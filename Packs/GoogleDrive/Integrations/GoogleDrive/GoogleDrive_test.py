@@ -1025,7 +1025,6 @@ class TestFilePermissionMethods:
                 'kind': 'drive#file',
                 'mimeType': 'application/octet-stream',
                 'name': 'TEST COPY',
-                'something_else': 'a thing'
             }
         )
 
@@ -1045,4 +1044,43 @@ class TestFilePermissionMethods:
             'mimeType': 'application/octet-stream',
             'name': 'TEST COPY'
         }
-        assert results.readable_output == '### New file copied from *test_file_id*\n|Id|\n|---|\n| test_id |\n'
+        assert results.readable_output == (
+            '### New file copied from *test_file_id*\n'
+            '|Id|Kind|Mimetype|Name|\n'
+            '|---|---|---|---|\n'
+            '| test_id | drive#file | application/octet-stream | TEST COPY |\n'
+        )
+    
+    def test_file_copy_command(self, mocker, gsuite_client):
+        """
+        Given:
+        - A request to copy a Drive file with an error.
+
+        When:
+        - Calling google-drive-file-copy.
+
+        Then:
+        - Return an error gracefully.
+        """
+        from GoogleDrive import file_copy_command, errors
+
+        def raise_error():
+            raise errors.HttpError(
+                resp=type(
+                    'MockRequest', (),
+                    {'status': 400, 'reason': 'Bad Request'}
+                ), 
+                content=b'Bad Request')
+
+        mocker.patch('googleapiclient.http.HttpRequest.execute', side_effect=raise_error)
+
+        with pytest.raises(DemistoException, match='Status Code: 400'):
+            file_copy_command(
+                gsuite_client,
+                args={
+                    'file_id': 'test_file_id',
+                    'copy_title': 'test_copy_title',
+                    'supports_all_drives': 'true',
+                    'user_id': 'test_user_id',
+                }
+            )

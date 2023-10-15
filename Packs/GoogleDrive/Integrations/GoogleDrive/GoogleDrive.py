@@ -1789,15 +1789,12 @@ def file_copy_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandRe
     file = copy_file_http_request(client, **args)
 
     return CommandResults(
-        raw_response=file,
         outputs_prefix='GoogleDrive',
         outputs_key_field='id',
-        outputs={
-            k: file.get(k) for k in ('kind', 'id', 'name', 'mimeType')
-        },
+        outputs=file,
         readable_output=tableToMarkdown(
             f'New file copied from *{args["file_id"]}*',
-            {'Id': file.get('id')}
+            file, headerTransform=string_to_table_header
         ),
     )
 
