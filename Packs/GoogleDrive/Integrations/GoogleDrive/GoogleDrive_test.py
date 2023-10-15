@@ -1050,7 +1050,7 @@ class TestFilePermissionMethods:
             '|---|---|---|---|\n'
             '| test_id | drive#file | application/octet-stream | TEST COPY |\n'
         )
-    
+
     def test_file_copy_command(self, mocker, gsuite_client):
         """
         Given:
@@ -1069,7 +1069,7 @@ class TestFilePermissionMethods:
                 resp=type(
                     'MockRequest', (),
                     {'status': 400, 'reason': 'Bad Request'}
-                ), 
+                ),
                 content=b'Bad Request')
 
         mocker.patch('googleapiclient.http.HttpRequest.execute', side_effect=raise_error)
