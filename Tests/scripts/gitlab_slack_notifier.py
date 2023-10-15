@@ -114,40 +114,45 @@ def test_modeling_rules_results(artifact_folder: Path, title: str) -> list[dict[
     return content_team_fields
 
 
-def test_playbooks_results_to_slack_msg(failed_tests: list[str],
+def test_playbooks_results_to_slack_msg(instance_role: str,
+                                        failed_tests: list[str],
                                         skipped_integrations: list[str],
                                         skipped_tests: list[str],
                                         title: str) -> list[dict[str, Any]]:
     content_team_fields = []
     if failed_tests:
-        field_failed_tests = {
-            "title": f"{title} - Failed Tests - ({len(failed_tests)})",
+        content_team_fields.append({
+            "title": f"{title} ({instance_role}) - Failed Tests - ({len(failed_tests)})",
             "value": ', '.join(failed_tests),
             "short": False
-        }
-        content_team_fields.append(field_failed_tests)
+        })
+    else:
+        content_team_fields.append({
+            "title": f"{title} ({instance_role}) - All Tests Playbooks Passed",
+            "value": '',
+            "short": False
+        })
+
     if skipped_tests:
-        field_skipped_tests = {
-            "title": f"{title} - Skipped Tests - ({len(skipped_tests)})",
+        content_team_fields.append({
+            "title": f"{title} ({instance_role}) - Skipped Tests - ({len(skipped_tests)})",
             "value": '',
             "short": True
-        }
-        content_team_fields.append(field_skipped_tests)
+        })
     if skipped_integrations:
-        field_skipped_integrations = {
-            "title": f"{title} - Skipped Integrations - ({len(skipped_integrations)})",
+        content_team_fields.append({
+            "title": f"{title} ({instance_role}) - Skipped Integrations - ({len(skipped_integrations)})",
             "value": '',
             "short": True
-        }
-        content_team_fields.append(field_skipped_integrations)
+        })
+
     return content_team_fields
 
 
 def test_playbooks_results(artifact_folder: Path, title: str) -> list[dict[str, Any]]:
 
-    instance_directories = get_instance_directories(artifact_folder)
     content_team_fields = []
-    for instance_directory in instance_directories:
+    for instance_role, instance_directory in get_instance_directories(artifact_folder).items():
         failed_tests_data = get_artifact_data(instance_directory, 'failed_tests.txt')
         failed_tests = failed_tests_data.split('\n') if failed_tests_data else []
 
@@ -157,14 +162,8 @@ def test_playbooks_results(artifact_folder: Path, title: str) -> list[dict[str, 
         skipped_integrations_data = get_artifact_data(instance_directory, 'skipped_integrations.txt')
         skipped_integrations = skipped_integrations_data.split('\n') if skipped_integrations_data else []
 
-        content_team_fields += test_playbooks_results_to_slack_msg(failed_tests, skipped_integrations, skipped_tests, title)
-
-    if not content_team_fields:
-        content_team_fields.append({
-            "title": f"{title} - All Tests Playbooks Passed",
-            "value": '',
-            "short": False
-        })
+        content_team_fields += test_playbooks_results_to_slack_msg(instance_role,
+                                                                   failed_tests, skipped_integrations, skipped_tests, title)
 
     return content_team_fields
 
@@ -299,10 +298,9 @@ def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
                           pipeline_id: str) -> tuple[str, list]:
     project = gitlab_client.projects.get(int(project_id))
     pipeline = project.pipelines.get(int(pipeline_id))
-    jobs = pipeline.jobs.list()
 
     failed_jobs = []
-    for job in jobs:
+    for job in pipeline.jobs.list(iterator=True):
         logging.info(f'status of gitlab job with id {job.id} and name {job.name} is {job.status}')
         if job.status == 'failed':
             logging.info(f'collecting failed job {job.name}')

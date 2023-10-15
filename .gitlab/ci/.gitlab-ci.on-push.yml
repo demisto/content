@@ -78,6 +78,7 @@ stop-running-pipelines:
     - section_start "Stop running pipelines on current branch"
     - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
     - section_end "Stop running pipelines on current branch"
+    - job-done
 
 # runs in gitlab for the on-push flow (except for contributors)
 run-unittests-and-lint:
@@ -658,6 +659,7 @@ test-upload-flow:
     - current_storage_base_path="upload-flow/builds/$BRANCH/$pipeline_id/content/packs"
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a "${ARTIFACTS_FOLDER}" -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
     - section_end "Verify Created Testing Bucket"
+    - job-done
 
 .server_test_playbooks_report:
   stage: test_playbooks_report

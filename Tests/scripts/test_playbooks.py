@@ -188,8 +188,8 @@ def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str,
 
 def get_test_playbook_results_files(artifacts_path: Path) -> list[Path]:
     test_playbooks_result_files_list: list[Path] = []
-    for directory in get_instance_directories(artifacts_path):
-        logging.info(f"Found instance directory: {directory}")
+    for instance_role, directory in get_instance_directories(artifacts_path).items():
+        logging.info(f"Found instance directory: {directory} for instance role: {instance_role}")
         has_test_playbooks_result_files_list = Path(artifacts_path) / directory / "has_test_playbooks_result_files_list.txt"
         if has_test_playbooks_result_files_list.exists():
             logging.info(f"Found test playbook result files list file: {has_test_playbooks_result_files_list}")
@@ -197,9 +197,12 @@ def get_test_playbook_results_files(artifacts_path: Path) -> list[Path]:
     return test_playbooks_result_files_list
 
 
-def get_instance_directories(artifacts_path: Path) -> list[Path]:
-    test_playbooks_result_files_list: list[Path] = []
+def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
+    test_playbooks_result_files_list: dict[str, Path] = {}
     for directory in artifacts_path.iterdir():
         if directory.is_dir() and directory.name.startswith("instance_"):
-            test_playbooks_result_files_list.append(directory)
+            instance_role_txt = directory / "instance_role.txt"
+            if instance_role_txt.exists():
+                instance_role: str = instance_role_txt.read_text().replace("\n", "")
+                test_playbooks_result_files_list[instance_role] = directory
     return test_playbooks_result_files_list
