@@ -5,7 +5,7 @@ This pack includes Cortex XSIAM content.
 A step-by-step configuration process is available at Cortex XSIAM Administrator Guide- [Ingest Alerts from Prisma Cloud Compute](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Alerts-from-Prisma-Cloud). 
 
 ## Configuration on XSIAM
-1. Select Settings → Data Sources.
+1. Click **Settings** > **Data Sources**.
 2. In the Prisma Cloud Compute Collector configuration, click **Add Instance** to begin a new alerts integration.
 3. Specify the Name for the Prisma Cloud Compute Collector displayed in Cortex XSIAM.
 4. Save & Generate Token. The token is displayed in a blue box, which is blurred in the image below.
