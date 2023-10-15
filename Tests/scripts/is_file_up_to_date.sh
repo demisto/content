@@ -4,7 +4,7 @@ BRANCH=$2
 SHOULD_CHECKOUT=$3
 
 if [[ -n $BRANCH ]]; then
-    BRANCH=$(git branch --show-current)
+  BRANCH=$(git branch --show-current 2>/dev/null) || BRANCH=$(git rev-parse --head) 
 fi
 
 # Checks if there's any diff from master
