@@ -242,3 +242,52 @@ def test_get_available_collections(mocker, session_fixture):
     assert isinstance(result.outputs['collections'], list)
 
 
+def test_find_element_by_key_nested_dict():
+    """
+    Given:
+      - A nested input dict
+    
+    When:
+      - Calling find_element_by_key() with a nested key
+    
+    Then:
+      - The expected nested value is returned
+    """
+    from GroupIBTIA import find_element_by_key
+    test_dict = {'a': {'b': 'value'}}
+    result = find_element_by_key(test_dict, 'a.b')
+    assert result == 'value'
+
+def test_find_element_by_key_list():
+    """  
+    Given:
+      - A list input
+    
+    When:
+      - Calling find_element_by_key() to get all values of a key
+    
+    Then:
+      - A list containing all values is returned
+    """
+    from GroupIBTIA import find_element_by_key
+    test_list = [{'a': 'value1'}, {'a': 'value2'}] 
+    result = find_element_by_key(test_list, 'a')
+    assert len(result) == 2
+    assert 'value1' in result
+    assert 'value2' in result
+    
+def test_find_element_by_key_missing():
+    """
+    Given:
+      - An input dict without the specified key
+    
+    When:
+      - Calling find_element_by_key() with a missing key
+
+    Then:  
+      - None is returned as expected
+    """
+    from GroupIBTIA import find_element_by_key
+    test_dict = {'a': 1}
+    result = find_element_by_key(test_dict, 'b')
+    assert result is None
