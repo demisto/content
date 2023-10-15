@@ -23,7 +23,7 @@ See this[doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSI
 3. Click the **Advanced** tab and enable **Access log**.
 4. Select the application to which to export all Access logs.
 
-For more information refer to the official Radware [documentation](https://support.radware.com/).
+For more information, refer to the official Radware [documentation](https://support.radware.com/).
 
 **On XSIAM:**
 
