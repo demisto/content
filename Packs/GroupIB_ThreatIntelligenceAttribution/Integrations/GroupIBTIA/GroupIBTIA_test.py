@@ -104,10 +104,10 @@ def session_fixture(request):
     """ 
     Given:
       - A list of collection names from the integration
-    
+
     When:
       - Using each collection name as a parameter to the session_fixture
-    
+
     Then:
       - The fixture creates the expected client for each collection name
     """
@@ -118,61 +118,64 @@ def test_transform_function_on_dict():
     """
     Given:
       - A dictionary input to transform 
-    
+
     When:
       - Calling transform_function() on the input
-    
+
     Then:
       - The nested dict is flattened as expected
-    """ 
+    """
     test_input = {'a': 1, 'b': {'c': 2}}
     expected = {'a': 1, 'b c': 2}
     actual, _ = transform_function(test_input)
     assert actual == expected
 
+
 def test_transform_function_on_list():
     """
     Given:
       - A list input to transform 
-    
+
     When:
       - Calling transform_function() on the input
-    
+
     Then:
       - The nested list is flattened as expected
-    """ 
-    test_input = [{'a': 1}, {'b': 2}] 
+    """
+    test_input = [{'a': 1}, {'b': 2}]
     # expected = {}
     actual, _ = transform_function(test_input)
     assert actual == {}
+
 
 def test_transform_function_on_primitive():
     """
     Given:
       - A primitive input to transform 
-    
+
     When:
       - Calling transform_function() on the input
-    
+
     Then:
       - The nested primitive is flattened as expected
-    """ 
+    """
     test_input = 'test'
     expected = {'': 'test'}
     actual, _ = transform_function(test_input)
     assert actual == expected
-    
+
+
 def test_transform_function_returns_tuple():
     """
     Given:
       - A tuple input to transform 
-    
+
     When:
       - Calling transform_function() on the input
-    
+
     Then:
       - The nested tuple is flattened as expected
-    """ 
+    """
     test_input = {'a': 1}
     actual = transform_function(test_input)
     assert isinstance(actual, tuple)
@@ -207,7 +210,7 @@ def test_main_error():
     """
     Given:
       - main() setup to raise an exception
-    
+
     When:
       - Calling the error_command() via main()
 
@@ -222,21 +225,21 @@ def test_get_available_collections(mocker, session_fixture):
     """
     Given:
       - Mock client with a mocked get_available_collections method
-    
+
     When:
       - Calling get_available_collections_command()
-    
+
     Then:
       - Outputs prefix and key field are as expected
       - Result outputs is a list
     """
     import GroupIBTIA
-    collection_name , client = session_fixture  
+    collection_name, client = session_fixture
     mocker.patch.object(Client, '_http_request', return_value=RAW_JSON)
     mocker.patch.object(GroupIBTIA, 'find_element_by_key', return_value=RAW_JSON[collection_name])
-    
+
     result = get_available_collections_command(client=client)
-    
+
     assert result.outputs_prefix == "GIBTIA.OtherInfo"
     assert result.outputs_key_field == "collections"
     assert isinstance(result.outputs['collections'], list)
@@ -246,10 +249,10 @@ def test_find_element_by_key_nested_dict():
     """
     Given:
       - A nested input dict
-    
+
     When:
       - Calling find_element_by_key() with a nested key
-    
+
     Then:
       - The expected nested value is returned
     """
@@ -258,29 +261,31 @@ def test_find_element_by_key_nested_dict():
     result = find_element_by_key(test_dict, 'a.b')
     assert result == 'value'
 
+
 def test_find_element_by_key_list():
     """  
     Given:
       - A list input
-    
+
     When:
       - Calling find_element_by_key() to get all values of a key
-    
+
     Then:
       - A list containing all values is returned
     """
     from GroupIBTIA import find_element_by_key
-    test_list = [{'a': 'value1'}, {'a': 'value2'}] 
+    test_list = [{'a': 'value1'}, {'a': 'value2'}]
     result = find_element_by_key(test_list, 'a')
     assert len(result) == 2
     assert 'value1' in result
     assert 'value2' in result
-    
+
+
 def test_find_element_by_key_missing():
     """
     Given:
       - An input dict without the specified key
-    
+
     When:
       - Calling find_element_by_key() with a missing key
 
