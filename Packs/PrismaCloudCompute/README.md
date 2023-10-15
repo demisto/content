@@ -23,7 +23,7 @@ The URL format for the tenant is ```https://api-<tenant name>.xdr.us.paloaltonet
 4. In **Credential Options**, select **Basic Authentication**, and use the Username and Password that you saved when you generated the token.
 5. Select **Container Runtime**.
 6. Click **Save**.
-   * In Cortex XSIAM, once alerts start to come in, a green check mark appears underneath the Prisma Cloud Compute Collector configuration with the amount of data received.
+   * In Cortex XSIAM, once alerts start to come in, a green checkmark appears underneath the Prisma Cloud Compute Collector configuration with the amount of data received.
 7. After Cortex XSIAM begins receiving data from Prisma Cloud Compute, you can use XQL Search to search for specific data using the ```prisma_cloud_compute_raw``` dataset.
 
 **Pay Attention**:
