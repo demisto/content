@@ -392,6 +392,7 @@ def get_indicators(indicators: str) -> list:
 
 
 def tim_insert_jsons(client: Client):
+    # takes our changes and pushes to XDR
     indicators = demisto.args().get('indicator', '')
     validation_errors = []
     if not indicators:
@@ -501,6 +502,7 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
 
 
 def get_changes(client: Client):
+    # takes changes from XDR
     from_time: dict = get_integration_context()
     if not from_time:
         raise DemistoException('XDR is not synced.')
@@ -528,8 +530,10 @@ def module_test(client: Client):
 def fetch_indicators(client: Client, auto_sync: bool = False):
     if not get_integration_context() and auto_sync:
         demisto.debug("running sync with first_time=True")
+        # this will happen on the first time we run 
         xdr_iocs_sync_command(client, first_time=True)
     else:
+        # this will happen every minute 
         get_changes(client)
         if auto_sync:
             tim_insert_jsons(client)
@@ -543,6 +547,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
     if first_time or not get_integration_context():
+        # the sync is the large operation including the data and the get_integration_context is fill in the sync  
         sync(client)
     else:
         iocs_to_keep(client)
