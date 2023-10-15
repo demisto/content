@@ -1090,7 +1090,7 @@ def fetch_incidents_command(client: Client, last_run: typing.Dict, first_fetch_t
     return next_run, incidents
 
 
-def get_available_collections_command(client: Client, args):
+def get_available_collections_command(client: Client):
     """
     Returns list of available collections to context and War Room.
 
@@ -1248,7 +1248,7 @@ def local_search_command(client: Client, args: dict):
     return results
 
 
-def main():
+def main(): 
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """

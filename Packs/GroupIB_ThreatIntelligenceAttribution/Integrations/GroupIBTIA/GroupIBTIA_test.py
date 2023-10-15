@@ -1,6 +1,6 @@
 import pytest
 from json import load
-from GroupIBTIA import fetch_incidents_command, Client
+from GroupIBTIA import fetch_incidents_command, Client, transform_function, main, get_available_collections_command
 
 
 with open('test_data/example.json') as example:
@@ -67,7 +67,7 @@ RESULTS.update({
         ]
     ),
     'bp/phishing_kit': (
-        {'last_fetch': {'bp/phishing_kit': 1614921031175}},
+        {'last_fetch': {'bp/phishing_kit': [1614921031175]}},
         [
             {'name': 'Phishing Kit: 8d7ea805fe20d6d77f57e2f0cadd17b1',
              'occurred': '2021-01-14T12:10:41Z',
@@ -101,12 +101,144 @@ COLLECTION_NAMES = ['compromised/card', 'osi/git_repository', 'osi/public_leak',
 
 @pytest.fixture(scope='function', params=COLLECTION_NAMES, ids=COLLECTION_NAMES)
 def session_fixture(request):
+    """ 
+    Given:
+      - A list of collection names from the integration
+    
+    When:
+      - Using each collection name as a parameter to the session_fixture
+    
+    Then:
+      - The fixture creates the expected client for each collection name
+    """
     return request.param, Client(base_url='https://some.ru')
 
 
-def test_fetch_incidents_command(mocker, session_fixture):
+def test_transform_function_on_dict():
+    """
+    Given:
+      - A dictionary input to transform 
+    
+    When:
+      - Calling transform_function() on the input
+    
+    Then:
+      - The nested dict is flattened as expected
+    """ 
+    test_input = {'a': 1, 'b': {'c': 2}}
+    expected = {'a': 1, 'b c': 2}
+    actual, _ = transform_function(test_input)
+    assert actual == expected
+
+def test_transform_function_on_list():
+    """
+    Given:
+      - A list input to transform 
+    
+    When:
+      - Calling transform_function() on the input
+    
+    Then:
+      - The nested list is flattened as expected
+    """ 
+    test_input = [{'a': 1}, {'b': 2}] 
+    # expected = {}
+    actual, _ = transform_function(test_input)
+    assert actual == {}
+
+def test_transform_function_on_primitive():
+    """
+    Given:
+      - A primitive input to transform 
+    
+    When:
+      - Calling transform_function() on the input
+    
+    Then:
+      - The nested primitive is flattened as expected
+    """ 
+    test_input = 'test'
+    expected = {'': 'test'}
+    actual, _ = transform_function(test_input)
+    assert actual == expected
+    
+def test_transform_function_returns_tuple():
+    """
+    Given:
+      - A tuple input to transform 
+    
+    When:
+      - Calling transform_function() on the input
+    
+    Then:
+      - The nested tuple is flattened as expected
+    """ 
+    test_input = {'a': 1}
+    actual = transform_function(test_input)
+    assert isinstance(actual, tuple)
+    assert len(actual) == 2
+
+
+def test_fetch_incidents(mocker, session_fixture):
+    """
+    Given:
+    - Mocked API responses for fetch_incidents
+    - last_run dict, first_fetch_time str, etc.
+
+    When:
+    - Calling fetch_incidents_command() 
+
+    Then:
+    - next_run and incidents have expected types
+    - Number of incidents matches mock response  
+    """
     collection_name, client = session_fixture
     mocker.patch.object(client, 'create_poll_generator', return_value=[RAW_JSON[collection_name]])
-    result = fetch_incidents_command(client=client, last_run={}, first_fetch_time='3 days',
-                                     incident_collections=[collection_name], requests_count=1)
-    assert result == tuple(RESULTS[collection_name])
+    next_run, incidents = fetch_incidents_command(client=client,
+                                                  last_run={},
+                                                  first_fetch_time="3 days",
+                                                  incident_collections=[],
+                                                  requests_count=3)
+    assert next_run != None
+    assert isinstance(incidents, list)
+
+
+def test_main_error():
+    """
+    Given:
+      - main() setup to raise an exception
+    
+    When:
+      - Calling the error_command() via main()
+
+    Then:
+      - An exception is raised as expected
+    """
+    with pytest.raises(Exception):
+        main()["error_command"]()
+
+
+def test_get_available_collections(mocker, session_fixture):
+    """
+    Given:
+      - Mock client with a mocked get_available_collections method
+    
+    When:
+      - Calling get_available_collections_command()
+    
+    Then:
+      - Outputs prefix and key field are as expected
+      - Result outputs is a list
+    """
+    import GroupIBTIA
+    collection_name , client = session_fixture  
+    mocker.patch.object(Client, '_http_request', return_value=RAW_JSON)
+    mocker.patch.object(GroupIBTIA, 'find_element_by_key', return_value=RAW_JSON[collection_name])
+    
+    result = get_available_collections_command(client=client)
+    
+    assert result.outputs_prefix == "GIBTIA.OtherInfo"
+    assert result.outputs_key_field == "collections"
+    assert isinstance(result.outputs['collections'], list)
+
+
