@@ -8,7 +8,7 @@ notable_eventid = demisto.args()['event_id']
 
 if notable_eventid:
     notable_eventid = notable_eventid.encode('UTF-8')
-    sha1_object = hashlib.sha1(notable_eventid)
+    sha1_object = hashlib.sha1(notable_eventid)     # nosec
     sha1 = sha1_object.digest()
     base64_object = base64.b64encode(sha1)
     base64_string = base64_object.decode('UTF-8')
