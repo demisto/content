@@ -420,7 +420,7 @@ slack-notify-nightly-build:
       fi
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Are there tests to run?"
-
+    - echo "TEST_XDR_ENV = $TEST_XDR_ENV, BUCKET_UPLOAD = $BUCKET_UPLOAD"
     - !reference [.lock-machine]
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
@@ -477,7 +477,7 @@ xsiam_server_ga:
         CLOUD_MACHINES_TYPE: "nightly"
         CLOUD_MACHINES_COUNT: 1
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
-    - if: '$TEST_XDR_ENV == "true" && $BUCKET_UPLOAD == null'
+    - if: '$TEST_XDR_ENV == "true"'
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
@@ -528,7 +528,7 @@ xsoar_ng_server_ga:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
       when: always
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
+    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == ""
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
