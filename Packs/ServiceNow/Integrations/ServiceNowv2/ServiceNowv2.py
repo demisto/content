@@ -657,7 +657,7 @@ class Client(BaseClient):
 
     def send_request(self, path: str, method: str = 'GET', body: dict | None = None, params: dict | None = None,
                      headers: dict | None = None, file=None, sc_api: bool = False, cr_api: bool = False,
-                     get_attachments: bool = False, no_record_found_res: dict = {'result': []}, custom_api: str | None = None):
+                     get_attachments: bool = False, no_record_found_res: dict = {'result': []}, custom_api: str = ''):
         """Generic request to ServiceNow.
 
         Args:
