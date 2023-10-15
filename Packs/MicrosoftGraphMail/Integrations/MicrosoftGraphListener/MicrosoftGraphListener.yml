@@ -848,7 +848,6 @@ script:
     - contextPath: MSGraphMail.Folders.UnreadItemCount
       description: The number of unread email messages in the folder.
       type: Number
-    polling: true
   dockerimage: demisto/crypto:1.0.0.76022
   isfetch: true
   script: ''
