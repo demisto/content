@@ -51,7 +51,7 @@ script:
     - description: The hostname of the machine
       name: machineName
       required: true
-    description: Get the FQDN or Group ID
+    description: Get the Machine FQDN and Machine Group Details
     name: cybereason-fetch-machine-details
   - arguments:
     - description: Sensor ID of Cybereason Sensor.

@@ -1005,4 +1005,4 @@ def test_fetch_machine_details_command(mocker):
     raw_response = json.loads(load_mock_response('fetch_machine_details_raw_response.json'))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = fetch_machine_details_command(client, args)
-    assert command_output.outputs_prefix == "Cybereason.Sensors"
+    assert command_output.outputs_prefix == "Cybereason.Sensor"

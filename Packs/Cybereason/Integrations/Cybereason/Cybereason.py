@@ -69,7 +69,7 @@ DOMAIN_HEADERS = [
 
 USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
 
-SENSOR_HEADERS = ['MachineID', 'MachineName', 'GroupID', 'GroupName']
+SENSOR_HEADERS = ['MachineID', 'MachineName', 'MachineFQDN', 'GroupID', 'GroupName']
 
 CONNECTION_INFO = [
     {'field': 'elementDisplayName', 'header': 'Name', 'type': 'simple'},
@@ -1944,6 +1944,7 @@ def fetch_machine_details_command(client: Client, args: dict):
                 outputs.append({
                     "MachineID": single_sensor["sensorId"],
                     "MachineName": single_sensor["machineName"],
+                    "MachineFQDN": single_sensor["fqdn"],
                     "GroupID": single_sensor["groupId"],
                     "GroupName": single_sensor["groupName"]
                 })
@@ -1952,7 +1953,7 @@ def fetch_machine_details_command(client: Client, args: dict):
         return CommandResults(
             readable_output=tableToMarkdown(
                 'Machine Details', outputs, headers=SENSOR_HEADERS) if outputs else empty_output_message,
-            outputs_prefix='Cybereason.Sensors',
+            outputs_prefix='Cybereason.Sensor',
             outputs_key_field='MachineID',
             outputs=outputs)
 
