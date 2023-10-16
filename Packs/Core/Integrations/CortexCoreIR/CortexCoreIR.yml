@@ -41,7 +41,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -76,7 +76,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -96,17 +96,17 @@ script:
     - description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_id_list
-    - description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+    - description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2."
       isArray: true
       name: dist_name
     - description: |-
         A comma-separated list of IP addresses.
-        Example: 8.8.8.8,1.1.1.1
+        Example: 8.8.8.8,1.1.1.1.
       isArray: true
       name: ip_list
     - description: |-
         The group name to which the agent belongs.
-        Example: group_name1,group_name2
+        Example: group_name1,group_name2.
       isArray: true
       name: group_name
     - auto: PREDEFINED
@@ -120,7 +120,7 @@ script:
       - android
     - description: |-
         A comma-separated list of alias names.
-        Examples: alias_name1,alias_name2
+        Examples: alias_name1,alias_name2.
       isArray: true
       name: alias_name
     - auto: PREDEFINED
@@ -131,7 +131,7 @@ script:
       - unisolated
     - description: |-
         Hostname
-        Example: hostname1,hostname2
+        Example: hostname1,hostname2.
       isArray: true
       name: hostname
     - description: |-
@@ -139,28 +139,28 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_gte
     - description: |-
         All the agents that were first seen before {first_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_lte
     - description: |-
         All the agents that were last seen before {last_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_gte
     - description: |-
         All the agents that were last seen before {last_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_lte
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
@@ -295,12 +295,12 @@ script:
       name: endpoint_id_list
     - description: |-
         A comma-separated list of distribution package names or installation package names to use as a filter.
-        Example: dist_name1,dist_name2
+        Example: dist_name1,dist_name2.
       isArray: true
       name: dist_name
     - description: |-
         A comma-separated list of IP addresses to use as a filter.
-        Example: 8.8.8.8,1.1.1.1
+        Example: 8.8.8.8,1.1.1.1.
       isArray: true
       name: ip_list
     - description: A comma-separated list of group names to which the agent belongs to use as a filter.
@@ -317,7 +317,7 @@ script:
       - android
     - description: |-
         A comma-separated list of alias names to use as a filter.
-        Examples: alias_name1,alias_name2
+        Examples: alias_name1,alias_name2.
       isArray: true
       name: alias_name
     - auto: PREDEFINED
@@ -334,28 +334,28 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_gte
     - description: |-
         All the agents that were first seen before {first_seen_lte} to use as a filter.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_lte
     - description: |-
         All the agents that were last seen after {last_seen_gte} to use as a filter.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_gte
     - description: |-
         All the agents that were last seen before {last_seen_lte} to use as a filter.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_lte
     - name: username
       description: The usernames to use as a filter. Accepts a single user, or comma-separated list of usernames.
@@ -396,7 +396,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: "String, valid values are:\n• windows \n• linux\n• macos \n• android"
+      description: "String, valid values are:\n• windows \n• linux\n• macos \n• android."
       name: platform
       predefined:
       - windows
@@ -408,7 +408,7 @@ script:
       description: |-
         A string representing the type of package to create.
         standalone - An installation for a new agent
-        upgrade - An upgrade of an agent from ESM
+        upgrade - An upgrade of an agent from ESM.
       name: package_type
       predefined:
       - standalone
@@ -453,7 +453,7 @@ script:
         • deb - For Linux
         • pkg - For Mac
         • x86 - For Windows
-        • x64 - For Windows
+        • x64 - For Windows.
       name: package_type
       predefined:
       - upgrade
@@ -519,7 +519,7 @@ script:
     - description: The audit log subtype.
       name: sub_type
     - auto: PREDEFINED
-      description: Result type
+      description: Result type.
       name: result
       predefined:
       - SUCCESS
@@ -530,14 +530,14 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: timestamp_gte
     - description: |-
         Return logs when the timestamp is before the 'log_time_after'.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: timestamp_lte
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
@@ -669,7 +669,7 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: timestamp_gte
     - description: |-
         Return logs for which the timestamp is before the 'timestamp_lte'.
@@ -677,7 +677,7 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: timestamp_lte
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
@@ -769,10 +769,10 @@ script:
     name: core-blocklist-files
     outputs:
     - contextPath: Core.blocklist.added_hashes
-      description: Added fileHash to blocklist
+      description: Added fileHash to blocklist.
       type: Number
     - contextPath: Core.blocklist.excluded_hashes
-      description: Added fileHash to blocklist
+      description: Added fileHash to blocklist.
       type: Number
   - arguments:
     - description: Links the response action to the triggered incident.
@@ -794,10 +794,10 @@ script:
     name: core-allowlist-files
     outputs:
     - contextPath: Core.allowlist.added_hashes
-      description: Added fileHash to allowlist
+      description: Added fileHash to allowlist.
       type: Number
     - contextPath: Core.allowlist.excluded_hashes
-      description: Added fileHash to allowlist
+      description: Added fileHash to allowlist.
       type: Number
   - arguments:
     - description: Links the response action to the triggered incident.
@@ -812,7 +812,7 @@ script:
     - description: String that represents the file’s hash. Must be a valid SHA256 hash.
       name: file_hash
       required: true
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -843,7 +843,7 @@ script:
       required: true
     - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
       name: endpoint_id
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1191,7 +1191,7 @@ script:
     - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
       isArray: true
       name: generic_file_path
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1338,7 +1338,7 @@ script:
     - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
-    - description: Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
+    - description: Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
       name: parameters
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
@@ -1361,7 +1361,7 @@ script:
     - description: Section of a script you want to initiate on an endpoint, for example, print("7").
       name: snippet_code
       required: true
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1504,7 +1504,7 @@ script:
       description: The SSDeep hash of the file.
       type: String
     - contextPath: File.EntryID
-      description: EntryID of the file
+      description: EntryID of the file.
       type: String
     - contextPath: File.Info
       description: Information about the file.
@@ -1530,7 +1530,7 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1562,7 +1562,7 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1594,7 +1594,7 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1626,7 +1626,7 @@ script:
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
       name: timeout
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1692,7 +1692,7 @@ script:
       - '1'
       name: new_verdict
       required: true
-    - description: String that represents the reason of the report
+    - description: String that represents the reason of the report.
       name: reason
       required: true
     - description: User’s email address.
@@ -1721,7 +1721,7 @@ script:
     name: core-remove-allowlist-files
     outputs:
     - contextPath: Core.allowlist.removed_hashes
-      description: Removed file hash
+      description: Removed file hash.
       type: Number
   - arguments:
     - description: Links the response action to the incident that triggered it.
@@ -1736,20 +1736,20 @@ script:
     name: core-remove-blocklist-files
     outputs:
     - contextPath: Core.blocklist.removed_hashes
-      description: Removed fileHash from blocklist
+      description: Removed fileHash from blocklist.
       type: Number
   - arguments:
     - description: Name of the exclusion.
       name: name
       required: true
-    - description: 'Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
+    - description: 'Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}.'
       name: filterObject
       required: true
     - description: String that represents additional information regarding the action.
       name: comment
     - auto: PREDEFINED
       defaultValue: ENABLED
-      description: Status of exclusion. default value = ENABLED
+      description: Status of exclusion. default value = ENABLED.
       name: status
       predefined:
       - ENABLED
@@ -1758,22 +1758,22 @@ script:
     name: core-add-exclusion
     outputs:
     - contextPath: Core.exclusion.rule_id
-      description: Added exclusion rule id
+      description: Added exclusion rule id.
       type: Number
   - arguments:
-    - description: The desired alert_exclusion_id to be removed
+    - description: The desired alert_exclusion_id to be removed.
       name: alert_exclusion_id
       required: true
     description: Delete an alert exclusion rule based on rule ID.
     name: core-delete-exclusion
     outputs:
     - contextPath: Core.deletedExclusion.rule_id
-      description: Deleted exclusion rule id
+      description: Deleted exclusion rule id.
       type: Number
   - arguments:
     - description: Links the response action to the tenant that triggered it.
       name: tenant_ID
-    - description: 'Filter object for the exclusion. Example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
+    - description: 'Filter object for the exclusion. Example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}.'
       name: filterObject
     - description: Limit for the response. You will get the first "limit" exclusions. Default value is 20.
       name: limit
@@ -1978,6 +1978,13 @@ script:
       isArray: true
       name: alert_ids
       required: true
+    - description: Whether to return only a subset of the alert fields. Filtering the fields can reduce response size for large alerts.
+      auto: PREDEFINED
+      name: filter_alert_fields
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns dynamic analysis of each alert ID.
     name: core-get-dynamic-analysis
     outputs:
@@ -2509,17 +2516,17 @@ script:
     - description: A comma-separated list of endpoint IDs by which to filter the results.
       isArray: true
       name: endpoint_id_list
-    - description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+    - description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2."
       isArray: true
       name: dist_name
     - description: |-
         A comma-separated list of IP addresses.
-        Example: 8.8.8.8,1.1.1.1
+        Example: 8.8.8.8,1.1.1.1.
       isArray: true
       name: ip_list
     - description: |-
         A comma-separated list of group name to which the agent belongs.
-        Example: group_name1,group_name2
+        Example: group_name1,group_name2.
       isArray: true
       name: group_name
     - auto: PREDEFINED
@@ -2533,7 +2540,7 @@ script:
       - android
     - description: |-
         A comma-separated list of alias names.
-        Examples: alias_name1,alias_name2
+        Examples: alias_name1,alias_name2.
       isArray: true
       name: alias_name
     - auto: PREDEFINED
@@ -2544,7 +2551,7 @@ script:
       - unisolated
     - description: |-
         A comma-separated list of hostnames.
-        Example: hostname1,hostname2
+        Example: hostname1,hostname2.
       isArray: true
       name: hostname
     - description: |-
@@ -2552,28 +2559,28 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_gte
     - description: |-
         All the agents that were first seen before {first_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_lte
     - description: |-
         All the agents that were last seen before {last_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_gte
     - description: |-
         All the agents that were last seen before {last_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_lte
     - auto: PREDEFINED
       description: The status of the endpoint to filter.
@@ -2596,17 +2603,17 @@ script:
     - description: A comma-separated list of endpoint IDs to filter by them.
       isArray: true
       name: endpoint_id_list
-    - description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+    - description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2."
       isArray: true
       name: dist_name
     - description: |-
         A comma-separated list of IP addresses.
-        Example: 8.8.8.8,1.1.1.1
+        Example: 8.8.8.8,1.1.1.1.
       isArray: true
       name: ip_list
     - description: |-
         A comma-separated list of group names to which the agent belongs.
-        Example: group_name1,group_name2
+        Example: group_name1,group_name2.
       isArray: true
       name: group_name
     - auto: PREDEFINED
@@ -2620,7 +2627,7 @@ script:
       - android
     - description: |-
         A comma-separated list of alias names.
-        Examples: alias_name1,alias_name2
+        Examples: alias_name1,alias_name2.
       isArray: true
       name: alias_name
     - auto: PREDEFINED
@@ -2631,7 +2638,7 @@ script:
       - unisolated
     - description: |-
         A comma-separated list of hostnames.
-        Example: hostname1,hostname2
+        Example: hostname1,hostname2.
       isArray: true
       name: hostname
     - description: |-
@@ -2639,28 +2646,28 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_gte
     - description: |-
         All the agents that were first seen before {first_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_lte
     - description: |-
         All the agents that were last seen before {last_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_gte
     - description: |-
         All the agents that were last seen before {last_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_lte
     - auto: PREDEFINED
       description: The status of the endpoint to filter.
@@ -2705,7 +2712,7 @@ script:
         Unique ID of a specific user.
         User ID could be either of the `foo/dummy` format, or just `dummy`.
       name: user_id
-    - description: Limit the number of users that will appear in the list. (limit should be used when no specific host is requested)
+    - description: Limit the number of users that will appear in the list. (limit should be used when no specific host is requested).
       name: limit
       defaultValue: 50
     name: core-list-risky-users
@@ -2787,7 +2794,7 @@ script:
       description: Name of the user group as it appears in the management console.
       type: String
     - contextPath: Core.UserGroup.insert_time
-      description: Timestamp of when the user group was created
+      description: Timestamp of when the user group was created.
       type: Number
     - contextPath: Core.UserGroup.update_time
       description: Timestamp of when the user group was last updated.
@@ -2850,7 +2857,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.68300
+  dockerimage: demisto/python3:3.10.13.75921
 tests:
 - No tests
 fromversion: 6.2.0
