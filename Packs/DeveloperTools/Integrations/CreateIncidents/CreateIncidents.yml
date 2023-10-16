@@ -51,7 +51,7 @@ script:
       name: attachment_paths
     description: Creates incidents from json files provided, and stores it in the instance context.
     name: create-test-incident-from-file
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   runonce: false
   script: '-'
