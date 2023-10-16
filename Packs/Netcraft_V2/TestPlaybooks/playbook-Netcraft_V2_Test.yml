@@ -98,7 +98,7 @@ tasks:
       comment:
         simple: Test attack report.
       customer_label:
-        simple: Test customer label
+        simple: Test label
       inactive:
         simple: "true"
       tags:
@@ -178,7 +178,7 @@ tasks:
       add_tags:
         simple: smishing,fake-shop-logo
       customer_label:
-        simple: Test customer label
+        simple: Test label
       description:
         simple: Test description
       remove_tags:
