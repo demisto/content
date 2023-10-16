@@ -1078,8 +1078,7 @@ def get_indicator_list(
     """
     last_run_dict = demisto.getLastRun()
     indicators_list = last_run_dict.get(f"{indicator_type}List", [])
-    last_run = last_run_dict.get(indicator_type + "LastFetch", first_fetch)
-    new_last_updated = last_run
+    new_last_updated = last_run = last_run_dict.get(f"{indicator_type}LastFetch", first_fetch)
     if len(indicators_list) < limit:
         new_indicators_list, new_last_updated = get_new_indicators(
             client, last_run, indicator_type, limit
@@ -1148,9 +1147,9 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
 
         result += indicators
 
-        last_run_dict[indicator_type + "List"] = indicators[limit:]
+        last_run_dict[f"{indicator_type}List"] = indicators[limit:]
         if indicators_list:
-            last_run_dict[indicator_type + "LastFetch"] = new_last_updated
+            last_run_dict[f"{indicator_type}LastFetch"] = new_last_updated
 
     return (result, last_run_dict)
 
