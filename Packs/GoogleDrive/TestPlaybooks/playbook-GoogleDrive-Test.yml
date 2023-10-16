@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2d039b61-85bd-4ab8-81a9-1d541c882d8d
+    taskid: 377956ba-544f-45f4-8c9f-b2e7b212c25b
     type: start
     task:
-      id: 2d039b61-85bd-4ab8-81a9-1d541c882d8d
+      id: 377956ba-544f-45f4-8c9f-b2e7b212c25b
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b01d03a1-1950-4941-8827-79e0d76bd39a
+    taskid: 5ce9a2f6-73e6-4f6f-82a8-123fa86ff9bc
     type: regular
     task:
-      id: b01d03a1-1950-4941-8827-79e0d76bd39a
+      id: 5ce9a2f6-73e6-4f6f-82a8-123fa86ff9bc
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7f918e20-4cd2-430a-8569-63433c9996e9
+    taskid: f9c06e77-65a6-4fb8-8762-422db20452d1
     type: regular
     task:
-      id: 7f918e20-4cd2-430a-8569-63433c9996e9
+      id: f9c06e77-65a6-4fb8-8762-422db20452d1
       version: -1
       name: google-drive-drive-create
       script: '|||google-drive-drive-create'
@@ -112,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f4c11ee7-40ff-485c-8e76-aa9d3b6d6a42
+    taskid: bb751820-daf8-491b-8933-98a61d844042
     type: condition
     task:
-      id: f4c11ee7-40ff-485c-8e76-aa9d3b6d6a42
+      id: bb751820-daf8-491b-8933-98a61d844042
       version: -1
       name: Verify Outputs
       type: condition
@@ -159,10 +159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 86d5ea8e-3d94-4cec-8526-81be2ad69db9
+    taskid: 685fead4-6116-49b5-8bb3-3bcc6dc406b0
     type: regular
     task:
-      id: 86d5ea8e-3d94-4cec-8526-81be2ad69db9
+      id: 685fead4-6116-49b5-8bb3-3bcc6dc406b0
       version: -1
       name: google-drive-changes-list
       script: '|||google-drive-changes-list'
@@ -197,10 +197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5ef7e46e-12ea-4ed5-821d-d7f33156988e
+    taskid: 2cb30134-dd8b-43f8-80f0-7f6437753306
     type: regular
     task:
-      id: 5ef7e46e-12ea-4ed5-821d-d7f33156988e
+      id: 2cb30134-dd8b-43f8-80f0-7f6437753306
       version: -1
       name: google-drive-activity-list
       script: '|||google-drive-activity-list'
@@ -231,10 +231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a59ba135-da79-462c-8919-9ada1e20786d
+    taskid: 9da608e9-f961-4d45-8b9d-d54aa8255851
     type: title
     task:
-      id: a59ba135-da79-462c-8919-9ada1e20786d
+      id: 9da608e9-f961-4d45-8b9d-d54aa8255851
       version: -1
       name: Test Done
       type: title
@@ -246,7 +246,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2995
         }
       }
     note: false
@@ -259,10 +259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 51e51e01-a698-4709-817e-d8f8f10f9287
+    taskid: 4d4c0fc4-ae74-40c1-8872-f3ef559c1d4b
     type: regular
     task:
-      id: 51e51e01-a698-4709-817e-d8f8f10f9287
+      id: 4d4c0fc4-ae74-40c1-8872-f3ef559c1d4b
       version: -1
       name: google-drive-file-get - from a shared drive
       description: 'Get a single file from a shared drive. '
@@ -300,10 +300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 9f3db4f8-840d-4314-8f3a-c53d3c619bba
+    taskid: 1a0646a1-f29a-4c4f-8ab9-7a8bc97ecd8d
     type: condition
     task:
-      id: 9f3db4f8-840d-4314-8f3a-c53d3c619bba
+      id: 1a0646a1-f29a-4c4f-8ab9-7a8bc97ecd8d
       version: -1
       name: Verify Outputs
       type: condition
@@ -341,10 +341,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 3142ae06-fa39-4469-854e-85d935d83c17
+    taskid: a8a34e00-1484-4bf4-8fd7-c83a1626c7dd
     type: regular
     task:
-      id: 3142ae06-fa39-4469-854e-85d935d83c17
+      id: a8a34e00-1484-4bf4-8fd7-c83a1626c7dd
       version: -1
       name: google-drive-files-list - from a shared drive
       description: Lists the user's shared drives.
@@ -384,10 +384,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5c2fd621-11bc-4649-8af9-dfd3575d3a9d
+    taskid: a651d69a-943b-4333-8c45-7f900dd8024e
     type: condition
     task:
-      id: 5c2fd621-11bc-4649-8af9-dfd3575d3a9d
+      id: a651d69a-943b-4333-8c45-7f900dd8024e
       version: -1
       name: Verify Outputs
       description: 'Verify that the file from the shared drive is in the list. '
@@ -396,7 +396,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -423,10 +423,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 0cec0d2c-85aa-4a89-88fe-24c3ab1efa2d
+    taskid: 9f8de4ec-c558-4492-8f9d-7a5b0f11155f
     type: regular
     task:
-      id: 0cec0d2c-85aa-4a89-88fe-24c3ab1efa2d
+      id: 9f8de4ec-c558-4492-8f9d-7a5b0f11155f
       version: -1
       name: DeleteContext
       description: |-
@@ -463,10 +463,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c708bf03-39df-4b08-874c-c21ec6ccd527
+    taskid: 2d6e06e7-4cb8-431f-8527-d0ddf2e9a4ae
     type: regular
     task:
-      id: c708bf03-39df-4b08-874c-c21ec6ccd527
+      id: 2d6e06e7-4cb8-431f-8527-d0ddf2e9a4ae
       version: -1
       name: DeleteContext
       description: |-
@@ -503,10 +503,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 7a9a7a22-ac81-4c9a-8e9c-1011925a361f
+    taskid: d99effdf-4df4-431f-8ff6-bf283ea8a8a3
     type: regular
     task:
-      id: 7a9a7a22-ac81-4c9a-8e9c-1011925a361f
+      id: d99effdf-4df4-431f-8ff6-bf283ea8a8a3
       version: -1
       name: google-drive-drive-delete
       description: Deletes the shared drive that was created in the previous task.
@@ -538,12 +538,163 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 5bea31d9-931c-4c26-8bba-ccd8e80dfceb
+    type: regular
+    task:
+      id: 5bea31d9-931c-4c26-8bba-ccd8e80dfceb
+      version: -1
+      name: google-drive-file-copy
+      description: Make a copy of a Google Drive file.
+      script: GoogleDrive|||google-drive-file-copy
+      type: regular
+      iscommand: true
+      brand: GoogleDrive
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      copy_title:
+        simple: TEST COPY
+      extend-context:
+        simple: CopiedFile=id
+      file_id:
+        simple: ${GoogleDrive.File.File.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 90c58c1a-57b2-4972-8ba6-409ded82e669
+    type: regular
+    task:
+      id: 90c58c1a-57b2-4972-8ba6-409ded82e669
+      version: -1
+      name: google-drive-file-delete
+      description: Permanently deletes a file owned by the user without moving it to the trash. If the file belongs to a shared drive the user must be an organizer on the parent. If the target is a folder, all descendants owned by the user are also deleted.
+      script: GoogleDrive|||google-drive-file-delete
+      type: regular
+      iscommand: true
+      brand: GoogleDrive
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file_id:
+        simple: ${CopiedFile}
+      supports_all_drives:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: e70e037d-b9ce-4a55-8a95-01b394ee9a61
+    type: regular
+    task:
+      id: e70e037d-b9ce-4a55-8a95-01b394ee9a61
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: cf9ab855-a614-496c-8968-c58519768987
+    type: regular
+    task:
+      id: cf9ab855-a614-496c-8968-c58519768987
+      version: -1
+      name: google-drive-files-list
+      description: Lists the user's shared drives.
+      script: '|||google-drive-files-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      page_size:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 3010,
         "width": 380,
         "x": 50,
         "y": 50
