@@ -304,7 +304,11 @@ xpanse-prepare-testing-bucket:
     - section_start "Destroy Instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - if [ $? -ne 0 ]; then
-        echo "Failed to destroy instances, exit code"$?";
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - destroy_instances_exit_code=$?
+    - |
+      if [ ${destroy_instances_exit_code} -ne 0 ]; then
+        echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
       fi
     - section_end "Destroy Instances"
 
@@ -375,7 +379,6 @@ jobs-done-check-on-push:
       optional: true
   tags:
     - gke
-
 
 slack-notify-nightly-build:
   extends:
@@ -510,8 +513,8 @@ xsiam_server_ga:
         - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
     paths:
       - ${ARTIFACTS_FOLDER}/modeling_rules_results.xml
-      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
-      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 xsoar_ng_server_ga:
   extends:
@@ -528,15 +531,15 @@ xsoar_ng_server_ga:
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
-    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
-    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR_SAAS}/env_results.json"
+    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
-    MARKETPLACE_NAME: "xsoar"
+    MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
   needs:
-    - job: xsoar-prepare-testing-bucket
+    - job: xsoar-saas-prepare-testing-bucket
       optional: true
 
 
@@ -577,7 +580,7 @@ test-upload-flow:
     -   echo "Sleeping for 10 seconds before retrying"
     -   sleep 10
     - done
-    - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
+    - echo "Successful triggered test upload - ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     - section_end "Trigger Test Upload Flow On Testing Branch"
 
     - section_start "Wait For Upload To Finish"
