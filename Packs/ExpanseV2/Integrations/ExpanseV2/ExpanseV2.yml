@@ -5497,7 +5497,7 @@ script:
     arguments:
       - name: domain
     outputs:
-      - contextPath: ASM.IP.ip
+      - contextPath: ASM.Domain.ip
         description: The IP address of the asset.
         type: string
       - contextPath: ASM.Domain.domain
