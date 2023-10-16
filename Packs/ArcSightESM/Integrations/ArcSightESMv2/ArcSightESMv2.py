@@ -214,6 +214,8 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
         if not res.ok and not is_login:
             if params and not body:
                 params['authToken'] = login()
+            elif 'Authorization' in headers:
+                headers['Authorization'] = f'Bearer {login()}'
             else:
                 body = body.replace(demisto.getIntegrationContext().get('auth_token'), login())
             return requests.request(
@@ -846,6 +848,55 @@ def entries_command(func):
                                                                                                  res.text))
 
     demisto.results("Success")
+    
+    
+def add_entries_command():
+    resource_id = demisto.args().get('resourceId')
+    entries_arg = demisto.args().get('entries')
+    query_path = f'detect-api/rest/activelists/{resource_id}/entries'
+    fields = []
+    entries = []
+    
+    if not isinstance(entries_arg, list):
+        try:
+            entries_arg = json.loads(entries_arg)
+            if len(entries_arg) > 0:
+                fields = list(entries_arg[0].keys())
+        except ValueError as ex:
+            demisto.debug(str(ex))
+            return_error('Entries must be in JSON format. Must be array of objects.')
+        if not all([entry.keys() == entries_arg[0].keys() for entry in entries_arg[1:]]):
+            return_error('All entries must have the same fields')
+
+    if len(entries_arg) > 0:
+        for entry_input in entries_arg:
+            entry = []
+            for k in fields:
+                val = entry_input[k]
+                entry.append(val)
+            
+            entries.append({
+                'fields': entry
+            })
+        
+    body = {
+        'fields': fields,
+        'entries': entries
+    }
+    headers = HEADERS
+    headers['Authorization'] = f'Bearer {AUTH_TOKEN}'
+    
+    body = json.dumps(body)
+    res = send_request(query_path, body=body)
+
+    if not res.ok:
+        demisto.debug(res.text)
+        return_error("Failed to add entries. Please make sure to enter Active List resource ID"
+                     "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(resource_id,
+                                                                                                 res.status_code, body,
+                                                                                                 res.text))
+
+    demisto.results("Success")
 
 
 @logger
@@ -881,6 +932,8 @@ AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
 
 
 def main():
+    use_rest = demisto.params().get('use_rest', False)
+    
     try:
         if demisto.command() == 'test-module':
             test()
@@ -911,7 +964,10 @@ def main():
             get_entries_command()
 
         elif demisto.command() == 'as-add-entries':
-            entries_command(func='addEntries')
+            if use_rest:
+                add_entries_command()
+            else:
+                entries_command(func='addEntries')   
 
         elif demisto.command() == 'as-delete-entries':
             entries_command(func='deleteEntries')
