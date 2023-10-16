@@ -67,7 +67,7 @@
         },
         {
             "playbookID": "Local Analysis alert Investigation - Test",
-            "timeout": 1500,
+            "timeout": 1800,
             "integrations": [
                 "VirusTotal (API v3)"
             ],
