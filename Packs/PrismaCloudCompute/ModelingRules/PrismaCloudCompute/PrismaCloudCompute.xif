@@ -26,7 +26,8 @@ alter
 	xdm.event.tags = arraycreate(if(lowercase_tags ~= "auth", XDM_CONST.EVENT_TAG_AUTHENTICATION, lowercase_tags ~= "vpn", XDM_CONST.EVENT_TAG_VPN, lowercase_tags ~= "network", XDM_CONST.EVENT_TAG_NETWORK, lowercase_tags = null, null, to_string(lowercase_tags))),
 	xdm.event.type = type,
 	xdm.source.agent.identifier = coalesce(image, get_label_image_name_1, get_label_image_name_2, get_label_image_name_3, get_label_image_name_4),
-	xdm.alert.description = labels,
+	xdm.alert.description = coalesce(aggregatedAlerts, aggregated),
+	xdm.source.host.manufacturer = labels
 	xdm.source.location.region = region,
 	xdm.event.description = message,
 	xdm.source.application.name = get_label_app,
