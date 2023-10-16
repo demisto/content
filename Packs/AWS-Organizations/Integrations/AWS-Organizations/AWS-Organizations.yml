@@ -1,0 +1,72 @@
+category: Identity and Access Management
+commonfields:
+  id: AWS-Organizations
+  version: -1
+sectionOrder:
+- Connect
+configuration:
+- display: Role Arn
+  name: role_arn
+  section: Connect
+  type: 0
+- display: Role Session Name
+  name: role_session_name
+  section: Connect
+  type: 0
+- display: Role Session Duration
+  name: role_session_duration
+  section: Connect
+  type: 0
+  advanced: true
+- displaypassword: Access Key
+  name: access_key
+  hiddenusername: true
+  section: Connect
+  type: 9
+- displaypassword: Secret Key
+  name: secret_key
+  hiddenusername: true
+  section: Connect
+  type: 9
+- display: Timeout
+  name: timeout
+  section: Connect
+  type: 0
+  advanced: true
+- display: Retries
+  name: retries
+  section: Connect
+  type: 0
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+description: This is the Hello World integration for getting started.
+display: AWS-Organizations
+name: AWS-Organizations
+script:
+  commands: []
+  dockerimage: demisto/python3:3.9.5.21272
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
