@@ -1,6 +1,7 @@
 # adding so null don't get seen as variable.
 null = None
 false = False
+true = True
 
 EXTERNAL_SERVICES_RESPONSE = {
     "reply": {
@@ -1271,7 +1272,7 @@ INCIDENT_GET_RAW = {
             "manual_severity": null,
             "manual_description": null,
             "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=71",
-            "starred": True,
+            "starred": true,
             "hosts": [
                 "1.1.1.1:null"
             ],
@@ -1580,6 +1581,125 @@ ALERT_UPDATE_RAW = {
     "reply": {
         "alerts_ids": [
             602,
+        ]
+    }
+}
+
+IP_DOMAIN_RAW = {
+    "reply": {
+        "total_count": 1,
+        "result_count": 1,
+        "assets_internet_exposure": [
+            {
+                "asm_ids": [
+                    "4b1f3765-de40-3a1a-8535-667420408fd9"
+                ],
+                "name": "*.acme.com",
+                "asset_type": "DOMAIN",
+                "cloud_provider": null,
+                "externally_detected_providers": [
+                    "Amazon Web Services"
+                ],
+                "region": null,
+                "ips": [
+                    "1.1.1.1"
+                ],
+                "management_status": [],
+                "iot_model": null,
+                "iot_category": null,
+                "iot_profile": null,
+                "sensor": [
+                    "XPANSE"
+                ],
+                "service_type": [
+                    "HttpServer"
+                ],
+                "last_observed": 1697361335282,
+                "first_observed": 1679457579382,
+                "has_active_externally_services": true,
+                "has_xdr_agent": "NA",
+                "certificate_classifications": [],
+                "certificate_issuer": null,
+                "certificate_algorithm": null,
+                "mac_addresses": [],
+                "cloud_id": null,
+                "ip_ranges": [],
+                "domain_resolves": true,
+                "operation_system": null,
+                "asm_va_score": null,
+                "externally_inferred_cves": [],
+                "agent_id": null,
+                "tags": [
+                    "BU:Xpanse VanDelay Demo 3"
+                ],
+                "ipv6s": null,
+                "has_alerts": false,
+                "has_incidents": false,
+                "annotation": null,
+                "cloud_resource_type": null,
+                "provider_account": null,
+                "domain": "*.acme.com",
+                "asset_explainers": [],
+                "date_added": 1679398600086,
+                "certificate_details": null,
+                "domain_details": {
+                    "admin": {},
+                    "alignedRegistrar": "MarkMonitor",
+                    "collectionTime": 1695942091000,
+                    "creationDate": 785376000000,
+                    "dnssec": null,
+                    "domainName": "acme.com",
+                    "domainStatuses": [
+                        "clientUpdateProhibited",
+                        "clientTransferProhibited",
+                        "clientDeleteProhibited"
+                    ],
+                    "dropped": false,
+                    "nameServers": [],
+                    "registrant": {},
+                    "registrar": {},
+                    "registryDomainId": null,
+                    "registryExpiryDate": 1732060800000,
+                    "reseller": null,
+                    "retrievedDate": 1696075229360,
+                    "tech": {},
+                    "updatedDate": 1666137600000
+                },
+                "last_sampled_ip": "1.1.1.1",
+                "recent_ips": [
+                    {
+                        "id": "218b3cc9-2d26-3a17-aadd-9eac08cc30ec",
+                        "ip": "1.1.1.1",
+                        "ipv6": null,
+                        "source": {
+                            "name": "DOMAIN_RESOLUTION"
+                        },
+                        "provider": {
+                            "name": "AWS",
+                            "additionalProviderInfo": null,
+                            "isCdn": false,
+                            "legacyName": "AWS",
+                            "displayName": "Amazon Web Services",
+                            "cdn": false
+                        },
+                        "firstObserved": 1692418207732,
+                        "lastObserved": 1697361335282
+                    }
+                ],
+                "business_units": [
+                    [
+                        {
+                            "creation_time": 1697472961328,
+                            "family": "business_units",
+                            "family_alias": "BU",
+                            "id": "BU:fabdd2a9-e1e7-4d76-ba75-35a817980d3f",
+                            "name": "Xpanse VanDelay Demo 3",
+                            "parent_id": null,
+                            "update_time": 1697472961328
+                        }
+                    ]
+                ]
+            }
         ]
     }
 }

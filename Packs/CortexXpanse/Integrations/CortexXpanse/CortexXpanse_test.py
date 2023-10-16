@@ -635,6 +635,80 @@ def test_update_alert_command(requests_mock):
     assert response.outputs_prefix == 'ASM.UpdatedAlerts'
 
 
+def test_ip_command(requests_mock):
+    """Tests ip_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate ip_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'ip_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, ip_command
+
+    from test_data.raw_response import IP_DOMAIN_RAW
+    from test_data.expected_results import IP_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/get_asset_internet_exposure/',
+                       json=IP_DOMAIN_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'ip': "1.1.1.1"
+    }
+
+    response = ip_command(client, args)
+
+    assert response.outputs == IP_RESULTS
+    assert response.outputs_prefix == 'ASM.IP'
+
+
+def test_domain_command(requests_mock):
+    """Tests domain_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate domain_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'domain_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, domain_command
+
+    from test_data.raw_response import IP_DOMAIN_RAW
+    from test_data.expected_results import IP_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/assets/get_asset_internet_exposure/',
+                       json=IP_DOMAIN_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'domain': "*.acme.com"
+    }
+
+    response = domain_command(client, args)
+
+    assert response.outputs == IP_RESULTS
+    assert response.outputs_prefix == 'ASM.Domain'
+
+
 def test_fetch_incidents(requests_mock, mocker):
     """Tests fetch_incidents function.
 
