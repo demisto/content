@@ -27,7 +27,7 @@ alter
 	xdm.event.type = type,
 	xdm.source.agent.identifier = coalesce(image, get_label_image_name_1, get_label_image_name_2, get_label_image_name_3, get_label_image_name_4),
 	xdm.alert.description = coalesce(aggregatedAlerts, aggregated),
-	xdm.source.host.manufacturer = labels
+	xdm.source.host.manufacturer = labels,
 	xdm.source.location.region = region,
 	xdm.event.description = message,
 	xdm.source.application.name = get_label_app,
