@@ -218,7 +218,7 @@ install-packs-in-server-master:
       variables:
         CLOUD_MACHINES_TYPE: "testing"
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
-    - if: $TEST_UPLOAD && $BUCKET_UPLOAD == "true"
+    - if: $TEST_UPLOAD == "true" && $BUCKET_UPLOAD == "true"
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "build"
