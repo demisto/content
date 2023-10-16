@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 import requests
@@ -11,6 +12,7 @@ from demisto_client.demisto_api.rest import ApiException
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
 
+CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
 
 def load_json_file(directory: str, file_name: str):
     with open(Path(__file__).parent / 'test_data' / directory / file_name) as json_file:
@@ -363,7 +365,7 @@ def test_fetch_pack_metadata_from_gitlab(mocker):
 
     # Assert API call is valid
     requests_mock.assert_called_with(
-        "https://example.com/api/v4/projects/2596/repository/files/Packs%2FTestPack%2Fpack_metadata.json",
+        f"https://example.com/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/Packs%2FTestPack%2Fpack_metadata.json",
         headers={"PRIVATE-TOKEN": "API_KEY"},
         params={"ref": "COMMIT_HASH"},
     )
