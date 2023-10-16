@@ -2,7 +2,6 @@ import re
 
 import pytest
 import json
-import io
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 import ServiceNowv2
@@ -50,16 +49,16 @@ from urllib.parse import urlencode
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_get_server_url():
-    assert "http://www.demisto.com/" == get_server_url("http://www.demisto.com//")
+    assert get_server_url("http://www.demisto.com//") == "http://www.demisto.com/"
 
 
 def test_get_ticket_context():
-    assert EXPECTED_TICKET_CONTEXT == get_ticket_context(RESPONSE_TICKET)
+    assert get_ticket_context(RESPONSE_TICKET) == EXPECTED_TICKET_CONTEXT
 
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[0] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[1] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
@@ -75,8 +74,8 @@ def test_get_ticket_context_additional_fields():
         - validate that all the details of the ticket were updated, and all the updated keys are shown in
         the context with do duplicates.
     """
-    assert EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
-                                                                                ['Summary', 'sys_created_by'])
+    assert get_ticket_context(RESPONSE_TICKET,
+                              ['Summary', 'sys_created_by']) == EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS
 
 
 def test_get_ticket_context_nested_additional_fields():
@@ -89,12 +88,12 @@ def test_get_ticket_context_nested_additional_fields():
         - validate that all the details of the ticket were updated, and all the updated keys are shown in
         the context with do duplicates.
     """
-    assert EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
-                                                                                       ['Summary', 'opened_by.link'])
+    assert get_ticket_context(RESPONSE_TICKET,
+                              ['Summary', 'opened_by.link']) == EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS
 
 
 def test_get_ticket_human_readable():
-    assert EXPECTED_TICKET_HR == get_ticket_human_readable(RESPONSE_TICKET, 'incident')
+    assert get_ticket_human_readable(RESPONSE_TICKET, 'incident') == EXPECTED_TICKET_HR
 
     assert EXPECTED_MULTIPLE_TICKET_HR[0] in get_ticket_human_readable(RESPONSE_MULTIPLE_TICKET, 'incident')
     assert EXPECTED_MULTIPLE_TICKET_HR[1] in get_ticket_human_readable(RESPONSE_MULTIPLE_TICKET, 'incident')
@@ -1229,7 +1228,7 @@ def test_get_mapping_fields():
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     res = get_mapping_fields_command(client)
-    assert EXPECTED_MAPPING == res.extract_mapping()
+    assert res.extract_mapping() == EXPECTED_MAPPING
 
 
 def test_get_remote_data(mocker):
@@ -1446,12 +1445,12 @@ def test_get_remote_data_no_entries(mocker):
 
 
 def upload_file_request(*args):
-    assert 'test_mirrored_from_xsoar.txt' == args[2]
+    assert args[2] == 'test_mirrored_from_xsoar.txt'
     return {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test.txt'}
 
 
 def add_comment_request(*args):
-    assert '(dbot): This is a comment\n\n Mirrored from Cortex XSOAR' == args[3]
+    assert args[3] == '(dbot): This is a comment\n\n Mirrored from Cortex XSOAR'
     return {'id': "1234", 'comment': "This is a comment"}
 
 
@@ -1479,20 +1478,32 @@ def test_upload_entries_update_remote_system_command(mocker, mirror_entries):
     update_remote_system_command(client, args, params)
 
 
-TICKET_FIELDS = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+TICKET_FIELDS = {'close_notes': 'Closed by XSOAR', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
                  'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
                  'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
                  'work_start': '0001-01-01T00:00:00Z'}
 
 
 def ticket_fields(*args, **kwargs):
-    state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
-    assert {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-            'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-            'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
-            'work_start': '0001-01-01T00:00:00Z'} == args[0]
+    # state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
+    if kwargs.get('ticket_type') == 'incident':
+        state = '7'
+        assert {'close_notes': 'Closed by XSOAR', 'close_code': 'Closed/Resolved by Caller',
+                'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00',
+                'severity': '1 - Low',
+                'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+                'work_start': '0001-01-01T00:00:00Z'} == args[0]
 
-    return {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+    else:
+        state = '3'
+        assert {'close_notes': 'Closed by XSOAR', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+                'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+                'work_start': '0001-01-01T00:00:00Z'} == args[0]
+
+    return {'close_notes': 'Closed by XSOAR', 'close_code': 'Closed/Resolved by Caller',
+            'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
             'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
             'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': '1',
             'work_start': '0001-01-01T00:00:00Z'}
@@ -1500,7 +1511,7 @@ def ticket_fields(*args, **kwargs):
 
 def update_ticket(*args):
     state = '7' if 'incident' in args else '3'
-    return {'short_description': 'Post parcel', 'close_notes': 'This is closed',
+    return {'short_description': 'Post parcel', 'close_notes': 'Closed by XSOAR',
             'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
             'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
             'sla_due': '0001-01-01T00:00:00Z', 'state': state, 'urgency': '3', 'work_start': '0001-01-01T00:00:00Z'}
@@ -1899,11 +1910,19 @@ def test_converts_state_close_reason(ticket_state, server_close_custom_state, ex
 
 
 def ticket_fields_mocker(*args, **kwargs):
-    state = '88' if kwargs.get('ticket_type') == 'incident' else '90'
-    fields = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
-              'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
-              'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
-              'work_start': '0001-01-01T00:00:00Z'}
+    if kwargs.get('ticket_type') == 'incident':
+        state = '88'
+        fields = {'close_notes': 'Closed by XSOAR', 'close_code': 'Closed/Resolved by Caller',
+                  'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                  'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+                  'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+                  'work_start': '0001-01-01T00:00:00Z'}
+    else:
+        state = '90'
+        fields = {'close_notes': 'Closed by XSOAR', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+                  'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+                  'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+                  'work_start': '0001-01-01T00:00:00Z'}
     assert fields == args[0]
     return fields
 
@@ -1956,6 +1975,7 @@ def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, clos
               'close_custom_state': close_custom_state}
 
     TICKET_FIELDS['state'] = ticket_state
+    TICKET_FIELDS['close_notes'] = 'Closed by XSOAR'
     args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
             'status': 2}
 
@@ -1963,7 +1983,7 @@ def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, clos
         # Represents only the response of the last call to client.update
         # In case the custom state doesn't exist -
         # in the first call will return the ticket's state as before (in case2 - '16', case4 - '1')
-        return {'result': {'short_description': 'Post parcel', 'close_notes': 'This is closed',
+        return {'result': {'short_description': 'Post parcel', 'close_notes': 'Closed by XSOAR',
                            'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
                            'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
                            'sla_due': '0001-01-01T00:00:00Z', 'state': result_close_state, 'urgency': '3',
