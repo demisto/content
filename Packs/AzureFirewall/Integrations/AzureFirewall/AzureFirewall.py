@@ -6,12 +6,14 @@ from MicrosoftApiModule import *  # noqa: E402
 import urllib3
 
 
+API_VERSION = '2022-09-01'
+
+
 class AzureFirewallClient:
     def __init__(self,
                  subscription_id: str,
                  resource_group: str,
                  client_id: str,
-                 api_version: str,
                  verify: bool,
                  proxy: bool,
                  client_secret: str | None = None,
@@ -21,8 +23,7 @@ class AzureFirewallClient:
                  managed_identities_client_id: str | None = None):
         self.resource_group = resource_group
         self.subscription_id = subscription_id
-        self.api_version = api_version
-        self.default_params = {"api-version": api_version}
+        self.default_params = {"api-version": API_VERSION}
 
         is_credentials = (client_secret and tenant_id) or (certificate_thumbprint and private_key)
 
@@ -508,6 +509,10 @@ class AzureFirewallClient:
                                                json_data=ip_group_data, resp_type="json", timeout=100)
 
         return response
+
+    def azure_firewall_subscriptions_list_request(self) -> dict:
+        return self.ms_client.http_request('GET', url_suffix='subscriptions', params=self.default_params,
+                                           resp_type="json", timeout=100)
 
 
 def generate_polling_readable_message(resource_type_name: str, resource_name: str) -> str:
@@ -2791,6 +2796,13 @@ def azure_firewall_ip_group_delete_command(client: AzureFirewallClient, args: Di
     return command_results_list
 
 
+def azure_firewall_subscriptions_list_command(client: AzureFirewallClient):
+    response = client.azure_firewall_subscriptions_list_request()
+    return CommandResults(
+        readable_output=f"Subscriptions: {response}",
+    )
+
+
 # --Authorization Commands--
 
 def start_auth(client: AzureFirewallClient) -> CommandResults:
@@ -2843,10 +2855,9 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    api_version = params.get('api_version', '')
 
-    subscription_id = params['subscription_id']['password']
-    resource_group = params['resource_group']
+    subscription_id = args.get('subscription_id') or params['subscription_id']['password']
+    resource_group = args.get('resource_group_name') or params['resource_group']
     client_id = params.get('client_id', '')
 
     client_secret = dict_safe_get(params, ['client_secret', 'password'])
@@ -2870,7 +2881,6 @@ def main() -> None:
             subscription_id=subscription_id,
             resource_group=resource_group,
             client_id=client_id,
-            api_version=api_version,
             verify=verify_certificate,
             proxy=proxy,
             client_secret=client_secret,
@@ -2928,6 +2938,9 @@ def main() -> None:
 
         elif command == 'azure-firewall-auth-reset':
             return_results(reset_auth())
+
+        elif command == 'azure-firewall-subscriptions-list':
+            return_results(azure_firewall_subscriptions_list_command(client))
 
         elif command in commands:
             return_results(commands[command](client, args))
