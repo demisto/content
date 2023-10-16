@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import tempfile
 from typing import Dict, Optional
 
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import urllib3
@@ -41,7 +40,7 @@ class AddressObject(object):
         result: List[Dict[str, str]] = []
 
         indicator = props.find('Address_Value')
-        if indicator is None:
+        if indicator is None or indicator.string is None:
             return result
 
         indicator = indicator.string.encode('ascii', 'replace').decode()
@@ -89,7 +88,7 @@ class DomainNameObject(object):
             return []
 
         domain = props.find('Value')
-        if domain is None:
+        if domain is None or domain.string is None:
             return []
 
         return [{
@@ -177,7 +176,7 @@ class URIObject(object):
             return []
 
         url = props.find('Value')
-        if url is None:
+        if url is None or url.string is None:
             return []
 
         return [{
@@ -319,38 +318,40 @@ class StixDecode(object):
         # extract the Observable info
         if observables := package.find_all('Observable'):
             pprops = package_extract_properties(package)
-
             for o in observables:
-                gprops = observable_extract_properties(o)
+                try:
+                    gprops = observable_extract_properties(o)
 
-                obj = next((ob for ob in o if ob.name == 'Object'), None)
-                if obj is None:
-                    continue
+                    obj = next((ob for ob in o if ob.name == 'Object'), None)
+                    if obj is None:
+                        continue
 
-                # main properties
-                properties = next((c for c in obj if c.name == 'Properties'), None)
-                if properties is not None:
-                    for r in StixDecode.object_extract_properties(properties, kwargs):
-                        r.update(gprops)
-                        r.update(pprops)
-
-                        observable_result.append(r)
-
-                # then related objects
-                related = next((c for c in obj if c.name == 'Related_Objects'), None)
-                if related is not None:
-                    for robj in related:
-                        if robj.name != 'Related_Object':
-                            continue
-
-                        properties = next((c for c in robj if c.name == 'Properties'), None)
-                        if properties is None:
-                            continue
-
+                    # main properties
+                    properties = next((c for c in obj if c.name == 'Properties'), None)
+                    if properties is not None:
                         for r in StixDecode.object_extract_properties(properties, kwargs):
                             r.update(gprops)
                             r.update(pprops)
+
                             observable_result.append(r)
+
+                    # then related objects
+                    related = next((c for c in obj if c.name == 'Related_Objects'), None)
+                    if related is not None:
+                        for robj in related:
+                            if robj.name != 'Related_Object':
+                                continue
+
+                            properties = next((c for c in robj if c.name == 'Properties'), None)
+                            if properties is None:
+                                continue
+
+                            for r in StixDecode.object_extract_properties(properties, kwargs):
+                                r.update(gprops)
+                                r.update(pprops)
+                                observable_result.append(r)
+                except Exception as e:
+                    demisto.error(f"Error for {str(o)} with message {str(e)}")
 
         # extract the Indicator info
         if indicators := package.find_all('Indicator'):
