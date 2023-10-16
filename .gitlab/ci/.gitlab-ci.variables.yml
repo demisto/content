@@ -42,3 +42,4 @@ variables:
   FF_USE_FASTZIP: "true"
   POETRY_VERSION: "1.6.1"
   INSTALL_POETRY: "true"
+  TEST_XDR_ENV: "true"
