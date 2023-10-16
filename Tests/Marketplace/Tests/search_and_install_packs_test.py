@@ -14,6 +14,7 @@ from google.cloud.storage import Blob
 
 CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
 
+
 def load_json_file(directory: str, file_name: str):
     with open(Path(__file__).parent / 'test_data' / directory / file_name) as json_file:
         json_data = json.load(json_file)
