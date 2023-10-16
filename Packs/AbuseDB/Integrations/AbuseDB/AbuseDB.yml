@@ -13,17 +13,17 @@ configuration:
   type: 0
   section: Connect
 - name: credentials
-  required: false
   type: 9
   displaypassword: API Key (v2)
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Key (v2)
   name: apikey
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: integrationReliability
@@ -42,35 +42,35 @@ configuration:
 - defaultvalue: '80'
   display: Minimum score threshold
   name: threshold
-  required: false
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Maximum reports age (in days)
   name: days
-  required: false
   type: 0
   defaultvalue: '30'
   section: Collect
   advanced: true
+  required: false
 - display: Disregard quota errors
   name: disregard_quota
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration.
 display: AbuseIPDB
 name: AbuseIPDB
@@ -81,7 +81,6 @@ script:
       description: The IP address to check (CSV supported).
       isArray: true
       name: ip
-      required: false
     - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
       name: days
@@ -270,11 +269,10 @@ script:
     - contextPath: AbuseIPDB.Categories
       description: The list of AbuseIPDB categories.
       type: string
-  runonce: false
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.11.54132
+  dockerimage: demisto/python3:3.10.12.63474
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test

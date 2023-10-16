@@ -3717,3 +3717,4 @@ tests:
 - Phishing v3 - Get Original Email + Search & Delete - Test
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 fromversion: 6.5.0
+toversion: 6.7.9

@@ -1,58 +1,27 @@
 args:
-- default: false
-  description: The EntryID of the PCAP file to extract the files from.
-  isArray: false
+- description: The EntryID of the PCAP file to extract the files from.
   name: entry_id
   required: true
-  secret: false
-- default: false
-  description: The entry ID of the RSA private key.
-  isArray: false
+- description: The entry ID of the RSA private key.
   name: rsa_decrypt_key_entry_id
-  required: false
-  secret: false
-- default: false
-  description: The WPA password. By providing the password you will be able to decrypt. Can be password or ssid:password.
-  isArray: false
+- description: The WPA password. By providing the password you will be able to decrypt. Can be password or ssid:password.
   name: wpa_password
-  required: false
-  secret: false
-- default: false
-  defaultValue: '5'
+- defaultValue: '5'
   description: Maximum number of files to extract. Default is 5.
-  isArray: false
   name: limit
-  required: false
-  secret: false
-- default: false
-  description: 'A comma-separated list of file extensions to include/exclude for example, image/gif.'
-  isArray: false
+- description: 'A comma-separated list of file extensions to include/exclude for example, image/gif.'
   name: types
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: inclusive
   description: Is the type/extensions list inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
-  isArray: false
   name: inclusive_or_exclusive
   predefined:
   - inclusive
   - exclusive
-  required: false
-  secret: false
-- default: false
-  description: 'A comma-separated list of MIME file types to include/exclude, for example, image/png. Can not combine with the extensions argument.'
-  isArray: false
+- description: 'A comma-separated list of MIME file types to include/exclude, for example, image/png. Can not combine with the extensions argument.'
   name: types
-  required: false
-  secret: false
-- default: false
-  description: 'A comma-separated list of file extensions to include/exclude, for example, image/png. Can not combine with the types argument.'
-  isArray: false
+- description: 'A comma-separated list of file extensions to include/exclude, for example, image/png. Can not combine with the types argument.'
   name: extensions
-  required: false
-  secret: false
 comment: This automation extracts all possible files from a PCAP file.
 commonfields:
   id: PcapFileExtractor
@@ -112,7 +81,6 @@ outputs:
   type: String
 script: '-'
 subtype: python3
-system: false
 tags:
 - pcap
 - file

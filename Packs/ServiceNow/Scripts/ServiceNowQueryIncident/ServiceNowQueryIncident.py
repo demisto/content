@@ -68,7 +68,6 @@ def get_user_name(user_id):
 
 
 def main():
-
     """
     These record fields(columns) are mapped from their names in ServiceNow
     to your choice of field names to be in the output.

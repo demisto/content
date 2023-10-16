@@ -4,8 +4,7 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: listfiles
-  description: Whether to list the files in the bundle, or return the selected files
-    to the war room.
+  description: Whether to list the files in the bundle, or return the selected files to the war room.
   name: action
   predefined:
   - listfiles
@@ -13,19 +12,17 @@ args:
 - description: Array of file names to export, generated from the listfiles action.
   isArray: true
   name: file_names
-comment: This automation accepts an XSOAR custom content bundle, and either returns
-  a list of file names, or the files you want to the war room.
+comment: This automation accepts an XSOAR custom content bundle, and either returns a list of file names, or the files you want to the war room.
 commonfields:
   id: CustomContentBundleWizardry
   version: -1
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474
 enabled: true
 name: CustomContentBundleWizardry
 outputs:
 - contextPath: CustomContent
   description: List of files in the custom content bundle
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

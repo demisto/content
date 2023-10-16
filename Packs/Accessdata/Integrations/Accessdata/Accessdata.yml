@@ -170,7 +170,6 @@ script:
       type: string
     description: Returns the ID of the Quin-C processing case.
   dockerimage: demisto/python3:3.10.5.31928
-  runonce: false
   script: '-'
   type: python
   subtype: python3

@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """EmailRepIO Integration for Cortex XSOAR"""
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3

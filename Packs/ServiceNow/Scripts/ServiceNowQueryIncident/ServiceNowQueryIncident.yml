@@ -1,22 +1,10 @@
 args:
-- default: false
-  description: Incident System ID
-  isArray: false
+- description: Incident System ID
   name: id
-  required: false
-  secret: false
-- default: false
-  description: Incident number
-  isArray: false
+- description: Incident number
   name: number
-  required: false
-  secret: false
-- default: false
-  description: Incident assigne name (e.g John Smith)
-  isArray: false
+- description: Incident assigne name (e.g John Smith)
   name: assignee
-  required: false
-  secret: false
 comment: |-
   This script is used to wrap the generic query-table command in ServiceNow.
   You can add fields that you want to use as inputs and outputs from the record as script arguments or in the
@@ -43,17 +31,15 @@ script: '-'
 tags:
 - servicenow
 - servicenow v2
-system: false
 timeout: '0'
 type: python
 subtype: python3
-runonce: false
 tests:
 - No test - Hibernating instance
 dependson:
   must:
   - servicenow-query-table
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.11.58677
+dockerimage: demisto/python3:3.10.12.63474
 skipprepare:
 - script-name-incident-to-alert

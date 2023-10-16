@@ -131,6 +131,13 @@
                 },
                 "MITRE Technique ID": {
                     "simple": "mitreTechniques"
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
                 }
             }
         }

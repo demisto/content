@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """
 Vectra Event Collector XSIAM Integration
 
@@ -8,10 +10,7 @@ It uses version 2.2 of Vectra AI REST API.
 See https://support.vectra.ai/s/article/KB-VS-1174 for more the API reference.
 """
 
-import demistomock as demisto
-from CommonServerPython import *
 from typing import Dict, Any, Tuple, List
-import pytest
 from datetime import datetime, timedelta
 from urllib.parse import urljoin  # type: ignore
 
@@ -209,8 +208,7 @@ def get_most_recent_detection(detections: List[Dict[str, Any]]) -> Dict[str, Any
 """ COMMAND FUNCTIONS """
 
 
-@pytest.mark.skip("Not a pytest")
-def test_module(client: VectraClient) -> str:
+def module_test(client: VectraClient) -> str:
     """
     Tests API connectivity and authentication'
     Since the event collection works with the audit and detection APIs, we want to ensure that the user has access
@@ -472,7 +470,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if cmd == "test-module":
-            result = test_module(client)
+            result = module_test(client)
             return_results(result)
 
         elif cmd in ("vectra-get-events", "fetch-events"):

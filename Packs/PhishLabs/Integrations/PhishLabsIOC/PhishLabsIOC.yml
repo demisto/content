@@ -28,99 +28,70 @@ configuration:
   type: 15
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - defaultvalue: 1h
   display: Fetch for this time period, e.g., "1d", "1h", "10m". The default is 1h.
   name: fetch_time
-  required: false
   type: 0
+  required: false
 - defaultvalue: '10'
   display: Number of incidents to fetch each time
   name: fetch_limit
-  required: false
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 description: Get indicators of compromise from PhishLabs.
 display: PhishLabs IOC
 name: PhishLabs IOC
 script:
   commands:
   - arguments:
-    - default: false
-      defaultValue: 1h
-      description: Duration (from now) for which to pull updated data, for example,
-        "1d", "1h" or "10m".
-      isArray: false
+    - defaultValue: 1h
+      description: Duration (from now) for which to pull updated data, for example, "1d", "1h" or "10m".
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
+    - description: Maximum number of results to return.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter the data by indicator type.
-      isArray: false
       name: indicator_type
       predefined:
       - Domain
       - Attachment
       - URL
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Removes the protocol part from indicators, when the rule can be
-        applied.
-      isArray: false
+      description: Removes the protocol part from indicators, when the rule can be applied.
       name: remove_protocol
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Removes the query string part from indicators, when the rules can
-        be applied.
-      isArray: false
+      description: Removes the query string part from indicators, when the rules can be applied.
       name: remove_query
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
       description: Whether the indiciator is a false postive.
-      isArray: false
       name: false_positive
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves the global IOC feed from PhishLabs.
-    execution: false
     name: phishlabs-global-feed
     outputs:
     - contextPath: URL.Data
@@ -243,75 +214,43 @@ script:
   - arguments:
     - default: true
       description: PhishLabs incident reference ID, for example, "INC123456".
-      isArray: false
       name: incident_id
       required: true
-      secret: false
-    - default: false
-      defaultValue: 1h
-      description: Duration (from now) for which to pull updated data, for example,
-        "1d", "1h" or "10m".
-      isArray: false
+    - defaultValue: 1h
+      description: Duration (from now) for which to pull updated data, for example, "1d", "1h" or "10m".
       name: since
-      required: false
-      secret: false
-    - default: false
-      description: Maximum number of results to return.
-      isArray: false
+    - description: Maximum number of results to return.
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Filter the data by indicator type.
-      isArray: false
       name: indicator_type
       predefined:
       - E-mail
       - Domain
       - URL
       - Attachment
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: Suspicious
       description: How to classify indicators from the feed.
-      isArray: false
       name: indicators_classification
       predefined:
       - Malicious
       - Suspicious
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Removes the protocol part from indicators, when the rule can be
-        applied.
-      isArray: false
+      description: Removes the protocol part from indicators, when the rule can be applied.
       name: remove_protocol
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Removes the query string part from indicators, when the rules can
-        be applied.
-      isArray: false
+      description: Removes the query string part from indicators, when the rules can be applied.
       name: remove_query
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves indicators from a speicifed PhishLabs incident. To fetch
-      incidents to Demisto, enable fetching incidents.
-    execution: false
+    description: Retrieves indicators from a speicifed PhishLabs incident. To fetch incidents to Demisto, enable fetching incidents.
     name: phishlabs-get-incident-indicators
     outputs:
     - contextPath: URL.Data
@@ -467,11 +406,8 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: number
-  dockerimage: demisto/python3:3.10.8.37753
-  feed: false
+  dockerimage: demisto/python3:3.10.12.63474
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

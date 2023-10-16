@@ -1223,6 +1223,5 @@ script:
       - pdf
       description: Optional - request a structured report (formatted as XML/PDF)
     description: Deprecated, use detonate playbook instead
-  runonce: false
 tests:
 - No test

@@ -4,11 +4,10 @@ commonfields:
   version: -1
 name: CortexXDRAdditionalAlertInformationWidget
 script: '-'
-system: false
 tags:
 - dynamic-section
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.5.31928
+dockerimage: demisto/python3:3.10.12.63474
 fromversion: 6.0.0

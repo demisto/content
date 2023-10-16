@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 """HelloWorld Script for Cortex XSOAR (aka Demisto)
 
 This script is just a simple example on Code Conventions to write automation
@@ -19,8 +21,6 @@ HelloWorld Integration code.
 
 """
 
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 from typing import Dict, Any

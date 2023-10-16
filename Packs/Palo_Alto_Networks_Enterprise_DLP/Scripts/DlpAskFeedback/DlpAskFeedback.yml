@@ -9,7 +9,6 @@ enabled: true
 comment: Sends a message via Slack or MS Teams to the user whose activity violated DLP policies and triggered the incident.
 args:
 - name: messenger
-  required: false
   description: The messenger to use for sending notification,
   auto: PREDEFINED
   predefined:
@@ -24,7 +23,6 @@ args:
   description: The name of the DLP data profile that detected the violation.
 - name: app_name
   description: The application that performed the activity.
-  required: false
 - name: task
   description: A manual task that this task can close.
 - name: user_display_name

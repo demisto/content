@@ -1,7 +1,8 @@
 from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
-VERSION = "v2.0.8"
+
+VERSION = "v2.3.0"
 USER_AGENT = f"ReversingLabs XSOAR A1000 {VERSION}"
 HOST = demisto.getParam('host')
 TOKEN = demisto.getParam('token')
@@ -9,6 +10,62 @@ VERIFY_CERT = demisto.getParam('verify')
 RELIABILITY = demisto.params().get('reliability', 'C - Fairly reliable')
 WAIT_TIME_SECONDS = demisto.params().get('wait_time_seconds')
 NUM_OF_RETRIES = demisto.params().get('num_of_retries')
+
+HTTP_PROXY = demisto.params().get("http_proxy", None)
+HTTP_PROXY_USERNAME = demisto.params().get("http_credentials", {}).get("identifier", None)
+HTTP_PROXY_PASSWORD = demisto.params().get("http_credentials", {}).get("password", None)
+
+HTTPS_PROXY = demisto.params().get("https_proxy", None)
+HTTPS_PROXY_USERNAME = demisto.params().get("https_credentials", {}).get("identifier", None)
+HTTPS_PROXY_PASSWORD = demisto.params().get("https_credentials", {}).get("password", None)
+
+
+def format_proxy(addr, username=None, password=None):
+    if addr.startswith("http://"):
+        protocol = addr[:7]
+        proxy_name = addr[7:]
+    elif addr.startswith("https://"):
+        protocol = addr[:8]
+        proxy_name = addr[8:]
+    else:
+        return_error("Proxy address needs to start with either 'http://' or 'https://'")
+
+    if username:
+        if password:
+            proxy = f"{protocol}{username}:{password}@{proxy_name}"
+        else:
+            proxy = f"{protocol}{username}@{proxy_name}"
+    else:
+        proxy = f"{protocol}{proxy_name}"
+
+    return proxy
+
+
+def return_proxies():
+    proxies = {}
+
+    if HTTP_PROXY:
+        http_proxy = format_proxy(
+            addr=HTTP_PROXY,
+            username=HTTP_PROXY_USERNAME,
+            password=HTTP_PROXY_PASSWORD
+        )
+
+        proxies["http"] = http_proxy
+
+    if HTTPS_PROXY:
+        https_proxy = format_proxy(
+            addr=HTTPS_PROXY,
+            username=HTTPS_PROXY_USERNAME,
+            password=HTTPS_PROXY_PASSWORD
+        )
+
+        proxies["https"] = https_proxy
+
+    if proxies:
+        return proxies
+    else:
+        return None
 
 
 def classification_to_score(classification):
@@ -437,8 +494,374 @@ def advanced_search(a1000):
     return [command_result, file_result]
 
 
-def main():
+def get_url_report(a1000):
+    """
+    Get a report for a submitted URL
+    """
+    url = demisto.getArg("url")
 
+    try:
+        response = a1000.network_url_report(requested_url=url)
+        response_json = response.json()
+    except Exception as e:
+        return_error(str(e))
+
+    results = url_report_output(url=url, response_json=response_json)
+
+    return results
+
+
+def url_report_output(url, response_json):
+    classification = response_json.get("classification")
+    analysis = response_json.get("analysis", {})
+    analysis_statistics = analysis.get("statistics", {})
+    last_analysis = tableToMarkdown("Last analysis", analysis.get("last_analysis"))
+    analysis_history = tableToMarkdown("Analysis history", analysis.get("analysis_history"))
+    reputations = response_json.get("third_party_reputations")
+    reputation_statistics = reputations.get("statistics")
+    reputation_sources = tableToMarkdown("Sources", reputations.get("sources"))
+
+    markdown = f"""## ReversingLabs A1000 URL Report for {url}\n **Classification**: {classification}
+    \n## Third party reputation statistics\n **Total**: {reputation_statistics.get("total")}
+    **Malicious**: {reputation_statistics.get("malicious")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    \n## Analysis statistics\n **Unknown**: {analysis_statistics.get("unknown")}
+    **Suspicious**: {analysis_statistics.get("suspicious")}
+    **Malicious**: {analysis_statistics.get("malicious")}
+    **Goodware**: {analysis_statistics.get("goodware")}
+    **Total**: {analysis_statistics.get("total")}
+    \n**First analysis**: {analysis.get("first_analysis")}
+    **Analysis count**: {analysis.get("analysis_count")}
+    """
+
+    markdown = f"{markdown}\n ## Third party reputation sources\n"
+    markdown = f"{markdown}\n {reputation_sources}"
+
+    markdown = f"{markdown}\n {last_analysis}"
+    markdown = f"{markdown}\n {analysis_history}"
+
+    d_bot_score = classification_to_score(classification.upper())
+
+    dbot_score = Common.DBotScore(
+        indicator=url,
+        indicator_type=DBotScoreType.URL,
+        integration_name="ReversingLabs A1000 v2",
+        score=d_bot_score,
+        malicious_description=classification,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.URL(
+        url=url,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_url_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def get_domain_report(a1000):
+    """
+    Get a report for a submitted domain
+    """
+    domain = demisto.getArg("domain")
+
+    try:
+        response = a1000.network_domain_report(domain=domain)
+        response_json = response.json()
+    except Exception as e:
+        return_error(str(e))
+
+    results = domain_report_output(domain=domain, response_json=response_json)
+
+    return results
+
+
+def domain_report_output(domain, response_json):
+    top_threats = tableToMarkdown("Top threats", response_json.get("top_threats"))
+    file_statistics = response_json.get("downloaded_files_statistics")
+
+    last_dns_records = tableToMarkdown("Last DNS records", response_json.get("last_dns_records"))
+
+    reputations = response_json.get("third_party_reputations")
+    reputation_statistics = reputations.get("statistics")
+    reputation_sources = tableToMarkdown("Third party reputation sources", reputations.get("sources"))
+
+    markdown = f"""## ReversingLabs A1000 Domain Report for {domain}\n **Modified time**: {response_json.get("modified_time")}"""
+    markdown = f"{markdown}\n {top_threats}"
+
+    markdown = f"""{markdown}\n ### Third party reputation statistics\n **Malicious**: {reputation_statistics.get("malicious")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Total**: {reputation_statistics.get("total")}
+    """
+
+    markdown = f"""{markdown}\n ### Downloaded files statistics\n **Unknown**: {file_statistics.get("unknown")}
+    **Suspicious**: {file_statistics.get("suspicious")}
+    **Malicious**: {file_statistics.get("malicious")}
+    **Goodware**: {file_statistics.get("goodware")}
+    **Total**: {file_statistics.get("total")}
+    \n**Last DNS records time**: {response_json.get("last_dns_records_time")}
+    """
+
+    markdown = f"{markdown}\n {last_dns_records}"
+
+    markdown = f"{markdown}\n {reputation_sources}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_domain_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def get_ip_report(a1000):
+    """
+    Get a report for a submitted IP address
+    """
+    ip = demisto.getArg("ip_address")
+
+    try:
+        response = a1000.network_ip_addr_report(ip_addr=ip)
+        response_json = response.json()
+    except Exception as e:
+        return_error(str(e))
+
+    results = ip_report_output(ip=ip, response_json=response_json)
+
+    return results
+
+
+def ip_report_output(ip, response_json):
+    top_threats = tableToMarkdown("Top threats", response_json.get("top_threats"))
+    file_statistics = response_json.get("downloaded_files_statistics")
+
+    reputations = response_json.get("third_party_reputations")
+    reputation_statistics = reputations.get("statistics")
+    reputation_sources = tableToMarkdown("Third party reputation sources", reputations.get("sources"))
+
+    markdown = f"""## ReversingLabs A1000 IP Address Report for {ip}\n **Modified time**: {response_json.get("modified_time")}"""
+    markdown = f"{markdown}\n {top_threats}"
+
+    markdown = f"""{markdown}\n ### Third party reputation statistics\n **Malicious**: {reputation_statistics.get("malicious")}
+    **Undetected**: {reputation_statistics.get("undetected")}
+    **Clean**: {reputation_statistics.get("clean")}
+    **Total**: {reputation_statistics.get("total")}
+    """
+
+    markdown = f"""{markdown}\n ### Downloaded files statistics\n **Unknown**: {file_statistics.get("unknown")}
+    **Suspicious**: {file_statistics.get("suspicious")}
+    **Malicious**: {file_statistics.get("malicious")}
+    **Goodware**: {file_statistics.get("goodware")}
+    **Total**: {file_statistics.get("total")}
+    """
+
+    markdown = f"{markdown}\n {reputation_sources}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_ip_address_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def get_files_from_ip(a1000):
+    """
+    Get a list of hashes and classifications for files found on the requested IP address.
+    """
+    ip = demisto.getArg("ip_address")
+    extended = argToBoolean(demisto.getArg("extended_results"))
+    classification = demisto.getArg("classification")
+    page_size = int(demisto.getArg("page_size"))
+    max_results = int(demisto.getArg("max_results"))
+
+    try:
+        response = a1000.network_files_from_ip_aggregated(
+            ip_addr=ip,
+            extended_results=extended,
+            classification=classification,
+            page_size=page_size,
+            max_results=max_results
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = files_from_ip_output(ip=ip, response=response)
+
+    return results
+
+
+def files_from_ip_output(ip, response):
+    returned_files = tableToMarkdown("Files downloaded from IP address", response)
+
+    markdown = f"## ReversingLabs A1000 Files Downloaded From IP Address {ip}\n"
+    markdown = f"{markdown} {returned_files}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_ip_address_downloaded_files": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def get_ip_domain_resolutions(a1000):
+    """
+    Get a list of IP-to-domain resolutions.
+    """
+    ip = demisto.getArg("ip_address")
+    page_size = int(demisto.getArg("page_size"))
+    max_results = int(demisto.getArg("max_results"))
+
+    try:
+        response = a1000.network_ip_to_domain_aggregated(
+            ip_addr=ip,
+            page_size=page_size,
+            max_results=max_results
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = ip_domain_resolutions_output(ip=ip, response=response)
+
+    return results
+
+
+def ip_domain_resolutions_output(ip, response):
+    returned_domains = tableToMarkdown("IP-to-domain resolutions", response)
+
+    markdown = f"## ReversingLabs A1000 IP-to-domain Resolutions for IP address {ip}\n"
+    markdown = f"{markdown} {returned_domains}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_ip_domain_resolutions": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def get_urls_from_ip(a1000):
+    """
+    Get a list of URL-s hosted on an IP address.
+    """
+    ip = demisto.getArg("ip_address")
+    page_size = int(demisto.getArg("page_size"))
+    max_results = int(demisto.getArg("max_results"))
+
+    try:
+        response = a1000.network_urls_from_ip_aggregated(
+            ip_addr=ip,
+            page_size=page_size,
+            max_results=max_results
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = urls_from_ip_output(ip=ip, response=response)
+
+    return results
+
+
+def urls_from_ip_output(ip, response):
+    returned_urls = tableToMarkdown("URL-s hosted on the IP address", response)
+
+    markdown = f"## ReversingLabs A1000 URL-s Hosted On IP Address {ip}\n"
+    markdown = f"{markdown} {returned_urls}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs A1000 v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"a1000_ip_urls": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def main():
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
     except ValueError:
@@ -449,13 +872,16 @@ def main():
     except ValueError:
         return_error("Integration parameter <Number of retries> has to be of type integer.")
 
+    proxies = return_proxies()
+
     a1000 = A1000(
         host=HOST,
         token=TOKEN,
         verify=VERIFY_CERT,
         user_agent=USER_AGENT,
         wait_time_seconds=wait_time_seconds,
-        retries=num_of_retries
+        retries=num_of_retries,
+        proxies=proxies
     )
 
     demisto.info(f'Command being called is {demisto.command()}')
@@ -483,6 +909,18 @@ def main():
             return_results(get_classification(a1000))
         elif demisto.command() == 'reversinglabs-a1000-advanced-search':
             return_results(advanced_search(a1000))
+        elif demisto.command() == "reversinglabs-a1000-url-report":
+            return_results(get_url_report(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-domain-report':
+            return_results(get_domain_report(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-ip-address-report':
+            return_results(get_ip_report(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-ip-downloaded-files':
+            return_results(get_files_from_ip(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-ip-domain-resolutions':
+            return_results(get_ip_domain_resolutions(a1000))
+        elif demisto.command() == 'reversinglabs-a1000-ip-urls':
+            return_results(get_urls_from_ip(a1000))
         else:
             return_error(f'Command [{demisto.command()}] not implemented')
 

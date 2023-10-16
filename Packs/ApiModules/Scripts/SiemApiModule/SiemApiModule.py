@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
 
 from abc import ABC
 from typing import Any, Callable, Optional
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
 from enum import Enum
@@ -33,16 +33,17 @@ def load_json(v: Any) -> dict:
             raise ValueError('headers are not valid Json object') from exc
     if isinstance(v, dict):
         return v
+    return dict()
 
 
 class IntegrationHTTPRequest(BaseModel):
     method: Method
     url: AnyUrl
     verify: bool = True
-    headers: dict = dict()  # type: ignore[type-arg]
-    auth: Optional[HTTPBasicAuth]
+    headers: dict = {}  # type: ignore[type-arg]
+    auth: Optional[HTTPBasicAuth] = None
     data: Any = None
-    params: dict = dict()  # type: ignore[type-arg]
+    params: dict = {}  # type: ignore[type-arg]
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
@@ -165,4 +166,3 @@ class IntegrationGetEvents(ABC):
     @abstractmethod
     def _iter_events(self):
         """Create iterators with Yield"""
-        pass

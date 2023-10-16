@@ -62,67 +62,75 @@
       },
       "duser": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "from": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "to": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "cc": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "in": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "act": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "url": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "cat": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "cs1": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "exceptionReason": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "msg": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "x_mailer": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "externalId": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "reason": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "page": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "element": {
         "type": "string",
-        "is_array": true
+        "is_array": false
+      },
+      "app": {
+        "type": "string",
+        "is_array": false
+      },
+      "deliveryCode": {
+        "type": "string",
+        "is_array": false
       }
     }
   }

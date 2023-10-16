@@ -4,7 +4,7 @@ commonfields:
 name: SumoLogicSEC
 display: Sumo Logic Cloud SIEM
 category: Analytics & SIEM
-description: Freeing the analyst with autonomous decisions
+description: Freeing the analyst with autonomous decisions.
 configuration:
 - display: Sumo Logic API Endpoint
   name: api_endpoint
@@ -14,8 +14,8 @@ configuration:
 - display: Sumo Logic Instance Endpoint
   name: instance_endpoint
   type: 0
-  required: false
   additionalinfo: https://<yoursubdomain>.<deployment>.sumologic.com
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -41,13 +41,13 @@ configuration:
   name: max_fetch
   defaultvalue: "20"
   type: 0
-  required: false
   additionalinfo: Fetch limit must not be greater than 200
+  required: false
 - display: Override default fetch query
   name: fetch_query
   type: 0
-  required: false
   additionalinfo: Default fetch query is status:in("new", "inprogress")
+  required: false
 - display: First fetch time
   name: first_fetch
   defaultvalue: 1 day
@@ -57,8 +57,8 @@ configuration:
   additionalinfo: Pull Sumo Logic signals associated with detected Sumo Logic Insights as XSOAR incidents
   defaultvalue: "false"
   name: pull_signals
-  required: false
   type: 8
+  required: false
 - display: Incident Mirroring Direction
   additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Sumo Logic SIEM to Cortex XSOAR), Outgoing (from Cortex XSOAR to Sumo Logic SIEM), or Incoming and Outgoing (from/to Cortex XSOAR and Sumo Logic SIEM).'
   defaultvalue: None
@@ -68,31 +68,31 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  required: false
   type: 15
   section: Collect
+  required: false
 - display: Close Mirrored XSOAR Incident
   additionalinfo: When selected, closing the Sumo Logic SIEM Insight is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   name: close_incident
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Close Mirrored Sumo Logic Insight
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Sumo Logic SIEM.
   defaultvalue: 'false'
   name: close_insight
-  required: false
   type: 8
   section: Collect
   advanced: true
+  required: false
 - display: Override Record Summary Fields
   name: record_summary_fields
   defaultvalue: "action,description,device_hostname,device_ip,dstDevice_hostname,dstDevice_ip,email_sender,file_basename,file_hash_md5,file_hash_sha1,file_hash_sha256,srcDevice_hostname,srcDevice_ip,threat_name,threat_category,threat_identifier,user_username,threat_url,listMatches"
   type: 0
-  required: false
   additionalinfo: Record Summary Fields included when fetching Insights
+  required: false
 script:
   script: ''
   type: python
@@ -224,7 +224,7 @@ script:
       description: The insight ID for which to retrieve comments.
     - name: comment
       required: true
-      description: The comment to be added to the Insight ID
+      description: The comment to be added to the Insight ID.
     outputs:
     - contextPath: SumoLogicSec.InsightComments.Id
       description: ID of comment.
@@ -331,9 +331,9 @@ script:
       - Last 24 hours
       description: When the insight was created. Defaults to 'All time' if no time arguments are specified.
     - name: status
-      description: 'Comma separated list of values from the options: new,inprogress,closed'
+      description: 'Comma separated list of values from the options: new,inprogress,closed.'
     - name: asignee
-      description: User assigned to Insights
+      description: User assigned to Insights.
     - name: offset
       description: The number of items to skip before starting to collect the result set.
       defaultValue: "0"
@@ -522,7 +522,7 @@ script:
     - name: tag
       description: Tag contains value.
     - name: offset
-      description: The number of items to skip before starting to collect the result. set
+      description: The number of items to skip before starting to collect the result set.
       defaultValue: "0"
     - name: limit
       description: The maximum number of items to return.
@@ -735,7 +735,7 @@ script:
       description: Description of match list item.
     - name: expiration
       required: true
-      description: Expiration of match list item, e.g. "2021-03-25T23:52:23.508Z"
+      description: Expiration of match list item, e.g. "2021-03-25T23:52:23.508Z".
     - name: value
       required: true
       description: Value of match list item.
@@ -859,11 +859,10 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
-  runonce: false
   subtype: python3
 fromversion: 5.0.0
 tests:

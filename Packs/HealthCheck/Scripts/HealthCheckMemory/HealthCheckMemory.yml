@@ -14,7 +14,6 @@ dockerimage: demisto/python3:3.10.9.42476
 enabled: true
 name: HealthCheckMemory
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3

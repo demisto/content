@@ -1,5 +1,4 @@
 import json
-import io
 from defusedxml import ElementTree
 import pytest
 import requests_mock
@@ -38,7 +37,7 @@ integration_panorama_params = {
 
 
 def load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -151,10 +150,10 @@ def test_add_argument_target():
 def test_filter_rules_by_status(disabled: str, rules_file: str, expected_results_file: str):
     from Panorama import filter_rules_by_status
 
-    with open(rules_file, 'r') as f:
+    with open(rules_file) as f:
         rules = json.loads(f.read())
 
-    with open(expected_results_file, 'r') as f:
+    with open(expected_results_file) as f:
         expected_result = json.loads(f.read())
 
     result = filter_rules_by_status(disabled, rules)
@@ -718,7 +717,7 @@ def test_build_logs_query():
     from Panorama import build_logs_query
 
     urls_as_string = "demisto.com, paloaltonetworks.com"
-    response = build_logs_query(None, None, None, None, None, None, None, None, None, urls_as_string, None)
+    response = build_logs_query(None, None, None, None, None, None, None, None, None, urls_as_string, None, None)
     expected = "((url contains 'demisto.com') or (url contains 'paloaltonetworks.com'))"
     assert response == expected
 
@@ -1367,9 +1366,7 @@ class TestPanoramaEditRuleCommand:
             }
         }
         mocker.patch('Panorama.http_request', return_value=uncommited_rule_item)
-
-        with pytest.raises(DemistoException):
-            Panorama.panorama_edit_rule_command(args)
+        Panorama.panorama_edit_rule_command(args)
 
     @staticmethod
     def test_edit_rule_to_disabled_flow(mocker, reset_device_group):
@@ -1965,7 +1962,7 @@ class TestPanoramaCommitCommand:
     EXPECTED_COMMIT_REQUEST_URL_PARAMS = {
         'action': 'partial',
         'cmd': '<commit><device-group><entry '
-               'name="some_device"/></device-group><partial><admin>'
+               'name="some_device"/></device-group><description>a simple commit</description><partial><admin>'
                '<member>some_admin_name</member></admin></partial></commit>',
         'key': 'APIKEY',
         'type': 'commit'
@@ -2010,7 +2007,8 @@ class TestPanoramaCommitCommand:
                                             'description': 'a simple commit', 'polling': 'false'},
                                            {'action': 'partial',
                                             'cmd': '<commit><device-group><entry '
-                                                   'name="some_device"/></device-group><partial><admin>'
+                                                   'name="some_device"/></device-group><description>a simple commit</description>'
+                                                   '<partial><admin>'
                                                    '<member>some_admin_name</member></admin></partial></commit>',
                                             'key': 'thisisabogusAPIKEY!',
                                             'type': 'commit'},
@@ -2203,7 +2201,7 @@ class TestPanoramaPushToDeviceGroupCommand:
             ) for _ in range(push_to_devices_job_status_count)
         ]
 
-        with open('test_data/push_to_device_success.xml', 'r') as data_file:
+        with open('test_data/push_to_device_success.xml') as data_file:
             mocked_responses += [
                 MockedResponse(
                     text=data_file.read(),
@@ -2568,7 +2566,7 @@ def test_get_url_category__url_length_gt_1278(mocker):
     )
 
     # validate
-    assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
+    assert return_results_mock.call_args[0][0][1].readable_output == 'URL Node can be at most 1278 characters.'
 
 
 def test_get_url_category_multiple_categories_for_url(mocker):
@@ -2634,14 +2632,14 @@ class TestDevices:
 
     def test_with_specific_target_only(self, requests_mock):
         import Panorama
-        with open('test_data/devices_list.xml', 'r') as data_file:
+        with open('test_data/devices_list.xml') as data_file:
             requests_mock.get(Panorama.URL, text=data_file.read())
         Panorama.VSYS = None  # this a Panorama instance
         assert list(Panorama.devices(targets=['target1'])) == [('target1', 'vsys1'), ('target1', 'vsys2')]
 
     def test_without_specify(self, requests_mock):
         import Panorama
-        with open('test_data/devices_list.xml', 'r') as data_file:
+        with open('test_data/devices_list.xml') as data_file:
             requests_mock.get(Panorama.URL, text=data_file.read())
         Panorama.VSYS = None  # this a Panorama instance
         assert list(Panorama.devices()) == [('target1', 'vsys1'), ('target1', 'vsys2'), ('target2', None)]
@@ -6484,10 +6482,10 @@ class TestFetchIncidentsHelperFunctions:
             1. Verify the command output is the returned response, and the debug message is called with 'FIN' status.
             2. Retry to query the job status in 1 second, and return empty dict if max retries exceeded.
          """
-        from Panorama import get_query_entries_by_id_request
+        from Panorama import get_query_entries_by_id_request, GET_LOG_JOB_ID_MAX_RETRIES
         mocker.patch('Panorama.http_request', return_value=response)
         debug = mocker.patch('demistomock.debug')
-        assert get_query_entries_by_id_request('000') == expected_result
+        assert get_query_entries_by_id_request('000', GET_LOG_JOB_ID_MAX_RETRIES) == expected_result
         assert debug.called_with(debug_msg)
 
 
@@ -6504,7 +6502,7 @@ class TestFetchIncidentsFlows:
         - no incidents should be returned.
         """
 
-        from Panorama import fetch_incidents
+        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/22 08:00:00)"}
@@ -6513,7 +6511,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_query_entries', return_value={})
 
         last_fetch_dict, last_id_dict, incident_entries_list = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch)
+            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
 
         assert incident_entries_list == []
         assert last_fetch_dict == {'X_log_type': ''}
@@ -6533,7 +6531,7 @@ class TestFetchIncidentsFlows:
         - X_log_type last fetch should be created.
         - X_log_type last id should be created.
         """
-        from Panorama import fetch_incidents
+        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
         last_run = {}
         first_fetch = '24 hours'
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
@@ -6549,7 +6547,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch)
+            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 12:00:00'
@@ -6569,7 +6567,7 @@ class TestFetchIncidentsFlows:
         - last_fetch_dict X_log_type value should not be updated.
         - last_id_dict X_log_type value should not be updated.
         """
-        from Panorama import fetch_incidents
+        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01T12:00:00'},
                     'last_id_dict': {'X_log_type': '000000001'}}
         first_fetch = '24 hours'
@@ -6585,7 +6583,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch)
+            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01T12:00:00'
@@ -6606,7 +6604,7 @@ class TestFetchIncidentsFlows:
         - last_fetch_dict X_log_type value should be updated.
         - last_id_dict X_log_type value should be updated.
         """
-        from Panorama import fetch_incidents
+        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 13:00:00'},
                     'last_id_dict': {'X_log_type': {'dummy_device': '000000001'}}}
         first_fetch = '24 hours'
@@ -6624,7 +6622,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch)
+            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
@@ -6648,7 +6646,7 @@ class TestFetchIncidentsFlows:
         - X_log_type last fetch time will be updated.
         - X_log_type last id is updated.
         """
-        from Panorama import fetch_incidents
+        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 12:00:00'},
                     'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}}}
         first_fetch = '24 hours'
@@ -6676,7 +6674,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch)
+            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
@@ -6702,7 +6700,7 @@ class TestFetchIncidentsFlows:
         - X_log_type last fetch time will be updated.
         - X_log_type last id is updated.
         """
-        from Panorama import fetch_incidents
+        from Panorama import fetch_incidents, GET_LOG_JOB_ID_MAX_RETRIES
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01 11:00:00', 'Y_log_type': '2022-01-01 13:00:00'},
                     'last_id_dict': {'X_log_type': {'dummy_device1': '000000001'}, 'Y_log_type': {'dummy_device2': '000000002'}}}
         first_fetch = '24 hours'
@@ -6727,7 +6725,7 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(
-            last_run, first_fetch, queries_dict, max_fetch)
+            last_run, first_fetch, queries_dict, max_fetch, GET_LOG_JOB_ID_MAX_RETRIES)
 
         assert incident_entries_dict == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01 13:00:00'
@@ -6838,10 +6836,10 @@ def test_prettify_edls_arr(sample_file, expected_result_file):
     """
     from Panorama import prettify_edls_arr
 
-    with open(sample_file, 'r') as f:
+    with open(sample_file) as f:
         sample = json.loads(f.read())
 
-    with open(expected_result_file, 'r') as f:
+    with open(expected_result_file) as f:
         expected_result = json.loads(f.read())
 
     mock_result = prettify_edls_arr(sample)
@@ -7071,3 +7069,110 @@ def test_pan_os_delete_tag_command(mocker, is_shared):
     assert request_mocker.call_count == expected_request_count
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == 'The tag with name "testtag" was deleted successfully.'
+
+
+@pytest.mark.parametrize(
+    "device_group, vsys, args, expected_response", [
+        (
+            "device_group",
+            "",
+            {"disable_override": True, "comment": ""},
+            "<disable-override>yes</disable-override><comments></comments>"
+        ),
+        (
+            "",
+            "vsys1",
+            {"disable_override": True, "comment": ""},
+            "<comments></comments>"
+        ),
+    ]
+)
+def test_build_tag_element(mocker, device_group, vsys, args, expected_response):
+    """
+    Given:
+     - given the disable_override argument that isn't supported with Firewall instances
+
+    When:
+     - Running the build_tag_element function
+
+    Then:
+     - Ensure that the expected response matches the actual response.
+     (ignoring the disable_override argument when using Firewall instances)
+    """
+    from Panorama import build_tag_element
+    mocker.patch('Panorama.DEVICE_GROUP', device_group)
+    mocker.patch('Panorama.VSYS', vsys)
+    response = build_tag_element(**args)
+    assert response == expected_response
+
+
+@pytest.mark.parametrize("element_to_change, element_value, current_objects_items, params_element, "
+                         "expected_exception, expected_warning, expected_warning_exit", [
+                             ('tag', ['tag3'], ['tag3'], '<tag></tag>', False, False, False),  # Last tag
+                             ('tag', ['tag2'], ['tag3', 'tag2'], '<tag><member>tag3</member></tag>',
+                              False, False, False),  # Not last tag
+                             ('tag', ['nonexistent_tag'], ['tag1'], '', False, True, True),  # Non-existent tag > exit
+                             ('tag', ['nonexistent_tag', 'tag1'], ['tag1'], '<tag></tag>',
+                              False, True, False),  # Non-existent tag & existent > warning
+                             ('source', ['source'], ['source'], '', True, False, False)  # raise exception
+                         ])
+def test_panorama_edit_rule_items_remove(mocker, element_to_change, element_value, current_objects_items, params_element,
+                                         expected_exception, expected_warning, expected_warning_exit):
+    """
+    Given:
+     - element_to_change: The element to be changed in the rule.
+     - element_value: The value(s) to be removed from the element.
+     - current_objects_items: The current items present in the element.
+     - params_element: The expected element value in the request body.
+     - expected_exception: Flag indicating whether an exception is expected to be raised.
+     - expected_warning: Flag indicating whether a warning is expected to be returned.
+     - expected_warning_exit: Flag indicating whether the warning is expected to trigger an exit.
+
+    When:
+     - Running the panorama_edit_rule_items function to remove element from rule.
+
+    Then:
+     - Ensure that the expected response matches the actual response.
+     - If expected_exception is True, assert that the correct exception is raised.
+     - If expected_warning is True, assert that the correct warning message is returned.
+     - If expected_warning_exit is True, assert that the warning triggers an exit.
+     - If expected_warning_exit is False, assert the correct values in the request body, the success message,
+       and the call to return_results.
+    """
+    from Panorama import panorama_edit_rule_items
+
+    mocker.patch('Panorama.VSYS', 'vsys1')
+    mocker.patch('Panorama.DEVICE_GROUP', '')
+    mocker.patch('Panorama.panorama_get_current_element', return_value=current_objects_items)
+    mock_return_warning = mocker.patch('Panorama.return_warning')
+    request_mock = mocker.patch(
+        'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_SUCCESS_RESPONSE
+    )
+
+    return_results_mock = mocker.patch('Panorama.return_results')
+
+    if expected_exception:
+        with pytest.raises(Exception, match=f'The object: {element_to_change} must have at least one item.'):
+            panorama_edit_rule_items('rulename', element_to_change, element_value, 'remove')
+    else:
+        panorama_edit_rule_items('rulename', element_to_change, element_value, 'remove')
+
+        if expected_warning:
+            mock_return_warning.assert_called_once_with('The following tags do not exist: nonexistent_tag',
+                                                        exit=expected_warning_exit)
+
+        if not expected_warning_exit:
+            assert request_mock.call_args.kwargs['body']['action'] == 'edit'
+            assert request_mock.call_args.kwargs['body']['element'] == params_element
+            assert return_results_mock.call_args[0][0]['HumanReadable'] == 'Rule edited successfully.'
+
+
+def test_list_device_groups_names(mocker):
+    from Panorama import list_device_groups_names
+
+    mocker.patch('Panorama.get_device_groups_names', return_value=['Test-Device', 'Test-Device-2'])
+
+    result = list_device_groups_names()
+
+    assert result.outputs == ['Test-Device', 'Test-Device-2']
+    assert result.readable_output == '### Device Group Names:\n|Group Name|\n|---|\n| Test-Device |\n| Test-Device-2 |\n'

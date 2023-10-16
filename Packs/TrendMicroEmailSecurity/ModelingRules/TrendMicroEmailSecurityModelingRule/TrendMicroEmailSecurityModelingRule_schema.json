@@ -1,0 +1,112 @@
+{
+    "trend_micro_email_security_raw": {
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "mailID": {
+            "type": "string",
+            "is_array": false
+        },
+        "sender": {
+            "type": "string",
+            "is_array": false
+        },
+        "genTime": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "logType": {
+            "type": "string",
+            "is_array": false
+        },
+        "subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "tlsInfo": {
+            "type": "string",
+            "is_array": false
+        },
+        "senderIP": {
+            "type": "string",
+            "is_array": false
+        },
+        "direction": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventType": {
+            "type": "string",
+            "is_array": false
+        },
+        "messageID": {
+            "type": "string",
+            "is_array": false
+        },
+        "recipient": {
+            "type": "string",
+            "is_array": false
+        },
+        "domainName": {
+            "type": "string",
+            "is_array": false
+        },
+        "headerFrom": {
+            "type": "string",
+            "is_array": false
+        },
+        "policyName": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventSubtype": {
+            "type": "string",
+            "is_array": false
+        },
+        "policyAction": {
+            "type": "string",
+            "is_array": false
+        },
+        "deliveredTo": {
+            "type": "string",
+            "is_array": false
+        },
+        "attachments": {
+            "type": "string",
+            "is_array": false
+        },
+        "recipients": {
+            "type": "string",
+            "is_array": false
+        },
+        "headerTo": {
+            "type": "string",
+            "is_array": false
+        },
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "timestamp": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "size": {
+            "type": "int",
+            "is_array": false
+        },
+        "deliveryTime": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "embeddedUrls": {
+            "type": "string",
+            "is_array": false
+        },
+        "reason": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

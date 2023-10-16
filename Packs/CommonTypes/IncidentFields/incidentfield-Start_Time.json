@@ -11,7 +11,9 @@
         "Skyhigh Security Threat",
         "Exabeam Incident",
         "Microsoft Sentinel Incident",
-        "Graph Security Alert"
+        "Graph Security Alert",
+        "CrowdStrike Falcon IDP Detection",
+        "Stamus Networks DoC"
     ],
     "breachScript": "",
     "caseInsensitive": true,

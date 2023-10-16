@@ -1,0 +1,46 @@
+[MODEL: dataset=semperis_dsp_raw]
+filter _raw_log ~= "\[OperationLog\@"
+| alter
+    get_ip = arraystring(regextract(_raw_log, "\[OperationSource\]\s+(\S+):\S+"), ""),
+    get_outcome = arraystring(regextract(_raw_log, "\[OperationResult\]\s+([^\[]+)\s"), "")
+| alter
+    src_ip_v4 = if(get_ip !~= ":", get_ip, null),
+    src_ip_v6 = if(get_ip ~= ":", get_ip, null)
+| alter
+	xdm.event.type = arraystring(regextract(_raw_log, "\[OperationLog\@"), ""),
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.event.outcome = if(get_outcome ~= "[s|S]uccess", XDM_CONST.OUTCOME_SUCCESS, get_outcome ~= "[a|A]ccess denied", XDM_CONST.OUTCOME_FAILED, get_outcome ~= "[E|e]rror", XDM_CONST.OUTCOME_PARTIAL, to_string(get_outcome)),
+    xdm.event.outcome_reason = get_outcome,
+    xdm.event.original_event_type = arraystring(regextract(_raw_log, "\[OperationType\]\s+([^\[]+)\s"), ""),
+    xdm.event.operation_sub_type = arraystring(regextract(_raw_log, "\[RequestedAction\]\s+([^\[]+)\s"), ""),
+    xdm.observer.type = arraystring(regextract(_raw_log, "\[OperationTarget\]\s+([^\[]+)\s"), ""),
+    xdm.intermediate.user.username = arraystring(regextract(_raw_log, "\[TrusteeName\]\s+([^\[]+)\s"), ""),
+    xdm.source.application.name = arraystring(regextract(_raw_log, "\[OperationSource\]\s+\S+:(\S+)"), "");
+
+
+filter _raw_log ~= "\[AdChanges\@"
+| alter
+    get_DistinguishedName = arraystring(regextract(_raw_log, "\[DistinguishedName\]\s+([^\[]+)\s"), ""),
+    get_ClassName = arraystring(regextract(_raw_log, "\[ClassName\]\s+([^\[]+)\s"), ""),
+    get_AttributeName = arraystring(regextract(_raw_log, "\[AttributeName\]\s+([^\[]+)\s"), "")
+| alter
+	xdm.event.type = arraystring(regextract(_raw_log, "\[AdChanges\@"), ""),
+    xdm.target.host.device_id = arraystring(regextract(_raw_log, "\[ForestId\]\s+([^\[]+)\s"), ""),
+    xdm.event.id = arraystring(regextract(_raw_log, "\[ChangeId\]\s+([^\[]+)\s"), ""),
+    xdm.intermediate.host.hostname = arraystring(regextract(_raw_log, "\[PartitionNamingContext\]\s+([^\[]+)\s"), ""),
+    xdm.target.user.username = arraystring(regextract(get_DistinguishedName, "CN=([^\,]+)"), ""),
+    xdm.target.user.ou = arraystring(regextract(get_DistinguishedName, "OU=([^\,]+)"), " "),
+    xdm.target.user.domain = arraystring(regextract(get_DistinguishedName, "DC=([^\,]+)"), "."),
+    xdm.target.resource.parent_id = get_ClassName,
+    xdm.target.resource.id = get_AttributeName,
+    xdm.target.resource.name = get_ClassName + "." + get_AttributeName,
+    xdm.event.operation = arraystring(regextract(_raw_log, "\[ObjectModificationType\]\s+([^\[]+)\s"), ""),
+	xdm.network.ldap.attributes = arraycreate(get_DistinguishedName),
+    xdm.event.original_event_type = arraystring(regextract(_raw_log, "\[AttributeModificationType\]\s+([^\[]+)\s"), ""),
+    xdm.target.domain = arraystring(regextract(_raw_log, "\[LinkedValueDN\]\s+([^\[]+)\s"), ""),
+    xdm.target.host.hostname = arraystring(regextract(_raw_log, "\[OriginatingServer\]\s+([^\[]+)\s"), ""),
+    xdm.source.user.username = arraystring(regextract(_raw_log, "\[OriginatingUsers\]\s+([^\[]+)\s"), ""),
+    xdm.source.host.hostname = arraystring(regextract(_raw_log, "\[OriginatingUserWorkstations\]\s+([^\[]+)\s"), ""),
+    xdm.target.resource_before.value = arraystring(regextract(_raw_log, "\[StringValueFrom\]\s+([^\[]+)\s"), ""),
+    xdm.target.resource.value = arraystring(regextract(_raw_log, "\[StringValueTo\]\s+([^\[]+)"), "");

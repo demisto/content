@@ -1,12 +1,13 @@
 [INGEST:vendor="google_workspace", product="drive", target_dataset="google_workspace_drive_raw", no_hit = keep]
-alter tmp_event_time_string = json_extract_scalar(id  ,"$.time")
-| alter tmp_time1 = arrayindex(split(tmp_event_time_string ,"."),0)
-| alter tmp_time2 = arrayindex(regextract(arrayindex(split(tmp_event_time_string ,"."),1),"(\d+)"),0)
-// Calculating time 1 format
-| alter tmp_time1 = parse_timestamp("%Y-%m-%dT%H:%M:%S", tmp_time1)
-// Calculating time 2 format
-| alter tmp_splitStr = split(tmp_time2, ".")
-| alter tmp_epoch_s = to_epoch(tmp_time1, "millis"),
-        tmp_epoch_ms = to_integer(tmp_time2)
-| alter _time = to_timestamp(add(tmp_epoch_s , tmp_epoch_ms), "millis")
-| fields - tmp_event_time_string, tmp_time1 , tmp_time2 , tmp_splitStr, tmp_epoch_s, tmp_epoch_ms;
+filter id ~= "\"time\":[\"\s]+\d{4}-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.\dZ]{1,5}\""
+| alter 
+    tmp_event_time_string = json_extract_scalar(id, "$.time"),
+    tmp_get_extensions = arraystring(regextract(id, "\"time\":[\"\s]+\d{4}-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}([\.\dZ]+)\""), "")
+| alter
+    tmp_check_z = if(tmp_get_extensions ~= "^Z$", parse_timestamp("%Y-%m-%dT%H:%M:%SZ", tmp_event_time_string), null),
+    tmp_check_3ms = if(tmp_get_extensions ~= "\.\d{3}Z", parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_event_time_string), null)
+| alter
+    tmp_pick_timestamp = coalesce(tmp_check_z, tmp_check_3ms)
+| alter
+    _time = tmp_pick_timestamp
+| fields -tmp_event_time_string, tmp_get_extensions, tmp_check_z, tmp_check_3ms, tmp_pick_timestamp;

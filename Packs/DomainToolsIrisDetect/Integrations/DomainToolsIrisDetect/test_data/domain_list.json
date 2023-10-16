@@ -1,0 +1,33 @@
+[
+  {
+    "state": "new",
+    "domain": "dummy.com",
+    "status": "active",
+    "discovered_date": "2023-01-07T03:18:40.704000+00:00",
+    "changed_date": "2023-01-07T03:20:16.000000+00:00",
+    "risk_score": 74,
+    "risk_score_status": "full",
+    "risk_score_components": {
+      "proximity": 22,
+      "threat_profile": {
+        "phishing": 74,
+        "malware": 54,
+        "spam": 32,
+        "evidence": [
+          "domain name",
+          "name server",
+          "registrant"
+        ]
+      }
+    },
+    "mx_exists": false,
+    "tld": "com",
+    "id": "MWpVbD0x5E",
+    "escalations": [],
+    "monitor_ids": [
+      "rA7bn46jQ3"
+    ],
+    "registrar": "dummy Technology Co., Ltd.",
+    "create_date": 20230106
+  }
+]

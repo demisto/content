@@ -34,8 +34,7 @@ configuration:
   - hmac-sha256
   - hmac-sha384
   - hmac-sha512
-- additionalinfo: Sets the transport protocol (TCP or UDP). TCP is the recommended
-    and a more robust option.
+- additionalinfo: Sets the transport protocol (TCP or UDP). TCP is the recommended and a more robust option.
   defaultvalue: 'tcp'
   display: Protocol
   name: protocol
@@ -58,12 +57,9 @@ script:
       predefined:
       - present
       - absent
-    - description: 'DNS record will be modified on this `zone`. When omitted DNS will
-        be queried to attempt finding the correct zone. Starting with Ansible 2.7
-        this parameter is optional.'
+    - description: 'DNS record will be modified on this `zone`. When omitted DNS will be queried to attempt finding the correct zone. Starting with Ansible 2.7 this parameter is optional.'
       name: zone
-    - description: Sets the DNS record to modify. When zone is omitted this has to
-        be absolute (ending with a dot).
+    - description: Sets the DNS record to modify. When zone is omitted this has to be absolute (ending with a dot).
       name: record
       required: true
     - defaultValue: A
@@ -102,7 +98,6 @@ script:
       description: dnspython return code (string representation)
       type: string
   dockerimage: demisto/ansible-runner:1.0.0.24037
-  runonce: false
   script: ''
   subtype: python3
   type: python

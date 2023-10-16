@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import datetime
 import json
@@ -8,9 +7,10 @@ import re
 import sys
 from contextlib import contextmanager
 from queue import Queue
-from typing import Union, Any, Generator
+from typing import Any
+from collections.abc import Generator
+import demisto_client
 
-import demisto_client.demisto_api
 import pytz
 import requests
 import urllib3
@@ -104,7 +104,7 @@ class DataKeeperTester:
 
 def print_test_summary(tests_data_keeper: DataKeeperTester,
                        is_ami: bool = True,
-                       logging_module: Union[Any, ParallelLoggingManager] = logging) -> None:
+                       logging_module: Any | ParallelLoggingManager = logging) -> None:
     """
     Takes the information stored in the tests_data_keeper and prints it in a human readable way.
     Args:
@@ -268,8 +268,8 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
     integrations = []
     test_skipped_integration = []
     for integration in integrations_conf:
-        if integration in skipped_integrations_conf.keys():
-            skipped_integration.add("{0} - reason: {1}".format(integration, skipped_integrations_conf[integration]))
+        if integration in skipped_integrations_conf:
+            skipped_integration.add(f"{integration} - reason: {skipped_integrations_conf[integration]}")
             test_skipped_integration.append(integration)
 
         # string description
@@ -282,7 +282,7 @@ def collect_integrations(integrations_conf, skipped_integration, skipped_integra
 
 
 def extract_filtered_tests():
-    with open(FILTER_CONF, 'r') as filter_file:
+    with open(FILTER_CONF) as filter_file:
         filtered_tests = [line.strip('\n') for line in filter_file.readlines()]
 
     return filtered_tests
@@ -308,7 +308,7 @@ def load_env_results_json():
         logging.warning(f"Did not find {env_results_path} file ")
         return {}
 
-    with open(env_results_path, 'r') as json_file:
+    with open(env_results_path) as json_file:
         return json.load(json_file)
 
 
@@ -334,7 +334,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         logging.warning(f"assuming server version is {default_version}.")
         return default_version
 
-    instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
+    instances_ami_names = {env.get('ImageName') for env in env_json if ami_env in env.get('Role', '')}
     if len(instances_ami_names) != 1:
         logging.warning(f'Did not get one AMI Name, got {instances_ami_names}.'
                         f' Assuming server version is {default_version}')
@@ -346,19 +346,21 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 
 
 def extract_server_numeric_version(instances_ami_name, default_version):
-    # regex doesn't catch Server Master execution
-    extracted_version = re.findall(r'Demisto-(?:Circle-CI|Marketplace)-Content-AMI-[A-Za-z]*[-_](\d[._]\d)-[\d]{5}',
-                                   instances_ami_name)
-    extracted_version = [match.replace('_', '.') for match in extracted_version]
+    try:
+        server_numeric_version = re.search(  # type: ignore[union-attr]
+            r'family/xsoar-(?:ga-)?(?P<version>[a-z0-9\-]+)',
+            instances_ami_name
+        ).group('version')
+    except (AttributeError, IndexError) as e:
+        logging.info(f'Got exception when trying to get the server version. Setting server version to {default_version=}.'
+                     f' Given {instances_ami_name=}. Exact error is {str(e)}')
+        return default_version
 
-    if extracted_version:
-        server_numeric_version = extracted_version[0]
+    if server_numeric_version == 'master':
+        logging.info('Server version: Master')
+        return default_version
     else:
-        if 'Master' in instances_ami_name:
-            logging.info('Server version: Master')
-            return default_version
-        else:
-            server_numeric_version = default_version
+        server_numeric_version = server_numeric_version.replace('-', '.')
 
     # make sure version is three-part version
     if server_numeric_version.count('.') == 1:
@@ -372,7 +374,7 @@ def get_instances_ips_and_names(tests_settings):
     if tests_settings.server:
         return [tests_settings.server]
     env_json = load_env_results_json()
-    instances_ips = [(env.get('Role'), f"localhost:{env.get('TunnelPort')}") for env in env_json]
+    instances_ips = [(env.get('Role'), env.get('InstanceDNS', '')) for env in env_json]
     return instances_ips
 
 
@@ -388,7 +390,7 @@ def get_test_records_of_given_test_names(tests_settings, tests_names_to_search):
 
 
 def get_json_file(path):
-    with open(path, 'r') as json_file:
+    with open(path) as json_file:
         return json.loads(json_file.read())
 
 
@@ -431,7 +433,7 @@ def add_pr_comment(comment):
     branch_name = os.environ['CI_COMMIT_BRANCH']
     sha1 = os.environ['CI_COMMIT_SHA']
 
-    query = '?q={}+repo:demisto/content+org:demisto+is:pr+is:open+head:{}+is:open'.format(sha1, branch_name)
+    query = f'?q={sha1}+repo:demisto/content+org:demisto+is:pr+is:open+head:{branch_name}+is:open'
     url = 'https://api.github.com/search/issues'
     headers = {'Authorization': 'Bearer ' + token}
     try:

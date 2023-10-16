@@ -1,17 +1,10 @@
 args:
-- default: false
-  description: Enter JSON STRING like {'email@company':'@bonuslyuser'}
-  isArray: false
+- description: Enter JSON STRING like {'email@company':'@bonuslyuser'}
   name: json
   required: true
-  secret: false
-- default: false
-  description: The username of the Cortex XSOAR incident owner. This will look up the incident
-    owner's email address.
-  isArray: false
+- description: The username of the Cortex XSOAR incident owner. This will look up the incident owner's email address.
   name: owner
   required: true
-  secret: false
 comment: This script gets the email address of the incident owner and then returns the incident owner username in Bonusly.
 commonfields:
   id: IncOwnerToBonuslyUser
@@ -27,15 +20,13 @@ outputs:
   type: Unknown
 script: '-'
 subtype: python3
-system: false
 tags:
 - Bonusly
 - Utilities
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
-runonce: false
 fromversion: 5.0.0
 tests:
 - No test

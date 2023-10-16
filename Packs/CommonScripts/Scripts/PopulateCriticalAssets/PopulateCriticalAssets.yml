@@ -14,9 +14,8 @@ args:
   description: A list of all critical assets. Received as output from "Calculate Severity - Critical Assets v2" playbook.
   isArray: true
 scripttarget: 0
-runonce: false
 runas: DBotWeakRole
 tests:
 - Calculate Severity - Generic v2 - Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.12.63474

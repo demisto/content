@@ -15,7 +15,6 @@ args:
   description: Date to convert
 scripttarget: 0
 subtype: python3
-runonce: false
 dockerimage: demisto/python3:3.10.11.61265
 runas: DBotWeakRole
 fromversion: 6.0.0

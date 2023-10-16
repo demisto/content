@@ -5,20 +5,15 @@ Use the integration to get logs from the O365 service.
 2. Search for Microsoft Policy And Compliance (Audit Log).
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Exchange Online URL | True |
-    | Email (UPN) | False |
-    | Trust any certificate (not secure) | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Exchange Online URL |  | True |
+    | Certificate | A pfx certificate encoded in Base64. | True |
+    | Password |  | True |
+    | The organization used in app-only authentication. |  | True |
+    | The application ID from the Azure portal |  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
-## Authentication
-- OAuth2.0 (For MFA enabled accounts) -
-    1. Enter a value for the Email (UPN) parameter in the integration configuration.
-    2. Run the ***o365-auditlog-auth-start*** command and follow the instructions.
-    3. Run the ***o365-auditlog-auth-test*** command to verify that the authorization process was implemented correctly.
-
 
 ## Required Permissions To Search Audit Logs
 - The minimum required Exchange permissions are **Audit Logs** or **View-Only Audit Logs**.
@@ -31,17 +26,6 @@ Use the integration to get logs from the O365 service.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### o365-auditlog-auth-start
-***
-Starts the OAuth2.0 authorization process.
-
-### o365-auditlog-auth-complete
-***
-Completes the OAuth2.0 authorization process.
-
-### o365-auditlog-auth-test
-***
-Tests the OAuth2.0 authorization process.
 
 ### o365-auditlog-search
 ***

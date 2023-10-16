@@ -4,6 +4,8 @@ from CommonServerPython import *
 RETURN_ERROR_TARGET = 'GetListRow.return_error'
 DATA_WITH_CUSTOM_SEP = [{"Contents": "name;id\nname1;id1\nname2;id2"}]
 DATA_WITH_NEW_LINE_SEP = [{"Contents": "name\nid\nname1\nid1\nname2\nid2"}]
+DATA_WITH_TAB_SEP = [{"Contents": "name	id\nname1	id1\nname2	id2"}]
+DATA_WITH_TAB_SEP_2 = [{"Contents": "name\tid\nname1\tid1\nname2\tid2"}]
 
 
 @pytest.mark.parametrize(
@@ -117,6 +119,45 @@ def test_custom_list_new_line_sep(mocker, data, parse_all, header, value, list_n
     mocker.patch.object(demisto, "executeCommand", return_value=data)
     res = parse_list(parse_all, header, value, list_name, list_separator)
     assert res.outputs.get('Results') == expected
+
+
+@pytest.mark.parametrize(
+    "data, parse_all, header, value, list_name, list_separator, expected",
+    [
+        (DATA_WITH_TAB_SEP, "True", "name", "id", "getListRow", '\t',
+         [{'name': 'name1', 'id': 'id1'}, {'name': 'name2', 'id': 'id2'}]),
+        (DATA_WITH_TAB_SEP, "False", "name", "name2", "getListRow", '	', [{'name': 'name2', 'id': 'id2'}]),
+        (DATA_WITH_TAB_SEP_2, "True", "name", "id", "getListRow", '\\t',
+         [{'name': 'name1', 'id': 'id1'}, {'name': 'name2', 'id': 'id2'}]),
+        (DATA_WITH_TAB_SEP_2, "True", "name", "id", "getListRow", '\t',
+         [{'name': 'name1', 'id': 'id1'}, {'name': 'name2', 'id': 'id2'}]),
+    ]
+)
+def test_custom_list_tab_sep(mocker, data, parse_all, header, value, list_name, list_separator, expected):
+    """
+    Given:
+        - Data that should be split by the tab separator (' ').
+    When:
+        - Running the script with a custom separator arg
+    Then:
+        - Ensure the parsed sata was split correctly
+    """
+    import GetListRow
+
+    mock_args = {
+        'list_name': list_name,
+        'parse_all': parse_all,
+        'header': header,
+        'value': value,
+        'list_separator': list_separator
+    }
+    mocker.patch.object(demisto, "args", return_value=mock_args)
+    mocker.patch.object(demisto, "executeCommand", return_value=data)
+    mocker.patch.object(GetListRow, "return_results", return_value=data)
+
+    GetListRow.main()
+
+    assert GetListRow.return_results.call_args[0][0].outputs.get('Results') == expected
 
 
 @pytest.mark.parametrize(

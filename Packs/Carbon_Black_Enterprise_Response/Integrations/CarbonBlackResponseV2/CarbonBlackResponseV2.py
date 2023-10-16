@@ -1,8 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import struct
 import dateparser
 import urllib3
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
 from typing import Callable, Dict, List, Any, Union, Tuple
 
@@ -102,6 +102,7 @@ class netconn_complete(ProcessEventDetail):
     For netconn_complete, the v2 API and newer return an array of JSON objects instead of piped-versioned fields.
     https://developer.carbonblack.com/reference/enterprise-response/5.1/rest-api/#netconn_complete
     """
+
     def __init__(self, fields):
         self.fields = fields
 
@@ -860,6 +861,15 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         incident_name = f'{INTEGRATION_NAME}: {alert_id} {alert_name}'
         if not alert_id or not alert_name:
             demisto.debug(f'{INTEGRATION_NAME} - Alert details are missing. {str(alert)}')
+
+        if ioc_attr := alert.get('ioc_attr'):
+            try:
+                alert['ioc_attr'] = json.loads(ioc_attr)
+                highlights = alert['ioc_attr'].get('highlights', [])
+                for i, attribute in enumerate(highlights):
+                    highlights[i] = attribute.replace("PREPREPRE", "").replace("POSTPOSTPOST", "")
+            except json.JSONDecodeError as e:
+                demisto.debug(f"Failed to parse ioc_attr as JSON: {e}")
 
         incident = {
             'name': incident_name,

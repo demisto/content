@@ -1,26 +1,13 @@
 args:
-- default: false
-  description: '"Entry ID" of the uploaded logo in Cortex XSOAR.'
-  isArray: false
+- description: '"Entry ID" of the uploaded logo in Cortex XSOAR.'
   name: logoImageId
-  required: false
-  secret: false
-- default: false
-  description: Name of the logo. The name is the unique identifier for the logo.
-  isArray: false
+- description: Name of the logo. The name is the unique identifier for the logo.
   name: logoName
-  required: false
-  secret: false
-- default: false
-  description: Comma-separated list of domains that are associated to the logo defined in the logoName argument. It will only be used if the action argument is AddLogo or ModifiedDomainForLogo.
+- description: Comma-separated list of domains that are associated to the logo defined in the logoName argument. It will only be used if the action argument is AddLogo or ModifiedDomainForLogo.
   isArray: true
   name: associatedDomains
-  required: false
-  secret: false
 - auto: PREDEFINED
-  default: false
   description: Action to execute on the model.
-  isArray: false
   name: action
   predefined:
   - RemoveLogo
@@ -28,7 +15,6 @@ args:
   - ModifiedDomainForLogo
   - DisplayAllLogos
   required: true
-  secret: false
 comment: Add, remove, or modify logos from the URL Phishing model.
 commonfields:
   id: DBotUpdateLogoURLPhishing
@@ -37,14 +23,12 @@ enabled: true
 name: DBotUpdateLogoURLPhishing
 script: '-'
 subtype: python3
-system: false
 tags:
 - ml
 timeout: '0'
 type: python
 dockerimage: demisto/mlurlphishing:1.0.0.61412
 runas: DBotRole
-runonce: false
 tests:
 - DBotUpdateLogoURLPhishing_test
 fromversion: 6.5.0

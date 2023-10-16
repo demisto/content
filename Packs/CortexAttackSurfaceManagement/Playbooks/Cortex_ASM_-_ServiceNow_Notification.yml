@@ -1,0 +1,264 @@
+id: Cortex ASM - ServiceNow Notification
+version: -1
+name: Cortex ASM - ServiceNow Notification
+description: This playbook is used to create ServiceNow tickets directed toward service owners to notify them of their internet exposures.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 18a8542a-f6ca-474e-82bb-cd023bdf2a69
+    type: start
+    task:
+      id: 18a8542a-f6ca-474e-82bb-cd023bdf2a69
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e28fdfca-d524-4853-8dc3-285981f0050f
+    type: title
+    task:
+      id: e28fdfca-d524-4853-8dc3-285981f0050f
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7618b987-b315-448e-8b57-a97192a973e7
+    type: playbook
+    task:
+      id: 7618b987-b315-448e-8b57-a97192a973e7
+      version: -1
+      name: Cortex ASM - Remediation Guidance
+      description: This playbook pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
+      playbookName: Cortex ASM - Remediation Guidance
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      IssueTypeID:
+        complex:
+          root: alert
+          accessor: asmattacksurfaceruleid
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '[\"]'
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: df24c45a-e372-42d5-8d7f-2db7f1950429
+    type: regular
+    task:
+      id: df24c45a-e372-42d5-8d7f-2db7f1950429
+      version: -1
+      name: Create ServiceNow alert
+      description: Creates new ServiceNow ticket.
+      script: ServiceNow v2|||servicenow-create-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      description:
+        complex:
+          root: inputs.OwnerNotificationBody
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${RemediationGuidance}
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: <br>
+      extend-context:
+        simple: 'ServiceNowDomain=.={"url": val.result.sys_domain.link.split(''api/now'')[0]}'
+      short_description:
+        complex:
+          root: alert
+          accessor: name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Cortex ASM Alert: '
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 75531f68-ebd5-4f9d-855f-d739e502ef20
+    type: regular
+    task:
+      id: 75531f68-ebd5-4f9d-855f-d739e502ef20
+      version: -1
+      name: Set notification grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      gridfield:
+        simple: asmnotification
+      keys:
+        simple: type,value,url,timestamp
+      val1:
+        simple: ServiceNow
+      val2:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: ID
+      val3:
+        complex:
+          root: ServiceNowDomain
+          accessor: url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.do?sysparm_query=number=
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ServiceNow.Ticket.Number
+                iscontext: true
+      val4:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: CreatedOn
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: OwnerNotificationBody
+  value: {}
+  required: true
+  description: Body of the notification (email or ticket) sent to the potential service owner.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

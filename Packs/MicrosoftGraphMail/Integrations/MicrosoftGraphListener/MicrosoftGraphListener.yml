@@ -7,105 +7,105 @@ commonfields:
   version: -1
 configuration:
 - name: creds_auth_id
-  required: false
   type: 9
   displaypassword: ID or Client ID
   hiddenusername: true
   section: Connect
-- name: creds_refresh_token
   required: false
+- name: creds_refresh_token
   type: 9
   displaypassword: Token or Tenant ID
   hiddenusername: true
   section: Connect
   advanced: true
-- name: creds_enc_key
   required: false
+- name: creds_enc_key
   type: 9
   displaypassword: Key or Client Secret
   hiddenusername: true
   section: Connect
+  required: false
 - display: ID or Client ID - see Detailed Instructions (?)
   name: auth_id
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Token or Tenant ID - see Detailed Instructions (?)
   name: refresh_token
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key
-  required: false
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Certificate Thumbprint (optional for self-deployed Azure app)
   name: creds_certificate
-  required: false
   type: 9
   displaypassword: Private Key
   section: Connect
   advanced: true
+  required: false
 - display: Certificate Thumbprint (optional for self-deployed Azure app)
   name: certificate_thumbprint
-  required: false
   type: 4
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Private Key
   name: private_key
-  required: false
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
   section: Connect
-- name: creds_auth_code
   required: false
+- name: creds_auth_code
   type: 9
   displaypassword: Authorization code (required for self-deployed Azure app)
   hiddenusername: true
   section: Connect
   advanced: true
+  required: false
 - display: Authorization code (required for self-deployed Azure app)
   name: auth_code
-  required: false
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Application redirect URI (required for self-deployed Azure app)
   name: redirect_uri
-  required: false
   type: 0
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
-  required: false
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
-  required: false
   hiddenusername: true
   type: 9
   section: Connect
   advanced: true
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
   section: Collect
+  required: false
 - display: Email address from which to fetch incidents (e.g., "example@demisto.com")
   name: mailbox_to_fetch
   required: true
@@ -120,39 +120,40 @@ configuration:
   section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  required: false
   type: 0
   defaultvalue: 15 minutes
   section: Collect
+  required: false
 - display: Maximum number of emails to pull per fetch
   name: fetch_limit
   defaultvalue: '50'
   type: 0
-  required: false
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
   section: Connect
   advanced: true
-- display: Use a self-deployed Azure application
-  name: self_deployed
   required: false
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure application
+  name: self_deployed
   type: 8
   section: Connect
-  advanced: true
+  advanced: false
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
   section: Connect
+  required: false
 - display: Display full email body
   name: display_full_email_body
   defaultvalue: 'false'
@@ -160,20 +161,30 @@ configuration:
   additionalinfo: If not active, only a preview of the email will be fetched.
   section: Collect
   advanced: true
-- additionalinfo: Relevant only if fetch incidents is active.
+  required: false
+- additionalinfo: Select this checkbox to retrieve the body of an email in HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs (e.g., email previews in the Email Communication pack) may not provide their full capabilities.
   defaultvalue: 'false'
-  display: Mark fetched emails as read
+  display: Fetch emails in HTML format
+  name: fetch_html_formatting
+  type: 8
+  section: Collect
+  advanced: false
+  required: false
+- display: Mark fetched emails as read
   name: mark_fetched_read
+  defaultvalue: 'false'
   type: 8
   section: Collect
   advanced: true
+  required: false
+  additionalinfo: Relevant only if fetch incidents is active.
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
   type: 19
-  required: false
   section: Collect
   advanced: true
+  required: false
 description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
@@ -203,7 +214,7 @@ script:
       - HTML
     - auto: PREDEFINED
       defaultValue: notFlagged
-      description: 'The flag value that indicates the status of the draft. Can be: "notFlagged", "complete", or "flagged".'
+      description: The flag value that indicates the status of the draft.
       name: flag
       predefined:
       - notFlagged
@@ -211,7 +222,7 @@ script:
       - flagged
     - auto: PREDEFINED
       defaultValue: Low
-      description: 'The importance of the draft. Can be: "Low", "Normal", or "High".'
+      description: The importance of the draft.
       name: importance
       predefined:
       - Low
@@ -230,10 +241,8 @@ script:
       isArray: true
       name: attach_cids
     - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
+      description: Flag for rate limit retry.
       name: ran_once_flag
-      required: false
     description: Creates a draft message in the specified user's mailbox.
     name: msgraph-mail-create-draft
     outputs:
@@ -253,7 +262,7 @@ script:
       description: The message ID of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.SentTime
-      description: The created time of the draft email.
+      description: The sent time of the draft email.
       type: Date
     - contextPath: MicrosoftGraph.Draft.Headers
       description: The headers of the draft email.
@@ -296,7 +305,7 @@ script:
       type: String
     polling: true
   - arguments:
-    - description: A CSV list of email addresses for the 'to' field.
+    - description: A comma-separated list of email addresses for the 'to' field.
       isArray: true
       name: to
       required: true
@@ -308,28 +317,26 @@ script:
     - name: inReplyTo
       required: true
       description: ID of the item to reply to.
-    - description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+    - description: 'A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
       name: attachIDs
-    - description: A CSV list of email addresses for the 'cc' field.
+    - description: A comma-separated list of email addresses for the 'cc' field.
       isArray: true
       name: cc
-    - description: A CSV list of email addresses for the 'bcc' field.
+    - description: A comma-separated list of email addresses for the 'bcc' field.
       isArray: true
       name: bcc
     - description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
       name: htmlBody
-    - description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
+    - description: A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs.
       isArray: true
       name: attachNames
-    - description: A CSV list of CIDs to embed attachments within the email itself.
+    - description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
       name: attachCIDs
     - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
+      description: Flag for rate limit retry.
       name: ran_once_flag
-      required: false
     description: Replies to an email using Graph Mail Single User.
     name: reply-mail
     outputs:
@@ -376,25 +383,21 @@ script:
       predefined:
       - text
       - HTML
-    - description: 'Indicates whether to render the email body'
+    - description: Indicates whether to render the email body.
       name: renderBody
-      default: false
-      isArray: false
-      required: false
-      secret: false
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       defaultValue: notFlagged
-      description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
+      description: The flag value that indicates the status for the email.
       name: flag
       predefined:
       - notFlagged
       - complete
       - flagged
-    - description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
+    - description: The importance of the email.
       name: importance
       auto: PREDEFINED
       defaultValue: Low
@@ -408,20 +411,30 @@ script:
     - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
       isArray: true
       name: attach_ids
+      hidden: true
     - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
       isArray: true
       name: attach_names
+      hidden: true
     - description: A comma-separated list of CIDs to embed attachments within the actual email.
       name: attach_cids
+      isArray: true
+      hidden: true
+    - description: A comma-separated list of War Room entry IDs that contain files, which are used to attach files for the email to send. For example, attachIDs=15@8,19@8.
+      isArray: true
+      name: attachIDs
+    - description: A comma-separated list of names of attachments to display in the email to send. Must be the same number of elements as attachIDs.
+      name: attachNames
+      isArray: true
+    - description: A comma-separated list of CIDs to embed attachments within the actual email.
+      name: attachCIDs
       isArray: true
     - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
       isArray: true
       name: replyTo
     - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
+      description: Flag for rate limit retry.
       name: ran_once_flag
-      required: false
     description: Sends an email using Microsoft Graph.
     name: send-mail
     outputs:
@@ -477,10 +490,8 @@ script:
       isArray: true
       name: attach_cids
     - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
+      description: Flag for rate limit retry.
       name: ran_once_flag
-      required: false
     description: The replies to the recipients of a message.
     name: msgraph-mail-reply-to
     polling: true
@@ -489,17 +500,15 @@ script:
       name: draft_id
       required: true
     - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
+      description: Flag for rate limit retry.
       name: ran_once_flag
-      required: false
     description: Sends a draft email using Microsoft Graph.
     name: msgraph-mail-send-draft
     polling: true
   - description: Tests connectivity of the email.
     name: msgraph-mail-test
     arguments: []
-  - description: Run this command to rerun the authentication process.
+  - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-mail-auth-reset
     arguments: []
   - name: msgraph-mail-list-emails
@@ -509,16 +518,14 @@ script:
     - name: search
       description: 'The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc. For further information, see https://tools.ietf.org/html/rfc3986#section-2.2'
     - name: page_size
-      description: Limit emails to fetch in one request
+      description: The maximum number of emails to fetch in one request.
       defaultValue: '20'
     - name: pages_to_pull
       description: The number of pages of emails to return (maximum is 10 emails per page).
       defaultValue: '1'
     - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
+      description: Flag for rate limit retry.
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: MSGraphMail.ID
       description: The ID of the email.
@@ -542,7 +549,7 @@ script:
       description: Whether the email has attachments.
       type: Boolean
     - contextPath: MSGraphMail.Subject
-      description: The subject of email.
+      description: The subject of the email.
       type: String
     - contextPath: MSGraphMail.IsDraft
       description: Whether the email is a draft.
@@ -551,7 +558,7 @@ script:
       description: The content (body) of the email.
       type: String
     - contextPath: MSGraphMail.Sender.Name
-      description: The name of sender.
+      description: The name of the sender.
       type: String
     - contextPath: MSGraphMail.Sender.Address
       description: The email address of the sender.
@@ -560,7 +567,7 @@ script:
       description: The name of the user in the 'from' field of the email.
       type: String
     - contextPath: MSGraphMail.From.Address
-      description: The email address of the user in the 'from' field of the email
+      description: The email address of the user in the 'from' field of the email.
       type: String
     - contextPath: MSGraphMail.CCRecipients.Name
       description: The names of the CC recipients.
@@ -587,7 +594,7 @@ script:
       description: The ID of the conversation.
       type: String
     - contextPath: MSGraphMail.InternetMessageID
-      description: Internet Message ID of the message
+      description: Internet Message ID of the message.
       type: String
     - contextPath: MSGraphMail.Recipients.Name
       description: The name of the user in the 'toRecipients' field of the email.
@@ -603,15 +610,13 @@ script:
   - name: msgraph-mail-list-attachments
     arguments:
     - name: message_id
-      description: The email message id
+      description: The email message id.
       required: true
     - name: folder_id
-      description: The id of the folder
+      description: The id of the folder.
     - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
+      description: Flag for rate limit retry.
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: MSGraphMailAttachment.ID
       description: The email ID.
@@ -628,33 +633,20 @@ script:
     - contextPath: MSGraphMailAttachment.UserID
       description: The ID of the user.
       type: String
-    description: Lists all of the attachments of given email
+    description: Lists all attachments of an email.
     polling: true
   - name: msgraph-mail-get-attachment
     arguments:
     - name: message_id
       required: true
-      description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
-      default: false
-      isArray: false
-      secret: false
+      description: The unique ID of the mail. You cannot use the 'MessageID' key in the form '<message-id>'.
     - description: 'A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).'
-      isArray: false
       name: folder_id
-      required: false
-      default: false
-      secret: false
-    - default: false
-      description: The ID of the attachment. In case not supplied, the command will return all the attachments.
-      isArray: false
+    - description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       name: attachment_id
-      required: false
-      secret: false
     - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
+      description: Flag for rate limit retry.
       name: ran_once_flag
-      required: false
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -688,18 +680,14 @@ script:
       type: String
     description: Gets an attachment from the email.
     polling: true
-    deprecated: false
-    execution: false
   - name: msgraph-mail-get-email-as-eml
     arguments:
-    - description: The unique ID of the email. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - description: The unique ID of the email. You cannot use the 'MessageID' key in the form '<message-id>'.
       name: message_id
       required: true
-    - description: flag for rate limit retry
+    - description: Flag for rate limit retry.
       name: ran_once_flag
       deprecated: true
-      isArray: false
-      required: false
     description: Retrieves an email message by message ID and uploads the content as an EML file.
     outputs:
     - contextPath: File.Size
@@ -753,12 +741,115 @@ script:
       - Read
       - Unread
   - description: Generate the login url used for Authorization code flow.
-    execution: false
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.62834
+  - arguments:
+    - description: display name of new folder.
+      name: new_folder_name
+      required: true
+    - description: The ID of the parent folder under which to create a new folder.
+      name: parent_folder_id
+    - description: Flag for rate limit retry.
+      name: ran_once_flag
+    description: Creates a new folder under the specified folder (parent).
+    name: msgraph-mail-create-folder
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: The number of child folders.
+      type: number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: The folder display name.
+      type: string
+    - contextPath: MSGraphMail.Folders.ID
+      description: The Folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: The parent folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread email messages in the folder.
+      type: number
+  - arguments:
+    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      name: message_id
+      required: true
+    - description: The ID of the destination folder.
+      name: destination_folder_id
+      required: true
+    - description: Flag for rate limit retry.
+      name: ran_once_flag
+    description: Moves a message to a different folder.
+    name: msgraph-mail-move-email
+    outputs:
+    - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
+      description: The folder where the email message was moved.
+      type: string
+    - contextPath: MSGraphMail.MovedEmails.ID
+      description: The new ID of the moved email message.
+      type: string
+    - contextPath: MSGraphMail.MovedEmails.UserID
+      description: The user ID.
+  - arguments:
+    - description: The maximum number of mail folder lists to return. Default is 20.
+      name: limit
+    - description: Flag for rate limit retry.
+      name: ran_once_flag
+    description: Returns the mail folder list directly under the root folder.
+    name: msgraph-mail-list-folders
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: Number of child folders.
+      type: number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: Folder display name.
+      type: string
+    - contextPath: MSGraphMail.Folders.ID
+      description: Target folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: Parent folder ID.
+      type: string
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread emails in the folder.
+      type: number
+  - arguments:
+    - description: The ID of the parent folder.
+      name: parent_folder_id
+      required: true
+    - defaultValue: '20'
+      description: The maximum number of mail folder lists to return. 
+      name: limit
+    - description: Flag for the rate limit retry.
+      name: ran_once_flag
+    description: Returns the folder list under the specified folder.
+    name: msgraph-mail-list-child-folders
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: The number of child folders.
+      type: Number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: The folder display name.
+      type: String
+    - contextPath: MSGraphMail.Folders.ID
+      description: The folder ID.
+      type: String
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: The parent folder ID.
+      type: String
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: Number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread email messages in the folder.
+      type: Number
+  dockerimage: demisto/crypto:1.0.0.76022
   isfetch: true
-  runonce: false
   script: ''
   type: python
   subtype: python3

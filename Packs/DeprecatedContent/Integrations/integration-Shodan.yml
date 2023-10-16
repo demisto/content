@@ -138,7 +138,6 @@ script:
     - contextPath: IP.Hostname
       description: Hostname
     description: Returns all services that have been found on the given host IP.
-  runonce: false
 tests:
 - No tests
 fromversion: 5.0.0

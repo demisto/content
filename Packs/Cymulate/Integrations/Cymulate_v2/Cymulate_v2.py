@@ -1,5 +1,5 @@
 from datetime import date
-from typing import Any, Dict, Tuple, Optional
+from typing import Any
 
 import copy
 import json
@@ -57,7 +57,7 @@ class Client(BaseClient):
                                   headers=self.headers,
                                   resp_type='response')
 
-    def start_assessment(self, endpoint: Optional[str], data: dict):
+    def start_assessment(self, endpoint: str | None, data: dict):
         """ Start new assessment.
 
         Args:
@@ -69,7 +69,7 @@ class Client(BaseClient):
                                   headers=self.headers,
                                   data=json.dumps(data))
 
-    def stop_assessment(self, endpoint: Optional[str]):
+    def stop_assessment(self, endpoint: str | None):
         """ Stop a running assessment.
 
         Args:
@@ -79,7 +79,7 @@ class Client(BaseClient):
                                   url_suffix=f'/{endpoint}/stop',
                                   headers=self.headers)
 
-    def get_assessment_status(self, endpoint: Optional[str], assessment_id: Optional[str]):
+    def get_assessment_status(self, endpoint: str | None, assessment_id: str | None):
         """ Retrieve an assessment status.
 
         Args:
@@ -91,7 +91,7 @@ class Client(BaseClient):
                                   headers=self.headers,
                                   params={'id': assessment_id})
 
-    def list_templates(self, endpoint: Optional[str]):
+    def list_templates(self, endpoint: str | None):
         """ Retrieve a list af all Cymulate templates to run the assessments on.
 
         Args:
@@ -107,14 +107,14 @@ class Client(BaseClient):
                                   url_suffix='/phishing/contacts/groups',
                                   headers=self.headers)
 
-    def get_phishing_contacts(self, group_id: Optional[str]):
+    def get_phishing_contacts(self, group_id: str | None):
         """ Retrieve a list of phishing contacts by group ID."""
         return self._http_request(method='GET',
                                   url_suffix='/phishing/contacts',
                                   headers=self.headers,
                                   params={'groupId': group_id})
 
-    def create_phishing_contacts(self, group_name: Optional[str]):
+    def create_phishing_contacts(self, group_name: str | None):
         """ Create phishing contacts group."""
         return self._http_request(method='POST',
                                   url_suffix='/phishing/contacts/group',
@@ -128,7 +128,7 @@ class Client(BaseClient):
                                   headers=self.headers,
                                   resp_type='json')
 
-    def list_attacks(self, endpoint: Optional[str]):
+    def list_attacks(self, endpoint: str | None):
         """Retrieves attacks by module.
 
         Args:
@@ -139,8 +139,8 @@ class Client(BaseClient):
                                       headers=self.headers)
         return response.get('data')
 
-    def list_attack_ids_by_date(self, endpoint: Optional[str], from_date: Optional[str],
-                                to_date: Optional[str] = None):
+    def list_attack_ids_by_date(self, endpoint: str | None, from_date: str | None,
+                                to_date: str | None = None):
         """Retrieves attack IDs by their dates.
 
         Args:
@@ -156,7 +156,7 @@ class Client(BaseClient):
                                       headers=self.headers)
         return dict_safe_get(dict_object=response, keys=['data', 'attack'], return_type=list)
 
-    def list_immediate_threats_ids_by_date(self, from_date: Optional[str], to_date: Optional[str]):
+    def list_immediate_threats_ids_by_date(self, from_date: str | None, to_date: str | None):
         """Retrieves immediate threats attack IDs by their dates.
 
         Args:
@@ -170,7 +170,7 @@ class Client(BaseClient):
                                       headers=self.headers)
         return response.get('data')
 
-    def list_attack_ids(self, endpoint: Optional[str]):
+    def list_attack_ids(self, endpoint: str | None):
         """Retrieves all attack IDs.
 
         Args:
@@ -181,7 +181,7 @@ class Client(BaseClient):
                                       headers=self.headers)
         return response.get('data')
 
-    def get_attack_by_id(self, endpoint: Optional[str], attack_id: Optional[str]):
+    def get_attack_by_id(self, endpoint: str | None, attack_id: str | None):
         """Retrieves data regarding an attack by the attack ID.
 
         Args:
@@ -193,7 +193,7 @@ class Client(BaseClient):
                                       headers=self.headers)
         return response.get('data')
 
-    def get_immediate_threat_assessment(self, attack_id: Optional[str]):
+    def get_immediate_threat_assessment(self, attack_id: str | None):
         """Retrieves data regarding immediate threats attack by the attack ID.
 
         Args:
@@ -204,7 +204,7 @@ class Client(BaseClient):
                                       headers=self.headers).get('data')
         return response.get('payloads')
 
-    def get_simulations_by_id(self, endpoint: Optional[str], attack_id: Optional[str]):
+    def get_simulations_by_id(self, endpoint: str | None, attack_id: str | None):
         """ Retrieves all event data."""
         return self._http_request(method='GET',
                                   url_suffix=f'{endpoint}/history/technical/{attack_id}',
@@ -266,7 +266,7 @@ def validate_timestamp(timestamp: Any) -> bool:
 
 
 def get_alerts_by_module(client: Client, module_name: str,
-                         last_fetch: int) -> Tuple[List[Any], int, int, int]:
+                         last_fetch: int) -> tuple[List[Any], int, int, int]:
     """Helper function to retrieves raw data from the API according to the module currently fetched,
     and using format_incidents() function to format the raw data into XSOAR incident format.
 
@@ -373,7 +373,7 @@ def format_id_list(id_data_dict: dict) -> list:
 
 
 def format_incidents(events: list, event_offset: int, last_fetch: int, module_name: str,
-                     timestamp_endpoint: str = None) -> Tuple[List[Any], int, int, int]:
+                     timestamp_endpoint: str = None) -> tuple[List[Any], int, int, int]:
     """
     This function loops over the alerts list and create incidents from different events.
     For `Endpoint Security` and `Kill Chain` modules, if current event name is identical to previous
@@ -509,7 +509,7 @@ def extract_event_name(event: dict, module_name: str) -> str:
     return event_name
 
 
-def extract_event_description(event) -> Optional[Any]:
+def extract_event_description(event) -> Any | None:
     """Helper function to extract event description.
 
     Args:
@@ -624,7 +624,7 @@ def build_incident_dict(event: dict, module_name: str, event_timestamp=None) -> 
     return incident
 
 
-def convert_to_xsoar_severity(severity: Optional[Any]) -> int:
+def convert_to_xsoar_severity(severity: Any | None) -> int:
     """Maps Cymulate severity to Cortex XSOAR severity.
 
     Args:
@@ -695,14 +695,15 @@ def list_exfiltration_template_command(client: Client) -> CommandResults:
     return command_results
 
 
-def start_exfiltration_assessment_command(client: Client, template_id: str, agent_name: str,
-                                          schedule: bool, schedule_loop: str) -> CommandResults:
+def start_exfiltration_assessment_command(client: Client, template_id: str, agent_name: str, schedule: bool,
+                                          schedule_loop: str, agent_profile_name: str = None) -> CommandResults:
     """Start a new exfiltration assessment.
 
     Args:
         client (Client): Cymulate client.
         template_id (str): The ID of the template to run the exfiltration Assessment with.
         agent_name (str): Agent name to run simulation attacks.
+        agent_profile_name (str): Agent profile name to run simulation attacks on.
         schedule (bool): Whether to schedule the automated assessment periodically.
         schedule_loop (str): Loop size of the scheduled agent.
                              For example: to run the agent only once, use the value 'one-time'.
@@ -712,9 +713,12 @@ def start_exfiltration_assessment_command(client: Client, template_id: str, agen
                         containing the start assessment data.
 
     """
+    if agent_profile_name is not None:
+        agent_profile_name = agent_profile_name.replace("\"", "")
     params = {
         'templateID': template_id,
         'agentName': agent_name,
+        'agentProfileName': agent_profile_name,
         'schedule': schedule,
         'scheduleLoop': schedule_loop
     }
@@ -933,13 +937,14 @@ def list_endpoint_security_template_command(client: Client) -> CommandResults:
 
 def start_endpoint_security_assessment_command(client: Client, template_id: str, agent_name: str,
                                                schedule: bool,
-                                               schedule_loop: str) -> CommandResults:
+                                               schedule_loop: str, agent_profile_name: str = None) -> CommandResults:
     """Start a new endpoint security assessment.
 
     Args:
         client (Client): Cymulate client.
         template_id (str): The ID of the template to run the assessment with.
         agent_name (str): Agent's name to run simulation attacks with.
+        agent_profile_name (str): Agent profile name to run simulation attacks on
         schedule (bool): Whether to schedule the automated assessment periodically.
         schedule_loop (str): Loop size of the scheduled agent.
                              For example: to run the agent only once, use the value 'one-time'.
@@ -948,10 +953,12 @@ def start_endpoint_security_assessment_command(client: Client, template_id: str,
         CommandResults: A CommandResults object that is then passed to 'return_results',
                         containing the start assessment data.
     """
-
+    if agent_profile_name is not None:
+        agent_profile_name = agent_profile_name.replace("\"", "")
     params = {
         'templateID': template_id,
         'agentName': agent_name,
+        'agentProfileName': agent_profile_name,
         'schedule': schedule,
         'scheduleLoop': schedule_loop
     }
@@ -1152,7 +1159,9 @@ def get_waf_assessment_status_command(client: Client, assessment_id: str) -> Com
 
 def start_immediate_threat_assessment_command(client: Client, template_id: str,
                                               browsing_address: str = "",
+                                              browsing_address_profile_name: str = "",
                                               mail_address: str = "",
+                                              edr_address_profile_name: str = "",
                                               edr_address: str = "") -> CommandResults:
     """Start a new immediate threats assessment.
 
@@ -1160,8 +1169,10 @@ def start_immediate_threat_assessment_command(client: Client, template_id: str,
         client (Client): Cymulate client.
         template_id (str): The ID of the template to run the assessment with.
         browsing_address (str): Browsing address.
+        browsing_address_profile_name (str): browsing Agent profile name (Optional - required on SBA only)
         mail_address (str): Agent email address.
-        edr_address (str): EDR address.
+        edr_address_profile_name (str): EDR Agent profile name (Optional - required on SBA only)
+        edr_address (str): EDR Agent address.
 
     Returns:
         CommandResults: A CommandResults object that is then passed to 'return_results',
@@ -1173,8 +1184,10 @@ def start_immediate_threat_assessment_command(client: Client, template_id: str,
 
     params = {
         'templateID': template_id,
-        'mailAddress': browsing_address,
-        'browsingAddress': mail_address,
+        'mailAddress': mail_address,
+        'browsingAddress': browsing_address,
+        'browsingAddressProfileName': browsing_address_profile_name,
+        'edrAddressProfileName': edr_address_profile_name,
         'edrAddress': edr_address
     }
 
@@ -1275,12 +1288,13 @@ def list_lateral_movement_template_command(client: Client) -> CommandResults:
 
 def start_lateral_movement_assessment_command(client: Client, agent_name: str, template_id: str,
                                               upload_to_cymulate: bool, schedule: bool,
-                                              schedule_loop: str) -> CommandResults:
+                                              schedule_loop: str, agent_profile_name: str = None) -> CommandResults:
     """Start a new lateral movement assessment.
 
     Args:
         client (Client): Cymulate client.
         agent_name (str): Agent name to run the assessment with.
+        agent_profile_name (str): Agent profile name to run simulation attacks on.
         template_id (str): The ID of the template to run the lateral movement with.
         upload_to_cymulate (bool): Whether to upload the result to Cymulate.
         schedule (bool): Whether to schedule the automated assessment periodically.
@@ -1292,8 +1306,11 @@ def start_lateral_movement_assessment_command(client: Client, agent_name: str, t
                         containing the start assessment data.
 
     """
+    if agent_profile_name is not None:
+        agent_profile_name = agent_profile_name.replace("\"", "")
     params = {
         "agentName": agent_name,
+        "agentProfileName": agent_profile_name,
         "templateID": template_id,
         "uploadResultsToCymulate": upload_to_cymulate,
         "schedule": schedule,
@@ -1559,9 +1576,9 @@ def list_simulations_command(client: Client, module: str, attack_id: str):
     return command_results
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, int],
+def fetch_incidents(client: Client, last_run: dict[str, int],
                     first_fetch_time: int,
-                    fetch_categories: list) -> Tuple[Dict[str, int], List[dict]]:
+                    fetch_categories: list) -> tuple[dict[str, int], List[dict]]:
     """
     Retrieves new incidents every interval (default is 1 minute). The function will retrieve
     incidents from all selected modules chosen in the configuration page by the user.

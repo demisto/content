@@ -4,7 +4,7 @@ import json
 import requests
 import dateparser
 from datetime import timedelta
-from typing import Any, Dict, Tuple, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 import urllib3
 
 # Disable insecure warnings
@@ -28,25 +28,26 @@ MIRROR_DIRECTION = {
     'Incoming And Outgoing': 'Both'
 }
 XSOAR_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-
+MIRROR_RESET = 'XSOARMirror_mirror_reset'
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
     def search_incidents(self, query: Optional[str], max_results: Optional[int],
-                         start_time: Union[str, int]) -> List[Dict[str, Any]]:
-        data = {
+                         start_time: Union[str, int], page: int = None, field: str = "id") -> List[Dict[str, Any]]:
+        data = remove_empty_elements({
             "filter": {
                 "query": query,
                 "size": max_results or 10,
+                "page": page,
                 "fromDate": start_time,
                 "sort": [{
-                    "field": "id",
+                    "field": field,
                     "asc": True
                 }]
             }
-        }
+        })
         return self._http_request(
             method='POST',
             url_suffix='/incidents/search',
@@ -81,7 +82,7 @@ class Client(BaseClient):
             url_suffix=f'/investigation/{incident_id}',
             json_data=data
         )
-        return inv_with_entries.get('entries')
+        return inv_with_entries.get('entries', [])
 
     def get_incident_fields(self) -> List[Dict[str, Any]]:
         return self._http_request(
@@ -157,6 +158,31 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def validate_and_prepare_basic_params(params: dict):
+    """
+    Validated and then prepares the API Key, API ID, and URL.
+
+    Args:
+        params (dict): The params dictionary.
+
+    Return:
+        str: the API key ID
+        str: the API key secret
+        str: the URL to the server with `xsoar` suffix if one is needed
+    """
+    api_key = params.get('credentials_api_key', {}).get('password') or params.get('apikey')
+    api_key_id = params.get('credentials_api_key', {}).get('identifier')
+    base_url = params.get('url', '')
+    if not api_key:
+        raise DemistoException('API Key must be provided.')
+
+    # For cloud environments an 'xsoar' suffix must be added
+    if api_key_id:
+        base_url = base_url if base_url.endswith('/xsoar') else base_url + '/xsoar'
+
+    return api_key_id, api_key, base_url
 
 
 def arg_to_timestamp(arg: str, arg_name: str, required: bool = False):
@@ -236,9 +262,12 @@ def test_module(client: Client, first_fetch_time: str) -> str:
             raise e
 
 
-def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[str, int]],
-                    first_fetch_time: Union[int, str], query: Optional[str], mirror_direction: str,
-                    mirror_tag: List[str], mirror_playbook_id: bool = False) -> Tuple[Dict[str, str], List[dict]]:
+def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[str, int, list[str]]],
+                    last_fetch: Union[str, int],
+                    first_fetch_time: Union[int, str], query: str | None, mirror_direction: str,
+                    mirror_tag: list[str], mirror_playbook_id: bool = False,
+                    fetch_incident_history: bool = False) -> \
+        tuple[dict[str, Union[list[dict[Any, Any]], str, Any]], list[dict[str, Any]]]:
     """This function retrieves new incidents every interval (default is 1 minute).
 
     :type client: ``Client``
@@ -247,7 +276,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
     :type max_results: ``int``
     :param max_results: Maximum numbers of incidents per fetch
 
-    :type last_run: ``Optional[Dict[str, str]]``
+    :type last_run: ``Dict[str, Union[str, int, List[str]]],``
     :param last_run:
         A dict with a key containing the latest incident created time we got
         from last fetch
@@ -270,20 +299,25 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
         When set to false, mirrored incidents will have a blank playbookId value,
          causing the receiving machine to run the default playbook of the incident type.
 
+    :type fetch_incident_history: `bool`
+    :param fetch_incident_history:
+        When set to True, all incidents fetched will be added to a context data list
+        which will be used in  get_remote_data_command
+
     :type mirror_tag: ``List[str]``
     :param mirror_tag:
         The tags that you will mirror out of the incident.
 
     :return:
         A tuple containing two elements:
-            next_run (``Dict[str, int]``): Contains the timestamp that will be
+            next_run (``Dict[str, str]``): Contains the timestamp that will be
                     used in ``last_run`` on the next fetch.
             incidents (``List[dict]``): List of incidents that will be created in XSOAR
 
-    :rtype: ``Tuple[Dict[str, int], List[dict]]``
+    :rtype: ``Tuple[Dict[str, str], List[dict]]``
     """
-
-    last_fetch = last_run.get('last_fetch')
+    demisto.debug(f'last run is: {last_run}')
+    last_fetched_incidents: list = last_run.get('last_fetched_incidents', [])  # type: ignore
     if not last_fetch:
         last_fetch = first_fetch_time  # type: ignore
     else:
@@ -296,21 +330,25 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
             pass
 
     latest_created_time = dateparser.parse(last_fetch)  # type: ignore[arg-type]
-    incidents_result: List[Dict[str, Any]] = []
+    incidents_result: list[dict[str, Any]] = []
     if query:
         query += f' and created:>="{last_fetch}"'
     else:
         query = f'created:>="{last_fetch}"'
 
-    demisto.debug(f'Fetching incidents since last fetch: {last_fetch}')
-    incidents = client.search_incidents(
-        query=query,
-        max_results=max_results,
-        start_time=last_fetch
-    )
+    demisto.debug(f'XSOAR Mirroring: Fetching incidents since last fetch: {last_fetch}')
+
+    incidents, last_fetched_incidents = get_and_dedup_incidents(client, last_fetched_incidents, query, max_results, last_fetch)
+    if fetch_incident_history:
+        integration_context = get_integration_context()
+        incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
+        if incident_mirror_reset:
+            demisto.debug(f'Adding incidents id to mirror reset set:{incident_mirror_reset}')
+            integration_context[MIRROR_RESET] = incident_mirror_reset
+            set_to_integration_context_with_retries(context=integration_context)
 
     for incident in incidents:
-        incident_result: Dict[str, Any] = dict()
+        incident_result: dict[str, Any] = {}
         incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
         incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
@@ -361,9 +399,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': (latest_created_time + timedelta(milliseconds=1))  # type: ignore[operator]
-                .strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
-
+    next_run = {'last_fetch': (latest_created_time)  # type: ignore[operator]
+                .strftime(XSOAR_DATE_FORMAT),  # type: ignore[union-attr,operator]
+                'last_fetched_incidents': last_fetched_incidents}
+    demisto.debug(f'XSOAR Mirroring: Setting next run to: {next_run}')
     return next_run, incidents_result
 
 
@@ -577,16 +616,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
         remote_args = GetRemoteDataArgs(args)
         demisto_debug(f'Getting update for remote [{remote_args.remote_incident_id}]')
 
-        categories = params.get('categories', None)
-        if categories:
-            categories = categories.split(',')
-        else:
-            categories = None
-        tags = params.get('tags', None)
-        if tags:
-            tags = tags.split(',')
-        else:
-            tags = None
+        categories = argToList(params.get('categories', None))
+        tags = argToList(params.get('tags', None))
 
         incident = client.get_incident(incident_id=remote_args.remote_incident_id)  # type: ignore
         # If incident was modified before we last updated, no need to return it
@@ -609,14 +640,27 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict[s
 
         demisto_debug(f'tags: {tags}')
         demisto_debug(f'tags: {categories}')
+        integration_context = get_integration_context()
+        XSOARMirror_mirror_reset: dict = json.loads(integration_context.get(MIRROR_RESET, '{}'))
+        is_incident_update_after_reset = False
+        if XSOARMirror_mirror_reset:
+            is_incident_update_after_reset = XSOARMirror_mirror_reset.get(remote_args.remote_incident_id, None)
+        from_date = 0 if is_incident_update_after_reset else remote_args.last_update * 1000
+        demisto.debug(f'Requesting update for incident id {remote_args.remote_incident_id} from date: {from_date}')
         entries = client.get_incident_entries(
             incident_id=remote_args.remote_incident_id,  # type: ignore
-            from_date=remote_args.last_update * 1000,
+            from_date=from_date,
             max_results=100,
             categories=categories,
             tags=tags,
             tags_and_operator=True
         )
+        if is_incident_update_after_reset:
+            del XSOARMirror_mirror_reset[remote_args.remote_incident_id]
+            integration_context[MIRROR_RESET] = XSOARMirror_mirror_reset
+            set_to_integration_context_with_retries(context=integration_context)
+            demisto.debug(f'Removed incident id: {remote_args.remote_incident_id} from XSOARMirror_mirror_reset\
+                context data list.')
 
         formatted_entries = []
         # file_attachments = []
@@ -756,11 +800,69 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
     return new_incident_id
 
 
-def main() -> None:
-    api_key = demisto.params().get('credentials_api_key', {}).get('password') or demisto.params().get('apikey')
-    if not api_key:
-        raise DemistoException('API Key must be provided.')
-    base_url = demisto.params().get('url')
+def get_and_dedup_incidents(client: Client, last_fetched_incidents: List[Any],
+                            query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict]]:
+    """ get incidents and dedup the incidents response.
+
+    Cases:
+    1.  Empty incidents list (no new incidents received from API response).
+        Return empty list of incidents and the unchanged the list of 'last_fetched_incidents'.
+
+    2.  The response includes incidents from the previous fetch cycle, with the same timestamp.
+        Fetch incidents until the number of incidents is equal to the requested max fetch_limit.
+        Add the list of fetched incident IDs to the current 'last_fetched_incidents' from last run,
+        return a list of new incidents, and updated list of 'last_fetched_incidents'.
+
+    3.  Most recent incident has a later timestamp than other incidents in the response.
+        Return a list of new incidents and a list of 'new_ids' containing only the IDs of
+        incidents with identical latest times for next run.
+
+    Args:
+        incidents (list[dict]): List of incidents from the current fetch response.
+        last_fetched_incidents (list[dict]): List of IDs of incidents from last fetch cycle.
+
+    Returns:
+        tuple[list[dict], list[str]: The list of dedup incidents and ID list of incidents of current fetch.
+    """
+    last_fatched_incident = dateparser.parse(str(last_fetch))
+
+    new_incidents: list = []
+    page = 0
+    while len(new_incidents) < max_results:
+        incidents = client.search_incidents(
+            query=query,
+            max_results=max_results,
+            start_time=last_fetch,
+            field="created",
+            page=page,
+        )
+        # Case 1: Empty response.
+        if len(incidents) == 0:
+            break
+        for incident in incidents:
+            if len(new_incidents) >= max_results:
+                break
+            incident_id = incident.get("id")
+            incident_creation_time = dateparser.parse(incident.get("created", last_fatched_incident))
+            if incident_id not in last_fetched_incidents:
+                # Case 3: The last fetched incident with the different timestamp then the previous incident.
+                if last_fatched_incident and incident_creation_time and last_fatched_incident < incident_creation_time:
+                    demisto.debug(f"XSOAR Mirroring: reset the last_fetched_incidents list with id {incident_id}")
+                    last_fetched_incidents = [incident_id]
+                # Case 2: The last fetched incident with the same timestamp as the previous incident.
+                else:
+                    demisto.debug(f"XSOAR Mirroring: attached id {incident_id} to the last_fetched_incidents list")
+                    last_fetched_incidents.append(incident_id)
+                new_incidents.append(incident)
+                last_fatched_incident = incident_creation_time
+        page += 1
+    return new_incidents, last_fetched_incidents
+
+
+def main() -> None:  # pragma: no cover
+    params = demisto.params()
+
+    api_key_id, api_key, base_url = validate_and_prepare_basic_params(params)
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
@@ -769,7 +871,7 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \
-        if demisto.params().get('mirror_tag') else set([])
+        if demisto.params().get('mirror_tag') else set()
 
     query = demisto.params().get('query', '') or ''
     disable_from_same_integration = demisto.params().get('disable_from_same_integration')
@@ -785,7 +887,9 @@ def main() -> None:
 
     try:
         headers = {
-            'Authorization': api_key
+            'Authorization': api_key,
+            'x-xdr-auth-id': api_key_id,
+            'Content-Type': 'application/json',
         }
         client = Client(
             base_url=base_url,
@@ -800,11 +904,13 @@ def main() -> None:
                     client=client,
                     max_results=max_results,
                     last_run=demisto.getLastRun(),
+                    last_fetch=demisto.getLastRun().get("last_fetch"),
                     first_fetch_time=first_fetch_time,
                     query=query,
                     mirror_direction=demisto.params().get('mirror_direction'),
                     mirror_tag=list(mirror_tags),
                     mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
+                    fetch_incident_history=demisto.params().get('fetch_incident_history', False),
                 )
 
             return_results(test_module(client, first_fetch_time))
@@ -814,11 +920,13 @@ def main() -> None:
                 client=client,
                 max_results=max_results,
                 last_run=demisto.getLastRun(),
+                last_fetch=demisto.getLastRun().get("last_fetch"),
                 first_fetch_time=first_fetch_time,
                 query=query,
                 mirror_direction=demisto.params().get('mirror_direction'),
                 mirror_tag=list(mirror_tags),
                 mirror_playbook_id=demisto.params().get('mirror_playbook_id', True),
+                fetch_incident_history=demisto.params().get('fetch_incident_history', False),
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)

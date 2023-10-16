@@ -10,12 +10,12 @@ configuration:
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Username
   displaypassword: Password
   name: credentials
@@ -101,8 +101,7 @@ script:
     - contextPath: Keyfactor.CertInfo.Lists.formated_chain
       description: Formatted Certificate's Trust Chain
       type: string
-  dockerimage: demisto/akamai:1.0.0.34769
-  runonce: false
+  dockerimage: demisto/auth-utils:1.0.0.76157
   script: ''
   subtype: python3
   type: python

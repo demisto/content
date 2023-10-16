@@ -1,0 +1,13 @@
+[
+    {
+        "_id": "test",
+        "id": 1,
+        "name": "test",
+        "ipv4Address": "test",
+        "ipv6Address": "::/0",
+        "interface": "port2",
+        "useInterfaceIP": false,
+        "enable": true,
+        "can_delete": true
+    }
+]

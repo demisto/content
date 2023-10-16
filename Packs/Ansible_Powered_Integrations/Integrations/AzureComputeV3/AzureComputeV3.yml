@@ -23,18 +23,13 @@ configuration:
   name: tenant
   required: true
   type: 0
-- additionalinfo: For cloud environments other than the US public cloud, the environment
-    name (as defined by Azure Python SDK, eg, `AzureChinaCloud`, `AzureUSGovernment`),
-    or a metadata discovery endpoint URL (required for Azure Stack).
+- additionalinfo: For cloud environments other than the US public cloud, the environment name (as defined by Azure Python SDK, eg, `AzureChinaCloud`, `AzureUSGovernment`), or a metadata discovery endpoint URL (required for Azure Stack).
   defaultvalue: AzureCloud
   display: Azure Cloud Environment
   name: cloud_environment
   required: true
   type: 0
-- additionalinfo: Controls the certificate validation behavior for Azure endpoints.
-    By default, all modules will validate the server certificate, but when an HTTPS
-    proxy is in use, or against Azure Stack, it may be necessary to disable this behavior
-    by passing `ignore`.
+- additionalinfo: Controls the certificate validation behavior for Azure endpoints. By default, all modules will validate the server certificate, but when an HTTPS proxy is in use, or against Azure Stack, it may be necessary to disable this behavior by passing `ignore`.
   defaultvalue: validate
   display: Certificate Validation Mode
   name: cert_validation_mode
@@ -43,9 +38,7 @@ configuration:
   - validate
   required: true
   type: 15
-- additionalinfo: Selects an API profile to use when communicating with Azure services.
-    Default value of `latest` is appropriate for public clouds; future values will
-    allow use with Azure Stack.
+- additionalinfo: Selects an API profile to use when communicating with Azure services. Default value of `latest` is appropriate for public clouds; future values will allow use with Azure Stack.
   defaultvalue: latest
   display: API Profile
   name: api_profile
@@ -76,8 +69,7 @@ script:
       name: notifications
     - auto: PREDEFINED
       defaultValue: present
-      description: Assert the state of the virtual network. Use `present` to create
-        or update and `absent` to delete.
+      description: Assert the state of the virtual network. Use `present` to create or update and `absent` to delete.
       name: state
       predefined:
       - present
@@ -108,16 +100,14 @@ script:
       required: true
     - description: The name of the Auto Scale Setting.
       name: name
-    - description: Limit results by providing a list of tags. Format tags as 'key'
-        or 'key:value'.
+    - description: Limit results by providing a list of tags. Format tags as 'key' or 'key:value'.
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get Azure Auto Scale Setting facts
     name: azure-rm-autoscale-info
   - arguments:
-    - description: Name of a resource group where the availability set exists or will
-        be created.
+    - description: Name of a resource group where the availability set exists or will be created.
       name: resource_group
       required: true
     - description: Name of the availability set.
@@ -135,8 +125,7 @@ script:
     - description: Valid Azure location. Defaults to location of the resource group.
       name: location
     - defaultValue: "5"
-      description: Update domains indicate groups of virtual machines and underlying
-        physical hardware that can be rebooted at the same time.
+      description: Update domains indicate groups of virtual machines and underlying physical hardware that can be rebooted at the same time.
       name: platform_update_domain_count
     - defaultValue: "3"
       description: |-
@@ -257,8 +246,7 @@ script:
       description: Whether or not to block until the deployment has completed.
       name: wait_for_deployment_completion
     - defaultValue: "10"
-      description: Time (in seconds) to wait between polls when waiting for deployment
-        completion.
+      description: Time (in seconds) to wait between polls when waiting for deployment completion.
       name: wait_for_deployment_polling_period
     - auto: PREDEFINED
       defaultValue: present
@@ -354,8 +342,7 @@ script:
       name: app_settings
     - auto: PREDEFINED
       defaultValue: present
-      description: Assert the state of the Function App. Use `present` to create or
-        update a Function App and `absent` to delete.
+      description: Assert the state of the Function App. Use `present` to create or update a Function App and `absent` to delete.
       name: state
       predefined:
       - absent
@@ -380,8 +367,7 @@ script:
       name: name
     - description: Limit results to a resource group. Required when filtering by name.
       name: resource_group
-    - description: Limit results by providing a list of tags. Format tags as 'key'
-        or 'key:value'.
+    - description: Limit results by providing a list of tags. Format tags as 'key' or 'key:value'.
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
@@ -391,14 +377,12 @@ script:
     - description: The name of the resource group.
       name: resource_group
       required: true
-    - description: The name of the Shared Image Gallery. Valid names consist of less
-        than 80 alphanumeric characters, underscores and periods.
+    - description: The name of the Shared Image Gallery. Valid names consist of less than 80 alphanumeric characters, underscores and periods.
       name: name
       required: true
     - description: Resource location
       name: location
-    - description: The description of this Shared Image Gallery resource. This property
-        is updatable.
+    - description: The description of this Shared Image Gallery resource. This property is updatable.
       name: description
     - auto: PREDEFINED
       defaultValue: present
@@ -455,19 +439,15 @@ script:
     - description: The name of the resource group.
       name: resource_group
       required: true
-    - description: The name of the Shared Image Gallery in which the Image Definition
-        is to be created.
+    - description: The name of the Shared Image Gallery in which the Image Definition is to be created.
       name: gallery_name
       required: true
-    - description: The name of the gallery Image Definition to be created or updated.
-        The allowed characters are alphabets and numbers with dots, dashes, and periods
-        allowed in the middle. The maximum length is 80 characters.
+    - description: The name of the gallery Image Definition to be created or updated. The allowed characters are alphabets and numbers with dots, dashes, and periods allowed in the middle. The maximum length is 80 characters.
       name: name
       required: true
     - description: Resource location
       name: location
-    - description: The description of this gallery Image Definition resource. This
-        property is updatable.
+    - description: The description of this gallery Image Definition resource. This property is updatable.
       name: description
     - description: The Eula agreement for the gallery Image Definition.
       name: eula
@@ -476,8 +456,7 @@ script:
     - description: The release note uri.
       name: release_note_uri
     - auto: PREDEFINED
-      description: This property allows you to specify the type of the OS that is
-        included in the disk when creating a VM from a managed image.
+      description: This property allows you to specify the type of the OS that is included in the disk when creating a VM from a managed image.
       name: os_type
       predefined:
       - windows
@@ -490,9 +469,7 @@ script:
       - generalized
       - specialized
       required: true
-    - description: The end of life date of the gallery Image Definition. This property
-        can be used for decommissioning purposes. This property is updatable. Format
-        should be according to ISO-8601, for instance "2019-06-26".
+    - description: The end of life date of the gallery Image Definition. This property can be used for decommissioning purposes. This property is updatable. Format should be according to ISO-8601, for instance "2019-06-26".
       name: end_of_life_date
     - description: Image identifier.
       isArray: true
@@ -535,8 +512,7 @@ script:
     - description: The name of the resource group.
       name: resource_group
       required: true
-    - description: The name of the shared image gallery from which the image definitions
-        are to be retrieved.
+    - description: The name of the shared image gallery from which the image definitions are to be retrieved.
       name: gallery_name
       required: true
     - description: Resource name
@@ -560,25 +536,20 @@ script:
     - contextPath: AzureComputeV3.images.os_state
       description: '["The allowed values for OS State are ''Generalized''."]'
     - contextPath: AzureComputeV3.images.os_type
-      description: This property allows you to specify the type of the OS that is
-        included in the disk when creating a VM from a managed image.
+      description: This property allows you to specify the type of the OS that is included in the disk when creating a VM from a managed image.
     - contextPath: AzureComputeV3.images.identifier
       description: '[''This is the gallery image definition identifier.'']'
   - arguments:
     - description: The name of the resource group.
       name: resource_group
       required: true
-    - description: The name of the Shared Image Gallery in which the Image Definition
-        resides.
+    - description: The name of the Shared Image Gallery in which the Image Definition resides.
       name: gallery_name
       required: true
-    - description: The name of the gallery Image Definition in which the Image Version
-        is to be created.
+    - description: The name of the gallery Image Definition in which the Image Version is to be created.
       name: gallery_image_name
       required: true
-    - description: 'The name of the gallery Image Version to be created. Needs to
-        follow semantic version name pattern: The allowed characters are digit and
-        period. Digits must be within the range of a 32-bit integer. Format: <MajorVersion>.<MinorVersion>.<Patch>'
+    - description: 'The name of the gallery Image Version to be created. Needs to follow semantic version name pattern: The allowed characters are digit and period. Digits must be within the range of a 32-bit integer. Format: <MajorVersion>.<MinorVersion>.<Patch>'
       name: name
       required: true
     - description: Resource location
@@ -615,12 +586,10 @@ script:
     - description: The name of the resource group.
       name: resource_group
       required: true
-    - description: The name of the Shared Image Gallery in which the Image Definition
-        resides.
+    - description: The name of the Shared Image Gallery in which the Image Definition resides.
       name: gallery_name
       required: true
-    - description: The name of the gallery Image Definition in which the Image Version
-        resides.
+    - description: The name of the gallery Image Definition in which the Image Version resides.
       name: gallery_image_name
       required: true
     - description: Resource name
@@ -661,8 +630,7 @@ script:
         If you specify the `type` in a dict, acceptable value contains `disks`, `virtual_machines` and `snapshots`.
       name: source
       required: true
-    - description: List of data disk sources, including unmanaged blob URI, managed
-        disk id or name, or snapshot id or name.
+    - description: List of data disk sources, including unmanaged blob URI, managed disk id or name, or snapshot id or name.
       isArray: true
       name: data_disk_sources
     - description: Location of the image. Derived from `resource_group` if not specified.
@@ -675,8 +643,7 @@ script:
       - Linux
     - auto: PREDEFINED
       defaultValue: present
-      description: Assert the state of the image. Use `present` to create or update
-        a image and `absent` to delete an image.
+      description: Assert the state of the image. Use `present` to create or update a image and `absent` to delete an image.
       name: state
       predefined:
       - absent
@@ -727,8 +694,7 @@ script:
       description: '[''Specifies caching requirements for the image.'']'
       type: string
     - contextPath: AzureComputeV3.images.os_state
-      description: '[''Specifies image operating system state. Possible values are
-        C(Generalized) or C(Specialized).'']'
+      description: '[''Specifies image operating system state. Possible values are C(Generalized) or C(Specialized).'']'
       type: string
     - contextPath: AzureComputeV3.images.os_storage_account_type
       description: '[''Specifies the storage account type for the managed disk.'']'
@@ -747,8 +713,7 @@ script:
     - contextPath: AzureComputeV3.images.data_disks
       description: '[''List of data disks associated with the image.'']'
   - arguments:
-    - description: Name of a resource group where the load balancer exists or will
-        be created.
+    - description: Name of a resource group where the load balancer exists or will be created.
       name: resource_group
       required: true
     - description: Name of the load balancer.
@@ -756,8 +721,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: present
-      description: Assert the state of the load balancer. Use `present` to create/update
-        a load balancer, or `absent` to delete one.
+      description: Assert the state of the load balancer. Use `present` to create/update a load balancer, or `absent` to delete one.
       name: state
       predefined:
       - absent
@@ -784,8 +748,7 @@ script:
         NICs that are associated with individual virtual machines cannot reference an inbound NAT pool.
         They have to reference individual inbound NAT rules.
       name: inbound_nat_pools
-    - description: Object collection representing the load balancing rules Gets the
-        provisioning.
+    - description: Object collection representing the load balancing rules Gets the provisioning.
       name: load_balancing_rules
     - description: |-
         Collection of inbound NAT Rules used by a load balancer.
@@ -891,16 +854,14 @@ script:
       name: name
     - description: The resource group to search for the desired load balancer.
       name: resource_group
-    - description: Limit results by providing a list of tags. Format tags as 'key'
-        or 'key:value'.
+    - description: Limit results by providing a list of tags. Format tags as 'key' or 'key:value'.
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
     description: Get load balancer facts
     name: azure-rm-loadbalancer-info
   - arguments:
-    - description: Name of a resource group where the managed disk exists or will
-        be created.
+    - description: Name of a resource group where the managed disk exists or will be created.
       name: resource_group
       required: true
     - description: Name of the managed disk.
@@ -908,8 +869,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: present
-      description: Assert the state of the managed disk. Use `present` to create or
-        update a managed disk and `absent` to delete a managed disk.
+      description: Assert the state of the managed disk. Use `present` to create or update a managed disk and `absent` to delete a managed disk.
       name: state
       predefined:
       - absent
@@ -932,15 +892,13 @@ script:
       - Premium_LRS
       - UltraSSD_LRS
     - auto: PREDEFINED
-      description: '`import` from a VHD file in `source_uri` and `copy` from previous
-        managed disk `source_uri`.'
+      description: '`import` from a VHD file in `source_uri` and `copy` from previous managed disk `source_uri`.'
       name: create_option
       predefined:
       - empty
       - import
       - copy
-    - description: URI to a valid VHD file to be used or the resource ID of the managed
-        disk to copy.
+    - description: URI to a valid VHD file to be used or the resource ID of the managed disk to copy.
       name: source_uri
     - auto: PREDEFINED
       description: |-
@@ -1025,15 +983,13 @@ script:
       description: '[''Valid Azure location.'']'
       type: string
     - contextPath: AzureComputeV3.azure_managed_disk.storage_account_type
-      description: '[''Type of storage for the managed disk.'', ''See U(https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types)
-        for more information about this type.'']'
+      description: '[''Type of storage for the managed disk.'', ''See U(https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disks-types) for more information about this type.'']'
       type: string
     - contextPath: AzureComputeV3.azure_managed_disk.create_option
       description: '[''Create option of the disk.'']'
       type: string
     - contextPath: AzureComputeV3.azure_managed_disk.source_uri
-      description: '[''URI to a valid VHD file to be used or the resource ID of the
-        managed disk to copy.'']'
+      description: '[''URI to a valid VHD file to be used or the resource ID of the managed disk to copy.'']'
       type: string
     - contextPath: AzureComputeV3.azure_managed_disk.os_type
       description: '[''Type of Operating System.'']'
@@ -1042,8 +998,7 @@ script:
       description: '[''Size in GB of the managed disk to be created.'']'
       type: string
     - contextPath: AzureComputeV3.azure_managed_disk.managed_by
-      description: '[''Name of an existing virtual machine with which the disk is
-        or will be associated, this VM should be in the same resource group.'']'
+      description: '[''Name of an existing virtual machine with which the disk is or will be associated, this VM should be in the same resource group.'']'
       type: string
     - contextPath: AzureComputeV3.azure_managed_disk.tags
       description: '[''Tags to assign to the managed disk.'']'
@@ -1085,26 +1040,21 @@ script:
       - DELETE
       - MERGE
     - defaultValue: '[200, 201, 202]'
-      description: A valid, numeric, HTTP status code that signifies success of the
-        request. Can also be comma separated list of status codes.
+      description: A valid, numeric, HTTP status code that signifies success of the request. Can also be comma separated list of status codes.
       isArray: true
       name: status_code
     - defaultValue: "False"
-      description: If enabled, idempotency check will be done by using `method=GET`
-        first and then comparing with `body`.
+      description: If enabled, idempotency check will be done by using `method=GET` first and then comparing with `body`.
       name: idempotency
     - defaultValue: "0"
-      description: If enabled, idempotency check will be done by using `method=GET`
-        first and then comparing with `body`.
+      description: If enabled, idempotency check will be done by using `method=GET` first and then comparing with `body`.
       name: polling_timeout
     - defaultValue: "60"
-      description: If enabled, idempotency check will be done by using `method=GET`
-        first and then comparing with `body`.
+      description: If enabled, idempotency check will be done by using `method=GET` first and then comparing with `body`.
       name: polling_interval
     - auto: PREDEFINED
       defaultValue: present
-      description: Assert the state of the resource. Use `present` to create or update
-        resource or `absent` to delete resource.
+      description: Assert the state of the resource. Use `present` to create or update resource or `absent` to delete resource.
       name: state
       predefined:
       - absent
@@ -1121,8 +1071,7 @@ script:
       description: '[''The kind of storage.'']'
       type: string
     - contextPath: AzureComputeV3.response.location
-      description: '[''The resource location, defaults to location of the resource
-        group.'']'
+      description: '[''The resource location, defaults to location of the resource group.'']'
       type: string
     - contextPath: AzureComputeV3.response.name
       description: The storage account name.
@@ -1227,8 +1176,7 @@ script:
   - arguments:
     - description: Limit results to a specific resource group.
       name: name
-    - description: Limit results by providing a list of tags. Format tags as 'key'
-        or 'key:value'.
+    - description: Limit results by providing a list of tags. Format tags as 'key' or 'key:value'.
       name: tags
     - description: |-
         List all resources under the resource group.
@@ -1266,8 +1214,7 @@ script:
       predefined:
       - Linux
       - Windows
-    - description: Disk source information. CreationData information cannot be changed
-        after the disk has been created.
+    - description: Disk source information. CreationData information cannot be changed after the disk has been created.
       isArray: true
       name: creation_data
     - auto: PREDEFINED
@@ -1334,8 +1281,7 @@ script:
       name: generalized
     - description: Set to `true` with `state=present` to restart a running VM.
       name: restarted
-    - description: Valid Azure location for the VM. Defaults to location of the resource
-        group.
+    - description: Valid Azure location for the VM. Defaults to location of the resource group.
       name: location
     - description: |-
         Name assigned internally to the host. On a Linux VM this is the name returned by the `hostname` command.
@@ -1372,8 +1318,7 @@ script:
         Set `version=latest` to get the most recent version of a given image.
       name: image
       required: true
-    - description: Name or ID of an existing availability set to add the VM to. The
-        `availability_set` should be in the same resource group as VM.
+    - description: Name or ID of an existing availability set to add the VM to. The `availability_set` should be in the same resource group as VM.
       name: availability_set
     - description: |-
         Name of a storage account that supports creation of VHD blobs.
@@ -1446,8 +1391,7 @@ script:
         To create a new network interface, at least one Virtual Network with one Subnet must exist.
       isArray: true
       name: network_interface_names
-    - description: The resource group to use when creating a VM with another resource
-        group's virtual network.
+    - description: The resource group to use when creating a VM with another resource group's virtual network.
       name: virtual_network_resource_group
     - description: |-
         The virtual network to use when creating a VM.
@@ -1516,13 +1460,11 @@ script:
     description: Manage Azure virtual machines
     name: azure-rm-virtualmachine
   - arguments:
-    - description: Name of the resource group containing the virtual machines (required
-        when filtering by vm name).
+    - description: Name of the resource group containing the virtual machines (required when filtering by vm name).
       name: resource_group
     - description: Name of the virtual machine.
       name: name
-    - description: Limit results by providing a list of tags. Format tags as 'key'
-        or 'key:value'.
+    - description: Limit results by providing a list of tags. Format tags as 'key' or 'key:value'.
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
@@ -1570,8 +1512,7 @@ script:
       description: '[''Power state of the virtual machine.'']'
       type: string
   - arguments:
-    - description: Name of a resource group where the vm extension exists or will
-        be created.
+    - description: Name of a resource group where the vm extension exists or will be created.
       name: resource_group
       required: true
     - description: Name of the vm extension.
@@ -1579,16 +1520,14 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: present
-      description: State of the vm extension. Use `present` to create or update a
-        vm extension and `absent` to delete a vm extension.
+      description: State of the vm extension. Use `present` to create or update a vm extension and `absent` to delete a vm extension.
       name: state
       predefined:
       - absent
       - present
     - description: Valid Azure location. Defaults to location of the resource group.
       name: location
-    - description: The name of the virtual machine where the extension should be create
-        or updated.
+    - description: The name of the virtual machine where the extension should be create or updated.
       name: virtual_machine_name
     - description: The name of the extension handler publisher.
       name: publisher
@@ -1600,8 +1539,7 @@ script:
       name: settings
     - description: Json formatted protected settings for the extension.
       name: protected_settings
-    - description: Whether the extension handler should be automatically upgraded
-        across minor versions.
+    - description: Whether the extension handler should be automatically upgraded across minor versions.
       name: auto_upgrade_minor_version
     - description: Your Azure subscription Id.
       name: subscription_id
@@ -1616,8 +1554,7 @@ script:
       required: true
     - description: The name of the virtual machine extension.
       name: name
-    - description: Limit results by providing a list of tags. Format tags as 'key'
-        or 'key:value'.
+    - description: Limit results by providing a list of tags. Format tags as 'key' or 'key:value'.
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
@@ -1661,14 +1598,11 @@ script:
         Supplying only a location value will yield a list of available publishers for the location.
       name: location
       required: true
-    - description: Name of an image publisher. List image offerings associated with
-        a particular publisher.
+    - description: Name of an image publisher. List image offerings associated with a particular publisher.
       name: publisher
-    - description: Name of an image offering. Combine with SKU to see a list of available
-        image versions.
+    - description: Name of an image offering. Combine with SKU to see a list of available image versions.
       name: offer
-    - description: Image offering SKU. Combine with offer to see a list of available
-        versions.
+    - description: Image offering SKU. Combine with offer to see a list of available versions.
       name: sku
     - description: Specific version number of an image.
       name: version
@@ -1677,8 +1611,7 @@ script:
     description: Get virtual machine image facts
     name: azure-rm-virtualmachineimage-info
   - arguments:
-    - description: Name of the resource group containing the virtual machine scale
-        set.
+    - description: Name of the resource group containing the virtual machine scale set.
       name: resource_group
       required: true
     - description: Name of the virtual machine.
@@ -1719,16 +1652,14 @@ script:
       predefined:
       - Manual
       - Automatic
-    - description: Admin username used to access the host after it is created. Required
-        when creating a VM.
+    - description: Admin username used to access the host after it is created. Required when creating a VM.
       name: admin_username
     - description: |-
         Password for the admin username.
         Not required if the os_type is Linux and SSH password authentication is disabled by setting `ssh_password_enabled=false`.
       name: admin_password
     - defaultValue: "True"
-      description: When the os_type is Linux, setting `ssh_password_enabled=false`
-        will disable SSH password authentication and require use of SSH keys.
+      description: When the os_type is Linux, setting `ssh_password_enabled=false` will disable SSH password authentication and require use of SSH keys.
       name: ssh_password_enabled
     - description: |-
         For `os_type=Linux` provide a list of SSH keys.
@@ -1784,8 +1715,7 @@ script:
         It can be `all` or a list with any of the following ['network_interfaces', 'virtual_storage', 'public_ips'].
         Any other input will be ignored.
       name: remove_on_absent
-    - description: Indicates whether user wants to allow accelerated networking for
-        virtual machines in scaleset being created.
+    - description: Indicates whether user wants to allow accelerated networking for virtual machines in scaleset being created.
       name: enable_accelerated_networking
     - description: |-
         Existing security group with which to associate the subnet.
@@ -1797,8 +1727,7 @@ script:
       description: Specifies whether the Virtual Machine Scale Set should be overprovisioned.
       name: overprovision
     - defaultValue: "True"
-      description: When true this limits the scale set to a single placement group,
-        of max size 100 virtual machines.
+      description: When true this limits the scale set to a single placement group, of max size 100 virtual machines.
       name: single_placement_group
     - description: A list of Availability Zones for your virtual machine scale set.
       isArray: true
@@ -1826,8 +1755,7 @@ script:
   - arguments:
     - description: Limit results to a specific virtual machine scale set.
       name: name
-    - description: The resource group to search for the desired virtual machine scale
-        set.
+    - description: The resource group to search for the desired virtual machine scale set.
       name: resource_group
     - description: List of tags to be matched.
       name: tags
@@ -1904,15 +1832,12 @@ script:
       description: '[''Virtual machine size.'']'
       type: string
     - contextPath: AzureComputeV3.vmss.tags
-      description: '[''Tags assigned to the resource. Dictionary of string:string
-        pairs.'']'
+      description: '[''Tags assigned to the resource. Dictionary of string:string pairs.'']'
   - arguments:
-    - description: Name of a resource group where the VMSS extension exists or will
-        be created.
+    - description: Name of a resource group where the VMSS extension exists or will be created.
       name: resource_group
       required: true
-    - description: The name of the virtual machine where the extension should be create
-        or updated.
+    - description: The name of the virtual machine where the extension should be create or updated.
       name: vmss_name
       required: true
     - description: Name of the VMSS extension.
@@ -1935,8 +1860,7 @@ script:
         Settings depend on extension type.
         Refer to `https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview` for more information.
       name: protected_settings
-    - description: Whether the extension handler should be automatically upgraded
-        across minor versions.
+    - description: Whether the extension handler should be automatically upgraded across minor versions.
       name: auto_upgrade_minor_version
     - auto: PREDEFINED
       defaultValue: present
@@ -2013,8 +1937,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: present
-      description: State of the VMSS instance. Use `present` to update an instance
-        and `absent` to delete an instance.
+      description: State of the VMSS instance. Use `present` to update an instance and `absent` to delete an instance.
       name: state
       predefined:
       - absent
@@ -2036,8 +1959,7 @@ script:
       required: true
     - description: The instance ID of the virtual machine.
       name: instance_id
-    - description: Limit results by providing a list of tags. Format tags as 'key'
-        or 'key:value'.
+    - description: Limit results by providing a list of tags. Format tags as 'key' or 'key:value'.
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
@@ -2071,12 +1993,10 @@ script:
     - description: Name of the resource group to which the resource belongs.
       name: resource_group
       required: true
-    - description: Unique name of the app to create or update. To create or update
-        a deployment slot, use the {slot} parameter.
+    - description: Unique name of the app to create or update. To create or update a deployment slot, use the {slot} parameter.
       name: name
       required: true
-    - description: Resource location. If not set, location from the resource group
-        will be used as default.
+    - description: Resource location. If not set, location from the resource group will be used as default.
       name: location
     - description: |-
         App service plan. Required for creation.
@@ -2106,24 +2026,19 @@ script:
         Used only for Linux web apps.
       name: startup_file
     - defaultValue: "True"
-      description: Whether or not to send session affinity cookies, which route client
-        requests in the same session to the same instance.
+      description: Whether or not to send session affinity cookies, which route client requests in the same session to the same instance.
       name: client_affinity_enabled
     - description: Configures web site to accept only https requests.
       name: https_only
-    - description: Whether or not the web app hostname is registered with DNS on creation.
-        Set to `false` to register.
+    - description: Whether or not the web app hostname is registered with DNS on creation. Set to `false` to register.
       name: dns_registration
-    - description: Whether or not to skip verification of custom (non *.azurewebsites.net)
-        domains associated with web app. Set to `true` to skip.
+    - description: Whether or not to skip verification of custom (non *.azurewebsites.net) domains associated with web app. Set to `true` to skip.
       name: skip_custom_domain_verification
     - description: Time to live in seconds for web app default domain name.
       name: ttl_in_seconds
-    - description: Configure web app application settings. Suboptions are in key value
-        pair format.
+    - description: Configure web app application settings. Suboptions are in key value pair format.
       name: app_settings
-    - description: Purge any existing application settings. Replace web app application
-        settings with app_settings.
+    - description: Purge any existing application settings. Replace web app application settings with app_settings.
       name: purge_app_settings
     - auto: PREDEFINED
       defaultValue: started
@@ -2165,8 +2080,7 @@ script:
     - defaultValue: "False"
       description: Indicate whether to return publishing profile of the web app.
       name: return_publish_profile
-    - description: Limit results by providing a list of tags. Format tags as 'key'
-        or 'key:value'.
+    - description: Limit results by providing a list of tags. Format tags as 'key' or 'key:value'.
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
@@ -2189,11 +2103,9 @@ script:
       description: '[''ID of app service plan used by the web app.'']'
       type: string
     - contextPath: AzureComputeV3.webapps.app_settings
-      description: '[''App settings of the application. Only returned when web app
-        has app settings.'']'
+      description: '[''App settings of the application. Only returned when web app has app settings.'']'
     - contextPath: AzureComputeV3.webapps.frameworks
-      description: '[''Frameworks of the application. Only returned when web app has
-        frameworks.'']'
+      description: '[''Frameworks of the application. Only returned when web app has frameworks.'']'
     - contextPath: AzureComputeV3.webapps.availability_state
       description: '[''Availability of this web app.'']'
       type: string
@@ -2225,8 +2137,7 @@ script:
       description: '[''Publishing profile password.'']'
       type: string
     - contextPath: AzureComputeV3.webapps.tags
-      description: '[''Tags assigned to the resource. Dictionary of string:string
-        pairs.'']'
+      description: '[''Tags assigned to the resource. Dictionary of string:string pairs.'']'
   - arguments:
     - description: Name of the resource group to which the resource belongs.
       name: resource_group
@@ -2237,11 +2148,9 @@ script:
     - description: Web app name which this deployment slot belongs to.
       name: webapp_name
       required: true
-    - description: Resource location. If not set, location from the resource group
-        will be used as default.
+    - description: Resource location. If not set, location from the resource group will be used as default.
       name: location
-    - description: Source slot to clone configurations from when creating slot. Use
-        webapp's name to refer to the production slot.
+    - description: Source slot to clone configurations from when creating slot. Use webapp's name to refer to the production slot.
       name: configuration_source
     - description: |-
         Used to configure target slot name to auto swap, or disable auto swap.
@@ -2260,11 +2169,9 @@ script:
         The slot startup file.
         This only applies for Linux web app slot.
       name: startup_file
-    - description: Configure web app slot application settings. Suboptions are in
-        key value pair format.
+    - description: Configure web app slot application settings. Suboptions are in key value pair format.
       name: app_settings
-    - description: Purge any existing application settings. Replace slot application
-        settings with app_settings.
+    - description: Purge any existing application settings. Replace slot application settings with app_settings.
       name: purge_app_settings
     - description: Deployment source for git.
       name: deployment_source
@@ -2301,7 +2208,6 @@ script:
     description: Manage Azure Web App slot
     name: azure-rm-webappslot
   dockerimage: demisto/ansible-runner:1.0.0.21184
-  runonce: false
   script: ''
   subtype: python3
   type: python

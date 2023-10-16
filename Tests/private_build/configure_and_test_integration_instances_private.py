@@ -1,11 +1,9 @@
-from __future__ import print_function
 
 import glob
 import sys
 import zipfile
 from time import sleep
 from ruamel import yaml
-from typing import List
 import logging
 
 from Tests.scripts.utils.log_util import install_logging
@@ -17,17 +15,18 @@ from Tests.Marketplace.search_and_install_packs import \
     search_and_install_packs_and_their_dependencies_private, upload_zipped_packs
 
 
-def install_private_testing_pack(build: Build, test_pack_zip_path: str):
+def install_private_testing_pack(build: Build, test_pack_zip_path: str) -> bool:
     """
     Creates and installs the test pack used in the private build. This pack contains the test
     playbooks and test scripts that will be used for the tests.
 
     :param build: Build object containing the build settings.
     :param test_pack_zip_path: Path to test_pack zip.
-    :return: No object is returned. concurrently_run_function_on_servers will wait for the process to finish.
+    :return: Boolean indicating if the installation was successful.
     """
-    build.concurrently_run_function_on_servers(function=upload_zipped_packs,
-                                               pack_path=test_pack_zip_path)
+    success, results = build.concurrently_run_function_on_servers(function=upload_zipped_packs,
+                                                                  pack_path=test_pack_zip_path)
+    return success and all(results)
 
 
 def install_packs_private(build: Build, pack_ids: list = None) -> bool:
@@ -53,7 +52,7 @@ def install_packs_private(build: Build, pack_ids: list = None) -> bool:
     return installed_content_packs_successfully
 
 
-def find_needed_test_playbook_paths(test_playbooks: List[dict], tests_to_run: List,
+def find_needed_test_playbook_paths(test_playbooks: list[dict], tests_to_run: list,
                                     path_to_content: str) -> set:
     """
     Uses the test filter file to determine which test playbooks are needed to run, then will use the
@@ -97,8 +96,8 @@ def write_test_pack_zip(tests_file_paths: set, path_to_content: str,
             if not test_path.endswith('.yml'):
                 continue
             test = test.name
-            with open(test_path, 'r') as test_file:
-                if not (test.startswith('playbook-') or test.startswith('script-')):
+            with open(test_path) as test_file:
+                if not (test.startswith(('playbook-', 'script-'))):
                     test_type = find_type(_dict=yaml.safe_load(test_file), file_type='yml').value
                     test_file.seek(0)
                     test_target = f'test_pack/TestPlaybooks/{test_type}-{test}'
@@ -144,10 +143,10 @@ def main():
                                                    tests_file_paths=tests_to_add_to_test_pack,
                                                    path_to_content=build.content_root)
     # Create and install private test pack
-    install_private_testing_pack(build, private_content_test_zip)
+    success = install_private_testing_pack(build, private_content_test_zip)
 
-    success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                  new_integrations, build)
+    success &= report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
+                                   new_integrations, build)
     sleep(30)
     if not success or not installed_content_packs_successfully:
         sys.exit(2)

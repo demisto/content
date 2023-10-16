@@ -1,6 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import urllib3
@@ -196,8 +196,8 @@ def make_markdown_matrix(sheets: list) -> str:
             markdown += "\n"
 
             markdown += '|'
-            for i in range(max_row_len):
-                markdown += str("-------------- | ")
+            for _ in range(max_row_len):
+                markdown += "-------------- | "
             markdown += "\n"
 
             row_data = sheet.get('rowData')
@@ -205,7 +205,7 @@ def make_markdown_matrix(sheets: list) -> str:
                 markdown += '|'
                 values = row.get('values')
                 for value in values:
-                    markdown += value + ' |'
+                    markdown += (value or "") + ' |'
                 markdown += '\n'
     return markdown
 

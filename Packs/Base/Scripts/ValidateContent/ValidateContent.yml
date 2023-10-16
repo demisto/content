@@ -9,24 +9,12 @@ tags: []
 comment: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs. This automation script is used as part of the content validation that runs as part of the contribution flow.
 enabled: true
 args:
-- default: false
-  description: Name of the file to validate.
-  isArray: false
+- description: Name of the file to validate.
   name: filename
-  required: false
-  secret: false
-- default: false
-  description: Base64 encoded contents of the file to validate.
-  isArray: false
+- description: Base64 encoded contents of the file to validate.
   name: data
-  required: false
-  secret: false
-- default: false
-  description: ID of War Room file entry for the ZIP content pack or the integration/automation YAML.
-  isArray: false
+- description: ID of War Room file entry for the ZIP content pack or the integration/automation YAML.
   name: entry_id
-  required: false
-  secret: false
 - name: use_system_proxy
   auto: PREDEFINED
   predefined:
@@ -53,7 +41,6 @@ outputs:
   type: String
 scripttarget: 0
 timeout: 600ns
-runonce: false
 runas: DBotWeakRole
 fromversion: 5.5.0
 dockerimage: demisto/xsoar-tools:1.0.0.58259

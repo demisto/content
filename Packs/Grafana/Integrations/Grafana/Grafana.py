@@ -1,7 +1,7 @@
-from pytz import utc
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from pytz import utc
+
 from CommonServerUserPython import *  # noqa
 
 import urllib3

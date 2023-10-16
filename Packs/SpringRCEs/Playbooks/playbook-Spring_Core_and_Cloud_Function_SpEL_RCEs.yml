@@ -1198,10 +1198,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b6299b9a-a471-4fd8-8370-b39dce7c0bde
+    taskid: 4591f282-b559-40eb-8f1b-93c0db9c6bf0
     type: condition
     task:
-      id: b6299b9a-a471-4fd8-8370-b39dce7c0bde
+      id: 4591f282-b559-40eb-8f1b-93c0db9c6bf0
       version: -1
       name: Is Prisma Cloud enabled?
       description: Checks if Prisma Cloud instance is enabled.
@@ -1214,6 +1214,8 @@ tasks:
       "yes":
       - "33"
       - "51"
+      - "52"
+      - "53"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1239,6 +1241,27 @@ tasks:
             value:
               simple: active
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PrismaCloud v2
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1305,11 +1328,12 @@ tasks:
       '#none#':
       - "20"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1630,
-          "y": 670
+          "x": 1640,
+          "y": 710
         }
       }
     note: false
@@ -1321,10 +1345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 03757630-f1b8-4671-8809-5fcb9a0f10c1
+    taskid: 6254f3cd-2f16-49f5-87d5-2eee6697cd7c
     type: condition
     task:
-      id: 03757630-f1b8-4671-8809-5fcb9a0f10c1
+      id: 6254f3cd-2f16-49f5-87d5-2eee6697cd7c
       version: -1
       name: Found servers using Prisma Cloud?
       description: Checks if Prisma Clooud found vulnerable server
@@ -1347,11 +1371,21 @@ tasks:
                 root: Redlock.RQL.Response.Data.NetworkInterfaces
                 accessor: PrivateIpAddress
             iscontext: true
+          right:
+            value: {}
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: PrismaCloud.Config.data.networkInterfaces
+                accessor: privateIpAddress
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1200,
-          "y": 495
+          "y": 540
         }
       }
     note: false
@@ -1377,6 +1411,7 @@ tasks:
       '#none#':
       - "9"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1895,15 +1930,13 @@ tasks:
       limit:
         simple: "10"
       rql:
-        simple: network from vpc.flow_record where bytes > 0 AND destination.resource
-          IN ( resource where finding.type IN ( 'Host Vulnerability' ) AND finding.source
-          IN ( 'Prisma Cloud' ) AND finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
-          ) AND source.publicnetwork IN ('Internet IPs', 'Suspicious IPs')
+        simple: network from vpc.flow_record where bytes > 0 AND destination.resource IN ( resource where finding.type IN ( 'Host Vulnerability' ) AND finding.source IN ( 'Prisma Cloud' ) AND finding.name IN ('CVE-2022-22963', 'CVE-2022-22965') ) AND source.publicnetwork IN ('Internet IPs', 'Suspicious IPs')
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1630,
+          "x": 2450,
           "y": 320
         }
       }
@@ -1914,7 +1947,76 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "52":
+    id: "52"
+    taskid: ca5742d3-7aec-4c37-829c-d45026b35113
+    type: regular
+    task:
+      id: ca5742d3-7aec-4c37-829c-d45026b35113
+      version: -1
+      name: Search for Vulnerable hosts on Prisma Cloud
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      script: '|||prisma-cloud-config-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      query:
+        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: ad950b52-4208-473e-8d25-5be11e876fb0
+    type: regular
+    task:
+      id: ad950b52-4208-473e-8d25-5be11e876fb0
+      version: -1
+      name: Search for internet facing exposed vulnerable hosts that are receiving traffic
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      script: '|||prisma-cloud-config-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      query:
+        simple: network from vpc.flow_record where bytes > 0 AND destination.resource IN ( resource where finding.type IN ( 'Host Vulnerability' ) AND finding.source IN ( 'Prisma Cloud' ) AND finding.name IN ('CVE-2022-22963', 'CVE-2022-22965') ) AND source.publicnetwork IN ('Internet IPs', 'Suspicious IPs')
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2030,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1937,7 +2039,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3575,
-        "width": 3440,
+        "width": 4260,
         "x": -1430,
         "y": -1050
       }

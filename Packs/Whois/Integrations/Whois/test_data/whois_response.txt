@@ -1,0 +1,108 @@
+%%
+%% This is the AFNIC Whois server.
+%%
+%% complete date format: YYYY-MM-DDThh:mm:ssZ
+%%
+%% Rights restricted by copyright.
+%% See https://www.afnic.fr/en/domain-names-and-support/everything-there-is-to-know-about-domain-names/find-a-domain-name-or-a-holder-using-whois/
+%%
+%%
+
+domain:                        google.fr
+status:                        ACTIVE
+eppstatus:                     serverUpdateProhibited
+eppstatus:                     serverTransferProhibited
+eppstatus:                     serverDeleteProhibited
+eppstatus:                     serverRecoverProhibited
+hold:                          NO
+holder-c:                      GIHU100-FRNIC
+admin-c:                       GIHU101-FRNIC
+tech-c:                        MI3669-FRNIC
+registrar:                     MARKMONITOR Inc.
+Expiry Date:                   2023-12-30T17:16:48Z
+created:                       2000-07-26T22:00:00Z
+last-update:                   2022-12-03T09:40:42.40624Z
+source:                        FRNIC
+
+nserver:                       ns1.google.com
+nserver:                       ns2.google.com
+nserver:                       ns3.google.com
+nserver:                       ns4.google.com
+source:                        FRNIC
+
+registrar:                     MARKMONITOR Inc.
+address:                       2150 S. Bonito Way, Suite 150
+address:                       ID 83642 MERIDIAN
+country:                       US
+phone:                         +1.2083895740
+fax-no:                        +1.2083895771
+e-mail:                        email@markmonitor.com
+website:                       http://www.markmonitor.com
+anonymous:                     No
+registered:                    2002-01-07T00:00:00Z
+source:                        FRNIC
+
+nic-hdl:                       GIHU100-FRNIC
+type:                          ORGANIZATION
+contact:                       Google Ireland Holdings Unlimited Company
+address:                       Google Ireland Holdings Unlimited Company
+address:                       70 Sir John Rogerson's Quay
+address:                       2 Dublin
+country:                       IE
+phone:                         +353.14361000
+e-mail:                        email@google.com
+registrar:                     MARKMONITOR Inc.
+changed:                       2022-10-15T05:41:14.918179Z
+anonymous:                     NO
+obsoleted:                     NO
+eppstatus:                     serverUpdateProhibited
+eppstatus:                     associated
+eligstatus:                    not identified
+reachstatus:                   not identified
+source:                        FRNIC
+
+nic-hdl:                       MI3669-FRNIC
+type:                          ORGANIZATION
+contact:                       MarkMonitor Inc.
+address:                       2150 S. Bonito Way, Suite 150
+address:                       83642 Meridian
+country:                       US
+phone:                         +1.2083895740
+fax-no:                        +1.2083895771
+e-mail:                        email@markmonitor.com
+registrar:                     MARKMONITOR Inc.
+changed:                       2023-09-07T07:32:23.899353Z
+anonymous:                     NO
+obsoleted:                     NO
+eppstatus:                     associated
+eppstatus:                     active
+eligstatus:                    ok
+eligsource:                    REGISTRAR
+eligdate:                      2021-10-05T00:00:00Z
+reachstatus:                   ok
+reachmedia:                    email
+reachsource:                   REGISTRAR
+reachdate:                     2021-10-05T00:00:00Z
+source:                        FRNIC
+
+nic-hdl:                       GIHU101-FRNIC
+type:                          ORGANIZATION
+contact:                       Google Ireland Holdings Unlimited Company
+address:                       70 Sir John Rogerson's Quay
+address:                       2 Dublin
+country:                       IE
+phone:                         +353.14361000
+e-mail:                        email@google.com
+registrar:                     MARKMONITOR Inc.
+anonymous:                     NO
+obsoleted:                     NO
+eppstatus:                     associated
+eppstatus:                     active
+eligstatus:                    not identified
+reachstatus:                   ok
+reachmedia:                    email
+reachsource:                   REGISTRAR
+reachdate:                     2018-03-02T00:00:00Z
+source:                        FRNIC
+
+>>> WHOIS request date: 2023-09-13T09:36:56.921026Z <<<

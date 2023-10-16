@@ -10,107 +10,79 @@ configuration:
 - defaultvalue: '61613'
   display: Port
   name: port
-  required: false
   type: 0
+  required: false
 - defaultvalue: Demisto
   display: Client ID
   name: client-id
-  required: false
   type: 0
+  required: false
 - display: '---------------------------- Basic Authentication ----------------------------                         Username'
   name: credentials
-  required: false
   type: 9
+  required: false
 - display: '--------------------- Certificate Authentication ---------------------                         Client certificate (.pem)'
   name: client_cert
-  required: false
   type: 12
+  required: false
 - display: Client certificate key (.key)
   name: client_key
-  required: false
   type: 12
+  required: false
 - display: Root Certificate
   name: root_ca
-  required: false
   type: 12
+  required: false
 - defaultvalue: '1'
   display: '---------------------------- Fetch Incidents ----------------------------                         Subscription ID'
   name: subscription-id
-  required: false
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
-  required: false
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
-  required: false
   type: 13
+  required: false
 - display: Topic Name (for subscription)
   name: topic-name
-  required: false
   type: 0
+  required: false
 - display: Queue Name (for subscription)
   name: queue_name
-  required: false
   type: 0
+  required: false
 description: Integration with ActiveMQ queue
 display: ActiveMQ
 name: ActiveMQ
 script:
   commands:
   - arguments:
-    - default: false
-      description: ' The message destination. For example, a message queue in the format: "/queue/test", or a message topic. '
-      isArray: false
+    - description: ' The message destination. For example, a message queue in the format: "/queue/test", or a message topic. '
       name: destination
       required: true
-      secret: false
-    - default: false
-      description: The content of the message to send.
-      isArray: false
+    - description: The content of the message to send.
       name: body
       required: true
-      secret: false
-    - default: false
-      description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True}'
-      isArray: false
+    - description: 'The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True}'
       name: headers
-      required: false
-      secret: false
-    deprecated: false
     description: Sends a message to the specified destination.
-    execution: false
     name: activemq-send
   - arguments:
-    - default: false
-      defaultValue: '1'
+    - defaultValue: '1'
       description: The subscription unique identifier.
-      isArray: false
       name: subscription-id
       required: true
-      secret: false
-    - default: false
-      description: The topic to subscribe to.
-      isArray: false
+    - description: The topic to subscribe to.
       name: topic-name
-      required: false
-      secret: false
-    - default: false
-      description: The queue to subscribe to.
-      isArray: false
+    - description: The queue to subscribe to.
       name: queue-name
-      required: false
-      secret: false
-    deprecated: false
     description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
-    execution: false
     name: activemq-subscribe
   dockerimage: demisto/py3-tools:1.0.0.49475
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

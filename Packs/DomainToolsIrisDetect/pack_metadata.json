@@ -1,0 +1,20 @@
+{
+    "name": "DomainTools Iris Detect",
+    "description": "Iris Detect protects against malicious domains impersonating your brands and supply chain.",
+    "support": "partner",
+    "currentVersion": "1.0.4",
+    "author": "DomainTools Integrations",
+    "url": "http://www.domaintools.com",
+    "email": "enterprisesupport@domaintools.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}

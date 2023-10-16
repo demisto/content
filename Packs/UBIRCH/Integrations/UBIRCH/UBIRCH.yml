@@ -20,8 +20,8 @@ configuration:
   display: Long running instance
   hidden: true
   name: longRunning
-  required: false
   type: 8
+  required: false
 - display: Tenant Id
   name: tenant_id
   required: true
@@ -40,15 +40,10 @@ display: UBIRCH
 name: UBIRCH
 script:
   commands:
-  - deprecated: false
-    description: Create a list of sample incidents
-    execution: false
+  - description: Create a list of sample incidents
     name: create-sample-incidents
   dockerimage: demisto/paho-mqtt:1.0.0.19143
-  feed: false
-  isfetch: false
   longRunning: true
-  longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3

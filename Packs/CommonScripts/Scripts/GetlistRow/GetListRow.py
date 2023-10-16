@@ -80,6 +80,7 @@ def main():
     header = args.get('header', '')
     value = args.get('value', '')
     list_separator = args.get('list_separator', ',') or ','
+    list_separator = list_separator.replace('\\t', '\t')
 
     return_results(parse_list(parse_all, header, value, list_name, list_separator))
 

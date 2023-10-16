@@ -1,10 +1,14 @@
 {
     "illusive_illusive_raw": {
-      "rt": {
-          "type": "int",
+      "cat": {
+          "type": "string",
           "is_array": false
       },
-      "cat": {
+      "cefDeviceProduct": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefVersion": {
           "type": "string",
           "is_array": false
       },
@@ -33,10 +37,6 @@
           "is_array": false
       },
       "cefDeviceVersion": {
-          "type": "string",
-          "is_array": false
-      },
-      "cefDeviceEventClassId": {
           "type": "string",
           "is_array": false
       },

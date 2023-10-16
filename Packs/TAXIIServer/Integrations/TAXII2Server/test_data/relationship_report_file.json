@@ -1,0 +1,74 @@
+[
+    {
+        "id": "14518",
+        "version": 2,
+        "cacheVersn": 0,
+        "modified": "2023-08-29T14:40:38.046007328Z",
+        "created": "0001-01-01T00:00:00Z",
+        "sizeInBytes": 0,
+        "CustomFields": {
+            "firstseenbysource": "2023-08-29T14:38:48.569Z",
+            "lastseenbysource": "2023-08-29T14:38:48.569Z",
+            "revoked": true
+        },
+        "entityA": "NEW DO NOT TOUCH ARAD",
+        "entityAFamily": "Indicator",
+        "entityAType": "Report",
+        "name": "related-to",
+        "reverseName": "related-to",
+        "entityB": "127.0.0.1",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "type": "IndicatorToIndicator",
+        "createdInSystem": "2023-08-29T14:39:06.923282887Z",
+        "updatedInSystemBySource": "0001-01-01T00:00:00Z",
+        "sources": [
+            {
+                "CustomFields": {
+                    "firstseenbysource": "2023-08-29T14:38:48.569Z",
+                    "lastseenbysource": "2023-08-29T14:38:48.569Z",
+                    "revoked": true
+                },
+                "createdInSystem": "2023-08-29T14:39:06.923177334Z",
+                "updatedInSystem": "2023-08-29T14:40:38.04582564Z",
+                "instance": "@admin",
+                "isManual": true
+            }
+        ]
+    },
+    {
+        "id": "14517",
+        "version": 1,
+        "cacheVersn": 0,
+        "modified": "2023-08-29T14:33:38.590766292Z",
+        "created": "0001-01-01T00:00:00Z",
+        "sizeInBytes": 0,
+        "CustomFields": {
+            "firstseenbysource": "2023-08-29T14:33:19.921Z",
+            "lastseenbysource": "2023-08-29T14:33:19.921Z"
+        },
+        "entityA": "Report",
+        "entityAFamily": "Indicator",
+        "entityAType": "Report",
+        "name": "related-to",
+        "reverseName": "related-to",
+        "entityB": "d95c006c919140ab950758ceaff28f12",
+        "entityBFamily": "Indicator",
+        "entityBType": "File",
+        "type": "IndicatorToIndicator",
+        "createdInSystem": "2023-08-29T14:33:38.590668049Z",
+        "updatedInSystemBySource": "0001-01-01T00:00:00Z",
+        "sources": [
+            {
+                "CustomFields": {
+                    "firstseenbysource": "2023-08-29T14:33:19.921Z",
+                    "lastseenbysource": "2023-08-29T14:33:19.921Z"
+                },
+                "createdInSystem": "2023-08-29T14:33:38.344345518Z",
+                "updatedInSystem": "2023-08-29T14:33:38.344345518Z",
+                "instance": "@admin",
+                "isManual": true
+            }
+        ]
+    }
+]

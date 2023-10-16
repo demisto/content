@@ -5,38 +5,34 @@ commonfields:
 configuration:
 - display: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
   name: auth_json
-  required: false
   type: 4
   hidden: true
-- name: auth_json_creds
   required: false
+- name: auth_json_creds
   type: 9
   displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
   hiddenusername: true
+  required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
 
+  required: false
 description: Image processing with Google Vision API
 display: Google Vision AI
 name: Google Vision AI
 script:
   commands:
   - arguments:
-    - default: false
-      description: The entry ID of the image to process.
+    - description: The entry ID of the image to process.
       isArray: true
       name: entry_id
       required: true
-      secret: false
-    deprecated: false
     description: Detects brand logos in the given image.
-    execution: false
     name: google-vision-detect-logos
     outputs:
     - contextPath: GoogleVisionAPI.Logo.Description
@@ -49,9 +45,6 @@ script:
       description: The certainty score provided by the Google Vision API.
       type: Unknown
   dockerimage: demisto/google-vision-api:1.0.0.63870
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

@@ -16,22 +16,22 @@ configuration:
   name: apiKey
   defaultvalue: ""
   type: 4
-  required: false
   hidden: true
+  required: false
 - name: apikey_creds
   type: 9
-  required: false
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  required: false
   type: 8
 
+  required: false
 script:
   script: ''
   type: javascript

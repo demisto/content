@@ -1,0 +1,6 @@
+name: HPE Aruba ClearPass Parsing Rule
+id: HPE_Aruba_ClearPass_ParsingRule
+fromversion: 8.3.0
+tags: []
+rules: ''
+samples: ''

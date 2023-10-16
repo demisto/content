@@ -1,43 +1,21 @@
 args:
-- default: false
-  description: Value to search for. If you supply a value, you need to supply the
-    "header" argument also.
-  isArray: false
+- description: Value to search for. If you supply a value, you need to supply the "header" argument also.
   name: value
-  required: false
-  secret: false
-- default: false
-  description: Header to filter lines by. If you supply a header, you need to supply
-    the "value" argument.
-  isArray: false
+- description: Header to filter lines by. If you supply a header, you need to supply the "value" argument.
   name: header
-  required: false
-  secret: false
-- default: false
-  description: The list name in which to search.
-  isArray: false
+- description: The list name in which to search.
   name: list_name
   required: true
-  secret: false
 - auto: PREDEFINED
-  default: false
   defaultValue: 'False'
-  description: If "True", parses the entire list into the context. Can be "True" or
-    "False". Default is "False".
-  isArray: false
+  description: If "True", parses the entire list into the context. Can be "True" or "False". Default is "False".
   name: parse_all
   predefined:
   - 'True'
   - 'False'
-  required: false
-  secret: false
-- default: false
-  defaultValue: ','
-  description: Separator to split the list by.
-  isArray: false
+- defaultValue: ','
+  description: Separator to split the list by (use \\t in case of tab separated list).
   name: list_separator
-  required: false
-  secret: false
 comment: Parses a list by header and value.
 commonfields:
   id: GetListRow
@@ -62,12 +40,10 @@ outputs:
   type: UnKnown
 script: '-'
 subtype: python3
-system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.12.65389
 runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

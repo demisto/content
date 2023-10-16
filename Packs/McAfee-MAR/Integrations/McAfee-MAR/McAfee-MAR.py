@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 
-import demistomock as demisto
-from CommonServerPython import *
 from dxlclient.client_config import DxlClientConfig
 from dxlclient.client import DxlClient
 from dxlclient.broker import Broker
@@ -136,7 +136,7 @@ def extract_item_output(item, capitalize):
     # map <CollectorName>|<OutputName> to <OutputName>
     for key, value in output.items():
         splited_key = key.split('|')
-        if(len(splited_key) > 1):
+        if (len(splited_key) > 1):
             new_key = splited_key[1]
         else:
             new_key = splited_key[0]

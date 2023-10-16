@@ -7,8 +7,7 @@ args:
   name: item
 - auto: PREDEFINED
   defaultValue: "true"
-  description: Set to true if you want to append item(s) without separating them by
-    comma
+  description: Set to true if you want to append item(s) without separating them by comma
   name: raw
   predefined:
   - "true"
@@ -23,7 +22,6 @@ contentitemexportablefields:
 enabled: true
 name: AppendIfNotEmpty
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 tags:

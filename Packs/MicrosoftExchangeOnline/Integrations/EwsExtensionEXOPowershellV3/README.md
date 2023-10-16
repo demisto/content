@@ -2,7 +2,7 @@ Use the EWS Extension Online Powershell v3 integration to get information about 
 This integration was integrated and tested with version v3 of EWS Extension Online Powershell v3
 
 **Note:** This integration does not replace the **O365 - EWS - Extension** integration, but an additional EWS extension integration
-which utilizes the [EXO v3 module](https://docs.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v3?view=exchange-ps).
+which utilizes the [EXO v3 module](https://learn.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps).
 
 ## Configure EWS Extension Online Powershell v3 on Cortex XSOAR
 
@@ -12,12 +12,20 @@ which utilizes the [EXO v3 module](https://docs.microsoft.com/en-us/powershell/e
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Exchange Online URL |  | True |
-    | Certificate | A pfx certificate encoded in Base64. | True |
+    | Name | The name of the integration | True |
+    | Exchange Online URL | https://outlook.office365.com | True |
+    | Certificate | A txt certificate encoded in Base64. | True |
     | The organization used in app-only authentication. |  | True |
     | The application ID from the Azure portal |  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+### Important Notes
+---
+* It is strongly recommended to follow the [Docker Hardening Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide) to prevent the docker container from utilizing excessive memory. Details about the known memory leak can be found [here](https://github.com/MicrosoftDocs/office-docs-powershell/issues/6924).
+* If your instance does experience memory management issues, please configure your playbooks to use *Retry on error*.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

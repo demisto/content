@@ -1,38 +1,38 @@
 from CommonServerPython import IncidentStatus, EntryType
 
 response_incident = {"incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd",
-                                "cid": "24ab288b109b411aba970e570d1ddf58",
-                                "host_ids": [
+                     "cid": "24ab288b109b411aba970e570d1ddf58",
+                     "host_ids": [
                                     "afb5d1512a00480f53e9ad91dc3e4b55"
-                                ],
-                                "hosts": [
-                                    {"device_id": "afb5d1512a00480f53e9ad91dc3e4b55",
-                                     "cid": "24ab288b109b411aba970e570d1ddf58",
-                                     "agent_load_flags": "0",
-                                     "agent_local_time": "2020-05-06T23:36:34.594Z",
-                                     "agent_version": "5.28.10902.0",
-                                     "bios_manufacturer": "Apple Inc.",
-                                     "bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)",
-                                     "config_id_base": "65994753",
-                                     "config_id_build": "10902",
-                                     "config_id_platform": "4",
-                                     "external_ip": "1.1.1.1",
-                                     "hostname": "SFO-M-Y81WHJ",
-                                     "first_seen": "2019-05-10T17:20:39Z",
-                                     "last_seen": "2020-05-17T16:59:42Z",
-                                     "local_ip": "1.1.1.1",
-                                     "mac_address": "86-89-ad-65-d0-30",
-                                     "major_version": "18",
-                                     "minor_version": "7",
-                                     "os_version": "Mojave (10.14)",
-                                     "platform_id": "1",
-                                     "platform_name": "Mac",
-                                     "product_type_desc": "Workstation",
-                                     "status": "normal",
-                                     "system_manufacturer": "Apple Inc.",
-                                     "system_product_name": "MacBookPro15,1",
-                                     "modified_timestamp": "2020-05-17T16:59:56Z"}
-                                ],
+                     ],
+                     "hosts": [
+                         {"device_id": "afb5d1512a00480f53e9ad91dc3e4b55",
+                          "cid": "24ab288b109b411aba970e570d1ddf58",
+                          "agent_load_flags": "0",
+                          "agent_local_time": "2020-05-06T23:36:34.594Z",
+                          "agent_version": "5.28.10902.0",
+                          "bios_manufacturer": "Apple Inc.",
+                          "bios_version": "1037.100.359.0.0 (iBridge: 17.16.14263.0.0,0)",
+                          "config_id_base": "65994753",
+                          "config_id_build": "10902",
+                          "config_id_platform": "4",
+                          "external_ip": "1.1.1.1",
+                          "hostname": "SFO-M-Y81WHJ",
+                          "first_seen": "2019-05-10T17:20:39Z",
+                          "last_seen": "2020-05-17T16:59:42Z",
+                          "local_ip": "1.1.1.1",
+                          "mac_address": "86-89-ad-65-d0-30",
+                          "major_version": "18",
+                          "minor_version": "7",
+                          "os_version": "Mojave (10.14)",
+                          "platform_id": "1",
+                          "platform_name": "Mac",
+                          "product_type_desc": "Workstation",
+                          "status": "normal",
+                          "system_manufacturer": "Apple Inc.",
+                          "system_product_name": "MacBookPro15,1",
+                          "modified_timestamp": "2020-05-17T16:59:56Z"}
+                     ],
                      "created": "2020-05-17T17:30:38Z",
                      "start": "2020-05-17T17:30:38Z",
                      "end": "2020-05-17T17:30:38Z",
@@ -40,10 +40,10 @@ response_incident = {"incident_id": "inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a
                      "status": 20,
                      "name": "Incident on SFO-M-Y81WHJ at 2020-05-17T17:30:38Z",
                      "description": "Objectives in this incident: Keep Access. Techniques: External Remote Services. "
-                                               "Involved hosts and end users: SFO-M-Y81WHJ.",
+                     "Involved hosts and end users: SFO-M-Y81WHJ.",
                      "tags": [
                                     "Objective/Keep Access"
-                                ],
+                     ],
                      "fine_score": 38}
 
 response_detection = {"cid": "20879a8064904ecfbb62c118a6a19411",
@@ -132,8 +132,73 @@ response_detection = {"cid": "20879a8064904ecfbb62c118a6a19411",
                       ],
                       "date_updated": "2021-12-19T13:53:34.708949512Z"}
 
+response_idp_detection = {
+    "added_privileges": [
+        "AdministratorsRole"
+    ],
+    "aggregate_id": "aggind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+    "cid": "20879a8064904ecfbb62c118a6a19411",
+    "comment": "new test comment new test comment2 new test comment2 new test comment2 new test comment2 new test comment new test comment new test comment new test comment new test comment2 new test comment2 new test comment new test comment2 new test comment2 comment",
+    "composite_id": "20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+    "confidence": 20,
+    "context_timestamp": "2023-04-20T11:12:03.089Z",
+    "crawl_edge_ids": {
+        "Sensor": [
+                    "XNWu1KJ3f7ck@.W>%?R;<dP:4XWOiGq9#dnSpb\"l0^f#1Kl9'<k^`t9\"ptE?07V_G^*'_EU'/Ch6&[Xsfl<UI$RnhG;AQa[gb#+-\\+J1O?GF\\U^<^9bluf^^X`dYoqOIQpM,@C%pV[2A%9a\"T6O4b1:B1@ps8N",
+                    "N6GX$`'=_9i\"H:bRq0rXhf`Vd$[@1Wr?Lr'`EGQh3P42Up,g(aNSe7C38V)J@NV=)Rg/2m^+P>?(%>fETtmdN.<_m*o''\"CCUmBn.;18rN6.!:g%ohR0te,H;Z\\DK\"=MJe1?:_Y=XZj>E=nHY5ge>3^9:'(g:)A'RG0W,kPj.CNpo<Vk/RE^G9E!b'?=G[!!*'!",
+                    "XNXPaKHLg+i\"HEWkr@-r>$W@\"o+ta@8q'lE4T!!e@D;nls7!2S0cEcXKeuua2Q+<<8!<pD:k1.5(j-*D`ECSL7qH1t'ZZKh'%UJG'SaS8QVr:\"4jTCn[!Z]eCQhZa>bpJ`SjuN'Y.FcK0JOE\"K_hb8DEP5rc6I]<!!*'!"
+        ]
+    },
+    "crawl_vertex_ids": {
+        "Sensor": [
+            "idpind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+            "uid:20879a8064904ecfbb62c118a6a19411:S-1-5-21-4043902054-3757442694-3243833439-1141",
+            "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+            "aggind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56"
+        ]
+    },
+    "crawled_timestamp": "2023-04-20T12:12:10.427005199Z",
+    "created_timestamp": "2023-04-20T11:13:10.424647194Z",
+    "description": "A user received new privileges",
+    "display_name": "Privilege escalation (user)",
+    "end_time": "2023-04-20T11:12:03.089Z",
+    "falcon_host_link": "https://falcon.crowdstrike.com/identity-protection/detections/20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56?cid=20879a8064904ecfbb62c118a6a19411",
+    "id": "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56",
+    "name": "IdpEntityPrivilegeEscalationUser",
+            "objective": "Gain Access",
+            "pattern_id": 51113,
+            "platform": "Windows",
+            "previous_privileges": "0",
+            "privileges": "2177",
+            "product": "idp",
+            "scenario": "privilege_escalation",
+            "seconds_to_resolved": 5869002,
+            "seconds_to_triaged": 2250786,
+            "severity": 2,
+            "show_in_ui": True,
+            "source_account_domain": "ENV11.FERRUM-TECHS.LOCAL",
+            "source_account_name": "morganf",
+            "source_account_object_sid": "S-1-5-21-4043902054-3757442694-3243833439-1141",
+            "source_account_sam_account_name": "morganf",
+            "source_account_upn": "test@test.com",
+            "start_time": "2023-04-20T11:12:03.089Z",
+            "status": "closed",
+            "tactic": "Privilege Escalation",
+            "tactic_id": "TA0004",
+            "tags": [],
+            "technique": "Valid Accounts",
+            "technique_id": "T1078",
+            "timestamp": "2023-04-20T11:12:05.686Z",
+            "type": "idp-user-endpoint-app-info",
+            "updated_timestamp": "2023-06-27T09:29:52.448779709Z"
+}
+
+context_idp_detection = {'name': 'IDP Detection ID: 20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56',
+                         'occurred': '2023-04-20T11:12:03.089Z', 'last_updated': '2023-06-27T09:29:52.448779709Z', 'rawJSON': '{"added_privileges": ["AdministratorsRole"], "aggregate_id": "aggind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "cid": "20879a8064904ecfbb62c118a6a19411", "comment": "new test comment new test comment2 new test comment2 new test comment2 new test comment2 new test comment new test comment new test comment new test comment new test comment2 new test comment2 new test comment new test comment2 new test comment2 comment", "composite_id": "20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "confidence": 20, "context_timestamp": "2023-04-20T11:12:03.089Z", "crawl_edge_ids": {"Sensor": ["XNWu1KJ3f7ck@.W>%?R;<dP:4XWOiGq9#dnSpb\\"l0^f#1Kl9\'<k^`t9\\"ptE?07V_G^*\'_EU\'/Ch6&[Xsfl<UI$RnhG;AQa[gb#+-\\\\+J1O?GF\\\\U^<^9bluf^^X`dYoqOIQpM,@C%pV[2A%9a\\"T6O4b1:B1@ps8N", "N6GX$`\'=_9i\\"H:bRq0rXhf`Vd$[@1Wr?Lr\'`EGQh3P42Up,g(aNSe7C38V)J@NV=)Rg/2m^+P>?(%>fETtmdN.<_m*o\'\'\\"CCUmBn.;18rN6.!:g%ohR0te,H;Z\\\\DK\\"=MJe1?:_Y=XZj>E=nHY5ge>3^9:\'(g:)A\'RG0W,kPj.CNpo<Vk/RE^G9E!b\'?=G[!!*\'!", "XNXPaKHLg+i\\"HEWkr@-r>$W@\\"o+ta@8q\'lE4T!!e@D;nls7!2S0cEcXKeuua2Q+<<8!<pD:k1.5(j-*D`ECSL7qH1t\'ZZKh\'%UJG\'SaS8QVr:\\"4jTCn[!Z]eCQhZa>bpJ`SjuN\'Y.FcK0JOE\\"K_hb8DEP5rc6I]<!!*\'!"]}, "crawl_vertex_ids": {"Sensor": ["idpind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "uid:20879a8064904ecfbb62c118a6a19411:S-1-5-21-4043902054-3757442694-3243833439-1141", "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "aggind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56"]}, "crawled_timestamp": "2023-04-20T12:12:10.427005199Z", "created_timestamp": "2023-04-20T11:13:10.424647194Z", "description": "A user received new privileges", "display_name": "Privilege escalation (user)", "end_time": "2023-04-20T11:12:03.089Z", "falcon_host_link": "https://falcon.crowdstrike.com/identity-protection/detections/20879a8064904ecfbb62c118a6a19411:ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56?cid=20879a8064904ecfbb62c118a6a19411", "id": "ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56", "name": "IdpEntityPrivilegeEscalationUser", "objective": "Gain Access", "pattern_id": 51113, "platform": "Windows", "previous_privileges": "0", "privileges": "2177", "product": "idp", "scenario": "privilege_escalation", "seconds_to_resolved": 5869002, "seconds_to_triaged": 2250786, "severity": 2, "show_in_ui": true, "source_account_domain": "ENV11.FERRUM-TECHS.LOCAL", "source_account_name": "morganf", "source_account_object_sid": "S-1-5-21-4043902054-3757442694-3243833439-1141", "source_account_sam_account_name": "morganf", "source_account_upn": "test@test.com", "start_time": "2023-04-20T11:12:03.089Z", "status": "closed", "tactic": "Privilege Escalation", "tactic_id": "TA0004", "tags": [], "technique": "Valid Accounts", "technique_id": "T1078", "timestamp": "2023-04-20T11:12:05.686Z", "type": "idp-user-endpoint-app-info", "updated_timestamp": "2023-06-27T09:29:52.448779709Z", "mirror_direction": null, "mirror_instance": ""}'}
+
 remote_incident_id = 'inc:afb5d1512a00480f53e9ad91dc3e4b55:1cf23a95678a421db810e11b5db693bd'
 remote_detection_id = 'ldt:15dbb9d8f06b89fe9f61eb46e829d986:528715079668'
+remote_idp_detection_id = '20879a8064904e:ind:20879a8064904ecfbb62c118a6a19411:26DF54C9-8803-4F97-AD22-A725EE820EA9'
 
 # remote_id, close_incident, incident_status, detection_status, mirrored_object, entries
 get_remote_incident = (remote_incident_id,

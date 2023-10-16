@@ -1,8 +1,8 @@
-[MODEL:dataset="forcepoint_dlp_raw"]
+[MODEL:dataset="forcepoint_forcepoint_dlp_raw"]
 alter fsize = to_float(arrayindex(regextract(fname,"\s\-\s(\d+\.\d+)\s\w+"),0)),
     fsize_unit = arrayindex(regextract(fname,"\s\-\s\d+\.\d+\s(\w+)"),0)
 | alter fname = if(fname contains "N/A",null,arrayindex(regextract(fname ,"(.*)\s\-\s\d+"),0))
-| alter xdm.event.original_event_type = eventid,
+| alter xdm.event.original_event_type = to_string(eventid),
     xdm.event.operation_sub_type = act,
     xdm.observer.name = analyzedBy,
     xdm.event.description = cat,

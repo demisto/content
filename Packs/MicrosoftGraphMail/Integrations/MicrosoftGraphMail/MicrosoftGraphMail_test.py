@@ -106,9 +106,9 @@ def test_build_mail_object():
 
 
 def test_assert_pages():
-    assert GraphMailUtils.assert_pages(3) == 3\
-        and GraphMailUtils.assert_pages(None) == 1\
-        and GraphMailUtils.assert_pages('4') == 4
+    assert GraphMailUtils.assert_pages(3) == 3
+    assert GraphMailUtils.assert_pages(None) == 1
+    assert GraphMailUtils.assert_pages('4') == 4
 
 
 def test_build_folders_path():
@@ -975,10 +975,10 @@ class TestCommandsWithLargeAttachments:
             ]:
                 yield header
         else:
-            for header in [   # testing on the computer_architecture.pdf
-                {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/10520433',
+            for header in [   # testing on the test.pdf
+                {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/4512758',
                  'Content-Type': 'application/octet-stream'},
-                {'Content-Length': '3145728', 'Content-Range': 'bytes 3145728-6291455/10520433',
+                {'Content-Length': '1367030', 'Content-Range': 'bytes 3145728-4512757/4512758',
                  'Content-Type': 'application/octet-stream'},
                 {'Content-Length': '3145728', 'Content-Range': 'bytes 6291456-9437183/10520433',
                  'Content-Type': 'application/octet-stream'},
@@ -999,8 +999,8 @@ class TestCommandsWithLargeAttachments:
                 'name': 'plant.jpg'
             },
             '3': {
-                'path': 'test_data/computer_architecture.pdf',  # bigger than 3mb attachment
-                'name': 'computer_architecture.pdf'
+                'path': 'test_data/test.pdf',  # bigger than 3mb attachment
+                'name': 'test.pdf'
             },
             '4': {
                 'path': 'test_data/sample.pdf',  # smaller than 3mb attachment

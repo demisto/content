@@ -6,13 +6,13 @@ configuration:
 - additionalinfo: Fully Qualified Domain Name suffix to be added to the hostname. For example mydomain.local
   display: Domain
   name: domain
-  required: false
   type: 0
+  required: false
 - display: DNS
   additionalinfo: Optional IP address of a DNS server the integration will use to resolve your hosts. Use this setting when the host linux machine uses a different DNS from the Windows machines you are targeting.
   name: dns
-  required: false
   type: 0
+  required: false
 - additionalinfo: Username in the target machine. This can be a local or domain user with administrative privileges
   display: Username
   name: credentials
@@ -21,8 +21,8 @@ configuration:
 - additionalinfo: Hostname or IP address to use as a test for the integration connectivity.
   display: Test Host
   name: host
-  required: false
   type: 0
+  required: false
 - defaultvalue: Negotiate
   display: Authentication Method
   name: auth_method
@@ -33,12 +33,12 @@ configuration:
   type: 15
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
   type: 8
+  required: false
 - display: Use SSL (HTTPS)
   name: ssl
-  required: false
   type: 8
+  required: false
 description: "PowerShell Remoting is a comprehensive built-in remoting subsystem that is a part of Microsoft's native Windows management framework (WMF) and Windows remote management (WinRM).\nThis feature allows you to handle most remoting tasks in any configuration you might encounter by creating a remote PowerShell session to Windows hosts and executing commands in the created session.\nThe integration includes out-of-the-box commands which supports agentless forensics for remote hosts."
 display: PowerShell Remoting (Beta)
 name: PowerShell Remoting
@@ -46,7 +46,6 @@ script:
   commands:
   - arguments:
     - description: 'A single hostname or IP address on which to run the command.'
-      isArray: false
       name: host
       required: true
     - description: PowerShell commands (can be single or multiple in order of execution) to run on the target machine.
@@ -73,7 +72,6 @@ script:
       type: string
   - arguments:
     - description: 'Hostname or the IP address on which to run the command.'
-      isArray: false
       name: host
       required: true
     - description: The path of the file to download.
@@ -216,7 +214,6 @@ script:
       type: string
   - arguments:
     - description: 'A single hostname or IP address on which to run the command.'
-      isArray: false
       name: host
       required: true
     - description: The path on the hostname on which to create the ETL file. For example c:\temp\myhost.etl. Default is "C:\Users\<username>\AppData\Local\Temp\NetTraces\NetTrace.etl".
@@ -256,7 +253,6 @@ script:
       type: string
   - arguments:
     - description: 'A single Hostname or IP address on which to run the command.'
-      isArray: false
       name: host
       required: true
     description: Ends the recording of an ETL file on a Windows endpoint.
@@ -281,7 +277,6 @@ script:
       type: string
   - arguments:
     - description: 'A single hostname or IP address on which to run the command.'
-      isArray: false
       name: host
       required: true
     - defaultValue: all
@@ -316,13 +311,11 @@ script:
       type: string
   - arguments:
     - description: 'A single hostname or IP address on which to run the command.'
-      isArray: false
       name: host
       required: true
     - description: The volume from which to retrieve its master file table.
       name: volume
     - description: The path in which the MFT file is to be created.
-      isArray: false
       name: output_path
     description: Extracts the master file table from the volume.
     name: ps-remote-export-mft
@@ -336,7 +329,6 @@ script:
       description: The Fully Qualified Domain Name of the host on which the command was invoked.
       type: string
   dockerimage: demisto/powershell-ubuntu:7.2.2.29705
-  runonce: false
   script: ''
   type: powershell
 fromversion: 6.0.0

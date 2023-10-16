@@ -1,11 +1,17 @@
+from requests import Response
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from enum import Enum
+
 import urllib3
-import demistomock as demisto
-from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, List, Any
+from typing import Any, Optional
+from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
+DEFAULT_KEYS_TO_REPLACE = {'createdDateTime': 'CreatedDate'}
 urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
@@ -17,7 +23,36 @@ CMD_URL = API_V2_ENDPOINT
 API_VER = API_V2
 PAGE_SIZE_LIMIT_DICT = {API_V2: 2000, API_V1: 1000}
 API_V1_PAGE_LIMIT = 500
-POSSIBLE_FIELDS_TO_INCLUDE = ["All", "NetworkConnections", "Processes", "RegistryKeys", "UserStates", "HostStates", "FileStates",
+
+DataSourceType = {
+    'USER': {
+        'type': 'User',
+        'url_suffix': 'userSources',
+        'unique_table_headers': ['IncludedSources'],
+        'outputs_prefix': 'CustodianUserSource'
+    },
+    'SITE': {
+        'type': 'Site',
+        'url_suffix': 'siteSources',
+        'unique_table_headers': [],
+        'outputs_prefix': 'CustodianSiteSource'
+    },
+    'NON_CUSTODIAL': {
+        'type': 'Data',
+        'url_suffix': 'noncustodialDataSources',
+        'unique_table_headers': ['LastModifiedDateTime', 'ReleasedDateTime', 'Status'],
+        'outputs_prefix': 'NoncustodialDataSource'
+    }
+}
+
+
+class HoldAction(Enum):
+    APPLY = 'apply'
+    REMOVE = 'remove'
+
+
+POSSIBLE_FIELDS_TO_INCLUDE = ["All", "NetworkConnections", "Processes", "RegistryKeys", "UserStates", "HostStates",
+                              "FileStates",
                               "CloudAppStates", "MalwareStates", "CustomerComments", "Triggers", "VendorInformation",
                               "VulnerabilityStates"]
 
@@ -27,143 +62,6 @@ RELEVANT_DATA_TO_UPDATE_PER_VERSION = {API_V1: {'assigned_to': 'assignedTo', 'cl
                                        API_V2: {'assigned_to': 'assignedTo', 'determination': 'determination',
                                                 'classification': 'classification', 'status': 'status'}
                                        }
-''' HELPER FUNCTIONS '''
-
-
-def create_search_alerts_filters(args, is_fetch=False):
-    """
-    Creates the relevant filters for the search_alerts function.
-    Args:
-        args (Dict): The command's arguments dictionary.
-        is_fetch (bool): wether the search_alerts function is being called from fetch incidents or not.
-    Returns:
-        Dict: The filter dictionary to use
-    """
-    last_modified = args.get('last_modified')
-    severity = args.get('severity')
-    category = args.get('category')
-    time_from = args.get('time_from')
-    time_to = args.get('time_to')
-    filter_query = args.get('filter')
-    page = args.get('page')
-    if (is_fetch and args.get('page_size')) or not is_fetch:
-        page_size = int(args.get('page_size', 50))
-    else:
-        page_size = 0
-    filters = []
-    params: dict[str, str] = {}
-    if last_modified:
-        last_modified_query_key: str = "lastModifiedDateTime" if API_VER == API_V1 else "lastUpdateDateTime"
-        filters.append(f"{last_modified_query_key} gt {get_timestamp(last_modified)}")
-    if category:
-        filters.append(f"category eq '{category}'")
-    if severity:
-        filters.append(f"severity eq '{severity}'")
-    if time_from:  # changed to ge and le in order to solve issue #27884
-        filters.append(f"createdDateTime ge {time_from}")
-    if time_to:
-        filters.append(f"createdDateTime le {time_to}")
-    if filter_query:
-        filters.append(f"{filter_query}")
-    if page_size:
-        if PAGE_SIZE_LIMIT_DICT.get(API_VER, 1000) < page_size:
-            raise DemistoException(f"Please note that the page size limit for {API_VER} is {PAGE_SIZE_LIMIT_DICT.get(API_VER)}")
-        params['$top'] = str(page_size)
-    if page and page_size:
-        page = int(page)
-        page = page * page_size
-        if API_VER == API_V1 and API_V1_PAGE_LIMIT < page:
-            raise DemistoException(f"Please note that the maximum amount of alerts you can skip in {API_VER} is"
-                                   f" {API_V1_PAGE_LIMIT}")
-        params['$skip'] = page
-    if API_VER == API_V2:
-        relevant_filters_v2 = ['classification', 'serviceSource', 'status']
-        for key in relevant_filters_v2:
-            if val := args.get(key):
-                filters.append(f"{key} eq '{val}'")
-    filters = " and ".join(filters)
-    params['$filter'] = filters
-    return params
-
-
-def create_data_to_update(args):
-    """
-    Creates the data dictionary to update alert for the update_alert function according to the configured API version.
-    Args:
-        args (Dict): The command's arguments dictionary.
-    Returns:
-        Dict: A dictionary object containing the alert's fields to update.
-    """
-    relevant_data_to_update_per_version_dict: dict = RELEVANT_DATA_TO_UPDATE_PER_VERSION.get(API_VER, {})
-    if all(not args.get(key) for key in list(relevant_data_to_update_per_version_dict.keys())):
-        raise DemistoException(f"No data relevant for {API_VER} to update was provided, please provide at least one of the"
-                               f" following: {(', ').join(list(relevant_data_to_update_per_version_dict.keys()))}.")
-    data: Dict[str, Any] = {}
-    if API_VER == API_V1:
-        vendor_information = args.get('vendor_information')
-        provider_information = args.get('provider_information')
-        if not vendor_information or not provider_information:
-            raise DemistoException("When using Legacy Alerts, both vendor_information and provider_information must be provided.")
-        data['vendorInformation'] = {
-            'provider': provider_information,
-            'vendor': vendor_information
-        }
-    if assigned_to := args.get('assigned_to'):
-        data['assignedTo'] = assigned_to
-    for relevant_args_key, relevant_data_key in relevant_data_to_update_per_version_dict.items():
-        if val := args.get(relevant_args_key):
-            if 'tags' == relevant_args_key or 'comments' == relevant_args_key:
-                data[relevant_data_key] = [val]
-            else:
-                data[relevant_data_key] = val
-    return data
-
-
-def validate_fields_list(fields_list):
-    if unsupported_fields := (set(fields_list) - set(POSSIBLE_FIELDS_TO_INCLUDE)):
-        raise DemistoException(f"The following fields are not supported by the commands as fields to include: "
-                               f"{(', ').join(unsupported_fields)}.\nPlease make sure to enter only fields from the "
-                               f"following list: {(', ').join(POSSIBLE_FIELDS_TO_INCLUDE)}.")
-
-
-def get_timestamp(time_description):
-    if time_description == 'Last24Hours':
-        time_delta = 1
-    elif time_description == 'Last48Hours':
-        time_delta = 2
-    else:
-        time_delta = 7
-    return datetime.strftime(datetime.now() - timedelta(time_delta), '%Y-%m-%d')
-
-
-def capitalize_dict_keys_first_letter(response):
-    """
-    Recursively creates a data dictionary where all key starts with capital letters.
-    Args:
-        response (Dict / str): The dictionary to update.
-    Returns:
-        Dict: The updated dictionary.
-    """
-    if isinstance(response, str):
-        return response
-    parsed_dict: dict = {}
-    if isinstance(response, dict):
-        for key, value in response.items():
-            if key == 'id':
-                parsed_dict['ID'] = value
-            elif key == 'createdDateTime':
-                parsed_dict['CreatedDate'] = value
-            elif isinstance(value, dict):
-                parsed_dict[capitalize_first_letter(key)] = capitalize_dict_keys_first_letter(value)
-            elif isinstance(value, list):
-                parsed_dict[capitalize_first_letter(key)] = [capitalize_dict_keys_first_letter(list_item) for list_item in value]
-            else:
-                parsed_dict[capitalize_first_letter(key)] = value
-    return parsed_dict
-
-
-def capitalize_first_letter(string):
-    return string[:1].upper() + string[1:]
 
 
 class MsGraphClient:
@@ -171,19 +69,21 @@ class MsGraphClient:
     Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
-                 certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
-                 managed_identities_client_id: Optional[str] = None, api_version: str = ""):
+    def __init__(self, tenant_id, proxy,
+                 certificate_thumbprint: Optional[str] = None, api_version: str = "", **kwargs):
         self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-            proxy=proxy, self_deployed=self_deployed, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key,
-            managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph)
+            tenant_id=tenant_id,
+            proxy=proxy, certificate_thumbprint=certificate_thumbprint,
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix=APP_NAME, **kwargs
+        )
         if api_version == API_V1:
             global CMD_URL, API_VER
             API_VER = API_V1
             CMD_URL = LEGACY_API_ENDPOINT
+
+    def get(self, url, **kwargs):
+        return self.ms_client.http_request(method='GET', url_suffix=url, **kwargs)
 
     def search_alerts(self, params):
         cmd_url = CMD_URL
@@ -215,6 +115,326 @@ class MsGraphClient:
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=params)
         return response
 
+    def list_ediscovery_cases(self, case_id: str | None):
+        url = 'security/cases/ediscoveryCases'
+        if case_id:
+            url += f'/{case_id}'
+        return self.ms_client.http_request(method='GET', url_suffix=url)
+
+    def create_edsicovery_case(self, display_name, description, external_id):
+        url = 'security/cases/ediscoveryCases'
+        return self.ms_client.http_request(method='POST', url_suffix=url, json_data={
+            'displayName': display_name,
+            'description': description,
+            'externalId': external_id
+        })
+
+    def update_edsicovery_case(self, case_id, display_name, description, external_id):
+        url = f'security/cases/ediscoveryCases/{case_id}'
+        req = {'displayName': display_name,
+               'description': description,
+               'externalId': external_id}
+
+        remove_nulls_from_dictionary(req)
+        self.ms_client.http_request(ok_codes=[204], method='PATCH', url_suffix=url, json_data=req, resp_type='text')
+
+    def close_edsicovery_case(self, case_id):
+        url = f'security/cases/ediscoveryCases/{case_id}/close'
+        self.ms_client.http_request(ok_codes=[204], method='POST', url_suffix=url, resp_type='text')
+
+    def reopen_edsicovery_case(self, case_id):
+        url = f'security/cases/ediscoveryCases/{case_id}/reopen'
+        self.ms_client.http_request(ok_codes=[204], method='POST', url_suffix=url, resp_type='text')
+
+    def release_edsicovery_custodian(self, case_id, custodian_id):
+        url = f'security/cases/ediscoveryCases/{case_id}/custodians/{custodian_id}/release'
+        self.ms_client.http_request(ok_codes=[202], method='POST', url_suffix=url, resp_type='text')
+
+    def activate_edsicovery_custodian(self, case_id, custodian_id):
+        url = f'security/cases/ediscoveryCases/{case_id}/custodians/{custodian_id}/activate'
+        self.ms_client.http_request(ok_codes=[202], method='POST', url_suffix=url, resp_type='text')
+
+    def delete_edsicovery_case(self, case_id):
+        url = f'security/cases/ediscoveryCases/{case_id}'
+        self.ms_client.http_request(ok_codes=[204], method='DELETE', url_suffix=url, resp_type='text')
+
+    def create_edsicovery_custodian(self, case_id, email):
+        url = f'security/cases/ediscoveryCases/{case_id}/custodians'
+        return self.ms_client.http_request(method='POST', url_suffix=url, json_data={'email': email})
+
+    def list_ediscovery_custodians(self, case_id, custodian_id):
+        url = f'security/cases/ediscoveryCases/{case_id}/custodians'
+        if custodian_id:
+            url += f'/{custodian_id}'
+        return self.ms_client.http_request(method='GET', url_suffix=url)
+
+    def create_edsicovery_custodian_user_source(self, case_id, custodian_id, email, included_sources):
+        url = f'security/cases/ediscoveryCases/{case_id}/custodians/{custodian_id}/userSources'
+        return self.ms_client.http_request(method='POST', url_suffix=url, json_data={
+            'email': email,
+            'includedSources': included_sources
+        })
+
+    def create_edsicovery_custodian_site_source(self, case_id, custodian_id, site):
+        url = f'security/cases/ediscoveryCases/{case_id}/custodians/{custodian_id}/siteSources'
+        return self.ms_client.http_request(method='POST', url_suffix=url, json_data={
+            'site': {
+                'webUrl': site,
+            }
+        })
+
+    def list_ediscovery_custodians_sources(self, case_id, custodian_id, source_id, source_type):
+        url = f'security/cases/ediscoveryCases/{case_id}/custodians/{custodian_id}/{source_type["url_suffix"]}'
+        if source_id:
+            url += f'/{source_id}'
+        return self.ms_client.http_request(method='GET', url_suffix=url)
+
+    def create_ediscovery_non_custodial_data_source(self, case_id, site, email):
+        url = f'security/cases/ediscoveryCases/{case_id}/noncustodialDataSources'
+        body = {
+            "dataSource": {"@odata.type": "microsoft.graph.security.userSource", "email": email}
+        } if email else {
+            "dataSource": {"@odata.type": "microsoft.graph.security.siteSource",
+                           "site": {"webUrl": site}}}
+        return self.ms_client.http_request(method='POST', url_suffix=url, json_data=body)
+
+    def list_ediscovery_noncustodial_datasources(self, case_id, source_id):
+        url = f'security/cases/ediscoveryCases/{case_id}/noncustodialDataSources'
+        if source_id:
+            url += f'/{source_id}'
+        return self.ms_client.http_request(method='GET', url_suffix=url)
+
+    def update_hold_ediscovery_custodian(self, case_id: str, custodian_id: str, hold_action: HoldAction):
+        url = f'security/cases/ediscoveryCases/{case_id}/custodians/{hold_action.value}Hold'
+        body = {
+            'ids': custodian_id.split(',')
+        }
+        return self.ms_client.http_request(method='POST', url_suffix=url, resp_type='response', json_data=body)
+
+    def create_ediscovery_search(self, case_id, display_name, description, query, data_source_scopes):
+        url = f'/security/cases/ediscoveryCases/{case_id}/searches'
+        body = {
+            'displayName': display_name,
+            'description': description,
+            'contentQuery': query,
+            'dataSourceScopes': data_source_scopes
+        }
+        return self.ms_client.http_request(method='POST', url_suffix=url, json_data=body)
+
+    def update_ediscovery_search(self, case_id, search_id, display_name, description, query, data_source_scopes):
+        url = f'/security/cases/ediscoveryCases/{case_id}/searches/{search_id}'
+        body = {
+            'displayName': display_name,
+            'description': description,
+            'contentQuery': query,
+            'dataSourceScopes': data_source_scopes
+        }
+        remove_nulls_from_dictionary(body)
+        self.ms_client.http_request(ok_codes=[204], method='PATCH', url_suffix=url, json_data=body, resp_type='text')
+
+    def list_ediscovery_search(self, case_id, search_id):
+        url = f'security/cases/ediscoveryCases/{case_id}/searches'
+        if search_id:
+            url += f'/{search_id}'
+        return self.ms_client.http_request(method='GET', url_suffix=url)
+
+    def delete_ediscovery_search(self, case_id, search_id):
+        url = f'security/cases/ediscoveryCases/{case_id}/searches/{search_id}'
+        self.ms_client.http_request(ok_codes=[204], method='DELETE', url_suffix=url, resp_type='text')
+
+    def purge_ediscovery_data(self, case_id, search_id, purge_type, purge_areas):
+        url = f'security/cases/ediscoveryCases/{case_id}/searches/{search_id}/purgeData'
+        body = {
+            'purgeType': purge_type,
+            'purgeAreas': purge_areas
+        }
+        return self.ms_client.http_request(method='POST', url_suffix=url, json_data=body, resp_type='response')
+
+
+''' HELPER FUNCTIONS '''
+
+
+def get_status_of_operation(client: MsGraphClient, res: Response) -> str:
+    """
+    Some responses from MSG where an action is called return a url in the headers that we can use to retrieve the status
+    Args:
+        client: Microsoft
+        GraphClient
+        res: the response from the api
+
+    Returns:
+        The status
+    """
+    location = res.headers.get('Location')
+    status = 'success'  # if no location is returned then the custodian is already in this state/theres no data sources
+    if location:
+        location = 'security' + location.split('/security')[1]  # chop off the baseurl
+        resp = client.get(location)
+        demisto.debug(f'response from location get: {resp}')
+        status = resp.get('status')
+    return status
+
+
+def create_search_alerts_filters(args, is_fetch=False):
+    """
+    Creates the relevant filters for the search_alerts function.
+    Args:
+        args (Dict): The command's arguments dictionary.
+        is_fetch (bool): wether the search_alerts function is being called from fetch incidents or not.
+    Returns:
+        Dict: The filter dictionary to use
+    """
+    last_modified = args.get('last_modified')
+    severity = args.get('severity')
+    category = args.get('category')
+    time_from = args.get('time_from')
+    time_to = args.get('time_to')
+    filter_query = args.get('filter')
+    page = args.get('page')
+    page_size = int(args.get('page_size', 50)) if is_fetch and args.get('page_size') or not is_fetch else 0
+    filters = []
+    params: dict[str, str] = {}
+    if last_modified:
+        last_modified_query_key: str = "lastModifiedDateTime" if API_VER == API_V1 else "lastUpdateDateTime"
+        filters.append(f"{last_modified_query_key} gt {get_timestamp(last_modified)}")
+    if category:
+        filters.append(f"category eq '{category}'")
+    if severity:
+        filters.append(f"severity eq '{severity}'")
+    if time_from:  # changed to ge and le in order to solve issue #27884
+        filters.append(f"createdDateTime ge {time_from}")
+    if time_to:
+        filters.append(f"createdDateTime le {time_to}")
+    if filter_query:
+        filters.append(f"{filter_query}")
+    if page_size:
+        if PAGE_SIZE_LIMIT_DICT.get(API_VER, 1000) < page_size:
+            raise DemistoException(
+                f"Please note that the page size limit for {API_VER} is {PAGE_SIZE_LIMIT_DICT.get(API_VER)}")
+        params['$top'] = str(page_size)
+    if page and page_size:
+        page = int(page)
+        page = page * page_size
+        if API_VER == API_V1 and page > API_V1_PAGE_LIMIT:
+            raise DemistoException(f"Please note that the maximum amount of alerts you can skip in {API_VER} is"
+                                   f" {API_V1_PAGE_LIMIT}")
+        params['$skip'] = page
+    if API_VER == API_V2:
+        relevant_filters_v2 = ['classification', 'serviceSource', 'status']
+        for key in relevant_filters_v2:
+            if val := args.get(key):
+                filters.append(f"{key} eq '{val}'")
+    filters = " and ".join(filters)
+    params['$filter'] = filters
+    return params
+
+
+def created_by_fields_to_hr(ret_context: dict):
+    hr = ret_context.copy()
+    hr['CreatedByName'] = dict_safe_get(ret_context, ['CreatedBy', "User", "DisplayName"])
+    hr['CreatedByUPN'] = dict_safe_get(ret_context, ['CreatedBy', "User", "UserPrincipalName"])
+    hr['CreatedByAppName'] = dict_safe_get(ret_context, ['CreatedBy', "Application", "DisplayName"])
+    hr.pop("CreatedBy", None)
+    return hr
+
+
+def create_data_to_update(args):
+    """
+    Creates the data dictionary to update alert for the update_alert function according to the configured API version.
+    Args:
+        args (Dict): The command's arguments dictionary.
+    Returns:
+        Dict: A dictionary object containing the alert's fields to update.
+    """
+    relevant_data_to_update_per_version_dict: dict = RELEVANT_DATA_TO_UPDATE_PER_VERSION.get(API_VER, {})
+    if all(not args.get(key) for key in list(relevant_data_to_update_per_version_dict.keys())):
+        raise DemistoException(
+            f"No data relevant for {API_VER} to update was provided, please provide at least one of the"
+            f" following: {(', ').join(list(relevant_data_to_update_per_version_dict.keys()))}.")
+    data: dict[str, Any] = {}
+    if API_VER == API_V1:
+        vendor_information = args.get('vendor_information')
+        provider_information = args.get('provider_information')
+        if not vendor_information or not provider_information:
+            raise DemistoException(
+                "When using Legacy Alerts, both vendor_information and provider_information must be provided.")
+        data['vendorInformation'] = {
+            'provider': provider_information,
+            'vendor': vendor_information
+        }
+    if assigned_to := args.get('assigned_to'):
+        data['assignedTo'] = assigned_to
+    for relevant_args_key, relevant_data_key in relevant_data_to_update_per_version_dict.items():
+        if val := args.get(relevant_args_key):
+            if relevant_args_key == 'tags' or relevant_args_key == 'comments':
+                data[relevant_data_key] = [val]
+            else:
+                data[relevant_data_key] = val
+    return data
+
+
+def validate_fields_list(fields_list):
+    if unsupported_fields := (set(fields_list) - set(POSSIBLE_FIELDS_TO_INCLUDE)):
+        raise DemistoException(f"The following fields are not supported by the commands as fields to include: "
+                               f"{(', ').join(unsupported_fields)}.\nPlease make sure to enter only fields from the "
+                               f"following list: {(', ').join(POSSIBLE_FIELDS_TO_INCLUDE)}.")
+
+
+def get_timestamp(time_description):
+    if time_description == 'Last24Hours':
+        time_delta = 1
+    elif time_description == 'Last48Hours':
+        time_delta = 2
+    else:
+        time_delta = 7
+    return datetime.strftime(datetime.now() - timedelta(time_delta), '%Y-%m-%d')
+
+
+def capitalize_dict_keys_first_letter(response, keys_to_replace: dict = DEFAULT_KEYS_TO_REPLACE):
+    """
+    Recursively creates a data dictionary where all key starts with capital letters.
+    Args:
+        keys_to_replace: keys that should have custom replacements not according to capitalize_first_letter
+        response (Dict / str): The dictionary to update.
+    Returns:
+        Dict: The updated dictionary.
+    """
+    if isinstance(response, str):
+        return response
+    parsed_dict: dict = {}
+    if isinstance(response, dict):
+        for key, value in response.items():
+            if keys_to_replace and key in keys_to_replace:
+                parsed_dict[keys_to_replace[key]] = value
+            elif key == 'id':
+                parsed_dict['ID'] = value
+            elif isinstance(value, dict):
+                parsed_dict[capitalize_first_letter(key)] = capitalize_dict_keys_first_letter(value)
+            elif isinstance(value, list):
+                parsed_dict[capitalize_first_letter(key)] = [capitalize_dict_keys_first_letter(list_item) for list_item
+                                                             in value]
+            else:
+                parsed_dict[capitalize_first_letter(key)] = value
+    return parsed_dict
+
+
+def capitalize_first_letter(string):
+    return string[:1].upper() + string[1:]
+
+
+def list_ediscovery_custodian_sources(client: MsGraphClient, args, source_type):
+    raw_res = client.list_ediscovery_custodians_sources(args.get('case_id'), args.get('custodian_id'),
+                                                        args.get(f"{source_type['type']}_source_id".lower()),
+                                                        source_type)
+    if source_list := raw_res.get('value'):
+        demisto.info(f'returned {len(source_list)} results from the api')
+    else:
+        source_list = [raw_res]  # api doesnt return a list if only 1 result
+
+    if not argToBoolean(args.get('all_results', 'false')):
+        source_list = source_list[:arg_to_number(args.get('limit', 50))]
+    return ediscovery_source_command_results(source_list, source_type, raw_res)
+
 
 def create_filter_query(filter_param: str, providers_param: str, service_sources_param: str):
     """
@@ -245,8 +465,134 @@ def create_filter_query(filter_param: str, providers_param: str, service_sources
     return filter_query
 
 
-def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, providers: str, service_sources: str) \
-        -> list:
+def to_cases_hr(ret_context: dict):
+    hr = ret_context.copy()
+    hr['LastModifiedByName'] = dict_safe_get(ret_context, ['LastModifiedBy', "User", "DisplayName"])
+    hr['ClosedByName'] = dict_safe_get(ret_context, ['ClosedBy', "User", "DisplayName"])
+    return hr
+
+
+def ediscovery_cases_command_results(raw_case_list: list, raw_res=None) -> CommandResults:
+    """
+    Returns the CommandResults for a list of eDiscoveryCases from the API
+    Args:
+        raw_res: the raw_response to be used. If not provided assumed response==raw_res
+        limit: max number of entries to return. Does not affect raw_result
+        raw_case_list: the raw response from the api, as a list
+
+
+    Returns: A CommandResults object
+
+    """
+    return to_msg_command_results(raw_object_list=raw_case_list,
+                                  raw_res=raw_res,
+                                  outputs_prefix='MsGraph.eDiscoveryCase',
+                                  output_key_field='CaseId',
+                                  raw_keys_to_replace={'status': 'CaseStatus', 'id': 'CaseId'},
+                                  table_headers=['DisplayName', 'Description', 'ExternalId', 'CaseStatus', 'CaseId',
+                                                 'CreatedDateTime', 'LastModifiedDateTime', 'LastModifiedByName',
+                                                 'ClosedByName'],
+                                  to_hr=to_cases_hr)
+
+
+def custodian_to_hr(ret_context: dict):
+    hr = ret_context.copy()
+    hr['LastModifiedByName'] = dict_safe_get(ret_context, ['LastModifiedBy', "User", "DisplayName"])
+    hr['ClosedByName'] = dict_safe_get(ret_context, ['ClosedBy', "User", "DisplayName"])
+    return hr
+
+
+def ediscovery_custodian_command_results(raw_custodian_list, raw_res=None):
+    return to_msg_command_results(raw_object_list=raw_custodian_list,
+                                  raw_res=raw_res,
+                                  outputs_prefix='MsGraph.eDiscoveryCustodian',
+                                  output_key_field='CustodianId',
+                                  raw_keys_to_replace={'status': 'CustodianStatus', 'id': 'CustodianId'},
+                                  table_headers=['DisplayName', 'Email', 'CustodianStatus', 'CustodianId',
+                                                 'CreatedDateTime', 'LastModifiedDateTime', 'LastModifiedByName',
+                                                 'ClosedByName', 'AcknowledgedDateTime',
+                                                 'HoldStatus', 'ReleasedDateTime'],
+                                  to_hr=custodian_to_hr)
+
+
+def to_msg_command_results(raw_object_list, outputs_prefix, output_key_field, raw_keys_to_replace, raw_res=None,
+                           table_headers=[], to_hr=lambda x: x):
+    """
+    General function to return command results for Microsoft Graph.
+
+    Keys beginning with @ will be stripped from the response.
+    Keys will be converted to CapitalCaseFormat
+    Empty elements will be removed
+
+    Args:
+        raw_object_list: the list of objects from the api. One item will be converted to a list of one
+        outputs_prefix: The outputs prefix for the command
+        output_key_field: The key field for the CommandResults
+        raw_keys_to_replace: Keys to replace with a specific alternative. EG { 'id' : 'CustomID' }
+        raw_res: The raw response exactly as received from the API. Will assume same as raw_object_list if not provided
+        table_headers: Headers to show in the human readable output
+        to_hr: A function that will take a context dictionary as input and convert it to a human readable dictionary.
+        Default is identity function
+
+    Returns:
+        A CommandResults object
+    """
+    raw_res = raw_res or raw_object_list
+    if not isinstance(raw_object_list, list):
+        raw_object_list = [raw_object_list]
+    context_list = []
+    human_readable_list = []
+    for res in raw_object_list:
+        context = capitalize_dict_keys_first_letter(res, keys_to_replace=raw_keys_to_replace)
+        keys_to_del = [key for key in context if key.startswith('@')]
+        for key in keys_to_del:
+            del context[key]
+        context = remove_empty_elements(context)
+        context_list.append(context)
+        human_readable_list.append(to_hr(context))
+    return CommandResults(
+        outputs_prefix=outputs_prefix,
+        outputs_key_field=output_key_field,
+        raw_response=raw_res,
+        outputs=context_list,
+        readable_output=tableToMarkdown('Results:', human_readable_list,
+                                        headers=table_headers,
+                                        headerTransform=pascalToSpace, removeNull=True))
+
+
+def to_ediscovery_search_command_results(resp, raw_res=None):
+    return to_msg_command_results(resp,
+                                  raw_res=raw_res,
+                                  output_key_field='SearchId',
+                                  outputs_prefix='MsGraph.eDiscoverySearch',
+                                  raw_keys_to_replace={'id': 'SearchId'},
+                                  table_headers=['DisplayName', 'Description', 'DataSourceScopes', 'SearchId',
+                                                 'CreatedByName', 'CreatedByAppName', 'CreatedByUPN', 'CreatedDateTime',
+                                                 'LastModifiedDateTime', 'AdditionalSources'],
+                                  to_hr=created_by_fields_to_hr)
+
+
+def ediscovery_source_command_results(raw_case_list: list, source_type, raw_res=None):
+    type_name = source_type["type"]
+    demisto.debug(f'Returning command results for source {type_name}')
+
+    output_key_field = f'{type_name}SourceId'
+    return to_msg_command_results(raw_object_list=raw_case_list,
+                                  raw_res=raw_res,
+                                  outputs_prefix=f'MsGraph.{source_type["outputs_prefix"]}',
+                                  output_key_field=output_key_field,
+                                  raw_keys_to_replace={'id': output_key_field},
+                                  table_headers=['DisplayName', 'Email', output_key_field, 'HoldStatus',
+                                                 'CreatedDateTime', 'CreatedByName', 'CreatedByUPN', 'CreatedByAppName',
+                                                 'SiteWebUrl'] + source_type['unique_table_headers'],
+                                  to_hr=created_by_fields_to_hr)
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, filter: str, providers: str,
+                    service_sources: str) -> list:
     """
     This function will execute each interval (default is 1 minute).
     This function will return up to the given limit alerts according to the given filters using the search_alerts function.
@@ -265,11 +611,8 @@ def fetch_incidents(client: MsGraphClient, fetch_time: str, fetch_limit: int, fi
 
     last_run = demisto.getLastRun()
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    if not last_run:  # if first time running
-        new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
-    else:
-        new_last_run = last_run
-    demisto_incidents: List = list()
+    new_last_run = last_run if last_run else {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
+    demisto_incidents: list = []
     time_from = new_last_run.get('time')
     time_to = datetime.now().strftime(timestamp_format)
 
@@ -332,7 +675,8 @@ def search_alerts_command(client: MsGraphClient, args):
                 'Vendor': alert['vendorInformation']['vendor'],
                 'Provider': alert['vendorInformation']['provider']
             })
-        table_headers = ['ID', 'Vendor', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate', 'Status']
+        table_headers = ['ID', 'Vendor', 'Provider', 'Title', 'Category', 'Severity', 'CreatedDate', 'EventDate',
+                         'Status']
     else:
         outputs = [capitalize_dict_keys_first_letter(alert) for alert in alerts]
         table_headers = ['ID', 'DetectionSource', 'ServiceSource', 'Title', 'Category', 'Severity', 'CreatedDate',
@@ -375,7 +719,7 @@ def get_alert_details_command(client: MsGraphClient, args):
             validate_fields_list(fields_list)
         else:
             fields_list = []
-        show_all_fields = True if 'All' in fields_list else False
+        show_all_fields = 'All' in fields_list
 
         basic_properties_title = 'Basic Properties'
         basic_properties = {
@@ -599,7 +943,7 @@ def update_alert_command(client: MsGraphClient, args):
     human_readable = f'Alert {alert_id} has been successfully updated.'
     if status and API_VER == API_V1 and provider_information in {'IPC', 'MCAS', 'Azure Sentinel'}:
         human_readable += f'\nUpdating status for alerts from provider {provider_information} gets updated across \
-Microsoft Graph Security API integrated applications but not reflected in the provider’s management experience.\n \
+Microsoft Graph Security API integrated applications but not reflected in the provider`s management experience.\n \
         For more details, see the \
 [Microsoft documentation](https://docs.microsoft.com/en-us/graph/api/resources/security-api-overview?view=graph-rest-1.0#alerts)'
     return human_readable, ec, context
@@ -671,11 +1015,227 @@ def create_alert_comment_command(client: MsGraphClient, args):
     return human_readable, ec, res
 
 
-def test_function(client: MsGraphClient, args):
+def create_ediscovery_case_command(client: MsGraphClient, args: dict):
     """
+    """
+    res = client.create_edsicovery_case(args.get('display_name'), args.get('description'), args.get('external_id'))
+    return ediscovery_cases_command_results([res], res)
+
+
+def close_ediscovery_case_command(client: MsGraphClient, args):
+    """
+    """
+    client.close_edsicovery_case(args.get('case_id'))
+    return CommandResults(readable_output=f'Case with id {args.get("case_id")} was closed successfully.')
+
+
+def reopen_ediscovery_case_command(client: MsGraphClient, args):
+    """
+    """
+    client.reopen_edsicovery_case(args.get('case_id'))
+    return CommandResults(readable_output=f'Case with id {args.get("case_id")} was reopened successfully.')
+
+
+def update_ediscovery_case_command(client: MsGraphClient, args):
+    """
+    """
+    client.update_edsicovery_case(args.get('case_id'), args.get('display_name'), args.get('description'),
+                                  args.get('external_id'))
+    return CommandResults(readable_output=f'Case with id {args.get("case_id")} was updated successfully.')
+
+
+def release_ediscovery_custodian_command(client: MsGraphClient, args):
+    """
+    """
+    client.release_edsicovery_custodian(args.get('case_id'), args.get('custodian_id'))
+    return CommandResults(readable_output=f'Custodian with id {args.get("custodian_id")} was released from '
+                                          f'case with id {args.get("case_id")} successfully.')
+
+
+def activate_ediscovery_custodian_command(client: MsGraphClient, args):
+    """
+    """
+    client.activate_edsicovery_custodian(args.get('case_id'), args.get('custodian_id'))
+    return CommandResults(readable_output=f'Custodian with id {args.get("custodian_id")} Case was reactivated on '
+                                          f'case with id {args.get("case_id")} successfully.')
+
+
+def create_ediscovery_custodian_user_source_command(client: MsGraphClient, args):
+    """
+    """
+    resp = client.create_edsicovery_custodian_user_source(args.get('case_id'), args.get('custodian_id'),
+                                                          args.get('email'), args.get('included_sources'))
+    return ediscovery_source_command_results(resp, DataSourceType['USER'])
+
+
+def create_ediscovery_custodian_site_source_command(client: MsGraphClient, args):
+    resp = client.create_edsicovery_custodian_site_source(args.get('case_id'), args.get('custodian_id'),
+                                                          args.get('site'))
+    return ediscovery_source_command_results(resp, DataSourceType['SITE'])
+
+
+def create_ediscovery_non_custodial_data_source_command(client: MsGraphClient, args):
+    site = args.get('site')
+    email = args.get('email')
+    if not (bool(site) ^ bool(email)):
+        raise ValueError('One of either the site argument or the email argument must be provided, not both')
+
+    resp = client.create_ediscovery_non_custodial_data_source(args.get('case_id'), site, email)
+
+    return to_msg_command_results(raw_object_list=resp,
+                                  outputs_prefix='MsGraph.NoncustodialDataSource',
+                                  output_key_field='DataSourceId',
+                                  raw_keys_to_replace={'status': 'DataSourceStatus', 'id': 'DataSourceId'})
+
+
+def delete_ediscovery_case_command(client: MsGraphClient, args):
+    client.delete_edsicovery_case(args.get('case_id'))
+    return CommandResults(readable_output='Case was deleted successfully.')
+
+
+def create_ediscovery_custodian_command(client: MsGraphClient, args):
+    res = client.create_edsicovery_custodian(args.get('case_id'), args.get('email'))
+    return ediscovery_custodian_command_results(res)
+
+
+def list_ediscovery_case_command(client: MsGraphClient, args):
+    raw_res = client.list_ediscovery_cases(args.get('case_id'))
+    if case_list := raw_res.get('value'):
+        demisto.info(f'returned {raw_res.get("@odata.count")} results from the api')
+    else:
+        case_list = [raw_res]  # api doesnt return a list if only 1 result
+    if not argToBoolean(args.get('all_results', 'false')):
+        case_list = case_list[:arg_to_number(args.get('limit', 50))]
+    return ediscovery_cases_command_results(case_list, raw_res)
+
+
+def list_ediscovery_custodian_command(client: MsGraphClient, args):
+    raw_res = client.list_ediscovery_custodians(args.get('case_id'), args.get('custodian_id'))
+    if custodian_list := raw_res.get('value'):
+        demisto.info(f'returned {raw_res.get("@odata.count")} results from the api')
+    else:
+        custodian_list = [raw_res]  # api doesnt return a list if only 1 result
+    if not argToBoolean(args.get('all_results', 'false')):
+        custodian_list = custodian_list[:arg_to_number(args.get('limit', 50))]
+    return ediscovery_custodian_command_results(custodian_list, raw_res)
+
+
+def list_ediscovery_custodian_user_sources_command(client: MsGraphClient, args):
+    return list_ediscovery_custodian_sources(client, args, DataSourceType['USER'])
+
+
+def list_ediscovery_custodian_site_sources_command(client: MsGraphClient, args):
+    return list_ediscovery_custodian_sources(client, args, DataSourceType['SITE'])
+
+
+def list_ediscovery_non_custodial_data_source_command(client: MsGraphClient, args):
+    raw_res = client.list_ediscovery_noncustodial_datasources(args.get('case_id'), args.get('data_source_id'))
+    if source_list := raw_res.get('value'):
+        demisto.info(f'returned {len(source_list)} results from the api')
+    else:
+        source_list = [raw_res]  # api doesnt return a list if only 1 result
+    if not argToBoolean(args.get('all_results', 'false')):
+        source_list = source_list[:arg_to_number(args.get('limit'))]
+    return ediscovery_source_command_results(source_list, DataSourceType['NON_CUSTODIAL'], raw_res)
+
+
+def update_hold_ediscovery_custodian_command(client: MsGraphClient, args, hold_action: HoldAction):
+    demisto.debug(f'{hold_action.value=}')
+    res = client.update_hold_ediscovery_custodian(args.get('case_id'), args.get('custodian_id'), hold_action)
+    status = get_status_of_operation(client, res)
+    return CommandResults(readable_output=f'{hold_action.value.capitalize()} hold status is {status}.')
+
+
+def apply_hold_ediscovery_custodian_command(client: MsGraphClient, args):
+    return update_hold_ediscovery_custodian_command(client, args, HoldAction.APPLY)
+
+
+def remove_hold_ediscovery_custodian_command(client: MsGraphClient, args):
+    return update_hold_ediscovery_custodian_command(client, args, HoldAction.REMOVE)
+
+
+def update_ediscovery_search_command(client: MsGraphClient, args):
+    client.update_ediscovery_search(args.get('case_id'), args.get('search_id'), args.get('display_name'),
+                                    args.get('description'),
+                                    args.get('query'), args.get('data_source_scopes'))
+
+    return CommandResults(readable_output=f'eDiscovery search {args.get("search_id")} was updated successfully.')
+
+
+def delete_ediscovery_search_command(client: MsGraphClient, args):
+    client.delete_ediscovery_search(args.get('case_id'), args.get('search_id'))
+
+    return CommandResults(readable_output=f'eDiscovery search {args.get("search_id")} was deleted successfully.')
+
+
+def purge_ediscovery_data_command(client: MsGraphClient, args):
+    resp = client.purge_ediscovery_data(args.get('case_id'), args.get('search_id'), args.get('purge_type'),
+                                        args.get('purge_areas'))
+    status = get_status_of_operation(client, resp)
+    return CommandResults(readable_output=f'eDiscovery purge status is {status}.')
+
+
+def create_ediscovery_search_command(client: MsGraphClient, args):
+    resp = client.create_ediscovery_search(args.get('case_id'), args.get('display_name'), args.get('description'),
+                                           args.get('query'), args.get('data_source_scopes'))
+
+    return to_ediscovery_search_command_results(resp)
+
+
+def list_ediscovery_search_command(client: MsGraphClient, args):
+
+    raw_res = client.list_ediscovery_search(args.get('case_id'), args.get('search_id'))
+    if case_list := raw_res.get('value'):
+        demisto.info(f'returned {len(case_list)} results from the api')
+    else:
+        case_list = [raw_res]
+    if not argToBoolean(args.get('all_results', 'false')):
+        case_list = case_list[:arg_to_number(args.get('limit'))]
+    return to_ediscovery_search_command_results(case_list, raw_res)
+
+
+def test_auth_code_command(client: MsGraphClient, args):
+    """
+    Called to test authorization code flow (since integration context cant be accessed during test_module)
+    Calls list cases with no arguments
+    """
+
+    permissions = args.get('permission_type', 'all')
+    if permissions == 'all':
+        permissions = "ediscovery, alerts"
+    for permission in argToList(permissions):
+        try:
+            demisto.debug(f'checking permission {permission}')
+            match permission:
+                case 'ediscovery':
+                    list_ediscovery_case_command(client, {})
+                case 'alerts':
+                    test_function(client, args, True)
+        except Exception as e:
+            raise DemistoException(f'Authorization was not successful for permission {permission} '
+                                   'Check that you have the required permissions') from e
+    return CommandResults(readable_output='Authentication was successful.')
+
+
+def test_function(client: MsGraphClient, args, has_access_to_context=False):
+    """
+    Args:
+        has_access_to_context (bool): Whether this function is called from a command that allows this integration to access the
+        context. When called from the test button on an integration, we dont have access to the integration context. Since auth
+        code workflow depends on reading from and writing to the context, if we dont have access, this function cannot run
+        successfully, so we will throw an exception.
        Performs basic GET request to check if the API is reachable and authentication is successful.
-       Returns ok if successful.
+    Returns:
+        'ok' if connection is successful.
+    Raises:
+        DemistoException: If using auth code flow and called from test_module
     """
+    if not has_access_to_context and hasattr(client.ms_client, 'grant_type') \
+            and client.ms_client.grant_type == AUTHORIZATION_CODE:
+        raise DemistoException(
+            "Test module is not available for the authorization code flow."
+            " Use the msg-auth-test command instead.")
+
     response = client.ms_client.http_request(
         method='GET', url_suffix=CMD_URL, params={'$top': 1}, resp_type='response')
     try:
@@ -722,8 +1282,10 @@ def main():
     enc_key = params.get('creds_enc_key', {}).get('password') or params.get('enc_key')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
-    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get(
+        'certificate_thumbprint')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get(
+        'private_key')
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
     self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
     api_version: str = params.get('api_version', API_V2)
@@ -737,24 +1299,63 @@ def main():
 
     commands = {
         'test-module': test_function,
+        'msg-auth-test': test_auth_code_command,
         'msg-search-alerts': search_alerts_command,
         'msg-get-alert-details': get_alert_details_command,
         'msg-update-alert': update_alert_command,
         'msg-get-users': get_users_command,
         'msg-get-user': get_user_command,
         'msg-create-alert-comment': create_alert_comment_command,
+
+        # eDiscovery commands
+        'msg-create-ediscovery-case': create_ediscovery_case_command,
+        'msg-list-ediscovery-cases': list_ediscovery_case_command,
+        'msg-update-ediscovery-case': update_ediscovery_case_command,
+        'msg-close-ediscovery-case': close_ediscovery_case_command,
+        'msg-reopen-ediscovery-case': reopen_ediscovery_case_command,
+        'msg-delete-ediscovery-case': delete_ediscovery_case_command,
+        'msg-create-ediscovery-custodian': create_ediscovery_custodian_command,
+        'msg-list-ediscovery-custodians': list_ediscovery_custodian_command,
+        'msg-release-ediscovery-custodian': release_ediscovery_custodian_command,
+        'msg-activate-ediscovery-custodian': activate_ediscovery_custodian_command,
+        'msg-create-ediscovery-custodian-user-source': create_ediscovery_custodian_user_source_command,
+        'msg-list-ediscovery-custodian-user-sources': list_ediscovery_custodian_user_sources_command,
+        'msg-create-ediscovery-custodian-site-source': create_ediscovery_custodian_site_source_command,
+        'msg-list-ediscovery-custodian-site-sources': list_ediscovery_custodian_site_sources_command,
+        'msg-create-ediscovery-non-custodial-data-source': create_ediscovery_non_custodial_data_source_command,
+        'msg-list-ediscovery-non-custodial-data-sources': list_ediscovery_non_custodial_data_source_command,
+        'msg-apply-hold-ediscovery-custodian': apply_hold_ediscovery_custodian_command,
+        'msg-remove-hold-ediscovery-custodian': remove_hold_ediscovery_custodian_command,
+        'msg-create-ediscovery-search': create_ediscovery_search_command,
+        'msg-update-ediscovery-search': update_ediscovery_search_command,
+        'msg-list-ediscovery-searchs': list_ediscovery_search_command,
+        'msg-delete-ediscovery-search': delete_ediscovery_search_command,
+        'msg-purge-ediscovery-data': purge_ediscovery_data_command,
+
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
 
     try:
-        client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,
-                                              app_name=APP_NAME, base_url=url, verify=use_ssl, proxy=proxy,
+        auth_code = params.get('auth_code', {}).get('password')
+        redirect_uri = params.get('redirect_uri')
+        grant_type = AUTHORIZATION_CODE if auth_code and redirect_uri else CLIENT_CREDENTIALS
+
+        client: MsGraphClient = MsGraphClient(tenant_id=tenant,
+                                              auth_code=auth_code,
+                                              auth_id=auth_and_token_url,
+                                              enc_key=enc_key,
+                                              redirect_uri=redirect_uri,
+                                              app_name=APP_NAME,
+                                              base_url=url,
+                                              verify=use_ssl,
+                                              proxy=proxy,
                                               self_deployed=self_deployed,
                                               certificate_thumbprint=certificate_thumbprint,
                                               private_key=private_key,
                                               managed_identities_client_id=managed_identities_client_id,
-                                              api_version=api_version)
+                                              api_version=api_version,
+                                              grant_type=grant_type)
         if command == "fetch-incidents":
             fetch_time = params.get('fetch_time', '1 day')
             fetch_limit = params.get('fetch_limit', 10) or 10
@@ -765,15 +1366,23 @@ def main():
                                         filter=fetch_filter, providers=fetch_providers,
                                         service_sources=fetch_service_sources)
             demisto.incidents(incidents)
+        elif command == "ms-graph-security-auth-reset":
+            return_results(reset_auth())
+        elif demisto.command() == 'msg-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
         else:
-            human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
-            return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
+            if command not in commands:
+                raise NotImplementedError(f'The provided command {command} was not implemented.')
+            command_res = commands[command](client, demisto.args())  # type: ignore
+            if isinstance(command_res, CommandResults):
+                return_results(command_res)
+            else:
+                human_readable, entry_context, raw_response = command_res  # pylint: disable=E0633  # type: ignore
+                return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
     except Exception as err:
-        return_error(str(err))
+        return_error(f'Failed to execute {command} command.\nError:\n{err}\nTraceback:{traceback.format_exc()}')
 
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

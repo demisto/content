@@ -11,16 +11,20 @@ configuration:
 - display: API Key
   name: apiKey
   defaultvalue: ""
-  type: 0
-  required: true
+  type: 4
+  hidden: true
+- name: apikey_creds
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 script:
   script: >
     /**
@@ -135,7 +139,7 @@ script:
 
     var merakiUrlPrefix = 'https://api.meraki.com/api/v0/';
 
-    var apiKey = params.apiKey;
+    var apiKey = params.apikey_creds ? params.apikey_creds.password : params.apiKey;
 
     var insecure = params.insecure;
 
