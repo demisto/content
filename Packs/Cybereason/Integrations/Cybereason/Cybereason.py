@@ -1948,7 +1948,6 @@ def fetch_machine_details_command(client: Client, args: dict):
                     "GroupID": single_sensor["groupId"],
                     "GroupName": single_sensor["groupName"]
                 })
-        # return CommandResults(readable_output=f"Machine name {output}")
         empty_output_message = 'No Machine Details found for the given Machine Name'
         return CommandResults(
             readable_output=tableToMarkdown(
