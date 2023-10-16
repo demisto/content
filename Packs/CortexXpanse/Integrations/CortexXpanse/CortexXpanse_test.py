@@ -522,6 +522,43 @@ def test_list_incidents_command(requests_mock):
     assert response.outputs_key_field == 'incident_id'
 
 
+def test_get_incident_command(requests_mock):
+    """Tests get_incident_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate update_incident_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'get_incident_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, get_incident_command
+
+    from test_data.raw_response import INCIDENT_GET_RAW
+    from test_data.expected_results import INCIDENT_GET_RESULTS
+    requests_mock.post('https://test.com/public_api/v1/incidents/get_incident_extra_data/',
+                       json=INCIDENT_GET_RAW)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False)
+    args = {
+        'incident_id': 1
+    }
+
+    response = get_incident_command(client, args)
+
+    assert response.outputs == INCIDENT_GET_RESULTS
+    assert response.outputs_prefix == 'ASM.Incident'
+
+
 def test_update_incident_command(requests_mock):
     """Tests update_incident_command function.
 
