@@ -183,12 +183,6 @@ script:
       name: indicator
     description: Push modified IOCs to Cortex XDR.
     name: xdr-iocs-push
-  - arguments:
-    - description: The time of the file creation (use UTC time zone).
-      name: time
-      required: true
-    description: Set sync time manually (Do not use this command unless you unredstandard the consequences).
-    name: xdr-iocs-set-sync-time
   - description: Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
     name: xdr-iocs-create-sync-file
   - arguments:
