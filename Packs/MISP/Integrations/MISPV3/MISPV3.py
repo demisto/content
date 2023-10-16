@@ -979,6 +979,10 @@ def pagination_args_validation(page, limit):
         raise DemistoException("limit should be zero or a positive number")
 
 
+def nothing(nothing_as_wel):
+    return None
+
+
 def attribute_response_to_markdown_table(response: dict):
     attribute_highlights = []
     for attribute in response:
