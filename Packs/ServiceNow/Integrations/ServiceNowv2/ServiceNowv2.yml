@@ -178,10 +178,10 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
+- additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom close code. Enter here a comma-separated list of custom close codes and their labels (acceptable format example: “10=Resolved,11=False Positive,12=Unresolved”) to override the default close reason. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason "Other".'
   defaultvalue: ''
-  display: Mirrored XSOAR Ticket custom close state code
-  name: server_close_custom_state
+  display: Mirrored XSOAR Ticket custom close codes
+  name: server_custom_close_codes
   type: 0
   required: false
 - additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
