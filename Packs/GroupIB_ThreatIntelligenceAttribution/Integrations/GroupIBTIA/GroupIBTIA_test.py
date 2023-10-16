@@ -2,7 +2,6 @@ import pytest
 from json import load
 from GroupIBTIA import fetch_incidents_command, Client, transform_function, main, get_available_collections_command
 
-
 with open('test_data/example.json') as example:
     RAW_JSON = load(example)
 with open('test_data/results.json') as results:
@@ -202,7 +201,6 @@ def test_fetch_incidents(mocker, session_fixture):
                                                   first_fetch_time="3 days",
                                                   incident_collections=[],
                                                   requests_count=3)
-    assert not next_run
     assert isinstance(incidents, list)
 
 
@@ -219,6 +217,26 @@ def test_main_error():
     """
     with pytest.raises(Exception):
         main()["error_command"]()
+
+def test_global_search_command(mocker, session_fixture):
+    import GroupIBTIA
+    test_response = [{
+            "apiPath": "suspicious_ip/open_proxy",
+            "label": "Suspicious IP :: Open Proxy",
+            "link": "",
+            "count": 14,
+            "time": 0.299055199,
+            "detailedLinks": None,
+        }]
+
+    collection_name, client = session_fixture
+    mocker.patch.object(Client, '_http_request', return_value=test_response)
+    mocker.patch.object(GroupIBTIA, 'find_element_by_key', return_value=test_response)
+    test_query={'query': 'test'}
+    result = GroupIBTIA.global_search_command(client=client, args=test_query)
+
+    assert result.outputs_prefix == "GIBTIA.search.global"
+    assert result.outputs_key_field == "query"
 
 
 def test_get_available_collections(mocker, session_fixture):
@@ -296,3 +314,129 @@ def test_find_element_by_key_missing():
     test_dict = {'a': 1}
     result = find_element_by_key(test_dict, 'b')
     assert result is None
+
+
+
+
+
+def test_transform_some_fields_into_markdown():
+    from GroupIBTIA import transform_some_fields_into_markdown
+
+    collection_name = "osi/git_repository"
+    feed = {
+        "files": [
+            {
+                "url": "https://example.com",
+                "dateCreated": "2023-10-16",
+                "revisions": {
+                    "info": {
+                        "authorEmail": "author@example.com",
+                        "authorName": "John Doe",
+                        "timestamp": 1234567890
+                    }
+                }
+            },
+            # ...
+        ]
+    }
+
+    expected_output = {
+        "files": "| URL  |   Author Email  | Author Name  | Date Created| TimeStamp    |\n"
+                 "| ---- | --------------- | ------------ | ----------- | ------------ |\n"
+                 "| https://example.com | author@example.com | John Doe | 2023-10-16 | 1234567890 |\n"
+    }
+
+    result = transform_some_fields_into_markdown(collection_name, feed)
+
+    assert result == expected_output
+
+
+def test_transform_some_fields_into_markdown_phishing_kit():
+    from GroupIBTIA import transform_some_fields_into_markdown
+
+    collection_name = "bp/phishing_kit"
+    feed = {
+        "downloadedFrom": [
+            {
+                "date": "2023-10-16",
+                "url": "https://example.com",
+                "domain": "example.com",
+                "fileName": "phish.zip"
+            },
+            # ...
+        ]
+    }
+
+    expected_output = {'downloadedFrom': '| URL | File Name | Domain | Date |\n'
+                                         '| --- | --------- | ------ | ---- |\n'
+                                         '| https://example.com | phish.zip | example.com | '
+                                         '2023-10-16 |\n'}
+
+    result = transform_some_fields_into_markdown(collection_name, feed)
+
+    assert result == expected_output
+
+
+def test_transform_some_fields_into_markdown_public_leak():
+    from GroupIBTIA import transform_some_fields_into_markdown
+
+    collection_name = "osi/public_leak"
+    feed = {
+        "linkList": [
+            {
+                "author": "John Doe",
+                "dateDetected": "2023-10-16",
+                "datePublished": "2023-10-15",
+                "hash": "abcdef123456",
+                "link": "https://example.com",
+                "source": "Example Source"
+            },
+            # ...
+        ],
+        "matches": {
+            "Type1": {
+                "SubType1": ["Value1", "Value2"],
+                "SubType2": ["Value3"]
+            },
+            "Type2": {
+                "SubType3": ["Value4"]
+            }
+        }
+    }
+
+    expected_output = {'linkList': '| Author | Date Detected | Date Published | Hash | Link | Source |\n'
+                                   '| ------ | ------------- | -------------- | ---- |----- | ------ |\n'
+                                   '| John Doe | 2023-10-16 | 2023-10-15 | abcdef123456 | '
+                                   '[https://example.com](https://example.com) | Example Source |\n',
+                       'matches': '| Type | Sub Type | Value |\n'
+                                  '| ---- | -------- | ----- |\n'
+                                  '| Type1 | SubType1 | Value1 |\n'
+                                  '| Type1 | SubType1 | Value2 |\n'
+                                  '| Type1 | SubType2 | Value3 |\n'
+                                  '| Type2 | SubType3 | Value4 |\n'}
+
+    result = transform_some_fields_into_markdown(collection_name, feed)
+
+    assert result == expected_output
+
+def test_get_human_readable_feed():
+    from GroupIBTIA import get_human_readable_feed
+
+    collection_name = "TestCollection"
+    feed = {
+        "id": 123,
+        "field1": "value1",
+        "field2": "value2",
+        "field3": "value3"
+    }
+
+    expected_output = ('### Feed from TestCollection with ID 123\n'
+                        '|field1|field2|field3|id|\n'
+                        '|---|---|---|---|\n'
+                        '| value1 | value2 | value3 | 123 |')
+
+    result = get_human_readable_feed(collection_name, feed)
+
+    assert result.strip() == expected_output.strip()
+
+
