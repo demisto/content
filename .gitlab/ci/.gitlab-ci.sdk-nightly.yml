@@ -212,7 +212,65 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_end "Destroy instances"
     - job-done
 
-demisto-sdk-nightly:run-end-to-end-tests:
+demisto-sdk-nightly:run-end-to-end-tests-xsoar:
+  tags:
+    - gce
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  services: # needed for running e2e tests for docker
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    INSTANCE_ROLE: "Server Master"
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
+  stage: run-instances
+  script:
+    - |
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
+      echo "Server URL: $DEMISTO_BASE_URL"
+      unset DEMISTO_API_KEY # a temporary fix 
+      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+    - job-done
+    - exit $EXIT_CODE
+
+demisto-sdk-nightly:run-end-to-end-tests-mpv2:
+  tags:
+    - gce
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  services: # needed for running e2e tests for docker
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    INSTANCE_ROLE: "Server Master"
+  needs: ["demisto-sdk-nightly:mpv2-prepare-testing-bucket"]
+  stage: run-instances
+  script:
+    - |
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
+      echo "Server URL: $DEMISTO_BASE_URL"
+      unset DEMISTO_API_KEY # a temporary fix 
+      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+    - job-done
+    - exit $EXIT_CODE
+
+demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
   tags:
     - gce
   extends:
