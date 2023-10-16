@@ -888,13 +888,10 @@ def prepare_args_to_search(controller):
         args_to_misp_format['limit'] = '50'
     if 'tags' in args_to_misp_format:
         args_to_misp_format['tags'] = build_misp_complex_filter(args_to_misp_format['tags'])
-    if 'with_attachments' in args_to_misp_format:
-        if demisto_args.get('with_attachments') == 'true':
-            args_to_misp_format['with_attachments'] = 1
-        else:
-            args_to_misp_format['with_attachments'] = 0
-            args_to_misp_format['controller'] = controller
+    if args_to_misp_format.get('with_attachments') == 'true':
+        args_to_misp_format['with_attachments'] = 1
     else:
+        args_to_misp_format['with_attachments'] = 0
         args_to_misp_format['controller'] = controller
     demisto.debug(f"[MISP V3]: args for {demisto.command()} command are {args_to_misp_format}")
     return args_to_misp_format
