@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 1022.5,
           "y": 50
         }
       }
@@ -56,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 1022.5,
           "y": 195
         }
       }
@@ -98,7 +98,7 @@ tasks:
       comment:
         simple: Test attack report.
       customer_label:
-        simple: Test label
+        simple: Test customer label
       inactive:
         simple: "true"
       tags:
@@ -108,7 +108,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 1462.5,
           "y": 1040
         }
       }
@@ -133,7 +133,7 @@ tasks:
       brand: Netcraft V2
     nexttasks:
       '#none#':
-      - "42"
+      - "34"
     scriptarguments:
       all_results:
         simple: "true"
@@ -148,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1740
+          "x": 1462.5,
+          "y": 1915
         }
       }
     note: false
@@ -178,7 +178,7 @@ tasks:
       add_tags:
         simple: smishing,fake-shop-logo
       customer_label:
-        simple: Test label
+        simple: Test customer label
       description:
         simple: Test description
       remove_tags:
@@ -194,60 +194,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1565
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 88323e19-7f9c-46ac-8b37-a0e424afdc0c
-    type: regular
-    task:
-      id: 88323e19-7f9c-46ac-8b37-a0e424afdc0c
-      version: -1
-      name: netcraft-takedown-escalate
-      script: Netcraft V2|||netcraft-takedown-escalate
-      type: regular
-      iscommand: true
-      brand: Netcraft V2
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      retry-count:
-        simple: "0"
-      retry-interval:
-        simple: "0"
-      takedown_id:
-        complex:
-          root: Netcraft.Takedown
-          filters:
-          - - operator: isTrue
-              left:
-                value:
-                  simple: Netcraft.Takedown.authgiven
-                iscontext: true
-          accessor: id
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2090
+          "x": 1462.5,
+          "y": 1740
         }
       }
     note: false
@@ -259,10 +207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 66ef17bc-7b23-4e7d-8b7c-244751acacfa
+    taskid: ce9765db-6f9c-4855-8ce9-8909533a7589
     type: regular
     task:
-      id: 66ef17bc-7b23-4e7d-8b7c-244751acacfa
+      id: ce9765db-6f9c-4855-8ce9-8909533a7589
       version: -1
       name: netcraft-takedown-note-create
       script: Netcraft V2|||netcraft-takedown-note-create
@@ -273,6 +221,10 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      extend-context:
+        simple: new_note_id=note_id
+      ignore-outputs:
+        simple: "true"
       note_text:
         simple: Test note text
       notify:
@@ -284,7 +236,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 1462.5,
           "y": 1215
         }
       }
@@ -309,7 +261,7 @@ tasks:
       brand: Netcraft V2
     nexttasks:
       '#none#':
-      - "6"
+      - "44"
     scriptarguments:
       all_results:
         simple: "true"
@@ -320,7 +272,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 1462.5,
           "y": 1390
         }
       }
@@ -354,7 +306,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 1462.5,
           "y": 865
         }
       }
@@ -398,8 +350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 1040
+          "x": 480,
+          "y": 865
         }
       }
     note: false
@@ -442,8 +394,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 1215
+          "x": 480,
+          "y": 1040
         }
       }
     note: false
@@ -488,8 +440,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 1740
+          "x": 50,
+          "y": 1565
         }
       }
     note: false
@@ -524,8 +476,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 1915
+          "x": 50,
+          "y": 1740
         }
       }
     note: false
@@ -560,8 +512,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 2090
+          "x": 50,
+          "y": 1915
         }
       }
     note: false
@@ -609,8 +561,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 1740
+          "x": 480,
+          "y": 1565
         }
       }
     note: false
@@ -643,8 +595,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 1915
+          "x": 480,
+          "y": 1740
         }
       }
     note: false
@@ -677,8 +629,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 2090
+          "x": 480,
+          "y": 1915
         }
       }
     note: false
@@ -723,8 +675,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
-          "y": 1565
+          "x": 1022.5,
+          "y": 1390
         }
       }
     note: false
@@ -759,8 +711,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
-          "y": 1740
+          "x": 1022.5,
+          "y": 1565
         }
       }
     note: false
@@ -820,8 +772,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1585,
-          "y": 2090
+          "x": 910,
+          "y": 1915
         }
       }
     note: false
@@ -848,8 +800,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 2265
+          "x": 910,
+          "y": 2090
         }
       }
     note: false
@@ -879,8 +831,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 880
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -910,7 +862,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 1462.5,
           "y": 720
         }
       }
@@ -941,8 +893,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
-          "y": 1405
+          "x": 1022.5,
+          "y": 1230
         }
       }
     note: false
@@ -972,8 +924,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 602.5,
-          "y": 1580
+          "x": 50,
+          "y": 1405
         }
       }
     note: false
@@ -1003,8 +955,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 1580
+          "x": 480,
+          "y": 1405
         }
       }
     note: false
@@ -1046,7 +998,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 1022.5,
           "y": 370
         }
       }
@@ -1094,55 +1046,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
+          "x": 1022.5,
           "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "42":
-    id: "42"
-    taskid: d2c0b380-5d8f-488c-8672-a8ba08eea316
-    type: condition
-    task:
-      id: d2c0b380-5d8f-488c-8672-a8ba08eea316
-      version: -1
-      name: Are there authorized takedowns?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "34"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Netcraft.Takedown
-                filters:
-                - - operator: isTrue
-                    left:
-                      value:
-                        simple: Netcraft.Takedown.authgiven
-                      iscontext: true
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1915
         }
       }
     note: false
@@ -1181,8 +1086,50 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
-          "y": 1915
+          "x": 1022.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: ec1317f7-d9dd-448d-8e2e-938bbebd0121
+    type: condition
+    task:
+      id: ec1317f7-d9dd-448d-8e2e-938bbebd0121
+      version: -1
+      name: Is new note in list?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: new_note_id
+            iscontext: true
+          right:
+            value:
+              simple: Netcraft.TakedownNote.note_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 1565
         }
       }
     note: false
@@ -1197,8 +1144,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2280,
-        "width": 1915,
+        "height": 2105,
+        "width": 1792.5,
         "x": 50,
         "y": 50
       }
