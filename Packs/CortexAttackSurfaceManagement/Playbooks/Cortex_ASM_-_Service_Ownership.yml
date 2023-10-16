@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d19cd395-29e5-4b38-8e22-522bd9ca18ef
+    taskid: 91e4b9c9-2fe6-4cb4-8d55-f944a89e083b
     type: regular
     task:
-      id: d19cd395-29e5-4b38-8e22-522bd9ca18ef
+      id: 91e4b9c9-2fe6-4cb4-8d55-f944a89e083b
       version: -1
       name: Normalize and rank likely service owners
       description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
@@ -52,7 +52,26 @@ tasks:
       - "10"
     scriptarguments:
       owners:
-        simple: ${alert.asmserviceownerunrankedraw}
+        complex:
+          root: alert.asmserviceownerunrankedraw
+      asmsystemids:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: alert.asmsystemids.type
+                iscontext: true
+              right:
+                value:
+                  simple: ASSET-NAME
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -258,7 +277,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "18"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -389,12 +408,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 119258b1-6bac-4910-88c2-6da00763ea77
+  "19":
+    id: "19"
+    taskid: 6b8a094c-a54f-4678-86c6-6baf66e29721
     type: regular
     task:
-      id: 119258b1-6bac-4910-88c2-6da00763ea77
+      id: 6b8a094c-a54f-4678-86c6-6baf66e29721
       version: -1
       name: Look up project owners for service account
       description: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
@@ -407,16 +426,18 @@ tasks:
       - "6"
     scriptarguments:
       external_service:
-        simple: ${ASM.ExternalService.externally_detected_providers}
+        complex:
+          root: ASM.ExternalService.externally_detected_providers
       owners:
-        simple: ${alert.asmserviceownerunrankedraw}
+        complex:
+          root: alert.asmserviceownerunrankedraw
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -50,
-          "y": 1000
+          "y": 1005
         }
       }
     note: false
