@@ -109,3 +109,14 @@ ignore=BA124
 [file:XCloudRegionsPieWidget.yml]
 ignore=BA124
 
+[file:incidentfield-XDR_Risky_Hosts.json]
+ignore=IF115
+
+[file:incidentfield-XDR_Risky_Users.json]
+ignore=IF115
+
+[file:incidentfield-XDR_Risky_User_Count.json]
+ignore=IF115
+
+[file:incidentfield-XDR_Risky_Host_Count.json]
+ignore=IF115
