@@ -1,8 +1,5 @@
 This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
 
-Conditions:
-This is currently limited to stand-alone firewalls for PAN-OS.
-
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -33,6 +30,8 @@ This playbook does not use any scripts.
 | RemoteIP | IP address of the service. | alert.remoteip | Required |
 | RemoteProtocol | Protocol of the service. | alert.appid | Required |
 | RemotePort | Port number of the service. | alert.remoteport | Required |
+| DeviceGroup | Device Group of the firewall rule to lookup |  | Optional |
+| SecondaryDeviceGroup | In that case that the rule, address and service are created in the "Shared" location, we need to know what device-groups we can push to because it isn't possible to push to the "Shared" location. |  | Optional |
 
 ## Playbook Outputs
 
