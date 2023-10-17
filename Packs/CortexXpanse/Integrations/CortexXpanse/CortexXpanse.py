@@ -146,6 +146,8 @@ class Client(BaseClient):
 
         Args:
             search_params (list): list of search parameters to add to the API call body.
+            search_from (int): Starting search index.
+            search_to (int): Ending search index.
 
         Returns:
             dict: dict containing list of internet exposure assets.
@@ -571,8 +573,8 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
     name = args.get('name')
     asm_type = args.get('type')
     has_active_external_services = args.get('has_active_external_services')
-    search_from = args.get('search_from')
-    search_to = args.get('search_to')
+    search_from = args.get('search_from', 0)
+    search_to = args.get('search_to', DEFAULT_SEARCH_LIMIT)
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:

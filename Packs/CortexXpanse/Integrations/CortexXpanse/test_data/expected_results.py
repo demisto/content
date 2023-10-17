@@ -1204,7 +1204,7 @@ INCIDENT_GET_RESULTS = {
     "critical_severity_alert_count": 0,
     "description": "'Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443' along with 1 other alerts",
     "detection_time": null,
-    "high_severity_alert_count": 4,
+    "high_severity_alert_count": 1,
     "host_count": 1,
     "hosts": [
         "1.1.1.1:null"
@@ -1219,7 +1219,7 @@ INCIDENT_GET_RESULTS = {
     "manual_description": null,
     "manual_score": null,
     "manual_severity": null,
-    "med_severity_alert_count": 2,
+    "med_severity_alert_count": 1,
     "modification_time": 1696275576460,
     "notes": null,
     "original_tags": [

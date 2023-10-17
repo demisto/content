@@ -1261,8 +1261,8 @@ INCIDENT_GET_RAW = {
             "assigned_user_pretty_name": "User One",
             "alert_count": 2,
             "low_severity_alert_count": 0,
-            "med_severity_alert_count": 2,
-            "high_severity_alert_count": 4,
+            "med_severity_alert_count": 1,
+            "high_severity_alert_count": 1,
             "critical_severity_alert_count": 0,
             "user_count": 0,
             "host_count": 1,
@@ -1364,7 +1364,7 @@ INCIDENT_GET_RAW = {
             }
         },
         "alerts": {
-            "total_count": 4,
+            "total_count": 2,
             "data": [
                 {
                     "category": null,
@@ -1454,7 +1454,7 @@ INCIDENT_GET_RAW = {
                     "detection_timestamp": 1684486808566,
                     "name": "Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443",
                     "endpoint_id": null,
-                    "description": "This issue flags on-premises Microsoft Exchange Servers that are known to be below the current up-to-date secured versions suggested by Microsoft. Specifically, this issue flags: Exchange 2019 prior to Cumulative Update (CU) 12 and Exchange 2016 prior to CU23.\n\nThis issue also flags all end of life versions of Microsoft Exchange Server.\n\nVersions of Exchange flagged by this policy are likely vulnerable to multiple known exploits, including those exploited by the Hafnium threat actor in March 2021 (CVE-2021-26855, CVE-2021-26857, CVE-2021-26858, CVE-2021-27065), or the ProxyShell vulnerabilities from August 2021 (CVE-2021-34473, CVE-2021-34523, CVE-2021-31207) or the Play ransomware group (CVE-2022-41080 and CVE-2022-41082).\n\nSpecifically, this policy flags the following versions:\n * 15.0.x\n * 15.1.0 up to 15.1.2507.16\n * 15.2.0 up to 15.2.1118.20\n * 0.x through 14.x",
+                    "description": "This issue flags on-premises Microsoft Exchange Servers that are known to be below the current up-to-date secured versions suggested by Microsoft.",
                     "host_ip": null,
                     "host_name": "1.1.1.1",
                     "source": "ASM",
@@ -1495,7 +1495,7 @@ INCIDENT_GET_RAW = {
                     "action_local_ip_v6": null,
                     "action_remote_ip_v6": null,
                     "alert_type": "Unclassified",
-                    "resolution_status": "STATUS_120_RESOLVED_NO_LONGER_OBSERVED",
+                    "resolution_status": "STATUS_010_NEW",
                     "resolution_comment": "ASM alert resolution",
                     "dynamic_fields": null,
                     "tags": "AR:Registered to You,BU:Xpanse VanDelay Demo 3",
@@ -1547,7 +1547,7 @@ INCIDENT_GET_RAW = {
                         "firstObserved": 1686300134000,
                         "lastObserved": 1686300134000
                     },
-                    "alert_id": "113814",
+                    "alert_id": "89896",
                     "detection_timestamp": 1684486808564,
                     "name": "Missing X-Xss-Protection at 1.1.1.1:443",
                     "endpoint_id": null,
@@ -1600,16 +1600,8 @@ IP_DOMAIN_RAW = {
                 "externally_detected_providers": [
                     "Amazon Web Services"
                 ],
-                "region": null,
                 "ips": [
                     "1.1.1.1"
-                ],
-                "management_status": [],
-                "iot_model": null,
-                "iot_category": null,
-                "iot_profile": null,
-                "sensor": [
-                    "XPANSE"
                 ],
                 "service_type": [
                     "HttpServer"

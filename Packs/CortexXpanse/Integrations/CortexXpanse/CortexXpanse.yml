@@ -75,6 +75,20 @@ configuration:
   type: 0
   required: false
   additionalinfo: 'The tags of the alerts that will be fetched. If no tags are provided then no tag filtering will be applied on fetched alerts. These should include the tag prefix, ex. AT:Asset Tag.'
+- name: integration_reliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A+ - 3rd party enrichment
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 description: Integration to pull assets and other ASM related information.
 display: Cortex Xpanse
 name: Cortex Xpanse
@@ -687,9 +701,6 @@ script:
       required: true
       default: true
       isArray: true
-    - name: integration_reliability
-      required: false
-      description: The reliability of the source providing the intelligence data.
     outputs:
     - contextPath: ASM.IP.ip
       description: The IP address of the asset.
@@ -745,9 +756,6 @@ script:
       required: true
       isArray: true
       default: true
-    - name: integration_reliability
-      required: false
-      description: The reliability of the source providing the intelligence data.
     outputs:
     - contextPath: ASM.Domain.domain
       description: The domain affiliated with an asset.

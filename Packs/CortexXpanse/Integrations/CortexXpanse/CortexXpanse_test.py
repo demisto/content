@@ -705,7 +705,7 @@ def test_domain_command(requests_mock):
     args = {
         'domain': "*.acme.com"
     }
-
+    del IP_RESULTS[0]['ip']
     responses = domain_command(client, args)
 
     assert len(responses) == 2
