@@ -1,28 +1,38 @@
 id: Cortex ASM - On Prem Enrichment
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex ASM - On Prem Enrichment
-description: "Given an IP address, port, and protocol of a service, this playbook enriches on-prem integrations to find the related firewall rule and other related information."
-starttaskid: '0'
+description: |-
+  Given an IP address, port, and protocol of a service, this playbook enriches on-prem integrations to find the related firewall rule and other related information.
+
+  Conditions:
+  - Multiple integration instances configured at same time not supported (Panorama or standalone NGFW).
+  - !pan-os-security-policy-match fails if any firewall is disconnected (Panorama).
+  - Matching on different rules for different firewalls not supported (Panorama).
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 4627b363-29d7-4351-880f-f69276a11174
     type: start
     task:
       id: 4627b363-29d7-4351-880f-f69276a11174
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '24'
+      - "24"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": -160\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -160
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -30,8 +40,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: c495e804-5dcc-4474-84fc-29935ff3bb46
     type: regular
     task:
@@ -45,10 +55,16 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - '6'
+      - "6"
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 630\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 630
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -56,8 +72,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 9ec49b1d-f3ef-4338-80d5-53f8c0388991
     type: regular
     task:
@@ -71,7 +87,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       destination:
         complex:
@@ -100,8 +116,14 @@ tasks:
       source:
         simple: 1.1.1.1
     separatecontext: false
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 260\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 260
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -109,8 +131,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: e62a440c-57ac-4c93-8bb5-ef4e4ce71649
     type: condition
     task:
@@ -120,15 +142,15 @@ tasks:
       description: Check if firewall rule information was found (allow rules only).
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '5'
-      yes:
-      - '1'
+      - "5"
+      "yes":
+      - "1"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -149,8 +171,14 @@ tasks:
           right:
             value:
               simple: allow
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 410\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 410
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -158,8 +186,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
+  "5":
+    id: "5"
     taskid: 0ed129bf-45cb-4997-82d0-f2838151a0f2
     type: title
     task:
@@ -168,13 +196,13 @@ tasks:
       name: Continue
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '17'
+      - "17"
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": -350,\n    \"y\": 2535\n  }\n}"
     note: false
     timertriggers: []
@@ -183,8 +211,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
+  "6":
+    id: "6"
     taskid: f5797d40-066e-4f19-84b1-8ae33501e28e
     type: condition
     task:
@@ -194,15 +222,15 @@ tasks:
       description: Check if one of the integration instances is for a Panorama device.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '8'
-      yes:
+      - "8"
+      "yes":
       - '30'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: containsGeneral
           left:
@@ -214,8 +242,14 @@ tasks:
           right:
             value:
               simple: Panorama
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 780\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 780
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -223,8 +257,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '8':
-    id: '8'
+  "8":
+    id: "8"
     taskid: e9f87bca-b353-4aa1-8f33-09145bf2cd38
     type: regular
     task:
@@ -238,11 +272,12 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - '21'
+      - "21"
     scriptarguments:
       rulename:
         complex:
           root: Panorama.SecurityPolicyMatch.Rules
+          accessor: Name
           filters:
           - - operator: isEqualString
               left:
@@ -252,9 +287,8 @@ tasks:
               right:
                 value:
                   simple: allow
-          accessor: Name
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 990\n  }\n}"
     note: false
     timertriggers: []
@@ -263,8 +297,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     taskid: 8869db45-0714-43e9-8dd2-3c4600729a7b
     type: regular
     task:
@@ -278,7 +312,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '13'
+      - "13"
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -291,7 +325,7 @@ tasks:
       val3:
         simple: n/a
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2270\n  }\n}"
     note: false
     timertriggers: []
@@ -300,22 +334,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '10':
-    id: '10'
+  "10":
+    id: "10"
     taskid: a4d9354c-0d88-442e-84e6-732634431c1d
     type: regular
     task:
       id: a4d9354c-0d88-442e-84e6-732634431c1d
       version: -1
       name: Set cloud grid field
-      description: "Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:\n`!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2=\"AWS\" gridfiled=\"gridfield\"`"
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '14'
+      - "14"
     scriptarguments:
       gridfield:
         simple: asmcloud
@@ -332,7 +368,7 @@ tasks:
       val5:
         simple: n/a
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 2290\n  }\n}"
     note: false
     timertriggers: []
@@ -341,8 +377,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
+  "13":
+    id: "13"
     taskid: 55cb16b5-dffa-42bd-8d90-4d1b03d97d56
     type: regular
     task:
@@ -371,7 +407,7 @@ tasks:
       val3:
         simple: n/a
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2430\n  }\n}"
     note: false
     timertriggers: []
@@ -380,8 +416,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
+  "14":
+    id: "14"
     taskid: a8b9924f-da5a-4477-857a-1d8f9f0be0ae
     type: regular
     task:
@@ -392,19 +428,19 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '17'
+      - "17"
     scriptarguments:
       append:
-        simple: 'true'
+        simple: "true"
       key:
         simple: asm_fields_set_for_onprem
       value:
-        simple: 'true'
+        simple: "true"
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 3165\n  }\n}"
     note: false
     timertriggers: []
@@ -413,22 +449,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     taskid: 7c841170-de87-483f-8a8f-bbfec49e4573
     type: regular
     task:
       id: 7c841170-de87-483f-8a8f-bbfec49e4573
       version: -1
       name: Set ASM enrichment status to true
-      description: "Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:\n`!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2=\"AWS\" val3=\"TIMESTAMP\" gridfiled=\"gridfield\"`"
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     scriptarguments:
       gridfield:
         simple: asmenrichmentstatus
@@ -437,11 +475,11 @@ tasks:
       val1:
         simple: On Prem
       val2:
-        simple: 'true'
+        simple: "true"
       val3:
         simple: TIMESTAMP
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 280,\n    \"y\": 3610\n  }\n}"
     note: false
     timertriggers: []
@@ -450,8 +488,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '17':
-    id: '17'
+  "17":
+    id: "17"
     taskid: 7a3e239b-28b0-40cc-8a6c-c47d9cbe9380
     type: condition
     task:
@@ -461,15 +499,15 @@ tasks:
       description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '18'
-      yes:
-      - '16'
+      - "18"
+      "yes":
+      - "16"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isTrue
           left:
@@ -478,7 +516,7 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 3380\n  }\n}"
     note: false
     timertriggers: []
@@ -487,22 +525,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '18':
-    id: '18'
+  "18":
+    id: "18"
     taskid: ba489c19-e205-4184-86a2-5cc77c34f1f9
     type: regular
     task:
       id: ba489c19-e205-4184-86a2-5cc77c34f1f9
       version: -1
       name: Set ASM enrichment status to false
-      description: "Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:\n`!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2=\"AWS\" val3=\"TIMESTAMP\" gridfiled=\"gridfield\"`"
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
-      - '22'
+      - "22"
     scriptarguments:
       gridfield:
         simple: asmenrichmentstatus
@@ -511,11 +551,11 @@ tasks:
       val1:
         simple: On Prem
       val2:
-        simple: 'false'
+        simple: "false"
       val3:
         simple: TIMESTAMP
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 3610\n  }\n}"
     note: false
     timertriggers: []
@@ -524,8 +564,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '19':
-    id: '19'
+  "19":
+    id: "19"
     taskid: 41bdab6f-1603-4da9-8dc5-94bbe94c92ba
     type: title
     task:
@@ -534,13 +574,13 @@ tasks:
       name: System IDs
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2140\n  }\n}"
     note: false
     timertriggers: []
@@ -549,8 +589,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     taskid: 9d98d3cc-f234-401f-874a-2002b0dcee46
     type: title
     task:
@@ -559,13 +599,13 @@ tasks:
       name: Cloud
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - '10'
+      - "10"
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 2140\n  }\n}"
     note: false
     timertriggers: []
@@ -574,8 +614,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '21':
-    id: '21'
+  "21":
+    id: "21"
     taskid: fc836b11-f69a-4405-8f28-8e54eacfdd52
     type: condition
     task:
@@ -585,16 +625,16 @@ tasks:
       description: Check if firewall rule information was found.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '5'
-      yes:
-      - '20'
-      - '19'
+      - "5"
+      "yes":
+      - "20"
+      - "19"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -603,7 +643,7 @@ tasks:
                 root: Panorama.SecurityRule
                 accessor: Name
             iscontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 1900\n  }\n}"
     note: false
     timertriggers: []
@@ -612,8 +652,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     taskid: dbd0896a-ebbc-4b94-8541-564f9fdfd356
     type: title
     task:
@@ -622,10 +662,10 @@ tasks:
       name: Complete
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 3840\n  }\n}"
     note: false
     timertriggers: []
@@ -634,8 +674,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '24':
-    id: '24'
+  "24":
+    id: "24"
     taskid: 826cad0a-611a-49dd-825e-f66d78e1cba1
     type: condition
     task:
@@ -645,15 +685,15 @@ tasks:
       description: Check whether the PAN-OS integration is enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '5'
-      yes:
-      - '2'
+      - "5"
+      "yes":
+      - "2"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isExists
           left:
@@ -698,8 +738,14 @@ tasks:
               complex:
                 root: inputs.RemoteProtocol
             iscontext: true
-    continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": -30\n  }\n}"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -30
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1201,3 +1247,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}

@@ -1,27 +1,31 @@
 id: Cortex ASM - On Prem Remediation
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex ASM - On Prem Remediation
-description: "This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures."
-starttaskid: '0'
+description: |-
+  This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
+
+  Conditions:
+  - Multiple integration instances configured at same time not supported (Panorama or standalone NGFW).
+  - Multiple rules with the same name in different device-groups not supported (Panorama).
+  - !pan-os-list-services will fail if there are no services in a specific device-group (Panorama).
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 573237c6-7130-41ce-8653-2294f0b6ac94
     type: start
     task:
       id: 573237c6-7130-41ce-8653-2294f0b6ac94
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     nexttasks:
       '#none#':
       - '5'
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": -460\n  }\n}"
     note: false
     timertriggers: []
@@ -30,8 +34,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
+  "1":
+    id: "1"
     taskid: 22c135e5-6fc0-4464-87da-f8c0ae25220b
     type: regular
     task:
@@ -51,8 +55,7 @@ tasks:
         complex:
           root: inputs.RuleName
     separatecontext: false
-    continueonerror: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": -140\n  }\n}"
     note: false
     timertriggers: []
@@ -61,8 +64,9 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+    continueonerror: true
+  "2":
+    id: "2"
     taskid: 6db7e419-5848-487b-8eba-03db46a125bc
     type: playbook
     task:
@@ -73,20 +77,17 @@ tasks:
       playbookName: PAN-OS - Block Destination Service
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "4"
     scriptarguments:
       AutoCommit:
-        simple: 'True'
+        simple: "True"
       DestinationZone:
         complex:
           root: Panorama.SecurityRule
           accessor: To
-      DeviceGroup:
-        complex:
-          root: inputs.DeviceGroup
       IP:
         complex:
           root: inputs.RemoteIP
@@ -106,9 +107,6 @@ tasks:
           root: inputs.RemoteProtocol
       RuleNamePrefix:
         simple: xpanse-ar-rule
-      SecondaryDeviceGroup:
-        complex:
-          root: inputs.SecondaryDeviceGroup
       ServiceNamePrefix:
         simple: xpanse-ar-service-
       SourceZone:
@@ -117,11 +115,17 @@ tasks:
           accessor: From
       WhereRule:
         simple: top
+      DeviceGroup:
+        complex:
+          root: inputs.DeviceGroup
+      SecondaryDeviceGroup:
+        complex:
+          root: inputs.SecondaryDeviceGroup
     separatecontext: true
-    continueonerrortype: ''
+    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
     view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 400\n  }\n}"
@@ -132,8 +136,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
+  "4":
+    id: "4"
     taskid: d74fd530-00ae-4377-8dbf-8681f4a7a605
     type: title
     task:
@@ -142,10 +146,10 @@ tasks:
       name: Complete
       type: title
       iscommand: false
-      brand: ''
+      brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ''
+    continueonerrortype: ""
     view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 590\n  }\n}"
     note: false
     timertriggers: []
@@ -344,3 +348,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
