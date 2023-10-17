@@ -574,7 +574,7 @@ script:
     - description: Deprecated. Please use project_key.
       name: projectKey
       hidden: true
-    - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required)'
+    - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required).'
       name: issue_type_name
     - description: Deprecated. Please use issue_type_name.
       name: issueTypeName
@@ -880,7 +880,7 @@ script:
       description: The scope of the field.
       type: Object
     - contextPath: Jira.IssueField.scope.type
-      description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
+      description: 'The type of scope. Valid values: PROJECT, TEMPLATE.'
       type: String
     - contextPath: Jira.IssueField.scope.project
       description: The project the item has scope in.
@@ -898,7 +898,7 @@ script:
       description: The name of the project.
       type: String
     - contextPath: Jira.IssueField.scope.project.projectTypeKey
-      description: 'The project type of the project. Valid values: software, service_desk, business'
+      description: 'The project type of the project. Valid values: software, service_desk, business.'
       type: String
     - contextPath: Jira.IssueField.scope.project.simplified
       description: Whether or not the project is simplified.
@@ -922,7 +922,7 @@ script:
       description: The description of the project category.
       type: String
     - contextPath: Jira.IssueField.scope.type
-      description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
+      description: 'The type of scope. Valid values: PROJECT, TEMPLATE.'
       type: String
     - contextPath: Jira.IssueField.schema
       description: The data schema for the field.
@@ -978,7 +978,7 @@ script:
     - description: The project key or ID.
       name: project_key_id
     - auto: PREDEFINED
-      description: "The type of the board. Allowed values are: scrum, kanban, simple"
+      description: "The type of the board. Allowed values are: scrum, kanban, simple."
       name: type
       predefined:
       - 'scrum'
