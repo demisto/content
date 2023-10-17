@@ -75,7 +75,7 @@ script:
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 253b9a136f0d574149fc43691eaf7ae27aff141a
+        e.g.: 253b9a136f0d574149fc43691eaf7ae27aff141a.
       name: id
       required: true
       default: false
@@ -85,80 +85,80 @@ script:
     name: gibtia-get-compromised-account-info
     outputs:
     - contextPath: GIBTIA.CompromisedAccount.client.ipv4.asn
-      description: Victim IP address
+      description: Victim IP address.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.client.ipv4.countryName
-      description: Country name
+      description: Country name.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.client.ipv4.ip
-      description: Victim IP address
+      description: Victim IP address.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.client.ipv4.region
-      description: Region name
+      description: Region name.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.cnc.domain
-      description: Event CNC domain
+      description: Event CNC domain.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.cnc.url
-      description: CNC URL
+      description: CNC URL.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.cnc.ipv4.ip
-      description: CNC IP address
+      description: CNC IP address.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.dateCompromised
-      description: Date of compromise
+      description: Date of compromise.
       type: Date
     - contextPath: GIBTIA.CompromisedAccount.dateDetected
-      description: Date of detection
+      description: Date of detection.
       type: Date
     - contextPath: GIBTIA.CompromisedAccount.dropEmail.email
-      description: Email where compromised data were sent to
+      description: Email where compromised data were sent to.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.dropEmail.domain
-      description: Email domain
+      description: Email domain.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.login
-      description: Compromised login
+      description: Compromised login.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.password
-      description: Compromised password
+      description: Compromised password.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.malware.name
-      description: Malware name
+      description: Malware name.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.malware.id
-      description: Group IB malware ID
+      description: Group IB malware ID.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.person.name
-      description: Card owner name
+      description: Card owner name.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.person.email
-      description: Card owner e-mail
+      description: Card owner e-mail.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.portalLink
-      description: Link to GIB incident
+      description: Link to GIB incident.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.threatActor.name
-      description: Associated threat actor
+      description: Associated threat actor.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.threatActor.isAPT
-      description: Is threat actor APT group
+      description: Is threat actor APT group.
       type: Boolean
     - contextPath: GIBTIA.CompromisedAccount.threatActor.id
-      description: Threat actor GIB ID
+      description: Threat actor GIB ID.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.id
-      description: Group IB incident ID
+      description: Group IB incident ID.
       type: String
     - contextPath: GIBTIA.CompromisedAccount.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: ecda6f4dc85596f447314ce01e2152db9c9d3cbc
+        e.g.: ecda6f4dc85596f447314ce01e2152db9c9d3cbc.
       name: id
       required: true
       default: false
@@ -168,74 +168,74 @@ script:
     name: gibtia-get-compromised-card-info
     outputs:
     - contextPath: GIBTIA.CompromisedCard.cardInfo.cvv
-      description: Compromised card CVV
+      description: Compromised card CVV.
       type: String
     - contextPath: GIBTIA.CompromisedCard.cardInfo.issuer.issuer
-      description: Card issuer
+      description: Card issuer.
       type: String
     - contextPath: GIBTIA.CompromisedCard.cardInfo.number
-      description: Compromised card number
+      description: Compromised card number.
       type: String
     - contextPath: GIBTIA.CompromisedCard.cardInfo.system
-      description: Payment system
+      description: Payment system.
       type: String
     - contextPath: GIBTIA.CompromisedCard.cardInfo.type
-      description: Internal issuer card type
+      description: Internal issuer card type.
       type: String
     - contextPath: GIBTIA.CompromisedCard.cardInfo.validThru
-      description: Card expiration date
+      description: Card expiration date.
       type: String
     - contextPath: GIBTIA.CompromisedCard.client.ipv4.asn
-      description: Compromised client ASN
+      description: Compromised client ASN.
       type: String
     - contextPath: GIBTIA.CompromisedCard.client.ipv4.countryName
-      description: Country name
+      description: Country name.
       type: String
     - contextPath: GIBTIA.CompromisedCard.client.ipv4.ip
-      description: Victim IP address
+      description: Victim IP address.
       type: String
     - contextPath: GIBTIA.CompromisedCard.client.ipv4.region
-      description: Region name
+      description: Region name.
       type: String
     - contextPath: GIBTIA.CompromisedCard.dateCompromised
-      description: Date of compromise
+      description: Date of compromise.
       type: Date
     - contextPath: GIBTIA.CompromisedCard.dateDetected
-      description: Date detected
+      description: Date detected.
       type: Date
     - contextPath: GIBTIA.CompromisedCard.malware.name
-      description: Related malware name
+      description: Related malware name.
       type: String
     - contextPath: GIBTIA.CompromisedCard.malware.id
-      description: Related GIB malware ID
+      description: Related GIB malware ID.
       type: String
     - contextPath: GIBTIA.CompromisedCard.portalLink
-      description: Link to GIB incident
+      description: Link to GIB incident.
       type: String
     - contextPath: GIBTIA.CompromisedCard.threatActor.name
-      description: Associated  threat actor
+      description: Associated  threat actor.
       type: String
     - contextPath: GIBTIA.CompromisedCard.threatActor.isAPT
-      description: Is threat actor APT group
+      description: Is threat actor APT group.
       type: Boolean
     - contextPath: GIBTIA.CompromisedCard.threatActor.id
-      description: Threat actor GIB ID
+      description: Threat actor GIB ID.
       type: String
     - contextPath: GIBTIA.CompromisedCard.id
-      description: Group IB incident ID
+      description: Group IB incident ID.
       type: String
     - contextPath: GIBTIA.CompromisedCard.sourceType
-      description: Information source
+      description: Information source.
       type: String
     - contextPath: GIBTIA.CompromisedCard.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 50a3b4abbfca5dcbec9c8b3a110598f61ba93r33
+        e.g.: 50a3b4abbfca5dcbec9c8b3a110598f61ba93r33.
       name: id
       required: true
       default: false
@@ -245,59 +245,59 @@ script:
     name: gibtia-get-compromised-mule-info
     outputs:
     - contextPath: GIBTIA.CompromisedMule.account
-      description: Account number (card/phone), which was used by threat actor to cash out
+      description: Account number (card/phone), which was used by threat actor to cash out.
       type: String
     - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.asn
-      description: CNC ASN
+      description: CNC ASN.
       type: String
     - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.countryName
-      description: Country name
+      description: Country name.
       type: String
     - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.ip
-      description: Victim IP address
+      description: Victim IP address.
       type: String
     - contextPath: GIBTIA.CompromisedMule.cnc.ipv4.region
-      description: Region name
+      description: Region name.
       type: String
     - contextPath: GIBTIA.CompromisedMule.cnc.url
-      description: CNC URL
+      description: CNC URL.
       type: String
     - contextPath: GIBTIA.CompromisedMule.cnc.domain
-      description: CNC domain
+      description: CNC domain.
       type: String
     - contextPath: GIBTIA.CompromisedMule.dateAdd
-      description: Date of detection
+      description: Date of detection.
       type: Date
     - contextPath: GIBTIA.CompromisedMule.malware.name
-      description: Malware name
+      description: Malware name.
       type: String
     - contextPath: GIBTIA.CompromisedMule.portalLink
-      description: Link to GIB incident
+      description: Link to GIB incident.
       type: String
     - contextPath: GIBTIA.CompromisedMule.threatActor.name
-      description: Associated threat actor
+      description: Associated threat actor.
       type: String
     - contextPath: GIBTIA.CompromisedMule.threatActor.id
-      description: Threat actor GIB ID
+      description: Threat actor GIB ID.
       type: String
     - contextPath: GIBTIA.CompromisedMule.threatActor.isAPT
-      description: Is threat actor APT group
+      description: Is threat actor APT group.
       type: Boolean
     - contextPath: GIBTIA.CompromisedMule.id
-      description: Group IB incident ID
+      description: Group IB incident ID.
       type: String
     - contextPath: GIBTIA.CompromisedMule.sourceType
-      description: Information source
+      description: Information source.
       type: String
     - contextPath: GIBTIA.CompromisedMule.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 0c1426048474df19ada9d0089ef8b3efce906556
+        e.g.: 0c1426048474df19ada9d0089ef8b3efce906556.
       name: id
       required: true
       default: false
@@ -307,68 +307,68 @@ script:
     name: gibtia-get-compromised-imei-info
     outputs:
     - contextPath: GIBTIA.CompromisedIMEI.client.ipv4.asn
-      description: Compromised client ASN
+      description: Compromised client ASN.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.client.ipv4.countryName
-      description: Country name
+      description: Country name.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.client.ipv4.ip
-      description: Victim IP address
+      description: Victim IP address.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.client.ipv4.region
-      description: Region name
+      description: Region name.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.cnc.domain
-      description: CNC URL
+      description: CNC URL.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.cnc.ipv4.asn
-      description: CNC ASN
+      description: CNC ASN.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.cnc.ipv4.countryName
-      description: CNC IP country name
+      description: CNC IP country name.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.cnc.ipv4.ip
-      description: CNC IP address
+      description: CNC IP address.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.cnc.ipv4.region
-      description: CNC region name
+      description: CNC region name.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.dateCompromised
-      description: Date compromised
+      description: Date compromised.
       type: Date
     - contextPath: GIBTIA.CompromisedIMEI.dateDetected
-      description: Date detected
+      description: Date detected.
       type: Date
     - contextPath: GIBTIA.CompromisedIMEI.device.imei
-      description: Compromised IMEI
+      description: Compromised IMEI.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.device.model
-      description: Compromised device model
+      description: Compromised device model.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.malware.name
-      description: Associated malware
+      description: Associated malware.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.threatActor.id
-      description: Associated threat actor ID
+      description: Associated threat actor ID.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.threatActor.name
-      description: Associated threat actor
+      description: Associated threat actor.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.threatActor.isAPT
-      description: Is threat actor APT group
+      description: Is threat actor APT group.
       type: Boolean
     - contextPath: GIBTIA.CompromisedIMEI.id
-      description: Group IB incident ID
+      description: Group IB incident ID.
       type: String
     - contextPath: GIBTIA.CompromisedIMEI.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 6fd344f340f4bdc08548cb36ded62bdf
+        e.g.: 6fd344f340f4bdc08548cb36ded62bdf.
       name: id
       required: true
       default: false
@@ -378,29 +378,29 @@ script:
     name: gibtia-get-compromised-breached-info
     outputs:
     - contextPath: GIBTIA.DataBreach.email
-      description: List of breached emails
+      description: List of breached emails.
       type: String
     - contextPath: GIBTIA.DataBreach.leakName
-      description: Name of the leak
+      description: Name of the leak.
       type: String
     - contextPath: GIBTIA.DataBreach.password
-      description: List of breached passwords
+      description: List of breached passwords.
       type: String
     - contextPath: GIBTIA.DataBreach.uploadTime
-      description: Date of breached data upload
+      description: Date of breached data upload.
       type: Date
     - contextPath: GIBTIA.DataBreach.id
-      description: Group IB incident ID
+      description: Group IB incident ID.
       type: String
     - contextPath: GIBTIA.DataBreach.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: f201c253ac71f7d78db39fa111a2af9d7ee7a3f7
+        e.g.: f201c253ac71f7d78db39fa111a2af9d7ee7a3f7.
       name: id
       required: true
       default: false
@@ -410,44 +410,44 @@ script:
     name: gibtia-get-osi-git-leak-info
     outputs:
     - contextPath: GIBTIA.GitLeak.dateDetected
-      description: Leak detection date
+      description: Leak detection date.
       type: Date
     - contextPath: GIBTIA.GitLeak.matchesType
-      description: List of matches type
+      description: List of matches type.
       type: String
     - contextPath: GIBTIA.GitLeak.name
-      description: GIT filename
+      description: GIT filename.
       type: String
     - contextPath: GIBTIA.GitLeak.repository
-      description: GIT repository
+      description: GIT repository.
       type: String
     - contextPath: GIBTIA.GitLeak.revisions.file
-      description: Leaked file link
+      description: Leaked file link.
       type: String
     - contextPath: GIBTIA.GitLeak.revisions.fileDiff
-      description: Leaked file diff
+      description: Leaked file diff.
       type: String
     - contextPath: GIBTIA.GitLeak.revisions.info.authorName
-      description: Revision author
+      description: Revision author.
       type: String
     - contextPath: GIBTIA.GitLeak.revisions.info.authorEmail
-      description: Author name
+      description: Author name.
       type: String
     - contextPath: GIBTIA.GitLeak.revisions.info.dateCreated
-      description: Revision creation date
+      description: Revision creation date.
       type: Date
     - contextPath: GIBTIA.GitLeak.source
       description: Source(github/gitlab/etc.)
       type: String
     - contextPath: GIBTIA.GitLeak.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: a9a5b5cb9b971a2a037e3a0a30654185ea148095
+        e.g.: a9a5b5cb9b971a2a037e3a0a30654185ea148095.
       name: id
       required: true
       default: false
@@ -457,40 +457,40 @@ script:
     name: gibtia-get-osi-public-leak-info
     outputs:
     - contextPath: GIBTIA.PublicLeak.created
-      description: Leak event detection date
+      description: Leak event detection date.
       type: Date
     - contextPath: GIBTIA.PublicLeak.data
-      description: Leaked data
+      description: Leaked data.
       type: String
     - contextPath: GIBTIA.PublicLeak.hash
-      description: Leak data hash
+      description: Leak data hash.
       type: String
     - contextPath: GIBTIA.PublicLeak.linkList.author
-      description: Leak entry author
+      description: Leak entry author.
       type: String
     - contextPath: GIBTIA.PublicLeak.linkList.dateDetected
-      description: Leak detection date
+      description: Leak detection date.
       type: Date
     - contextPath: GIBTIA.PublicLeak.linkList.datePublished
-      description: Leak publish date
+      description: Leak publish date.
       type: Date
     - contextPath: GIBTIA.PublicLeak.linkList.hash
-      description: Leak hash
+      description: Leak hash.
       type: String
     - contextPath: GIBTIA.PublicLeak.linkList.link
-      description: Leak link
+      description: Leak link.
       type: String
     - contextPath: GIBTIA.PublicLeak.linkList.source
-      description: Leak source
+      description: Leak source.
       type: String
     - contextPath: GIBTIA.PublicLeak.matches
-      description: Matches
+      description: Matches.
       type: String
     - contextPath: GIBTIA.PublicLeak.portalLink
-      description: Group IB portal link
+      description: Group IB portal link.
       type: String
     - contextPath: GIBTIA.PublicLeak.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
@@ -498,7 +498,7 @@ script:
     - description: |-
         GIB event id.
 
-        e.g.: CVE-2021-27152
+        e.g.: CVE-2021-27152.
       name: id
       required: true
       default: false
@@ -508,50 +508,50 @@ script:
     name: gibtia-get-osi-vulnerability-info
     outputs:
     - contextPath: GIBTIA.OSIVulnerability.affectedSoftware.name
-      description: Affected software name
+      description: Affected software name.
       type: String
     - contextPath: GIBTIA.OSIVulnerability.affectedSoftware.operator
-      description: Affected software version operator( ex. le=less or equal)
+      description: Affected software version operator( ex. le=less or equal).
       type: String
     - contextPath: GIBTIA.OSIVulnerability.affectedSoftware.version
-      description: Affected software version
+      description: Affected software version.
       type: String
     - contextPath: GIBTIA.OSIVulnerability.bulletinFamily
-      description: Bulletin family
+      description: Bulletin family.
       type: String
     - contextPath: GIBTIA.OSIVulnerability.cvss.score
-      description: CVSS score
+      description: CVSS score.
       type: String
     - contextPath: GIBTIA.OSIVulnerability.cvss.vector
-      description: CVSS vector
+      description: CVSS vector.
       type: String
     - contextPath: GIBTIA.OSIVulnerability.dateLastSeen
-      description: Date last seen
+      description: Date last seen.
       type: Date
     - contextPath: GIBTIA.OSIVulnerability.datePublished
-      description: Date published
+      description: Date published.
       type: Date
     - contextPath: GIBTIA.OSIVulnerability.description
-      description: Vulnerability description
+      description: Vulnerability description.
       type: String
     - contextPath: GIBTIA.OSIVulnerability.id
-      description: Vulnerability ID
+      description: Vulnerability ID.
       type: String
     - contextPath: GIBTIA.OSIVulnerability.reporter
-      description: Vulnerability reporter
+      description: Vulnerability reporter.
       type: String
     - contextPath: GIBTIA.OSIVulnerability.title
-      description: Vulnerability title
+      description: Vulnerability title.
       type: String
     - contextPath: GIBTIA.OSIVulnerability.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 044f3f2cb599228c1882884eb77eb073f68a25f2
+        e.g.: 044f3f2cb599228c1882884eb77eb073f68a25f2.
       name: id
       default: false
       isArray: false
@@ -561,50 +561,50 @@ script:
     name: gibtia-get-phishing-kit-info
     outputs:
     - contextPath: GIBTIA.PhishingKit.dateDetected
-      description: Phishing kit detection date
+      description: Phishing kit detection date.
       type: Date
     - contextPath: GIBTIA.PhishingKit.dateFirstSeen
-      description: Phishing kit first seen date
+      description: Phishing kit first seen date.
       type: Date
     - contextPath: GIBTIA.PhishingKit.dateLastSeen
-      description: Phishing kit last seen date
+      description: Phishing kit last seen date.
       type: Date
     - contextPath: GIBTIA.PhishingKit.downloadedFrom.fileName
-      description: Phishing kit filename
+      description: Phishing kit filename.
       type: String
     - contextPath: GIBTIA.PhishingKit.downloadedFrom.domain
-      description: Phishing kit domain
+      description: Phishing kit domain.
       type: String
     - contextPath: GIBTIA.PhishingKit.downloadedFrom.date
-      description: Downloading date
+      description: Downloading date.
       type: Date
     - contextPath: GIBTIA.PhishingKit.downloadedFrom.url
-      description: URL where phishing kit were downloaded from
+      description: URL where phishing kit were downloaded from.
       type: String
     - contextPath: GIBTIA.PhishingKit.hash
-      description: MD5 phishing kit hash
+      description: MD5 phishing kit hash.
       type: String
     - contextPath: GIBTIA.PhishingKit.portalLink
-      description: Link to kit on GIB TI&A
+      description: Link to kit on GIB TI&A.
       type: String
     - contextPath: GIBTIA.PhishingKit.targetBrand
-      description: Phishing kit target brand
+      description: Phishing kit target brand.
       type: String
     - contextPath: GIBTIA.PhishingKit.emails
-      description: Emails found in phishing kit
+      description: Emails found in phishing kit.
       type: String
     - contextPath: GIBTIA.PhishingKit.id
-      description: GIB event ID
+      description: GIB event ID.
       type: String
     - contextPath: GIBTIA.PhishingKit.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: fce7f92d0b64946cf890842d083953649b259952
+        e.g.: fce7f92d0b64946cf890842d083953649b259952.
       name: id
       required: true
       default: false
@@ -614,62 +614,62 @@ script:
     name: gibtia-get-phishing-info
     outputs:
     - contextPath: GIBTIA.Phishing.dateDetected
-      description: Date of phishing detection
+      description: Date of phishing detection.
       type: Date
     - contextPath: GIBTIA.Phishing.dateBlocked
-      description: Phishing resource block date
+      description: Phishing resource block date.
       type: Unknown
     - contextPath: GIBTIA.Phishing.id
-      description: GIB incident ID
+      description: GIB incident ID.
       type: String
     - contextPath: GIBTIA.Phishing.ipv4.asn
-      description: Phishing resource ASN
+      description: Phishing resource ASN.
       type: String
     - contextPath: GIBTIA.Phishing.ipv4.countryName
-      description: Phishing resource country name
+      description: Phishing resource country name.
       type: String
     - contextPath: GIBTIA.Phishing.ipv4.ip
-      description: Phishing resource IP address
+      description: Phishing resource IP address.
       type: String
     - contextPath: GIBTIA.Phishing.ipv4.region
-      description: Phishing resource region name
+      description: Phishing resource region name.
       type: String
     - contextPath: GIBTIA.Phishing.phishingDomain.domain
-      description: Phishing domain
+      description: Phishing domain.
       type: String
     - contextPath: GIBTIA.Phishing.phishingDomain.dateRegistered
-      description: Phishing domain creation date
+      description: Phishing domain creation date.
       type: Date
     - contextPath: GIBTIA.Phishing.phishingDomain.registrar
-      description: Phishing domain registrar name
+      description: Phishing domain registrar name.
       type: String
     - contextPath: GIBTIA.Phishing.phishingDomain.title
-      description: Phishing domain title
+      description: Phishing domain title.
       type: String
     - contextPath: GIBTIA.Phishing.targetBrand
-      description: Phishing target name
+      description: Phishing target name.
       type: String
     - contextPath: GIBTIA.Phishing.targetCategory
       description: Phishing target category (financial, government, etc.)
       type: String
     - contextPath: GIBTIA.Phishing.targetDomain
-      description: Phishing target domain
+      description: Phishing target domain.
       type: String
     - contextPath: GIBTIA.Phishing.status
       description: Current status of phishing incident (blocked, in response, etc.)
       type: String
     - contextPath: GIBTIA.Phishing.url
-      description: Phishing URL
+      description: Phishing URL.
       type: String
     - contextPath: GIBTIA.Phishing.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 26a05baa4025edff367b058b13c6b43e820538a5
+        e.g.: 26a05baa4025edff367b058b13c6b43e820538a5.
       name: id
       required: true
       default: false
@@ -679,62 +679,62 @@ script:
     name: gibtia-get-attacks-ddos-info
     outputs:
     - contextPath: GIBTIA.AttacksDDoS.cnc.url
-      description: CNC URL
+      description: CNC URL.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.cnc.domain
-      description: CNC domain
+      description: CNC domain.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.cnc.ipv4.asn
-      description: CNC ASN
+      description: CNC ASN.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.cnc.ipv4.countryName
-      description: CNC IP country name
+      description: CNC IP country name.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.cnc.ipv4.ip
-      description: CNC IP address
+      description: CNC IP address.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.cnc.ipv4.region
-      description: CNC region name
+      description: CNC region name.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.target.ipv4.asn
-      description: DDoS target ASN
+      description: DDoS target ASN.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.target.ipv4.countryName
-      description: DDoS target country name
+      description: DDoS target country name.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.target.ipv4.ip
-      description: DDoS target IP address
+      description: DDoS target IP address.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.target.ipv4.region
-      description: DDoS target region name
+      description: DDoS target region name.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.target.category
-      description: DDoS target category
+      description: DDoS target category.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.target.domain
-      description: DDoS target domain
+      description: DDoS target domain.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.threatActor.id
-      description: Associated threat actor ID
+      description: Associated threat actor ID.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.threatActor.name
-      description: Associated threat actor
+      description: Associated threat actor.
       type: String
     - contextPath: GIBTIA.AttacksDdos.threatActor.isAPT
-      description: Is threat actor APT
+      description: Is threat actor APT.
       type: Boolean
     - contextPath: GIBTIA.AttacksDDoS.id
-      description: GIB incident ID
+      description: GIB incident ID.
       type: String
     - contextPath: GIBTIA.AttacksDDoS.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 6009637a1135cd001ef46e21
+        e.g.: 6009637a1135cd001ef46e21.
       name: id
       required: true
       default: false
@@ -744,41 +744,41 @@ script:
     name: gibtia-get-attacks-deface-info
     outputs:
     - contextPath: GIBTIA.AttacksDeface.date
-      description: Date of deface
+      description: Date of deface.
       type: Date
     - contextPath: GIBTIA.AttacksDeface.id
-      description: GIB incident ID
+      description: GIB incident ID.
       type: String
     - contextPath: GIBTIA.AttacksDeface.targetIp.asn
-      description: Victim ASN
+      description: Victim ASN.
       type: String
     - contextPath: GIBTIA.AttacksDeface.targetIp.countryName
-      description: Victim country name
+      description: Victim country name.
       type: String
     - contextPath: GIBTIA.AttacksDeface.targetIp.region
-      description: Victim IP region name
+      description: Victim IP region name.
       type: String
     - contextPath: GIBTIA.AttacksDeface.threatActor.id
-      description: Associated threat actor ID
+      description: Associated threat actor ID.
       type: String
     - contextPath: GIBTIA.AttacksDeface.threatActor.name
-      description: Associated threat actor
+      description: Associated threat actor.
       type: String
     - contextPath: GIBTIA.AttacksDeface.threatActor.isAPT
-      description: Is threat actor APT
+      description: Is threat actor APT.
       type: Boolean
     - contextPath: GIBTIA.AttacksDeface.url
-      description: URL of compromised resource
+      description: URL of compromised resource.
       type: String
     - contextPath: GIBTIA.AttacksDeface.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 1b09d389d016121afbffe481a14b30ea995876e4
+        e.g.: 1b09d389d016121afbffe481a14b30ea995876e4.
       name: id
       required: true
       default: false
@@ -786,7 +786,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Is threat APT
+      description: Is threat APT.
       name: isAPT
       predefined:
       - 'true'
@@ -802,113 +802,113 @@ script:
       description: Threat accounts found in this threat action.
       type: String
     - contextPath: GIBTIA.Threat.contacts.flag
-      description: Is account fake or not
+      description: Is account fake or not.
       type: String
     - contextPath: GIBTIA.Threat.contacts.service
-      description: Account service
+      description: Account service.
       type: String
     - contextPath: GIBTIA.Threat.contacts.type
       description: Type of account(social_network/email/wallet etc.)
       type: String
     - contextPath: GIBTIA.Threat.countries
-      description: Affected countries
+      description: Affected countries.
       type: String
     - contextPath: GIBTIA.Threat.createdAt
-      description: Threat report creation date
+      description: Threat report creation date.
       type: Date
     - contextPath: GIBTIA.Threat.cveList.name
-      description: List of abused CVE
+      description: List of abused CVE.
       type: String
     - contextPath: GIBTIA.Threat.dateFirstSeen
-      description: Attack first seen date
+      description: Attack first seen date.
       type: Date
     - contextPath: GIBTIA.Threat.dateLastSeen
-      description: Attack last seen date
+      description: Attack last seen date.
       type: Date
     - contextPath: GIBTIA.Threat.datePublished
-      description: Date published
+      description: Date published.
       type: Date
     - contextPath: GIBTIA.Threat.description
-      description: Threat description
+      description: Threat description.
       type: String
     - contextPath: GIBTIA.Threat.forumsAccounts.url
-      description: Related forum URL
+      description: Related forum URL.
       type: String
     - contextPath: GIBTIA.Threat.forumsAccounts.nickname
-      description: Related forums account
+      description: Related forums account.
       type: String
     - contextPath: GIBTIA.Threat.forumsAccounts.registeredAt
-      description: Related forums account registration date
+      description: Related forums account registration date.
       type: Date
     - contextPath: GIBTIA.Threat.forumsAccounts.messageCount
-      description: Related forums messages count
+      description: Related forums messages count.
       type: Number
     - contextPath: GIBTIA.Threat.id
-      description: GIB internal threat ID
+      description: GIB internal threat ID.
       type: String
     - contextPath: GIBTIA.Threat.indicators
-      description: Can be either network or file indicators
+      description: Can be either network or file indicators.
       type: String
     - contextPath: GIBTIA.Threat.langs
-      description: Languages actors related
+      description: Languages actors related.
       type: String
     - contextPath: GIBTIA.Threat.malwareList.name
-      description: Related Malware Name
+      description: Related Malware Name.
       type: String
     - contextPath: GIBTIA.Threat.malwareList.id
-      description: Related malware GIB internal ID
+      description: Related malware GIB internal ID.
       type: String
     - contextPath: GIBTIA.Threat.mitreMatrix.attackPatternId
-      description: MITRE attack pattern ID
+      description: MITRE attack pattern ID.
       type: String
     - contextPath: GIBTIA.Threat.mitreMatrix.attackTactic
-      description: MITRE attack tactic name
+      description: MITRE attack tactic name.
       type: String
     - contextPath: GIBTIA.Threat.mitreMatrix.attackType
-      description: MITRE attack type
+      description: MITRE attack type.
       type: String
     - contextPath: GIBTIA.Threat.mitreMatrix.id
-      description: MITRE attack id
+      description: MITRE attack id.
       type: String
     - contextPath: GIBTIA.Threat.regions
-      description: Regions affected by attack
+      description: Regions affected by attack.
       type: String
     - contextPath: GIBTIA.Threat.reportNumber
-      description: GIB report number
+      description: GIB report number.
       type: String
     - contextPath: GIBTIA.Threat.sectors
-      description: Affected sectors
+      description: Affected sectors.
       type: String
     - contextPath: GIBTIA.Threat.shortDescription
-      description: Short description
+      description: Short description.
       type: String
     - contextPath: GIBTIA.Threat.title
-      description: Threat title
+      description: Threat title.
       type: String
     - contextPath: GIBTIA.Threat.targetedCompany
-      description: Targeted company name
+      description: Targeted company name.
       type: String
     - contextPath: GIBTIA.Threat.ThreatActor.name
-      description: Threat actor name
+      description: Threat actor name.
       type: String
     - contextPath: GIBTIA.Threat.ThreatActor.id
-      description: Threat actor ID
+      description: Threat actor ID.
       type: String
     - contextPath: GIBTIA.Threat.ThreatActor.isAPT
-      description: Is threat actor APT group
+      description: Is threat actor APT group.
       type: Boolean
     - contextPath: GIBTIA.Threat.sources
-      description: Sources links
+      description: Sources links.
       type: String
     - contextPath: GIBTIA.Threat.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB internal threatActor ID.
-        e.g.: 0d4496592ac3a0f5511cd62ef29887f48d9cb545
+        e.g.: 0d4496592ac3a0f5511cd62ef29887f48d9cb545.
       name: id
       required: true
       default: false
@@ -916,7 +916,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Is threat actor APT group
+      description: Is threat actor APT group.
       name: isAPT
       predefined:
       - 'true'
@@ -929,68 +929,68 @@ script:
     name: gibtia-get-threat-actor-info
     outputs:
     - contextPath: GIBTIA.ThreatActor.aliases
-      description: Threat actor aliases
+      description: Threat actor aliases.
       type: String
     - contextPath: GIBTIA.ThreatActor.country
-      description: Threat actor country
+      description: Threat actor country.
       type: String
     - contextPath: GIBTIA.ThreatActor.createdAt
-      description: Threat actor record creation time
+      description: Threat actor record creation time.
       type: Date
     - contextPath: GIBTIA.ThreatActor.description
-      description: Threat actor description
+      description: Threat actor description.
       type: String
     - contextPath: GIBTIA.ThreatActor.goals
       description: Threat actor goals sectors(financial, diplomatic, etc.)
       type: String
     - contextPath: GIBTIA.ThreatActor.id
-      description: Threat actor id
+      description: Threat actor id.
       type: String
     - contextPath: GIBTIA.ThreatActor.isAPT
-      description: Threat actor is APT
+      description: Threat actor is APT.
       type: Boolean
     - contextPath: GIBTIA.ThreatActor.labels
       description: GIB internal threat actor labels(hacker, nation-state, etc.)
       type: String
     - contextPath: GIBTIA.ThreatActor.langs
-      description: Threat actor communication language
+      description: Threat actor communication language.
       type: String
     - contextPath: GIBTIA.ThreatActor.name
-      description: Threat actor name
+      description: Threat actor name.
       type: String
     - contextPath: GIBTIA.ThreatActor.roles
-      description: Threat actor roles
+      description: Threat actor roles.
       type: String
     - contextPath: GIBTIA.ThreatActor.stat.countries
-      description: Threat actor countries activity found in
+      description: Threat actor countries activity found in.
       type: String
     - contextPath: GIBTIA.ThreatActor.stat.dateFirstSeen
-      description: Date first seen
+      description: Date first seen.
       type: Date
     - contextPath: GIBTIA.ThreatActor.stat.dateLastSeen
-      description: Date last seen
+      description: Date last seen.
       type: Date
     - contextPath: GIBTIA.ThreatActor.stat.regions
-      description: Threat actor activity regions
+      description: Threat actor activity regions.
       type: String
     - contextPath: GIBTIA.ThreatActor.stat.reports.datePublished
-      description: Related threat report publishing date
+      description: Related threat report publishing date.
       type: Date
     - contextPath: GIBTIA.ThreatActor.stat.reports.id
-      description: Related threat report id
+      description: Related threat report id.
       type: String
     - contextPath: GIBTIA.ThreatActor.stat.reports.name.en
-      description: Related threat report language
+      description: Related threat report language.
       type: String
     - contextPath: GIBTIA.ThreatActor.stat.sectors
-      description: Sectors attacked by threat actor
+      description: Sectors attacked by threat actor.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 109.70.100.46
+        e.g.: 109.70.100.46.
       name: id
       required: true
       default: false
@@ -1000,29 +1000,29 @@ script:
     name: gibtia-get-suspicious-ip-tor-node-info
     outputs:
     - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.asn
-      description: Tor node ASN
+      description: Tor node ASN.
       type: String
     - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.countryName
-      description: Tor node IP country name
+      description: Tor node IP country name.
       type: String
     - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.ip
-      description: Tor node IP address
+      description: Tor node IP address.
       type: String
     - contextPath: GIBTIA.SuspiciousIPTorNode.ipv4.region
-      description: Tor node IP region name
+      description: Tor node IP region name.
       type: String
     - contextPath: GIBTIA.SuspiciousIPTorNode.id
-      description: GIB id
+      description: GIB id.
       type: String
     - contextPath: GIBTIA.SuspiciousIPTorNode.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: cc6a2856da2806b03839f81aa214f22dbcfd7369
+        e.g.: cc6a2856da2806b03839f81aa214f22dbcfd7369.
       name: id
       required: true
       default: false
@@ -1032,38 +1032,38 @@ script:
     name: gibtia-get-suspicious-ip-open-proxy-info
     outputs:
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.asn
-      description: Proxy ASN
+      description: Proxy ASN.
       type: String
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.countryName
-      description: Proxy IP country name
+      description: Proxy IP country name.
       type: String
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.ip
-      description: Proxy IP address
+      description: Proxy IP address.
       type: String
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.region
-      description: Proxy IP region name
+      description: Proxy IP region name.
       type: String
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.port
-      description: Proxy port
+      description: Proxy port.
       type: Number
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.source
-      description: Information source
+      description: Information source.
       type: String
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.ipv4.anonymous
-      description: Proxy anonymous level
+      description: Proxy anonymous level.
       type: String
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.id
-      description: GIB event ID
+      description: GIB event ID.
       type: String
     - contextPath: GIBTIA.SuspiciousIPOpenProxy.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e
+        e.g.: 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e.
       name: id
       required: true
       default: false
@@ -1073,29 +1073,29 @@ script:
     name: gibtia-get-suspicious-ip-socks-proxy-info
     outputs:
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.asn
-      description: Proxy IP ASN
+      description: Proxy IP ASN.
       type: String
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.countryName
-      description: Proxy IP country name
+      description: Proxy IP country name.
       type: String
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.ip
-      description: Proxy IP address
+      description: Proxy IP address.
       type: String
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.ipv4.region
-      description: Proxy IP region name
+      description: Proxy IP region name.
       type: String
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.id
-      description: GIB ID
+      description: GIB ID.
       type: String
     - contextPath: GIBTIA.SuspiciousIPSocksProxy.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: 5bbd38acf0b9e4f04123af494d485f6c49221e98
+        e.g.: 5bbd38acf0b9e4f04123af494d485f6c49221e98.
       name: id
       required: true
       default: false
@@ -1105,55 +1105,55 @@ script:
     name: gibtia-get-malware-targeted-malware-info
     outputs:
     - contextPath: GIBTIA.TargetedMalware.date
-      description: Date malware detected
+      description: Date malware detected.
       type: Date
     - contextPath: GIBTIA.TargetedMalware.fileName
-      description: Malware file name
+      description: Malware file name.
       type: String
     - contextPath: GIBTIA.TargetedMalware.fileType
-      description: Malware file type
+      description: Malware file type.
       type: String
     - contextPath: GIBTIA.TargetedMalware.id
-      description: GIB internal incident ID
+      description: GIB internal incident ID.
       type: String
     - contextPath: GIBTIA.TargetedMalware.injectDump
-      description: Inject dump
+      description: Inject dump.
       type: String
     - contextPath: GIBTIA.TargetedMalware.injectMd5
-      description: MD5 hash of injection dump
+      description: MD5 hash of injection dump.
       type: String
     - contextPath: GIBTIA.TargetedMalware.malware.name
-      description: GIB internal malware ID
+      description: GIB internal malware ID.
       type: String
     - contextPath: GIBTIA.TargetedMalware.md5
-      description: MD5 hash of malware file
+      description: MD5 hash of malware file.
       type: String
     - contextPath: GIBTIA.TargetedMalware.sha1
-      description: SHA1 hash of malware file
+      description: SHA1 hash of malware file.
       type: String
     - contextPath: GIBTIA.TargetedMalware.sha256
-      description: SHA256 hash of malware file
+      description: SHA256 hash of malware file.
       type: String
     - contextPath: GIBTIA.TargetedMalware.size
-      description: Malware size in bytes
+      description: Malware size in bytes.
       type: Number
     - contextPath: GIBTIA.TargetedMalware.source
-      description: Malware source
+      description: Malware source.
       type: String
     - contextPath: GIBTIA.TargetedMalware.portalLink
-      description: GIB portal incident link
+      description: GIB portal incident link.
       type: String
     - contextPath: GIBTIA.TargetedMalware.threatActor.name
-      description: Related threat actor
+      description: Related threat actor.
       type: String
     - contextPath: GIBTIA.TargetedMalware.threatActor.id
-      description: GIB internal threat actor ID
+      description: GIB internal threat actor ID.
       type: String
     - contextPath: GIBTIA.TargetedMalware.threatActor.isAPT
-      description: Is threat actor APT
+      description: Is threat actor APT.
       type: Boolean
     - contextPath: GIBTIA.TargetedMalware.evaluation.severity
-      description: Event severity
+      description: Event severity.
       type: String
     deprecated: false
     execution: false
@@ -1161,14 +1161,14 @@ script:
     name: gibtia-get-available-collections
     outputs:
     - contextPath: GIBTIA.OtherInfo.collections
-      description: List of availiable collections
+      description: List of availiable collections.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - description: |-
         GIB event id.
-        e.g.: aeed277396e27e375d030a91533aa232444d0089
+        e.g.: aeed277396e27e375d030a91533aa232444d0089.
       name: id
       required: true
       default: false
@@ -1178,43 +1178,43 @@ script:
     name: gibtia-get-malware-cnc-info
     outputs:
     - contextPath: GIBTIA.MalwareCNC.dateDetected
-      description: Date CNC detected
+      description: Date CNC detected.
       type: Date
     - contextPath: GIBTIA.MalwareCNC.dateLastSeen
-      description: Date CNC last seen
+      description: Date CNC last seen.
       type: Date
     - contextPath: GIBTIA.MalwareCNC.url
-      description: CNC URL
+      description: CNC URL.
       type: String
     - contextPath: GIBTIA.MalwareCNC.domain
-      description: CNC domain
+      description: CNC domain.
       type: String
     - contextPath: GIBTIA.MalwareCNC.ipv4.asn
-      description: CNC ASN
+      description: CNC ASN.
       type: String
     - contextPath: GIBTIA.MalwareCNC.ipv4.countryName
-      description: CNC IP country name
+      description: CNC IP country name.
       type: String
     - contextPath: GIBTIA.MalwareCNC.ipv4.ip
-      description: CNC IP address
+      description: CNC IP address.
       type: String
     - contextPath: GIBTIA.MalwareCNC.ipv4.region
-      description: CNC region name
+      description: CNC region name.
       type: String
     - contextPath: GIBTIA.MalwareCNC.malwareList.name
-      description: Associated malware
+      description: Associated malware.
       type: String
     - contextPath: GIBTIA.MalwareCNC.threatActor.id
-      description: Associated threat actor ID
+      description: Associated threat actor ID.
       type: String
     - contextPath: GIBTIA.MalwareCNC.threatActor.name
-      description: Associated threat actor
+      description: Associated threat actor.
       type: String
     - contextPath: GIBTIA.MalwareCNC.threatActor.isAPT
-      description: Is APT or not
+      description: Is APT or not.
       type: Boolean
     - contextPath: GIBTIA.MalwareCNC.id
-      description: GIB event ID
+      description: GIB event ID.
       type: String
     deprecated: false
     execution: false
@@ -1227,23 +1227,23 @@ script:
       default: false
       isArray: false
       secret: false
-    description: Command performs global Group IB search
+    description: Command performs global Group IB search.
     name: gibtia-global-search
     outputs:
     - contextPath: apiPath
-      description: Name of collection in which found matches
+      description: Name of collection in which found matches.
       type: String
     - contextPath: count
-      description: Count of feeds matching this query
+      description: Count of feeds matching this query.
       type: Number
     - contextPath: GIBLink
-      description: Link to GIB TI&A interface
+      description: Link to GIB TI&A interface.
       type: String
     deprecated: false
     execution: false
   - arguments:
     - auto: PREDEFINED
-      description: Collection you want to search
+      description: Collection you want to search.
       name: collection_name
       predefined:
       - compromised/account
@@ -1274,19 +1274,19 @@ script:
       secret: false
     - description: |-
         Query you want to search.
-        e.g.: 8.8.8.8
+        e.g.: 8.8.8.8.
       name: query
       required: true
       default: false
       isArray: false
       secret: false
-    - description: Start date of search session
+    - description: Start date of search session.
       name: date_from
       default: false
       isArray: false
       required: false
       secret: false
-    - description: End date of search session
+    - description: End date of search session.
       name: date_to
       default: false
       isArray: false
@@ -1296,14 +1296,14 @@ script:
     name: gibtia-local-search
     outputs:
     - contextPath: id
-      description: Id of a feed that matches a query
+      description: Id of a feed that matches a query.
       type: String
     - contextPath: additional_info
-      description: Additional info about feed
+      description: Additional info about feed.
       type: String
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   runonce: false
   script: '-'
