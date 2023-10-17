@@ -99,7 +99,7 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   script:
     - !reference [ .validate_content_test_conf_branch_merged ]
     - job-done
