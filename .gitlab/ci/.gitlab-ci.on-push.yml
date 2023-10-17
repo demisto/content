@@ -7,7 +7,7 @@
 .push-rule:
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 trigger-private-build:
   tags:
@@ -99,7 +99,7 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
   script:
     - !reference [ .validate_content_test_conf_branch_merged ]
     - job-done
