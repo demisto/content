@@ -807,21 +807,22 @@ def sort_all_list_incident_fields(incident_data):
     if incident_data.get('incident_sources', []):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
 
+    format_sublists = not argToBoolean(demisto.params().get('dontFormatSublists', False))
     if incident_data.get('alerts', []):
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
-        if not argToBoolean(demisto.params().get('dontFormatSublists', False)):
+        if format_sublists:
             reformat_sublist_fields(incident_data['alerts'])
 
     if incident_data.get('file_artifacts', []):
         incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
                                                       fallback_key='file_sha256')
-        if not argToBoolean(demisto.params().get('dontFormatSublists', False)):
+        if format_sublists:
             reformat_sublist_fields(incident_data['file_artifacts'])
 
     if incident_data.get('network_artifacts', []):
         incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
                                                          main_key='network_domain', fallback_key='network_remote_ip')
-        if not argToBoolean(demisto.params().get('dontFormatSublists', False)):
+        if format_sublists:
             reformat_sublist_fields(incident_data['network_artifacts'])
 
 

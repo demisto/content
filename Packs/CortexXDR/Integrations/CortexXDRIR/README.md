@@ -11,7 +11,7 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | - | --- | --- |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields (like client_id, clientid.) | False |
+    | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.) | False |
     | Incident Mirroring Direction |  | False |
     | Server URL (copy URL from XDR - click ? to see more info.) |  | True |
     | API Key ID |  | False |
