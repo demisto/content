@@ -57,7 +57,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - echo "successfully activated google cloud service account"
     - section_end "Activate GCloud Service Account"
     - section_start "Download private ID set" --collapsed
-    - gsutil cp gs://marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
+    - gsutil cp gs://${TEST_XDR_PREFIX}marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
     - echo "successfully downloaded private ID set"
     - section_end "Download private ID set"
     - gcloud auth revoke >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
