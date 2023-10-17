@@ -54,7 +54,503 @@ description: This is the Hello World integration for getting started.
 display: AWS-Organizations
 name: AWS-Organizations
 script:
-  commands: []
+  commands:
+  - arguments:
+    - description: ''
+      name: limit
+    - description: ''
+      name: page_size
+    - description: ''
+      name: next_token
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: ''
+      name: parent_id
+      required: true
+    - auto: PREDEFINED
+      description: ''
+      name: child_type
+      predefined:
+      - Account
+      - OrganizationalUnit
+      required: true
+    - description: ''
+      name: limit
+    - description: ''
+      name: page_size
+    - description: ''
+      name: next_token
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "The unique identifier (ID) of the OU or account whose parent containers\n\
+        \                        you want to list. Don't specify a root.\n\nAdd description\
+        \ that the user can get this value by running the\n                        commands\
+        \ \u201Croot-list\u201D / \u201Corganization-unit-list\u201D"
+      name: child_id
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: ''
+      name: organization_unit_id
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "An optional argument to get a specific account.If the user provided\n\
+        \                        this argument we will execute the describe\n      \
+        \                      account command"
+      name: account_id
+    - description: ''
+      name: limit
+    - defaultValue: '20'
+      description: "Valid Range: Minimum value of 1. Maximum value of 20.default -\n\
+        \                        20"
+      name: page_size
+    - description: ''
+      name: next_token
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "Add description that the user can get this value by running the\
+        \ command\n                        of \u201Caws-organizations-account-list\u201D"
+      name: account_id
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "Add description that the user can get this value by running the\n\
+        \                        command of \u201Caccount-list\u201D"
+      name: account_id
+      required: true
+    - description: "The unique identifier (ID) of the root or organizational unit that\
+        \ you\n                        want to move the account to.\n\nAdd description\
+        \ that the user can get this value by running the\n                        commands\
+        \ \u201Croot-list\u201D / \u201Corganization-unit-list\u201D"
+      name: destination_parent_id
+      required: true
+    - description: "The unique identifier (ID) of the root or organizational unit that\
+        \ you\n                        want to move the account from.\n\nAdd description\
+        \ that the user can get this value by running the\n                        commands\
+        \ \u201Croot-list\u201D / \u201Corganization-unit-list\u201D"
+      name: source_parent_id
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: ''
+      name: account_name
+      required: true
+    - description: "The email address of the owner to assign to the new member account.\
+        \ This\n                        email address must not already be associated\
+        \ with another AWS account."
+      name: email
+      required: true
+    - auto: PREDEFINED
+      defaultValue: ALLOW
+      description: "If set to ALLOW,\n                        the new account enables\
+        \ IAM users to access account billing information if they have the\n       \
+        \                 required permissions. If set to DENY, only\n             \
+        \           the root user of the new account can access account billing information.\n\
+        \ndefault - ALLOW"
+      name: iam_user_access_to_billing
+      predefined:
+      - Allow
+      - Deny
+    - defaultValue: "\u201COrganizationAccountAccessrole\u201D."
+      description: "The name of an IAM role that AWS Organizations automatically pre\n\
+        \                        configured in the new member account.\n default -\u201C\
+        OrganizationAccountAccessrole\u201D."
+      name: role_name
+    - description: '"Tags": [
+
+        {
+
+        "Key": "Tag1",
+
+        "Value": "Moishy"
+
+        }
+
+        ]'
+      name: tag_key
+    - description: ''
+      name: tag_value
+    - defaultValue: '600'
+      description: default 600
+      name: timeout
+    - defaultValue: '30'
+      description: default 30
+      name: interval_in_seconds
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: ''
+      name: account_id
+      required: true
+    - defaultValue: '600'
+      description: default 600
+      name: timeout
+    - defaultValue: '30'
+      description: default 30
+      name: interval_in_seconds
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: ''
+      name: name
+      required: true
+    - description: "The unique identifier (ID) of the parent root or OU that you want\
+        \ to\n                        create the new OU in.\n\nAdd description that\
+        \ the user can get this value by running the\n                        commands\
+        \ \u201Croot-list\u201D / \u201Corganization-unit-list\u201D"
+      name: parent_id
+      required: true
+    - description: Key=value array, separated bu comma.[f]
+      name: tags
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: ''
+      name: organizational_unit_id
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: ''
+      name: organizational_unit_id
+      required: true
+    - description: ''
+      name: name
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - auto: PREDEFINED
+      description: "The api parameter is \u201CFilter\u201DThe actual values we\n  \
+        \                      need to send:SERVICE_CONTROL_POLICY | TAG_POLICY |\n\
+        \                        BACKUP_POLICY | AISERVICES_OPT_OUT_POLICY"
+      name: policy_type
+      predefined:
+      - Service Control Policy
+      - Tag Policy
+      - Backup Policy
+      - AI Services Opt Out Policy
+      required: true
+    - description: ''
+      name: limit
+    - defaultValue: '20'
+      description: "Valid Range: Minimum value of 1. Maximum value of 20.default -\n\
+        \                        20"
+      name: page_size
+    - description: ''
+      name: next_token
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - auto: PREDEFINED
+      description: "The api parameter is \u201CFilter\u201DThe actual values we\n  \
+        \                      need to send:SERVICE_CONTROL_POLICY | TAG_POLICY |\n\
+        \                        BACKUP_POLICY | AISERVICES_OPT_OUT_POLICY"
+      name: policy_type
+      predefined:
+      - Service Control Policy
+      - Tag Policy
+      - Backup Policy
+      - AI Services Opt Out Policy
+      required: true
+    - description: "The unique identifier (ID) of the root, organizational unit, or\
+        \ account\n                        whose policies you want to list.\nAdd description\
+        \ that the user can get\n                        this value by running the commands\
+        \ \u201Croot-list\u201D /\n                        \u201Corganization-unit-list\u201D\
+        \ / \u201Croot-list\u201D"
+      name: target_id
+      required: true
+    - description: ''
+      name: limit
+    - defaultValue: '20'
+      description: "Valid Range: Minimum value of 1. Maximum value of 20.default -\n\
+        \                        20"
+      name: page_size
+    - description: ''
+      name: next_token
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "Add description that the user can get this value by running the\
+        \ command\n                        \u201Cpolicy-list\u201D"
+      name: policy_id
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "Add description that the user can get this value by running the\
+        \ command\n                        \u201Cpolicy-list\u201D"
+      name: policy_id
+      required: true
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "Add description that the user can get this value by running the\
+        \ command\n                        \u201Cpolicy-list\u201D"
+      name: policy_id
+      required: true
+    - description: "The unique identifier (ID) of the root, OU, or account that you\
+        \ want to\n                        attach the policy to. Add description that\
+        \ the user can get\n                        this value by running the commands\
+        \ \u201Croot-list\u201D /\n                        \u201Corganization-unit-list\u201D\
+        \ / \u201Croot-list\u201D"
+      name: target_id
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "Add description that the user can get this value by running the\
+        \ command\n                        \u201Cpolicy-list\u201D"
+      name: policy_id
+      required: true
+    - description: ''
+      name: limit
+    - defaultValue: '20'
+      description: "Valid Range: Minimum value of 1. Maximum value of 20.default -\n\
+        \                        20"
+      name: page_size
+    - description: ''
+      name: next_token
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "Add description that the user can get this value by running the\
+        \ commands\n                        \u201Croot-list\u201D / \u201Corganization-unit-list\u201D\
+        \ / \u201Croot-list\u201D /\n                        \u201Cpolicy-list\u201D"
+      name: resource_id
+      required: true
+    - description: "\"Tags\": [ {\_\"Key\": \"string\", \"Value\": \"string\"\n    \
+        \                    } ]"
+      name: tag_key
+      required: true
+    - description: ''
+      name: tag_value
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+  - arguments:
+    - description: "Add description that the user can get this value by running the\
+        \ commands\n                        \u201Croot-list\u201D / \u201Corganization-unit-list\u201D\
+        \ / \u201Croot-list\u201D /\n                        \u201Cpolicy-list\u201D"
+      name: resource_id
+      required: true
+    - description: "Option for the user to execute this command with a role different\
+        \ from\n                        that defined in the configuration parameters.\n\
+        In case the user provided these arguments we need to create a new\n        \
+        \                AWS.\nclient with the new values."
+      name: roleArn
+    - description: ''
+      name: roleSessionName
+    - description: ''
+      name: roleSessionDuration
+    description: ''
+    name: ''
+    outputs: []
+
+
   dockerimage: demisto/python3:3.9.5.21272
   feed: false
   isfetch: true
