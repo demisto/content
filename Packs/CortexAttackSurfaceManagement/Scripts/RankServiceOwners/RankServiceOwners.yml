@@ -1,12 +1,15 @@
 args:
-- description: List of potential service owners
+- description: List of potential service owners.
   isArray: true
   name: owners
+- description: System IDs or names associated with the compute instance.
+  isArray: true
+  name: asmsystemids
 comment: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
 commonfields:
   id: RankServiceOwners
   version: -1
-dockerimage: demisto/python3:3.10.12.68714
+dockerimage: demisto/xpanse-ml-ev2:1.0.0.77388
 enabled: true
 name: RankServiceOwners
 runas: DBotWeakRole
@@ -18,3 +21,4 @@ type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+runonce: false

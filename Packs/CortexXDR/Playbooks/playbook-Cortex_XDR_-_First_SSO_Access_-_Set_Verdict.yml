@@ -30,6 +30,8 @@ tasks:
       - "108"
       - "109"
       - "107"
+      - "122"
+      - "123"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1127,6 +1129,124 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 272c20de-5bc6-4d78-8c0a-caa9d03c5ca8
+    type: regular
+    task:
+      id: 272c20de-5bc6-4d78-8c0a-caa9d03c5ca8
+      version: -1
+      name: Check for risky users
+      description: Checks if there are risky users involved in the incident, and sets data accordingly in the VerdictResult object key.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: Risky user involved?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: "True"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.XDRRiskyUser
+                iscontext: true
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4210,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: 6025d9a3-8fab-47bb-8f6b-6f4bee42eae2
+    type: regular
+    task:
+      id: 6025d9a3-8fab-47bb-8f6b-6f4bee42eae2
+      version: -1
+      name: Check for risky hosts
+      description: Checks if there are risky hosts involved in the incident, and sets data accordingly in the VerdictResult object key.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: Risky host involved?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: "True"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.XDRRiskyHost
+                iscontext: true
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4630,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1136,8 +1256,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1935,
-        "width": 3270,
-        "x": -3790,
+        "width": 4110,
+        "x": -4630,
         "y": 90
       }
     }
@@ -1218,10 +1338,34 @@ inputs:
   required: false
   description: True if the user works from a permanent country from Okta. Otherwise, false.
   playbookInputQuery:
+- key: XDRRiskyUser
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.RiskyUser
+      accessor: id
+      transformers:
+      - operator: uniq
+  required: false
+  description: Usernames of users that were found as risky by Cortex XDR.
+  playbookInputQuery:
+- key: XDRRiskyHost
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.RiskyHost
+      accessor: |
+        id
+      transformers:
+      - operator: uniq
+  required: false
+  description: Hostnames that were found as risky by Cortex XDR
+  playbookInputQuery:
 outputs:
 - contextPath: Verdict
   description: The verdict based on the results of multiple checks.
   type: unknown
 tests:
-- No tests (auto formatted)
+- no tests
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

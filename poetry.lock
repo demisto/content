@@ -1375,13 +1375,13 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.20.5"
+version = "1.20.7"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "demisto_sdk-1.20.5-py3-none-any.whl", hash = "sha256:3ce0d7624682fba93935be3fb464d21d38c87f10e3c65fdfe81bae3d482e4e6a"},
-    {file = "demisto_sdk-1.20.5.tar.gz", hash = "sha256:e90e38dda91a3f172969ede807ec1f6302bc366827ff3b6bba0d849c88ce6fc5"},
+    {file = "demisto_sdk-1.20.7-py3-none-any.whl", hash = "sha256:f60d3170faf295de81ea6029565bc2fe4e6132211c1c80eed5d7f3af5e89cbe2"},
+    {file = "demisto_sdk-1.20.7.tar.gz", hash = "sha256:f9cbf2073d2045692a928d50cc58ef88647688524be947f5571872face0e8924"},
 ]
 
 [package.dependencies]
@@ -1884,17 +1884,20 @@ smmap = ">=3.0.1,<6"
 
 [[package]]
 name = "gitpython"
-version = "3.1.32"
+version = "3.1.37"
 description = "GitPython is a Python library used to interact with Git repositories"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "GitPython-3.1.32-py3-none-any.whl", hash = "sha256:e3d59b1c2c6ebb9dfa7a184daf3b6dd4914237e7488a1730a6d8f6f5d0b4187f"},
-    {file = "GitPython-3.1.32.tar.gz", hash = "sha256:8d9b8cb1e80b9735e8717c9362079d3ce4c6e5ddeebedd0361b228c3a67a62f6"},
+    {file = "GitPython-3.1.37-py3-none-any.whl", hash = "sha256:5f4c4187de49616d710a77e98ddf17b4782060a1788df441846bddefbb89ab33"},
+    {file = "GitPython-3.1.37.tar.gz", hash = "sha256:f9b9ddc0761c125d5780eab2d64be4873fc6817c2899cbcb34b02344bdc7bc54"},
 ]
 
 [package.dependencies]
 gitdb = ">=4.0.1,<5"
+
+[package.extras]
+test = ["black", "coverage[toml]", "ddt (>=1.1.1,!=1.4.3)", "mypy", "pre-commit", "pytest", "pytest-cov", "pytest-sugar"]
 
 [[package]]
 name = "giturlparse"
@@ -7161,4 +7164,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "aba1739ce1d410d7b5015b400d10d64d4f5dbf052229341a54587b06d7ccd1bb"
+content-hash = "6f61d3ccb02bf9c61f3cc8822c14149dc55100a89e52a6835fd978699d98aa2b"

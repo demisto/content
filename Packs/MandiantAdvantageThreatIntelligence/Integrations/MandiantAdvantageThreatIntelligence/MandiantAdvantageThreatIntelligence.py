@@ -1005,7 +1005,7 @@ def enrich_indicators(
 
 def get_new_indicators(
     client: MandiantClient, last_run: str, indicator_type: str, limit: int
-) -> List:
+) -> tuple[List, str]:
     """
     Get a list of new indicators
     Args:
@@ -1014,7 +1014,7 @@ def get_new_indicators(
         indicator_type (str): the desired type to fetch
         limit (int): number of indicator to fetch
     Returns:
-        List: A list of new indicators
+        tuple[List, str]: A list of new indicators, and the new "last updated" checkpoint
     """
     start_date = arg_to_datetime(last_run)
     minimum_mscore = int(demisto.params().get("feedMinimumConfidence", 80))
@@ -1047,7 +1047,7 @@ def get_new_indicators(
         new_indicators_list = list(
             filter(last_updated_filter(start_date), new_indicators_list)  # type: ignore
         )
-        return new_indicators_list
+        return new_indicators_list, new_indicators_list[-1]["last_updated"]
     else:
         updated_indicators = []
         # For Indicators of Compromise only
@@ -1060,12 +1060,12 @@ def get_new_indicators(
                 existing_indicators = list(IndicatorsSearcher(value=indicator["value"]))
                 if len(existing_indicators) > 0 and int(existing_indicators[0].get("total", 0)) > 0:
                     updated_indicators.append(indicator)
-        return updated_indicators
+        return updated_indicators, new_indicators_list[-1]["last_updated"]
 
 
 def get_indicator_list(
     client: MandiantClient, limit: int, first_fetch: str, indicator_type: str
-) -> List[dict]:
+) -> tuple[List[dict], str]:
     """
     Get a list of indicators of the given type
     Args:
@@ -1074,14 +1074,13 @@ def get_indicator_list(
         first_fetch (str): Get indicators newer than first_fetch.
         indicator_type (str): indicator type
     Returns:
-        List[Dict]: list of indicators
+        tuple[List[dict], str]: A list of indicators, and the new "last updated" checkpoint
     """
     last_run_dict = demisto.getLastRun()
     indicators_list = last_run_dict.get(f"{indicator_type}List", [])
-
+    new_last_updated = last_run = last_run_dict.get(f"{indicator_type}LastFetch", first_fetch)
     if len(indicators_list) < limit:
-        last_run = last_run_dict.get(indicator_type + "LastFetch", first_fetch)
-        new_indicators_list = get_new_indicators(
+        new_indicators_list, new_last_updated = get_new_indicators(
             client, last_run, indicator_type, limit
         )
         indicators_list += new_indicators_list
@@ -1091,7 +1090,7 @@ def get_indicator_list(
 
         indicators_list = new_indicators_list
 
-    return indicators_list
+    return indicators_list, new_last_updated
 
 
 def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, dict]:
@@ -1112,7 +1111,8 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
     if not args:
         args = {}
 
-    limit = args.get("limit", client.limit)
+    limit = int(args.get("limit", client.limit))
+
     # Cap maximum number of indicators to 1000
     if limit > 1000:
         limit = 1000
@@ -1127,7 +1127,7 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
     last_run_dict = demisto.getLastRun()
 
     for indicator_type in types:
-        indicators_list = get_indicator_list(client, limit, first_fetch, indicator_type)
+        indicators_list, new_last_updated = get_indicator_list(client, limit, first_fetch, indicator_type)
 
         if metadata:
             indicators_list = [
@@ -1147,9 +1147,9 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
 
         result += indicators
 
-        last_run_dict[indicator_type + "List"] = indicators[limit:]
+        last_run_dict[f"{indicator_type}List"] = indicators[limit:]
         if indicators_list:
-            last_run_dict[indicator_type + "LastFetch"] = indicators_list[-1]["last_updated"]
+            last_run_dict[f"{indicator_type}LastFetch"] = new_last_updated
 
     return (result, last_run_dict)
 
