@@ -105,6 +105,11 @@ script:
       isArray: true
       name: ip_list
     - description: |-
+        A comma-separated list of Public IP addresses.
+        Example: 8.8.8.8,1.1.1.1.
+      isArray: true
+      name: public_ip_list
+    - description: |-
         The group name to which the agent belongs.
         Example: group_name1,group_name2.
       isArray: true
