@@ -60,22 +60,22 @@ name: Dragos Worldview
 script:
   commands:
   - arguments:
-    - description: Exclude indicators that are only associated with Suspect Domain Reports (API default false)
+    - description: Exclude indicators that are only associated with Suspect Domain Reports (API default false).
       name: exclude_suspect_domain
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Page number to start at (API default 1)
+    - description: Page number to start at (API default 1).
       name: page
-    - description: Page size (API default 500) (must be less than 1001)
+    - description: Page size (API default 500) (must be less than 1001).
       name: page_size
-    - description: UTC timestamp in YYYY-mm-dd (optionally with HH:mm:ss) to filter to recent indicators (default is within the last 48 hours)
+    - description: UTC timestamp in YYYY-mm-dd (optionally with HH:mm:ss) to filter to recent indicators (default is within the last 48 hours).
       name: updated_after
-    - description: Search for indicators that match a specific value
+    - description: Search for indicators that match a specific value.
       name: value
     - auto: PREDEFINED
-      description: Search for indicators of a specific type
+      description: Search for indicators of a specific type.
       name: type
       predefined:
       - domain
@@ -85,87 +85,87 @@ script:
       - md5
       - sha1
       - sha256
-    - description: List of Dragos report serial number to get indicators from
+    - description: List of Dragos report serial number to get indicators from.
       isArray: true
       name: serial
-    - description: List of tags to search for indicators
+    - description: List of tags to search for indicators.
       isArray: true
       name: tags
-    description: Get Indicators from the Dragos WorldView API, if no arguments are provided the command will retrieve all indicators from the last 48 hours
+    description: Get Indicators from the Dragos WorldView API, if no arguments are provided the command will retrieve all indicators from the last 48 hours.
     name: dragos-get-indicators
     outputs:
     - contextPath: Dragos.Indicators.activity_groups
-      description: A list of activity groups
+      description: A list of activity groups.
     - contextPath: Dragos.Indicators.attack_techniques
-      description: A list of attack techniques
+      description: A list of attack techniques.
     - contextPath: Dragos.Indicators.category
-      description: The Dragos Indicator's category
+      description: The Dragos Indicator's category.
       type: string
     - contextPath: Dragos.Indicators.comment
-      description: The Dragos Indicator's comment
+      description: The Dragos Indicator's comment.
       type: string
     - contextPath: Dragos.Indicators.confidence
-      description: The Dragos Indicator's confidence
+      description: The Dragos Indicator's confidence.
       type: string
     - contextPath: Dragos.Indicators.first_seen
-      description: The first time the Indicator was seen in Dragos (yyyy-mm-ddThh:mm:ss.sssZ)
+      description: The first time the Indicator was seen in Dragos (yyyy-mm-ddThh:mm:ss.sssZ).
       type: string
     - contextPath: Dragos.Indicators.ics_attack_techniques
-      description: A list of ics attack techniques
+      description: A list of ics attack techniques.
     - contextPath: Dragos.Indicators.id
-      description: The Dragos Indicator's id
+      description: The Dragos Indicator's id.
       type: number
     - contextPath: Dragos.Indicators.indicator_type
-      description: The Dragos Indicator's type
+      description: The Dragos Indicator's type.
       type: string
     - contextPath: Dragos.Indicators.kill_chain
-      description: The Dragos Indicator's kill chain
+      description: The Dragos Indicator's kill chain.
       type: string
     - contextPath: Dragos.Indicators.kill_chains
-      description: A list of kill chains
+      description: A list of kill chains.
     - contextPath: Dragos.Indicators.last_seen
-      description: The last time the Indicator was seen in Dragos (yyyy-mm-ddThh:mm:ss.sssZ)
+      description: The last time the Indicator was seen in Dragos (yyyy-mm-ddThh:mm:ss.sssZ).
       type: string
     - contextPath: Dragos.Indicators.pre_attack_techniques
-      description: A list of pre-attack techniques
+      description: A list of pre-attack techniques.
     - contextPath: Dragos.Indicators.products
-      description: A list of dictionaries, usually containing the serial numbers of related Dragos reports
+      description: A list of dictionaries, usually containing the serial numbers of related Dragos reports.
     - contextPath: Dragos.Indicators.products.serial
-      description: The serial numbers of related Dragos reports
+      description: The serial numbers of related Dragos reports.
     - contextPath: Dragos.Indicators.severity
-      description: The Dragos Indicator's severity
+      description: The Dragos Indicator's severity.
       type: string
     - contextPath: Dragos.Indicators.status
-      description: The Dragos Indicator's status
+      description: The Dragos Indicator's status.
       type: string
     - contextPath: Dragos.Indicators.threat_groups
-      description: A list of threat groups
+      description: A list of threat groups.
     - contextPath: Dragos.Indicators.updated_at
-      description: The last time the Indicator was updated in Dragos (yyyy-mm-ddThh:mm:ss.sssZ)
+      description: The last time the Indicator was updated in Dragos (yyyy-mm-ddThh:mm:ss.sssZ).
       type: string
     - contextPath: Dragos.Indicators.uuid
-      description: The Dragos Indicator's uuid
+      description: The Dragos Indicator's uuid.
       type: string
     - contextPath: Dragos.Indicators.value
-      description: The Dragos Indicator's value
+      description: The Dragos Indicator's value.
       type: string
   - arguments:
-    - description: Serial number for the report to retrieve
+    - description: Serial number for the report to retrieve.
       name: serial
       required: true
-    description: Get the report file from the given serial number
+    description: Get the report file from the given serial number.
     name: dragos-get-full-report
   - arguments:
-    - description: Serial number of the report from which to get the file
+    - description: Serial number of the report from which to get the file.
       name: serial
       required: true
-    description: Get csv file with indicators from a given report
+    description: Get csv file with indicators from a given report.
     name: dragos-get-ioc-csv
   - arguments:
-    - description: Serial number of the report from which to retrieve the file
+    - description: Serial number of the report from which to retrieve the file.
       name: serial
       required: true
-    description: Get the stix2 json bundle of indicators from a given report
+    description: Get the stix2 json bundle of indicators from a given report.
     name: dragos-get-stix2
   dockerimage: demisto/python3:3.10.13.75921
   isFetchSamples: true
