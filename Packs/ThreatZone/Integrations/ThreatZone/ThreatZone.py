@@ -545,7 +545,7 @@ def main() -> None:
             return_results(threatzone_get_result(client, args))
         elif command == 'tz-get-sanitized':
             raise DemistoException("Sanitized file download will be avaliable at next patch, use tz-get-result instead.")
-            return_results(threatzone_get_sanitized_file(client, args))
+            #return_results(threatzone_get_sanitized_file(client, args))
 
     # Log exceptions and return errors
     except Exception as e:

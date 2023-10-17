@@ -102,6 +102,7 @@ class Test_ThreatZone_Helper_Functions(unittest.TestCase):
             self.assertEqual(v, DBOT_SCORES[k])
 
 @patch("ThreatZone.Client.threatzone_me", return_value=MockClient.threatzone_me)
+@patch.object(demisto, 'getFilePath', return_value={'id': 'id', 'path': 'README.md', 'name': 'README.md'})
 class Test_ThreatZone_Main_Functions(unittest.TestCase):
     def setUp(self):
         self.client = MockClient()
@@ -118,7 +119,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
             'entry_id': 'file_entry_id',
         }
 
-    def test_threatzone_sandbox_upload_sample(self, _):
+    def test_threatzone_sandbox_upload_sample(self, _, __):
         results = threatzone_sandbox_upload_sample(self.client, self.args)
         
         self.assertEqual(len(results), 2)
@@ -131,7 +132,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
         self.assertEqual(second_result.outputs_key_field, "E_Mail")
 
 
-    def test_fail_threatzone_sandbox_upload_sample(self, _):
+    def test_fail_threatzone_sandbox_upload_sample(self, _, __):
         return_value = {
             "avaliable": False,
             "Limits": "",
@@ -142,7 +143,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
             with self.assertRaises(DemistoException):
                 threatzone_sandbox_upload_sample(self.client, self.args)
 
-    def test_threatzone_static_upload_sample(self, _):
+    def test_threatzone_static_upload_sample(self, _, __):
         results = threatzone_static_upload_sample(self.client, self.args)
         
         self.assertEqual(len(results), 2)
@@ -156,7 +157,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
         self.assertEqual(second_result.outputs_key_field, "E_Mail")
 
 
-    def test_threatzone_cdr_upload_sample(self, _):
+    def test_threatzone_cdr_upload_sample(self, _, __):
         results = threatzone_cdr_upload_sample(self.client, self.args)
         
         self.assertEqual(len(results), 2)
