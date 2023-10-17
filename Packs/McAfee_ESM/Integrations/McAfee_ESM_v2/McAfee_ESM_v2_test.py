@@ -211,7 +211,8 @@ def test_mcafee_severity_to_demisto(test_input, output):
     assert temp == output, f'mcafee_severity_to_demisto({test_input}) returns: {temp} instead: {output}.'
 
 
-@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning')
+@pytest.mark.filterwarnings('ignore::urllib3.exceptions.InsecureRequestWarning',
+                            'ignore::pytest.PytestUnraisableExceptionWarning')
 def test_edit_case(mocker):
     params = {
         "url": "https://example.com",
@@ -260,6 +261,7 @@ def create_time_difference_string(days=0, hours=0):
 
 
 @freeze_time(MOCK_CURRENT_TIME)
+@pytest.mark.filterwarnings('ignore::pytest.PytestUnraisableExceptionWarning')
 def test_alarm_to_incidents(mocker):
     """
     Given:
@@ -339,9 +341,11 @@ def test_alarm_to_incidents(mocker):
     assert len(incidents) == 2
     assert last_run.get('alarms').get('time') == create_time_difference_string(hours=5)
 
+
 # testing if can upload
 class TestTestModule:
     @staticmethod
+    @pytest.mark.filterwarnings('ignore::pytest.PytestUnraisableExceptionWarning')
     def test_sanity(mocker):
         params = {
             "url": "https://example.com",
