@@ -23,7 +23,7 @@ configuration:
   additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   required: false
 - defaultvalue: '20'
-  display: Maximum number of incidents per fetch
+  display: Maximum number of incidents per fetch.
   name: limit
   type: 0
   section: Collect
