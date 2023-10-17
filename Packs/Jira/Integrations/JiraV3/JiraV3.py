@@ -646,7 +646,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             method='PUT',
             url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/assignee',
             json_data=assignee_body,
-            resp_type="text"
+            resp_type="response"
         )
 
     def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
