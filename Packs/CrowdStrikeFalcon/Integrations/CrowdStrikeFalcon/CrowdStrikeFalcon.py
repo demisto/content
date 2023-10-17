@@ -2604,15 +2604,19 @@ def fetch_incidents():
             if created:
                 detection["created"] = created.strftime(DATE_FORMAT)
                 demisto.debug(f"CrowdStrikeFalconMsg: Detection {detection['name']} created at {detection['created']}")
-        if offset != 0:
+        if offset:
             demisto.debug(f"Offset is not 0, it is {offset}. Keeping the last run and adding the new offset")
             current_fetch_info_detections["offset"] = offset
         else:
-            current_fetch_info_detections = update_last_run_object(last_run=current_fetch_info_detections, incidents=detections,
+            current_fetch_info_detections = update_last_run_object(last_run=current_fetch_info_detections,
+                                                                   incidents=detections,
                                                                    fetch_limit=INCIDENTS_PER_FETCH,
-                                                                   start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                                                   start_fetch_time=start_fetch_time,
+                                                                   end_fetch_time=end_fetch_time,
                                                                    look_back=look_back,
-                                                                   created_time_field='created', id_field='name', date_format=DATE_FORMAT)
+                                                                   created_time_field='created',
+                                                                   id_field='name',
+                                                                   date_format=DATE_FORMAT)
         demisto.debug(f"Updated last run is {current_fetch_info_detections}")
 
     if 'Incidents' in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
