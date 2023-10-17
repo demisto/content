@@ -1,0 +1,38 @@
+args:
+- defaultValue: '[]'
+  description: The list to shuffle
+  isArray: true
+  name: list
+  required: true
+- defaultValue: "3"
+  name: elements_to_return
+  type: textArea
+- default: true
+  defaultValue: ShuffledList
+  name: output_path
+comment: Shuffles a list, randomizing it.
+commonfields:
+  id: ShuffleList
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.75921
+enabled: true
+name: ShuffleList
+outputs:
+- contextPath: ShuffledList
+runas: Administrator
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- tools
+- Utilities
+- Utility
+- list
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
