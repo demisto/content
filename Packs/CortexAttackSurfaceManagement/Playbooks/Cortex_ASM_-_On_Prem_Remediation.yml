@@ -62,7 +62,7 @@ tasks:
           root: inputs.RuleName
     separatecontext: false
     continueonerrortype: ""
-    view: |- 
+    view: |-
       {
         "position": {
           "x": 460,

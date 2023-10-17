@@ -20,7 +20,13 @@ tasks:
       - '3'
     separatecontext: false
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -122,7 +128,13 @@ tasks:
             value:
               simple: On Prem
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 235\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 235
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -144,7 +156,13 @@ tasks:
       description: ''
     separatecontext: false
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 860\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -215,7 +233,13 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 1100,\n    \"y\": 450\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 450
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -260,7 +284,13 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 220,\n    \"y\": 470\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -325,7 +355,13 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 680\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 680
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -410,7 +446,13 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 0
-    view: "{\n  \"position\": {\n    \"x\": 680,\n    \"y\": 470\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 470
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -446,7 +488,13 @@ tasks:
                 root: inputs.AWSAssumeRoleName
             iscontext: true
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": -210,\n    \"y\": 450\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 450
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -532,7 +580,13 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": -460,\n    \"y\": 680\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 680
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -617,7 +671,13 @@ tasks:
       exitCondition: ''
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 1520,\n    \"y\": 420\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 420
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -625,7 +685,18 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 875,\n      \"width\": 2360,\n      \"x\": -460,\n      \"y\": 50\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 875,
+        "width": 2360,
+        "x": -460,
+        "y": 50
+      }
+    }
+  }
 inputs:
 - key: AWSAssumeRoleName
   value: {}
