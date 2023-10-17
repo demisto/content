@@ -218,21 +218,22 @@ def test_main_error():
     with pytest.raises(Exception):
         main()["error_command"]()
 
+
 def test_global_search_command(mocker, session_fixture):
     import GroupIBTIA
     test_response = [{
-            "apiPath": "suspicious_ip/open_proxy",
-            "label": "Suspicious IP :: Open Proxy",
-            "link": "",
-            "count": 14,
-            "time": 0.299055199,
-            "detailedLinks": None,
-        }]
+        "apiPath": "suspicious_ip/open_proxy",
+        "label": "Suspicious IP :: Open Proxy",
+        "link": "",
+        "count": 14,
+        "time": 0.299055199,
+        "detailedLinks": None,
+    }]
 
     collection_name, client = session_fixture
     mocker.patch.object(Client, '_http_request', return_value=test_response)
     mocker.patch.object(GroupIBTIA, 'find_element_by_key', return_value=test_response)
-    test_query={'query': 'test'}
+    test_query = {'query': 'test'}
     result = GroupIBTIA.global_search_command(client=client, args=test_query)
 
     assert result.outputs_prefix == "GIBTIA.search.global"
@@ -314,9 +315,6 @@ def test_find_element_by_key_missing():
     test_dict = {'a': 1}
     result = find_element_by_key(test_dict, 'b')
     assert result is None
-
-
-
 
 
 def test_transform_some_fields_into_markdown():
@@ -419,6 +417,7 @@ def test_transform_some_fields_into_markdown_public_leak():
 
     assert result == expected_output
 
+
 def test_get_human_readable_feed():
     from GroupIBTIA import get_human_readable_feed
 
@@ -431,12 +430,10 @@ def test_get_human_readable_feed():
     }
 
     expected_output = ('### Feed from TestCollection with ID 123\n'
-                        '|field1|field2|field3|id|\n'
-                        '|---|---|---|---|\n'
-                        '| value1 | value2 | value3 | 123 |')
+                       '|field1|field2|field3|id|\n'
+                       '|---|---|---|---|\n'
+                       '| value1 | value2 | value3 | 123 |')
 
     result = get_human_readable_feed(collection_name, feed)
 
     assert result.strip() == expected_output.strip()
-
-
