@@ -1,4 +1,6 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 """ Imports """
 
@@ -1133,7 +1135,7 @@ def main() -> None:
         if packs.get("name") == "GreyNoise":
             pack_version = packs.get("currentVersion")
 
-    api_key = demisto.params().get("apikey")
+    api_key = demisto.params().get('apikey', {}).get('password')
     proxy = demisto.params().get("proxy", False)
     reliability = demisto.params().get("integrationReliability", "B - Usually reliable")
     reliability = reliability if reliability else DBotScoreReliability.B

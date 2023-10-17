@@ -31,10 +31,12 @@ configuration:
   display: ''
   type: 1
   required: false
-- display: API Key
+- display: ''
   name: apikey
   required: true
-  type: 4
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
 - additionalinfo: Whether to allow connections without verifying SSL certificates validity.
   display: Trust any certificate (not secure)
   name: insecure
@@ -45,7 +47,6 @@ configuration:
   name: proxy
   type: 8
   required: false
-defaultclassifier: 'null'
 description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats.
 display: GreyNoise
 name: GreyNoise
@@ -541,9 +542,9 @@ script:
     - contextPath: GreyNoise.Timeline.ip_address
       description: Timeline IP address.
       type: string
-  dockerimage: demisto/greynoise:1.0.0.61972
+  dockerimage: demisto/greynoise:1.0.0.76362
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
