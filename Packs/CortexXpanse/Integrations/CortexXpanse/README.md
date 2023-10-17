@@ -2029,6 +2029,7 @@ Returns enrichment for an IP address.
 | DBotScore.Score         | Number   | An integer regarding the status of the indicator.   |
 | DBotScore.Indicator     | String   | The indicator value.                                |
 | DBotScore.Type          | String   | The vendor used to calculate the score.             |
+| DBotScore.Reliability          | String   | Reliability of the source providing the intelligence data.             |
 
 
 #### Command example
@@ -2148,6 +2149,7 @@ Returns enrichment for a Domain.
 | DBotScore.Score         | Number   | An integer regarding the status of the indicator.   |
 | DBotScore.Indicator     | String   | The indicator value.                                |
 | DBotScore.Type          | String   | The vendor used to calculate the score.             |
+| DBotScore.Reliability          | String   | Reliability of the source providing the intelligence data.             |
 
 #### Command example
 ```!domain domain="*.acme.com"```

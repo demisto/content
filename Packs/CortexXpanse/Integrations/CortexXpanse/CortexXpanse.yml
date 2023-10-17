@@ -687,6 +687,20 @@ script:
       required: true
       default: true
       isArray: true
+    - name: integration_reliability
+      display: Source Reliability
+      additionalinfo: Reliability of the source providing the intelligence data.
+      defaultvalue: A - Completely reliable
+      options:
+        - A+ - 3rd party enrichment
+        - A - Completely reliable
+        - B - Usually reliable
+        - C - Fairly reliable
+        - D - Not usually reliable
+        - E - Unreliable
+        - F - Reliability cannot be judged
+      required: false
+      type: 15
     outputs:
     - contextPath: ASM.IP.ip
       description: The IP address of the asset.
@@ -728,6 +742,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
     - contextPath: IP.Address
       description: IP address.
       type: String
@@ -739,6 +756,20 @@ script:
       required: true
       isArray: true
       default: true
+    - name: integration_reliability
+      display: Source Reliability
+      additionalinfo: Reliability of the source providing the intelligence data.
+      defaultvalue: A - Completely reliable
+      options:
+        - A+ - 3rd party enrichment
+        - A - Completely reliable
+        - B - Usually reliable
+        - C - Fairly reliable
+        - D - Not usually reliable
+        - E - Unreliable
+        - F - Reliability cannot be judged
+      required: false
+      type: 15
     outputs:
     - contextPath: ASM.Domain.domain
       description: The domain affiliated with an asset.
@@ -777,6 +808,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
       type: String

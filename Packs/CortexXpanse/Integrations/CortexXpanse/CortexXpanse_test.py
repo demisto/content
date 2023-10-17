@@ -666,10 +666,13 @@ def test_ip_command(requests_mock):
         'ip': "1.1.1.1"
     }
 
-    response = ip_command(client, args)
-
-    assert response.outputs == IP_RESULTS
-    assert response.outputs_prefix == 'ASM.IP'
+    responses = ip_command(client, args)
+    assert len(responses) == 2
+    for response in responses:
+        if response.outputs_prefix == 'ASM.IP':
+            assert response.outputs == IP_RESULTS
+        elif response.outputs_prefix == 'DBotScore':
+            assert response.outputs.get("Score") == 0
 
 
 def test_domain_command(requests_mock):
@@ -703,10 +706,14 @@ def test_domain_command(requests_mock):
         'domain': "*.acme.com"
     }
 
-    response = domain_command(client, args)
+    responses = domain_command(client, args)
 
-    assert response.outputs == IP_RESULTS
-    assert response.outputs_prefix == 'ASM.Domain'
+    assert len(responses) == 2
+    for response in responses:
+        if response.outputs_prefix == 'ASM.Domain':
+            assert response.outputs == IP_RESULTS
+        elif response.outputs_prefix == 'DBotScore':
+            assert response.outputs.get("Score") == 0
 
 
 def test_fetch_incidents(requests_mock, mocker):

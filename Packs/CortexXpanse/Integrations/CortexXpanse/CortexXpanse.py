@@ -1120,7 +1120,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                 indicator_type=DBotScoreType.IP,
                 integration_name="CortexXpanse",
                 score=Common.DBotScore.NONE,
-                reliability=demisto.params().get('integrationReliability')
+                reliability=demisto.params().get('integration_reliability')
             ),
             hostname=formatted_response.get("domain", "N/A")
         )
@@ -1189,7 +1189,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                 indicator_type=indicator_type,
                 integration_name="CortexXpanse",
                 score=Common.DBotScore.NONE,
-                reliability=demisto.params().get('integrationReliability')
+                reliability=demisto.params().get('integration_reliability')
             )
         )
         command_results.append(CommandResults(
