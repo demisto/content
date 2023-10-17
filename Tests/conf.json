@@ -157,7 +157,8 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test"
+            "playbookID": "Detonate File - WildFire - Test",
+            "timeout": 400
         },
         {
             "integrations": [
