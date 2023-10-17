@@ -16,7 +16,7 @@ Traceable Platform Integration enables publishing Traceable Detected Security Ev
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
     | Max number of records to fetch per API call to Traceable API Endpoint | False |
     | Number of span queries to run in parallel | False |
-    | Max spans per thread | False |
+    | Max spans per thread (1 to 1000) | False |
     | Comma Separated Environment List To Process | False |
     | Security Score Category | False |
     | Threat Category | False |

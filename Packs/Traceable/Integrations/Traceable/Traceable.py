@@ -12,6 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from requests.adapters import HTTPAdapter, Retry
 import ipaddress
+import time
 
 
 # Disable insecure warnings
@@ -65,7 +66,6 @@ get_threat_events_query = """{
 
 get_spans_for_trace_id = """{
   spans(
-    limit: $limit
     between: {
       startTime: "$starttime"
       endTime: "$endtime"
@@ -104,7 +104,6 @@ api_entities_query = """query entities
 {
   entities(
     scope: "API"
-    limit: $limit
     between: {
       startTime: "$starttime"
       endTime: "$endtime"
@@ -467,13 +466,15 @@ class Client(BaseClient):
     def graphql_query(self, query, params={}, verify=False, additional_logging=""):
         demisto.debug(f"graphql_query: Entered into graphql_query {additional_logging}")
         demisto.debug(f"graphql_query: Running request...{additional_logging}")
+        start = time.time()
         response = requests.post(
             self.url,
             json={"query": query, "variables": params},
             headers=self.headers,
             verify=verify,
         )
-        demisto.info(f"graphql_query: Completed request...{additional_logging}")
+        end = time.time()
+        demisto.info(f"graphql_query: Completed request in {(end-start)} seconds...{additional_logging}")
 
         if (
             response is not None
@@ -1095,8 +1096,13 @@ def main() -> None:
         optionalDomainEventFieldList = demisto.params().get("optionalDomainEventFieldList")
         optionalAPIAttributes = demisto.params().get("optionalAPIAttributes")
         fetch_unique_incidents = demisto.params().get("isFetchUniqueIncidents")
-        span_query_batch_size = demisto.params().get("isFetchUniqueIncidents", 50)
+        span_query_batch_size = demisto.params().get("span_query_batch_size", 50)
         timegap_between_repeat_incidents = demisto.params().get("timegap_between_repeat_incidents", 'in 7 days')
+
+        if span_query_batch_size > 1000:
+            msg = "Set a value for span_query_batch_size between 1 and 1000."
+            demisto.error(msg)
+            raise Exception(msg)
 
         _env = demisto.params().get("environment")
 

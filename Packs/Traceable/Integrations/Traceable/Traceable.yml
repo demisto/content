@@ -44,7 +44,7 @@ configuration:
   required: false
   type: 0
   defaultvalue: '5'
-- display: "Max spans per thread"
+- display: "Max spans per thread (1 to 1000)"
   name: span_query_batch_size
   type: 0
   required: false

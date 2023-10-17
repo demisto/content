@@ -1118,13 +1118,16 @@ def test_get_api_endpoint_details_query():
         ts
     )
     expected_query = (
-        'query entities\n{\n  entities(\n    scope: "API"\n    limit: 100\n    between: {\n      startTime: "2023-08-21'
-        + 'T12:41:27.000Z"\n      endTime: "2023-08-21T12:41:27.999Z"\n    }\n    offset: 0\n    filterBy: [{keyExpress'
-        + 'ion: {key: "id"}, operator: IN, value: ["067bb0d7-3740-3ba6-89eb-c457491fbc53","ea0f77c0-adc2-3a69-89ea-93b1'
-        + 'c8341d8f","be344182-c100-3287-874a-cb47eac709f2"], type: ATTRIBUTE}]\n  ) {\n    results {\n      id\n      '
-        + 'isExternal: attribute(expression: { key: "isExternal" })\nisAuthenticated: attribute(expression: { key: "isA'
-        + 'uthenticated" })\nriskScore: attribute(expression: { key: "riskScore" })\nriskScoreCategory: attribute(expre'
-        + 'ssion: { key: "riskScoreCategory" })\nisLearnt: attribute(expression: { key: "isLearnt" })\n\n    }\n  }\n}'
+        'query entities\n{\n  entities(\n    scope: "API"\n    between: {\n      startTime: "2023-'
+        + '08-21T12:41:27.000Z"\n      endTime: "2023-08-21T12:41:27.999Z"\n    }\n    offset: 0\n '
+        + '   filterBy: [{keyExpression: {key: "id"}, operator: IN, value: ["067bb0d7-3740-3ba6-89e'
+        + 'b-c457491fbc53","ea0f77c0-adc2-3a69-89ea-93b1c8341d8f","be344182-c100-3287-874a-cb47eac7'
+        + '09f2"], type: ATTRIBUTE}]\n  ) {\n    results {\n      id\n      isExternal: attribute(e'
+        + 'xpression: { key: "isExternal" })\nisAuthenticated: attribute(expression: { key: "isAuth'
+        + 'enticated" })\nriskScore: attribute(expression: { key: "riskScore" })\nriskScoreCategory'
+        + ': attribute(expression: { key: "riskScoreCategory" })\nisLearnt: attribute(expression: {'
+        + ' key: "isLearnt" })\n\n    }\n  }\n}'
+
     )
 
     assert query == expected_query
@@ -1339,12 +1342,14 @@ def test_construct_api_attribute_selection():
     client = Client(base_url="https://mock.url", verify=False, headers=headers)
     client.set_optional_api_attributes(["isExternal", "isExternal", "isAuthenticated", "nonexistent"])
     expected_output = (
-        'query entities\n{\n  entities(\n    scope: "API"\n    limit: 100\n    between: {\n      startTime: "2023-08-21'
-        + 'T12:41:27.000Z"\n      endTime: "2023-08-21T12:41:27.999Z"\n    }\n    offset: 0\n    filterBy: [{keyExpress'
-        + 'ion: {key: "id"}, operator: IN, value: ["067bb0d7-3740-3ba6-89eb-c457491fbc53","ea0f77c0-adc2-3a69-89ea-93b1'
-        + 'c8341d8f","be344182-c100-3287-874a-cb47eac709f2"], type: ATTRIBUTE}]\n  ) {\n    results {\n      id\n      '
-        + 'isExternal: attribute(expression: { key: "isExternal" })\nisAuthenticated: attribute(expression: { key: "isA'
-        + 'uthenticated" })\n\n    }\n  }\n}'
+        'query entities\n{\n  entities(\n    scope: "API"\n    between: {\n      startTime'
+        + ': "2023-08-21T12:41:27.000Z"\n      endTime: "2023-08-21T12:41:27.999Z"\n    }\n'
+        + '    offset: 0\n    filterBy: [{keyExpression: {key: "id"}, operator: IN, value: '
+        + '["067bb0d7-3740-3ba6-89eb-c457491fbc53","ea0f77c0-adc2-3a69-89ea-93b1c8341d8f","'
+        + 'be344182-c100-3287-874a-cb47eac709f2"], type: ATTRIBUTE}]\n  ) {\n    results {\n'
+        + '      id\n      isExternal: attribute(expression: { key: "isExternal" })\nisAuth'
+        + 'enticated: attribute(expression: { key: "isAuthenticated" })\n\n    }\n  }\n}'
+
     )
 
     ts = Helper.string_to_datetime("2023-08-21T12:41:27Z")
