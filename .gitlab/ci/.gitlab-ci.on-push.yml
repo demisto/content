@@ -543,6 +543,67 @@ xsoar_ng_server_ga:
       optional: true
 
 
+xsoar_ng_end_to_end_tests:
+  tags:
+    - gke
+    - us-west1
+  extends:
+    - .default-job-settings
+  rules:
+    - if: 'IS_NIGHTLY == "true"'
+    - when: always
+  variables:
+    CLOUD_MACHINES_TYPE: "build"
+    CLOUD_MACHINES_COUNT: 1
+    INSTANCE_ROLE: "XSIAM"
+    GCS_QUEUE_FILE: "queue-ga"
+    GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
+    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
+    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR_SAAS}/env_results.json"
+    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
+    SERVER_TYPE: "XSOAR_NG"
+    MARKETPLACE_NAME: "xsoar_saas"
+    NON_REMOVABLE_PACKS: "Base"
+  needs:
+    - job: xsoar-saas-prepare-testing-bucket
+      optional: true
+  stage: run-instances
+  script:
+    - EXIT_CODE=0
+    - section_start "Download content-test-conf and infra" --collapsed
+    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
+    - section_end "Download content-test-conf and infra"
+    - section_start "Secrets Fetch" --collapsed
+    - SECRET_CONF_PATH=$(cat secret_conf_path)
+    - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
+    - section_end "Secrets Fetch"
+    - section_start "Lock Machine"
+    - echo "Authenticating GCP"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
+    - echo "Auth done successfully"
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
+    - source CloudEnvVariables
+    - echo "CLOUD Chosen machine ids are:${CLOUD_CHOSEN_MACHINE_IDS}"
+    - section_end "Lock Machine"
+
+    - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
+    - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
+
+    - section_start "Clean Machine"
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
+    - section_end "Clean Machine"
+
+    - section_start "Run xsoar-ng end to end sanity tests"
+    - ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?
+    - section_end "Run xsoar-ng end to end sanity tests"
+
+  after_script:
+    - source .gitlab/helper_functions.sh
+    - !reference [ .unlock-machine ]
+
 test-upload-flow:
   tags:
     - gke
