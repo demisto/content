@@ -1,0 +1,28 @@
+args:
+- description: Name of Playbook
+  name: playbook_name
+  required: true
+comment: Retrieves all Playbook (and Sub-Playbook) Names and Integrations for a provided Playbook name
+commonfields:
+  id: RetrievePlaybooksAndIntegrations
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: RetrievePlaybooksAndIntegrations
+outputs:
+- contextPath: RetrievePlaybooksAndIntegrations.Playbooks
+  description: Names of all Playbooks and Sub-Playbooks used
+- contextPath: RetrievePlaybooksAndIntegrations.Integrations
+  description: Names of all Integrations used
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
