@@ -14,7 +14,7 @@ A step-by-step configuration process is available at Cortex XSIAM Administrator 
    * In the Data Sources page for the Prisma Cloud Compute Collector that you created, click **Copy api url**, and record it somewhere safe. You will need to provide this API URL when you set the Incoming Webhook URL as part of the configuration in Prisma Cloud Compute.
 
 **Note**:
-The URL format for the tenant is ```https://api-<tenant name>.xdr.us.paloaltonetworks.com/logs/v1/prisma```.
+The URL format for the tenant is `https://api-<tenant name>.xdr.us.paloaltonetworks.com/logs/v1/prisma`.
 
 ## Configuration on Prisma Cloud Compute
 1. In Prisma Cloud Compute, create a webhook as explained in the [Webhook Alerts](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin-compute/alerts/webhook) section of the Prisma Cloud Administrator’s Guide (Compute).
@@ -62,11 +62,11 @@ The URL format for the tenant is ```https://api-<tenant name>.xdr.us.paloaltonet
 5. Select **Container Runtime**.
 6. Click **Save**.
    * In Cortex XSIAM, once alerts start to come in, a green checkmark appears underneath the Prisma Cloud Compute Collector configuration with the amount of data received.
-7. After Cortex XSIAM begins receiving data from Prisma Cloud Compute, you can use XQL Search to search for specific data using the ```prisma_cloud_compute_raw``` dataset.
+7. After Cortex XSIAM begins receiving data from Prisma Cloud Compute, you can use XQL Search to search for specific data using the `prisma_cloud_compute_raw` dataset.
 
 
 **Pay Attention**:
-Timestamp parsing support is available for the **time** field in ```%h %d, %Y %H:%M:%S UTC``` format (E.g ```Oct 14, 2023 09:16:04 UTC```)
+Timestamp parsing support is available for the **time** field in `%h %d, %Y %H:%M:%S UTC` format (E.g `Oct 14, 2023 09:16:04 UTC`)
 
 
 </~XSIAM>
