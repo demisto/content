@@ -1040,19 +1040,18 @@ def search_attributes(demisto_args: dict) -> CommandResults:
         response_for_context_list = []
         response_for_context_dict = {}
 
-        if args.get('with_attachments', 0) == 1:
-            if isinstance(response, list):
-                for attachment in response:
-                    for objects in attachment.get('Event', {}).get('Object', []):
-                        for object in objects.get('Attribute', []):
-                            if args.get('value') == object.get('value'):
-                                for object in objects.get('Attribute'):
-                                    if data := object.get('data'):
-                                        res = fileResult('{}.zip'.format(args.get('value')), b64decode(data))
-                                        demisto.results(res)
+        if args.get('with_attachments', 0) == 1 and isinstance(response, list):
+            for attachment in response:
+                for objects in attachment.get('Event', {}).get('Object', []):
+                    for object in objects.get('Attribute', []):
+                        if args.get('value') == object.get('value'):
+                            for object in objects.get('Attribute'):
+                                if data := object.get('data'):
+                                    res = fileResult('{}.zip'.format(args.get('value')), b64decode(data))
+                                    demisto.results(res)
 
-                demisto.args()['with_attachments'] = 'false'
-                return search_attributes(demisto_args)
+            demisto.args()['with_attachments'] = 'false'
+            return search_attributes(demisto_args)
 
         if outputs_should_include_only_values:
             response_for_context_list = build_attributes_search_response_return_only_values(response)
