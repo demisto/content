@@ -2057,8 +2057,9 @@ def get_logs_defender_command(client: PrismaCloudComputeClient, args: dict):
     except DemistoException as de:
         if hasattr(de, 'res') and hasattr(de.res, 'status_code') and hasattr(de.res, 'text') \
                 and de.res.status_code == 400 and 'no such defender' in de.res.text:
-            return CommandResults(readable_output='No Entries.')
-        raise
+            response = []
+        else:
+            raise
 
     entry = {
         "Hostname": hostname,
@@ -2114,7 +2115,7 @@ def get_logs_defender_download_command(client: PrismaCloudComputeClient, args: d
     except DemistoException as de:
         if hasattr(de, 'res') and hasattr(de.res, 'status_code') and hasattr(de.res, 'text') \
                 and de.res.status_code == 400 and 'no such defender' in de.res.text:
-            return CommandResults(readable_output='No Entries.')
+            return CommandResults(readable_output=f'No data for hostname {hostname}.')
         raise
 
     return fileResult(f"{hostname}-logs.tar.gz", response, entryTypes["entryInfoFile"])
