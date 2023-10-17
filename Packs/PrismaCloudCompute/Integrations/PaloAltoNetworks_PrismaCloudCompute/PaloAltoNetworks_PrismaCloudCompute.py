@@ -1070,11 +1070,21 @@ def get_profile_container_forensic_list(client: PrismaCloudComputeClient, args: 
     # correct offset:limit after the api call.
     args["limit"] = limit + offset
 
-    if container_forensics := filter_api_response(
-        api_response=client.get_container_forensics(container_id=container_id, params=assign_params(**args)),
-        limit=limit,
-        offset=offset
-    ):
+    try:
+        container_forensics = filter_api_response(
+            api_response=client.get_container_forensics(container_id=container_id, params=assign_params(**args)),
+            limit=limit,
+            offset=offset
+        )
+
+    except DemistoException as de:
+        if hasattr(de, 'res') and hasattr(de.res, 'status_code') and hasattr(de.res, 'text') \
+                and de.res.status_code == 400 and 'no such defender' in de.res.text:
+            container_forensics = None
+        else:
+            raise
+
+    if container_forensics:
         for forensic in container_forensics:
             remove_nulls_from_dictionary(data=forensic)
             if "timestamp" in forensic:
@@ -1131,11 +1141,21 @@ def get_profile_host_forensic_list(client: PrismaCloudComputeClient, args: dict)
     # correct offset:limit after the api call.
     args["limit"] = limit + offset
 
-    if host_forensics := filter_api_response(
-        api_response=client.get_host_forensics(host_id=host_id, params=assign_params(**args)),
-        limit=limit,
-        offset=offset
-    ):
+    try:
+        host_forensics = filter_api_response(
+            api_response=client.get_host_forensics(host_id=host_id, params=assign_params(**args)),
+            limit=limit,
+            offset=offset
+        )
+
+    except DemistoException as de:
+        if hasattr(de, 'res') and hasattr(de.res, 'status_code') and hasattr(de.res, 'text') \
+                and de.res.status_code == 400 and 'no such defender' in de.res.text:
+            host_forensics = None
+        else:
+            raise
+
+    if host_forensics:
         for forensic in host_forensics:
             remove_nulls_from_dictionary(data=forensic)
             if "timestamp" in forensic:
@@ -2029,10 +2049,17 @@ def get_logs_defender_command(client: PrismaCloudComputeClient, args: dict):
     Returns:
         CommandResults: command-results object.
     """
-    hostname = args.get('hostname', '')
+    hostname = args.get('hostname')
     lines = args.get('lines')
+    try:
+        response = client.get_logs_defender_request(hostname, lines) or []
 
-    response = client.get_logs_defender_request(hostname, lines) or []
+    except DemistoException as de:
+        if hasattr(de, 'res') and hasattr(de.res, 'status_code') and hasattr(de.res, 'text') \
+                and de.res.status_code == 400 and 'no such defender' in de.res.text:
+            return CommandResults(readable_output='No Entries.')
+        raise
+
     entry = {
         "Hostname": hostname,
         "Logs": response
@@ -2081,7 +2108,15 @@ def get_logs_defender_download_command(client: PrismaCloudComputeClient, args: d
     hostname = args.get('hostname')
     lines = args.get('lines')
 
-    response = client.get_logs_defender_download_request(hostname, lines)
+    try:
+        response = client.get_logs_defender_download_request(hostname, lines)
+
+    except DemistoException as de:
+        if hasattr(de, 'res') and hasattr(de.res, 'status_code') and hasattr(de.res, 'text') \
+                and de.res.status_code == 400 and 'no such defender' in de.res.text:
+            return CommandResults(readable_output='No Entries.')
+        raise
+
     return fileResult(f"{hostname}-logs.tar.gz", response, entryTypes["entryInfoFile"])
 
 
@@ -2548,22 +2583,6 @@ def main():
             # this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
-        elif requested_command == 'prisma-cloud-compute-profile-host-list':
-            return_results(results=get_profile_host_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-profile-container-list':
-            return_results(results=get_container_profile_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-profile-container-hosts-list':
-            return_results(results=get_container_hosts_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-profile-container-forensic-list':
-            return_results(results=get_profile_container_forensic_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-host-forensic-list':
-            return_results(results=get_profile_host_forensic_list(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-add':
-            return_results(results=add_custom_ip_feeds(client=client, args=demisto.args()))
-        elif requested_command == 'prisma-cloud-compute-console-version-info':
-            return_results(results=get_console_version(client=client))
-        elif requested_command == 'prisma-cloud-compute-custom-feeds-ip-list':
-            return_results(results=get_custom_feeds_ip_list(client=client))
         elif requested_command == 'prisma-cloud-compute-profile-host-list':
             return_results(results=get_profile_host_list(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-profile-container-list':
