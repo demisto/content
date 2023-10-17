@@ -33,13 +33,13 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* gcp-iam-service-account-key-disable
-* gcp-iam-service-account-keys-get
+* gsuite-user-update
 * gcp-iam-service-account-key-create
 * gcp-compute-list-instances
-* gcp-iam-service-accounts-get
-* gsuite-user-update
 * gsuite-token-revoke
+* gcp-iam-service-accounts-get
+* gcp-iam-service-account-keys-get
+* gcp-iam-service-account-key-disable
 
 ## Playbook Inputs
 
