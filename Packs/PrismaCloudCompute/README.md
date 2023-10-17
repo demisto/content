@@ -18,6 +18,44 @@ The URL format for the tenant is ```https://api-<tenant name>.xdr.us.paloaltonet
 
 ## Configuration on Prisma Cloud Compute
 1. In Prisma Cloud Compute, create a webhook as explained in the [Webhook Alerts](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin-compute/alerts/webhook) section of the Prisma Cloud Administrator’s Guide (Compute).
+   * Config file for Webhook:
+```json
+//{
+  "type": "#type",
+  "time": "#time",
+  "container": "#container",
+  "containerID": "#containerID",
+  "image": "#image",
+  "imageID": "#imageID",
+  "tags": "#tags",
+  "host": "#host",
+  "fqdn": "#fqdn",
+  "function": "#function",
+  "region": "#region",
+  "provider": "#provider",
+  "osRelease": "#osRelease",
+  "osDistro": "#osDistro",
+  "runtime": "#runtime",
+  "appID": "#appID",
+  "rule": "#rule",
+  "message": "#message",
+  "aggregatedAlerts": #aggregatedAlerts,
+  "dropped": #dropped,
+  "forensics": "#forensics",
+  "accountID": "#accountID",
+  "category": "#category",
+  "command": "#command",
+  "startupProcess": "#startupProcess",
+  "labels": #labels,
+  "collections": #collections,
+  "complianceIssues": #complianceIssues,
+  "vulnerabilities": #vulnerabilities,
+  "clusters": #clusters,
+  "namespaces": #namespaces,
+  "accountIDs": #accountIDs,
+  "user": "#user"
+//}
+```
 2. Use the **Webhook** option to configure the webhook.
 3. In **Incoming Webhook URL**, paste the API URL that you copied and recorded from **Copy api url**.
 4. In **Credential Options**, select **Basic Authentication**, and use the Username and Password that you saved when you generated the token.
@@ -25,6 +63,7 @@ The URL format for the tenant is ```https://api-<tenant name>.xdr.us.paloaltonet
 6. Click **Save**.
    * In Cortex XSIAM, once alerts start to come in, a green checkmark appears underneath the Prisma Cloud Compute Collector configuration with the amount of data received.
 7. After Cortex XSIAM begins receiving data from Prisma Cloud Compute, you can use XQL Search to search for specific data using the ```prisma_cloud_compute_raw``` dataset.
+
 
 **Pay Attention**:
 Timestamp parsing support is available for the **time** field in ```%h %d, %Y %H:%M:%S UTC``` format (E.g ```Oct 14, 2023 09:16:04 UTC```)
