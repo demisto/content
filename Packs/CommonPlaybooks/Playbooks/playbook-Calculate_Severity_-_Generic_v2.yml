@@ -10,7 +10,9 @@ description: |-
   - Critical assets
   - Email authenticity
   - Current incident severity
-  - Microsoft Headers.
+  - Microsoft Headers
+  - Risky users (XDR)
+  - Risky hosts (XDR).
 starttaskid: "0"
 tasks:
   "0":
@@ -31,6 +33,7 @@ tasks:
       - "24"
       - "16"
       - "27"
+      - "28"
     separatecontext: false
     view: |-
       {
@@ -44,6 +47,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: cf430274-2565-4433-8dfe-a25a621b0a7c
@@ -77,6 +83,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 4def42ba-2984-40f3-83c0-ec484edc3b97
@@ -110,6 +119,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 132c16ae-fb69-4752-8f79-77923b14ca8c
@@ -143,6 +155,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 8ee3e05c-0da8-405d-8bb8-a2d7bbf7789f
@@ -168,6 +183,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: c7b36df3-1ae7-4b18-819f-9b85d96c4858
@@ -201,12 +219,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: be9c8f44-63bb-4ba0-873b-2168cdb2ab06
+    taskid: 5021be72-508c-4eba-852d-adee5146cb2d
     type: condition
     task:
-      id: be9c8f44-63bb-4ba0-873b-2168cdb2ab06
+      id: 5021be72-508c-4eba-852d-adee5146cb2d
       version: -1
       name: Determine incident severity
       description: Determines the severity level based on the highest result of all severity calculations.
@@ -228,7 +249,7 @@ tasks:
     conditions:
     - label: Critical
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
@@ -279,9 +300,11 @@ tasks:
                       value:
                         simple: "4"
             iscontext: true
+          right:
+            value: {}
     - label: High
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
@@ -331,10 +354,28 @@ tasks:
                     right:
                       value:
                         simple: "3"
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.XDRUserSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: High
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.XDRHostSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: High
+                    ignorecase: true
             iscontext: true
     - label: Medium
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
@@ -366,7 +407,6 @@ tasks:
                     right:
                       value:
                         simple: Medium
-                    ignorecase: true
                   - operator: isEqualString
                     left:
                       value:
@@ -384,11 +424,29 @@ tasks:
                     right:
                       value:
                         simple: "2"
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.XDRUserSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Medium
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.XDRHostSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Medium
+                    ignorecase: true
             iscontext: true
           ignorecase: true
     - label: Low
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
               complex:
@@ -438,6 +496,24 @@ tasks:
                     right:
                       value:
                         simple: "1"
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.XDRUserSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Low
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: Severities.XDRHostSeverity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Low
+                    ignorecase: true
             iscontext: true
     view: |-
       {
@@ -451,6 +527,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: 740266f8-5732-4285-81a1-d19dbea15988
@@ -490,6 +569,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     taskid: 29bad58f-8797-49ff-8681-68363fc8e9a5
@@ -552,6 +634,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: b20ff842-f44e-4314-8d7a-ce51e1d69c16
@@ -590,6 +675,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 1a13e3e0-18fb-4c0f-8866-9d56b0df1017
@@ -628,6 +716,9 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
     taskid: e042ddb9-d13d-492a-8ac4-95edfbf9a927
@@ -653,7 +744,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 870
+          "y": 905
         }
       }
     note: false
@@ -661,6 +752,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
     taskid: ec346f9c-5097-4f41-81f7-2fa0243a7a2c
@@ -681,8 +775,7 @@ tasks:
       key:
         simple: Severities.MicrosoftHeadersSeverityCheck
       value:
-        complex:
-          root: inputs.MicrosoftHeadersSeverityCheck
+        simple: ${inputs.MicrosoftHeadersSeverityCheck}
     separatecontext: false
     view: |-
       {
@@ -696,6 +789,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
     taskid: a69eaf95-968e-4032-8bfd-206412ffc322
@@ -734,6 +830,53 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 17fd7668-8920-46e4-88bf-87d7a492e3bd
+    type: playbook
+    task:
+      id: 17fd7668-8920-46e4-88bf-87d7a492e3bd
+      version: -1
+      name: Calculate Severity - Cortex XDR Risky Assets
+      playbookName: Calculate Severity - Cortex XDR Risky Assets
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      XDRRiskyHosts:
+        complex:
+          root: inputs.XDRRiskyHosts
+      XDRRiskyUsers:
+        complex:
+          root: inputs.XDRRiskyUsers
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -748,8 +891,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1115,
-        "width": 2350,
-        "x": -20,
+        "width": 2780,
+        "x": -450,
         "y": 50
       }
     }
@@ -813,6 +956,26 @@ inputs:
     simple: ${Email.MicrosoftHeadersSeverityCheck}
   required: false
   description: The value is set by the "Process Microsoft's Anti-Spam Headers" Playbook, which calculates the severity after processing the PCL, BCL and PCL values inside Microsoft's headers.
+  playbookInputQuery:
+- key: XDRRiskyUsers
+  value:
+    complex:
+      root: PaloAltoNetworksXDR
+      accessor: RiskyUser
+      transformers:
+      - operator: uniq
+  required: false
+  description: An object of risky users and their corresponding scores, as outputted by the "xdr-list-risky-users" command.
+  playbookInputQuery:
+- key: XDRRiskyHosts
+  value:
+    complex:
+      root: PaloAltoNetworksXDR
+      accessor: RiskyHost
+      transformers:
+      - operator: uniq
+  required: false
+  description: An object of risky hosts and their corresponding scores, as outputted by the "xdr-list-risky-hosts" command.
   playbookInputQuery:
 outputs:
 - contextPath: CriticalAssets
