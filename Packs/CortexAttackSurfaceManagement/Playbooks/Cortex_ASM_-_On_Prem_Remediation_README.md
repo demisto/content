@@ -1,7 +1,7 @@
 This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.
 
 Conditions:
-- Multiple integration instances configured at same time not supported (Panorama or standalone NGFW).
+- Multiple integration instances configured at the same time are not supported (Panorama or standalone NGFW).
 - Multiple rules with the same name in different device-groups not supported (Panorama).
 - !pan-os-list-services will fail if there are no services in a specific device-group (Panorama).
 
