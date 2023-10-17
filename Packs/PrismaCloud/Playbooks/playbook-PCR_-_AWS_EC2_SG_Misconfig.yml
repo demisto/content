@@ -280,10 +280,10 @@ tasks:
     continueonerrortype: ""
   "15":
     id: "15"
-    taskid: e8679729-db1b-4544-8ca5-5bc68ffee4c6
+    taskid: 13c8b02d-09b5-4315-8a3e-19b25b716632
     type: condition
     task:
-      id: e8679729-db1b-4544-8ca5-5bc68ffee4c6
+      id: 13c8b02d-09b5-4315-8a3e-19b25b716632
       version: -1
       name: Execute remediation
       description: Remediate the appropriate Prisma Cloud policy based on the policy Id.
@@ -308,28 +308,6 @@ tasks:
           right:
             value:
               simple: 2378dbf4-b104-4bda-9b05-7417affbba3f
-    - label: pubTraffic
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 2dbda57f-33d4-459a-97ae-dec7e81f9ec4
-    - label: permissive
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 566686e8-0581-4df5-ae22-5a901ed37b58
     - label: alltraffic-port22
       condition:
       - - operator: isEqualString
@@ -578,7 +556,6 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
-system: true
 view: |-
   {
     "linkLabelsPosition": {
