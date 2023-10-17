@@ -728,6 +728,9 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
     description: Returns enrichment for an IP address.
   - name: domain
     arguments:
@@ -774,12 +777,15 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
     description: Returns enrichment for a Domain.
   - name: asm-get-incident
     arguments:
     - name: incident_id
       required: true
-      description: The ID of the incident to be fetched
+      description: The ID of the incident to be fetched.
     outputs:
     - contextPath: ASM.Incident.incident_id
       description: The ID of the incident.
