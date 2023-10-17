@@ -4944,7 +4944,8 @@
         },
         {
             "playbookID": "playbook-SearchIncidentsV2InsideGenericPollng-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 300
         },
         {
             "playbookID": "IsRFC1918-Test",
