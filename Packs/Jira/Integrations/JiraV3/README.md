@@ -862,7 +862,9 @@ Scope: `write:jira-work`
 ### jira-issue-assign
 
 ***
-Assignes an issue in Jira.
+Assigns an assignee to an existing issue.
+
+Scope: `write:jira-work`
 
 #### Base Command
 

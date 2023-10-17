@@ -633,7 +633,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         )
 
     def update_assignee(self, issue_id_or_key: str, assignee_body: Dict[str, Any]) -> requests.Response:
-        """This method is in charge of assigning the issue to the specific user.
+        """This method is in charge of assigning an assignee to a specific issue.
 
         Args:
             issue_id_or_key (str): The id or the key of the issue to delete.
@@ -2022,26 +2022,26 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
 
 def update_issue_assignee_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
-    """This command is in charge of updating an assignee in the issue.
+    """This command is in charge of assigning an assignee to an issue.
 
     Args:
         client (JiraBaseClient): The Jira client.
         args (Dict[str, str]): The arguments supplied by the user.
 
     Raises:
-        DemistoException: If neither an issue id nor a key was supplied.
-                          If neither an assignee nor an assignee id was supplied.
+        DemistoException: If neither an assignee nor an assignee id was supplied.
+        DemistoException: If both an assignee and assignee id were supplied.
 
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    body = None
-    if args.get("assignee"):  # for jira server
-        body = {"name": args["assignee"]}
-    elif args.get("assignee_id"):  # for jira cloud
-        body = {"accountId": args["assignee_id"]}
-    else:
-        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud')
+    assignee_name = args.get('assignee', '')  # For Jira OnPrem
+    assignee_id = args.get('assignee_id', '')  # For Jira Cloud
+    if not (assignee_name or assignee_id):
+         raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud.')
+    if (assignee_name and assignee_id):
+        raise DemistoException('Please provide only one, assignee for Jira Server or assignee_id for Jira Cloud.')
+    body = {'accountId': assignee_id} if isinstance(client, JiraCloudClient) else {'name': assignee_name}
 
     issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
                                           issue_key=args.get('issue_key', ''))

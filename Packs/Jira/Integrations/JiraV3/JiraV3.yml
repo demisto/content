@@ -515,7 +515,7 @@ script:
       name: assignee
     - description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
       name: assignee_id
-    description: Assignes an issue in Jira.
+    description: Assigns an assignee to an existing issue.
     name: jira-issue-assign
     outputs:
     - contextPath: Ticket.Id
