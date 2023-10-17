@@ -1925,7 +1925,7 @@ script:
     - description: filter, Example:category eq 'malware’ and ContentType eq 'file'. Available Fields are expectedAssessment,ContentType,status,requestSource.
       isArray: false
       name: filter
-      required: true
+      required: false
     - description: order by.
       isArray: false
       name: order_by
@@ -1938,7 +1938,7 @@ script:
       - 'category'
       - 'status'
       - 'requestSource'
-      required: true
+      required: false
     - description: sort order.
       isArray: false
       name: sort_order
@@ -1946,15 +1946,15 @@ script:
       predefined:
       - 'asc'
       - 'desc'
-      required: true
+      required: false
     - description: limit.
       isArray: false
       name: limt
-      required: true
+      required: false
     - description: next token.
       isArray: false
       name: next_token
-      required: true
+      required: false
     description: Create url assessment request.
     execution: false
     name: msg-list-threat-assessment-requests

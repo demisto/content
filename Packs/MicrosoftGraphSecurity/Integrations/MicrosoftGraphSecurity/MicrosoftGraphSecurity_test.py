@@ -8,7 +8,7 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, purge_ediscovery_data_command, \
     list_ediscovery_non_custodial_data_source_command, list_ediscovery_case_command, activate_ediscovery_custodian_command, \
     release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command, \
-    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command
+    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command,create_mail_assessment_request_command
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -626,3 +626,27 @@ def test_create_ediscovery_non_custodial_data_source_command_invalid_args(mocker
 def test_empty_list_ediscovery_custodian_command(mocker):
     mocker.patch.object(client_mocker, 'list_ediscovery_custodians', return_value={})
     assert list_ediscovery_custodian_command(client_mocker, {}).readable_output == '### Results:\n**No entries.**\n'
+
+
+def test_create_mail_assessment_request_command(mocker):
+    """
+
+    Given:
+        A raw response with one result
+    When:
+        calling list search command
+    Then:
+    Prefixes are correct, nested value is in the readable output
+    """
+    raw_response = load_json("./test_data/mail_assessment_request.json")
+    mocker.patch.object(client_mocker, "create_mail_assessment_request",
+                        return_value={'request_id': '123'})
+    mocker.patch.object(client_mocker, "get_threat_assessment_request_status",
+                        return_value={'status': 'completed'})
+    mocker.patch.object(client_mocker, "get_threat_assessment_request",
+                        return_value=raw_response)
+    results = create_mail_assessment_request_command(client_mocker, {})
+
+    assert results.raw_response == raw_response
+    assert results.outputs_prefix == 'MSGraphMail.MailAssessment'
+    assert results.outputs.get('ID') == raw_response.get('id')
