@@ -41,6 +41,8 @@ params = demisto.params()
 if not params.get('credentials') or not (MISP_API_KEY := params.get('credentials', {}).get('password')):
     raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
 MISP_URL = params.get('url')
+TO_IDS = params.get('check_to_ids')
+ALLOWED_ORGS = argToList(params.get('allowed_orgs'), ',')
 VERIFY = not params.get('insecure')
 PROXIES = handle_proxy()  # type: ignore
 try:
@@ -697,9 +699,18 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
         CommandResults includes all the indicator results.
     """
     reputation_value_validation(value, dbot_type)
-    misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
-                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
-                                  include_decay_score=True, includeSightings=True)
+    # if ALLOWED_ORGS is empty, then it equals to any. When specified, then it filters out all other orgs that are not requested
+    if TO_IDS:
+        # to_ids flag represents whether the attribute is meant to be actionable
+        # Actionable defined attributes can be used in automated processes as a pattern for detection
+        misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
+                                      include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                      include_decay_score=True, includeSightings=True, to_ids=TO_IDS, org=ALLOWED_ORGS)
+    else:
+        misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
+                                      include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                      include_decay_score=True, includeSightings=True, org=ALLOWED_ORGS)
+
     indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')
     if is_indicator_found:
