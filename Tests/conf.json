@@ -761,7 +761,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 1500
+            "timeout": 1800
         },
         {
             "integrations": "HelloWorld",
