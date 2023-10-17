@@ -1,0 +1,3755 @@
+category: Network Security
+commonfields:
+  id: Palo Alto Networks - Prisma SASE V2
+  version: -1
+configuration:
+- defaultvalue: https://api.sase.paloaltonetworks.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: API Client ID
+  displaypassword: API Client Secret
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example:
+    1234567890.'
+  display: Tenant Services Group ID
+  name: tsg_id
+  required: true
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: "false"
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: fac9b974-fa4d-4d24-8303-02e9ebe73a70
+    packName: Palo Alto Networks - Prisma SASE V2 Contribution Pack
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Provides commands for interaction with Prisma SASE API.
+detaileddescription: |-
+  This integration was integrated and tested with version 1.0 of Prisma SASE API.
+
+  ## Create an account in Prisma SASE UI:
+
+  1. Navigate to **Common Services** > **Identity & Access** > **Servers & Services**.
+  2. Add or create a service account with the proper privileges.
+  3. Make a note of the **Client ID** and **Client Secret**.  These will be used to configure the integration.
+
+
+  ## Prisma SASE API
+  [Prisma SASE API](https://pan.dev/sase).
+
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/palo-alto-networks---prisma-sase)
+display: Palo Alto Networks - Prisma SASE V2
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAIb0lEQVR4Xu1ZeZBcRRkPVxAURFGwVHh9vDezYZNl40Zhi2sDiFCYnQ3Ughdyg+IfxtJwFNdSUhDAEgpKCcgRTayUGg0VUJSEwwJFJRR3VSAECkQsiWZnEwMVYDP+fj3TM/36zbG7bNYF+lfVNe9939ff169/fXzdM2VKQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQGMM9Sbf3liI5/hyi8G+eGDj3NzBvnwyIRbyAR2JUrnIB339tkQsxGNO7Lt8/f8Vg4X4O4O9ulQsxFvqkQz5ldTDbtNkJnkyEtyh9V45pQ6OI3VaLpf7lFtnQmDJtcUnuUquLZOY5MlGcC7Sx9RkohRHcbdfb5vCJ9cnOUPuJCf5/UJwLOIDsSocoYU+ur29/aO+3qARuVWSe5NzYbPCl5d1eutgITnV99kISaSOQ+f/xRQpfzQwMLA9OuFCLeQayIbw/BDfu7q6dnLr9ff37wD7ObBbhPI3dNKGOBL/QJ0/okPP6xE9H3DtWxGcSHloHMmfwe5x+CvC5hH4uRUdP9O3ZVsSpY6H/WLYrdZCDOL577C/PxZqnt/WkREsnqn2AwoJsvVLpdJ2Wsoz4Wc57NYh1no836eFuqqtrW1PawdCp5Jc9MsPUE7Kq/wsq6uiJbmF+Hzalfrbp/okk9xiX3y677MZ0CHfdD70VXzcL9wPr3aAEH/GPvUx1uF+hY9c69t4HbbO/fhGBJMMEHoT5Ft9H2U/8i20cYG1n6ZUAvuXfDsv9tP5fH43W2ckBPsFBH2Ndm2iTfDbfX0tllwPX3NNnDjeWUd6dhLJazDoTswQPFJyCY6qYkEvbERuaaBnx6GCvr3Vcu0RXGu4kFsyskjewjqMjU58IaXnrBPin579klqc+gQj/kAmTp3YiVDfoH1lQPwrHUf8JyPDalSL0Zpgrlb0Uy1S9nM1q0cubN9MyYR4IydybfSb1/ogu0TbCWEwBnJvbEZusTf+pdG32JMzBGN25KT8nFmWtO7yiBzGKN2vUu+CMqHywmlSRo6/y5yO2MKlvCzPEtymVI4z1In9HGLvz9jsKC75VV+R3ITYH6/EWAB/L2PZ/B5kn7axsWRe57R1g5WPiOA6ezCy63PSNnIZSeNMTYQ4G7Lhqg7f59evYpuRa0sTkn2Cubel9FL2pj5SyjMo7+jo+CD3HGODjseoPZLHjTSRokQSy3GyBIOgs1xb+qhFNrFP8mKbEwSX356enh353C7aPwH5UZU98mHXfrqUexs/YyQYA/g3js0Gd9kn4Pfnjv5tP+8w2ObktiDZJ9jdNwl+VKojhLiWcpJrZhD2WlfvF8zIQ8pxsgTD148d22E7YCw4O73Yl1De3d29C5Kyi1rtxXkpOypxxkrwi069lRk9BpXrAwP0s77NlKFC/MMMGeNNriFYv17syx1h7S18grHH7erqDZFuAoSEqJxpi3vdeuVOwnIr5JOpj25KsPxptS6Wc/p1Y3OwpfxjaeYeDNu/ZmJjX2Ry5creKcHw+Zrjf0VGj0Qs3Ya4x7cxqEfyRJBL+ATzHOfquQ+n9Woel3FXxuNCXqlZZmYpdayra0Ywfr/r2iZRMs2NjX348FRspb7KbSAlE+JSzPTPmH0xUl9xdaMhmHu+G5uA7aqqDWYzeXD1Jlt2fDQ89xIuyRNFLuETjHKvncXcU0DMH1w9RymWx8sd2Wb33IlOudq1b0YwdWnfcoVdpvH7IW3O4DV9JSm7wbF/ze10DLSFrn0zgkloKraU37J+bNKIelek26fmWRsOxvJ5vaKLxPNW1xAkeSLJJeoQzMa+go68k5cHnvxPdesI8TuQPh8dchve33Z1zQiuyO9I++K+Ku/C86tpuVpYiX2+K0fM5eVcQC7R3lm6GcFMDNN+5Ea2pWK7lQRyRvpHP9RfDbt78Lw5JRe6z37TiOCTawgu6OGhvtgcwMeDXCJDlt+x1Q+QxUQknaxjMlcc8DM2Zbs17nsrgpnpos6zGT+pIldzRtMeSZ8kGVmbbOxmBBt5JH+V8VEpNpnE7xcaxrMFxzPrc0SoR26K5Ln66+NBLuETjGVwhk4nUMMkBOc/5dbjWRnyp2odIrdgtC8lEbG54izLWxFsdNw/sexzyXXbYs7BmJ32LF21F+IwnpmrtkK8wdWDGb97rm5FMM+0bLMb08QV4j4eD6vxmM0L8Wu057+O3TDa8ASPaNZuVKiXeBmCe+O3inPiEwZ748W+brTkEj7B6KRPUm6u6JBZ4uN29+tYcCByv2KCRZKsnB3dKTr3YLHkkHgrs7OxHjijmej5xzUfjM1BxwTLzQHYXhvHZuVubJ7fa17K6FLqw0wmeclST29hTg9ax7RlQunrRw2fZENub9xPXQnBMiSPklyiEcEBEwRLskuuRYrkMZBLvJcI5moxY8aMj/CZCRJnOf/UZ+HJgDPVvvMmjDaclazDupzhrMvZaW+teJKw9a2Oz5RbG+Ov3i3WSFEsJNf45FqQZGTeN4+FXOK9RDDvyZkLJEIcYPZHZMrc17Gn3srLf/yeZ7JiIX6rlNrX3LubK1bxbyZTzNTN/o4cgftwIvQpOSFOhv5RvD+MPOHzvJ/mLRpzCnP+hk88/x6+FvntmRTgyGOyYYt/m/RugiEYRzkSUiWY/91GcrG9hAAhdyP5yttnkLmyfCyTq/gPEgb8ZYlQXy6TKZcYgoV8nIkaE0YSDPlavN9PHxW7ZfTlX4QEjDNA4r6xUhfktZ7Nvws7Ozv3wO+KBLMrUeo42oCQ73dU/oHKCf0l6BfvF8czQeLdHATT9fR9IPsJSL6tPZfbnzM80foUlIuxus2Cny/SVyL1fGbQGCynw3ZpEsnr060JCAgICAgICAgICAgICAgICAgICAgICAgYB/wPjJtl9N6DhfYAAAAASUVORK5CYII=
+name: Palo Alto Networks - Prisma SASE V2
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - auto: PREDEFINED
+      defaultValue: pre
+      description: Rule position.
+      name: position
+      predefined:
+      - pre
+      - post
+    - description: The name of the security rule.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Rule action.
+      name: action
+      predefined:
+      - deny
+      - allow
+      - drop
+      - reset-client
+      - reset-server
+      - reset-both
+      required: true
+    - description: The security rule's description.
+      name: description
+    - description: Rule log setting.
+      name: log_setting
+    - defaultValue: any
+      description: A comma-separated list of applications.
+      isArray: true
+      name: application
+    - defaultValue: any
+      description: A comma-separated list of categories. You can get category values
+        by running the prisma-sase-custom-url-category-list command.
+      isArray: true
+      name: category
+    - defaultValue: any
+      description: A comma-separated list of destination networks.
+      isArray: true
+      name: destination
+    - description: A comma-separated list of destination HIPs.
+      isArray: true
+      name: destination_hip
+    - description: Security profiles to apply to the traffic.
+      name: profile_setting
+    - defaultValue: any
+      description: Services the rule applies to.
+      name: service
+    - defaultValue: any
+      description: A comma-separated list of source networks.
+      isArray: true
+      name: source
+    - description: A comma-separated list of source HIPs.
+      isArray: true
+      name: source_hip
+    - defaultValue: any
+      description: A semi-colon (;) separated list of source users or groups.
+      isArray: true
+      name: source_user
+    - description: A comma-separated list of rule tags.
+      isArray: true
+      name: tag
+    - defaultValue: any
+      description: A comma-separated list of source zones.
+      isArray: true
+      name: from
+    - defaultValue: any
+      description: A comma-separated list of destination zones.
+      isArray: true
+      name: to
+    - description: Whether the rule is disabled.
+      name: disabled
+    - description: Negate the source.
+      name: negate_source
+    - description: Negate the destination.
+      name: negate_destination
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Create a new security rule.
+    name: prisma-sase-security-rule-create
+    outputs:
+    - contextPath: PrismaSase.SecurityRule
+      description: Created security rule.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.action
+      description: Security rule action.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.application
+      description: Security rule application.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.category
+      description: Security rule category.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.destination
+      description: Security rule destination.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.folder
+      description: Security rule folder.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.from
+      description: Security rule from field (source zone(s)).
+      type: String
+    - contextPath: PrismaSase.SecurityRule.id
+      description: Security rule ID.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.name
+      description: Security rule name.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.position
+      description: Security rule position.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.profile_setting.group
+      description: Security rule group.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.service
+      description: Security rule service.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source
+      description: Security rule source.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source_user
+      description: Security rule source user.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.to
+      description: Security rule to field (destination zone(s)).
+      type: String
+  - arguments:
+    - description: The name of the object to use as a filter.
+      name: name
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - auto: PREDEFINED
+      defaultValue: pre
+      description: Security rule position.
+      name: position
+      predefined:
+      - pre
+      - post
+    - defaultValue: "50"
+      description: The maximum number of results to return.
+      name: limit
+    - description: Page number you would like to view. Each page contains page_size
+        values. Must be used along with page_size.
+      name: page
+    - description: Number of results per page to display.
+      name: page_size
+    - description: A specific security rule to return. If not specified, all security
+        rules will be returned.
+      name: rule_id
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Lists all security rules.
+    name: prisma-sase-security-rule-list
+    outputs:
+    - contextPath: PrismaSase.SecurityRule
+      description: Found security rule.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.action
+      description: Security rule action.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.application
+      description: Security rule application.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.category
+      description: Security rule category.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.destination
+      description: Security rule destination.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.folder
+      description: Security rule folder.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.from
+      description: Security rule from field (source zone(s)).
+      type: String
+    - contextPath: PrismaSase.SecurityRule.id
+      description: Security rule ID.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.log_setting
+      description: Security rule log setting.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.name
+      description: Security rule name.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.position
+      description: Security rule position.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.service
+      description: Security rule service.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source
+      description: Security rule source.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source_user
+      description: Security rule source user.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.tag
+      description: Security rule tag.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.to
+      description: Security rule to field (destination zone(s)).
+      type: String
+    - contextPath: PrismaSase.SecurityRule.negate_destination
+      description: Security rule negate destination.
+      type: Boolean
+  - arguments:
+    - description: Comma-separated list of targets (Remote Networks, Mobile Users,
+        Service Connections).
+      name: folders
+      required: true
+    - description: Configuration push job description.
+      name: description
+    - description: interval for polling command. Default is 30.
+      name: interval_in_seconds
+    - defaultValue: "600"
+      description: Polling timeout in seconds.
+      name: polling_timeout_in_seconds
+    - deprecated: true
+      description: For polling use - the job id of the push job.
+      name: job_id
+    - deprecated: true
+      description: For polling use - wether the paret process finished and child processes
+        were creted.
+      name: parent_finished
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Push the candidate configuration.
+    name: prisma-sase-candidate-config-push
+    outputs:
+    - contextPath: PrismaSase.CandidateConfig.job_id
+      description: Configuration job ID.
+      type: String
+    - contextPath: PrismaSase.CandidateConfig.result
+      description: The configuration push result, e.g. OK, FAIL.
+      type: String
+    - contextPath: PrismaSase.CandidateConfig.details
+      description: The configuration push details.
+      type: String
+    polling: true
+  - arguments:
+    - description: ID of the rule to be changed.
+      name: rule_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - auto: PREDEFINED
+      defaultValue: pre
+      description: Security rule position.
+      name: position
+      predefined:
+      - pre
+      - post
+    - auto: PREDEFINED
+      description: Rule action.
+      name: action
+      predefined:
+      - deny
+      - allow
+      - drop
+      - reset-client
+      - reset-server
+      - reset-both
+    - description: The security rule's description.
+      name: description
+    - description: Rule log setting.
+      name: log_setting
+    - description: A comma-separated list of applications.
+      isArray: true
+      name: application
+    - description: A comma-separated list of categories.
+      isArray: true
+      name: category
+    - description: A comma-separated list of destination networks.
+      isArray: true
+      name: destination
+    - description: A comma-separated list of destination HIPs.
+      isArray: true
+      name: destination_hip
+    - description: Security profiles to apply to the traffic.
+      name: profile_setting
+    - description: Services the rule applies to.
+      name: service
+    - description: A comma-separated list of source networks.
+      isArray: true
+      name: source
+    - description: A comma-separated list of source HIPs.
+      isArray: true
+      name: source_hip
+    - description: A semi-colon (;) separated list of source user(s).
+      name: source_user
+    - description: A comma-separated list of rule tags.
+      isArray: true
+      name: tag
+    - description: A comma-separated list of source zones.
+      isArray: true
+      name: from
+    - description: A comma-separated list of destination zones.
+      isArray: true
+      name: to
+    - description: Whether the rule is disabled.
+      name: disabled
+    - description: Negate source
+      name: negate_source
+    - description: Negate the destination.
+      name: negate_destination
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to overwrite the original rule values.
+      name: overwrite
+      predefined:
+      - "true"
+      - "false"
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Update an existing security rule.
+    name: prisma-sase-security-rule-update
+    outputs:
+    - contextPath: PrismaSase.SecurityRule
+      description: Edited security rule.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.action
+      description: Security rule action.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.application
+      description: Security rule application.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.category
+      description: Security rule category.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.description
+      description: Security rule description.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.destination
+      description: Security rule destination.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.folder
+      description: Security rule folder.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.from
+      description: Security rule from field (source zone(s)).
+      type: String
+    - contextPath: PrismaSase.SecurityRule.id
+      description: Security rule ID.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.name
+      description: Security rule name.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.profile_setting.group
+      description: Security rule profile setting.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.service
+      description: Security rule service.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source
+      description: Security rule source.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.source_user
+      description: Security rule source user.
+      type: String
+    - contextPath: PrismaSase.SecurityRule.to
+      description: Security rule to field (destination zone(s)).
+      type: String
+  - arguments:
+    - description: ID of the address object to edit.
+      name: object_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: The address object's description.
+      name: description
+    - auto: PREDEFINED
+      description: "The type of the address. \nThe optional types are: \nIP Netmask:
+        IP address or a network using the slash notation - ip_address/mask.\nIP Range:
+        Range of IP addresses using the notation ip_address-ip_address.\nIP Wildcard:
+        IP wildcard address in the format of an IPv4 address followed by a slash and
+        a mask.\nFQDN: Domain Name."
+      name: type
+      predefined:
+      - ip_netmask
+      - ip_range
+      - ip_wildcard
+      - fqdn
+    - description: The address value (should match the type)
+      name: address_value
+      required: true
+    - description: A comma-separated list of address object tags.
+      isArray: true
+      name: tag
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Update an existing address object.
+    name: prisma-sase-address-object-update
+    outputs:
+    - contextPath: PrismaSase.Address.description
+      description: Address description.
+      type: String
+    - contextPath: PrismaSase.Address.folder
+      description: Address folder.
+      type: String
+    - contextPath: PrismaSase.Address.id
+      description: Address ID.
+      type: String
+    - contextPath: PrismaSase.Address.address_value
+      description: Address value.
+      type: String
+    - contextPath: PrismaSase.Address.type
+      description: Address type.
+      type: String
+    - contextPath: PrismaSase.Address.name
+      description: Address name.
+      type: String
+  - arguments:
+    - description: A specific config job to return. If not specified, all config jobs
+        will be returned.
+      name: job_id
+    - defaultValue: "50"
+      description: The maximum number of results to return.
+      name: limit
+    - description: Page number you would like to view. Each page contains page_size
+        values. Must be used along with page_size.
+      name: page
+    - description: Number of results per page to display.
+      name: page_size
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Lists all configuration jobs.
+    name: prisma-sase-config-job-list
+    outputs:
+    - contextPath: PrismaSase.ConfigJob.description
+      description: Configuration job description.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.end_ts
+      description: Configuration job end timestamp.
+      type: Date
+    - contextPath: PrismaSase.ConfigJob.id
+      description: Configuration job ID.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.job_result
+      description: Configuration job result.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.job_status
+      description: Configuration job status.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.job_type
+      description: Configuration job type.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.parent_id
+      description: Configuration job parent ID.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.percent
+      description: Configuration job percent.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.result_str
+      description: Configuration job result string.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.start_ts
+      description: Configuration job start timestamp.
+      type: Date
+    - contextPath: PrismaSase.ConfigJob.status_str
+      description: Configuration job status string.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.summary
+      description: Configuration job summary.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.type_str
+      description: Configuration job type string.
+      type: String
+    - contextPath: PrismaSase.ConfigJob.uname
+      description: Configuration job uname.
+      type: String
+  - arguments:
+    - description: Rule ID of the rule to be deleted.
+      name: rule_id
+      required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Delete a specific security rule.
+    name: prisma-sase-security-rule-delete
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: The name of the address object.
+      name: name
+      required: true
+    - description: The address object's description.
+      name: description
+    - auto: PREDEFINED
+      description: "The type of the address. \nThe optional types are: \nIP Netmask:
+        IP address or a network using the slash notation - ip_address/mask.\nIP Range:
+        Range of IP addresses using the notation ip_address-ip_address.\nIP Wildcard:
+        IP wildcard address in the format of an IPv4 address followed by a slash and
+        a mask.\nFQDN: Domain Name."
+      name: type
+      predefined:
+      - ip_netmask
+      - ip_range
+      - ip_wildcard
+      - fqdn
+      required: true
+    - description: A comma-separated list of address object tags.
+      isArray: true
+      name: tag
+    - description: The address value (should match the type)
+      name: address_value
+      required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Create a new address object.
+    name: prisma-sase-address-object-create
+    outputs:
+    - contextPath: PrismaSase.Address
+      description: Created address object.
+      type: String
+    - contextPath: PrismaSase.Address.description
+      description: Address description.
+      type: String
+    - contextPath: PrismaSase.Address.folder
+      description: Address folder.
+      type: String
+    - contextPath: PrismaSase.Address.id
+      description: Address ID.
+      type: String
+    - contextPath: PrismaSase.Address.type
+      description: Address type.
+      type: String
+    - contextPath: PrismaSase.Address.address_value
+      description: Address value.
+      type: String
+    - contextPath: PrismaSase.Address.name
+      description: Address name.
+      type: String
+  - arguments:
+    - description: The name of the object to use as a filter.
+      name: name
+    - description: ID of the address object to delete.
+      name: object_id
+      required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Delete a specific address object.
+    name: prisma-sase-address-object-delete
+  - arguments:
+    - description: The specific address object to return. If not specified, all addresses
+        will be returned.
+      name: object_id
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - defaultValue: "50"
+      description: The maximum number of results to return.
+      name: limit
+    - description: Page number you would like to view. Each page contains page_size
+        values. Must be used along with page_size.
+      name: page
+    - description: Number of results per page to display.
+      name: page_size
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Lists all addresses objects.
+    name: prisma-sase-address-object-list
+    outputs:
+    - contextPath: PrismaSase.Address.description
+      description: Address description.
+      type: String
+    - contextPath: PrismaSase.Address.folder
+      description: Address folder.
+      type: String
+    - contextPath: PrismaSase.Address.id
+      description: Address ID.
+      type: String
+    - contextPath: PrismaSase.Address.name
+      description: Address name.
+      type: String
+    - contextPath: PrismaSase.Address.address_value
+      description: Address value.
+      type: String
+    - contextPath: PrismaSase.Address.type
+      description: Address type.
+      type: String
+  - arguments:
+    - description: The name of the object to use as a filter.
+      name: name
+    - description: A specific tag to return. If not specified, all tags will be returned.
+      name: tag_id
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - defaultValue: "50"
+      description: The maximum number of results to return.
+      name: limit
+    - description: Page number you would like to view. Each page contains page_size
+        values. Must be used along with page_size.
+      name: page
+    - description: Number of results per page to display.
+      name: page_size
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Lists all tags.
+    name: prisma-sase-tag-list
+    outputs:
+    - contextPath: PrismaSase.Tag.id
+      description: Tag ID.
+      type: String
+    - contextPath: PrismaSase.Tag.name
+      description: Tag name.
+      type: String
+    - contextPath: PrismaSase.Tag.folder
+      description: Tag folder.
+      type: String
+    - contextPath: PrismaSase.Tag.comments
+      description: Tag comments.
+      type: String
+    - contextPath: PrismaSase.Tag.color
+      description: The tag color.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: The tag unique name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: Tag color.
+      name: color
+      predefined:
+      - Red
+      - Green
+      - Blue
+      - Yellow
+      - Copper
+      - Orange
+      - Purple
+      - Gray
+      - Light Green
+      - Cyan
+      - Light Gray
+      - Blue Gray
+      - Lime
+      - Black
+      - Gold
+      - Brown
+      - Olive
+      - Maroon
+      - Red-Orange
+      - Yellow-Orange
+      - Forest Green
+      - Turquoise Blue
+      - Azure Blue
+      - Cerulean Blue
+      - Midnight Blue
+      - Medium Blue
+      - Cobalt Blue
+      - Violet Blue
+      - Blue Violet
+      - Medium Violet
+      - Medium Rose
+      - Lavender
+      - Orchid
+      - Thistle
+      - Peach
+      - Salmon
+      - Magenta
+      - Red Violet
+      - Mahogany
+      - Burnt Sienna
+      - Chestnut
+    - description: Tag comments.
+      name: comments
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Create a new tag.
+    name: prisma-sase-tag-create
+    outputs:
+    - contextPath: PrismaSase.Tag.id
+      description: The tag ID.
+      type: String
+    - contextPath: PrismaSase.Tag.name
+      description: The tag name.
+      type: String
+    - contextPath: PrismaSase.Tag.folder
+      description: The tag folder.
+      type: String
+    - contextPath: PrismaSase.Tag.color
+      description: The tag color.
+      type: String
+    - contextPath: PrismaSase.Tag.comments
+      description: The tag comments.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: The tag ID.
+      name: tag_id
+      required: true
+    - auto: PREDEFINED
+      description: Tag color.
+      name: color
+      predefined:
+      - Red
+      - Green
+      - Blue
+      - Yellow
+      - Copper
+      - Orange
+      - Purple
+      - Gray
+      - Light Green
+      - Cyan
+      - Light Gray
+      - Blue Gray
+      - Lime
+      - Black
+      - Gold
+      - Brown
+      - Olive
+      - Maroon
+      - Red-Orange
+      - Yellow-Orange
+      - Forest Green
+      - Turquoise Blue
+      - Azure Blue
+      - Cerulean Blue
+      - Midnight Blue
+      - Medium Blue
+      - Cobalt Blue
+      - Violet Blue
+      - Blue Violet
+      - Medium Violet
+      - Medium Rose
+      - Lavender
+      - Orchid
+      - Thistle
+      - Peach
+      - Salmon
+      - Magenta
+      - Red Violet
+      - Mahogany
+      - Burnt Sienna
+      - Chestnut
+    - description: Tag comments.
+      name: comments
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Update an existing tag.
+    name: prisma-sase-tag-update
+    outputs:
+    - contextPath: PrismaSase.Tag.id
+      description: The tag ID.
+      type: String
+    - contextPath: PrismaSase.Tag.name
+      description: The tag name.
+      type: String
+    - contextPath: PrismaSase.Tag.folder
+      description: The tag folder.
+      type: String
+    - contextPath: PrismaSase.Tag.color
+      description: The tag color.
+      type: String
+    - contextPath: PrismaSase.Tag.comments
+      description: The tag comments.
+      type: String
+  - arguments:
+    - description: The specific tag to delete
+      name: tag_id
+      required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Delete a specific tag.
+    name: prisma-sase-tag-delete
+  - arguments:
+    - description: The name of the object to use as a filter.
+      name: name
+    - description: A specific address group to return. If not specified, all address
+        groups will be returned.
+      name: group_id
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: The maximum number of results to return.
+      name: limit
+    - description: Page number you would like to view. Each page contains page_size
+        values. Must be used along with page_size.
+      name: page
+    - description: Number of results per page to display.
+      name: page_size
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Lists all address groups.
+    name: prisma-sase-address-group-list
+    outputs:
+    - contextPath: PrismaSase.AddressGroup.id
+      description: The address group ID.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.name
+      description: The address group name.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.description
+      description: The address group description.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.addresses
+      description: The address group addresses.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.dynamic_filter
+      description: The address group filter.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - auto: PREDEFINED
+      description: The address group type.
+      name: type
+      predefined:
+      - static
+      - dynamic
+      required: true
+    - description: Static addresses for the address group. If the type is static,
+        a value must be provided.
+      name: static_addresses
+    - description: Dynamic filter for the address group. If the type is dynamic, a
+        value must be provided.
+      name: dynamic_filter
+    - description: The address group's description.
+      name: description
+    - description: The name of the address group.
+      name: name
+      required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Create a new address group.
+    name: prisma-sase-address-group-create
+    outputs:
+    - contextPath: PrismaSase.AddressGroup.id
+      description: The address group ID.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.name
+      description: The address group name.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      description: The address group folder.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.description
+      description: The address group description.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.addresses
+      description: The address group addresses.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.dynamic_filter
+      description: The address group filter.
+      type: String
+  - arguments:
+    - description: The ID of the address group.
+      name: group_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: Static addresses for the address group. If the type is static,
+        a value must be provided.
+      name: static_addresses
+    - description: Dynamic filter for the address group. If the type is dynamic, a
+        value must be provided.
+      name: dynamic_filter
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Rather to overwrite existing data.
+      name: overwrite
+      predefined:
+      - "true"
+      - "false"
+    - description: The address group's description.
+      name: description
+    - auto: PREDEFINED
+      description: The address group type.
+      name: type
+      predefined:
+      - dynamic
+      - static
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Update an existing address group.
+    name: prisma-sase-address-group-update
+    outputs:
+    - contextPath: PrismaSase.AddressGroup.id
+      description: The address group ID.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.name
+      description: The address group name.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.folder
+      description: The address group folder.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.description
+      description: The address group description.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.addresses
+      description: The address group addresses.
+      type: String
+    - contextPath: PrismaSase.AddressGroup.dynamic_filter
+      description: The address group filter.
+      type: String
+  - arguments:
+    - description: The name of the address group.
+      name: group_id
+      required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Delete a specific address group.
+    name: prisma-sase-address-group-delete
+  - arguments:
+    - description: The name of the object to use as a filter.
+      name: name
+    - description: A specific URL category to return. If not specified, all URL categories
+        will be returned.
+      name: id
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: The maximum number of results to return.
+      name: limit
+    - description: Page number you would like to view. Each page contains page_size
+        values. Must be used along with page_size.
+      name: page
+    - description: Number of results per page to display.
+      name: page_size
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Lists all custom URL categories.
+    name: prisma-sase-custom-url-category-list
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory.id
+      description: The URL category ID.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      description: The URL category name.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.folder
+      description: The URL category folder.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      description: The URL category type.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.list
+      description: The URL category match list.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.description
+      description: The URL category description.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - auto: PREDEFINED
+      description: The custom URL category's type.
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+      required: true
+    - description: If the type is URL List, the value will be a comma-separated array
+        of URL addresses. If the type is Category Match, the value will be a comma-separated
+        array of category names. You can get the names by running the prisma-sase-url-access-profile-list
+        command.
+      isArray: true
+      name: value
+      required: true
+    - description: The custom URL category's description.
+      name: description
+    - description: The name of the custom URL category.
+      name: name
+      required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Create a new URL category.
+    name: prisma-sase-custom-url-category-create
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory.id
+      description: The URL category ID.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      description: The URL category name.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.folder
+      description: The URL category folder.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      description: The URL category type.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.list
+      description: The URL category match list.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.description
+      description: The URL category description.
+      type: String
+  - arguments:
+    - description: The custom URL category ID.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: The custom URL category's value.
+      name: value
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to overwrite the original custom URL category values.
+      name: overwrite
+      predefined:
+      - "true"
+      - "false"
+    - description: The custom URL category's description.
+      name: description
+    - auto: PREDEFINED
+      description: The custom URL category's type.
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Update an existing url category.
+    name: prisma-sase-custom-url-category-update
+    outputs:
+    - contextPath: PrismaSase.CustomURLCategory.id
+      description: The URL category ID.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.name
+      description: The URL category name.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.folder
+      description: The URL category folder.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.type
+      description: The URL category type.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.list
+      description: The URL category match list.
+      type: String
+    - contextPath: PrismaSase.CustomURLCategory.description
+      description: The URL category description.
+      type: String
+  - arguments:
+    - description: The custom URL category ID.
+      name: id
+      required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Delete a specific URL category.
+    name: prisma-sase-custom-url-category-delete
+  - arguments:
+    - description: The name of the object to use as a filter.
+      name: name
+    - description: A specific external dynamic list to return. If not specified, all
+        external dynamic lists will be returned.
+      name: id
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: The maximum number of results to return.
+      name: limit
+    - description: Page number you would like to view. Each page contains page_size
+        values. Must be used along with page_size.
+      name: page
+    - description: Number of results per page to display.
+      name: page_size
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Lists all external dynamic lists.
+    name: prisma-sase-external-dynamic-list-list
+    outputs:
+    - contextPath: PrismaSase.ExternalDynamicList.id
+      description: The external dynamic list ID.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.name
+      description: The external dynamic list name.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.folder
+      description: The external dynamic list folder.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.description
+      description: The external dynamic list description.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.type
+      description: The external dynamic list type.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.source
+      description: The external dynamic list source.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.frequency
+      description: The external dynamic list frequency.
+      type: String
+  - arguments:
+    - description: The external dynamic list name.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: The dynamic list's description.
+      name: description
+    - auto: PREDEFINED
+      description: The dynamic list's type.
+      name: type
+      predefined:
+      - predefined_ip
+      - predefined_url
+      - ip
+      - domain
+      - url
+      required: true
+    - auto: PREDEFINED
+      description: The predefined IP list. If the type is predefined_ip, a value must
+        be provided.
+      name: predefined_ip_list
+      predefined:
+      - panw-torexit-ip-list
+      - panw-bulletproof-ip-list
+      - panw-highrisk-ip-list
+      - panw-known-ip-list
+    - auto: PREDEFINED
+      description: The predefined URL list. If the type is predefined_url, a value
+        must be provided.
+      name: predefined_url_list
+      predefined:
+      - panw–auth-portal-exclude-list
+    - description: The source URL. If the type is ip, url or domain, a value must
+        be provided.
+      name: source_url
+    - auto: PREDEFINED
+      description: Frequency to check for updates. The default value is five minutes.
+      name: frequency
+      predefined:
+      - five_minute
+      - hourly
+      - daily
+      - weekly
+      - monthly
+    - description: The frequency hour. If the frequency argument is daily, weekly
+        or monthly, value must be provided. Possible values are 00-23.
+      name: frequency_hour
+    - auto: PREDEFINED
+      description: The day of the week. If the frequency argument is weekly or monthly,
+        value must be provided.
+      name: day_of_week
+      predefined:
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      - sunday
+    - description: The day of the month. If the frequency argument is monthly, value
+        must be provided. Possible values are between 1 and 31.
+      name: day_of_month
+    - description: The user can exclude certain addresses from the list depending
+        on the type of list.
+      name: exception_list
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Create a new dynamic list.
+    name: prisma-sase-external-dynamic-list-create
+    outputs:
+    - contextPath: PrismaSase.ExternalDynamicList.id
+      description: The external dynamic list ID.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.name
+      description: The external dynamic list name.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.folder
+      description: The external dynamic list folder.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.description
+      description: The external dynamic list description.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.type
+      description: The external dynamic list type.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.source
+      description: The external dynamic list source.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.frequency
+      description: The external dynamic list frequency.
+      type: String
+  - arguments:
+    - description: The external dynamic list ID.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to overwrite the original external dynamic list values.
+      name: overwrite
+      predefined:
+      - "true"
+      - "false"
+    - description: The dynamic list's description.
+      name: description
+    - auto: PREDEFINED
+      description: The dynamic list's type.
+      name: type
+      predefined:
+      - predefined_ip
+      - predefined_url
+      - ip
+      - domain
+      - url
+    - auto: PREDEFINED
+      description: The predefined ip list. If the type is predefined_ip, a value must
+        be provided.
+      name: predefined_ip_list
+      predefined:
+      - panw-torexit-ip-list
+      - panw-bulletproof-ip-list
+      - panw-highrisk-ip-list
+      - panw-known-ip-list
+    - auto: PREDEFINED
+      description: The predefined URL list. If the type is predefined_url, a value
+        must be provided.
+      name: predefined_url_list
+      predefined:
+      - panw–auth-portal-exclude-list
+    - description: The source URL. If the type is ip, url or domain, a value must
+        be provided.
+      name: source_url
+    - auto: PREDEFINED
+      description: Frequency to check for updates.
+      name: frequency
+      predefined:
+      - five_minute
+      - hourly
+      - daily
+      - weekly
+      - monthly
+    - description: The frequency hour. If the frequency argument is daily, weekly
+        or monthly, value must be provided. Possible values are 00-23.
+      name: frequency_hour
+    - auto: PREDEFINED
+      description: The day of the week. If the frequency argument is weekly or monthly,
+        a value must be provided.
+      name: day_of_week
+      predefined:
+      - monday
+      - tuesday
+      - wednesday
+      - thursday
+      - friday
+      - saturday
+      - sunday
+    - description: The day of the month. If the frequency argument is monthly, a value
+        must be provided. Possible values are between 1 and 31.
+      name: day_of_month
+    - description: The user can exclude certain addresses from the list depending
+        on the type of list.
+      name: exception_list
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Update an existing dynamic list.
+    name: prisma-sase-external-dynamic-list-update
+    outputs:
+    - contextPath: PrismaSase.ExternalDynamicList.id
+      description: The external dynamic list ID.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.name
+      description: The external dynamic list name.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.folder
+      description: The external dynamic list folder.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.description
+      description: The external dynamic list description.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.type
+      description: The external dynamic list type.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.source
+      description: The external dynamic list source.
+      type: String
+    - contextPath: PrismaSase.ExternalDynamicList.frequency
+      description: The external dynamic list frequency.
+      type: String
+  - arguments:
+    - description: The external dynamic list ID.
+      name: id
+      required: true
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Delete a specific dynamic list.
+    name: prisma-sase-external-dynamic-list-delete
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: Shared
+      description: The configuration folder group setting.
+      name: folder
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
+    - description: Tenant services group ID. If not provided, the tsg_id integration
+        parameter will be used as the default.
+      name: tsg_id
+    description: Get all predefined URL categories.
+    name: prisma-sase-url-category-list
+  - arguments:
+    - description: The host ID
+      name: host_id
+    - description: The TSG ID
+      name: tsg_id
+    description: 'Quarantine a host '
+    name: prisma-sase-quarantine-host
+  dockerimage: demisto/python3:3.10.11.60032
+  runonce: false
+  script: |
+    register_module_line('Palo Alto Networks - Prisma SASE', 'start', __line__())
+    ### pack version: 2.0.4
+
+
+
+
+    import urllib3
+
+    # Disable insecure warnings
+    urllib3.disable_warnings()
+
+    # CONSTANTS
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+    SEARCH_LIMIT = 200
+    DEFAULT_LIMIT = 50
+    PA_OUTPUT_PREFIX = "PrismaSase."
+    CONFIG_URI_PREFIX = "/sse/config/v1/"
+    DEFAULT_POLLING_INTERVAL = 30
+    DEFAULT_POLLING_TIMEOUT = 600
+    DEFAULT_POSITION = 'pre'
+    DEFAULT_FOLDER = 'Shared'
+    FREQUENCY_HOUR_REGEX = '[01][0-9]|2[0-3]'
+
+    SECURITYRULE_FIELDS = {
+        "action": "",
+        "application": [],
+        "category": [],
+        "description": "",
+        "destination": [],
+        "destination_hip": [],
+        "disabled": "",
+        "from": [],
+        "log_setting": "",
+        "name": "",
+        "negate_destination": "",
+        "negate_source": "",
+        "profile_setting": {},
+        "service": [],
+        "source": [],
+        "source_hip": [],
+        "source_user": [],
+        "tag": [],
+        "to": [],
+    }
+
+    ADDRESS_TYPES = ("ip_netmask", "ip_range", "ip_wildcard", "fqdn")
+
+
+    class Client(BaseClient):
+        """Client class to interact with the service API
+
+        This Client implements API calls to the Saas Security platform, and does not contain any XSOAR logic.
+        Handles the token retrieval.
+
+        Args:
+           base_url (str): Saas Security server url.
+           client_id (str): client ID.
+           client_secret (str): client secret.
+           verify (bool): specifies whether to verify the SSL certificate or not.
+           proxy (bool): specifies if to use XSOAR proxy settings.
+           tsg_id: The default target Prisma SASE tenant ID
+        """
+
+        def __init__(self, base_url: str, client_id: str,
+                     client_secret: str, tsg_id: str | None, verify: bool, proxy: bool, headers: dict, **kwargs):
+
+            super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, **kwargs)
+
+            self.client_id = client_id
+            self.client_secret = client_secret
+            self.tsg_id = tsg_id
+
+        def http_request(self,
+                         method: str,
+                         url_suffix: str = '',
+                         params: dict = None,
+                         json_data: dict = None,
+                         tsg_id: str | None = None) -> dict:  # pragma: no cover
+
+            headers = self.access_token_to_headers(tsg_id)
+            return self._http_request(method=method,
+                                      url_suffix=url_suffix,
+                                      params=params,
+                                      json_data=json_data,
+                                      headers=headers)
+
+        @staticmethod
+        def build_security_rule(args: dict) -> dict:
+            """Build a dictionary of security rule parameters to be used to create or update a rule
+            Args:
+                args: demisto.args()
+            Returns:
+                Security rule dictionary
+            """
+            rule = {}
+            keys = args.keys()
+            for key in SECURITYRULE_FIELDS:
+                if key in keys:
+                    field_value = args.get(key)
+                    if field_value:
+                        if key == 'profile_setting':
+                            val = argToList(field_value)
+                            rule[key] = {'group': val}
+                        if key == 'source_user':
+                            val = argToList(field_value, ';')
+                            rule[key] = val
+                        if isinstance(SECURITYRULE_FIELDS.get(key), str):
+                            rule[key] = field_value  # type: ignore
+                        if isinstance(SECURITYRULE_FIELDS.get(key), list):
+                            val = argToList(field_value)
+                            rule[key] = val  # type: ignore
+
+            return rule
+
+        def create_security_rule(self, rule: dict, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Creates new security rule
+            Args:
+                rule: Security rule dictionary
+                query_params: folder and position params
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}security-rules'
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+                params=query_params,
+                json_data=rule,
+                tsg_id=tsg_id
+            )
+
+        def edit_security_rule(self, rule: dict, rule_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Update an existing security rule
+            Args:
+                rule: Security rule dictionary
+                rule_id: identifier of rule to be updated
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}security-rules/{rule_id}'
+
+            return self.http_request(
+                method="PUT",
+                url_suffix=uri,
+                json_data=rule,
+                tsg_id=tsg_id
+            )
+
+        def delete_security_rule(self, rule_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Delete en existing security rule
+            Args:
+                rule_id: Identifier of the rule to be deleted
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}security-rules/{rule_id}'
+
+            return self.http_request(
+                method="DELETE",
+                url_suffix=uri,
+                tsg_id=tsg_id
+            )
+
+        def create_address_object(self, address: dict, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Create new address object
+            Args:
+                address: address object dictionary
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}addresses'
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+                params=query_params,
+                json_data=address,
+                tsg_id=tsg_id
+            )
+
+        def edit_address_object(self, address: dict, address_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Update an existing address object
+            Args:
+                address: Address object dictionary
+                address_id: Identifier of existing address to be updated
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}addresses/{address_id}'
+
+            return self.http_request(
+                method="PUT",
+                url_suffix=uri,
+                json_data=address,
+                tsg_id=tsg_id
+            )
+
+        def delete_address_object(self, address_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Delete an existing address object
+            Args:
+                address_id: Identifier of existing address to be deleted
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}addresses/{address_id}'
+
+            return self.http_request(
+                method="DELETE",
+                url_suffix=uri,
+                tsg_id=tsg_id
+            )
+
+        def list_address_objects(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """List of address objects
+            Args:
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}addresses'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def list_security_rules(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """List of security rules
+            Args:
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}security-rules'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def push_candidate_config(self, folders: list, tsg_id: str | None, description: str | None = None) \
+                -> dict:  # pragma: no cover
+            """Push candidate configuration
+            Args:
+                folders: Target Prisma SASE Folders for the configuration commit
+                description: Description for the job
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}config-versions/candidate:push'
+            body: Dict[str, Any] = {'folders': folders}
+            if description:
+                body['description'] = description
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+                json_data=body,
+                tsg_id=tsg_id
+            )
+
+        def get_config_job_by_id(self, job_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Get a specific config job
+            Args:
+                job_id: ID of the config job
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}jobs/{job_id}'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                tsg_id=tsg_id
+            )
+
+        def list_config_jobs(self, tsg_id: str | None, query_params: dict | None = None) -> dict:  # pragma: no cover
+            """List config jobs
+            Args:
+                 query_params: limit and offset param
+                 tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}jobs'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                tsg_id=tsg_id,
+                params=query_params
+            )
+
+        def get_address_by_id(self, query_params: dict, address_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Get an existing address object
+            Args:
+                query_params: folder param
+                address_id: Identifier of existing address
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}addresses/{address_id}'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def get_security_rule_by_id(self, query_params: dict, rule_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Get a specific security rule
+            Args:
+                query_params: folder and position params
+                rule_id: Identifier of existing security rule
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}security-rules/{rule_id}'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def get_tag_by_id(self, query_params: dict, tag_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Get a specific tag
+            Args:
+                query_params: folder param
+                tag_id: Identifier of existing tag
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}tags/{tag_id}'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def list_tags(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """List all tags
+            Args:
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}tags'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def update_tag(self, tag_id: str, tag: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Update an existing Tag
+            Args:
+                tag: Tag dictionary
+                tag_id: Identifier of existing tag to be updated
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}tags/{tag_id}'
+
+            return self.http_request(
+                method="PUT",
+                url_suffix=uri,
+                json_data=tag,
+                tsg_id=tsg_id
+            )
+
+        def delete_tag(self, tag_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Delete a tag
+            Args:
+                tag_id: Identifier of the existing tag to be deleted
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}tags/{tag_id}'
+
+            return self.http_request(
+                method="DELETE",
+                url_suffix=uri,
+                tsg_id=tsg_id
+            )
+
+        def create_tag(self, query_params: dict, tag: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Create new tagr
+            Args:
+                tag: tag dictionary
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}tags'
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+                params=query_params,
+                json_data=tag,
+                tsg_id=tsg_id
+            )
+
+        def get_address_group_by_id(self, query_params: dict, group_id: str, tsg_id: str | None) \
+                -> dict:  # pragma: no cover
+            """Get a specific address group
+            Args:
+                query_params: folder param
+                group_id: Identifier of existing address group
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}address-groups/{group_id}'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def list_address_group(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """List all address groups
+            Args:
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}address-groups'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def update_address_group(self, address_group: dict, group_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Update an existing address group
+            Args:
+                address_group: Address object dictionary
+                group_id: Identifier of existing address group to be updated
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}address-groups/{group_id}'
+
+            return self.http_request(
+                method="PUT",
+                url_suffix=uri,
+                json_data=address_group,
+                tsg_id=tsg_id
+            )
+
+        def create_address_group(self, query_params: dict, address_group: dict, tsg_id: str | None) \
+                -> dict:  # pragma: no cover
+            """Create new address group
+            Args:
+                address_group: address group dictionary
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}address-groups'
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+                params=query_params,
+                json_data=address_group,
+                tsg_id=tsg_id
+            )
+
+        def delete_address_group(self, group_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Delete an existing address group
+            Args:
+                group_id: Identifier of the existing address group to be deleted
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}address-groups/{group_id}'
+
+            return self.http_request(
+                method="DELETE",
+                url_suffix=uri,
+                tsg_id=tsg_id
+            )
+
+        def get_custom_url_category_by_id(self, query_params: dict, url_category_id: str, tsg_id: str | None) \
+                -> dict:  # pragma: no cover
+            """Get a specific custom URL category
+            Args:
+                query_params: folder param
+                url_category_id: Identifier of existing url category
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}url-categories/{url_category_id}'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def list_custom_url_category(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """List all custom url category
+            Args:
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}url-categories'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def update_custom_url_category(self, custom_url_category: dict, url_category_id: str, tsg_id: str | None) \
+                -> dict:  # pragma: no cover
+            """Update an existing custom url category
+            Args:
+                custom_url_category: custom url category dictionary
+                url_category_id: Identifier of existing address group to be updated
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}url-categories/{url_category_id}'
+
+            return self.http_request(
+                method="PUT",
+                url_suffix=uri,
+                json_data=custom_url_category,
+                tsg_id=tsg_id
+            )
+
+        def create_custom_url_category(self, query_params: dict, custom_url_category: dict, tsg_id: str | None) \
+                -> dict:  # pragma: no cover
+            """Create new custom url category
+            Args:
+                custom_url_category: custom url category dictionary
+                query_params: Prisma SASE Folder
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}url-categories'
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+                params=query_params,
+                json_data=custom_url_category,
+                tsg_id=tsg_id
+            )
+
+        def delete_custom_url_category(self, url_category_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Delete an existing custom url category
+            Args:
+                url_category_id: Identifier of the existing custom url category to be deleted
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}url-categories/{url_category_id}'
+
+            return self.http_request(
+                method="DELETE",
+                url_suffix=uri,
+                tsg_id=tsg_id
+            )
+
+        def get_external_dynamic_list_by_id(self, query_params: dict, external_dynamic_list_id: str, tsg_id: str | None) \
+                -> dict:  # pragma: no cover
+            """Get a specific external dynamic list
+            Args:
+                query_params: folder param
+                external_dynamic_list_id: Identifier of existing external dynamic list
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{external_dynamic_list_id}'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def list_external_dynamic_list(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """List all external dynamic list
+            Args:
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def update_external_dynamic_list(self, external_dynamic_list: dict, dynamic_list_id: str, tsg_id: str | None) \
+                -> dict:  # pragma: no cover
+            """Update an existing external dynamic list
+            Args:
+                external_dynamic_list: external dynamic list dictionary
+                dynamic_list_id: Identifier of existing external dynamic list to be updated
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{dynamic_list_id}'
+
+            return self.http_request(
+                method="PUT",
+                url_suffix=uri,
+                json_data=external_dynamic_list,
+                tsg_id=tsg_id
+            )
+
+        def create_external_dynamic_list(self, query_params: dict, external_dynamic_list: dict, tsg_id: str | None) \
+                -> dict:  # pragma: no cover
+            """Create new external dynamic list
+            Args:
+                external_dynamic_list: external dynamic list dictionary
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists'
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+                params=query_params,
+                json_data=external_dynamic_list,
+                tsg_id=tsg_id
+            )
+
+        def delete_external_dynamic_list(self, dynamic_list_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Delete external dynamic list
+            Args:
+                dynamic_list_id: Identifier of the existing external dynamic list to be deleted
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}external-dynamic-lists/{dynamic_list_id}'
+
+            return self.http_request(
+                method="DELETE",
+                url_suffix=uri,
+                tsg_id=tsg_id
+            )
+
+        def list_url_access_profile(self, query_params: dict, tsg_id: str | None) -> dict:  # pragma: no cover
+            """Get all url access profiles
+            Args:
+                query_params: folder param
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Outputs.
+            """
+            uri = f'{CONFIG_URI_PREFIX}url-access-profiles'
+
+            return self.http_request(
+                method="GET",
+                url_suffix=uri,
+                params=query_params,
+                tsg_id=tsg_id
+            )
+
+        def get_access_token(self, tsg_id: str | None) -> str:  # pragma: no cover
+            """Get access token to use for API call.
+
+            The SASE API is multi-tenant capable and the tenant structure is hierarchical.
+            The TSG (tenant services group) is an identifier for a particular tenant.
+            A single API service account can have access to the root tenant and any number of sub-tenants underneath.
+            The scope / target of the API call is determined via the requested authorization token.
+
+            If there is an existing access token, and it has not expired, set it as the access token for this request
+            Else request a new access token for the provided TSG and store it in the integration context and add the TSG ID
+            as a prefix.
+            Returns:
+                The access token
+            """
+
+            integration_context = get_integration_context()
+            tsg_access_token = f'{tsg_id}.access_token'
+            tsg_expiry_time = f'{tsg_id}.expiry_time'
+            previous_token = integration_context.get(tsg_access_token)
+            previous_token_expiry_time = integration_context.get(tsg_expiry_time)
+
+            if previous_token and previous_token_expiry_time > date_to_timestamp(datetime.now()):
+                return previous_token
+            else:
+                tsg = f'tsg_id:{tsg_id}'
+                data = {
+                    'grant_type': 'client_credentials',
+                    'scope': tsg
+                }
+                try:
+                    headers = {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+
+                    res = self._http_request(method='POST',
+                                             full_url='https://auth.apps.paloaltonetworks.com/am/oauth2/access_token',
+                                             auth=(self.client_id, self.client_secret),
+                                             resp_type='response',
+                                             headers=headers,
+                                             data=data)
+                    try:
+                        res = res.json()
+                    except ValueError as exception:
+                        raise DemistoException(f'Failed to parse json object from response: {res.text}.\n'
+                                               f'Error: {exception}')
+
+                    if access_token := res.get('access_token'):
+                        expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
+                        expiry_time += res.get('expires_in', 0) - 10
+                        new_token = {
+                            tsg_access_token: access_token,
+                            tsg_expiry_time: expiry_time
+                        }
+                        # store received token and expiration time in the integration context
+                        set_integration_context(new_token)
+                        return access_token
+
+                    else:
+                        raise DemistoException('Error occurred while creating an access token. Access token field has not'
+                                               ' found in the response data. Please check the instance configuration.\n')
+
+                except Exception as e:
+                    raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
+                                           f' configuration.\n\n{e}')
+
+        def access_token_to_headers(self, tsg_id: str | None = None) -> dict:
+            """Updates the headers with the access token
+            Args:
+                tsg_id: Target Prisma SASE tenant ID
+            Returns:
+                Headers
+            """
+            tsg_id = tsg_id if tsg_id else self.tsg_id
+            access_token = self.get_access_token(tsg_id)
+
+            headers = self._headers
+            headers['Authorization'] = f"Bearer {access_token}"
+            return headers
+
+        def quarantine_host(self, tag: dict, host_id: str,tsg_id: str | None) -> dict:  # pragma: no cover
+            """Creating a new tag
+            Args:
+                host_id: Host ID that needs to be added to quarantine List
+                tsg_id: Target Prisma SASE tenant ID
+            """
+            uri = f'{CONFIG_URI_PREFIX}quarantined-devices'
+
+            return self.http_request(
+                method="POST",
+                url_suffix=uri,
+                json_data=tag,
+                tsg_id=tsg_id
+            )
+
+
+    """HELPER FUNCTIONS"""
+
+
+    def address_to_xsoar_format(outputs):
+        """Modify an address object or list of address objects to XSOAR format
+        Args:
+            outputs: address objects
+        """
+        if isinstance(outputs, dict):
+            outputs = [outputs]
+        for output in outputs:
+            for address_type in ADDRESS_TYPES:
+                if address_type in output:
+                    output['type'] = address_type
+                    output['address_value'] = output[address_type]
+                    output.pop(address_type)
+
+
+    def address_group_to_xsoar_format(outputs):
+        """Modify an address group or list of address groups to XSOAR format
+        Args:
+            outputs: address groups
+        """
+        if isinstance(outputs, dict):
+            outputs = [outputs]
+        for output in outputs:
+            if 'static' in output:
+                output['addresses'] = output['static']
+                output.pop('static')
+            elif 'dynamic' in output:
+                output['dynamic_filter'] = output['dynamic'].get('filter', '')
+                output.pop('dynamic')
+
+
+    def external_dynamic_list_to_xsoar_format(outputs):
+        """Modify an external dynamic list or list of external dynamic lists to XSOAR format
+        Args:
+            outputs: external dynamic list
+        Returns:
+            Modified external dynamic list
+        """
+        if isinstance(outputs, dict):
+            outputs = [outputs]
+        for output in outputs:
+            # For pre-defined list, also predefined values are returned, and their structure is different
+            if output.get('snippet') == 'predefined':
+                output['type'] = 'predefined'
+                output['source'] = 'predefined'
+                continue
+            dynamic_list_type_object = output.get('type', {})
+            try:
+                # The object should contain exactly one key, and the key indicates the type of the dynamic list.
+                dynamic_list_type = list(dynamic_list_type_object.keys())[0]
+            except IndexError:
+                raise DemistoException(f'Could not parse the type of the Dynamic list. '
+                                       f'Type is missing. Dynamic list as returned by the API: {output}')
+            output['description'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('description')
+            output['source'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('url')
+            output['frequency'] = next(iter(dynamic_list_type_object.get(dynamic_list_type, {}).get('recurring', {})), None)
+            output['exception_list'] = dynamic_list_type_object.get(dynamic_list_type, {}).get('exception_list')
+            output['type'] = dynamic_list_type
+
+
+    def get_address_group_type(original_address_group: dict) -> str:
+        return 'static' if 'static' in original_address_group else 'dynamic'
+
+
+    def update_new_rule(new_rule: dict, original_rule: dict, overwrite: bool) -> dict:
+        """Updates a security rule with the required data
+        Args:
+            new_rule: The new rule
+            original_rule: The original rule
+            overwrite: Rather to overwrite or append the updated values
+        Returns:
+
+        """
+        if overwrite:
+            # simply update the relevant keys with the new data
+            original_rule.update(new_rule)
+            return original_rule
+
+        for key, value in new_rule.items():
+            if isinstance(SECURITYRULE_FIELDS.get(key), list):
+                # the 'any' value should be overwritten in all cases
+                if 'any' in value or 'any' in original_rule.get(key, []):
+                    original_rule[key] = argToList(new_rule.get(key))
+                else:
+                    original_rule.setdefault(key, []).extend(argToList(new_rule.get(key, [])))
+            if isinstance(SECURITYRULE_FIELDS.get(key), str):
+                original_rule[key] = new_rule.get(key)
+        return original_rule
+
+
+    def get_url_according_to_type(args: dict) -> str:
+        """Returns the url parameter according to the external dynamic list type.
+        Args:
+            args: Command args
+        Returns:
+            Url
+        """
+        dynamic_list_type = args.get('type')
+        if dynamic_list_type in ('ip', 'domain', 'url'):
+            url = args.get('source_url')
+            if not url:
+                raise DemistoException('Please provide the source_url argument when using IP, URL or Domain types')
+
+        elif dynamic_list_type == 'predefined_url':
+            url = args.get('predefined_url_list')
+            if not url:
+                raise DemistoException('Please provide the predefined_url_list argument when using predefined_url type')
+        else:  # dynamic_list_type == 'predefined_ip':
+            url = args.get('predefined_ip_list')
+            if not url:
+                raise DemistoException('Please provide the predefined_ip_list argument when using predefined_ip')
+        return url
+
+
+    def validate_url_is_type_compatible(args: dict,
+                                        type_changed: bool,
+                                        original_dynamic_list_type: dict,
+                                        original_dynamic_list_url: dict) -> str:
+        """Validates that the update is valid and returns the correct URL
+        Args:
+            args: Command arguments
+            original_dynamic_list_url: The original dynamic list url
+            original_dynamic_list_type: The original dynamic list type
+            type_changed: Rather the type has changed
+        Returns:
+            Url
+        """
+        dynamic_list_type = args.get('type') or original_dynamic_list_type
+        if dynamic_list_type in ('ip', 'domain', 'url'):
+            url = args.get('source_url', '')
+            if not url:
+                if type_changed:
+                    raise DemistoException('Please provide the source_url argument when using IP, URL or Domain types')
+
+        elif dynamic_list_type == 'predefined_url':
+            url = args.get('predefined_url_list', '')
+            if not url:
+                if type_changed:
+                    raise DemistoException('Please provide the predefined_url_list argument when using predefined_url type')
+        else:  # dynamic_list_type == 'predefined_ip':
+            url = args.get('predefined_ip_list', '')
+            if not url:
+                if type_changed:
+                    raise DemistoException('Please provide the predefined_ip_list argument when using predefined_ip')
+        url = url if url else original_dynamic_list_url
+        return url
+
+
+    def build_recurring_according_to_params(args: dict) -> dict:
+        """Returns a frequency object for the API according to the command arguments
+        Args:
+            args: Command arguments
+        Returns:
+            Frequency object
+        """
+        frequency = args.get('frequency') or 'five_minute'
+        frequency_object: dict = {frequency: {}}
+        if frequency in ('daily', 'weekly', 'monthly'):
+            frequency_hour = args.get('frequency_hour')
+            if not frequency_hour:
+                raise DemistoException('Please provide the frequency_hour argument when using daily, '
+                                       'weekly or monthly frequency')
+            if not re.match(FREQUENCY_HOUR_REGEX, frequency_hour):
+                raise DemistoException('frequency_hour argument should be 00,01,02...-23 only')
+            frequency_object[frequency]['at'] = frequency_hour
+            if frequency == 'weekly':
+                day_of_week = args.get('day_of_week')
+                if not day_of_week:
+                    raise DemistoException('Please provide the day_of_week argument when using weekly frequency')
+                frequency_object[frequency]['day_of_week'] = day_of_week
+
+            elif frequency == 'monthly':
+                day_of_month = args.get('day_of_month')
+                if not day_of_month:
+                    raise DemistoException('Please provide the day_of_month argument when using monthly frequency')
+                day_of_month = arg_to_number(day_of_month) or 0
+                if day_of_month < 1 or day_of_month > 31:
+                    raise DemistoException('day_of_month argument must be between 1 and 31')
+                frequency_object[frequency]['day_of_month'] = str(day_of_month)
+
+        return frequency_object
+
+
+    def validate_recurring_is_type_compatible(args: dict, original_frequency_obj: dict) -> dict:
+        """Validates that the update is valid and returns the correct frequency object
+        Args:
+            args: Command arguments
+            original_frequency_obj: The original frequency object
+        Returns:
+            Frequency object for the API
+        """
+        frequency = args.get('frequency')
+
+        if len(list(original_frequency_obj.keys())) == 0 and not frequency:
+            raise DemistoException('Could not find frequency for dynamic list type. Please check your configuration')
+        original_frequency = list(original_frequency_obj.keys())[0]
+        frequency = frequency if frequency else original_frequency
+        frequency_object: dict = {frequency: {}}
+        if frequency in ('daily', 'weekly', 'monthly'):
+            frequency_hour = args.get('frequency_hour') or original_frequency_obj[original_frequency].get('frequency_hour')
+            if not frequency_hour:
+                raise DemistoException('Please provide the frequency_hour argument when using daily, '
+                                       'weekly or monthly frequency')
+            if not re.match(FREQUENCY_HOUR_REGEX, frequency_hour):
+                raise DemistoException('frequency_hour argument should be 00,01,02...-23 only')
+            frequency_object[frequency]['at'] = frequency_hour or original_frequency_obj[original_frequency].get('at')
+            if frequency == 'weekly':
+                day_of_week = args.get('day_of_week') or original_frequency_obj[original_frequency].get('day_of_week')
+                if not day_of_week:
+                    raise DemistoException('Please provide the day_of_week argument when using weekly frequency')
+                frequency_object[frequency]['day_of_week'] = day_of_week
+
+            elif frequency == 'monthly':
+                day_of_month = args.get('day_of_month') or original_frequency_obj[original_frequency].get('day_of_month')
+                if not day_of_month:
+                    raise DemistoException('Please provide the day_of_month argument when using monthly frequency')
+                day_of_month = arg_to_number(day_of_month) or 0
+                if day_of_month < 1 or day_of_month > 31:
+                    raise DemistoException('day_of_month argument must be between 1 and 31')
+                frequency_object[frequency]['day_of_month'] = str(day_of_month)
+
+        return frequency_object if frequency_object else original_frequency_obj
+
+
+    def get_pagination_params(args: dict) -> dict:
+        """Returns the pagination parameters
+        Args:
+            args: Command arguments
+        Returns:
+            Pagination params
+        """
+        pagination_params = {}
+        page = arg_to_number(args.get('page')) or 1
+        page_size = arg_to_number(args.get('page_size'))
+        if page and page_size:
+            pagination_params['offset'] = (page - 1) * page_size
+            pagination_params['limit'] = page_size
+        elif limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
+            pagination_params['limit'] = limit
+        return pagination_params
+
+
+    """COMMANDS"""
+
+
+    def test_module(client: Client) -> CommandResults:
+        """Test command to determine if integration is working correctly.
+        Args:
+            client: Client object with request
+
+        Returns:
+            Outputs.
+
+        Returning 'ok' indicates that the integration works like it is supposed to.
+        Connection to the service is successful.
+        """
+        uri = f'{CONFIG_URI_PREFIX}config-versions?limit=1'
+
+        client.http_request(method='GET', url_suffix=uri)
+        return CommandResults(
+            raw_response="ok"
+        )
+
+
+    def create_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to create new security rule
+        """
+
+        rule = client.build_security_rule(args)
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+            'position': encode_string_results(args.get('position')) or DEFAULT_POSITION
+        }
+        tsg_id = args.get('tsg_id')
+        demisto.debug(f'sending security rule to the API. Rule: {rule}')
+        raw_response = client.create_security_rule(rule=rule, query_params=query_params, tsg_id=tsg_id)  # type: ignore
+        outputs = raw_response
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Security Rule Created', outputs, headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def create_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """Command to create new address object
+        Args:
+            client: Client object with request
+            args: demisto.args()
+        Returns:
+            Outputs.
+        """
+
+        address_object = {
+            args.get('type'): args.get('address_value'),
+            'name': args.get('name')}
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        }
+
+        if args.get('description'):
+            address_object['description'] = args.get('description')
+
+        if args.get('tag'):
+            address_object['tag'] = args.get('tag')
+
+        demisto.debug(f'sending address_object to the API. address_object: {address_object}')
+        raw_response = client.create_address_object(address=address_object,
+                                                    query_params=query_params,
+                                                    tsg_id=args.get('tsg_id'))  # type: ignore
+
+        outputs = raw_response.copy()
+        address_to_xsoar_format(outputs)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Address Object Created', outputs, headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def edit_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to update address object
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        }
+        object_id = args.get('object_id', '')
+        tsg_id = args.get('tsg_id')
+        # first get the original address, so user won't need to send all data
+        original_address = client.get_address_by_id(query_params=query_params, address_id=object_id, tsg_id=tsg_id)
+        original_address_type = None
+        if not args.get('type'):
+            for address_type in ADDRESS_TYPES:
+                if address_type in original_address:
+                    original_address_type = address_type
+        else:
+            original_address_type = args.get('type')
+
+        original_address[original_address_type] = args.get('address_value')
+
+        # in case the type has changed, we want to remove other types from the address object
+        for address_type in ADDRESS_TYPES:
+            if address_type in original_address and address_type != original_address_type:
+                original_address.pop(address_type)
+
+        if description := args.get('description'):
+            original_address['description'] = description
+
+        if tag := args.get('tag'):
+            original_address['tag'] = tag
+
+        demisto.debug(f'sending address_object to the API. address_object: {original_address}')
+
+        raw_response = client.edit_address_object(address=original_address,
+                                                  address_id=object_id,
+                                                  tsg_id=tsg_id)  # type: ignore
+
+        outputs = raw_response.copy()
+        address_to_xsoar_format(outputs)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Address Object updated', outputs, headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def delete_address_object_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to delete address object
+        """
+        tsg_id = args.get('tsg_id')
+        address_id = args.get('object_id')
+        demisto.debug(f'deleting address_object with id {address_id}')
+        raw_response = client.delete_address_object(address_id=address_id, tsg_id=tsg_id)  # type: ignore
+
+        return CommandResults(
+            readable_output=f'Address object with id {raw_response.get("id", "")} '
+                            f'and name {raw_response.get("name", "")} was deleted successfully',
+            raw_response=raw_response
+        )
+
+
+    def list_address_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to get all address objects
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER, 'name': args.get('name')
+        }
+        tsg_id = args.get('tsg_id')
+        if object_id := args.get('object_id'):
+            raw_response = client.get_address_by_id(query_params=query_params, address_id=object_id, tsg_id=tsg_id)
+            outputs = raw_response.copy()
+        else:
+            query_params.update(get_pagination_params(args))
+
+            raw_response = client.list_address_objects(query_params=query_params, tsg_id=tsg_id)  # type: ignore
+
+            outputs = raw_response.copy()
+            # A dict containing a list of results (data) is returned from the API.
+            # When filtering by name the key 'data' does not exist in the response, therefore we return the entire response.
+            outputs = outputs.get('data', outputs)
+
+        address_to_xsoar_format(outputs)
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Address Objects', outputs,
+                                            headers=['id', 'name', 'description', 'type', 'address_value', 'tag'],
+                                            headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def delete_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to delete the specified security rule
+        """
+
+        rule_id = args.get('rule_id')
+        tsg_id = args.get('tsg_id')
+
+        demisto.debug(f'deleting security_rule with id {rule_id}')
+        raw_response = client.delete_security_rule(rule_id=rule_id, tsg_id=tsg_id)  # type: ignore
+
+        return CommandResults(
+            readable_output=f'Security Rule object with id {raw_response.get("id", "")} '
+                            f'and name {raw_response.get("name", "")} was deleted successfully',
+            raw_response=raw_response
+        )
+
+
+    def edit_security_rule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to update an existing security rule
+        """
+        rule = client.build_security_rule(args)
+        rule_id = args.get('rule_id', '')
+        tsg_id = args.get('tsg_id')
+        overwrite = argToBoolean(args.get('overwrite'))
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+            'position': encode_string_results(args.get('position')) or DEFAULT_POSITION
+        }
+        original_rule = client.get_security_rule_by_id(query_params=query_params, rule_id=rule_id, tsg_id=tsg_id)
+        updated_rule = update_new_rule(rule, original_rule, overwrite=overwrite)
+        demisto.debug(f'Sending security_rule to the API. Rule {updated_rule}')
+        raw_response = client.edit_security_rule(rule=updated_rule, rule_id=rule_id, tsg_id=tsg_id)  # type: ignore
+        outputs = raw_response
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Security Rule Updated', outputs, headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def push_candidate_config_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """Command to Trigger a configuration push for the identified Folder/Devices
+
+        """
+        folders = argToList(args.get('folders'))  # type: ignore
+        tsg_id = args.get('tsg_id')
+
+        raw_response = client.push_candidate_config(folders, args.get('description', ''), tsg_id=tsg_id)  # type: ignore
+
+        outputs = raw_response
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Configuration Push Requested', outputs,
+                                            headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def list_security_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to Get all security rules
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+            'position': encode_string_results(args.get('position')) or DEFAULT_POSITION,
+            'name': args.get('name')
+        }
+        tsg_id = args.get('tsg_id')
+
+        if rule_id := args.get('rule_id'):
+            raw_response = client.get_security_rule_by_id(query_params=query_params, rule_id=rule_id, tsg_id=tsg_id)
+            outputs = raw_response
+        else:
+            query_params.update(get_pagination_params(args))
+
+            raw_response = client.list_security_rules(query_params=query_params, tsg_id=tsg_id)  # type: ignore
+            # A dict containing a list of results is returned by the API.
+            # A single dict is returned when filtering the request by name.
+            outputs = raw_response.get('data', raw_response)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}SecurityRule',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Security Rules', outputs,
+                                            headers=[
+                                                'id', 'name', 'description', 'action', 'destination', 'folder', 'disabled'
+                                            ],
+                                            headerTransform=string_to_table_header,
+                                            removeNull=True),
+            raw_response=raw_response
+        )
+
+
+    def list_config_jobs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """Command to list config jobs from Prisma Access
+
+        """
+
+        query_params = {}
+        tsg_id = args.get('tsg_id')
+        if job_id := args.get('job_id'):
+            raw_response = client.get_config_job_by_id(job_id=job_id, tsg_id=tsg_id)
+        else:
+            query_params.update(get_pagination_params(args))
+
+            raw_response = client.list_config_jobs(tsg_id=tsg_id, query_params=query_params)  # type: ignore
+
+        outputs = raw_response.get('data')
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}ConfigJob',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Config Job',
+                                            outputs,
+                                            headers=['id', 'type_str', 'status_str', 'result_str', 'start_ts', 'end_ts'],
+                                            headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def list_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to list all tags
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+            'name': args.get('name'),
+        }
+        tsg_id = args.get('tsg_id')
+        if tag_id := args.get('tag_id'):
+            raw_response = client.get_tag_by_id(query_params=query_params, tag_id=tag_id, tsg_id=tsg_id)
+            outputs = raw_response
+        else:
+            query_params.update(get_pagination_params(args))
+
+            raw_response = client.list_tags(query_params=query_params, tsg_id=tsg_id)  # type: ignore
+            # A dict containing a list of results is returned by the API.
+            # A single dict is returned when filtering the request by name.
+            outputs = raw_response.get('data', raw_response)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Tags',
+                                            outputs,
+                                            headers=['id', 'name', 'folder', 'color', 'comments'],
+                                            headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def create_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to create new tag
+        """
+
+        tag = {
+            'name': args.get('name')
+        }
+
+        if color := args.get('color'):
+            tag['color'] = color
+
+        if comments := args.get('comments'):
+            tag['comments'] = comments
+
+        query_params = {
+            'folder': args.get('folder') or DEFAULT_FOLDER
+        }
+        tsg_id = args.get('tsg_id')
+
+        demisto.debug(f'Sending tag to the API. Tag: {tag}')
+
+        raw_response = client.create_tag(query_params=query_params, tag=tag, tsg_id=tsg_id)  # type: ignore
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
+            outputs_key_field='id',
+            outputs=raw_response,
+            readable_output=tableToMarkdown('Address Object Created', raw_response, headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def update_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to update an existing tag
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder') or DEFAULT_FOLDER)
+        }
+        # first get the original tag, so user won't need to send all data
+        tag_id = args.get('tag_id', '')
+        tsg_id = args.get('tsg_id')
+        original_tag = client.get_tag_by_id(query_params=query_params, tag_id=tag_id, tsg_id=tsg_id)
+
+        if color := args.get('color'):
+            original_tag['color'] = color
+
+        if comments := args.get('comments'):
+            original_tag['comments'] = comments
+
+        demisto.debug(f'Sending tag to the API. Tag: {original_tag}')
+        raw_response = client.update_tag(tag_id=tag_id, tag=original_tag, tsg_id=tsg_id)  # type: ignore
+        outputs = raw_response
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}Tag',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Tag Edited', outputs, headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def delete_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to delete the specified tagG
+        """
+
+        tag_id = args.get('tag_id')
+        tsg_id = args.get('tsg_id')
+
+        demisto.debug(f'Deleting tag twith id {tag_id}')
+        raw_response = client.delete_tag(tag_id=tag_id, tsg_id=tsg_id)  # type: ignore
+
+        return CommandResults(
+            readable_output=f'Tag with id {raw_response.get("id", "")} '
+                            f'and name {raw_response.get("name", "")} was deleted successfully',
+            raw_response=raw_response
+        )
+
+
+    def list_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to get address groups
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+            'name': args.get('name'),
+        }
+        tsg_id = args.get('tsg_id')
+        if group_id := args.get('group_id'):
+            raw_response = client.get_address_group_by_id(query_params=query_params, group_id=group_id, tsg_id=tsg_id)
+            outputs = raw_response.copy()
+        else:
+            query_params.update(get_pagination_params(args))
+
+            raw_response = client.list_address_group(query_params=query_params, tsg_id=tsg_id)  # type: ignore
+            outputs = raw_response.copy()
+            # A dict containing a list of results is returned by the API.
+            # A single dict is returned when filtering the request by name.
+            outputs = outputs.get('data', outputs)
+
+        address_group_to_xsoar_format(outputs)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Address Groups', outputs,
+                                            headers=['id', 'name', 'description', 'addresses', 'dynamic_filter'],
+                                            headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def create_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to create new address group
+        """
+
+        address_group = {
+            'name': args.get('name')}
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        }
+        tsg_id = args.get('tsg_id')
+
+        if description := args.get('description'):
+            address_group['description'] = description
+
+        if group_type := args.get('type'):
+            if group_type == 'static':
+                if static_addresses := argToList(args.get('static_addresses')):
+                    address_group['static'] = static_addresses
+            else:  # type == 'dynamic'
+                if dynamic_filter := args.get('dynamic_filter'):
+                    address_group['dynamic'] = {'filter': dynamic_filter}
+        demisto.debug(f'Sending address_group to the API. address_group: {address_group}')
+        raw_response = client.create_address_group(query_params=query_params,
+                                                   address_group=address_group,
+                                                   tsg_id=tsg_id)  # type: ignore
+
+        outputs = raw_response.copy()
+        address_group_to_xsoar_format(outputs)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Address Group Created', outputs, headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def update_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to update an existing address group
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        }
+        tsg_id = args.get('tsg_id')
+        group_id = args.get('group_id', '')
+        # first get the original address, so user won't need to send all data
+        original_address_group = client.get_address_group_by_id(query_params=query_params, group_id=group_id, tsg_id=tsg_id)
+
+        if description := args.get('description'):
+            original_address_group['description'] = description
+        overwrite = argToBoolean(args.get('overwrite'))
+        group_type = args.get('type', '')
+        if group_type and group_type != get_address_group_type(original_address_group):
+            # we can not concatenate static value to dynamic
+            demisto.info(f"setting overwrite parameter to True as the type of the address group has changed."
+                         f"overwrite original value: {overwrite}")
+            overwrite = True
+
+        if not group_type:
+            group_type = get_address_group_type(original_address_group)
+
+        static_addresses = argToList(args.get('static_addresses'))
+        dynamic_filter = args.get('dynamic_filter')
+        if group_type == 'static' and (dynamic_filter and not static_addresses):
+            raise DemistoException("Please provide the static_addresses argument with type static")
+        if group_type == 'dynamic' and (not dynamic_filter and static_addresses):
+            raise DemistoException("Please provide the dynamic_filter argument with type dynamic")
+        if group_type == 'static':
+            if overwrite:
+                original_address_group['static'] = static_addresses
+            else:
+                original_address_group.setdefault('static', []).extend(static_addresses)
+            original_address_group.pop('dynamic') if 'dynamic' in original_address_group else None
+
+        else:  # type == 'dynamic'
+            if not overwrite:
+                dynamic_filter = original_address_group.get('dynamic', {}).get('filter', '') + ' ' + dynamic_filter
+
+            original_address_group['dynamic'] = {'filter': dynamic_filter}
+
+            original_address_group.pop('static') if 'static' in original_address_group else None
+
+        demisto.debug(f'Sending address_group to the API. address_group: {original_address_group}')
+        raw_response = client.update_address_group(address_group=original_address_group,
+                                                   group_id=group_id,
+                                                   tsg_id=tsg_id)  # type: ignore
+
+        outputs = raw_response.copy()
+        address_group_to_xsoar_format(outputs)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}AddressGroup',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Address Group updated', outputs, headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def delete_address_group_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to delete address group
+        """
+        group_id = args.get('group_id')
+        tsg_id = args.get('tsg_id')
+
+        demisto.debug(f'Deleting address group with id {group_id}')
+        raw_response = client.delete_address_group(group_id=group_id, tsg_id=tsg_id)  # type: ignore
+
+        return CommandResults(
+            readable_output=f'Address group with id {raw_response.get("id", "")} '
+                            f'and name {raw_response.get("name", "")} was deleted successfully',
+            raw_response=raw_response
+        )
+
+
+    def list_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to get all custom url categories
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+            'name': args.get('name'),
+        }
+        tsg_id = args.get('tsg_id')
+        if url_category_id := args.get('id'):
+            raw_response = client.get_custom_url_category_by_id(query_params=query_params,
+                                                                url_category_id=url_category_id,
+                                                                tsg_id=tsg_id)
+            outputs = [raw_response]
+        else:
+            query_params.update(get_pagination_params(args))
+
+            raw_response = client.list_custom_url_category(query_params=query_params, tsg_id=tsg_id)  # type: ignore
+            # A dict containing a list of results is returned by the API.
+            # A single dict is returned when filtering the request by name.
+            outputs = raw_response.get('data', raw_response)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Custom Url Categories', outputs,
+                                            headers=['id', 'name', 'folder', 'type', 'list'],
+                                            headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def create_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to create new custom url category
+        """
+
+        custom_url_category = {
+            'name': args.get('name'),
+            'type': args.get('type')
+        }
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        }
+        tsg_id = args.get('tsg_id')
+
+        if description := args.get('description'):
+            custom_url_category['description'] = description
+
+        if value := argToList(args.get('value')):
+            custom_url_category['list'] = value
+
+        demisto.debug(f'Sending custom_url_category to the API. custom_url_category: {custom_url_category}')
+        raw_response = client.create_custom_url_category(query_params=query_params,
+                                                         custom_url_category=custom_url_category,
+                                                         tsg_id=tsg_id)  # type: ignore
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+            outputs_key_field='id',
+            outputs=raw_response,
+            readable_output=tableToMarkdown('Custom URrl Category Created', raw_response,
+                                            headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def update_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to update an existing custom url category
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        }
+        tsg_id = args.get('tsg_id')
+        url_category_id = args.get('id', '')
+        # first get the original, so user won't need to send all data
+        original_custom_url_category = client.get_custom_url_category_by_id(query_params=query_params,
+                                                                            url_category_id=url_category_id,
+                                                                            tsg_id=tsg_id)
+
+        if description := args.get('description'):
+            original_custom_url_category['description'] = description
+        overwrite = argToBoolean(args.get('overwrite'))
+        if category_type := args.get('type'):
+            if category_type != original_custom_url_category['type']:
+                demisto.info(f"setting overwrite parameter to True as the type of the URL category has changed."
+                             f"overwrite original value: {overwrite}")
+                overwrite = True
+            original_custom_url_category['type'] = category_type
+
+        if value := argToList(args.get('value')):
+            if overwrite:
+                original_custom_url_category['list'] = value
+            else:
+                original_custom_url_category.setdefault('list', []).extend(value)
+
+        demisto.debug(f'Sending custom_url_category to the API. custom_url_category: {original_custom_url_category}')
+        raw_response = client.update_custom_url_category(custom_url_category=original_custom_url_category,
+                                                         url_category_id=url_category_id,
+                                                         tsg_id=tsg_id)  # type: ignore
+        outputs = raw_response
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}CustomURLCategory',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Custom Url Category updated', outputs, headerTransform=string_to_table_header),
+            raw_response=raw_response
+        )
+
+
+    def delete_custom_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to delete custom url category
+        """
+        url_category_id = args.get('id')
+        tsg_id = args.get('tsg_id')
+
+        demisto.debug(f'Deleting custom_url_category with id {url_category_id}')
+        raw_response = client.delete_custom_url_category(url_category_id=url_category_id, tsg_id=tsg_id)  # type: ignore
+
+        return CommandResults(
+            readable_output=f'Custom Url Category with id {raw_response.get("id", "")} '
+                            f'and name {raw_response.get("name", "")} was deleted successfully',
+            raw_response=raw_response
+        )
+
+
+    def list_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to get all external dynamic lists
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER,
+            'name': args.get('name')
+        }
+        tsg_id = args.get('tsg_id')
+        if external_dynamic_list_id := args.get('id'):
+            raw_response = client.get_external_dynamic_list_by_id(query_params=query_params,
+                                                                  external_dynamic_list_id=external_dynamic_list_id,
+                                                                  tsg_id=tsg_id)
+            outputs = raw_response.copy()
+        else:
+            query_params.update(get_pagination_params(args))
+
+            raw_response = client.list_external_dynamic_list(query_params=query_params, tsg_id=tsg_id)  # type: ignore
+
+            outputs = raw_response.copy()
+            # A dict containing a list of results is returned by the API.
+            # A single dict is returned when filtering the request by name.
+            outputs = outputs.get('data', outputs)
+
+        external_dynamic_list_to_xsoar_format(outputs)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('External Dynamic Lists',
+                                            outputs,
+                                            headers=['id', 'name', 'type', 'folder', 'description', 'source', 'frequency'],
+                                            headerTransform=string_to_table_header,
+                                            is_auto_json_transform=True),
+            raw_response=raw_response
+        )
+
+
+    def create_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to create new external dynamic list
+        """
+
+        dynamic_list_type = args.get('type', '')
+        external_dynamic_list: dict = {
+            'name': args.get('name'),
+            'type': {dynamic_list_type: {}}
+        }
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        }
+        tsg_id = args.get('tsg_id')
+
+        url = get_url_according_to_type(args)
+        external_dynamic_list['type'][dynamic_list_type]['url'] = url
+
+        if exception_list := argToList(args.get('exception_list')):
+            external_dynamic_list['type'][dynamic_list_type]['exception_list'] = exception_list
+
+        if description := args.get('description'):
+            external_dynamic_list['type'][dynamic_list_type]['description'] = description
+
+        if dynamic_list_type in ('ip', 'domain', 'url'):
+            external_dynamic_list['type'][dynamic_list_type]['recurring'] = build_recurring_according_to_params(args)
+
+        demisto.debug(f'Sending external_dynamic_list to the API. external_dynamic_list: {external_dynamic_list}')
+        raw_response = client.create_external_dynamic_list(query_params=query_params,
+                                                           external_dynamic_list=external_dynamic_list,
+                                                           tsg_id=tsg_id)  # type: ignore
+
+        outputs = raw_response.copy()
+        external_dynamic_list_to_xsoar_format(outputs)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('External Dynamic List Created',
+                                            outputs,
+                                            headers=['id', 'name', 'type', 'folder', 'description', 'source', 'frequency'],
+                                            headerTransform=string_to_table_header,
+                                            is_auto_json_transform=True),
+            raw_response=raw_response
+        )
+
+
+    def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command to update an existing external dynamic list
+        """
+
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        }
+        tsg_id = args.get('tsg_id')
+        dynamic_list_id = args.get('id', '')
+        # first get the original, so user won't need to send all data
+        original_dynamic_list = client.get_external_dynamic_list_by_id(query_params=query_params,
+                                                                       external_dynamic_list_id=dynamic_list_id,
+                                                                       tsg_id=tsg_id)
+
+        overwrite = argToBoolean(args.get('overwrite'))
+        original_dynamic_list_type_object = original_dynamic_list['type']
+        try:
+            original_dynamic_list_type = list(original_dynamic_list_type_object.keys())[0]
+        except IndexError:
+            raise DemistoException(f'Could not parse the type of the Dynamic list. '
+                                   f'Type is missing. Dynamic list as returned by the API: {original_dynamic_list}')
+        original_dynamic_list_url = original_dynamic_list_type_object[original_dynamic_list_type]['url']
+        original_frequency_object = original_dynamic_list_type_object[original_dynamic_list_type].get('recurring',
+                                                                                                      {'recurring': {}})
+        type_changed = False
+        if dynamic_list_type := args.get('type'):
+            if original_dynamic_list_type != dynamic_list_type:
+                # changing the key that indicates the type
+                original_dynamic_list['type'][dynamic_list_type] = original_dynamic_list_type_object[
+                    original_dynamic_list_type]
+                demisto.info(f"setting overwrite parameter to True as the type of the dynamic list has changed."
+                             f"overwrite original value: {overwrite}")
+                type_changed = True
+                overwrite = True
+
+        dynamic_list_type = dynamic_list_type if dynamic_list_type else original_dynamic_list_type
+        if exception_list := argToList(args.get('exception_list')):
+            if overwrite:
+                original_dynamic_list['type'][dynamic_list_type]['exception_list'] = exception_list
+            else:
+                original_dynamic_list['type'][dynamic_list_type].setdefault('exception_list', []).extend(exception_list)
+
+        if description := args.get('description'):
+            original_dynamic_list['type'][dynamic_list_type]['description'] = description
+
+        url = validate_url_is_type_compatible(args, type_changed, original_dynamic_list_type, original_dynamic_list_url)
+        original_dynamic_list['type'][dynamic_list_type]['url'] = url
+
+        if dynamic_list_type in ('ip', 'domain', 'url'):
+            original_dynamic_list['type'][dynamic_list_type]['recurring'] = \
+                validate_recurring_is_type_compatible(args, original_frequency_object)
+
+        if type_changed:
+            original_dynamic_list['type'].pop(original_dynamic_list_type)
+            if not original_dynamic_list['type'][dynamic_list_type].get('recurring'):
+                original_dynamic_list['type'][dynamic_list_type].pop('recurring')
+
+        demisto.debug(f'Sending external_dynamic_list to the API. external_dynamic_list: {original_dynamic_list}')
+        raw_response = client.update_external_dynamic_list(external_dynamic_list=original_dynamic_list,
+                                                           dynamic_list_id=dynamic_list_id,
+                                                           tsg_id=tsg_id)  # type: ignore
+        outputs = raw_response.copy()
+        external_dynamic_list_to_xsoar_format(outputs)
+
+        return CommandResults(
+            outputs_prefix=f'{PA_OUTPUT_PREFIX}ExternalDynamicList',
+            outputs_key_field='id',
+            outputs=outputs,
+            readable_output=tableToMarkdown('External Dynamic List updated',
+                                            outputs,
+                                            headers=['id', 'name', 'type', 'folder', 'description', 'source', 'frequency'],
+                                            headerTransform=string_to_table_header,
+                                            is_auto_json_transform=True),
+            raw_response=raw_response
+        )
+
+
+    def delete_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """Command to delete external dynamic list
+
+        """
+        dynamic_list_id = args.get('id')
+        tsg_id = args.get('tsg_id')
+
+        demisto.debug(f'Deleting external_dynamic_list with id {dynamic_list_id}')
+        raw_response = client.delete_external_dynamic_list(dynamic_list_id=dynamic_list_id, tsg_id=tsg_id)  # type: ignore
+
+        return CommandResults(
+            readable_output=f'External Dynamic List with id {raw_response.get("id", "")} '
+                            f'and name {raw_response.get("name", "")} was deleted successfully',
+            raw_response=raw_response
+        )
+
+
+    def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command get all built-in url categories
+        """
+        query_params = {
+            'folder': encode_string_results(args.get('folder')) or DEFAULT_FOLDER
+        }
+        tsg_id = args.get('tsg_id')
+        raw_response = client.list_url_access_profile(query_params=query_params, tsg_id=tsg_id)  # type: ignore
+        profiles = raw_response.get('data', [])
+
+        categories: dict = {'alert': [], 'allow': [], 'block': [], 'continue': [], 'override': []}
+        for profile in profiles:
+            # we only want predefined profiles
+            if profile.get('folder', '') == 'predefined':
+                for category in categories.keys():
+                    categories[category].extend(profile.get(category, []))
+                    categories[category].extend(profile.get('credential_enforcement', {}).get(category, []))
+                    # remove duplicates
+                    categories[category] = list(set(categories[category]))
+
+        return CommandResults(
+            readable_output=tableToMarkdown('URL categories', categories),
+            raw_response=raw_response
+        )
+
+    def quarantine_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+        """
+        Command quarantine a given host
+        """
+        tag = {}
+        host_id = args.get('host_id'),
+        tsg_id = args.get('tsg_id')
+        tag["host_id"] = host_id[0]
+
+        raw_response = client.quarantine_host(tag=tag, host_id=host_id, tsg_id=tsg_id)
+
+        outputs = raw_response
+
+        return CommandResults(
+            readable_output=tableToMarkdown('Host Quarantined',
+                                            outputs),
+            raw_response=raw_response
+        )
+
+
+    def run_push_jobs_polling_command(client: Client, args: dict):
+        """
+        This function is generically handling the polling flow. In the polling flow, there is always an initial call that
+        starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
+        of that upload (referred here as the 'results' function).
+        The run_polling_command function runs the 'upload' function and returns a ScheduledCommand object that schedules
+        the next 'results' function, until the polling is complete.
+        """
+        polling_interval = args.get('interval_in_seconds') or DEFAULT_POLLING_INTERVAL
+        polling_timeout = arg_to_number(args.get('polling_timeout_in_seconds')) or DEFAULT_POLLING_TIMEOUT
+        tsg_id = args.get('tsg_id')
+        if folders := argToList(args.get('folders')):
+            # first call, folder in args. We make the first push
+            res = client.push_candidate_config(folders=folders, tsg_id=tsg_id)
+            # remove folders, not needed for the rest
+            args['folders'] = []
+            # The result from the push returns a job id
+            job_id = res.get('job_id', '')
+            args['job_id'] = job_id
+            # The push job creates sub processes once done. at this point, the parent job hasn't finished.
+            args['parent_finished'] = False
+            return CommandResults(
+                scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
+                                                   args=args,
+                                                   next_run_in_seconds=polling_interval,
+                                                   timeout_in_seconds=polling_timeout),
+                readable_output=f'Waiting for all data to push for job id {job_id}')
+
+        job_id = args.get('job_id', '')
+        outputs: dict = {'job_id': job_id, 'result': 'OK'}
+        if not argToBoolean(args.get('parent_finished')):
+            res = client.get_config_job_by_id(job_id=job_id, tsg_id=tsg_id).get('data', [{}])[0]
+            if res.get('result_str') == 'PEND':
+                demisto.debug(f'waiting for parent processes to finish, parent job_id {job_id}')
+                return CommandResults(
+                    scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
+                                                       args=args,
+                                                       next_run_in_seconds=polling_interval,
+                                                       timeout_in_seconds=polling_timeout))
+
+            # From testing (as this is not documented) the status returns only as OK if the job succeeded
+            job_result = res.get('result_str')
+            if job_result != 'OK':
+                outputs['result'] = job_result
+                outputs['details'] = res.get('details', '')
+                return CommandResults(entry_type=EntryType.ERROR,
+                                      outputs=outputs,
+                                      outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
+                                      readable_output=f'Something went wrong while trying to push job id {job_id}. '
+                                                      f'Result: {job_result}')
+
+            # Parent is the first push. After finishing, sub processes created for each folder.
+            args['parent_finished'] = True
+        res = client.list_config_jobs(tsg_id=tsg_id).get('data', {})
+        for job in res:
+            # looking for all sub processes with parent id as the job id
+            if job.get('parent_id') == job_id:
+                demisto.debug(f'looking for child processes with parent_id {job}')
+                if job.get('result_str') == 'PEND':
+                    return CommandResults(
+                        scheduled_command=ScheduledCommand(command='prisma-sase-candidate-config-push',
+                                                           args=args,
+                                                           next_run_in_seconds=polling_interval,
+                                                           timeout_in_seconds=polling_timeout))
+                job_result = job.get('result_str')
+                if job_result != 'OK':
+                    outputs['result'] = job_result
+                    outputs['details'] = res.get('details', '')
+                    return CommandResults(entry_type=EntryType.ERROR,
+                                          outputs=outputs,
+                                          outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
+                                          readable_output=f'Something went wrong while trying to push sub process '
+                                                          f'with id {job.get("id", "")}job id {job_id}. '
+                                                          f'Result: {job_result}')
+        return CommandResults(readable_output=f'Finished pushing job {job_id}',
+                              outputs_prefix=f'{PA_OUTPUT_PREFIX}CandidateConfig',
+                              outputs=outputs)
+
+
+    def main():  # pragma: no cover
+        """
+            PARSE AND VALIDATE INTEGRATION PARAMS
+        """
+        # get the service API url
+        params = demisto.params()
+        base_url = params.get('url').strip('/')
+        client_id = params.get('credentials', {}).get('identifier')
+        client_secret = params.get('credentials', {}).get('password')
+        tsg_id = params.get('tsg_id')
+
+        verify_certificate = not argToBoolean(params.get('insecure', False))
+        proxy = argToBoolean(params.get('proxy', False))
+        handle_proxy()
+
+        command = demisto.command()
+        demisto.debug(f'Command being called is {command}')
+
+        commands = {
+            'prisma-sase-security-rule-create': create_security_rule_command,
+            'prisma-sase-security-rule-list': list_security_rules_command,
+            'prisma-sase-security-rule-delete': delete_security_rule_command,
+            'prisma-sase-security-rule-update': edit_security_rule_command,
+
+            'prisma-sase-candidate-config-push': run_push_jobs_polling_command,
+            'prisma-sase-config-job-list': list_config_jobs_command,
+
+            'prisma-sase-address-object-create': create_address_object_command,
+            'prisma-sase-address-object-update': edit_address_object_command,
+            'prisma-sase-address-object-delete': delete_address_object_command,
+            'prisma-sase-address-object-list': list_address_objects_command,
+
+            'prisma-sase-tag-list': list_tags_command,
+            'prisma-sase-tag-create': create_tag_command,
+            'prisma-sase-tag-update': update_tag_command,
+            'prisma-sase-tag-delete': delete_tag_command,
+
+            'prisma-sase-address-group-list': list_address_group_command,
+            'prisma-sase-address-group-create': create_address_group_command,
+            'prisma-sase-address-group-update': update_address_group_command,
+            'prisma-sase-address-group-delete': delete_address_group_command,
+
+            'prisma-sase-custom-url-category-list': list_custom_url_category_command,
+            'prisma-sase-custom-url-category-create': create_custom_url_category_command,
+            'prisma-sase-custom-url-category-update': update_custom_url_category_command,
+            'prisma-sase-custom-url-category-delete': delete_custom_url_category_command,
+
+            'prisma-sase-url-category-list': list_url_category_command,
+
+            'prisma-sase-external-dynamic-list-list': list_external_dynamic_list_command,
+            'prisma-sase-external-dynamic-list-create': create_external_dynamic_list_command,
+            'prisma-sase-external-dynamic-list-update': update_external_dynamic_list_command,
+            'prisma-sase-external-dynamic-list-delete': delete_custom_url_category_command,
+
+            'prisma-sase-quarantine-host': quarantine_host_command,
+
+        }
+        client = Client(
+            base_url=base_url,
+            client_id=client_id,
+            client_secret=client_secret,
+            tsg_id=tsg_id,
+            verify=verify_certificate,
+            headers={
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            proxy=proxy,
+            ok_codes=(200, 201, 204))
+
+
+
+        try:
+            if command == 'test-module':
+                return_results(test_module(client))
+            elif command in commands:
+                return_results(commands[command](client, demisto.args()))  # type: ignore
+            else:
+                raise NotImplementedError(f'Command "{command}" is not implemented.')
+
+        # Log exceptions
+        except DemistoException as e:
+            # special handling for 404 error, which is returned when the item is not found
+            if e.res is not None and e.res.status_code == 404 and "Object Not Present" in e.message:
+                return_results("The item you're searching for does not exist within the Prisma SASE API.")
+
+            else:
+                return_error(f'Failed to execute {command} command. Error: {str(e)}')
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('Palo Alto Networks - Prisma SASE', 'end', __line__())
+  subtype: python3
+  type: python
+sourcemoduleid: Palo Alto Networks - Prisma SASE
