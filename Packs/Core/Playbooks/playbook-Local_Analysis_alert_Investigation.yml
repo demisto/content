@@ -854,6 +854,8 @@ tasks:
       windows_file_paths:
         complex:
           root: inputs.Path
+      timeout_in_seconds:
+        simple: "300"
     separatecontext: false
     view: |-
       {
