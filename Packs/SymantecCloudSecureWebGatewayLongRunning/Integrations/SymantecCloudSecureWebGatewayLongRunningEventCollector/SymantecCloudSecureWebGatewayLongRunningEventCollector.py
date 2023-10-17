@@ -15,7 +15,7 @@ disable_warnings()
 
 VENDOR = "symantec_long_running"
 PRODUCT = "swg"
-FETCH_SLEEP = 20
+FETCH_SLEEP = 240
 FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR = 180
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
@@ -152,6 +152,58 @@ def get_file_size(file_path: Path) -> int:
     return file_path.stat().st_size
 
 
+# def extract_logs_from_response2(response: Response) -> list[bytes]:
+#     """
+#     - Extracts the data from the zip file returned from the API
+#       and then extracts the events from the gzip files into a list of events as bytes
+#     - When there is no zip file returns an empty list
+#     Args:
+#         response (Response)
+#     Returns:
+#         list[bytes]: list of events as bytes
+#     """
+#     logs: list[bytes] = []
+#     demisto.debug(f"size of the zip file: {len(response.content) / (1024 ** 2):.2f} MB")
+#     # try:
+#     #     # extract the ZIP file
+#     #     with ZipFile(BytesIO(response.content)) as outer_zip:
+#     #         # iterate all gzip files
+#     #         for file in outer_zip.infolist():
+#     #             # check if the file is gzip
+#     #             if file.filename.lower().endswith(".gz"):
+#     #                 try:
+#     #                     with outer_zip.open(file) as nested_zip_file, gzip.open(
+#     #                         nested_zip_file, "rb"
+#     #                     ) as f:
+#     #                         logs.extend(f.readlines())
+#     #                 except Exception as e:
+#     #                     demisto.debug(
+#     #                         f"Crashed at the open the internal file {file.filename} file, Error: {e}"
+#     #                     )
+#     #             else:  # the file is not gzip
+#     #                 demisto.debug(
+#     #                     f"The {file.filename} file is not of gzip type"
+#     #                 )
+#     # except BadZipFile as e:
+#     #     try:
+#     #         # checks whether no events returned
+#     #         if response.content.decode().startswith("X-sync"):
+#     #             demisto.debug("No events returned from the api")
+#     #         else:
+#     #             demisto.debug(
+#     #                 f"The external file type is not of type ZIP, Error: {e},"
+#     #                 "the response.content is {}".format(response.content)
+#     #             )
+#     #     except Exception:
+#     #         demisto.debug(
+#     #             f"The external file type is not of type ZIP, Error: {e},"
+#     #             "the response.content is {}".format(response.content)
+#     #         )
+#     # except Exception as e:
+#     #     raise ValueError(f"There is no specific error for the crash, Error: {e}")
+#     return logs
+
+
 def extract_logs_from_response(file_path: Path) -> list[bytes]:
     """
     - Extracts the data from the zip file returned from the API
@@ -280,8 +332,8 @@ def organize_of_events(
             max_values.append(id_)
         events.append(event)
 
-    # demisto.debug(f"The len of the events after filter {len(events)}")
-    return [], max_time, []
+    demisto.debug(f"The len of the events after filter {len(events)}")
+    return events, max_time, max_values
 
 
 """ FETCH EVENTS """
@@ -314,6 +366,7 @@ def get_events_command(
         try:
             demisto.debug("start fetching events - API")
             res = write_to_file_system(client, params)
+            # res = client.get_logs(params=params)
             demisto.debug("end fetching events - API")
         except DemistoException as e:
             try:
@@ -338,6 +391,7 @@ def get_events_command(
         file_size = get_file_size(res)
         demisto.debug(f"size of the file system: {file_size / (1024 ** 2):.2f} MB")
         status, params["token"] = get_status_and_token_from_file_system(res)
+        # status, params["token"] = get_status_and_token_from_res(res)
         demisto.debug(f"The status is {status}")
 
         if status == "abort":
