@@ -1972,7 +1972,8 @@
         },
         {
             "integrations": "PhishTank V2",
-            "playbookID": "PhishTank Testing"
+            "playbookID": "PhishTank Testing",
+            "is_mockable": false
         },
         {
             "integrations": "McAfee Web Gateway",
@@ -2145,7 +2146,6 @@
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
             "is_mockable": false
-
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2975,7 +2975,9 @@
             "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
-            "memory_threshold": 90
+            "memory_threshold": 90,
+            "timeout": 700,
+            "is_mockable": false
         },
         {
             "integrations": "AWS - EC2",
