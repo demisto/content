@@ -443,25 +443,30 @@ def fetch_incidents(client: Client, *args) -> str:
     fields = set_fields(argToList(params.get('fields')))
     max_fetch = params.get('max_fetch', '200')
     group_type = params.get('group_type', ['Incident'])
-    last_run = demisto.getLastRun()
-    last_run = last_run.get('last')
-    demisto.debug(f'[ThreatConnect] last run: {last_run}')
-    if not last_run:
-        last_run = f"{params.get('first_fetch') or '3 days'} ago"
-        last_run = dateparser.parse(last_run)
 
-    last_run = str(last_run)
+    last_run = demisto.getLastRun()
+    demisto.debug(f'[ThreatConnect] last run: {last_run}')
+
+    last_fetch_time = last_run.get('last_time')
+    last_fetch_id = last_run.get('last_id', 0)
+    if not last_fetch_time:
+        last_fetch_time = f"{params.get('first_fetch') or '3 days'} ago"
+        last_fetch_time = dateparser.parse(last_fetch_time)
+    last_fetch_time = str(last_fetch_time)
+
     response = list_groups(client, {}, group_type=group_type, fields=fields, return_raw=True, tag=tags,
-                           status=status, from_date=last_run, limit=max_fetch, sort='&sorting=dateAdded%20ASC')
+                           status=status, from_date=last_fetch_time, limit=max_fetch, sort='&sorting=dateAdded%20ASC')
     incidents: list = []
-    incidents.extend(
-        detection_to_incident(incident, incident.get('dateAdded'))
-        for incident in response
-    )
+    for incident in response:
+        threatconnect_id = int(incident.get('id'))
+        if threatconnect_id > last_fetch_id:
+            last_fetch_id = threatconnect_id
+            incidents.extend(detection_to_incident(incident, incident.get('dateAdded')))
+
     demisto.incidents(incidents)
     set_last = get_last_run_time(response, last_run)
-    demisto.debug(f'Setting last run to: {set_last}')
-    demisto.setLastRun({'last': set_last})
+    demisto.debug(f'Setting last run to: last_time: {set_last}, last_id: {last_fetch_id}')
+    demisto.setLastRun({'last_time': set_last, 'last_id': last_fetch_id})
     return set_last
 
 
