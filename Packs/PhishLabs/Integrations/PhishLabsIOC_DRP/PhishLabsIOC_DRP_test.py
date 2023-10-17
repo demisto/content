@@ -24,7 +24,7 @@ def client():
 
 
 @pytest.mark.helper
-@pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+@pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
 class TestHelperFunctions:
     def test_raw_response_to_context(self):
         from PhishLabsIOC_DRP import raw_response_to_context
@@ -37,7 +37,7 @@ class TestHelperFunctions:
 
 @pytest.mark.commands
 @freeze_time("2019-12-1 18:43:02")
-@pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+@pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
 class TestCommandsFunctions:
     @pytest.mark.fetch
     def test_fetch_incidents_no_incidents(self, requests_mock, client):
@@ -55,7 +55,7 @@ class TestCommandsFunctions:
         assert expected_last_run == tested_last_run_response, 'Failed - Test no incidents, last run criteria'
 
     @pytest.mark.fetch
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_fetch_incidents_last_run(self, requests_mock, client):
         # Test last run - should return 2 incidents and new last run
         from PhishLabsIOC_DRP import fetch_incidents_command
@@ -71,7 +71,7 @@ class TestCommandsFunctions:
         assert expected_last_run == tested_last_run_response, 'Failed -  Test 2 incidents should return, last run criteria'
 
     @pytest.mark.fetch
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_fetch_incidents_no_last_run(self, requests_mock, client):
         # Test no last run - should return 2 incidents and new last run
         from PhishLabsIOC_DRP import fetch_incidents_command
@@ -89,7 +89,7 @@ class TestCommandsFunctions:
 
 
 @pytest.mark.client
-@pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+@pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
 @freeze_time("2019-12-02")
 class TestClientMethods:
     @pytest.mark.get_cases
@@ -105,7 +105,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_limit
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_limit_filter_exact_results(self, requests_mock, client):
         # Test exact results - get cases should query twice and return 7 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=7',
@@ -119,7 +119,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_limit
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_limit_filter_overflow_results(self, requests_mock, client):
         # Test Overflow - get cases should query three times and return 7 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=10',
@@ -135,7 +135,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_limit
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_begin_date_filter_first_request(self, requests_mock, client):
         # Test - begin date in first request - get cases should query one time and return 1 case
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=20',
@@ -147,7 +147,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_begin_date
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_begin_date_filter_second_request(self, requests_mock, client):
         # Test begin date in second request - get cases should query twice and return 3 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=20',
@@ -162,7 +162,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_begin_date
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_begin_date_filter_overflow(self, requests_mock, client):
         # Test begin date is more then exsits - get cases should query three-times and return 7 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=20',
@@ -178,7 +178,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_end_date
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_end_date_filter_overflow_results(self, requests_mock, client):
         # Test end date is more than exsits - get cases should query three times and return 0 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=20',
@@ -194,7 +194,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_end_date
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_end_date_filter_second_request(self, requests_mock, client):
         # Test end date in second request - get cases should query three times and return 2 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=20',
@@ -210,7 +210,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_end_date
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_end_date_filter_first_request(self, requests_mock, client):
         # Test end date in first request - get cases should query three-times and return 7 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=20',
@@ -226,7 +226,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_combined
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_combined_filters_first_request(self, requests_mock, client):
         # Test end date and begin date in first request - get cases should query twice and return 5 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=20',
@@ -241,7 +241,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_combined
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_combined_filters_first_second_request(self, requests_mock, client):
         # Test end date in first request and begin date in second request - get cases should query twice and return 2 cases
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=20',
@@ -256,7 +256,7 @@ class TestClientMethods:
 
     @pytest.mark.get_cases
     @pytest.mark.get_cases_combined
-    @pytest.mark.filterwarnings("ignore::PytestUnknownMarkWarning")
+    @pytest.mark.filterwarnings("ignore::_pytest.warning_types.PytestUnknownMarkWarning")
     def test_get_cases_combined_filters_second_request(self, requests_mock, client):
         # Test - end date in second request and begin date in not exsits - get cases should three times and return 1 case
         requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases?offset=0&maxRecords=1',
