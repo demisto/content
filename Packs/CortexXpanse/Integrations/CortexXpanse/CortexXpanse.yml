@@ -688,19 +688,8 @@ script:
       default: true
       isArray: true
     - name: integration_reliability
-      display: Source Reliability
-      additionalinfo: Reliability of the source providing the intelligence data.
-      defaultvalue: A - Completely reliable
-      options:
-        - A+ - 3rd party enrichment
-        - A - Completely reliable
-        - B - Usually reliable
-        - C - Fairly reliable
-        - D - Not usually reliable
-        - E - Unreliable
-        - F - Reliability cannot be judged
       required: false
-      type: 15
+      description: The reliability of the source providing the intelligence data.
     outputs:
     - contextPath: ASM.IP.ip
       description: The IP address of the asset.
@@ -757,19 +746,8 @@ script:
       isArray: true
       default: true
     - name: integration_reliability
-      display: Source Reliability
-      additionalinfo: Reliability of the source providing the intelligence data.
-      defaultvalue: A - Completely reliable
-      options:
-        - A+ - 3rd party enrichment
-        - A - Completely reliable
-        - B - Usually reliable
-        - C - Fairly reliable
-        - D - Not usually reliable
-        - E - Unreliable
-        - F - Reliability cannot be judged
       required: false
-      type: 15
+      description: The reliability of the source providing the intelligence data.
     outputs:
     - contextPath: ASM.Domain.domain
       description: The domain affiliated with an asset.

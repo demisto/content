@@ -1314,7 +1314,7 @@ INCIDENT_UPDATE_RESULTS = "Update operation successful: True"
 
 ALERT_UPDATE_RESULTS = "Updated alerts: [602]"
 
-IP_RESULTS = {
+IP_RESULTS = [{
     "asm_ids": [
         "4b1f3765-de40-3a1a-8535-667420408fd9"
     ],
@@ -1374,4 +1374,4 @@ IP_RESULTS = {
     "tags": [
                 "BU:Xpanse VanDelay Demo 3"
     ]
-}
+}]
