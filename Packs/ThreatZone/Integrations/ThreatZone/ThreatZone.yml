@@ -122,11 +122,23 @@ script:
       description: Snapshot.
       defaultValue: "false"
     outputs:
-    - contextPath: ThreatZone.Analysis.UUID
+    - contextPath: ThreatZone.Submission.UUID
       description: UUID of sample.
       type: String
-    - contextPath: ThreatZone.Analysis.URL
+    - contextPath: ThreatZone.Submission.URL
       description: URL of analysis of sample.
+      type: String
+    - contextPath: ThreatZone.Limits.E_Mail
+      description: The owner e-mail of current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.API_Limit
+      description: The remaining/total API request limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Concurrent_Limit
+      description: The remaining/total concurrent analysis limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Daily_Submission_Limit
+      description: The remaining/total daily submission limits of the current plan.
       type: String
     description: Submits a sample to ThreatZone for sandbox analysis.
   - name: tz-static-upload-sample
@@ -137,11 +149,23 @@ script:
       - ''
       required: true
     outputs:
-    - contextPath: ThreatZone.Analysis.UUID
+    - contextPath: ThreatZone.Submission.UUID
       description: UUID of sample.
       type: String
-    - contextPath: ThreatZone.Analysis.URL
+    - contextPath: ThreatZone.Submission.URL
       description: URL of analysis of sample.
+      type: String
+    - contextPath: ThreatZone.Limits.E_Mail
+      description: The owner e-mail of current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.API_Limit
+      description: The remaining/total API request limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Concurrent_Limit
+      description: The remaining/total concurrent analysis limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Daily_Submission_Limit
+      description: The remaining/total daily submission limits of the current plan.
       type: String
     description: Submits a sample to ThreatZone for static analysis.
   - name: tz-cdr-upload-sample
@@ -152,11 +176,23 @@ script:
       - ''
       required: true
     outputs:
-    - contextPath: ThreatZone.Analysis.UUID
+    - contextPath: ThreatZone.Submission.UUID
       description: UUID of sample.
       type: String
-    - contextPath: ThreatZone.Analysis.URL
+    - contextPath: ThreatZone.Submission.URL
       description: URL of analysis of sample.
+      type: String
+    - contextPath: ThreatZone.Limits.E_Mail
+      description: The owner e-mail of current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.API_Limit
+      description: The remaining/total API request limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Concurrent_Limit
+      description: The remaining/total concurrent analysis limits of the current plan.
+      type: String
+    - contextPath: ThreatZone.Limits.Daily_Submission_Limit
+      description: The remaining/total daily submission limits of the current plan.
       type: String
     description: Submits a sample to ThreatZone for CDR.
   - name: tz-get-result
@@ -195,11 +231,65 @@ script:
     - contextPath: ThreatZone.Result.SANITIZED
       description: The url of the sanitized file.
       type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
     description: Retrive the analysis result from ThreatZone.
+  - name: tz-get-sanitized
+    arguments:
+    - name: uuid
+      required: true
+      description: UUID of the submission.
+    description: Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
+    outputs:
+    - contextPath: File.Extension
+      type: String
+      description: Extension of the file sanitized by CDR.
+    - contextPath: File.Name
+      type: String
+      description: The name of the file sanitized by CDR.
+    - contextPath: File.Size
+      type: Number
+      description: Size of the file sanitized by CDR.
+    - contextPath: File.EntryID
+      type: String
+      description: EntryID of the file sanitized by CDR.
+    - contextPath: File.Info
+      type: String
+      description: Info of the file sanitized by CDR.
+    - contextPath: File.MD5
+      type: String
+      description: MD5 hash of the file sanitized by CDR.
+    - contextPath: File.SHA1
+      type: String
+      description: SHA1 hash of the file sanitized by CDR.
+    - contextPath: File.SHA256
+      type: String
+      description: SHA256 hash of the file sanitized by CDR.
+    - contextPath: File.SHA512
+      type: String
+      description: SHA512 hash of the file sanitized by CDR.
+    - contextPath: File.SSDeep
+      type: String
+      description: SSDeep hash of the file sanitized by CDR.
   - name: tz-check-limits
     arguments: []
     description: Check the plan limits from ThreatZone API.
     outputs:
+    - contextPath: ThreatZone.Limits.E_Mail
+      description: The owner e-mail of current plan.
+      type: String
     - contextPath: ThreatZone.Limits.API_Limit
       description: The remaining/total API request limits of the current plan.
       type: String

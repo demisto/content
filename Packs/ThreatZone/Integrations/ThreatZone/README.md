@@ -1,57 +1,30 @@
 *Threat.Zone* is a hypervisor-based, automated and interactive tool for analyzing malware , you can fight new generation malwares.
 
-## Use Cases
-
-1. Submit a file, remote file to ThreatZone for analysis.
-2. Retrieve report details for a given analysis UUID.
-
 ## Configure ThreatZone on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for **ThreatZone**.
+2. Search for ThreatZone.
 3. Click **Add instance** to create and configure a new integration instance.
 
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g. <https://app.threat.zone>) |  | True |
+    | ThreatZone API Key |  | True |
+    | Source Reliability | Reliability of the source. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
-| **Parameter**                      | **Required** |
-| :----------------------------------- | -------------- |
-| Server URL                         | True         |
-| API Key                            | True         |
-| Trust any certificate (not secure) | False        |
-| Use system proxy settings          | False        |
-| Source Reliability                 | False        |
-
-4. Click **Test** to validate the URLs, API Key, and connection.
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a human readable output appears in the War Room with the command details.
-All details and full analysis report is avaliable at Context Data.
-
-### tz-check-limits
-
----
-
-Check the plan limits from ThreatZone API.
-
-#### Base Command
-
-`tz-check-limits`
-
-#### Output
-
-
-| **Path**                                 | **Type** | **Description**                                                |
-| ------------------------------------------ | ---------- | ---------------------------------------------------------------- |
-| ThreatZone.Limits.API_Limit              | String   | The used/total API request limits of the current plan.         |
-| ThreatZone.Limits.Concurrent_Limit       | String   | The used/total concurrent analysis limits of the current plan. |
-| ThreatZone.Limits.Daily_Submission_Limit | String   | The used/total daily submission limits of the current plan.    |
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### tz-sandbox-upload-sample
 
----
-
-Submit a file for sandbox analysis.
+***
+Submits a sample to ThreatZone for sandbox analysis.
 
 #### Base Command
 
@@ -59,33 +32,34 @@ Submit a file for sandbox analysis.
 
 #### Input
 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| environment | Choose what environment you want to run your submission. Possible values are: w7_x64, w10_x64, w11_x64. Default is w7_x64. | Required | 
+| private | Privacy of the submission. Possible values are: true, false. Default is true. | Required | 
+| entry_id | Entry ID of the file to submit. Possible values are: . | Required | 
+| timeout | Duration of the submission analysis. Possible values are: 60, 120, 180, 300. Default is 60. | Optional | 
+| work_path | The working path of the submission. Possible values are: desktop, root, appdata, windows, temp. Default is desktop. | Optional | 
+| mouse_simulation | Enable mouse simulation. Possible values are: true, false. Default is false. | Optional | 
+| https_inspection | Https inspection to read encrypted traffic. Possible values are: true, false. Default is false. | Optional | 
+| internet_connection | Enable internet connection. Possible values are: true, false. Default is false. | Optional | 
+| raw_logs | Raw logs. Possible values are: true, false. Default is false. | Optional | 
+| snapshot | Snapshot. Possible values are: true, false. Default is false. | Optional | 
 
-| **Argument Name**   | **Description**                                                                                                                                        | **Required** |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| entry_id            | EntryID of the file to analyze.                                                                                                                        | True         |
-| environment         | Version of Windows OS. Possible values are: w7_x64 for Windows 7 x64, w10_x64 for Windows 10 x64, w11_x64 for Windows 11 x64. Default is Windows 7 x64 | Optional     |
-| private             | Privacy of the submission. Possible values are: true, false. Default is true.                                                                          | Optional     |
-| timeout             | Duration of the submission analysis. Possible values are: 60, 120, 180, 300. Default is 60.                                                            | Optional     |
-| work_path           | The working path of the submission. Possible values are: desktop, root, appdata, windows, temp. Default is desktop.                                    | Optional     |
-| mouse_simulation    | Enable mouse simulation during the analysis. Possible values are: true, false. Default false.                                                          | Optional     |
-| https_inspection    | Https inspection to read encrypted traffic. Possible values are: true, false. Default is false.                                                        | Optional     |
-| internet_connection | Enable internet connection during the analysis. Possible values are: true, false. Default is false.                                                    | Optional     |
-| raw_logs            | Raw logs. Possible values are: true, false. Default is false.                                                                                          | Optional     |
-| snapshot            | Snapshot. Possible values are: true, false. Default is false.                                                                                          | Optional     |
+#### Context Output
 
-#### Output
-
-
-| **Path**                 | **Type** | **Description**                                     |
-| -------------------------- | ---------- | ----------------------------------------------------- |
-| ThreatZone.Analysis.UUID | String   | UUID of the task created to analyze the submission. |
-| ThreatZone.Analysis.URL  | String   | URL of the task created to analyze the submission.  |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Submission.UUID | String | UUID of sample. | 
+| ThreatZone.Submission.URL | String | URL of analysis of sample. | 
+| ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
+| ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
+| ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
+| ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. | 
 
 ### tz-static-upload-sample
 
----
-
-Submit a file for static analysis.
+***
+Submits a sample to ThreatZone for static analysis.
 
 #### Base Command
 
@@ -93,24 +67,25 @@ Submit a file for static analysis.
 
 #### Input
 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | Entry ID of the file to submit. Possible values are: . | Required | 
 
-| **Argument Name** | **Description**                 | **Required** |
-| ------------------- | --------------------------------- | -------------- |
-| entry_id          | EntryID of the file to analyze. | True         |
+#### Context Output
 
-#### Output
-
-
-| **Path**                 | **Type** | **Description**                                     |
-| -------------------------- | ---------- | ----------------------------------------------------- |
-| ThreatZone.Analysis.UUID | String   | UUID of the task created to analyze the submission. |
-| ThreatZone.Analysis.URL  | String   | URL of the task created to analyze the submission.  |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Submission.UUID | String | UUID of sample. | 
+| ThreatZone.Submission.URL | String | URL of analysis of sample. | 
+| ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
+| ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
+| ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
+| ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. | 
 
 ### tz-cdr-upload-sample
 
----
-
-Submit a file to ThreatZone CDR.
+***
+Submits a sample to ThreatZone for CDR.
 
 #### Base Command
 
@@ -118,61 +93,110 @@ Submit a file to ThreatZone CDR.
 
 #### Input
 
-
-| **Argument Name** | **Description**                 | **Required** |
-| ------------------- | --------------------------------- | -------------- |
-| entry_id          | EntryID of the file to analyze. | True         |
-
-#### Output
-
-
-| **Path**                 | **Type** | **Description**                                     |
-| -------------------------- | ---------- | ----------------------------------------------------- |
-| ThreatZone.Analysis.UUID | String   | UUID of the task created to analyze the submission. |
-| ThreatZone.Analysis.URL  | String   | URL of the task created to analyze the submission.  |
-
-### tz-get-report
-
----
-
-Gets the report of a UUID created for a submitted file or URL.
-
-#### Base Command
-
-`tz-get-report`
-
-#### Input
-
-
-| **Argument Name** | **Description**                                                                            | **Required** |
-| ------------------- | -------------------------------------------------------------------------------------------- | -------------- |
-| uuid              | A UUID is returned when submitting a file for analysis using the`tz-run-analysis` command. | Required     |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | Entry ID of the file to submit. Possible values are: . | Required | 
 
 #### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Submission.UUID | String | UUID of sample. | 
+| ThreatZone.Submission.URL | String | URL of analysis of sample. | 
+| ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
+| ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
+| ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
+| ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. | 
 
-| **Path**                    | **Type** | **Description**                                              |
-| ----------------------------- | ---------- | -------------------------------------------------------------- |
-| ThreatZone.Result.INFO      | String   | Details of the submitted file.                               |
-| ThreatZone.Result.UUID      | String   | The UUID of the task.                                        |
-| ThreatZone.Result.URL       | String   | The URL of the submission analysis page in threat.zone.      |
-| ThreatZone.Result.RESULT    | String   | The analysis result dict of the file submitted for analysis. |
-| ThreatZone.Result.MIME      | String   | The MIME of the file submitted for analysis.                 |
-| ThreatZone.Result.MD5       | String   | The MD5 hash of the file submitted for analysis.             |
-| ThreatZone.Result.SHA1      | String   | The SHA1 hash of the file submitted for analysis.            |
-| ThreatZone.Result.SHA256    | String   | The SHA256 hash of the file submitted for analysis.          |
-| ThreatZone.Result.LEVEL     | Number   | The threat level of the file submitted for analysis.         |
-| ThreatZone.Result.SANITIZED | String   | The sanitized file URL of the file submitted to CDR.         |
-| File.Extension              | String   | Extension of the file sanitized by CDR.                      |
-| File.Name                   | String   | The name of the file sanitized by CDR.                       |
-| File.Size                   | Number   | Size of the file sanitized by CDR.                           |
-| File.EntryID                | String   | EntryID of the file sanitized by CDR.                        |
-| File.Info                   | String   | Info of the file sanitized by CDR.                           |
-| File.MD5                    | String   | MD5 hash of the file sanitized by CDR.                       |
-| File.SHA1                   | String   | SHA1 hash of the file sanitized by CDR.                      |
-| File.SHA256                 | String   | SHA256 hash of the file sanitized by CDR.                    |
-| File.SHA512                 | String   | SHA512 hash of the file sanitized by CDR.                    |
-| File.SSDeep                 | String   | SSDeep hash of the file sanitized by CDR.                    |
+### tz-get-result
+
+***
+Retrive the analysis result from ThreatZone.
+
+#### Base Command
+
+`tz-get-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | UUID of the submission. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Result.STATUS | String | The status of the submission scanning process. | 
+| ThreatZone.Result.LEVEL | String | Threat Level of the scanned file. \(malicious, suspicious or informative\). | 
+| ThreatZone.Result.URL | String | The result page url of the submission. | 
+| ThreatZone.Result.INFO | String | Contains the file name, scan process status and public status. | 
+| ThreatZone.Result.REPORT | String | The analysis report of the submission. | 
+| ThreatZone.Result.MD5 | String | The md5 hash of the submission. | 
+| ThreatZone.Result.SHA1 | String | The sha1 hash of the submission. | 
+| ThreatZone.Result.SHA256 | String | The sha256 hash of the submission. | 
+| ThreatZone.Result.UUID | String | The UUID of the submission. | 
+| ThreatZone.Result.SANITIZED | String | The url of the sanitized file. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+
+### tz-get-sanitized
+
+***
+Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
+
+#### Base Command
+
+`tz-get-sanitized`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | UUID of the submission. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Extension | String | Extension of the file sanitized by CDR. | 
+| File.Name | String | The name of the file sanitized by CDR. | 
+| File.Size | Number | Size of the file sanitized by CDR. | 
+| File.EntryID | String | EntryID of the file sanitized by CDR. | 
+| File.Info | String | Info of the file sanitized by CDR. | 
+| File.MD5 | String | MD5 hash of the file sanitized by CDR. | 
+| File.SHA1 | String | SHA1 hash of the file sanitized by CDR. | 
+| File.SHA256 | String | SHA256 hash of the file sanitized by CDR. | 
+| File.SHA512 | String | SHA512 hash of the file sanitized by CDR. | 
+| File.SSDeep | String | SSDeep hash of the file sanitized by CDR. | 
+
+### tz-check-limits
+
+***
+Check the plan limits from ThreatZone API.
+
+#### Base Command
+
+`tz-check-limits`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
+| ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
+| ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
+| ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. | 
+
+
 
 #### Command Example
 
@@ -184,10 +208,32 @@ Gets the report of a UUID created for a submitted file or URL.
 
 #### Context Example for Sandbox
 
+Note: Long output parts are truncated
+
 ```json
 {
+  "DBotScore": {
+    "Indicator": "80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108",
+    "Reliability": "A - Completely reliable",
+    "Score": 3,
+    "Type": "file",
+    "Vendor": "ThreatZone"
+  },
+  "File": {
+    "Hashes": [
+      {
+        "type": "SHA256",
+        "value": "80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108"
+      }
+    ],
+    "Malicious": {
+      "Description": null,
+      "Vendor": "ThreatZone"
+    },
+    "SHA256": "80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108"
+  },
   "ThreatZone": {
-    "Result": {
+    "Analysis": {
       "INFO": {
         "file_name": "80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108.exe",
         "private": false
@@ -416,6 +462,7 @@ Gets the report of a UUID created for a submitted file or URL.
           "vnc": "https://app.threat.zone/cloudvnc/index.html?path=?token=95b6bc52-d040-4d82-a98b-af6fd5f6feea"
         }
       },
+      "SANITIZED": null,
       "SHA1": "0cd47f6bb5bb8e8e9dc01286adcc493acf5dd649",
       "SHA256": "80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108",
       "STATUS": 5,
@@ -428,10 +475,28 @@ Gets the report of a UUID created for a submitted file or URL.
 
 #### Context Example for Static Scan
 
+Note: Long output parts are truncated
+
 ```json
 {
+  "DBotScore": {
+    "Indicator": "e38dae160633fb5bf65a982374f1c7725c25ed32e89dbe2dce3a8f486cfae3cb",
+    "Reliability": "A - Completely reliable",
+    "Score": 2,
+    "Type": "file",
+    "Vendor": "ThreatZone"
+  },
+  "File": {
+    "Hashes": [
+      {
+        "type": "SHA256",
+        "value": "e38dae160633fb5bf65a982374f1c7725c25ed32e89dbe2dce3a8f486cfae3cb"
+      }
+    ],
+    "SHA256": "e38dae160633fb5bf65a982374f1c7725c25ed32e89dbe2dce3a8f486cfae3cb"
+  },
   "ThreatZone": {
-    "Result": {
+    "Analysis": {
       "INFO": {
         "file_name": "0_nUlF45uRfpbPIaqC.png",
         "private": false
@@ -557,7 +622,356 @@ Gets the report of a UUID created for a submitted file or URL.
                 "blacklist": false,
                 "name": "_vsnprintf"
               },
-              ...
+              {
+                "address": "0x19030",
+                "blacklist": false,
+                "name": "IofCallDriver"
+              },
+              {
+                "address": "0x19034",
+                "blacklist": false,
+                "name": "IoBuildPartialMdl"
+              },
+              {
+                "address": "0x19038",
+                "blacklist": false,
+                "name": "IoAllocateMdl"
+              },
+              {
+                "address": "0x1903c",
+                "blacklist": false,
+                "name": "IoFreeMdl"
+              },
+              {
+                "address": "0x19040",
+                "blacklist": false,
+                "name": "ZwCreateKey"
+              },
+              {
+                "address": "0x19044",
+                "blacklist": false,
+                "name": "ZwClose"
+              },
+              {
+                "address": "0x19048",
+                "blacklist": false,
+                "name": "IoOpenDeviceRegistryKey"
+              },
+              {
+                "address": "0x1904c",
+                "blacklist": false,
+                "name": "ZwDeleteKey"
+              },
+              {
+                "address": "0x19050",
+                "blacklist": false,
+                "name": "ZwOpenKey"
+              },
+              {
+                "address": "0x19054",
+                "blacklist": false,
+                "name": "IoFreeIrp"
+              },
+              {
+                "address": "0x19058",
+                "blacklist": false,
+                "name": "IoAllocateIrp"
+              },
+              {
+                "address": "0x1905c",
+                "blacklist": false,
+                "name": "memmove"
+              },
+              {
+                "address": "0x19060",
+                "blacklist": false,
+                "name": "_allshl"
+              },
+              {
+                "address": "0x19064",
+                "blacklist": false,
+                "name": "_allmul"
+              },
+              {
+                "address": "0x19068",
+                "blacklist": false,
+                "name": "RtlAnsiStringToUnicodeString"
+              },
+              {
+                "address": "0x1906c",
+                "blacklist": false,
+                "name": "RtlInitAnsiString"
+              },
+              {
+                "address": "0x19070",
+                "blacklist": false,
+                "name": "RtlAppendUnicodeToString"
+              },
+              {
+                "address": "0x19074",
+                "blacklist": false,
+                "name": "MmMapLockedPagesSpecifyCache"
+              },
+              {
+                "address": "0x19078",
+                "blacklist": false,
+                "name": "InterlockedIncrement"
+              },
+              {
+                "address": "0x1907c",
+                "blacklist": false,
+                "name": "IoDeleteDevice"
+              },
+              {
+                "address": "0x19080",
+                "blacklist": false,
+                "name": "RtlEqualUnicodeString"
+              },
+              {
+                "address": "0x19084",
+                "blacklist": false,
+                "name": "RtlFreeUnicodeString"
+              },
+              {
+                "address": "0x19088",
+                "blacklist": false,
+                "name": "IoCreateDevice"
+              },
+              {
+                "address": "0x1908c",
+                "blacklist": false,
+                "name": "RtlCompareUnicodeString"
+              },
+              {
+                "address": "0x19090",
+                "blacklist": false,
+                "name": "ZwEnumerateKey"
+              },
+              {
+                "address": "0x19094",
+                "blacklist": false,
+                "name": "IoInvalidateDeviceRelations"
+              },
+              {
+                "address": "0x19098",
+                "blacklist": false,
+                "name": "KeSetImportanceDpc"
+              },
+              {
+                "address": "0x1909c",
+                "blacklist": false,
+                "name": "_aullrem"
+              },
+              {
+                "address": "0x190a0",
+                "blacklist": false,
+                "name": "KeSetEvent"
+              },
+              {
+                "address": "0x190a4",
+                "blacklist": false,
+                "name": "KeInsertQueueDpc"
+              },
+              {
+                "address": "0x190a8",
+                "blacklist": false,
+                "name": "ExfInterlockedInsertTailList"
+              },
+              {
+                "address": "0x190ac",
+                "blacklist": false,
+                "name": "KefReleaseSpinLockFromDpcLevel"
+              },
+              {
+                "address": "0x190b0",
+                "blacklist": false,
+                "name": "KefAcquireSpinLockAtDpcLevel"
+              },
+              {
+                "address": "0x190b4",
+                "blacklist": false,
+                "name": "InterlockedDecrement"
+              },
+              {
+                "address": "0x190b8",
+                "blacklist": false,
+                "name": "ExfInterlockedRemoveHeadList"
+              },
+              {
+                "address": "0x190bc",
+                "blacklist": false,
+                "name": "MmBuildMdlForNonPagedPool"
+              },
+              {
+                "address": "0x190c0",
+                "blacklist": false,
+                "name": "MmCreateMdl"
+              },
+              {
+                "address": "0x190c4",
+                "blacklist": false,
+                "name": "KeInitializeDpc"
+              },
+              {
+                "address": "0x190c8",
+                "blacklist": false,
+                "name": "KeInitializeEvent"
+              },
+              {
+                "address": "0x190cc",
+                "blacklist": false,
+                "name": "PoSetPowerState"
+              },
+              {
+                "address": "0x190d0",
+                "blacklist": false,
+                "name": "PoStartNextPowerIrp"
+              },
+              {
+                "address": "0x190d4",
+                "blacklist": false,
+                "name": "KeWaitForSingleObject"
+              },
+              {
+                "address": "0x190d8",
+                "blacklist": false,
+                "name": "ZwQueryValueKey"
+              },
+              {
+                "address": "0x190dc",
+                "blacklist": false,
+                "name": "RtlAppendUnicodeStringToString"
+              },
+              {
+                "address": "0x190e0",
+                "blacklist": false,
+                "name": "IoInitializeIrp"
+              },
+              {
+                "address": "0x190e4",
+                "blacklist": false,
+                "name": "ObfDereferenceObject"
+              },
+              {
+                "address": "0x190e8",
+                "blacklist": false,
+                "name": "ObfReferenceObject"
+              },
+              {
+                "address": "0x190ec",
+                "blacklist": false,
+                "name": "RtlCopyUnicodeString"
+              },
+              {
+                "address": "0x190f0",
+                "blacklist": false,
+                "name": "RtlInt64ToUnicodeString"
+              },
+              {
+                "address": "0x190f4",
+                "blacklist": false,
+                "name": "RtlIntegerToUnicodeString"
+              },
+              {
+                "address": "0x190f8",
+                "blacklist": false,
+                "name": "ExDeleteNPagedLookasideList"
+              },
+              {
+                "address": "0x190fc",
+                "blacklist": false,
+                "name": "KeCancelTimer"
+              },
+              {
+                "address": "0x19100",
+                "blacklist": false,
+                "name": "KeSetTimer"
+              },
+              {
+                "address": "0x19104",
+                "blacklist": false,
+                "name": "ExInitializeNPagedLookasideList"
+              },
+              {
+                "address": "0x19108",
+                "blacklist": false,
+                "name": "KeInitializeTimer"
+              },
+              {
+                "address": "0x1910c",
+                "blacklist": false,
+                "name": "_aullshr"
+              },
+              {
+                "address": "0x19110",
+                "blacklist": false,
+                "name": "KeTickCount"
+              },
+              {
+                "address": "0x19114",
+                "blacklist": false,
+                "name": "KeBugCheckEx"
+              },
+              {
+                "address": "0x19118",
+                "blacklist": false,
+                "name": "memset"
+              },
+              {
+                "address": "0x1911c",
+                "blacklist": false,
+                "name": "KeInitializeSpinLock"
+              },
+              {
+                "address": "0x19120",
+                "blacklist": false,
+                "name": "IoWMIRegistrationControl"
+              },
+              {
+                "address": "0x19124",
+                "blacklist": false,
+                "name": "memcpy"
+              },
+              {
+                "address": "0x19128",
+                "blacklist": false,
+                "name": "ExFreePool"
+              },
+              {
+                "address": "0x1912c",
+                "blacklist": false,
+                "name": "ExAllocatePoolWithTag"
+              },
+              {
+                "address": "0x19130",
+                "blacklist": false,
+                "name": "IofCompleteRequest"
+              },
+              {
+                "address": "0x19134",
+                "blacklist": false,
+                "name": "KeSetTargetProcessorDpcEx"
+              },
+              {
+                "address": "0x19138",
+                "blacklist": false,
+                "name": "RtlInitUnicodeString"
+              },
+              {
+                "address": "0x1913c",
+                "blacklist": false,
+                "name": "ProbeForRead"
+              },
+              {
+                "address": "0x19140",
+                "blacklist": false,
+                "name": "ExAllocatePoolWithQuotaTag"
+              },
+              {
+                "address": "0x19144",
+                "blacklist": false,
+                "name": "RtlUnwind"
+              }
             ]
           },
           "ioc": null,
@@ -665,20 +1079,7 @@ Gets the report of a UUID created for a submitted file or URL.
               "blacklist": false,
               "hint": null,
               "value": "0(I0(I0(I0)I`(I9I7(I9I3(I9I1(I9I=(I9I1(I9I1(IRich0(I"
-            },
-            {
-              "_id": "64f061eb9292e0f8f30fb5d4",
-              "blacklist": false,
-              "hint": null,
-              "value": ".text"
-            },
-            {
-              "_id": "64f061eb9292e0f8f30fb5d5",
-              "blacklist": false,
-              "hint": null,
-              "value": "h.rdata"
-            },
-            ...
+            }
           ],
           "yaraRules": {
             "_id": "64f061eb9292e0f8f30fb5d1",
@@ -696,6 +1097,7 @@ Gets the report of a UUID created for a submitted file or URL.
           }
         }
       },
+      "SANITIZED": null,
       "SHA1": "e0ecee70f2704093a8fb620d61a995b561b65c20",
       "SHA256": "e38dae160633fb5bf65a982374f1c7725c25ed32e89dbe2dce3a8f486cfae3cb",
       "STATUS": 5,
@@ -708,23 +1110,28 @@ Gets the report of a UUID created for a submitted file or URL.
 
 #### Context Example for CDR
 
+Note: Long output parts are truncated
+
 ```json
 {
+  "DBotScore": {
+    "Indicator": "945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca",
+    "Reliability": "A - Completely reliable",
+    "Score": 0,
+    "Type": "file",
+    "Vendor": "ThreatZone"
+  },
   "File": {
-    "EntryID": "204@f2408274-2db1-4b29-8996-0db4a6e3d813",
-    "Extension": "zip",
-    "Info": "application/zip",
-    "MD5": "d42c3fe93c7c72ab54f1a65b3721783e",
-    "Name": "sanitized-1170250a-40ac-4b73-84f7-3c0b6026d8af.zip",
-    "SHA1": "2751b056bd130b4b522de0c64a9944282a930c52",
-    "SHA256": "4d241fcb3be8c5c0e57956dcd12953edbf9bd61759887ad346c35008dfbff93a",
-    "SHA512": "98415a517373103e2f2ee9d7de84bb25a4fc70a39011fe91b7b3b983322b21bcb0599564f207d9843968f6383e6412fc851787870de4aef654da91296f0ff2ab",
-    "SSDeep": "3:YWR4h24VJHvAMaXwLnDW0:YWyQ4VJP0UDW0",
-    "Size": 52,
-    "Type": "JSON data"
+    "Hashes": [
+      {
+        "type": "SHA256",
+        "value": "945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca"
+      }
+    ],
+    "SHA256": "945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca"
   },
   "ThreatZone": {
-    "Result": {
+    "Analysis": {
       "INFO": {
         "file_name": "fff2035c-def9-482c-9e1a-405c4d427833.docx",
         "private": false
@@ -773,19 +1180,6 @@ Gets the report of a UUID created for a submitted file or URL.
 
 #### Human Readable Output For CDR
 
-
 | FILE_NAME                                 | MD5                              | PRIVATE | SANITIZED                                                                                                                                                                      | SCAN_URL                                                                                                                                           | SHA1                                     | SHA256                                                           | STATUS                 | THREAT_LEVEL | UUID                                 |
 | ------------------------------------------- | ---------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------ | -------------- | -------------------------------------- |
 | fff2035c-def9-482c-9e1a-405c4d427833.docx | cf543c55343c6307349aafd098fb6958 | false   | [https://app.threat.zone/download/v1/download/cdr/1170250a-40ac-4b73-84f7-3c0b6026d8af](https://app.threat.zone/download/v1/download/cdr/1170250a-40ac-4b73-84f7-3c0b6026d8af) | [https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af](https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af) | 1bec0d7bfea812ca7aa1f5399bb7ff3671006331 | 945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca | Submission is finished | Not Measured | 1170250a-40ac-4b73-84f7-3c0b6026d8af |
-
-
-| Property | Value                                                                                                                            |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Type     | application/json                                                                                                                 |
-| Size     | 100,777 bytes                                                                                                                    |
-| Info     | ASCII text, with very long lines, with no line terminators                                                                       |
-| MD5      | aa85ec510171690d4435e94b2cceb912                                                                                                 |
-| SHA1     | d5dede7a3b9871557842eee508322df38ac946f8                                                                                         |
-| SHA256   | **8a5d8c81d285359bf9099061d847d110c9b71a99ad5495f149e92d3abc8d3ecd**                                                             |
-| SHA512   | d6ddf83c0e3ffed2688e70adf4eb9ab5e99add4461a856f1a94f9586a722d8e08b697d345a64d71387dbd183d4bcaed2a9e0bf9b2f6b9a8d6e3ff84edd8d4dee |
-| SSDeep   | 768:ibrt4XX8p4Q/GxvCJgj5yOHUmcqnn5PRozB:ivCXX8p4Q/GxvCJgkCUmjnFGd                                                                |

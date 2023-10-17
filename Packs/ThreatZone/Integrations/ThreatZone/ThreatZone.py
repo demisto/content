@@ -85,12 +85,14 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
         api_me = self.threatzone_me()
+        acc_email = api_me["userInfo"]["email"]
         limits_count = api_me["userInfo"]["limitsCount"]
         submission_limits = api_me["plan"]["submissionLimits"]
         avaliable_api = submission_limits["apiLimit"] - limits_count["apiRequestCount"]
         avaliable_submission = submission_limits["dailyLimit"] - limits_count["dailySubmissionCount"]
         avaliable_concurrent = submission_limits["concurrentLimit"] - limits_count["concurrentSubmissionCount"]
         limits = {
+            "E_Mail": f"{acc_email}",
             "Daily_Submission_Limit": f"{limits_count['dailySubmissionCount']}/{submission_limits['dailyLimit']}",
             "Concurrent_Limit": f"{limits_count['concurrentSubmissionCount']}/{submission_limits['concurrentLimit']}",
             "API_Limit": f"{limits_count['apiRequestCount']}/{submission_limits['apiLimit']}"
@@ -217,7 +219,7 @@ def generate_dbotscore(indicator, report, type=None):
         indicator=indicator,
         indicator_type=_type_selector(type),
         integration_name='ThreatZone',
-        score=translate_score(report.get('THREAT_LEVEL')),
+        score=translate_score(report.get('LEVEL')),
         reliability=get_reputation_reliability(demisto.params().get('integrationReliability'))
     )
 
@@ -282,12 +284,14 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
             readable_output = tableToMarkdown('Submission Result', {"Exception": str(exception)})
         return [
             CommandResults(
+                outputs_prefix='ThreatZone.Analysis',
                 readable_output=readable_output,
-                outputs_key_field='results',
+                outputs_key_field="UUID",
                 outputs=output,
-                indicator=generate_indicator(readable_dict["SHA256"], readable_dict, "file")
+                indicator=generate_indicator(readable_dict["SHA256"], output, "file")
             )
         ]
+
     try:
         report_type = ""
         if result["reports"]["dynamic"]["enabled"]:
@@ -323,57 +327,79 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
             'FILE_NAME': result['fileInfo']['name'],
             'PRIVATE': result['private'],
             'SCAN_URL': result_url,
-            'UUID': submission_uuid
+            'UUID': submission_uuid,
+            'SANITIZED': None
         }
 
         output = {
-            'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {
-                'STATUS': status,
-                'MD5': md5,
-                'SHA1': sha1,
-                'SHA256': sha256,
-                'LEVEL': level,
-                'INFO': submission_info,
-                'URL': result_url,
-                'UUID': submission_uuid,
-                'REPORT': {report_type: result["reports"][report_type]}
-            }
+            'STATUS': status,
+            'MD5': md5,
+            'SHA1': sha1,
+            'SHA256': sha256,
+            'LEVEL': level,
+            'INFO': submission_info,
+            'URL': result_url,
+            'UUID': submission_uuid,
+            'REPORT': {report_type: result["reports"][report_type]},
+            'SANITIZED': None
         }
 
         res = create_res(readable_dict, output)
         if report_type == "cdr" and status == 5:
             sanitized_file_url = f"https://app.threat.zone/download/v1/download/cdr/{submission_uuid}"
-            output['ThreatZone.Result(val.Job_ID == obj.Job_ID)']["SANITIZED"] = sanitized_file_url
+            output["SANITIZED"] = sanitized_file_url
             readable_dict["SANITIZED"] = sanitized_file_url
-            # data = client.threatzone_get_sanitized(submission_uuid)
-            # f_res = fileResult(f"sanitized-{submission_uuid}.zip", data)
             res = create_res(readable_dict, output)
-            # res.append(f_res)
 
     except Exception as e:
-        output = {'ThreatZone.Result(val.Job_ID == obj.Job_ID)': {'REPORT': result}}
+        output = {'REPORT': result}
         res = create_res(result, output, exception=e)
     return res
 
 
 def threatzone_check_limits(client: Client) -> CommandResults:
+    """Checks and prints remaining limits and current quota"""
     availability = client.threatzone_check_limits(None)
     readable_output = tableToMarkdown('LIMITS', availability["Limits"])
     return CommandResults(
+        outputs_prefix='ThreatZone.Limits',
         readable_output=readable_output,
-        outputs_key_field='results',
-        outputs={'ThreatZone.Limits(val.Job_ID == obj.Job_ID)': availability["Limits"]}
+        outputs=availability["Limits"]
     )
 
 
-def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threatzone_return_results(uuid, url, readable_output, availability) -> List[CommandResults]:
+    """Helper function for returning results with limits."""
+    return [
+        CommandResults(
+            outputs_prefix='ThreatZone.Submission',
+            readable_output=readable_output,
+            outputs_key_field="UUID",
+            outputs={'UUID': uuid, 'URL': url}
+        ),
+        CommandResults(
+            outputs_prefix='ThreatZone.Limits',
+            outputs_key_field="E_Mail",
+            outputs=availability["Limits"]
+        )
+    ]
+
+
+def threatzone_get_sanitized_file(client: Client, args: Dict[str, Any]) -> None:
+    """Downloads and uploads sanitized file to WarRoom & Context Data."""
+    submission_uuid = args.get('uuid')
+    data = client.threatzone_get_sanitized(submission_uuid)
+    return_results(fileResult(f"sanitized-{submission_uuid}.zip", data))
+
+
+def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("sandbox")
     if not availability["avaliable"]:
         raise DemistoException(
             f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}")
 
-    ispublic = args.get('isPublic')
+    ispublic = args.get('private')
     environment = args.get('environment')
     work_path = args.get('work_path')
     timeout = args.get('timeout')
@@ -411,15 +437,10 @@ def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> Co
     uuid = result['uuid']
     url = f"https://app.threat.zone/submission/{uuid}"
     availability = client.threatzone_check_limits("sandbox")
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_key_field='results',
-        outputs={'ThreatZone.Limits(val.Job_ID == obj.Job_ID)': availability["Limits"],
-                 'ThreatZone.Analysis(val.Job_ID == obj.Job_ID)': {'UUID': uuid, 'URL': url}}
-    )
+    return threatzone_return_results(uuid, url, readable_output, availability)
 
 
-def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone static engine to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("static")
     if not availability["avaliable"]:
@@ -447,15 +468,10 @@ def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> Com
     }
     readable_output = tableToMarkdown('SAMPLE UPLOADED', readable)
     availability = client.threatzone_check_limits("static")
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_key_field='results',
-        outputs={'ThreatZone.Limits(val.Job_ID == obj.Job_ID)': availability["Limits"],
-                 'ThreatZone.Analysis(val.Job_ID == obj.Job_ID)': {'UUID': uuid, 'URL': url}}
-    )
+    return threatzone_return_results(uuid, url, readable_output, availability)
 
 
-def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> CommandResults:
+def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("cdr")
     if not availability["avaliable"]:
@@ -483,12 +499,7 @@ def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> Comman
     }
     readable_output = tableToMarkdown('SAMPLE UPLOADED', readable)
     availability = client.threatzone_check_limits("cdr")
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_key_field='results',
-        outputs={'ThreatZone.Limits(val.Job_ID == obj.Job_ID)': availability["Limits"],
-                 'ThreatZone.Analysis(val.Job_ID == obj.Job_ID)': {'UUID': uuid, 'URL': url}}
-    )
+    return threatzone_return_results(uuid, url, readable_output, availability)
 
 
 ''' MAIN FUNCTION '''
@@ -521,7 +532,7 @@ def main() -> None:
             proxy=proxy)
 
         if command == 'test-module':
-            demisto.results(test_module(params))
+            return_results(test_module(params))
         elif command == 'tz-check-limits':
             return_results(threatzone_check_limits(client))
         elif command == 'tz-sandbox-upload-sample':
@@ -532,6 +543,9 @@ def main() -> None:
             return_results(threatzone_cdr_upload_sample(client, args))
         elif command == 'tz-get-result':
             return_results(threatzone_get_result(client, args))
+        elif command == 'tz-get-sanitized':
+            raise DemistoException("Sanitized file download will be avaliable at next patch, use tz-get-result instead.")
+            return_results(threatzone_get_sanitized_file(client, args))
 
     # Log exceptions and return errors
     except Exception as e:
