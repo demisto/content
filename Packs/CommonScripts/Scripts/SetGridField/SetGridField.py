@@ -367,8 +367,13 @@ def main():  # pragma: no cover
                 grid_id: table,
             },
         })
-        custom_fields = demisto.incident().get("CustomFields", {})
-        if grid_id not in custom_fields:
+        # we want to check if the incident was succefully updated
+        # we execute command and not using `demisto.incident()` because we want to get the updated incident and context
+        res = demisto.executeCommand("getIncidents", {"id": demisto.incident().get("id")})
+        data = res[0]["Contents"]["data"]
+        custom_fields = data[0].get("CustomFields")
+
+        if table and grid_id not in custom_fields:
             raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
                              f"incident type with the \"Machine name\" as it appears in the incident field editor in "
                              f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
