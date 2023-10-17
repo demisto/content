@@ -87,7 +87,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
 description: Integration to pull assets and other ASM related information.
 display: Cortex Xpanse
