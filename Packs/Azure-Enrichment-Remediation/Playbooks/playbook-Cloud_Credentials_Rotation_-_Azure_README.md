@@ -30,12 +30,12 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* msgraph-apps-service-principal-lock-configuration
-* msgraph-user-update
-* msgraph-apps-service-principal-password-add
-* msgraph-apps-service-principal-get
 * msgraph-user-session-revoke
+* msgraph-apps-service-principal-get
+* msgraph-apps-service-principal-lock-configuration
 * msgraph-apps-service-principal-unlock-configuration
+* msgraph-apps-service-principal-password-add
+* msgraph-user-update
 
 ## Playbook Inputs
 
