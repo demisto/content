@@ -1,0 +1,77 @@
+{
+    "production":
+        {
+          "production": {
+            "ocspStapled": true,
+            "ocspUris": [
+              "http://ocsp.example.com"
+            ],
+            "networkConfiguration": {
+              "geography": "core",
+              "mustHaveCiphers": "ak-akamai-2020q1",
+              "ocspStapling": "not-set",
+              "preferredCiphers": "ak-akamai-2020q1",
+              "quicEnabled": false,
+              "secureNetwork": "standard-tls",
+              "sniOnly": true,
+              "disallowedTlsVersions": [],
+              "dnsNames": [
+                "san2.example.com",
+                "san1.example.com"
+              ]
+            },
+            "primaryCertificate": {
+              "certificate": "-----BEGIN CERTIFICATE-----\nMIID2 ... <sample - removed for readability> .... ZlSw==\n-----END CERTIFICATE-----",
+              "expiry": "2021-06-10T12:00:00Z",
+              "keyAlgorithm": "RSA",
+              "signatureAlgorithm": "SHA-256",
+              "trustChain": "-----BEGIN CERTIFICATE-----\nMIIDT ... <sample - removed for readability> .... JuAIQ=\n-----END CERTIFICATE-----"
+            },
+            "multiStackedCertificates": [
+              {
+                "certificate": "-----BEGIN CERTIFICATE-----\nMIID2 ... <sample - removed for readability> .... ZlSw==\n-----END CERTIFICATE-----",
+                "expiry": "2021-06-10T12:00:00Z",
+                "keyAlgorithm": "ECDSA",
+                "signatureAlgorithm": "SHA-256",
+                "trustChain": "-----BEGIN CERTIFICATE-----\nMIIDT ... <sample - removed for readability> .... JuAIQ=\n-----END CERTIFICATE-----"
+              }
+            ]
+          },
+          "staging": {
+            "ocspStapled": true,
+            "ocspUris": [
+              "http://ocsp.example.com"
+            ],
+            "networkConfiguration": {
+              "geography": "core",
+              "mustHaveCiphers": "ak-akamai-2020q1",
+              "ocspStapling": "not-set",
+              "preferredCiphers": "ak-akamai-2020q1",
+              "quicEnabled": false,
+              "secureNetwork": "standard-tls",
+              "sniOnly": true,
+              "disallowedTlsVersions": [],
+              "dnsNames": [
+                "san2.example.com",
+                "san1.example.com"
+              ]
+            },
+            "primaryCertificate": {
+              "certificate": "-----BEGIN CERTIFICATE-----\nMIID2 ... <sample - removed for readability> .... ZlSw==\n-----END CERTIFICATE-----",
+              "expiry": "2021-06-10T12:00:00Z",
+              "keyAlgorithm": "RSA",
+              "signatureAlgorithm": "SHA-256",
+              "trustChain": "-----BEGIN CERTIFICATE-----\nMIIDT ... <sample - removed for readability> .... JuAIQ=\n-----END CERTIFICATE-----"
+            },
+            "multiStackedCertificates": [
+              {
+                "certificate": "-----BEGIN CERTIFICATE-----\nMIID2 ... <sample - removed for readability> .... ZlSw==\n-----END CERTIFICATE-----",
+                "expiry": "2021-06-10T12:00:00Z",
+                "keyAlgorithm": "ECDSA",
+                "signatureAlgorithm": "SHA-256",
+                "trustChain": "-----BEGIN CERTIFICATE-----\nMIIDT ... <sample - removed for readability> .... JuAIQ=\n-----END CERTIFICATE-----"
+              }
+            ]
+          }
+        }
+}
