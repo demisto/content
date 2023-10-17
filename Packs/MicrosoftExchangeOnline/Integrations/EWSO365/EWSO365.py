@@ -2093,7 +2093,10 @@ def parse_incident_from_item(item):     # pragma: no cover
                         label_attachment_id_type = "attachmentId"
 
                         # save the attachment
-                        file_name = get_attachment_name(attachment.name)
+                        attachment_file_name = attachment.name if str(
+                            attachment.name).endswith('.eml') else attachment.name + '.eml'
+                        file_name = get_attachment_name(attachment_file_name)
+
                         demisto.debug(f"saving content number {attachment_counter}, "
                                       f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
@@ -2107,7 +2110,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                         incident["attachment"].append(
                             {
                                 "path": file_result["FileID"],
-                                "name": get_attachment_name(attachment.name),
+                                "name": file_name,
                             }
                         )
                 except TypeError as e:
@@ -2168,7 +2171,9 @@ def parse_incident_from_item(item):     # pragma: no cover
                             demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
                             data = attached_email_bytes  # type: ignore
 
-                    file_result = fileResult(get_attachment_name(attachment.name), data)
+                    file_name = attachment.name if str(attachment.name).endswith('.eml') else attachment.name + '.eml'
+
+                    file_result = fileResult(get_attachment_name(file_name), data)
 
                 if file_result:
                     # check for error
@@ -2180,14 +2185,14 @@ def parse_incident_from_item(item):     # pragma: no cover
                     incident["attachment"].append(
                         {
                             "path": file_result["FileID"],
-                            "name": get_attachment_name(attachment.name),
+                            "name": file_name,
                         }
                     )
 
             labels.append(
                 {
                     "type": label_attachment_type,
-                    "value": get_attachment_name(attachment.name),
+                    "value": file_name,
                 }
             )
             labels.append(
