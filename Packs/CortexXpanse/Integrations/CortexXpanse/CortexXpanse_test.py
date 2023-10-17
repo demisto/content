@@ -650,7 +650,7 @@ def test_ip_command(requests_mock):
 
     from test_data.raw_response import IP_DOMAIN_RAW
     from test_data.expected_results import IP_RESULTS
-    requests_mock.post('https://test.com/public_api/v1/assets/get_asset_internet_exposure/',
+    requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
 
     client = Client(
@@ -687,7 +687,7 @@ def test_domain_command(requests_mock):
 
     from test_data.raw_response import IP_DOMAIN_RAW
     from test_data.expected_results import IP_RESULTS
-    requests_mock.post('https://test.com/public_api/v1/assets/get_asset_internet_exposure/',
+    requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
 
     client = Client(

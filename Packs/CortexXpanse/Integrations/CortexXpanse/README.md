@@ -1771,7 +1771,6 @@ Returns additional details about a specific incident. Note: Incident IDs may als
 | ASM.Incident.status | String   | The status of the incident. | 
 | ASM.Incident.severity | String   | The severity of the incident. | 
 | ASM.Incident.description | String   | Description of the incident. | 
-| ASM.Incident.high_severity_alert_count | Number   | Number of high alerts. | 
 | ASM.Incident.notes | String   | User-provided notes related to the incident. | 
 
 #### Command example
@@ -2012,20 +2011,25 @@ Returns enrichment for an IP address.
 
 #### Context Output
 
-| **Path**                | **Type** | **Description**                      |
-|-------------------------|----------|--------------------------------------|
-| ASM.IP.ip               | String   | The IP address of the asset.         |
-| ASM.IP.domain           | String   | The domain affiliated with an asset. |
-| ASM.IP.name             | String   | The asset name.                      |
-| ASM.IP.asset_type       | String   | The asset type.                      |
-| ASM.IP.first_observed   | unknown  | When the asset was first observed.   |
-| ASM.IP.last_observed    | unknown  | When the asset was last observed.    |
-| ASM.IP.asm_ids          | unknown  | The ID of the asset. |
-| ASM.IP.service_type     | unknown  | Affiliated service types for the asset. |
+| **Path**                | **Type** | **Description**                                     |
+|-------------------------|----------|-----------------------------------------------------|
+| ASM.IP.ip               | String   | The IP address of the asset.                        |
+| ASM.IP.domain           | String   | The domain affiliated with an asset.                |
+| ASM.IP.name             | String   | The asset name.                                     |
+| ASM.IP.asset_type       | String   | The asset type.                                     |
+| ASM.IP.first_observed   | unknown  | When the asset was first observed.                  |
+| ASM.IP.last_observed    | unknown  | When the asset was last observed.                   |
+| ASM.IP.asm_ids          | unknown  | The ID of the asset.                                |
+| ASM.IP.service_type     | unknown  | Affiliated service types for the asset.             |
 | ASM.IP.tags             | unknown  | A list of tags that have been assigned to the asset. |
-| ASM.IP.asset_explainers | unknown  | The asset explanation details. |
-| ASM.IP.domain_details   | unknown  | Additional domain details. |
-| ASM.IP.recent_ips       | unknown  | Details about the recent IP observations. |
+| ASM.IP.asset_explainers | unknown  | The asset explanation details.                      |
+| ASM.IP.domain_details   | unknown  | Additional domain details.                          |
+| ASM.IP.recent_ips       | unknown  | Details about the recent IP observations.           |
+| DBotScore.Vendor        | String   | The vendor reporting the score of the indicator.    |
+| DBotScore.Score         | Number   | An integer regarding the status of the indicator.   |
+| DBotScore.Indicator     | String   | The indicator value.                                |
+| DBotScore.Type          | String   | The vendor used to calculate the score.             |
+
 
 #### Command example
 ```!ip ip=1.1.1.1```
@@ -2129,17 +2133,21 @@ Returns enrichment for a Domain.
 
 | **Path**                | **Type** | **Description**                      |
 |-------------------------|----------|--------------------------------------|
-| ASM.IP.domain           | String   | The domain affiliated with an asset. |
-| ASM.IP.name             | String   | The asset name.                      |
-| ASM.IP.asset_type       | String   | The asset type.                      |
-| ASM.IP.first_observed   | unknown  | When the asset was first observed.   |
-| ASM.IP.last_observed    | unknown  | When the asset was last observed.    |
-| ASM.IP.asm_ids          | unknown  | The ID of the asset. |
-| ASM.IP.service_type     | unknown  | Affiliated service types for the asset. |
-| ASM.IP.tags             | unknown  | A list of tags that have been assigned to the asset. |
-| ASM.IP.asset_explainers | unknown  | The asset explanation details. |
-| ASM.IP.domain_details   | unknown  | Additional domain details. |
-| ASM.IP.recent_ips       | unknown  | Details about the recent IP observations. |
+| ASM.Domain.domain       | String   | The domain affiliated with an asset. |
+| ASM.Domain.name             | String   | The asset name.                      |
+| ASM.Domain.asset_type       | String   | The asset type.                      |
+| ASM.Domain.first_observed   | unknown  | When the asset was first observed.   |
+| ASM.Domain.last_observed    | unknown  | When the asset was last observed.    |
+| ASM.Domain.asm_ids          | unknown  | The ID of the asset. |
+| ASM.Domain.service_type     | unknown  | Affiliated service types for the asset. |
+| ASM.Domain.tags             | unknown  | A list of tags that have been assigned to the asset. |
+| ASM.Domain.asset_explainers | unknown  | The asset explanation details. |
+| ASM.Domain.domain_details   | unknown  | Additional domain details. |
+| ASM.Domain.recent_ips       | unknown  | Details about the recent IP observations. |
+| DBotScore.Vendor        | String   | The vendor reporting the score of the indicator.    |
+| DBotScore.Score         | Number   | An integer regarding the status of the indicator.   |
+| DBotScore.Indicator     | String   | The indicator value.                                |
+| DBotScore.Type          | String   | The vendor used to calculate the score.             |
 
 #### Command example
 ```!domain domain="*.acme.com"```
@@ -2147,7 +2155,7 @@ Returns enrichment for a Domain.
 ```json
 {
     "ASM": {
-        "IP": {
+        "Domain": {
             "asm_ids": [
                 "4b1f3765-de40-3a1a-8535-667420408fd9"
             ],

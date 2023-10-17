@@ -1315,39 +1315,39 @@ INCIDENT_UPDATE_RESULTS = "Update operation successful: True"
 ALERT_UPDATE_RESULTS = "Updated alerts: [602]"
 
 IP_RESULTS = {
-            "asm_ids": [
-                "4b1f3765-de40-3a1a-8535-667420408fd9"
-            ],
-            "ip": "1.1.1.1",
-            "asset_explainers": [],
-            "asset_type": "DOMAIN",
-            "domain": "*.acme.com",
-            "domain_details": {
-                "admin": {},
-                "alignedRegistrar": "MarkMonitor",
-                "collectionTime": 1695942091000,
-                "creationDate": 785376000000,
-                "dnssec": null,
-                "domainName": "acme.com",
-                "domainStatuses": [
-                    "clientUpdateProhibited",
-                    "clientTransferProhibited",
-                    "clientDeleteProhibited"
-                ],
-                "dropped": false,
-                "nameServers": [],
-                "registrant": {},
-                "registrar": {},
-                "registryDomainId": null,
-                "registryExpiryDate": 1732060800000,
-                "reseller": null,
-                "retrievedDate": 1696075229360,
-                "tech": {},
-                "updatedDate": 1666137600000
-            },
-            "first_observed": 1679457579382,
-            "last_observed": 1697361335282,
-            "name": "*.acme.com",
+    "asm_ids": [
+        "4b1f3765-de40-3a1a-8535-667420408fd9"
+    ],
+    "ip": "1.1.1.1",
+    "asset_explainers": [],
+    "asset_type": "DOMAIN",
+    "domain": "*.acme.com",
+    "domain_details": {
+        "admin": {},
+        "alignedRegistrar": "MarkMonitor",
+        "collectionTime": 1695942091000,
+        "creationDate": 785376000000,
+        "dnssec": null,
+        "domainName": "acme.com",
+        "domainStatuses": [
+            "clientUpdateProhibited",
+            "clientTransferProhibited",
+            "clientDeleteProhibited"
+        ],
+        "dropped": false,
+        "nameServers": [],
+        "registrant": {},
+        "registrar": {},
+        "registryDomainId": null,
+        "registryExpiryDate": 1732060800000,
+        "reseller": null,
+        "retrievedDate": 1696075229360,
+        "tech": {},
+        "updatedDate": 1666137600000
+    },
+    "first_observed": 1679457579382,
+    "last_observed": 1697361335282,
+    "name": "*.acme.com",
             "recent_ips": [
                 {
                     "firstObserved": 1692418207732,
@@ -1367,11 +1367,11 @@ IP_RESULTS = {
                         "name": "DOMAIN_RESOLUTION"
                     }
                 }
-            ],
-            "service_type": [
+    ],
+    "service_type": [
                 "HttpServer"
-            ],
-            "tags": [
+    ],
+    "tags": [
                 "BU:Xpanse VanDelay Demo 3"
-            ]
-        }
+    ]
+}
