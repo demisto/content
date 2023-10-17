@@ -1074,7 +1074,7 @@ def get_indicator_list(
         first_fetch (str): Get indicators newer than first_fetch.
         indicator_type (str): indicator type
     Returns:
-        List[Dict]: list of indicators
+        tuple[List, str]: A list of indicators, and the new "last updated" checkpoint
     """
     last_run_dict = demisto.getLastRun()
     indicators_list = last_run_dict.get(f"{indicator_type}List", [])
