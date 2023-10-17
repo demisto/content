@@ -54,7 +54,7 @@ configuration:
   type: 0
   required: false
   defaultvalue: '50'
-description: 'Custom integration designed to pull in reports from the Dragos Worldview API as incidents '
+description: 'Custom integration designed to pull in reports from the Dragos Worldview API as incidents.'
 display: Dragos Worldview
 name: Dragos Worldview
 script:
