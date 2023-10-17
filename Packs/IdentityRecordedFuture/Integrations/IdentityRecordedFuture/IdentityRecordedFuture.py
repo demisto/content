@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 """Recorded Future Identity Integration for Demisto."""
 from typing import Dict, Any, Union, Optional
 import requests
@@ -128,7 +130,7 @@ def main() -> None:
         # If user has not set password properties we will get empty string but client require empty list
 
         headers = {
-            "X-RFToken": demisto_params["token"],
+            "X-RFToken": demisto_params["token"]["password"],
             "X-RF-User-Agent": f"xsoar-identity/{__version__} rfclient (Cortex_XSOAR_"
             f'{demisto.demistoVersion()["version"]})',
         }
