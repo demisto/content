@@ -1,63 +1,82 @@
-# Traceable AI API Security Platform Integration
+Traceable Platform Integration enables publishing Traceable Detected Security Events to be published to Cortex Xsoar for further action.
 
-## Overview
+## Configure Traceable on Cortex XSOAR
 
-Traceable platform monitors application APIs and detects _Threat Events_. These _Threat Events_ consist of the details about the _Threat Activity_, the _Actor_ performing the threat activity and the request/response payloads.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Traceable.
+3. Click **Add instance** to create and configure a new integration instance.
 
-With this integration, an _Incident_ can be raised in Cortex Xsoar when an event is detected by Traceable platform. This enables the security teams to orchestrate actions through Cortex Xsoar with meaningful information about the detected _Threat Activities_.
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Traceable Platform API Endpoint URL | True |
+    | API Token | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | Fetch incidents | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
+    | Max number of records to fetch per API call to Traceable API Endpoint | False |
+    | Number of span queries to run in parallel | False |
+    | Max spans per thread | False |
+    | Comma Separated Environment List To Process | False |
+    | Security Score Category | False |
+    | Threat Category | False |
+    | IP Reputation Level | False |
+    | IP Abuse Velocity | False |
+    | IP Location Type | False |
+    | Traceable Platform Endpoint URL | False |
+    | Incident type | False |
+    | Ignore Status Codes | False |
+    | Incident optional field list | False |
+    | Additional API Attributes | False |
+    | Fetch unique incidents | False |
+    | Time between raising similar incidents (in &lt;number&gt; &lt;time unit&gt;, e.g., in 12 hours, in 7 days) | False |
 
-## Setup
-
-To use the integration the following mandatory parameters need to be set:
-
-|Parameter Name|Default Value|Description|
-|------|------|------|
-|Traceable Platform API Endpoint URL|<https://api.traceable.ai>| Base URL of the Traceable platform API endpoint. |
-|API Token|-| API token used for authenticating against the Traceable platform. |
-|Trust any certificate (not secure)|false| Trust any SSL certificate while connecting to the Traceable platform API endpoint. |
-|Use system proxy settings|false| Use the system proxy using the environment variables `http_proxy`/`https_proxy`. |
-
-The API token can be generated as described in the [Traceable Documentation](https://docs.traceable.ai/docs/public-apis#step-1-%E2%80%93-copy-the-platform-api-token)
-
-## Customize Event/Activity Collection
-
-The following parameters can be used to select the events that should be imported from the Traceable platform into Cortex Xsoar as security incidents.
-
-|Parameter name|Type|Required (Yes/No)|Default Value|Description|
-|------|------|------|------|------|
-|First fetch timestamp|Short text|No|1 days| Duration in the past to query the events, when querying for the first time. |
-|Max number of records to fetch per API call to Traceable API Endpoint|Short text|No|100| Number of records to return from Traceable platform per query. |
-|Number of span queries to run in parallel|Short text|No|5| Number of threads to use for querying `spans` in parallel. |
-|Max spans per thread|Short text|No|50|Max mumber of spans to query per thread|
-|Comma Separated Environment List To Process|Long text|No|-| Comma separated list of environments to query. |
-|Security Score Category|Multi select|No|CRITICAL, HIGH, MEDIUM| `Security Score Category` of the events to be queried. |
-|Threat Category|Multi select|No|Malicious Activities, API Abuse, Malicious Sources| `Threat Category` of the events to be queried. |
-|IP Reputation Level|Multi select|No|CRITICAL, HIGH, MEDIUM| `IP Reputation Level` of the events to be queried. |
-|IP Abuse Velocity|Multi select|No|CRITICAL, HIGH, MEDIUM| `IP Abuse Velocity` of the events to queried. |
-|IP Location Type|Multi select|No|-| `IP Location` type of the events to be queried. |
-|Traceable Platform Endpoint URL|Long text|No|<https://app.traceable.ai>| Base URL of the Traceable platform UI endpoint. |
-|Ignore Status Codes|Long text|No|400-499| Ignore incidents for attacks failing with these status codes. |
-|Incident optional field list|Multi select|No|actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,anomalousAttribute,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,serviceName,actorScore,threatCategory,type| Optional fields to pull from the Traceable event.|
-|Additional API Attributes|Multi select|No|isExternal,isAuthenticated,riskScore,riskScoreCategory,isLearnt| Additional API attributes to query for the affected API in the incident. |
-|Fetch unique incidents|Boolean|No|true|Only pull an incident the same one has not been raised before.|
-|Time between raising similar incidents (in `<number>` `<timeunit>`, e.g., `in 12 hours`, `in 7 days`)|Short text|No|in 7 days|Time to wait before raising an incident similar to an existing one (in `<number>` `<timeunit>`, e.g., `in 12 hours`, `in 7 days`).|
-
-## Incident Types
-
-The integration generates _Exploit_ type of incidents.
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-The Traceable integration pack provides the following commands.
-|Command|Description|
-|------|------|
-|list_incident_cache|List all the entries in the Traceable instance cache|
-|purge_incident_cache|Purge/Delete all the entries i the Traceable instance cache|
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+### list_incident_cache
 
-## Official Traceable Documentation
-<https://docs.traceable.ai/>
+***
+List the entries present in the Traceable instance cache.
 
-## Issues?
+#### Base Command
 
-Reach out to support@traceable.ai
+`list_incident_cache`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Traceable.Instancecache.id | string | Cache entry id. | 
+| Traceable.Instancecache.expiry | date | Cache entry expire date. | 
+
+### purge_incident_cache
+
+***
+Delete all entries in the incident cache.
+
+#### Base Command
+
+`purge_incident_cache`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Traceable.Instancecache.id | string | Cache entry id. | 
+| Traceable.Instancecache.expiry | date | Cache entry expire date. | 
+| Traceable.Instancecache.deletion_status | string | Cache entry deletion status. | 

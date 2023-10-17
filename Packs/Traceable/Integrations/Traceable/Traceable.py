@@ -216,8 +216,7 @@ class Helper:
             if type(value) is str:
                 _value = f'"{value}"'
             elif type(value) is bool:
-                _c = str(value)
-                _value = f"{_c[0:1].lower()}{_c[1:]}"
+                _value = f"{str(value).lower()}"
             else:
                 _value = value
             return (
@@ -744,7 +743,7 @@ class Client(BaseClient):
                                  + f" Span Object: {json.dumps(trace_results['data']['spans']['results'])}")
 
         api_endpoint_details = []
-        api_endpoint_details_map = {}
+        api_endpoint_details_map: dict = {}
 
         if self.__query_api_attributes:
             api_endpoint_details = self.get_api_endpoint_details(
@@ -881,61 +880,42 @@ class Client(BaseClient):
                 self.__query_api_attributes
                 and "riskScore" in self.optional_api_attributes
                 and "apiId" in domain_event
-                and domain_event["apiId"] is not None
-                and domain_event["apiId"] != "null"
-                and domain_event["apiId"] in api_endpoint_details_map
-                and api_endpoint_details_map[domain_event["apiId"]] is not None
-                and "riskScore" in api_endpoint_details_map[domain_event["apiId"]]
-                and api_endpoint_details_map[domain_event["apiId"]][
-                    "riskScore"
-                ] is not None
-                and api_endpoint_details_map[domain_event["apiId"]][
-                    "riskScore"
-                ]
-                != "null"
+                and domain_event.get("apiId", '') != ''
+                and domain_event.get("apiId", '') != "null"
+                and domain_event.get("apiId", '') in api_endpoint_details_map
+                and "riskScore" in api_endpoint_details_map.get(domain_event.get("apiId"), {})
+                and api_endpoint_details_map.get(domain_event.get("apiId"), {}).get("riskScore") is not None
+                and api_endpoint_details_map.get(domain_event.get("apiId", ''), {}).get("riskScore", '') != ''
+                and api_endpoint_details_map.get(domain_event.get("apiId", ''), {}).get("riskScore", '') != "null"
             ):
-                domain_event["apiRiskScore"] = api_endpoint_details_map[domain_event["apiId"]]["riskScore"]
+                domain_event["apiRiskScore"] = api_endpoint_details_map.get(domain_event["apiId"], {}).get("riskScore")
             if (
                 self.__query_api_attributes
                 and "riskScoreCategory" in self.optional_api_attributes
                 and "apiId" in domain_event
-                and domain_event["apiId"] is not None
-                and domain_event["apiId"] != "null"
-                and domain_event["apiId"] in api_endpoint_details_map
-                and api_endpoint_details_map[domain_event["apiId"]] is not None
-                and "riskScoreCategory" in api_endpoint_details_map[domain_event["apiId"]]
-                and api_endpoint_details_map[domain_event["apiId"]][
-                    "riskScoreCategory"
-                ] is not None
-                and api_endpoint_details_map[domain_event["apiId"]][
-                    "riskScoreCategory"
-                ]
-                != "null"
+                and domain_event.get("apiId", '') != ''
+                and domain_event.get("apiId", '') != "null"
+                and domain_event.get("apiId", '') in api_endpoint_details_map
+                and "riskScoreCategory" in api_endpoint_details_map.get(domain_event.get("apiId", ''), {})
+                and api_endpoint_details_map.get(domain_event.get("apiId", ''), {}).get("riskScoreCategory", '') != ''
+                and api_endpoint_details_map.get(domain_event.get("apiId", ''), {}).get("riskScoreCategory", '') != 'null'
             ):
-                domain_event["apiRiskScoreCategory"] = api_endpoint_details_map[domain_event["apiId"]][
-                    "riskScoreCategory"
-                ]
+                domain_event["apiRiskScoreCategory"] = api_endpoint_details_map.get(
+                    domain_event.get("apiId"), {}
+                ).get("riskScoreCategory")
 
             if (
                 self.__query_api_attributes
                 and "isLearnt" in self.optional_api_attributes
-                and "apiId" in domain_event
-                and domain_event["apiId"] is not None
-                and domain_event["apiId"] != "null"
-                and domain_event["apiId"] in api_endpoint_details_map
-                and api_endpoint_details_map[domain_event["apiId"]] is not None
-                and "isLearnt" in api_endpoint_details_map[domain_event["apiId"]]
-                and api_endpoint_details_map[domain_event["apiId"]][
-                    "isLearnt"
-                ] is not None
-                and api_endpoint_details_map[domain_event["apiId"]][
-                    "isLearnt"
-                ]
-                != "null"
+                and domain_event.get("apiId", '') != ''
+                and domain_event.get("apiId", '') != "null"
+                and domain_event.get("apiId", '') in api_endpoint_details_map
+                and api_endpoint_details_map.get(domain_event.get("apiId", '')) is not None
+                and "isLearnt" in api_endpoint_details_map.get(domain_event.get("apiId", ''), {})
+                and api_endpoint_details_map.get(domain_event.get("apiId", ''), {}).get("isLearnt", '') != ''
+                and api_endpoint_details_map.get(domain_event.get("apiId", ''), {}).get("isLearnt", '') != 'null'
             ):
-                domain_event["apiIsLearnt"] = api_endpoint_details_map[domain_event["apiId"]][
-                    "isLearnt"
-                ]
+                domain_event["apiIsLearnt"] = api_endpoint_details_map.get(domain_event.get("apiId", ''), {}).get("isLearnt")
 
             if "ipAddressType" not in domain_event:
                 domain_event["ipAddressType"] = "Internal"
@@ -943,14 +923,18 @@ class Client(BaseClient):
             if "apiType" not in domain_event and self.__query_api_attributes and "isExternal" in self.optional_api_attributes:
                 domain_event["apiType"] = "Unknown"
 
-            if ("id" in domain_event and "value" in domain_event["id"] and self.app_url != ""
-                    and "environment" in domain_event and domain_event["environment"] is not None
-                    and domain_event["environment"] != ""):
+            if (
+                "id" in domain_event
+                and "value" in domain_event.get("id", {})
+                and self.app_url != ""
+                and "environment" in domain_event
+                and domain_event.get("environment", '') != ''
+            ):
                 domain_event["eventUrl"] = (
                     f"{self.app_url}/security-event/"
-                    + domain_event["id"]["value"]
+                    + domain_event.get("id", {}).get("value")
                     + "?time=90d&env="
-                    + parse.quote(domain_event["environment"])
+                    + parse.quote(domain_event.get("environment"))
                 )
 
             events.append(domain_event)
@@ -1059,9 +1043,8 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
                 "rawJSON": json.dumps(item),
             }
             if ("eventUrl" in item
-                    and item["eventUrl"] is not None
-                    and item["eventUrl"] != ""):
-                incident["eventUrl"] = item["eventUrl"]
+                    and item.get("eventUrl", '') != ''):
+                incident["eventUrl"] = item.get("eventUrl")
 
             incidents.append(incident)
             if context_key != "":
