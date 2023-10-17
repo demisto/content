@@ -114,7 +114,7 @@ tasks:
               priority: {}
               wildcards: {}
       source:
-        simple: 1.1.1.1
+        simple: 0.0.0.0
     separatecontext: false
     continueonerrortype: ""
     view: |-
