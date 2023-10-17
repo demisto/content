@@ -67,8 +67,7 @@ jobs:
         badge: true
         format: markdown
         output: both
-        thresholds: '70 80'
-        
+
 
     - name: Append coverage to summary
       if: always()

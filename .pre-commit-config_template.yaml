@@ -57,6 +57,13 @@ repos:
     language: script
     pass_filenames: false
 
+  - id: delete-old-coverage-files
+    name: delete-old-coverage-files
+    description: Delete old coverage files.
+    entry: bash -c "find . -name ".coverage" -type f -delete"
+    language: script
+    pass_filenames: false
+
 - repo: https://github.com/demisto/demisto-sdk
   rev: ""
   hooks:
@@ -74,7 +81,7 @@ repos:
   - id: run-unit-tests
 
   - id: coverage-analyze
-    args: [ "-i", ".coverage" ]
+    args: [ "-i", ".coverage", "--report-dir", "coverage_report", "--report-type", "all"]
 
   - id: secrets
     args: ["--ignore-entropy"]
