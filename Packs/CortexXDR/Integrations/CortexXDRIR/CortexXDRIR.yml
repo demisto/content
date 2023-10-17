@@ -19,7 +19,7 @@ configuration:
   required: false
 - defaultvalue: 'false'
   display: Remove legacy incident fields
-  name: dontFormatSublists
+  name: dont_format_sublists
   type: 8
   section: Collect
   required: false

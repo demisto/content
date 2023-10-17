@@ -807,7 +807,7 @@ def sort_all_list_incident_fields(incident_data):
     if incident_data.get('incident_sources', []):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
 
-    format_sublists = not argToBoolean(demisto.params().get('dontFormatSublists', False))
+    format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
     if incident_data.get('alerts', []):
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
         if format_sublists:
