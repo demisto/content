@@ -473,6 +473,7 @@ def test_format_sublists_param(dont_format_sublists, mocker):
     Then
         - if dont_format_sublists is False, should be formatted, so should have underscore
         - if dont_format_sublists is True, should not be formatted, so should not have underscore
+        - Underscre value should always be present
     """
     from CortexXDRIR import sort_all_list_incident_fields
     raw_incident = load_test_data('test_data/raw_fetched_incident.json')
@@ -480,6 +481,7 @@ def test_format_sublists_param(dont_format_sublists, mocker):
 
     sort_all_list_incident_fields(raw_incident)
     assert bool(raw_incident.get('alerts')[0].get('alertid')) == (not dont_format_sublists)
+    assert raw_incident.get('alerts')[0].get('alert_id')
 
 
 def test_get_mapping_fields_command():
