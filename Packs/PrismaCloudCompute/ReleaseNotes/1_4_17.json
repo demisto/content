@@ -1,1 +1,0 @@
-{"breakingChanges": true, "breakingChangesNotes": "Updated the **hostname** argument in the ***prisma-cloud-compute-logs-defender*** and ***prisma-cloud-compute-logs-defender-download*** commands to be required."}

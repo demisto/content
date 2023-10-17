@@ -1915,7 +1915,6 @@ script:
   - arguments:
     - description: The Defender hostname.
       name: hostname
-      required: true
     - description: The number of log lines to fetch.
       name: lines
       defaultValue: 10
@@ -1937,7 +1936,6 @@ script:
   - arguments:
     - description: The Defender hostname.
       name: hostname
-      required: true
     - description: The number of log lines to fetch.
       name: lines
       defaultValue: 100

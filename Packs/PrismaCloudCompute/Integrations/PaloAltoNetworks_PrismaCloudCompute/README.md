@@ -3154,7 +3154,7 @@ Download the Defender logs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The Defender hostname. | Required | 
+| hostname | The Defender hostname. | Optional | 
 | lines | The number of log lines to fetch. Default is 10. | Optional | 
 
 #### Context Output
@@ -3213,7 +3213,7 @@ Download a zip of all Defender logs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The Defender hostname. | Required | 
+| hostname | The Defender hostname. | Optional | 
 | lines | The number of log lines to fetch. Default is 100. | Optional | 
 
 #### Context Output
