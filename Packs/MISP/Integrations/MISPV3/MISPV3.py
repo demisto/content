@@ -1035,8 +1035,9 @@ def search_attributes(demisto_args: dict) -> CommandResults:
                     for objects in attachment.get('Event', {}).get('Object', []):
                         for object in objects.get('Attribute', []):
                             if args.get('value') == object.get('value'):
-                                if data := object.get('data'):
-                                    res = fileResult('{}.zip'.format(args.get('value')), b64decode(data))
+                                for object in objects.get('Attribute'):
+                                    if data := object.get('data'):
+                                        res = fileResult('{}.zip'.format(args.get('value')), b64decode(data))
                                         demisto.results(res)
 
                 demisto.args()['with_attachments'] = 'false'
