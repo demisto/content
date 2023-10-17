@@ -203,7 +203,13 @@ tasks:
       - "17"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": -350,\n    \"y\": 2535\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 2535
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -289,7 +295,13 @@ tasks:
                   simple: allow
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 300,\n    \"y\": 990\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 990
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -326,7 +338,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2270\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2270
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -369,7 +387,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 2290\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 2290
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -408,7 +432,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2430\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2430
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -441,7 +471,13 @@ tasks:
         simple: "true"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 660,\n    \"y\": 3165\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 3165
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -480,7 +516,13 @@ tasks:
         simple: TIMESTAMP
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 280,\n    \"y\": 3610\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 3610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -517,7 +559,13 @@ tasks:
           right:
             value: {}
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 490,\n    \"y\": 3380\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3380
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -556,7 +604,13 @@ tasks:
         simple: TIMESTAMP
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 700,\n    \"y\": 3610\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 3610
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -581,7 +635,13 @@ tasks:
       - "9"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2140\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2140
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -606,7 +666,13 @@ tasks:
       - "10"
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 2140\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 2140
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -644,7 +710,13 @@ tasks:
                 accessor: Name
             iscontext: true
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 1900\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1900
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -666,7 +738,13 @@ tasks:
       description: ''
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 500,\n    \"y\": 3840\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 3840
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -784,7 +862,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2980\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2980
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -843,7 +927,13 @@ tasks:
             value:
               simple: 'true'
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2605\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2605
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -874,7 +964,13 @@ tasks:
         simple: 'true'
     separatecontext: false
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 1160\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1160
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -911,7 +1007,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2800\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -937,7 +1039,13 @@ tasks:
       - '28'
     separatecontext: false
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 1000\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1000
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -981,7 +1089,13 @@ tasks:
           accessor: name
     separatecontext: false
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 1320\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1320
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1029,7 +1143,13 @@ tasks:
     separatecontext: false
     continueonerror: true
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 1485\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1485
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1067,7 +1187,13 @@ tasks:
         simple: n/a
     separatecontext: false
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2980\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2980
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1115,7 +1241,13 @@ tasks:
     separatecontext: false
     continueonerror: true
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1260,\n    \"y\": 1495\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1495
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1162,7 +1294,13 @@ tasks:
     separatecontext: false
     continueonerror: true
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 830,\n    \"y\": 1675\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1675
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1209,7 +1347,13 @@ tasks:
     separatecontext: false
     continueonerror: true
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 1260,\n    \"y\": 1675\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1675
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -1217,7 +1361,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {\n    \"21_5_#default#\": 0.33,\n    \"24_5_#default#\": 0.68,\n    \"4_5_#default#\": 0.19\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4065,\n      \"width\": 1990,\n      \"x\": -350,\n      \"y\": -160\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_5_#default#": 0.33,
+      "24_5_#default#": 0.68,
+      "4_5_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4065,
+        "width": 1990,
+        "x": -350,
+        "y": -160
+      }
+    }
+  }
 inputs:
 - key: RemoteIP
   value:

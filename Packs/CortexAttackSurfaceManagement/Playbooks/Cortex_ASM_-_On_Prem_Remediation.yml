@@ -26,7 +26,13 @@ tasks:
       - '5'
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": -460\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -460
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -56,7 +62,13 @@ tasks:
           root: inputs.RuleName
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": -140\n  }\n}"
+    view: |- 
+      {
+        "position": {
+          "x": 460,
+          "y": -140
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -128,7 +140,13 @@ tasks:
       exitCondition: ""
       wait: 1
       max: 100
-    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 400\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 400
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -150,7 +168,13 @@ tasks:
       description: ''
     separatecontext: false
     continueonerrortype: ""
-    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 590\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 590
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -186,7 +210,13 @@ tasks:
                 root: inputs.DeviceGroup
             iscontext: true
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": -340\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -340
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -222,7 +252,13 @@ tasks:
     separatecontext: false
     continueonerror: true
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": -140\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -140
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -258,7 +294,13 @@ tasks:
     separatecontext: false
     continueonerror: true
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 890,\n    \"y\": 20\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 20
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -295,7 +337,13 @@ tasks:
                 accessor: Name
             iscontext: true
     continueonerrortype: ''
-    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 190\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 190
+        }
+      }
     note: false
     timertriggers: []
     ignoreworker: false
@@ -303,7 +351,18 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1115,\n      \"width\": 810,\n      \"x\": 460,\n      \"y\": -460\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 810,
+        "x": 460,
+        "y": -460
+      }
+    }
+  }
 inputs:
 - key: RuleName
   value: {}
