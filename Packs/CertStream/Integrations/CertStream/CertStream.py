@@ -1,3 +1,4 @@
+import json
 import traceback
 from contextlib import contextmanager
 
@@ -52,7 +53,7 @@ def long_running_execution_command(host: str, fetch_interval: int):
 
                 if now - last_fetch_time >= timedelta(minutes=fetch_interval):
                     context["homographs"] = get_homographs_list(context["word_list_name"])
-                    context["fetch_time"] = now
+                    context["fetch_time"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     demisto.setIntegrationContext({"context": json.dumps(context)})
 
                 try:
@@ -63,12 +64,11 @@ def long_running_execution_command(host: str, fetch_interval: int):
                     break
 
 
-
 def fetch_certificates(message: str):
     """ Fetches the certificates data from the CertStream socket
 
     Args:
-        message (str): The message received from CertStream
+        connection (Connection): The connection to the socket, used to iterate over messages
 
     """
 
@@ -86,12 +86,12 @@ def fetch_certificates(message: str):
             if is_suspicious_domain:
                 now = datetime.now()
                 demisto.info(f"Potential homograph match found for domain: {domain}")
-                create_xsoar_certificate_indicator(message)
-                create_xsoar_incident(message, domain, now, result)
+                create_xsoar_certificate_indicator(data)
+                create_xsoar_incident(data, domain, now, result)
 
 
 def build_xsoar_grid(data: dict) -> list:
-    return [{"title": key.lower(), "value": value} for key, value in data.items()]
+    return [{"title": key, "data": value or ""} for key, value in data.items()]
 
 
 def set_incident_severity(similarity: float) -> int:
@@ -117,6 +117,67 @@ def set_incident_severity(similarity: float) -> int:
         return IncidentSeverity.LOW
 
 
+def threat_summit_example():
+    data = r"""
+    {
+  "cert_index": 824806432,
+  "cert_link": "https://ct.googleapis.com/testtube/ct/v1/get-entries?start=824806432&end=824806432",
+  "leaf_cert": {
+    "all_domains": [
+      "papa1.xyz"
+    ],
+    "extensions": {
+      "authorityInfoAccess": "CA Issuers - URI:http://stg-e1.i.lencr.org/\nOCSP - URI:http://stg-e1.o.lencr.org\n",
+      "authorityKeyIdentifier": "keyid:EB:F9:25:C2:80:28:66:E2:6D:08:92:32:F3:C2:E1:AD:C3:FF:35:45\n",
+      "basicConstraints": "CA:FALSE",
+      "certificatePolicies": "Policy: 2.23.140.1.2.1",
+      "ctlPoisonByte": true,
+      "extendedKeyUsage": "TLS Web server authentication, TLS Web client authentication",
+      "keyUsage": "Digital Signature",
+      "subjectAltName": "DNS:papa1.xyz",
+      "subjectKeyIdentifier": "10:26:DE:54:97:48:8D:90:2B:FF:21:2A:C9:75:9A:A2:59:4F:11:95"
+    },
+    "fingerprint": "78:6B:41:06:89:F9:E1:1F:6A:95:96:54:AB:0B:9F:BF:CB:B4:4F:AA",
+    "issuer": {
+      "C": "US",
+      "CN": "(STAGING) Ersatz Edamame E1",
+      "L": null,
+      "O": "(STAGING) Let's Encrypt",
+      "OU": null,
+      "ST": null,
+      "aggregated": "/C=US/CN=(STAGING) Ersatz Edamame E1/O=(STAGING) Let's Encrypt",
+      "emailAddress": null
+    },
+    "not_after": 1705307110,
+    "not_before": 1697531111,
+    "serial_number": "FAFC65D6E0179461AB2A6DBBFBB204DBC426",
+    "signature_algorithm": "sha384, ecdsa",
+    "subject": {
+      "C": null,
+      "CN": "papa1.xyz",
+      "L": null,
+      "O": null,
+      "OU": null,
+      "ST": null,
+      "aggregated": "/CN=papa1.xyz",
+      "emailAddress": null
+    }
+  },
+  "seen": 1697534775.374554,
+  "source": {
+    "name": "Google 'Testtube' log",
+    "url": "https://ct.googleapis.com/testtube/"
+  },
+  "update_type": "PrecertLogEntry"
+}
+    """
+
+    data = json.loads(data)
+    create_xsoar_incident(data, "paypa1.xyz", datetime.now(), {"similarity": 0.9, "homograph": "paypa1", "asset": "paypal"})
+    create_xsoar_certificate_indicator(data)
+    return_error('Done')
+
+
 def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime, result: dict):
     """Creates an XSOAR 'New Suspicious Domain` incident using the certificate and domain details
 
@@ -130,17 +191,18 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
 
     incident = {
         "name": f"Suspicious Domain Discovered - {domain}",
-        "occured": current_time,
-        "type": "newsuspiciousdomain",
+        "occured": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+        "type": "New Suspicious Domain",
         "severity": set_incident_severity(result["similarity"]),
         "CustomFields": {
-            "fingerprint": certificate["data"]["leaf_cert"]["fingerprint"],
+            "fingerprint": certificate["leaf_cert"]["fingerprint"],
             "levenshtein_distance": result["similarity"],
             "userasset": result["asset"]
         }
     }
 
     demisto.createIncidents([incident])
+    demisto.info(f'Done creating new incident for {domain}')
 
 
 def create_xsoar_certificate_indicator(certificate: dict):
@@ -149,21 +211,21 @@ def create_xsoar_certificate_indicator(certificate: dict):
     Args:
         certificate (dict): An X.509 certificate object from CertStream
     """
-    certificate_data = certificate["data"]["leaf_cert"]
+    certificate_data = certificate["leaf_cert"]
 
     demisto.info(f'Creating an X.509 indicator {certificate_data["fingerprint"]}')
 
     demisto.createIndicators([{
-        "type": "X.509 Certificate",
+        "type": "X509 Certificate",
         "value": certificate_data["fingerprint"],
-        "sourcetimestamp": datetime.fromtimestamp(certificate_data["seen"]),
+        "sourcetimestamp": datetime.fromtimestamp(certificate["seen"]).strftime('%Y-%m-%d %H:%M:%S'),
         "fields": {
             "serialnumber": certificate_data["serial_number"],
-            "validitynotbefore": datetime.fromtimestamp(certificate_data["not_before"]),
-            "validitynotafter": datetime.fromtimestamp(certificate_data["not_after"]),
-            "source": certificate["data"]["source"]["name"],
+            "validitynotbefore": datetime.fromtimestamp(certificate_data["not_before"]).strftime('%Y-%m-%d %H:%M:%S'),
+            "validitynotafter": datetime.fromtimestamp(certificate_data["not_after"]).strftime('%Y-%m-%d %H:%M:%S'),
+            "source": certificate["source"]["name"],
             "domains": [{"domain": domain} for domain in certificate_data["all_domains"]],
-            "signaturealgorithm": certificate_data["signature_algorithm"].sub(" ", "").split(","),
+            "signaturealgorithm": certificate_data["signature_algorithm"].replace(" ", "").split(","),
             "subject": build_xsoar_grid(certificate_data["subject"]),
             "issuer": build_xsoar_grid(certificate_data["issuer"]),
             "x.509v3extensions": build_xsoar_grid(certificate_data["issuer"]),
@@ -302,6 +364,7 @@ def main():  # pragma: no cover
     word_list_name: str = params["list_name"]
     list_update_interval: int = params.get("update_interval", 30)
     levenshtein_distance_threshold: float = float(params.get("levenshtein_distance_threshold", 0.85))
+    logging.getLogger('websockets.client').setLevel(logging.ERROR)
 
     demisto.setIntegrationContext({"context": json.dumps({
         "word_list_name": word_list_name,
@@ -316,6 +379,8 @@ def main():  # pragma: no cover
             return_results(long_running_execution_command(host, list_update_interval))
         elif command == "test-module":
             return_results(test_module(host))
+        elif command == "threat-summit":
+            return_results(threat_summit_example())
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception:
