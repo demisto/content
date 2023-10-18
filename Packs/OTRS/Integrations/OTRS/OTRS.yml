@@ -418,6 +418,8 @@ script:
   type: python
   isremotesyncin: true
   isremotesyncout: true
+  ismappable: true
+
 tests:
 - OTRS Test
 fromversion: 5.0.0
