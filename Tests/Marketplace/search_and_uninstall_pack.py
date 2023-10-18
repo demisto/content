@@ -353,10 +353,7 @@ def delete_datasets(dataset_names, base_url, api_key, auth_id):
         Boolean - If the operation succeeded.
     """
     def should_try_handler(response) -> Any:
-        if response is not None and response.status_code == DATASET_NOT_FOUND_ERROR_CODE:
-            return False
-        else:
-            return True
+        return not (response is not None and response.status_code == DATASET_NOT_FOUND_ERROR_CODE)
 
     success = True
     for dataset in dataset_names:

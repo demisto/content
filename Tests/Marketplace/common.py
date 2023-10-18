@@ -1,4 +1,3 @@
-import os.path
 from datetime import datetime, timedelta
 import time
 from typing import Any
@@ -209,7 +208,7 @@ def send_api_request_with_retries(
     Returns: True if the request succeeded
 
     """
-    headers = {} if not headers else headers
+    headers = headers if headers else {}
     headers['Accept'] = accept
     response = None
     url_path = urljoin(base_url, endpoint)

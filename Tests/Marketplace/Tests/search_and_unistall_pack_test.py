@@ -190,16 +190,16 @@ def test_handle_delete_datasets_by_testdata(requests_mock, status_code, expected
     """
     test_data = {"data": [
         {
-          "test_data_event_id": "some_uuid",
-          "vendor": "vendor",
-          "product": "product",
-          "dataset": "product_vendor_raw",
-          "event_data": {
-              "test": "test"
-          },
-          "expected_values": {
-              "test": "test"
-          }
+            "test_data_event_id": "some_uuid",
+            "vendor": "vendor",
+            "product": "product",
+            "dataset": "product_vendor_raw",
+            "event_data": {
+                "test": "test"
+            },
+            "expected_values": {
+                "test": "test"
+            }
         }]
     }
     with tempfile.TemporaryDirectory() as temp_dir:
