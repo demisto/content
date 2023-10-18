@@ -284,7 +284,7 @@ def get_ticket_command(client: Client, args: dict[str, str]):
         CommandResults(
             outputs=output,
             outputs_prefix="OTRS.Ticket",
-            outputs_key_field=["ID"],
+            outputs_key_field="ID",
             readable_output=human_readable,
             raw_response=ticket
         )
@@ -342,7 +342,7 @@ def search_ticket_command(client: Client, args: dict[str, str]):
         return CommandResults(
             outputs=output,
             outputs_prefix="OTRS.Ticket",
-            outputs_key_field=["ID"],
+            outputs_key_field="ID",
             readable_output=tableToMarkdown(title, output, headers),
             raw_response=raw_output
         )
@@ -419,7 +419,7 @@ def create_ticket_command(client: Client, args: dict[str, str]):
     return CommandResults(
         outputs=context,
         outputs_prefix="OTRS.Ticket",
-        outputs_key_field=["ID"],
+        outputs_key_field="ID",
         readable_output=output,
         raw_response=context
     )
@@ -560,7 +560,7 @@ def fetch_incidents(client: Client, fetch_queue: str, fetch_priority: str, fetch
 
     priority = None
     if fetch_priority:
-        priority = [translate_priority(p) for p in fetch_priority]
+        priority = [translate_priority(p) for p in fetch_priority.split(",")]
 
     raw_tickets = client.search_ticket(created_after=looked_back_last_run, queue=queue, priority=priority)
     tickets = [ticket_id for ticket_id in raw_tickets if ticket_id not in last_fetched_ids]
@@ -624,8 +624,8 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
 
                 # Get article details
                 description = f'ID: {str(article["ArticleID"])}\nTo: {article.get("To")}\nCC: {article.get("Cc")}\n'\
-                              f'Subject: {article["Subject"]}\nCreateTime: {article["CreateTime"]}\n'\
-                              f'From: {article["From"]}\nContentType: {article["ContentType"]}\nBody:\n\n{article["Body"]}'
+                              f'Subject: {article.get("Subject")}\nCreateTime: {article.get("CreateTime")}\n'\
+                              f'From: {article.get("From")}\nContentType: {article.get("ContentType")}\nBody:\n\n{article.get("Body")}'
 
                 if article["IncomingTime"] > last_update:
                     entries.append({
@@ -704,7 +704,7 @@ def main():
 
     args = demisto.args()
 
-    LOG(f'command is {demisto.command()}')
+    demisto.info(f'command is {demisto.command()}')
 
     commands = {
         'otrs-get-ticket': get_ticket_command,
@@ -732,8 +732,7 @@ def main():
             raise NotImplementedError(f'Command not implemented: {demisto.command()}')
 
     except Exception as e:
-        LOG(str(e))
-        LOG.print_log()
+        demisto.info(str(e))
         return_error(str(e))
 
 
