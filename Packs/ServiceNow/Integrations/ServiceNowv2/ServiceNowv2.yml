@@ -1576,6 +1576,8 @@ script:
       required: true
     - description: data to send in body, can be json.
       name: body
+    - description: the custom API root (like /api/custom/tasks).
+      name: custom_api
     - description: json of headers to add.
       name: headers
     - auto: PREDEFINED
