@@ -158,7 +158,7 @@ class GCP:
         Returns the max version of a given pack
         """
         changelog = self.get_changelog(pack_id)
-        return str(max([Version(key) for key in changelog]))
+        return str(max([Version(key) for key in changelog.keys()]))
 
     def get_changelog(self, pack_id):
         """
@@ -265,7 +265,7 @@ class BucketVerifier:
         Verify the new dependency is in the metadata
         """
         # TODO: Should verify the dependency in the pack zip metadata as well - after CIAC-4686 is fixed
-        return dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}), pack_id
+        return dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}).keys(), pack_id
 
     @logger
     def verify_new_image(self, pack_id, new_image_path):
