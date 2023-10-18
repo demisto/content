@@ -1,0 +1,23 @@
+[MODEL: dataset = "cyberark_pta_raw"]
+alter
+	src_ip_v4 = if(src !~= ":", src, null),
+    src_ip_v6 = if(src ~= ":", src, null),
+	tar_ip_v4 = if(dst !~= ":", dst, null),
+    tar_ip_v6 = if(dst ~= ":", dst, null)
+| alter	
+	xdm.source.ipv4 = src_ip_v4,
+	xdm.source.ipv6 = src_ip_v6,
+	xdm.target.ipv4 = tar_ip_v4,
+	xdm.target.ipv6 = tar_ip_v6,
+	xdm.event.description = cs1,
+	xdm.alert.original_alert_id = cs2,
+	xdm.observer.unique_identifier = cs3,
+	xdm.intermediate.application.name = cs4,
+	xdm.event.operation_sub_type = cs5,
+	xdm.target.host.hostname = dhost,
+	xdm.target.user.username = duser,
+	xdm.source.host.hostname = shost,
+	xdm.source.user.username = suser,
+	xdm.event.type = cefName,
+	xdm.alert.severity = cefSeverity,
+	xdm.event.id = cefDeviceEventClassId;
