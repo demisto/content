@@ -1668,7 +1668,7 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
         - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
     """
     mocker.patch.object(demisto, 'params', return_value={'close_ticket': close_ticket_param})
-    assert close_incident_in_remote(delta) == to_close
+    assert close_incident_in_remote(delta, data) == to_close
 
 
 @pytest.mark.parametrize("data, delta, mocked_fetch_data, expected_response, close_ticket", [
