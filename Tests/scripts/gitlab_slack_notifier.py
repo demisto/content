@@ -20,10 +20,11 @@ from Tests.scripts.test_playbooks import get_instance_directories
 from Tests.scripts.utils.log_util import install_logging
 
 ROOT_ARTIFACTS_FOLDER = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
-ARTIFACTS_FOLDER_XSOAR = Path(os.getenv('ARTIFACTS_FOLDER_XSOAR', './artifacts/xsoar'))
-ARTIFACTS_FOLDER_MPV2 = Path(os.getenv('ARTIFACTS_FOLDER_MPV2', './artifacts/marketplacev2'))
-ARTIFACTS_FOLDER_MPV2_INSTANCE = Path(os.getenv('ARTIFACTS_FOLDER_INSTANCE', './artifacts/marketplacev2/instance_xsiam'))
-ARTIFACTS_FOLDER_XPANSE = Path(os.getenv('ARTIFACTS_FOLDER_XPANSE', './artifacts/xpanse'))
+ARTIFACTS_FOLDER_XSOAR = Path(os.getenv('ARTIFACTS_FOLDER_XSOAR', (ROOT_ARTIFACTS_FOLDER / 'xsoar').as_posix()))
+ARTIFACTS_FOLDER_MPV2 = Path(os.getenv('ARTIFACTS_FOLDER_MPV2', (ROOT_ARTIFACTS_FOLDER / 'marketplacev2').as_posix()))
+ARTIFACTS_FOLDER_MPV2_INSTANCE = Path(os.getenv('ARTIFACTS_FOLDER_INSTANCE',
+                                                (ROOT_ARTIFACTS_FOLDER / 'marketplacev2' / 'instance_xsiam').as_posix()))
+ARTIFACTS_FOLDER_XPANSE = Path(os.getenv('ARTIFACTS_FOLDER_XPANSE', (ROOT_ARTIFACTS_FOLDER / 'xpanse').as_posix()))
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 CONTENT_CHANNEL = 'dmst-build-test'
