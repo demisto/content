@@ -1690,7 +1690,7 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
         False
     ),
     (
-        {'title': 'New Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
+        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
         {'title': 'New Title'},
         {'title': 'New Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
@@ -1710,7 +1710,7 @@ def test_update_incident_request(mocker, data, delta, expected_response, close_t
     mocker.patch.object(client, 'http_request', return_value={})
 
     update_incident_request(client, 'id-incident-1', data, delta, close_ticket)
-    assert client.http_request.call_args[1]['data'] == expected_response
+    assert client.http_request.call_args[1]['data'].get('properties') == expected_response
 
 
 @pytest.mark.parametrize("args", [
