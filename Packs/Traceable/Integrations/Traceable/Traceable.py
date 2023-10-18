@@ -314,15 +314,11 @@ class Client(BaseClient):
 
     def get_integration_context_key_value(self, key):
         self.__init_integration_context__()
-        return_value = None
-        if key in self.integration_context:
-            return_value = self.integration_context[key]
-        return return_value
+        return self.integration_context.get(key)
 
     def delete_integration_context_key_value(self, key):
         self.__init_integration_context__()
-        if key in self.integration_context:
-            self.integration_context.pop(key)
+        self.integration_context.pop(key)
         self.__commit_integration_context__()
 
     def __commit_integration_context__(self):
@@ -1096,7 +1092,7 @@ def main() -> None:
         optionalDomainEventFieldList = demisto.params().get("optionalDomainEventFieldList")
         optionalAPIAttributes = demisto.params().get("optionalAPIAttributes")
         fetch_unique_incidents = demisto.params().get("isFetchUniqueIncidents")
-        span_query_batch_size = demisto.params().get("span_query_batch_size", 50)
+        span_query_batch_size = int(demisto.params().get("span_query_batch_size", 50))
         timegap_between_repeat_incidents = demisto.params().get("timegap_between_repeat_incidents", 'in 7 days')
 
         if span_query_batch_size > 1000:
