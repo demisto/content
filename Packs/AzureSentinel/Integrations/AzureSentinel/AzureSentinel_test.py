@@ -1256,8 +1256,7 @@ class TestHappyPath:
     @pytest.mark.parametrize('args, client, expected_result', [  # disable-secrets-detection
         ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 1}, mock_client(),
          {'last_fetch_ids': ['inc_ID'], 'last_incident_number': 2}),  # case 1
-        ({'last_fetch_ids': ['inc_ID'], 'min_severity': 3, 'last_incident_number': 2}, mock_client(),
-         {'last_fetch_ids': [], 'last_incident_number': 2})  # case 2
+        ({'last_fetch_ids': ['inc_ID'], 'min_severity': 3, 'last_incident_number': 2}, mock_client()),
     ])
     def test_process_incidents(self, args, client, expected_result):
         """
@@ -1269,18 +1268,16 @@ class TestHappyPath:
 
         Then:
             - Validate the return values based on the scenario:
-            case 1: We expect to process the incident, so its ID exists in the expected result.
-            case 2: The incident id is in the "last_fetch_ids" array, so we expect to not process the incident.
+            - We expect to process the incident, so its ID exists in the expected result.
         """
         # prepare
         raw_incidents = [MOCKED_RAW_INCIDENT_OUTPUT.get('value')[0]]
-        last_fetch_ids = args.get('last_fetch_ids')
         min_severity = args.get('min_severity')
         last_incident_number = args.get('last_incident_number')
         latest_created_time = dateparser.parse('2020-02-02T14:05:01.5348545Z')
 
         # run
-        next_run, _ = process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time,
+        next_run, _ = process_incidents(raw_incidents, min_severity, latest_created_time,
                                         last_incident_number)
 
         # validate
