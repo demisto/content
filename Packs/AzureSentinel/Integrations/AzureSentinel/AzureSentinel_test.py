@@ -1655,6 +1655,7 @@ def test_update_remote_incident(mocker, incident_status, close_incident_in_remot
     ({'classification': 'FalsePositive'}, {}, False, False),
     ({}, {}, True, False),
     ({}, {}, False, False),
+    # Closing after classification is already present in the data.
     ({}, {'classification': 'FalsePositive'}, True, True)
 ])
 def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_close):
@@ -1671,40 +1672,41 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
 
 
 @pytest.mark.parametrize("data, delta, mocked_fetch_data, expected_response, close_ticket", [
-    (   # Update title of active incident
-        {'title': 'Old Title', 'severity': 2, 'status': 1},
-        {'title': 'New Title'},
-        {'title': 'Old Title', 'severity': 'Medium', 'status': 'Active'},
-        {'title': 'New Title', 'severity': 'Medium', 'status': 'Active'},
+    (   # Update description of active incident.
+        {'title': 'Title', 'description': 'old desc', 'severity': 2, 'status': 1},
+        {'title': 'Title', 'description': 'new desc'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Medium', 'status': 'Active'},
+        {'title': 'Title', 'description': 'new desc', 'severity': 'Medium', 'status': 'Active'},
         False
     ),
-    (   # Update title and classification and close incident
-        {'title': 'Old Title', 'severity': 1, 'status': 2},
-        {'title': 'New Title', 'classification': 'Undetermined'},
-        {'title': 'Old Title', 'severity': 'Low', 'status': 'Active'},
-        {'title': 'New Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+    (   # Update description and classification and close incident.
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
+        {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     ),
-    (   # Update title and classification of active incident without closing. Result in title update only.
-        {'title': 'Old Title', 'severity': 1, 'status': 2},
-        {'title': 'New Title', 'classification': 'Undetermined'},
-        {'title': 'Old Title', 'severity': 'Low', 'status': 'Active'},
-        {'title': 'New Title', 'severity': 'Low', 'status': 'Active'},
+    (   # Update description and classification of active incident without closing. Result in description update only.
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
+        {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Active'},
         False
     ),
     (   # Update title and close incident with classification already in data. Result in closing with classification.
-        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
-        {'title': 'New Title'},
-        {'title': 'New Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
-        {'title': 'New Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+        {'title': 'Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+        {'title': 'Title'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     )
 ])
 def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, close_ticket):
     """
     Given
-        - data
-        - delta
+        - data: The incident data before the update in xsoar.
+        - delta: The changes in the incident made in xsoar.
+        - mocked fetched current data: The incident data before the update in sentinel.
     When
         - running update_incident_request
     Then
