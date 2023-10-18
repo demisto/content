@@ -132,6 +132,14 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
         
+        days_back = 7
+        if start_time is None and end_time is None and last_days is None:
+            last_days = days_back
+        elif start_time is None and end_time is not None:
+            start_time = datetime.now() - datetime.timedelta(days=days_back)
+        elif end_time is None and start_time is not None:
+            last_days = datetime.now()
+        
         data = {
             'RuleIds': [],
             'AlertIds': [],
@@ -589,19 +597,19 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 
     # todo: fix when it will be converted to array
     output["Sources"] = []
-    platforms = [] if alert_saas_format.get("Platform") is None else alert_saas_format.get("Platform").split(',')
-    abnormal_locations = [] if alert_saas_format.get("FileServerOrDomain") is None else alert_saas_format.get("FileServerOrDomain").split(',')
+    platforms = [] if alert_saas_format.get("Platform") is None else alert_saas_format.get("Platform")
+    file_server_or_Domain = [] if alert_saas_format.get("FileServerOrDomain") is None else alert_saas_format.get("FileServerOrDomain")
     for i in range(len(platforms)):
         entry = {
             "Platform": "" if len(platforms) <= i else platforms[i],
-            "FileServerOrDomain": "" if len(abnormal_locations) <= i else abnormal_locations[i]
+            "FileServerOrDomain": "" if len(file_server_or_Domain) <= i else file_server_or_Domain[i]
         }
         output["Sources"].append(entry)
 
     # todo: fix when it will be converted to array
     output["Devices"] = []
     device_names = [] if alert_saas_format.get("DeviceName") is None else alert_saas_format.get("DeviceName").split(',')
-    assets = [] if alert_saas_format.get("Asset") is None else alert_saas_format.get("Asset").split(',')
+    assets = [] if alert_saas_format.get("Asset") is None else alert_saas_format.get("Asset")
     for i in range(len(device_names)):
         entry = {
             "Name": "" if len(device_names) <= i else device_names[i],
@@ -611,9 +619,9 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
 
     # todo: fix when it will be converted to array
     output["Users"] = []
-    user_names = [] if alert_saas_format.get("UserName") is None else alert_saas_format["UserName"].split(',')
-    sam_account_names = [] if alert_saas_format.get("SamAccountName") is None else alert_saas_format["SamAccountName"].split(',')
-    privileged_account_types = [] if alert_saas_format.get("PrivilegedAccountType") is None else alert_saas_format["PrivilegedAccountType"].split(',')
+    user_names = [] if alert_saas_format.get("UserName") is None else alert_saas_format["UserName"]
+    sam_account_names = [] if alert_saas_format.get("SamAccountName") is None else alert_saas_format["SamAccountName"]
+    privileged_account_types = [] if alert_saas_format.get("PrivilegedAccountType") is None else alert_saas_format["PrivilegedAccountType"]
     departments = [] if alert_saas_format.get("Department") is None else alert_saas_format["Department"].split(',')
     for i in range(len(user_names)):
         entry = {
