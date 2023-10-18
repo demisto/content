@@ -8,7 +8,7 @@ This pack includes Cortex XSIAM content.
 You need to configure CyberArk Privileged Threat Analytics (PTA) to forward Syslog messages in CEF format.
  
 Access your Cyberark PTA machine and follow these instructions [Product Documentation](https://docs.cyberark.com/PAS/Latest/en/Content/PTA/Outbound-Sending-%20PTA-syslog-Records-to-SIEM.htm):
-1. On the PTA machine, open the default **systemparm.properties** file using the **DEFAULTPARM** command.
+1. On the PTA machine, open the default **systemparm.properties** file using the ***DEFAULTPARM*** command.
 2. Copy the line containing the **syslog_outbound** property, and exit the file.
 3. Open the local **systemparm.properties** file using the **LOCALPARM** command.
 4. Press **i** to edit the file.
