@@ -1337,6 +1337,7 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             "use_ip_nt_range_tags_include", "use_ip_nt_range_tags_exclude",
             "active",
             "scanners_in_network",
+            "fqdn",
             "recurrence",
             "end_after_mins",
             "iscanner_id",
