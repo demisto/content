@@ -1,18 +1,18 @@
 {
-    "name": "CyberArk AIM",
-    "description": "Query CyberArk Application Identity Manager for accounts and credentials",
-    "support": "xsoar",
+    "name": "CyberArk Secrets Manager",
+    "description": "Securely pull hard-coded and embedded privileged credentials from the CyberArk Vault using CyberArk Secrets Manager.",
+    "support": "CyberArk",
     "currentVersion": "1.0.14",
     "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "url": "https://www.cyberark.com/products/secrets-management/",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Authentication & Identity Management"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [IAM],
+    "useCases": [Identity and Access Management],
+    "keywords": [Credential Vault, Identities, Secrets],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
