@@ -5700,7 +5700,7 @@ def update_cps_enrollment_command(client: Client,
     Args:
         client:
         enrollmentId:
-            Enrollment ID on which to perform the desired operation. 
+            Enrollment ID on which to perform the desired operation.
             And it can be retrived via list_enrollments_command.
         enrollment:
             Enrollment info in dict format. If provided, the script will not make another API call to get the enrollmont info.
@@ -5719,7 +5719,7 @@ def update_cps_enrollment_command(client: Client,
         allow_cancel_pending_changes:
             All pending changes to be cancelled when updating an enrollment.
         allow_staging_bypass:
-            Bypass staging and push meta_data updates directly to production network. Current change will also be updated with 
+            Bypass staging and push meta_data updates directly to production network. Current change will also be updated with
             the same changes.
         deploy_not_after:
             Don't deploy after this date (UTC). Sample: 2021-01-31T00:00:00.000Z
@@ -5792,7 +5792,7 @@ def update_cps_enrollment_schedule_command(client: Client,
     Args:
         client:
         enrollment_path:
-            Enrollment path found in the pending change location field. 
+            Enrollment path found in the pending change location field.
             And it can be retrived via list_enrollments_command
         enrollment_id:
             Enrollment ID on which to perform the desired operation.
