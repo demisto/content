@@ -2549,12 +2549,9 @@ def fetch_incidents():
 
     if 'Detections' in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
         detections_offset: int = current_fetch_info_detections.get('offset') or 0
-        detection_look_back = look_back
-        if detections_offset:
-            detection_look_back = 0
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
                                                                     first_fetch=FETCH_TIME,
-                                                                    look_back=detection_look_back,
+                                                                    look_back=look_back,
                                                                     date_format=DATE_FORMAT)
         fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
         incident_type = 'detection'
@@ -2598,29 +2595,23 @@ def fetch_incidents():
             if created:
                 detection["created"] = created.strftime(DATE_FORMAT)
                 demisto.debug(f"CrowdStrikeFalconMsg: Detection {detection['name']} created at {detection['created']}")
-        current_fetch_info_detections["offset"] = detections_offset
-
-        if not detections_offset:
-            current_fetch_info_detections = update_last_run_object(last_run=current_fetch_info_detections,
-                                                                   incidents=detections,
-                                                                   fetch_limit=INCIDENTS_PER_FETCH,
-                                                                   start_fetch_time=start_fetch_time,
-                                                                   end_fetch_time=end_fetch_time,
-                                                                   look_back=look_back,
-                                                                   created_time_field='created',
-                                                                   id_field='name',
-                                                                   date_format=DATE_FORMAT)
-        demisto.debug(f"Updated last run is {current_fetch_info_detections}")
+        current_fetch_info_detections = update_last_run_object(last_run=current_fetch_info_detections,
+                                                               incidents=detections,
+                                                               fetch_limit=INCIDENTS_PER_FETCH,
+                                                               start_fetch_time=start_fetch_time,
+                                                               end_fetch_time=end_fetch_time,
+                                                               look_back=look_back,
+                                                               created_time_field='created',
+                                                               id_field='name',
+                                                               date_format=DATE_FORMAT,
+                                                               new_offset=detections_offset)
+        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(detections)}")
 
     if 'Incidents' in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
         incidents_offset: int = current_fetch_info_incidents.get('offset') or 0
-        incidents_look_back = look_back
-        if incidents_offset:
-            incidents_look_back = 0
-
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_incidents,
                                                                     first_fetch=FETCH_TIME,
-                                                                    look_back=incidents_look_back,
+                                                                    look_back=look_back,
                                                                     date_format=DATE_FORMAT)
 
         fetch_limit = current_fetch_info_incidents.get('limit') or INCIDENTS_PER_FETCH
@@ -2661,24 +2652,22 @@ def fetch_incidents():
             if occurred:
                 incident["occurred"] = occurred.strftime(DATE_FORMAT)
                 demisto.debug(f"CrowdStrikeFalconMsg: Incident {incident['name']} occurred at {incident['occurred']}")
-        current_fetch_info_incidents["offset"] = incidents_offset
 
-        if not incidents_offset:
-            current_fetch_info_incidents = update_last_run_object(last_run=current_fetch_info_incidents, incidents=incidents,
-                                                                  fetch_limit=INCIDENTS_PER_FETCH,
-                                                                  start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
-                                                                  look_back=look_back,
-                                                                  created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+        current_fetch_info_incidents = update_last_run_object(last_run=current_fetch_info_incidents, incidents=incidents,
+                                                              fetch_limit=INCIDENTS_PER_FETCH,
+                                                              start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
+                                                              look_back=look_back,
+                                                              created_time_field='occurred', id_field='name',
+                                                              date_format=DATE_FORMAT,
+                                                              new_offset=incidents_offset)
+        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(incidents)}")
 
     if "IDP Detection" in fetch_incidents_or_detections:
         idp_detections_offset: int = current_fetch_info_idp_detections.get('offset') or 0
-        idp_look_back = look_back
-        if idp_detections_offset:
-            idp_look_back = 0
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_idp_detections,
                                                                     first_fetch=FETCH_TIME,
-                                                                    look_back=idp_look_back,
+                                                                    look_back=look_back,
                                                                     date_format=IDP_DATE_FORMAT)
         fetch_limit = current_fetch_info_idp_detections.get('limit') or INCIDENTS_PER_FETCH
         fetch_query = demisto.params().get('idp_detections_fetch_query', "")
@@ -2709,14 +2698,17 @@ def fetch_incidents():
             idp_detections = filter_incidents_by_duplicates_and_limit(incidents_res=idp_detections,
                                                                       last_run=current_fetch_info_idp_detections,
                                                                       fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
-            current_fetch_info_idp_detections["offset"] = idp_detections_offset
 
-            if not idp_detections_offset:
-                current_fetch_info_idp_detections = update_last_run_object(last_run=current_fetch_info_idp_detections, incidents=idp_detections,
-                                                                           fetch_limit=fetch_limit,
-                                                                           start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time,
-                                                                           look_back=look_back,
-                                                                           created_time_field='occurred', id_field='name', date_format=IDP_DATE_FORMAT)
+            current_fetch_info_idp_detections = update_last_run_object(last_run=current_fetch_info_idp_detections,
+                                                                       incidents=idp_detections,
+                                                                       fetch_limit=fetch_limit,
+                                                                       start_fetch_time=start_fetch_time,
+                                                                       end_fetch_time=end_fetch_time,
+                                                                       look_back=look_back,
+                                                                       created_time_field='occurred',
+                                                                       id_field='name',
+                                                                       date_format=IDP_DATE_FORMAT,
+                                                                       new_offset=idp_detections_offset)
             demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(idp_detections)}")
 
     if 'Indicator of Misconfiguration' in fetch_incidents_or_detections:
