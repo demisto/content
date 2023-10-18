@@ -560,7 +560,7 @@ def fetch_incidents(client: Client, fetch_queue: str, fetch_priority: str, fetch
 
     priority = None
     if fetch_priority:
-        priority = [translate_priority(p) for p in fetch_priority.split(",")]
+        priority = [translate_priority(p) for p in fetch_priority]
 
     raw_tickets = client.search_ticket(created_after=looked_back_last_run, queue=queue, priority=priority)
     tickets = [ticket_id for ticket_id in raw_tickets if ticket_id not in last_fetched_ids]
