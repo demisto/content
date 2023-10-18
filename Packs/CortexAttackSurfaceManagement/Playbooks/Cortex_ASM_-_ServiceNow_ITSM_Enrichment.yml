@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -810
+          "y": -1140
         }
       }
     note: false
@@ -41,7 +41,8 @@ tasks:
       id: e5028c5b-cee6-444d-811e-b13290662aaf
       version: -1
       name: Get timestamp from 30 days prior to now
-      description: "Retrieves the date and time from 30 days prior.\n"
+      description: |
+        Retrieves the date and time from 30 days prior.
       scriptName: GetTime
       type: regular
       iscommand: false
@@ -60,7 +61,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -340
+          "y": -330
         }
       }
     note: false
@@ -387,7 +388,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -630
+          "y": -960
         }
       }
     note: false
@@ -442,19 +443,81 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 6c922685-7de6-4bae-82c2-5321ccba7f28
+    type: condition
+    task:
+      id: 6c922685-7de6-4bae-82c2-5321ccba7f28
+      version: -1
+      name: Is ServiceNow v2 enabled?
+      description: Determines if the "ServiceNow v2" integration instance is enabled in order to find email accounts for ServiceNow usernames.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "27_21_#default#": 0.29,
-      "32_21_#default#": 0.23,
-      "32_9_yes": 0.52
+      "27_21_#default#": 0.11,
+      "32_21_#default#": 0.4,
+      "32_9_yes": 0.52,
+      "34_21_#default#": 0.17
     },
     "paper": {
       "dimensions": {
-        "height": 2005,
+        "height": 2335,
         "width": 720,
         "x": 120,
-        "y": -810
+        "y": -1140
       }
     }
   }
@@ -465,7 +528,7 @@ inputs:
   description: Search terms to be used in the ServiceNow ITSM query search
   playbookInputQuery:
 outputs: []
-description: Given search terms, this playbook will query ServiceNow ticket descriptions and short descriptions over the last 30 days and set users that were found in the assigned_to field in those ServiceNow tickets.
+description: Given search terms, this playbook will query ServiceNow ticket descriptions and short descriptions over the last 30 days and set users that were found in the assigned_to field in those ServiceNow tickets. Note, the max amount of tickets returned from querying is 100.
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
