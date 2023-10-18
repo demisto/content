@@ -883,8 +883,8 @@ tasks:
     task:
       id: 5eaf15c4-c5cc-4a9b-8ec2-c8a5c03b609f
       version: -1
-      name: Was there a device-group in rule?
-      description: Check if firewall device-group information was found.
+      name: Was there a device group in rule?
+      description: Check if firewall device group information was found.
       type: condition
       iscommand: false
       brand: ''
@@ -1029,7 +1029,7 @@ tasks:
       id: 048f7537-fa3b-4c13-88d7-ddca9a825ab3
       version: -1
       name: pan-os-platform-get-device-groups
-      description: Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
+      description: Gets the operational information of the device groups in the topology. (Only device groups with associated devices will be listed by this command).
       script: Panorama|||pan-os-platform-get-device-groups
       type: regular
       iscommand: true
@@ -1111,7 +1111,7 @@ tasks:
       id: 068e20a0-f298-40b4-8416-8948c9d7235f
       version: -1
       name: pan-os-list-rules (device-groups pre-rulebase)
-      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -1209,7 +1209,7 @@ tasks:
       id: b0ecff52-f5b6-45da-8281-d3defc49d5d5
       version: -1
       name: 'pan-os-list-rules (device-groups post-rulebase) '
-      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -1263,7 +1263,7 @@ tasks:
       id: 4a269433-06d1-48c9-843f-db146da7e06c
       version: -1
       name: pan-os-list-rules (shared pre-rulebase)
-      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -1316,7 +1316,7 @@ tasks:
       id: 7b99a59a-e4e5-4bb1-8c5a-f93b6efe60d9
       version: -1
       name: pan-os-list-rules (shared post-rulebase)
-      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true

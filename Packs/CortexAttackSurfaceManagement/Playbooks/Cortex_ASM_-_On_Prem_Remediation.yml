@@ -232,7 +232,7 @@ tasks:
       id: 54b86def-75f3-4fe8-8779-4fbec1d42728
       version: -1
       name: pan-os-list-rules (pre-rulebase)
-      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -274,7 +274,7 @@ tasks:
       id: a918e4e4-2ea8-4d70-883d-5265ce5be25d
       version: -1
       name: pan-os-list-rules (post-rulebase)
-      description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
       script: Panorama|||pan-os-list-rules
       type: regular
       iscommand: true
@@ -396,12 +396,12 @@ inputs:
 - key: DeviceGroup
   value: {}
   required: false
-  description: Device Group of the firewall rule to lookup
+  description: Device group of the firewall rule to lookup.
   playbookInputQuery:
 - key: SecondaryDeviceGroup
   value: {}
   required: false
-  description: In that case that the rule, address and service are created in the "Shared" location, we need to know what device-groups we can push to because it isn't possible to push to the "Shared" location.
+  description: If the rule, address and service are created in the "Shared" location, we need to know what device groups we can push to because it isn't possible to push to the "Shared" location.
   playbookInputQuery:
 outputs: []
 tests:

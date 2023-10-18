@@ -48,7 +48,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - AWS EC2 Instance
   - Azure Compute Instance
   - GCP Compute Engine (VM)
-  - On Prem asset protected with a Palo Alto Networks Firewall
+  - On-prem asset protected with a Palo Alto Networks Firewall
 - Service owner information found through one of the following:
   - AWS IAM
   - Azure IAM
