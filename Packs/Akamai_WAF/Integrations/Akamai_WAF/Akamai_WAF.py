@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
-
 """ IMPORTS """
 # Std imports
 import re
@@ -15,7 +13,6 @@ import urllib3
 
 # Local imports
 from akamai.edgegrid import EdgeGridAuth
-from typing import Sequence
 """
 
 GLOBALS/PARAMS
@@ -1955,15 +1952,15 @@ class Client(BaseClient):
                                   )
 
     def update_cps_enrollment(self,
-                          enrollment_id: str,
-                          updates: dict,
-                          allow_cancel_pending_changes: str = 'true',
-                          allow_staging_bypass: str = 'true',
-                          deploy_not_after: str = "",
-                          deploy_not_before: str = "",
-                          force_renewal: str = 'true',
-                          renewal_date_check_override: str = 'true',
-                          allow_missing_certificate_addition: str = 'true') -> dict:
+                              enrollment_id: str,
+                              updates: dict,
+                              allow_cancel_pending_changes: str = 'true',
+                              allow_staging_bypass: str = 'true',
+                              deploy_not_after: str = "",
+                              deploy_not_before: str = "",
+                              force_renewal: str = 'true',
+                              renewal_date_check_override: str = 'true',
+                              allow_missing_certificate_addition: str = 'true') -> dict:
         """
             Returns the enrollment change path.
         Args:
@@ -2028,7 +2025,7 @@ class Client(BaseClient):
                                        change_id: str = '',
                                        deploy_not_before: str = '',
                                        deploy_not_after: str = None,
-                          ) -> dict:
+                                       ) -> dict:
         """
             Returns the enrollment change path.
         Args:
@@ -2054,7 +2051,8 @@ class Client(BaseClient):
         """
         if enrollment_path == '':
             if not all(s != '' for s in [enrollment_id, change_id]):
-                raise DemistoException('If "enrollment_path" is blank than "enrollment_id" and "change_id" should both contain a value')
+                raise DemistoException(
+                    'If "enrollment_path" is blank than "enrollment_id" and "change_id" should both contain a value')
         method = "PUT"
         headers = {
             'Accept': 'application/vnd.akamai.cps.change-id.v1+json',
@@ -2065,9 +2063,9 @@ class Client(BaseClient):
             "notAfter": deploy_not_after
         }
         if enrollment_path == '':
-            url_suffix=f'cps/v2/enrollments/{enrollment_id}/changes/{change_id}/deployment-schedule'
+            url_suffix = f'cps/v2/enrollments/{enrollment_id}/changes/{change_id}/deployment-schedule'
         else:
-            url_suffix=f'{enrollment_path}/deployment-schedule'
+            url_suffix = f'{enrollment_path}/deployment-schedule'
         return self._http_request(method=method,
                                   url_suffix=url_suffix,
                                   headers=headers,
@@ -2091,7 +2089,8 @@ class Client(BaseClient):
         """
         if enrollment_path == '':
             if not all(s != '' for s in [enrollment_id, change_id]):
-                raise DemistoException('If "enrollment_path" is blank than "enrollment_id" and "change_id" should both contain a value')
+                raise DemistoException(
+                    'If "enrollment_path" is blank than "enrollment_id" and "change_id" should both contain a value')
         headers = {"accept": "application/vnd.akamai.cps.change.v2+json"}
         method = "GET"
         if enrollment_path == "":
@@ -2932,6 +2931,7 @@ def list_papi_property_by_hostname_ec(raw_response: dict,
 
     return entry_context, human_readable
 
+
 def list_siteshield_maps_ec(raw_response: dict) -> tuple[list, list]:
     """
         Parse siteshield map
@@ -2944,10 +2944,11 @@ def list_siteshield_maps_ec(raw_response: dict) -> tuple[list, list]:
     """
     entry_context = []
     human_readable = []
-    if raw_response: 
+    if raw_response:
         entry_context.append(raw_response.get('siteShieldMaps', [])[0])
         human_readable.append(raw_response.get('siteShieldMaps', [])[0])
     return entry_context, human_readable
+
 
 def list_cidr_blocks_ec(raw_response: dict) -> tuple[list, list]:
     """
@@ -2965,6 +2966,7 @@ def list_cidr_blocks_ec(raw_response: dict) -> tuple[list, list]:
         entry_context.append(raw_response.get('cidrBlocks'))
         human_readable.append(raw_response.get('cidrBlocks'))
     return entry_context, human_readable
+
 
 def update_cps_enrollment_ec(raw_response: dict) -> tuple[list, list]:
     """
@@ -2997,6 +2999,7 @@ def update_cps_enrollment_ec(raw_response: dict) -> tuple[list, list]:
         }))
         human_readable = entry_context
     return entry_context, human_readable
+
 
 def update_cps_enrollment_schedule_ec(raw_response: dict) -> tuple[list, list]:
     """
@@ -3694,7 +3697,7 @@ def update_network_list_elements_command(client: Client, network_list_id: str, e
     elements = argToList(elements)
     # demisto.results(elements)
 
-    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  #type: ignore # noqa
+    raw_response = client.update_network_list_elements(network_list_id=network_list_id, elements=elements)  # type: ignore # noqa
 
     if raw_response:
         human_readable = f'**{INTEGRATION_NAME} - network list {network_list_id} updated**'
@@ -4459,7 +4462,8 @@ def clone_security_policy_command(client: Client,
                                                          config_version=config_version)
         lookupKey = 'policyName'
         lookupValue = policy_name
-        returnDict = next((item for item in raw_response['policies'] if item[lookupKey].lower().strip() == lookupValue.lower()), None)
+        returnDict = next((item for item in raw_response['policies']
+                          if item[lookupKey].lower().strip() == lookupValue.lower()), None)
         if returnDict is not None:
             title = f'{INTEGRATION_NAME} - clone security policy command - found existing Security Policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
@@ -5627,7 +5631,7 @@ def get_cps_enrollment_deployment_command(client: Client,
 @logger
 def list_cidr_blocks_command(client: Client,
                              last_action: str = '',
-                             effective_date_gt: str='') -> tuple[str, dict[str, Any], list | dict]:
+                             effective_date_gt: str = '') -> tuple[str, dict[str, Any], list | dict]:
     """
         List all CIDR blocks for all services you are subscribed to.
         To see additional CIDR blocks, subscribe yourself to more services and run this operation again.
@@ -5664,16 +5668,16 @@ def list_cidr_blocks_command(client: Client,
 
 @logger
 def update_cps_enrollment_command(client: Client,
-                              enrollment_id: str,
-                              updates: dict,
-                              enrollment: dict = {},
-                              allow_cancel_pending_changes: str = 'true',
-                              allow_staging_bypass: str = 'true',
-                              deploy_not_after: str = "",
-                              deploy_not_before: str = "",
-                              force_renewal: str = 'false',
-                              renewal_date_check_override: str = 'true',
-                              allow_missing_certificate_addition: str = 'false') -> tuple[str, dict[str, Any], list | dict]:
+                                  enrollment_id: str,
+                                  updates: dict,
+                                  enrollment: dict = {},
+                                  allow_cancel_pending_changes: str = 'true',
+                                  allow_staging_bypass: str = 'true',
+                                  deploy_not_after: str = "",
+                                  deploy_not_before: str = "",
+                                  force_renewal: str = 'false',
+                                  renewal_date_check_override: str = 'true',
+                                  allow_missing_certificate_addition: str = 'false') -> tuple[str, dict[str, Any], list | dict]:
     import json
     """
         Updates an enrollment with changes. Response type will vary depending on the type and impact of change.
@@ -5731,10 +5735,10 @@ def update_cps_enrollment_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    deploy_not_after =  datetime.strptime(deploy_not_after, '%Y-%m-%dT%H:%M:%SZ')
+    deploy_not_after = datetime.strptime(deploy_not_after, '%Y-%m-%dT%H:%M:%SZ')
     deploy_not_before = datetime.strptime(deploy_not_before, '%Y-%m-%dT%H:%M:%SZ')
     if enrollment == {}:
-        enrollment = client.get_enrollment_byid(enrollment_id = enrollment_id, json_version = '11')
+        enrollment = client.get_enrollment_byid(enrollment_id=enrollment_id, json_version='11')
     # Remove the fields that are not supposed to be changed.
     enrollment.pop('id')
     enrollment.pop('productionSlots')
@@ -5828,6 +5832,8 @@ def update_cps_enrollment_schedule_command(client: Client,
     return human_readable, context_entry, raw_response
 
 # Created by D.S.
+
+
 @logger
 def get_cps_change_status_command(client: Client,
                                   enrollment_path: str = "",
@@ -5881,7 +5887,7 @@ def main():
     client_token = params.get('credentials_client_token', {}).get('password') or params.get('clientToken')
     access_token = params.get('credentials_access_token', {}).get('password') or params.get('accessToken')
     client_secret = params.get('credentials_client_secret', {}).get('password') or params.get('clientSecret')
-    if not(client_token and access_token and client_secret):
+    if not (client_token and access_token and client_secret):
         raise DemistoException('Client token, Access token and Client secret must be provided.')
     client = Client(
         base_url=params.get('host'),
@@ -5977,4 +5983,3 @@ def main():
 
 if __name__ == 'builtins':
     main()
-
