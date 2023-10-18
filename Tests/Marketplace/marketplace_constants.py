@@ -434,7 +434,7 @@ RN_HEADER_TO_ID_SET_KEYS = {
     'Wizards': 'Wizards',
     'XDRC Templates': 'XDRCTemplates',
     'Layout Rules': 'LayoutRules',
-    'Packs': 'Pack'
+    'Pack': 'Packs'
 }
 
 # the format is defined in issue #19786, may change in the future
