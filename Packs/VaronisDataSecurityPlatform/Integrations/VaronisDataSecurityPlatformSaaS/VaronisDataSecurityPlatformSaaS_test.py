@@ -40,11 +40,6 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
         'varonis_get_enum',
         return_value=util_load_json('test_data/varonis_get_enum_response.json')
     )
-    mocker.patch.object(
-        client,
-        'varonis_get_users',
-        return_value=util_load_json('test_data/varonis_get_users_api_response.json')
-    )
 
     args = util_load_json("test_data/test_varonis_get_alerts_command/demisto_search_alerts_args.json")
     expected_outputs = util_load_json('test_data/test_varonis_get_alerts_command/varonis_get_alerts_command_output.json')
@@ -230,29 +225,6 @@ def test_case_insensitive():
     assert strEqual('None', 'None')
     assert strEqual('None', 'none')
     assert strEqual('none', 'None')
-
-
-def test_get_sids_user(mocker: MockerFixture):
-    from VaronisDataSecurityPlatformSaaS import get_sids, NON_EXISTENT_SID, DISPLAY_NAME_KEY
-    client = Client(
-        base_url='https://test.com',
-        verify=False,
-        proxy=False
-    )
-    mocker.patch.object(
-        client,
-        'varonis_get_users',
-        return_value=util_load_json('test_data/varonis_get_users_api_response.json')
-    )
-
-    result = get_sids(client, ['not_exist'], None, DISPLAY_NAME_KEY)
-    assert result[0] == NON_EXISTENT_SID
-
-    result = get_sids(client, [], None, DISPLAY_NAME_KEY)
-    assert len(result) == 0
-
-    result = get_sids(client, ['Administrator'], None, DISPLAY_NAME_KEY)
-    assert result[0] == 509
 
 
 def test_convert_to_demisto_severity():

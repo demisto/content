@@ -17,7 +17,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 MAX_USERS_TO_SEARCH = 5
-NON_EXISTENT_SID = -1000
 THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
 ALERT_SEVERITIES = ['high', 'medium', 'low']
@@ -78,8 +77,8 @@ class Client(BaseClient):
     def varonis_get_alerts(self, ruleIds: Optional[List[str]], alertIds: Optional[List[str]], start_time: Optional[datetime],
                            end_time: Optional[datetime], ingest_time_from: Optional[datetime],
                            ingest_time_to: Optional[datetime], device_names: Optional[List[str]], last_days: Optional[int],
-                           sid_ids: Optional[List[int]], from_alert_id: Optional[int], alert_statuses: Optional[List[str]],
-                           alert_severities: Optional[List[str]], aggregate: bool,
+                           alert_statuses: Optional[List[str]],
+                           alert_severities: Optional[List[str]],
                            descending_order: bool) -> List[Dict[str, Any]]:
         """Get alerts
 
@@ -107,23 +106,11 @@ class Client(BaseClient):
         :type last_days: ``Optional[List[int]]``
         :param last_days: Number of days you want the search to go back to
 
-        :type sid_ids: ``Optional[List[int]]``
-        :param sid_ids: List of user ids
-
-        :type from_alert_id: ``Optional[int]``
-        :param from_alert_id: Alert id to fetch from
-
         :type alert_statuses: ``Optional[List[str]]``
         :param alert_statuses: List of alert statuses to filter by
 
         :type alert_severities: ``Optional[List[str]]``
         :param alert_severities: List of alert severities to filter by
-
-        :type aggregate: ``bool``
-        :param aggregate: Indicated whether agregate alert by alert id
-
-        :type count: ``int``
-        :param count: Alerts count
 
         :type descendingOrder: ``bool``
         :param descendingOrder: Indicates whether alerts should be ordered in newest to oldest order
@@ -149,7 +136,6 @@ class Client(BaseClient):
             'IngestTimeTo': None,
             'DeviceNames': [],
             'LastDays': None,
-            'SidIds': [],
             'Statuses': [],
             'Severities': [],
             'DescendingOrder': None
@@ -179,9 +165,6 @@ class Client(BaseClient):
         if last_days:
             data['LastDays'] = last_days
 
-        if sid_ids and len(sid_ids) > 0:
-            data['SidIds'] = sid_ids
-
         if alert_statuses and len(alert_statuses) > 0:
             data['Statuses'] = alert_statuses
         
@@ -190,11 +173,6 @@ class Client(BaseClient):
         
         if descending_order:
             data['DescendingOrder'] = descending_order
-        
-        # TODO: next parametes are not supported by API
-        # if from_alert_id is not None:
-        #     data['FromAlertSeqId'] = from_alert_id
-        # data['Aggregate'] = aggregate
         
         dataJSON = json.dumps(data)
         return self._http_request(
@@ -206,7 +184,7 @@ class Client(BaseClient):
 
 
     def varonis_get_alerted_events(self, alertIds: List[str], start_time: Optional[datetime], end_time: Optional[datetime],
-                                   descending_order: bool) -> List[Dict[str, Any]]:
+                                   last_days: Optional[int], descending_order: bool) -> List[Dict[str, Any]]:
         """Get alerted events
 
         :type alertIds: ``List[str]``
@@ -232,17 +210,29 @@ class Client(BaseClient):
             'AlertIds': [],
             'StartDate': None,
             'EndDate': None,
+            'LastDays': None,
             'DescendingOrder': 'False'
         }
-
+        
+        days_back = 7
+        if start_time is None and end_time is None and last_days is None:
+            last_days = days_back
+        elif start_time is None and end_time is not None:
+            start_time = datetime.now() - datetime.timedelta(days=days_back)
+        elif end_time is None and start_time is not None:
+            end_time = datetime.now()
+        
         if alertIds and len(alertIds) > 0:
             data['AlertIds'] = alertIds
 
         if start_time:
-            data['StartDate'] = start_time.isoformat()
+            data['StartTime'] = start_time.isoformat()
 
         if end_time:
-            data['EndDate'] = end_time.isoformat()
+            data['EndTime'] = end_time.isoformat()
+
+        if last_days:
+            data['LastDays'] = last_days
 
         if descending_order:
             data['DescendingOrder'] = descending_order
@@ -254,29 +244,6 @@ class Client(BaseClient):
             data=dataJSON,
             headers=self.headers
         )
-
-
-    def varonis_get_users(self, search_string: str) -> List[Any]:
-        """Search users by search string
-
-        :type search_string: ``str``
-        :param search_string: search string
-
-        :return: The list of users
-        :rtype: ``Dict[str, Any]``
-        """
-        request_params: Dict[str, Any] = {}
-        request_params['columns'] = '[\'SamAccountName\',\'Email\',\'DomainName\',\'ObjName\']'
-        request_params['searchString'] = search_string
-        request_params['limit'] = 1000
-
-        response = self._http_request(
-            'GET',
-            'api/userdata/users',
-            params=request_params,
-            headers=self.headers
-        )
-        return response['ResultSet']
 
 
     def varonis_get_enum(self, enum_id: int) -> List[Any]:
@@ -433,88 +400,6 @@ def enrich_with_url(output: Dict[str, Any], baseUrl: str, id: str) -> Dict[str, 
     return output
 
 
-def get_sids(client: Client, values: List[str], user_domain_name: Optional[str], key: str) -> List[int]:
-    """Return list of user ids
-
-    :type client: ``Client``
-    :param client: Http client
-
-    :type user_names: ``List[str]``
-    :param user_names: A list of user names
-
-    :type user_domain_name: ``str``
-    :param user_domain_name: User domain name
-
-    :return: List of user ids
-    :rtype: ``List[int]``
-    """
-    sidIds: List[int] = []
-
-    if not values:
-        return sidIds
-
-    for value in values:
-        users = client.varonis_get_users(value)
-
-        for user in users:
-            if (strEqual(user[key], value)
-                    and (not user_domain_name or strEqual(user['DomainName'], user_domain_name))):
-                sidIds.append(user['Id'])
-
-    if len(sidIds) == 0:
-        sidIds.append(NON_EXISTENT_SID)
-
-    return sidIds
-
-
-def get_sids_by_user_name(client: Client, user_names: List[str], user_domain_name: str) -> List[int]:
-    """Return list of user ids
-
-    :type client: ``Client``
-    :param client: Http client
-
-    :type user_names: ``List[str]``
-    :param user_names: A list of user names
-
-    :type user_domain_name: ``str``
-    :param user_domain_name: User domain name
-
-    :return: List of user ids
-    :rtype: ``List[int]``
-    """
-    return get_sids(client, user_names, user_domain_name, DISPLAY_NAME_KEY)
-
-
-def get_sids_by_sam(client: Client, sam_account_names: List[str]) -> List[int]:
-    """Return list of user ids
-
-    :type client: ``Client``
-    :param client: Http client
-
-    :type sam_account_names: ``List[str]``
-    :param sam_account_names: A list of sam account names
-
-    :return: List of user ids
-    :rtype: ``List[int]``
-    """
-    return get_sids(client, sam_account_names, None, SAM_ACCOUNT_NAME_KEY)
-
-
-def get_sids_by_email(client: Client, emails: List[str]) -> List[int]:
-    """Return list of user ids
-
-    :type client: ``Client``
-    :param client: Http client
-
-    :type emails: ``List[str]``
-    :param emails: A list of emails
-
-    :return: List of user ids
-    :rtype: ``List[int]``
-    """
-    return get_sids(client, emails, None, EMAIL_KEY)
-
-
 def get_rule_ids(client: Client, values: List[str]) -> List[int]:
     """Return list of user ids
 
@@ -539,9 +424,6 @@ def get_rule_ids(client: Client, values: List[str]) -> List[int]:
                 ruleIds.append(rule['ruleID'])
                 # ruleIds.append(rule['templateID'])
                 break
-
-    if len(ruleIds) == 0:
-        ruleIds.append(NON_EXISTENT_SID)
 
     return ruleIds
 
@@ -585,7 +467,7 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
     countries = [] if alert_saas_format.get("Country") is None else alert_saas_format.get("Country").split(',')
     states = [] if alert_saas_format.get("State") is None else alert_saas_format.get("State").split(',')
     blacklist_locations = [] if alert_saas_format.get("BlacklistLocation") is None else alert_saas_format.get("BlacklistLocation").split(',')
-    abnormal_locations = [] if alert_saas_format.get("AbnormalLocation") is None else alert_saas_format.get("AbnormalLocation").split(',')
+    abnormal_locations = [] if alert_saas_format.get("AbnormalLocation") is None else alert_saas_format.get("AbnormalLocation")
     for i in range(len(countries)):
         entry = {
             "Country": "" if len(countries) <= i else countries[i],
@@ -723,10 +605,10 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
     ruleIds = get_rule_ids(client, threat_model_names)
 
     alerts = client.varonis_get_alerts( ruleIds=ruleIds, alertIds=None, start_time=None, end_time=None,
-                                        device_names=None, last_days=None, sid_ids=None, from_alert_id=None,
+                                        device_names=None, last_days=None,
                                         ingest_time_from=last_fetched_ingest_time,
                                         ingest_time_to=ingest_time_to,
-                                        alert_statuses=statuses, alert_severities=severities, aggregate=True,
+                                        alert_statuses=statuses, alert_severities=severities,
                                         descending_order=True)
 
     demisto.debug(f'varonis_get_alerts returned: {len(alerts)} alerts')
@@ -781,10 +663,6 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ``args['alert_status']`` List of required alerts status
         ``args['alert_severity']`` List of alerts severity
         ``args['device_name']`` List of device names
-        ``args['user_domain_name']`` User domain name
-        ``args['user_name']`` List of user names
-        ``args['sam_account_name']`` List of sam account names
-        ``args['email']`` List of emails
         ``args['last_days']`` Number of days you want the search to go back to
         ``args['descending_order']`` Indicates whether alerts should be ordered in newest to oldest order
 
@@ -802,16 +680,8 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     alert_statuses = args.get('alert_status', None)
     alert_severities = args.get('alert_severity', None)
     device_names = args.get('device_name', None)
-    user_domain_name = args.get('user_domain_name', None)
-    user_names = args.get('user_name', None)
-    sam_account_names = args.get('sam_account_name', None)
-    emails = args.get('email', None)
     last_days = args.get('last_days', None)
     descending_order = args.get('descending_order', True)
-
-    user_names = try_convert(user_names, lambda x: argToList(x))
-    sam_account_names = try_convert(sam_account_names, lambda x: argToList(x))
-    emails = try_convert(emails, lambda x: argToList(x))
 
     if last_days:
         last_days = try_convert(
@@ -822,18 +692,6 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
 
         if last_days <= 0:
             raise ValueError('last_days cannot be less then 1')
-
-    if user_domain_name and (not user_names or len(user_names) == 0):
-        raise ValueError('user_domain_name cannot be provided without user_name')
-
-    if user_names and len(user_names) > MAX_USERS_TO_SEARCH:
-        raise ValueError(f'cannot provide more then {MAX_USERS_TO_SEARCH} users')
-
-    if sam_account_names and len(sam_account_names) > MAX_USERS_TO_SEARCH:
-        raise ValueError(f'cannot provide more then {MAX_USERS_TO_SEARCH} sam account names')
-
-    if emails and len(emails) > MAX_USERS_TO_SEARCH:
-        raise ValueError(f'cannot provide more then {MAX_USERS_TO_SEARCH} emails')
 
     alert_severities = try_convert(alert_severities, lambda x: argToList(x))
     device_names = try_convert(device_names, lambda x: argToList(x))
@@ -862,9 +720,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
     alert_statuses = try_convert(alert_statuses, lambda x: argToList(x))
-    sid_ids = get_sids_by_email(client, emails) + get_sids_by_sam(client, sam_account_names) + \
-        get_sids_by_user_name(client, user_names, user_domain_name)
-
+    
     if alert_severities:
         for severity in alert_severities:
             if severity.lower() not in ALERT_SEVERITIES:
@@ -878,7 +734,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     ruleIds = get_rule_ids(client, threat_model_names)
     
     alerts = client.varonis_get_alerts(ruleIds, alert_ids, start_time, end_time, ingest_time_from, ingest_time_to, device_names,
-                                       last_days, sid_ids, None, alert_statuses, alert_severities, False,
+                                       last_days, alert_statuses, alert_severities,
                                        descending_order)
     outputs = dict()
     outputs['Alert'] = alerts
@@ -935,6 +791,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     )
     
     events = client.varonis_get_alerted_events(alertIds=alertIds, start_time=start_time, end_time=end_time,
+                                               last_days=None,
                                                descending_order=descending_order)
     outputs = dict()
     outputs['Event'] = events
@@ -1049,10 +906,6 @@ def main() -> None:
             args['alert_status'] = None  # List of required alerts status
             args['alert_severity'] = []  # List of alerts severity
             args['device_name'] = None  # List of device names
-            args['user_domain_name'] = None  # User domain name
-            args['user_name'] = None  # List of user names
-            args['sam_account_name'] = None  # List of sam account names
-            args['email'] = None  # List of emails
             args['last_days'] = None  # Number of days you want the search to go back to
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
 
