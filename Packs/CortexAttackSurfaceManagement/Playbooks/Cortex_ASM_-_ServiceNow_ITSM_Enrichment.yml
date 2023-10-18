@@ -1,6 +1,5 @@
 id: Cortex ASM - ServiceNow ITSM Enrichment
-version: 33
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cortex ASM - ServiceNow ITSM Enrichment
 starttaskid: '0'
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ''
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '27'
@@ -211,6 +211,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     separatecontext: false
     continueonerrortype: ''
     view: |-
@@ -465,3 +466,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 description: Given search terms, this playbook will query ServiceNow ticket descriptions and short descriptions over the last 30 days and set users that were found in the assigned_to field in those ServiceNow tickets.
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
