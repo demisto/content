@@ -981,9 +981,23 @@ tasks:
       lh:
         complex:
           root: NumOfOktaFailedLogon
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
       rh:
         complex:
           root: NumOfSiemFailedLogon
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""

@@ -6,6 +6,7 @@ import requests_mock
 
 import pytest
 
+from CommonServerPython import EntryType
 
 MOCK_URL = "https://cloud.vmray.com/"
 MOCK_API_KEY = "123456"
@@ -183,7 +184,7 @@ def test_rate_limit(requests_mock):
     assert response == {"foo": "bar"}
 
 
-def test_rate_limit_max_reties(requests_mock, mocker):
+def test_rate_limit_max_retries(requests_mock, mocker):
     mocker.patch.object(sys, "exit", return_value=None)
     requests_mock.get(
         "https://cloud.vmray.com/rest/analysis/123",
@@ -221,3 +222,50 @@ def test_billing_type(requests_mock):
     from VMRay import get_billing_type
     billing_type = get_billing_type(123)
     assert billing_type == "detector"
+
+
+def test_get_screenshots_command(requests_mock, mocker):
+    from VMRay import main
+
+    raw_screenshots_zip = (
+        b"PK\x03\x04\x14\x00\x00\x00\x08\x00\xc3j\tW/Lw$l\x00\x00\x00w\x00\x00\x008\x00\x00\x00screenshots/"
+        b"0d8bcf13d159a14aed6b2bf8b75a094aab4a6aeb.png\xeb\x0c\xf0s\xe7\xe5\x92\xe2b``\xe0\xf5\xf4p\t\x02\xd2\x8c "
+        b"\xcc\xc1\x04$'\x94\x07\xdf\x03q\x8a\x83\xdc\x9d\x18\xd6\x9d\x93y\t\xe4\xb0\xa4;\xfa:20l\xec\xe7\xfe\x93\xc8"
+        b"\n\xe4s\x16xD\x1630\xf0\x1d\x06a\xc6\xe3\xf9+R\x80\x82<\x9e.\x8e!\x12\xe1\xc9\x16\x01\x91\xbc\x0c\xcc\x1b"
+        b"\x19\xb7N\xbd\x91\xf9\x04(\xce\xe0\xe9\xea\xe7\xb2\xce)\xa1\t\x00PK\x03\x04\x14\x00\x00\x00\x08\x00\x8bk"
+        b"\tW\xbdA`\xb4\x89\x00\x00\x00\xd8\x00\x00\x00\x15\x00\x00\x00screenshots/index.log\x8d\x8e1\x0e\x021\x0c"
+        b"\x04{$\xfep\x0f@(v\x1c'.\xee1^;\x81\x06\x84D\xcb\xe39~@\xb7\xd2\xcej\xb6l\x9f\x8d\xb8J\xd3#<\xb2\xed\xd2c-K"
+        b"\xa2@\x93Ai\xa9u\xaa\x18\x81\x8d\x18zy\xdf\x9d\xf6\x92\x03\xb1\xa8&5s\x12\x9f\xa9`\xac\x81\xde\xbc\x98"
+        b"\xb8C\\}\xe2Gs\xd3=\xe8\xa8\xcc\xca\xec\xd3\xe0>\xaa\x94\xc1VK\xd4\xa8sx\x8cL\x10z\xf5u,\xd3m\xa00\x07VB"
+        b"\x1d@\x1e\xe7\xfeU^_\xcf\xdb\xf9\xf4\x05PK\x01\x02\x14\x00\x14\x00\x00\x00\x08\x00\xc3j\tW/Lw$l\x00\x00"
+        b"\x00w\x00\x00\x008\x00\x00\x00\x00\x00\x00\x00\x00\x00 \x00\x00\x00\x00\x00\x00\x00screenshots"
+        b"/0d8bcf13d159a14aed6b2bf8b75a094aab4a6aeb.pngPK\x01\x02\x14\x00\x14\x00\x00\x00\x08\x00\x8bk\tW\xbdA`\xb4"
+        b"\x89\x00\x00\x00\xd8\x00\x00\x00\x15\x00\x00\x00\x00\x00\x00\x00\x01\x00 \x00\x00\x00\xc2\x00\x00"
+        b"\x00screenshots/index.logPK\x05\x06\x00\x00\x00\x00\x02\x00\x02\x00\xa9\x00\x00\x00~\x01\x00\x00\x00\x00"
+    )
+    file_result_return_value = {
+        'Contents': b'',
+        'File': 'analysis_123_screenshot_0.png',
+        'FileID': '00000000-0000-0000-0000-000000000000',
+        'Type': EntryType.IMAGE,
+    }
+
+    mocker.patch.object(demisto, 'args', return_value={'analysis_id': '123'})
+    mocker.patch.object(demisto, 'command', return_value='vmray-get-screenshots')
+    mocker.patch('VMRay.get_screenshots', return_value=raw_screenshots_zip)
+    return_results_mock = mocker.patch('VMRay.return_results')
+    file_result_mock = mocker.patch('VMRay.fileResult', return_value=file_result_return_value)
+
+    main()
+
+    file_result_mock.assert_called_once_with(
+        filename='analysis_123_screenshot_0.png',
+        data=(
+            b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00'
+            b'\x00\x00\x01sRGB\x00\xae\xce\x1c\xe9\x00\x00\x00\x04gAMA\x00\x00\xb1\x8f\x0b\xfca\x05\x00\x00\x00\tpHYs'
+            b'\x00\x00\x0e\xc3\x00\x00\x0e\xc3\x01\xc7o\xa8d\x00\x00\x00\x0cIDAT\x18Wc8PY\r\x00\x03\xb1\x01\xb5\x95'
+            b'\xd8i\xe4\x00\x00\x00\x00IEND\xaeB`\x82'
+        ),
+        file_type=EntryType.IMAGE,
+    )
+    return_results_mock.assert_called_once_with([file_result_return_value])

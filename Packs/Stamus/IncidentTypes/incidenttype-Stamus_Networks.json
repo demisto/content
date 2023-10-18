@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#92F4EF",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Stamus Networks DoC",
+    "layout": "Stamus Networks DoC Layout",
+    "locked": false,
+    "name": "Stamus Networks DoC",
+    "onChangeRepAlg": 0,
+    "playbookId": "Stamus Networks - Get Extra Data",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.9.0"
+}

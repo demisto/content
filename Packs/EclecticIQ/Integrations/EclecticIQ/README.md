@@ -239,6 +239,7 @@
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
 <p>Gets the reputation of a URL observable.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-1">Base Command</h5>
@@ -1050,6 +1051,7 @@
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
 <p>Gets the reputation of a domain observable.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command-5">Base Command</h5>

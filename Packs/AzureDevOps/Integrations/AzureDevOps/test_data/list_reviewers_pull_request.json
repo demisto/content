@@ -1,0 +1,22 @@
+{
+    "count": 1,
+    "value": [
+        {
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "displayName": "",
+            "hasDeclined": false,
+            "id": "",
+            "imageUrl": "",
+            "isContainer": true,
+            "isFlagged": false,
+            "reviewerUrl": "",
+            "uniqueName": "",
+            "url": "",
+            "vote": 0
+        }
+    ]
+}

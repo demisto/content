@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 276e4804-39ab-4f66-826d-6918f5723f6c
+    taskid: 9aea5384-4c9e-4677-8d59-dcb9e78ddee5
     type: start
     task:
-      id: 276e4804-39ab-4f66-826d-6918f5723f6c
+      id: 9aea5384-4c9e-4677-8d59-dcb9e78ddee5
       version: -1
       name: ""
       iscommand: false
@@ -33,12 +33,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 6c6af7ad-aa9c-4a2a-8aff-fc01f5b5c122
+    taskid: 3033eb1d-7c8b-4233-8673-850e450e641a
     type: regular
     task:
-      id: 6c6af7ad-aa9c-4a2a-8aff-fc01f5b5c122
+      id: 3033eb1d-7c8b-4233-8673-850e450e641a
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -66,18 +67,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
-    taskid: f906f849-1646-49ad-8f09-0802271a490a
+    taskid: f4ba2f8e-bb2d-423f-86eb-21b993ae688f
     type: regular
     task:
-      id: f906f849-1646-49ad-8f09-0802271a490a
+      id: f4ba2f8e-bb2d-423f-86eb-21b993ae688f
       version: -1
       name: hyas-get-passive-dns-records-by-indicator
-      script: '|||hyas-get-passive-dns-records-by-indicator'
+      script: 'HYAS Insight|||hyas-get-passive-dns-records-by-indicator'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "HYAS Insight"
     nexttasks:
       '#none#':
       - "3"
@@ -87,7 +89,7 @@ tasks:
       indicator_value:
         simple: domain.org
       limit:
-        simple: "5"
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -103,12 +105,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 47c1d7a7-89a6-4d4b-8fc8-42c9023c1645
+    taskid: 9a49fdc1-d258-4c00-87b1-d026373c9d33
     type: condition
     task:
-      id: 47c1d7a7-89a6-4d4b-8fc8-42c9023c1645
+      id: 9a49fdc1-d258-4c00-87b1-d026373c9d33
       version: -1
       name: Passive DNS Outputs
       type: condition
@@ -126,6 +129,8 @@ tasks:
             value:
               simple: HYAS.PassiveDNS.count
             iscontext: true
+          right:
+            value: {}
         - operator: isEmpty
           left:
             value:
@@ -315,18 +320,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 5a1e3a03-315a-4dbd-8754-9d41194f6b2a
+    taskid: 57becd02-002b-41f1-81e9-21de7d6ad48d
     type: regular
     task:
-      id: 5a1e3a03-315a-4dbd-8754-9d41194f6b2a
+      id: 57becd02-002b-41f1-81e9-21de7d6ad48d
       version: -1
       name: hyas-get-dynamic-dns-records-by-indicator
-      script: '|||hyas-get-dynamic-dns-records-by-indicator'
+      script: 'HYAS Insight|||hyas-get-dynamic-dns-records-by-indicator'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "HYAS Insight"
     nexttasks:
       '#none#':
       - "5"
@@ -336,7 +342,7 @@ tasks:
       indicator_value:
         simple: 4.4.4.4
       limit:
-        simple: "5"
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -352,12 +358,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 8953556f-be9e-49d8-84d9-a3204b3d5b89
+    taskid: 35b79465-7bee-4fad-88cc-3d33e904eced
     type: condition
     task:
-      id: 8953556f-be9e-49d8-84d9-a3204b3d5b89
+      id: 35b79465-7bee-4fad-88cc-3d33e904eced
       version: -1
       name: Dynamic DNS Outputs
       type: condition
@@ -375,6 +382,8 @@ tasks:
             value:
               simple: HYAS.DynamicDNS.a_record
             iscontext: true
+          right:
+            value: {}
         - operator: isEmpty
           left:
             value:
@@ -449,18 +458,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: eac1ec54-4f2d-4727-85c8-b9f94fc41dac
+    taskid: a6d5583d-dc76-488d-8c06-ecbdd021301e
     type: regular
     task:
-      id: eac1ec54-4f2d-4727-85c8-b9f94fc41dac
+      id: a6d5583d-dc76-488d-8c06-ecbdd021301e
       version: -1
       name: hyas-get-whois-records-by-indicator
-      script: '|||hyas-get-whois-records-by-indicator'
+      script: 'HYAS Insight|||hyas-get-whois-records-by-indicator'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "HYAS Insight"
     nexttasks:
       '#none#':
       - "7"
@@ -468,9 +478,9 @@ tasks:
       indicator_type:
         simple: domain
       indicator_value:
-        simple: domain.net
+        simple: edubolivia.org
       limit:
-        simple: "5"
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -486,14 +496,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: 37f7e906-95a7-434e-8202-8f1900c8fdac
+    taskid: 4d5c899a-bb58-48f9-8b5c-633412929a0a
     type: condition
     task:
-      id: 37f7e906-95a7-434e-8202-8f1900c8fdac
+      id: 4d5c899a-bb58-48f9-8b5c-633412929a0a
       version: -1
-      name: Whois  Outputs
+      name: Whois Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -509,6 +520,8 @@ tasks:
             value:
               simple: HYAS.WHOIS.address
             iscontext: true
+          right:
+            value: {}
         - operator: isEmpty
           left:
             value:
@@ -688,24 +701,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: abd4dc9c-79e3-40e1-8cbe-8a8d60953e8e
+    taskid: b0621790-cb58-4e64-8d9c-bd81395ee3b2
     type: regular
     task:
-      id: abd4dc9c-79e3-40e1-8cbe-8a8d60953e8e
+      id: b0621790-cb58-4e64-8d9c-bd81395ee3b2
       version: -1
       name: hyas-get-whois-current-records-by-domain
-      script: '|||hyas-get-whois-current-records-by-domain'
+      script: 'HYAS Insight|||hyas-get-whois-current-records-by-domain'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "HYAS Insight"
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
       domain:
-        simple: www.hyas.com
+        simple: edubolivia.org
     separatecontext: false
     view: |-
       {
@@ -721,12 +735,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: f37b3481-026b-4214-8c83-c78eb2efd196
+    taskid: 74aa9d1f-9dae-41a6-8967-7d75031773fe
     type: condition
     task:
-      id: f37b3481-026b-4214-8c83-c78eb2efd196
+      id: 74aa9d1f-9dae-41a6-8967-7d75031773fe
       version: -1
       name: Whois Current Outputs
       type: condition
@@ -744,6 +759,8 @@ tasks:
             value:
               simple: HYAS.WHOISCurrent.abuse_emails
             iscontext: true
+          right:
+            value: {}
         - operator: isEmpty
           left:
             value:
@@ -913,18 +930,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: 4786efec-488e-4b9b-873b-23deac2831fa
+    taskid: a0202afc-8048-4b2c-879e-aa96fb1bb0bc
     type: regular
     task:
-      id: 4786efec-488e-4b9b-873b-23deac2831fa
+      id: a0202afc-8048-4b2c-879e-aa96fb1bb0bc
       version: -1
       name: hyas-get-malware-samples-records-by-indicator
-      script: '|||hyas-get-malware-samples-records-by-indicator'
+      script: 'HYAS Insight|||hyas-get-malware-samples-records-by-indicator'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "HYAS Insight"
     nexttasks:
       '#none#':
       - "11"
@@ -932,9 +950,9 @@ tasks:
       indicator_type:
         simple: domain
       indicator_value:
-        simple: butterfly.bigmoney.biz
+        simple: chennaigastrosurgeon.com
       limit:
-        simple: "5"
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -950,12 +968,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: 30a8170b-ca7f-49bf-82a0-e517802b3dde
+    taskid: a5362110-96e2-4433-8045-8f839d9ff1ec
     type: condition
     task:
-      id: 30a8170b-ca7f-49bf-82a0-e517802b3dde
+      id: a5362110-96e2-4433-8045-8f839d9ff1ec
       version: -1
       name: Malware Sample Outputs
       type: condition
@@ -973,6 +992,8 @@ tasks:
             value:
               simple: HYAS.MalwareSamples.datetime
             iscontext: true
+          right:
+            value: {}
         - operator: isEmpty
           left:
             value:
@@ -1052,24 +1073,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
-    taskid: 231f38cc-9e35-474a-8b35-9683a9767745
+    taskid: f662c2b2-1bcb-494b-82a6-ac6c0446107c
     type: regular
     task:
-      id: 231f38cc-9e35-474a-8b35-9683a9767745
+      id: f662c2b2-1bcb-494b-82a6-ac6c0446107c
       version: -1
-      name: hyas-get-associated-ips-by-hash
-      script: '|||hyas-get-associated-ips-by-hash'
+      name: hyas-get-c2attribution-records-by-indicator
+      script: 'HYAS Insight|||hyas-get-c2attribution-records-by-indicator'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "HYAS Insight"
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
-      md5:
-        simple: 1d0a97c41afe5540edd0a8c1fb9a0f2d
+      indicator_type:
+        simple: domain
+      indicator_value:
+        simple: himionsa.com
+      limit:
+        simple: "3"
     separatecontext: false
     view: |-
       {
@@ -1085,12 +1111,1243 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
-    taskid: 550a4ce8-90c4-45f5-876f-b659e56399df
+    taskid: 90ebc203-b857-470d-81b3-b64d3eae8ff6
     type: condition
     task:
-      id: 550a4ce8-90c4-45f5-876f-b659e56399df
+      id: 90ebc203-b857-470d-81b3-b64d3eae8ff6
+      version: -1
+      name: C2 Attribution Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.actor_ipv4
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.actor_ipv4
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_ip
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.c2_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.email
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.email_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.email_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_ipv4
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_ipv4
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.referrer_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.sha256
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.C2_Attribution.sha256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "14":
+    id: "14"
+    taskid: 3980c592-0e8d-4be8-8d2a-e35988803e61
+    type: regular
+    task:
+      id: 3980c592-0e8d-4be8-8d2a-e35988803e61
+      version: -1
+      name: hyas-get-passive-hash-records-by-indicator
+      script: 'HYAS Insight|||hyas-get-passive-hash-records-by-indicator'
+      type: regular
+      iscommand: true
+      brand: "HYAS Insight"
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      indicator_type:
+        simple: domain
+      indicator_value:
+        simple: edubolivia.org
+      limit:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "15":
+    id: "15"
+    taskid: de9e3d31-d839-4cc6-8860-afbfcf7f4bbf
+    type: condition
+    task:
+      id: de9e3d31-d839-4cc6-8860-afbfcf7f4bbf
+      version: -1
+      name: Passive Hash Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Passive_Hash.domain
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Passive_Hash.domain
+            iscontext: true
+          right:
+            value: { }
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Passive_Hash.md5_count
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Passive_Hash.md5_count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "16":
+    id: "16"
+    taskid: a25530f5-e678-4011-8032-f5e7aaf80da8
+    type: regular
+    task:
+      id: a25530f5-e678-4011-8032-f5e7aaf80da8
+      version: -1
+      name: hyas-get-ssl-certificate-records-by-indicator
+      type: regular
+      iscommand: true
+      brand: "HYAS Insight"
+      script: HYAS Insight|||hyas-get-ssl-certificate-records-by-indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      indicator_type:
+        simple: ip
+      indicator_value:
+        simple: 4.4.4.4
+      limit:
+        simple: "3"
+    continueonerrortype: ""
+  "17":
+    id: "17"
+    taskid: d71df6b0-7732-496d-80fb-32f1309636c7
+    type: condition
+    task:
+      id: d71df6b0-7732-496d-80fb-32f1309636c7
+      version: -1
+      name: SSL Certificate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ip
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.cert_key
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.cert_key
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.expire_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.expire_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issue_date
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issue_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_commonName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_commonName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_countryName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_countryName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_localityName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_localityName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_organizationName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_organizationName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_organizationalUnitName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_organizationalUnitName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_stateOrProvinceName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.issuer_stateOrProvinceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.md5
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.serial_number
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.serial_number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.sha1
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.sha_256
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.sha_256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.sig_algo
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.sig_algo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.signature
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.signature
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.ssl_version
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.ssl_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_commonName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_commonName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_countryName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_countryName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_localityName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_localityName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_organizationName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_organizationName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_organizationalUnitName
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.subject_organizationalUnitName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.timestamp
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.SSL_Certificate.ssl_certs.ssl_cert.timestamp
+            iscontext: true
+    continueonerrortype: ""
+  "18":
+    id: "18"
+    taskid: eca860c7-2791-4c75-8c05-8c4fef8355a0
+    type: regular
+    task:
+      id: eca860c7-2791-4c75-8c05-8c4fef8355a0
+      version: -1
+      name: hyas-get-opensource-indicator-records-by-indicator
+      type: regular
+      iscommand: true
+      brand: "HYAS Insight"
+      script: HYAS Insight|||hyas-get-opensource-indicator-records-by-indicator
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      indicator_type:
+        simple: domain
+      indicator_value:
+        simple: kidd16.blinn.edu
+      limit:
+        simple: "3"
+    continueonerrortype: ""
+  "19":
+    id: "19"
+    taskid: c9056e09-d35b-414f-85d5-e08c43f618d7
+    type: condition
+    task:
+      id: c9056e09-d35b-414f-85d5-e08c43f618d7
+      version: -1
+      name: OS Indicator Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.context
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.context
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.data
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.domain
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.domain_2tld
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.domain_2tld
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.first_seen
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.first_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.ipv4
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.ipv4
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.ipv6
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.ipv6
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.last_seen
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.last_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.md5
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.sha1
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.sha256
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.source_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.source_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.source_url
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.source_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.uri
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.OS_Indicators.uri
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 6bd726bf-b8bf-42ad-8cea-16e0f927ab97
+    type: regular
+    task:
+      id: 6bd726bf-b8bf-42ad-8cea-16e0f927ab97
+      version: -1
+      name: hyas-get-device-geo-records-by-ip-address
+      script: HYAS Insight|||hyas-get-device-geo-records-by-ip-address
+      type: regular
+      iscommand: true
+      brand: HYAS Insight
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      indicator_type:
+        simple: ipv4
+      indicator_value:
+        simple: 4.4.4.4
+      limit:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 7b7ceb38-e723-4b83-815b-51a71f8722ed
+    type: condition
+    task:
+      id: 7b7ceb38-e723-4b83-815b-51a71f8722ed
+      version: -1
+      name: Device Geo Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.datetime
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.device_user_agent
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.device_user_agent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.geo_country_alpha_2
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.geo_country_alpha_2
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.geo_horizontal_accuracy
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.geo_horizontal_accuracy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.ipv4
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.ipv4
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.ipv6
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.ipv6
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.latitude
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.latitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.longitude
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.longitude
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.wifi_bssid
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Device_Geo.wifi_bssid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: efbb9606-c8a2-49c4-83cc-1cfc4e6cd3ca
+    type: regular
+    task:
+      id: efbb9606-c8a2-49c4-83cc-1cfc4e6cd3ca
+      version: -1
+      name: hyas-get-sinkhole-records-by-ipv4-address
+      script: HYAS Insight|||hyas-get-sinkhole-records-by-ipv4-address
+      type: regular
+      iscommand: true
+      brand: HYAS Insight
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      ipv4:
+        simple: 4.4.4.4
+      limit:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 32f5214d-b208-47bf-86ba-44090ba27b12
+    type: condition
+    task:
+      id: 32f5214d-b208-47bf-86ba-44090ba27b12
+      version: -1
+      name: Sinkhole Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.count
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.count
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.country_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.country_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.data_port
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.data_port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.datetime
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.datetime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.ipv4
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.ipv4
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.last_seen
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.last_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.organization_name
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.organization_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.sink_source
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              simple: HYAS.Sinkhole.sink_source
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 04b1489e-ec4b-4f1b-8e28-5e2e1e7b86c9
+    type: regular
+    task:
+      id: 04b1489e-ec4b-4f1b-8e28-5e2e1e7b86c9
+      version: -1
+      name: hyas-get-malware-sample-information-by-hash
+      script: HYAS Insight|||hyas-get-malware-sample-information-by-hash
+      type: regular
+      iscommand: true
+      brand: HYAS Insight
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      hash:
+        simple: 1d0a97c41afe5540edd0a8c1fb9a0f1c
+      limit:
+        simple: '"3"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 668fd4f8-3042-4634-867e-64610f21cc02
+    type: condition
+    task:
+      id: 668fd4f8-3042-4634-867e-64610f21cc02
+      version: -1
+      name: Malware Sample Information Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Malware_Information.avscan_score
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Malware_Information.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Malware_Information.scan_results.av_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Malware_Information.scan_results.def_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Malware_Information.scan_results.threat_found
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Malware_Information.scan_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Malware_Information.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Malware_Information.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: HYAS.Malware_Information.sha512
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: cdb64a04-a16b-4fff-88c9-276513098ecc
+    type: regular
+    task:
+      id: cdb64a04-a16b-4fff-88c9-276513098ecc
+      version: -1
+      name: hyas-get-associated-ips-by-hash
+      script: HYAS Insight|||hyas-get-associated-ips-by-hash
+      type: regular
+      iscommand: true
+      brand: HYAS Insight
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      md5:
+        simple: 1d0a97c41afe5540edd0a8c1fb9a0f1c
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 44df3871-c09b-43f0-87a9-d5b196a1393c
+    type: condition
+    task:
+      id: 44df3871-c09b-43f0-87a9-d5b196a1393c
       version: -1
       name: Associated IPs Outputs
       type: condition
@@ -1098,7 +2355,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1115,11 +2372,12 @@ tasks:
             value:
               simple: HYAS.HASH-IP.ips
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2600
+          "y": 5400
         }
       }
     note: false
@@ -1129,30 +2387,31 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: b4b86feb-c243-4ed6-8ae8-88f5a02867a0
+  "28":
+    id: "28"
+    taskid: 8ef8e998-ff27-49c8-8da8-d27cded248f4
     type: regular
     task:
-      id: b4b86feb-c243-4ed6-8ae8-88f5a02867a0
+      id: 8ef8e998-ff27-49c8-8da8-d27cded248f4
       version: -1
       name: hyas-get-associated-domains-by-hash
-      script: '|||hyas-get-associated-domains-by-hash'
+      script: HYAS Insight|||hyas-get-associated-domains-by-hash
       type: regular
       iscommand: true
-      brand: ""
+      brand: HYAS Insight
     nexttasks:
       '#none#':
-      - "15"
+      - "29"
     scriptarguments:
       md5:
-        simple: 1d0a97c41afe5540edd0a8c1fb9a0f2d
+        simple: 1d0a97c41afe5540edd0a8c1fb9a0f1c
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2800
+          "y": 5600
         }
       }
     note: false
@@ -1162,20 +2421,20 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 274ab786-e901-490c-81ec-5b14a3f59abf
+  "29":
+    id: "29"
+    taskid: 1a0ced49-90af-4e2b-8848-026ba5393b70
     type: condition
     task:
-      id: 274ab786-e901-490c-81ec-5b14a3f59abf
+      id: 1a0ced49-90af-4e2b-8848-026ba5393b70
       version: -1
       name: Associated Domains Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "YES":
-      - "17"
+      "yes":
+      - "30"
     separatecontext: false
     conditions:
     - label: "YES"
@@ -1192,11 +2451,12 @@ tasks:
             value:
               simple: HYAS.HASH-DOMAIN.domains
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3000
+          "y": 5800
         }
       }
     note: false
@@ -1206,12 +2466,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 275a6b1d-08c0-4eab-8645-6b254c6093f2
+  "30":
+    id: "30"
+    taskid: ff1a2091-761e-4136-8c8c-b21e503c4aac
     type: title
     task:
-      id: 275a6b1d-08c0-4eab-8645-6b254c6093f2
+      id: ff1a2091-761e-4136-8c8c-b21e503c4aac
       version: -1
       name: Test Done
       type: title
@@ -1219,191 +2479,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3640
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 3f673366-cefb-4b81-8a31-d2692bf6a9e1
-    type: regular
-    task:
-      id: 3f673366-cefb-4b81-8a31-d2692bf6a9e1
-      version: -1
-      name: hyas-get-c2attribution-records-by-indicator
-      description: Return C2 Attribution records for the provided indicator value.
-      script: HYAS Insight|||hyas-get-c2attribution-records-by-indicator
-      type: regular
-      iscommand: true
-      brand: HYAS Insight
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      indicator_type:
-        simple: ip
-      indicator_value:
-        simple: 197.210.84.34
-      limit:
-        simple: "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: a119256a-562b-4080-864d-a55815c99aa2
-    type: condition
-    task:
-      id: a119256a-562b-4080-864d-a55815c99aa2
-      version: -1
-      name: C2 Attribution Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "16"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.actor_ipv4
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.actor_ipv4
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.c2_domain
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.c2_domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.c2_ip
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.c2_ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.c2_url
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.c2_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.datetime
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.datetime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.email
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.email
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.email_domain
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.email_domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.referrer_domain
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.referrer_domain
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.referrer_ipv4
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.referrer_ipv4
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.referrer_url
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.referrer_url
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.sha256
-            iscontext: true
-        - operator: isEmpty
-          left:
-            value:
-              simple: HYAS.C2_Attribution.sha256
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3440
+          "y": 6000
         }
       }
     note: false
@@ -1418,7 +2499,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3655,
+        "height": 6015,
         "width": 380,
         "x": 50,
         "y": 50
@@ -1427,4 +2508,4 @@ view: |-
   }
 inputs: []
 outputs: []
-description: HYASInsight Test Playbook
+description: ''

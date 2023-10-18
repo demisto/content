@@ -26,17 +26,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "14"
-      - "13"
-      - "12"
-      - "11"
-      - "15"
+      - "18"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 750,
-          "y": -30
+          "y": -230
         }
       }
     note: false
@@ -346,7 +342,7 @@ tasks:
       description:
         simple: Blocked accounts
       fromType:
-        simple: everyone
+        simple: individual_email_address
       fromValue:
         complex:
           root: inputs.EmailToBlock
@@ -623,11 +619,59 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 9e4f3f09-0897-4f18-86ce-22dd8a09b18c
+    type: condition
+    task:
+      id: 9e4f3f09-0897-4f18-86ce-22dd8a09b18c
+      version: -1
+      name: Has emails to block?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+      - "15"
+      - "12"
+      - "11"
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EmailToBlock
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "16_17_yes": 0.62,
       "16_2_#default#": 0.32,
+      "18_2_#default#": 0.67,
       "4_2_#default#": 0.21,
       "4_8_yes": 0.62,
       "5_2_#default#": 0.27,
@@ -637,10 +681,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 775,
+        "height": 975,
         "width": 2020,
         "x": -70,
-        "y": -30
+        "y": -230
       }
     }
   }

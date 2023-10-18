@@ -1088,11 +1088,188 @@ script:
     - contextPath: TenableIO.Vulnerability.indexed
       description: The date and time (in Unix time) when the vulnerability was indexed into Tenable.io.
       type: Date
+  - arguments: []
+    description: Lists the filtering, sorting, and pagination capabilities available for scan records on endpoints/commands that support them.
+    name: tenable-io-list-scan-filters
+    outputs:
+    - contextPath: TenableIO.ScanFilter.name
+      description: The name of the scan filter.
+      type: String
+    - contextPath: TenableIO.ScanFilter.readable_name
+      description: The readable name of the scan filter.
+      type: String
+    - contextPath: TenableIO.ScanFilter.control.type
+      description: The type of control associated with the scan filter.
+      type: String
+    - contextPath: TenableIO.ScanFilter.control.regex
+      description: The regular expression used by the scan filter.
+      type: String
+    - contextPath: TenableIO.ScanFilter.control.readable_regex
+      description: An example expression that the filter's regular expression would match.
+      type: String
+    - contextPath: TenableIO.ScanFilter.operators
+      description: The operators available for the scan filter.
+      type: String
+    - contextPath: TenableIO.ScanFilter.group_name
+      description: The group name associated with the scan filter.
+      type: String
+  - arguments:
+    - name: scanId
+      description: The ID of the scan of which to get the runs.
+      required: true
+    - name: sortFields
+      description: A comma-separated list of fields by which to sort, in the order defined by "sortOrder".
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - start_date
+      - end_date
+      - status
+    - name: sortOrder
+      description: |
+        A comma-separated list of directions in which to sort the fields defined by "sortFields".
+        If multiple directions are chosen, they will be sequentially matched with "sortFields".
+        If only one direction is chosen it will be used to sort all values in "sortFields".
+        For example:
+          If sortFields is "start_date,status" and sortOrder is "asc,desc",
+          then start_date is sorted in ascending order and status in descending order.
+          If sortFields is "start_date,status" and sortOrder is simply "asc",
+          then both start_date and status are sorted in ascending order.
+      isArray: true
+      defaultValue: asc
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: excludeRollover
+      description: Whether to exclude rollover scans from the scan history.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: page
+      description: The page number of scan records to retrieve (used for pagination) starting from 1. The page size is defined by the "pageSize" argument.
+    - name: pageSize
+      description: The number of scan records per page to retrieve (used for pagination). The page number is defined by the "page" argument.
+    - name: limit
+      description: The maximum number of records to retrieve. If "pageSize" is defined, this argument is ignored.
+      defaultValue: '50'
+    description: Lists the individual runs of the specified scan.
+    name: tenable-io-get-scan-history
+    outputs:
+    - contextPath: TenableIO.ScanHistory.time_end
+      description: The end time of the scan.
+      type: Number
+    - contextPath: TenableIO.ScanHistory.scan_uuid
+      description: The UUID (Universally Unique Identifier) of the scan.
+      type: String
+    - contextPath: TenableIO.ScanHistory.id
+      description: The ID of the scan history.
+      type: Number
+    - contextPath: TenableIO.ScanHistory.is_archived
+      description: Indicates whether the scan is archived or not.
+      type: Boolean
+    - contextPath: TenableIO.ScanHistory.time_start
+      description: The start time of the scan.
+      type: Number
+    - contextPath: TenableIO.ScanHistory.visibility
+      description: The visibility of the scan.
+      type: String
+    - contextPath: TenableIO.ScanHistory.targets.custom
+      description: Indicates whether custom targets were used in the scan.
+      type: Boolean
+    - contextPath: TenableIO.ScanHistory.targets.default
+      description: Indicates whether the default targets were used in the scan.
+      type: Boolean
+    - contextPath: TenableIO.ScanHistory.status
+      description: The status of the scan.
+      type: String
+  - arguments:
+    - name: scanId
+      description: The identifier for the scan to export. Run the "tenable-io-list-scans" command to get all available scans.
+      required: true
+    - name: historyId
+      description: The unique identifier of the historical data to export. Run the "tenable-io-get-scan-history" command to get history IDs.
+    - name: historyUuid
+      description: The UUID of the historical data to export. Run the "tenable-io-get-scan-history" command to get history UUIDs.
+    - name: format
+      required: true
+      description: |
+        The file format to export the scan in. Scans can be export in the HTML and PDF formats for up to 35 days.
+         For scans that are older than 35 days, only the Nessus and CSV formats are supported.
+         The "chapters" argument must be defined if the chosen format is HTML or PDF.
+      defaultValue: CSV
+      auto: PREDEFINED
+      predefined:
+      - Nessus
+      - HTML
+      - PDF
+      - CSV
+    - name: chapters
+      description: A comma-separated list of chapters to include in the export. This argument is required if the file format is PDF or HTML.
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - vuln_hosts_summary
+      - vuln_by_host
+      - compliance_exec
+      - remediations
+      - vuln_by_plugin
+      - compliance
+    - name: filter
+      description: |
+        A comma-separated list of filters, in the format of "name quality value" to apply to the exported scan report.
+         Example: "port.protocol eq tcp, plugin_id eq 1234567"
+         Note: when used literally, commas and spaces should be escaped. (i.e. "\\," for comma and "\\s" for space)
+         Filters cannot be applied to scans older than 35 days.
+         Run "tenable-io-list-scan-filters" to get all available filters, ("Filter name" (name), "Filter operators" (quality) and "Readable regex" (value) in response).
+         For more information: https://developer.tenable.com/docs/scan-export-filters-tio
+      isArray: true
+    - name: filterSearchType
+      description: For multiple filters, specifies whether to use the AND or the OR logical operator.
+      defaultValue: AND
+      auto: PREDEFINED
+      predefined:
+      - AND
+      - OR
+    - name: assetId
+      description: The ID of the asset scanned.
+    - name: fileId
+      description: ''
+      hidden: true
+    - name: hide_polling_output
+      description: ''
+      hidden: true
+    polling: true
+    description: |
+      Export and download a scan report.
+      Scan results older than 35 days are supported in Nessus and CSV formats only, and filters cannot be applied.
+      Scans that are actively running cannot be exported (run "tenable-io-list-scans" to view scan statuses)
+    name: tenable-io-export-scan
+    outputs:
+    - contextPath: InfoFile.Size
+      description: The size of the file in bytes.
+      type: number
+    - contextPath: InfoFile.Name
+      description: The name of the file.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The War Room entry ID of the file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The format and encoding of the file.
+      type: string
+    - contextPath: InfoFile.Type
+      description: The type of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The file extension of the file.
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.68714
 tests:
 - Tenable.io test
 fromversion: 5.0.0

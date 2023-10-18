@@ -65,16 +65,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Account Enrichment - Generic v2.1
-* Eradication Plan
 * Ransomware Advanced Analysis
 * Ticket Management - Generic
-* Handle False Positive Alerts
-* Endpoint Investigation Plan
-* Ransomware Enrich and Contain
-* Recovery Plan
-* Containment Plan
 * Enrichment for Verdict
+* Endpoint Investigation Plan
+* Recovery Plan
+* Eradication Plan
+* Containment Plan
+* Account Enrichment - Generic v2.1
+* Handle False Positive Alerts
+* Ransomware Enrich and Contain
 
 ### Integrations
 
@@ -86,7 +86,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* setParentIncidentField
+* setParentIncidentFields
 * closeInvestigation
 
 ## Playbook Inputs

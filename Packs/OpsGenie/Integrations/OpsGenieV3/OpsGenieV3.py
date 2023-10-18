@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests import Response
 import urllib3
-from typing import Callable, Tuple
+from collections.abc import Callable
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
@@ -77,6 +77,10 @@ class Client(BaseClient):
 
     def create_alert(self, args: dict):
         args['responders'] = argToList(args.get('responders'))
+        if args.get('details') and not isinstance(args.get('details'), dict):
+            args['details'] = {key_value.split('=')[0]: key_value.split('=')[1]
+                               for key_value in argToList(args.get('details'))}
+
         args.update(Client.responders_to_json(args.get('responders', []), "responders"))
         return self._http_request(method='POST',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}",
@@ -162,6 +166,19 @@ class Client(BaseClient):
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert-id')}/tags",
                                   json_data=args)
 
+    def add_alert_note(self, args: dict):
+        return self._http_request(method='POST',
+                                  url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert_id')}/notes",
+                                  json_data=args)
+
+    def add_alert_details(self, args: dict):
+        if not isinstance(args.get('details'), dict):
+            args['details'] = {key_value.split('=')[0]: key_value.split('=')[1]
+                               for key_value in argToList(args.get('details'))}
+        return self._http_request(method='POST',
+                                  url_suffix=f"/v2/{ALERTS_SUFFIX}/{args.get('alert_id')}/details",
+                                  json_data=args)
+
     def remove_alert_tag(self, args: dict):
         args['tags'] = argToList(args.get('tags'))
         return self._http_request(method='DELETE',
@@ -177,6 +194,12 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{ALERTS_SUFFIX}/"
                                              f"{args.get('alert-id')}/attachments")
+
+    def get_alert_logs(self, args: dict):
+        alert_id = args.get('alert_id')
+        return self._http_request(method='GET',
+                                  url_suffix=f"/v2/{ALERTS_SUFFIX}/"
+                                             f"{alert_id}/logs")
 
     def get_schedule(self, args: dict):
         if not is_one_argument_given(args.get("schedule_id"), args.get("schedule_name")):
@@ -211,7 +234,7 @@ class Client(BaseClient):
                                   )
 
     def get_on_call(self, args: dict):
-        return self._http_request(method='GET', url_suffix=f"/v2/{SCHEDULE_SUFFIX}/" f"{args.get('schedule')}/on-calls",
+        return self._http_request(method='GET', url_suffix=f"/v2/{SCHEDULE_SUFFIX}/{args.get('schedule')}/on-calls",
                                   params={"scheduleIdentifierType": args.get('scheduleIdentifierType')})
 
     def create_incident(self, args: dict):
@@ -244,12 +267,12 @@ class Client(BaseClient):
             priority = argToList(args.get("priority", [ALL_TYPE]))
             if ALL_TYPE not in priority:
                 query += ' AND ' if query else ''
-                priority_parsed = ' OR '.join([p for p in priority])
+                priority_parsed = ' OR '.join(list(priority))
                 query += f'priority: ({priority_parsed})'
             tags = argToList(args.get("tags", []))
             if tags:
                 query += ' AND ' if query else ''
-                tag_parsed = ' OR '.join([t for t in tags])
+                tag_parsed = ' OR '.join(list(tags))
                 query += f'tag: ({tag_parsed})'
         return query
 
@@ -313,6 +336,11 @@ class Client(BaseClient):
     def get_team(self, args: dict):
         return self._http_request(method='GET',
                                   url_suffix=f"/v2/{TEAMS_SUFFIX}/{args.get('team_id')}"
+                                  )
+
+    def get_team_routing_rules(self, args: dict):
+        return self._http_request(method='GET',
+                                  url_suffix=f"/v2/{TEAMS_SUFFIX}/{args.get('team_id')}/routing-rules"
                                   )
 
     def list_teams(self):
@@ -617,6 +645,34 @@ def add_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     return get_request_command(client, args)
 
 
+def add_alert_note(client: Client, args: Dict[str, Any]) -> CommandResults:
+    args = {
+        'request_type': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddAlertNote',
+        **args
+    }
+    data = client.add_alert_note(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    return get_request_command(client, args)
+
+
+def add_alert_details(client: Client, args: Dict[str, Any]) -> CommandResults:
+    args = {
+        'request_type': ALERTS_SUFFIX,
+        'output_prefix': 'OpsGenie.AddAlertDetails',
+        **args
+    }
+    data = client.add_alert_details(args)
+    request_id = data.get("requestId")
+    if not request_id:
+        raise ConnectionError(f"Failed to send request - {data}")
+    args['request_id'] = request_id
+    return get_request_command(client, args)
+
+
 def remove_alert_tag(client: Client, args: Dict[str, Any]) -> CommandResults:
     args = {
         'request_type': ALERTS_SUFFIX,
@@ -637,6 +693,17 @@ def get_alert_attachments(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix="OpsGenie.Alert.Attachment",
         outputs=result.get("data"),
         readable_output=tableToMarkdown("OpsGenie Attachment", result.get("data")),
+        raw_response=result
+    )
+
+
+def get_alert_logs(client: Client, args: Dict[str, Any]) -> CommandResults:
+    result = client.get_alert_logs(args)
+    data = result.get("data")
+    return CommandResults(
+        outputs_prefix="OpsGenie.AlertLogs",
+        outputs=result.get("data"),
+        readable_output=tableToMarkdown("OpsGenie Logs", data),
         raw_response=result
     )
 
@@ -838,10 +905,12 @@ def get_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                                    args.get('timeout_in_seconds', DEFAULT_POLL_TIMEOUT))))
     else:
         results_dict = results.json()
+        outputs_prefix = args.get("output_prefix", f'OpsGenie.{request_type.capitalize()[:-1]}')
         return CommandResults(
-            outputs_prefix=args.get("output_prefix", f'OpsGenie.{request_type.capitalize()[:-1]}'),
+            outputs_prefix=outputs_prefix,
             outputs=results_dict.get("data"),
-            readable_output=tableToMarkdown("OpsGenie", results_dict.get('data')),
+            readable_output=tableToMarkdown(f"OpsGenie - {pascalToSpace(outputs_prefix.split('.')[-1])}",
+                                            results_dict.get('data')),
             raw_response=results_dict
         )
 
@@ -863,6 +932,17 @@ def get_teams(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix="OpsGenie.Team",
         outputs=result.get("data"),
         readable_output=tableToMarkdown("OpsGenie Team", result.get("data")),
+        raw_response=result
+    )
+
+
+def get_team_routing_rules(client: Client, args: Dict[str, Any]) -> CommandResults:
+    result = client.get_team_routing_rules(args)
+    data = result.get("data")
+    return CommandResults(
+        outputs_prefix="OpsGenie.TeamRoutingRule",
+        outputs=data,
+        readable_output=tableToMarkdown("OpsGenie Team Routing Rules", data),
         raw_response=result
     )
 
@@ -900,7 +980,7 @@ def fetch_incidents_by_type(client: Client,
         time_query = f'createdAt>{timestamp_last_run} AND createdAt<={timestamp_now}'
         params['query'] = f'{query} AND {time_query}' if query else f'{time_query}'
         params['limit'] = limit
-        params['is_fetch_query'] = True if query else False
+        params['is_fetch_query'] = bool(query)
         params['status'] = status
         params["priority"] = priority
         params["tags"] = tags
@@ -928,7 +1008,7 @@ def _get_utc_now():
 
 def fetch_incidents_command(client: Client,
                             params: Dict[str, Any],
-                            last_run: Optional[Dict] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+                            last_run: Optional[Dict] = None) -> tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -1017,8 +1097,11 @@ def main() -> None:
             'opsgenie-get-escalations': get_escalations,
             'opsgenie-escalate-alert': escalate_alert,
             'opsgenie-add-alert-tag': add_alert_tag,
+            'opsgenie-add-alert-note': add_alert_note,
+            'opsgenie-add-alert-details': add_alert_details,
             'opsgenie-remove-alert-tag': remove_alert_tag,
             'opsgenie-get-alert-attachments': get_alert_attachments,
+            'opsgenie-get-alert-logs': get_alert_logs,
             'opsgenie-get-schedules': get_schedules,
             'opsgenie-get-schedule-overrides': get_schedule_overrides,
             'opsgenie-get-on-call': get_on_call,
@@ -1031,6 +1114,7 @@ def main() -> None:
             'opsgenie-add-tag-incident': add_tag_incident,
             'opsgenie-remove-tag-incident': remove_tag_incident,
             'opsgenie-get-teams': get_teams,
+            'opsgenie-get-team-routing-rules': get_team_routing_rules,
             'opsgenie-get-request': get_request_command
         }
         command = demisto.command()

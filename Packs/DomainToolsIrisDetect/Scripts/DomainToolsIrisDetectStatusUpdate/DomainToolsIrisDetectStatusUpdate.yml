@@ -6,7 +6,6 @@ enabled: true
 name: DomainToolsIrisDetectStatusUpdate
 script: '-'
 subtype: python3
-system: false
 tags:
 - field-change-triggered
 timeout: 180ns

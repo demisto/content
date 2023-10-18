@@ -3,7 +3,6 @@
     "associatedTypes": [
         "SafeBreach Insight"
     ],
-    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "safebreachaffectedtargets",
     "closeForm": false,
@@ -51,7 +50,6 @@
     ],
     "description": "List of the affected target simulators (name, IP, number of remediation data points)",
     "editForm": true,
-    "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
     "id": "incident_safebreachaffectedtargets",
@@ -60,19 +58,14 @@
     "name": "SafeBreach Affected Targets",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "placeholder": "",
     "required": false,
-    "script": "",
-    "selectValues": [],
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
     "type": "grid",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
-    "validationRegex": "",
     "version": -1,
     "fromVersion": "5.5.0"
 }

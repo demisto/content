@@ -78,6 +78,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- defaultvalue: '50'
+  display: Maximum number of incident per fetch
+  name: limit
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
 - additionalinfo: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes). Proofpoint supports a maximum 1 week fetch back.
   defaultvalue: 1 hour
   display: First fetch time range
@@ -107,7 +114,7 @@ name: Proofpoint TAP v2
 script:
   commands:
   - arguments:
-    - description: 'A string containing an ISO8601-formatted interval. If this interval overlaps with previous requests for data, records from the previous request might be duplicated. The minimum interval is thirty seconds. The maximum interval is one hour. Examples: * 2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour interval, beginning at noon UTC on 05-01-2016 * PT30M/2016-05-01T12:30:00Z - the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm * UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using -0700 as the time zone'
+    - description: 'A string containing an ISO8601-formatted interval. If this interval overlaps with previous requests for data, records from the previous request might be duplicated. The minimum interval is thirty seconds. The maximum interval is one hour. Examples: * 2016-05-01T12:00:00Z/2016-05-01T13:00:00Z - an hour interval, beginning at noon UTC on 05-01-2016 * PT30M/2016-05-01T12:30:00Z - the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm * UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using -0700 as the time zone.'
       name: interval
     - auto: PREDEFINED
       description: 'A comma-separated list of the threat types to return. If empty, all threat types are returned. The following values are accepted: "url", "attachment", and "messageText".'
@@ -831,7 +838,7 @@ script:
       description: The malicious URL was clicked.
       type: String
     - contextPath: Proofpoint.ClicksBlocked.classification
-      description: The threat category of the malicious URL (Malware, Phish, or Spam)
+      description: The threat category of the malicious URL (Malware, Phish, or Spam).
       type: String
     - contextPath: Proofpoint.ClicksBlocked.clickTime
       description: The time the user clicked the URL.
@@ -1293,7 +1300,7 @@ script:
       description: The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.recipient
-      description: A list containing the email addresses of the recipients
+      description: A list containing the email addresses of the recipients.
       type: List
     - contextPath: Proofpoint.MessagesDelivered.senderIP
       description: The IP address of the sender.
@@ -1430,7 +1437,7 @@ script:
     - contextPath: Proofpoint.URL.success
       description: Indicates whether the URL could successfully be decoded.
       type: Boolean
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   runonce: false
   script: '-'

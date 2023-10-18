@@ -1052,23 +1052,50 @@ script:
       description: MIME type of the Summary JSON v2
       type: string
   - arguments:
+    - description: ID of the analysis from which to retrieve the screenshots from (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
+      name: analysis_id
+      required: true
+      default: false
+      isArray: false
+      secret: false
+    deprecated: false
+    description: >
+      Retrieves screenshots taken during a specific dynamic analysis. The screenshots are stored with file names like
+      'analysis_5_screenshot_2.png'. In this example, '5' represents the analysis ID from which the screenshot came,
+      and '2' indicates that it's the third screenshot taken during the analysis, in chronological order.
+    name: vmray-get-screenshots
+    execution: false
+    outputs:
+    - contextPath: InfoFile.Name
+      description: Filename
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the file
+      type: string
+    - contextPath: InfoFile.Size
+      description: The file size of the file
+      type: number
+    - contextPath: InfoFile.Info
+      description: MIME type of the file
+      type: string
+  - arguments:
     - description: Sample ID.
       name: sample_id
       required: true
     deprecated: true
-    description: This command performs a function similiar to the 'vmray-get-job-by-sample' command.
+    description: This command performs a function similar to the 'vmray-get-job-by-sample' command.
     name: get_job_sample
-  - arguments:
+  - deprecated: true
+    description: similar to vmray-get-sample
+    name: get_results
+    arguments:
     - description: ID of the sample.
       name: sample_id
       required: true
-    deprecated: true
-    description: similiar to vmray-get-sample
-    name: get_results
   - deprecated: true
     description: Retrieves a sample using the sample ID. (Deprecated)
     name: upload_sample
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.72123
   runonce: false
   script: '-'
   subtype: python3

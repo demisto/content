@@ -445,10 +445,11 @@ script:
     - contextPath: URL.DATA
       description: The URL.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.65389
   script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

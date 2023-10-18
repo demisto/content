@@ -1557,14 +1557,13 @@ def test_zoom_list_messages_command(mocker):
         ]
     }
     expacted_result = {
-        "messages": [
+        'ChatMessage': {"messages": [
             {"id": "message_id_1", "message": "Message 1", "sender": "sender_1",
              "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"},
             {"id": "message_id_2", "message": "Message 2", "sender": "sender_2",
              "sender_display_name": "Sender 2", "date_time": "2023-03-08T09:15:00Z"}
-        ],
+        ]},
         "ChatMessageNextToken": None
-
     }
     client.zoom_list_user_messages = mocker.MagicMock(return_value=expected_raw_data)
     from Zoom import zoom_list_messages_command
@@ -1585,11 +1584,80 @@ def test_zoom_list_messages_command(mocker):
     )
 
     assert result.outputs == expacted_result
-    assert result.outputs['messages'][0]['id'] == expacted_result['messages'][0]['id']
-    assert result.outputs['messages'][0]['message'] == expacted_result['messages'][0]['message']
-    assert result.outputs['messages'][0]['sender'] == expacted_result['messages'][0]['sender']
-    assert result.outputs['messages'][0]['sender_display_name'] == expacted_result['messages'][0]['sender_display_name']
-    assert result.outputs['messages'][0]['date_time'] == expacted_result['messages'][0]['date_time']
+    assert result.outputs['ChatMessage']['messages'][0]['id'] == expacted_result['ChatMessage']['messages'][0]['id']
+    assert result.outputs['ChatMessage']['messages'][0]['message'] == expacted_result['ChatMessage']['messages'][0]['message']
+    assert result.outputs['ChatMessage']['messages'][0]['sender'] == expacted_result['ChatMessage']['messages'][0]['sender']
+    assert result.outputs['ChatMessage']['messages'][0]['sender_display_name'] == expacted_result['ChatMessage']['messages'][0]['sender_display_name']  # noqa: E501
+    assert result.outputs['ChatMessage']['messages'][0]['date_time'] == expacted_result['ChatMessage']['messages'][0]['date_time']
+
+
+def test_zoom_list_messages_command_pageination(mocker):
+    """
+    Given -
+        client
+    When -
+        get all messages in date
+    Then -
+        Validate that the zoom_list_messages_command function is called with the correct arguments
+        Validate the command results including outputs and readable output
+    """
+    client = Client(base_url='https://test.com', account_id="mockaccount", client_id="mockclient", client_secret="mocksecret")
+    channel_id = "channel_id"
+    user_id = "user_id"
+    limit = 1
+    to_contact = "contact@example.com"
+    to_channel = "channel_id"
+    date_arg = "2023-03-07T00:49:01Z"
+    include_deleted_and_edited_message = True
+    search_type = "message"
+    search_key = "keyword"
+    exclude_child_message = False
+
+    expected_raw_data = {
+        "messages": [
+            {"id": "message_id_1", "message": "Message 1", "sender": "sender_1",
+                "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"}
+        ],
+        "next_page_token": "xxxxxxxxxxx"
+    }
+    expacted_result = {
+        "ChatMessage": {"messages": [
+            {"id": "message_id_1", "message": "Message 1", "sender": "sender_1",
+             "sender_display_name": "Sender 1", "date_time": "2023-03-07T10:30:00Z"}
+        ]},
+        "ChatMessageNextToken":
+            {"user_id": "user_id",
+             "to_contact": "contact@example.com",
+             "to_channel": "channel_id",
+             "date": "2023-03-07T00:49:01Z",
+             "include_deleted_and_edited_message": True,
+             "search_type": "message",
+             "search_key": "keyword",
+             "exclude_child_message": False,
+             "page_size": 1,
+             "next_page_token": "xxxxxxxxxxx"}
+    }
+    client.zoom_list_user_messages = mocker.MagicMock(return_value=expected_raw_data)
+    from Zoom import zoom_list_messages_command
+
+    result = zoom_list_messages_command(
+        client,
+        channel_id=channel_id,
+        user_id=user_id,
+        next_page_token='next_page_token',
+        limit=limit,
+        to_contact=to_contact,
+        to_channel=to_channel,
+        date=date_arg,
+        include_deleted_and_edited_message=include_deleted_and_edited_message,
+        search_type=search_type,
+        search_key=search_key,
+        exclude_child_message=exclude_child_message
+    )
+
+    assert result.outputs == expacted_result
+    assert result.outputs['ChatMessageNextToken']['user_id'] == expacted_result['ChatMessageNextToken']['user_id']
+    assert result.outputs['ChatMessageNextToken']['date'] == expacted_result['ChatMessageNextToken']['date']
 
 
 def test_zoom_update_message_command(mocker):

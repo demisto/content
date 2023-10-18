@@ -144,9 +144,11 @@ full_alert = {
         "scannerVersion": "CS_2.0"
     }
 }
+mirroring_fields = {"mirror_direction": None, "mirror_instance": ""}
+full_alert_with_mirroring_fields = {**full_alert, **mirroring_fields}
 full_incident = {'name': 'Policy name - P-11111',
                  'occurred': '2022-11-09T18:10:03Z',
-                 'rawJSON': json.dumps(full_alert),
+                 'rawJSON': json.dumps(full_alert_with_mirroring_fields),
                  'severity': 3}
 
 ''' HELPER FUNCTIONS TESTS ARGUMENTS '''
@@ -226,18 +228,19 @@ truncated_alert6 = {'id': 'P-666666', 'alertTime': 1000000120000, 'policy': {'na
 incident6 = {'name': 'Policy Six - P-666666',
              'occurred': '2001-09-09T01:48:40Z',
              'rawJSON': '{"id": "P-666666", "alertTime": 1000000120000, "policy": '
-                        '{"name": "Policy Six", "severity": "medium"}}',
+                        '{"name": "Policy Six", "severity": "medium"}, "mirror_direction": null, "mirror_instance": ""}',
              'severity': 2}
 truncated_alert7 = {'id': 'P-777777', 'alertTime': 1000000130000, 'policy': {'name': 'Policy Seven', 'severity': 'low'}}
 incident7 = {'name': 'Policy Seven - P-777777',
              'occurred': '2001-09-09T01:48:50Z',
              'rawJSON': '{"id": "P-777777", "alertTime": 1000000130000, "policy": '
-                        '{"name": "Policy Seven", "severity": "low"}}',
+                        '{"name": "Policy Seven", "severity": "low"}, "mirror_direction": null, "mirror_instance": ""}',
              'severity': 1}
 truncated_alert_no_policy = {'id': 'P-888888', 'alertTime': 1000000130000}
 incident_no_policy = {'name': 'No policy - P-888888',
                       'occurred': '2001-09-09T01:48:50Z',
-                      'rawJSON': '{"id": "P-888888", "alertTime": 1000000130000}',
+                      'rawJSON': '{"id": "P-888888", "alertTime": 1000000130000, '
+                                 '"mirror_direction": null, "mirror_instance": ""}',
                       'severity': 0}
 
 # test_filter_alerts
@@ -327,3 +330,54 @@ fetch_with_expiring_ids = ({'time': 999990000000, 'fetched_ids': {}},
                            999995330000,
                            {},
                            999998930000)
+
+# mirroring_tests
+alert_search_request_response = [{'id': 'P-1111111', 'status': 'resolved'},
+                                 {'id': 'P-1111112', 'status': 'dismissed'},
+                                 {'id': 'P-1111113', 'status': 'snoozed'}
+                                 ]
+
+alert_get_details_request_dismissed_alert_raw_response = {'id': 'test id', 'status': 'dismissed', 'reason': 'USER_DISMISSED',
+                                                          'dismissalNote': 'test dismiss', 'policy': {'name': 'alert name'},
+                                                          'alertTime': '2023-08-16T11:39:36Z', 'firstSeen': '2023-08-16T11:39:36Z'}
+
+alert_get_details_request_snoozed_alert_raw_response = {'id': 'test id', 'status': 'snoozed', 'reason': 'USER_SNOOZED',
+                                                        'dismissalNote': 'test snooze', 'policy': {'name': 'alert name'},
+                                                        'alertTime': '2023-08-16T11:39:36Z', 'firstSeen': '2023-08-16T11:39:36Z'}
+
+alert_get_details_request_resolved_alert_raw_response = {'id': 'test id', 'status': 'resolved', 'reason': 'RESOLVED',
+                                                         'policy': {'name': 'alert name'},
+                                                         'alertTime': '2023-08-16T11:39:36Z', 'firstSeen': '2023-08-16T11:39:36Z'}
+
+alert_get_details_request_reopened_alert_raw_response = {'id': 'test id', 'status': 'open', 'reason': 'USER_REOPENED',
+                                                         'policy': {'name': 'alert name'},
+                                                         'alertTime': '2023-08-16T11:39:36Z', 'firstSeen': '2023-08-16T11:39:36Z'}
+
+get_remote_alert_data_dismissed_alert_updated_object = {'status': 'dismissed', 'reason': 'USER_DISMISSED',
+                                                        'dismissalNote': 'test dismiss', 'policy': {'name': 'alert name'}}
+
+get_remote_alert_data_snoozed_alert_updated_object = {'status': 'snoozed', 'reason': 'USER_SNOOZED',
+                                                      'dismissalNote': 'test snooze', 'policy': {'name': 'alert name'}}
+
+get_remote_alert_data_resolved_alert_updated_object = {'status': 'resolved', 'reason': 'RESOLVED', 'dismissalNote': '',
+                                                       'policy': {'name': 'alert name'}}
+
+get_remote_alert_data_reopened_alert_updated_object = {'status': 'open', 'reason': 'USER_REOPENED', 'dismissalNote': '',
+                                                       'policy': {'name': 'alert name'}}
+
+dismissed_closed_xsoar_entry = {'dbotIncidentClose': True,
+                                'rawCloseReason': 'dismissed',
+                                'closeReason': 'Alert was dismissed on Prisma Cloud.',
+                                'closeNotes': 'test dismiss'}
+
+snoozed_closed_xsoar_entry = {'dbotIncidentClose': True,
+                              'rawCloseReason': 'snoozed',
+                              'closeReason': 'Alert was snoozed on Prisma Cloud.',
+                              'closeNotes': 'test snooze'}
+
+resolved_closed_xsoar_entry = {'dbotIncidentClose': True,
+                               'rawCloseReason': 'resolved',
+                               'closeReason': 'Alert was resolved on Prisma Cloud.',
+                               'closeNotes': 'resolved'}
+
+reopened_closed_xsoar_entry = {'dbotIncidentReopen': True}

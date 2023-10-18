@@ -38,99 +38,6 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
         """
         return fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
 
-    def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
-        """
-        Fetches emails from given folder that were modified after specific datetime (last_fetch).
-
-        All fields are fetched for given email using select=* clause,
-        for more information https://docs.microsoft.com/en-us/graph/query-parameters.
-        The email will be excluded from returned results if it's id is presented in exclude_ids.
-        Number of fetched emails is limited by _emails_fetch_limit parameter.
-        The filtering and ordering is done based on modified time.
-
-        :type folder_id: ``str``
-        :param folder_id: Folder id
-
-        :type last_fetch: ``dict``
-        :param last_fetch: Previous fetch data
-
-        :type exclude_ids: ``list``
-        :param exclude_ids: List of previous fetch email ids to exclude in current run
-
-        :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
-        :rtype: ``list`` and ``list``
-        """
-        demisto.debug(f'Fetching Emails starting from {last_fetch}')
-        fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch,
-                                         folder_id=folder_id, overwrite_rate_limit_retry=True,
-                                         mark_emails_as_read=self._mark_fetched_read)
-
-        fetched_emails = fetched_emails[:self._emails_fetch_limit]
-
-        if exclude_ids:  # removing emails in order to prevent duplicate incidents
-            fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
-
-        fetched_emails_ids = [email.get('id') for email in fetched_emails]
-        return fetched_emails, fetched_emails_ids
-
-    def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
-        """
-        Parses fetched emails as incidents.
-
-        :type email: ``dict``
-        :param email: Fetched email to parse
-
-        :return: Parsed email
-        :rtype: ``dict``
-        """
-        parsed_email = GraphMailUtils.parse_item_as_dict(email)
-
-        # handling attachments of fetched email
-        attachments = self._get_email_attachments(
-            message_id=email.get('id', ''),
-            overwrite_rate_limit_retry=overwrite_rate_limit_retry
-        )
-        if attachments:
-            parsed_email['Attachments'] = attachments
-
-        parsed_email['Mailbox'] = self._mailbox_to_fetch
-
-        if self._display_full_email_body:
-            body = email.get('body', {}).get('content', '')
-
-        else:
-            body = email.get('bodyPreview', '')
-
-        incident = {
-            'name': parsed_email['Subject'],
-            'details': body,
-            'labels': GraphMailUtils.parse_email_as_labels(parsed_email),
-            'occurred': parsed_email['ModifiedTime'],
-            'attachment': parsed_email.get('Attachments', []),
-            'rawJSON': json.dumps(parsed_email)
-        }
-
-        return incident
-
-    def get_emails(self, exclude_ids, last_fetch, folder_id, overwrite_rate_limit_retry=False,
-                   mark_emails_as_read: bool = False) -> list:
-
-        results = self.get_emails_from_api(folder_id,
-                                           last_fetch,
-                                           limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
-                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry)
-
-        if mark_emails_as_read:
-            for email in results:
-                if email.get('id'):
-                    self.update_email_read_status(
-                        user_id=self._mailbox_to_fetch,
-                        message_id=email["id"],
-                        read=True,
-                        folder_id=folder_id)
-
-        return results
-
     @logger
     def fetch_incidents(self, last_run):
         """
@@ -164,26 +71,39 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
             last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
             demisto.info(f"initialize fetch and pull emails from date :{last_fetch}")
 
-        fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
-                                                                     exclude_ids=exclude_ids)
-        incidents = list(map(lambda email: self._parse_email_as_incident(email, True), fetched_emails))
+        fetched_emails, exclude_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
+                                                              exclude_ids=exclude_ids)
+
+        incidents = [self._parse_email_as_incident(email, True) for email in fetched_emails]
+
         next_run_time = self._get_next_run_time(fetched_emails, last_fetch)
+
         next_run = {
             'LAST_RUN_TIME': next_run_time,
-            'LAST_RUN_IDS': fetched_emails_ids,
+            'LAST_RUN_IDS': exclude_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch
         }
-        demisto.info(f"fetched {len(incidents)} incidents")
+
         demisto.debug(f'MicrosoftGraphMail - Next run after incidents fetching: {json.dumps(next_run)}')
         demisto.debug(f"MicrosoftGraphMail - Number of incidents before filtering: {len(fetched_emails)}")
         demisto.debug(f"MicrosoftGraphMail - Number of incidents after filtering: {len(incidents)}")
+        demisto.debug(f"MicrosoftGraphMail - Number of incidents skipped: {len(fetched_emails)-len(incidents)}")
+
+        """
+        The below pop is here to maintain parity between this (single-user) version of
+        the graph mail integration and the application-permission version. It is output
+        by the ApiModule but does not provide any functionaltiy and consideration should be given
+        in the future to either removing it's
+        addition in the Api module.
+        """
+        for incident in incidents:  # remove the ID from the incidents, they are used only for look-back.
+            incident.pop('ID', None)
+
+        demisto.info(f"fetched {len(incidents)} incidents")
+        demisto.debug(f"{next_run=}")
+
         return next_run, incidents
-
-
-def reset_auth() -> str:
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!msgraph-mail-test** to verify the authentication.'
 
 
 def main():     # pragma: no cover
@@ -218,6 +138,7 @@ def main():     # pragma: no cover
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     display_full_email_body = argToBoolean(params.get("display_full_email_body", "false"))
     mark_fetched_read = argToBoolean(params.get("mark_fetched_read", "false"))
+    fetch_html_formatting = argToBoolean(params.get("fetch_html_formatting", "false"))
 
     # params related to self deployed
     tenant_id = refresh_token if self_deployed else ''
@@ -225,12 +146,7 @@ def main():     # pragma: no cover
     # params related to oproxy
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
-
-    # Client gets refresh_token_param as well as refresh_token which is the current refresh token from the integration
-    # context (if exists) so It will be possible to manually update the refresh token param for an existing integration
-    # instance.
-    refresh_token_param = refresh_token  # Refresh token from the integration parameters (i.e current instance config)
-    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token_param
+    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
 
     client = MsGraphListenerClient(
         self_deployed=self_deployed,
@@ -246,6 +162,7 @@ def main():     # pragma: no cover
         folder_to_fetch=folder_to_fetch,
         first_fetch_interval=first_fetch_interval,
         emails_fetch_limit=emails_fetch_limit,
+        fetch_html_formatting=fetch_html_formatting,
 
         refresh_token=refresh_token,
         auth_code=auth_code,
@@ -254,7 +171,6 @@ def main():     # pragma: no cover
         mark_fetched_read=mark_fetched_read,
         redirect_uri=params.get('redirect_uri', ''),
         certificate_thumbprint=certificate_thumbprint,
-        refresh_token_param=refresh_token_param,
         managed_identities_client_id=managed_identities_client_id)
     try:
         args = demisto.args()
@@ -271,7 +187,7 @@ def main():     # pragma: no cover
             client.test_connection()
             return_results(CommandResults(readable_output='```✅ Success!```'))
         if command == 'msgraph-mail-auth-reset':
-            return_results(CommandResults(readable_output=reset_auth()))
+            return_results(reset_auth())
         if command == 'fetch-incidents':
             next_run, incidents = client.fetch_incidents(demisto.getLastRun())
             demisto.setLastRun(next_run)
@@ -286,8 +202,16 @@ def main():     # pragma: no cover
             return_results(list_attachments_command(client, args))
         elif command == 'msgraph-mail-get-attachment':
             return_results(get_attachment_command(client, args))
+        elif command == 'msgraph-mail-create-folder':
+            return_results(create_folder_command(client, args))
         elif command == 'msgraph-mail-get-email-as-eml':
             return_results(get_email_as_eml_command(client, args))
+        elif command == 'msgraph-mail-move-email':
+            return_results(move_email_command(client, args))
+        elif command == 'msgraph-mail-list-folders':
+            return_results(list_folders_command(client, args))
+        elif command == 'msgraph-mail-list-child-folders':
+            return_results(list_child_folders_command(client, args))
         elif command == 'msgraph-mail-send-draft':
             return_results(send_draft_command(client, args))  # pylint: disable=E1123
         elif command == 'msgraph-update-email-status':

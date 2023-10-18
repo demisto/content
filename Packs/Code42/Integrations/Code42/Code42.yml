@@ -797,7 +797,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.63737
+  dockerimage: demisto/py42:1.0.0.66909
   isfetch: true
   runonce: false
   script: '-'

@@ -1,0 +1,7 @@
+{
+    "machine1": {
+        "demisto_version": "8.3.0",
+        "base_url": "https://test_machine.us.test.com",
+        "x-xdr-auth-id": "101"
+    }
+}

@@ -1,0 +1,153 @@
+category: Analytics & SIEM
+commonfields:
+  id: CommvaultSecurityIQ
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Long running instance ( Only select it, if Fetch Incidents was not selected )
+  name: longRunning
+  required: false
+  type: 8
+- display: Commvault Webservice Url
+  name: CVWebserviceUrl
+  required: true
+  type: 0
+- display: Commvault API Token
+  name: CommvaultAPIToken
+  hiddenusername: true
+  displaypassword: API Token
+  required: true
+  type: 9
+- display: Azure KeyVault Url
+  name: AzureKeyVaultUrl
+  hiddenusername: true
+  displaypassword: AzureKeyVaultUrl
+  required: false
+  type: 9
+- display: Azure KeyVault Tenant ID
+  name: AzureKeyVaultTenantId
+  hiddenusername: true
+  displaypassword: Azure KeyVault Tenant ID
+  required: false
+  type: 9
+- display: Azure KeyVault Client Secret
+  name: AzureKeyVaultClientSecret
+  hiddenusername: true
+  displaypassword: Azure KeyVault Client Secret
+  required: false
+  type: 9
+- display: Azure KeyVault Client ID
+  name: AzureKeyVaultClientId
+  required: false
+  type: 4
+- display: 'Port mapping (<port> or <host port>:<docker port>) '
+  name: longRunningPort
+  required: false
+  type: 0
+  additionalinfo: Only for Long running Integration
+- display: Incident type
+  name: incidentType
+  defaultvalue: Commvault Suspicious File Activity
+  required: false
+  type: 13
+- defaultvalue: '60'
+  display: Incidents Fetch Interval
+  additionalinfo: Only for Fetch Incidents
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Forwarding Rule
+  additionalinfo: Only for Long running Integration
+  name: forwardingRule
+  options:
+  - Syslog
+  - Webhook
+  required: false
+  type: 15
+- defaultvalue: 1 day 
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  additionalinfo: Only for Fetch Incidents
+  name: first_fetch
+  required: false
+  type: 0
+- display: Max events to fetch
+  additionalinfo: Maximum events that can be fetch is 200 (Only for Fetch Incidents)
+  name: max_fetch
+  required: false
+  type: 0
+  defaultvalue: '50'
+- name: creds_certificate
+  display: Certificate
+  type: 9
+  section: Connect
+  displaypassword: Private Key
+  required: false
+description: Commvault Security IQ provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
+display: Commvault Security IQ
+name: CommvaultSecurityIQ
+script:
+  commands:
+  - deprecated: false
+    description: Disables data aging on CS
+    execution: false
+    name: commvault-security-set-disable-data-aging
+    outputs:
+    - contextPath: CommvaultSecurityIQ.DisableDataAging
+      description: Status returned after calling disable data aging API
+      type: string
+  - deprecated: false
+    description: Generate Token
+    execution: false
+    name: commvault-security-get-generate-token
+    outputs:
+    - contextPath: CommvaultSecurityIQ.GenerateToken
+      description: Status indicating whether successfully generated access token or not 
+      type: string
+  - deprecated: false
+    description: Read the access token from KeyVault
+    execution: false
+    name: commvault-security-get-access-token-from-keyvault
+    outputs:
+    - contextPath: CommvaultSecurityIQ.GetAccessToken
+      description: Status returned after getting the access token from KeyVault 
+      type: string
+  - deprecated: false
+    description: Disable SAML provider
+    execution: false
+    name: commvault-security-set-disable-saml-provider
+    outputs:
+    - contextPath: CommvaultSecurityIQ.DisableSaml
+      description: Status indicating whether successfully disabled SAML provider or not
+      type: string
+  - deprecated: false
+    description: Copy the list of affected files list to war room
+    execution: false
+    name: commvault-security-get-copy-files-list-to-war-room
+  - deprecated: false
+    description: Disables user
+    execution: false
+    name: commvault-security-set-disable-user
+    arguments:
+    - name: user_email
+      description: Email id of the user to be disabled.
+      required: true
+      type: textArea
+    outputs:
+    - contextPath: CommvaultSecurityIQ.DisableUser
+      description: Response indicating whether successfully disabled user or not.
+      type: string
+  dockerimage: demisto/commvault:1.0.0.68497
+  feed: false
+  isfetch: true
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

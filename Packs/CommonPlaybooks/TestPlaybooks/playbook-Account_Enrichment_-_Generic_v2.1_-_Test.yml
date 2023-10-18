@@ -1,16 +1,16 @@
 id: Account Enrichment - Generic v2.1 - Test
 version: -1
-fromversion: 5.0.0
+fromversion: 6.8.0
 name: Account Enrichment - Generic v2.1 - Test
 description: A test for the Account Enrichment - Generic v2 playbook.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 628ddf6f-d859-4b9b-8679-10571ea848fe
+    taskid: 938ee2b5-dae1-443e-8b36-b87b09db6ff2
     type: start
     task:
-      id: 628ddf6f-d859-4b9b-8679-10571ea848fe
+      id: 938ee2b5-dae1-443e-8b36-b87b09db6ff2
       version: -1
       name: ""
       iscommand: false
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 42e5ac7e-2b61-48d7-8988-16de9960f7f4
+    taskid: 648f1602-68e5-4e44-8783-2e1547e24d17
     type: regular
     task:
-      id: 42e5ac7e-2b61-48d7-8988-16de9960f7f4
+      id: 648f1602-68e5-4e44-8783-2e1547e24d17
       version: -1
       name: Users with a domain
       description: 'Will create an array object in context from given string input '
@@ -53,7 +53,7 @@ tasks:
       - "10"
     scriptarguments:
       arrayData:
-        simple: DEM449982,DEM531065
+        simple: DEM449982,DEM531065,desktop-s2455r8\demisto,Administrator
       contextKey:
         simple: Account.Username
     separatecontext: false
@@ -74,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: be320151-f8bd-43c2-8dd6-b64f706a3462
+    taskid: 69c06083-9dd2-4286-8bbb-42cab5d95a6a
     type: playbook
     task:
-      id: be320151-f8bd-43c2-8dd6-b64f706a3462
+      id: 69c06083-9dd2-4286-8bbb-42cab5d95a6a
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -124,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 372ee57a-43b3-4ace-8088-ddc94f526a3f
+    taskid: bbc74893-7273-4a63-8077-6f37627774ad
     type: title
     task:
-      id: 372ee57a-43b3-4ace-8088-ddc94f526a3f
+      id: bbc74893-7273-4a63-8077-6f37627774ad
       version: -1
       name: Checking with a Domain
       type: title
@@ -155,10 +155,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a8b08f80-3b3b-4c97-8ac1-786542cfb260
+    taskid: c7223b7b-93f3-4b51-8a44-1895a5be5328
     type: regular
     task:
-      id: a8b08f80-3b3b-4c97-8ac1-786542cfb260
+      id: c7223b7b-93f3-4b51-8a44-1895a5be5328
       version: -1
       name: Delete Context
       description: Clear the context for a fresh start of the test.
@@ -191,10 +191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 9cffe0a3-76f9-4f91-81f9-cdc868cd6cf2
+    taskid: 7b0d6394-6784-4500-8f45-30f750c05f3c
     type: condition
     task:
-      id: 9cffe0a3-76f9-4f91-81f9-cdc868cd6cf2
+      id: 7b0d6394-6784-4500-8f45-30f750c05f3c
       version: -1
       name: Was the account enriched?
       description: Checks whether the account was enriched.
@@ -239,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 3088d8ca-4179-4815-8780-b53d275a2add
+    taskid: c19e900b-d8b0-48a6-897a-87c27e76e97e
     type: regular
     task:
-      id: 3088d8ca-4179-4815-8780-b53d275a2add
+      id: c19e900b-d8b0-48a6-897a-87c27e76e97e
       version: -1
       name: Make test fail
       description: Prints an error entry with a given message.
@@ -275,10 +275,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: f2c3b038-ac2b-4661-8f9f-1535fa5dba98
+    taskid: 1c9bcc76-5564-41e1-86bc-81fb64d94bb0
     type: title
     task:
-      id: f2c3b038-ac2b-4661-8f9f-1535fa5dba98
+      id: 1c9bcc76-5564-41e1-86bc-81fb64d94bb0
       version: -1
       name: Checking with a Domain
       type: title
@@ -303,10 +303,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 6ada5f2c-bba8-423d-86e8-404b8df7658b
+    taskid: f1d64a8a-3589-4201-80ec-b87b7024bf93
     type: regular
     task:
-      id: 6ada5f2c-bba8-423d-86e8-404b8df7658b
+      id: f1d64a8a-3589-4201-80ec-b87b7024bf93
       version: -1
       name: Delete Context
       description: Clear the context for a fresh start of the test.
@@ -339,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: f84b83dc-6451-4fdd-8eea-8e91279ea045
+    taskid: 582a5630-c097-46ac-8760-d370ad922477
     type: playbook
     task:
-      id: f84b83dc-6451-4fdd-8eea-8e91279ea045
+      id: 582a5630-c097-46ac-8760-d370ad922477
       version: -1
       name: Account Enrichment - Generic v2.1
       description: |-
@@ -381,10 +381,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 43bec4b2-8eec-49bc-8059-cc9d0da80ca5
+    taskid: 71ace41d-837c-4b8b-8238-0c7bd6ba71f4
     type: title
     task:
-      id: 43bec4b2-8eec-49bc-8059-cc9d0da80ca5
+      id: 71ace41d-837c-4b8b-8238-0c7bd6ba71f4
       version: -1
       name: Test Without any Inputs
       type: title

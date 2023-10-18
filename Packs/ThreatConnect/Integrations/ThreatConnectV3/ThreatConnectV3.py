@@ -411,23 +411,30 @@ def integration_test(client: Client, args: dict) -> None:  # pragma: no cover
     return_results('ok')
 
 
-def get_last_run_time(groups: list) -> str:
-    latest_date = datetime(1, 1, 1, 0, 0)
+def get_last_run_time(groups: list, last_run: str) -> str:
+    latest_date = dateparser.parse(last_run)
+    if not latest_date:
+        raise DemistoException(f'There was a problem parsing {last_run=} with dateparser.parse')
+
     for group in groups:
-        group_date = datetime.strptime(group.get('dateAdded'), '%Y-%m-%dT%H:%M:%SZ')
-        if group_date > latest_date:
+        try:
+            group_date = datetime.strptime(group.get('dateAdded'), '%Y-%m-%dT%H:%M:%SZ')
+        except Exception as e:
+            demisto.debug(f'Error parsing group date, value {group.get("dateAdded")=} error message {e}')
+            raise e
+
+        if group_date and group_date > latest_date:
             latest_date = group_date
+
     return latest_date.isoformat()
 
 
 def convert_to_dict(arr: list):
-    new_dict = {}
-    for item in arr:
-        new_dict[item] = True
+    new_dict = {item: True for item in arr}
     return new_dict
 
 
-def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
+def fetch_incidents(client: Client, *args) -> str:
     params = demisto.params()
     tags = params.get('tags', '')
     if tags == 'None':
@@ -443,15 +450,19 @@ def fetch_incidents(client: Client, args: dict) -> None:  # pragma: no cover
         last_run = f"{params.get('first_fetch') or '3 days'} ago"
         last_run = dateparser.parse(last_run)
 
+    last_run = str(last_run)
     response = list_groups(client, {}, group_type=group_type, fields=fields, return_raw=True, tag=tags,
                            status=status, from_date=last_run, limit=max_fetch, sort='&sorting=dateAdded%20ASC')
-    incidents = []
-    for incident in response:
-        incidents.append(detection_to_incident(incident, incident.get('dateAdded')))
+    incidents: list = []
+    incidents.extend(
+        detection_to_incident(incident, incident.get('dateAdded'))
+        for incident in response
+    )
     demisto.incidents(incidents)
-    set_last = get_last_run_time(response)
-    demisto.debug('Setting last run to: ' + set_last)
+    set_last = get_last_run_time(response, last_run)
+    demisto.debug(f'Setting last run to: {set_last}')
     demisto.setLastRun({'last': set_last})
+    return set_last
 
 
 def tc_fetch_incidents_command(client: Client, args: dict) -> None:  # pragma: no cover

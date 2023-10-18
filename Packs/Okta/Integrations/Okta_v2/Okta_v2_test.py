@@ -638,6 +638,23 @@ def test_get_user_command(mocker, args, expected_context, expected_readable):
     assert expected_readable in readable
 
 
+def test_get_user_command_not_found_user(mocker):
+    """
+        Given:
+       - Username.
+
+       When:
+       - running get_user_command.
+
+       Then:
+       - Ensure that no exception was raised, and assert the readable output.
+    """
+    args = {"username": "test@this.com"}
+    mocker.patch.object(client, 'get_user', side_effect=Exception('Error in API call [404] - Not found'))
+    readable, _, _ = get_user_command(client, args)
+    assert 'User test@this.com was not found.' in readable
+
+
 @pytest.mark.parametrize(
     # Write and define the expected
     "args ,expected_context, expected_readable",

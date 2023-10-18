@@ -44,7 +44,7 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 3,
                         "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
@@ -113,36 +113,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "incidentsubcategory",
+                                "fieldId": "subcategory",
                                 "height": 22,
-                                "id": "1c3570d0-6712-11ed-9428-9f8510e86b77",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "incidentcategory",
-                                "height": 22,
-                                "id": "1ec4f550-6712-11ed-9428-9f8510e86b77",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "decyfircategory",
-                                "height": 22,
-                                "id": "bb2078f0-6bba-11ed-9dbd-816884b4e382",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "decyfirsubcategory",
-                                "height": 22,
-                                "id": "bc75f6d0-6bba-11ed-9dbd-816884b4e382",
+                                "id": "166dd0b0-260d-11ee-9a85-9d224c68568c",
                                 "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -165,8 +138,8 @@
                         "static": false,
                         "type": "notes",
                         "w": 1,
-                        "x": 2,
-                        "y": 2
+                        "x": 0,
+                        "y": 9
                     },
                     {
                         "displayType": "ROW",
@@ -179,65 +152,11 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 2,
-                        "y": 0
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
-                        "isVisible": true,
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Linked Incidents",
-                        "static": false,
-                        "type": "linkedIncidents",
-                        "w": 1,
-                        "x": 1,
-                        "y": 6
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Child Incidents",
-                        "static": false,
-                        "type": "childInv",
-                        "w": 1,
-                        "x": 2,
-                        "y": 6
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Evidence",
-                        "static": false,
-                        "type": "evidence",
-                        "w": 1,
-                        "x": 0,
-                        "y": 6
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Team Members",
-                        "static": false,
-                        "type": "team",
-                        "w": 1,
-                        "x": 0,
-                        "y": 8
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
+                        "h": 4,
                         "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
                         "maxW": 3,
                         "moved": false,
@@ -248,10 +167,10 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 1,
-                        "y": 4
+                        "y": 7
                     },
                     {
-                        "displayType": "CARD",
+                        "displayType": "ROW",
                         "h": 2,
                         "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                         "items": [
@@ -307,7 +226,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 0
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -348,32 +267,34 @@
                         "name": "Closing Information",
                         "static": false,
                         "w": 1,
-                        "x": 1,
-                        "y": 8
+                        "x": 0,
+                        "y": 11
                     },
                     {
                         "displayType": "CARD",
-                        "h": 2,
+                        "h": 5,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "details",
-                                "height": 22,
-                                "id": "incident-details-field",
+                                "endCol": 4,
+                                "fieldId": "decyfirdatadetails",
+                                "height": 106,
+                                "id": "87357ad0-1575-11ee-bf4a-1f3b02a9b840",
                                 "index": 0,
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289"
                             }
                         ],
                         "maxW": 3,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
                     },
                     {
                         "h": 2,
@@ -397,8 +318,9 @@
                         "static": false,
                         "type": "labels",
                         "w": 1,
-                        "x": 1,
-                        "y": 2
+                        "x": 0,
+                        "y": 3,
+                        "displayType": "ROW"
                     }
                 ],
                 "type": "custom"
@@ -412,21 +334,6 @@
                 "id": "workPlan",
                 "name": "Work Plan",
                 "type": "workPlan"
-            },
-            {
-                "id": "evidenceBoard",
-                "name": "Evidence Board",
-                "type": "evidenceBoard"
-            },
-            {
-                "id": "relatedIncidents",
-                "name": "Related Incidents",
-                "type": "relatedIncidents"
-            },
-            {
-                "id": "canvas",
-                "name": "Canvas",
-                "type": "canvas"
             }
         ]
     },
@@ -481,10 +388,6 @@
                     },
                     {
                         "fieldId": "incident_attachment",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_incidentsubcategory",
                         "isVisible": true
                     }
                 ],
@@ -820,10 +723,6 @@
                     },
                     {
                         "fieldId": "incident_incidentlink",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_incidentsubcategory",
                         "isVisible": true
                     },
                     {
@@ -1635,10 +1534,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_incidentsubcategory",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_incomingmirrorerror",
                         "isVisible": true
                     },
@@ -2050,6 +1945,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.2.0",
-    "description": "",
-    "marketplaces": ["xsoar"]
+    "description": ""
 }

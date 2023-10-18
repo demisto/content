@@ -206,6 +206,9 @@ MOCKED_INCIDENT_ALERTS = {
                 "endTimeUtc": "2021-08-12T01:48:03.4349774Z",
                 "startTimeUtc": "2021-08-11T01:48:03.4349774Z",
                 "timeGenerated": "2021-08-12T01:53:07.3071703Z",
+                "additionalData": {
+                    "MitreTechniques": "Unknown",
+                },
                 "friendlyName": "Test alert 1"
             }
         },
@@ -240,6 +243,9 @@ MOCKED_INCIDENT_ALERTS = {
                 "endTimeUtc": "2021-08-12T01:48:03.4349774Z",
                 "startTimeUtc": "2021-08-11T01:48:03.4349774Z",
                 "timeGenerated": "2021-08-12T01:53:07.3071703Z",
+                "additionalData": {
+                    "MitreTechniques": "Unknown",
+                },
                 "friendlyName": "Test alert 2"
             }
         }
@@ -398,12 +404,12 @@ MOCKED_THREAT_INDICATOR_OUTPUT = {
                         "patternTypeValues": [
                             {
                                 "valueType": "url",
-                                "value": "‘twitter.com’"
+                                "value": "‘twitter.com’"  # noqa: RUF001
                             }
                         ]
                     }
                 ],
-                "pattern": "[url:value = ‘twitter.com’]",
+                "pattern": "[url:value = ‘twitter.com’]",  # noqa: RUF001
                 "patternType": "twitter.com",
                 "validFrom": "2021-11-17T08:20:15.111Z"
             }
@@ -525,12 +531,12 @@ MOCKED_ORIGINAL_THREAT_INDICATOR_OUTPUT = {
                 "patternTypeValues": [
                     {
                         "valueType": "url",
-                        "value": "‘twitter.com’"
+                        "value": "‘twitter.com’"  # noqa: RUF001
                     }
                 ]
             }
         ],
-        "pattern": "[url:value = ‘twitter.com’]",
+        "pattern": "[url:value = ‘twitter.com’]",  # noqa: RUF001
         "patternType": "twitter.com",
         "validFrom": "0001-01-01T00:00:00"
     }
@@ -736,7 +742,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'incident_id': TEST_INCIDENT_ID}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENT_ENTITIES)
-        with open('test_data/expected_entities.json', 'r') as file:
+        with open('test_data/expected_entities.json') as file:
             expected_entities = json.load(file)
 
         # run
@@ -763,7 +769,7 @@ class TestHappyPath:
         # prepare
         client = mock_client()
         mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENT_ALERTS)
-        with open('test_data/expected_alerts.json', 'r') as file:
+        with open('test_data/expected_alerts.json') as file:
             expected_alerts = json.load(file)
 
         # run
@@ -789,7 +795,7 @@ class TestHappyPath:
         # prepare
         client = mock_client()
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLISTS)
-        with open('test_data/expected_watchlists.json', 'r') as file:
+        with open('test_data/expected_watchlists.json') as file:
             expected_watchlists = json.load(file)
 
         # run
@@ -817,7 +823,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLISTS['value'][0])
-        with open('test_data/expected_watchlists.json', 'r') as file:
+        with open('test_data/expected_watchlists.json') as file:
             expected_watchlist = json.load(file)[0]
 
         # run
@@ -830,12 +836,13 @@ class TestHappyPath:
         assert command_result.raw_response == MOCKED_WATCHLISTS['value'][0]
         assert expected_watchlist == command_result.outputs[0]
 
-    @pytest.mark.parametrize(argnames='deletion_command, args', argvalues=[
-        (delete_incident_command, {'incident_id': TEST_INCIDENT_ID}),
-        (delete_watchlist_command, {'watchlist_alias': TEST_WATCHLIST_ALIAS}),
-        (delete_watchlist_item_command, {'watchlist_item_id': TEST_ITEM_ID, 'watchlist_alias': TEST_WATCHLIST_ALIAS})
+    @pytest.mark.parametrize(argnames='deletion_command, args, item_id', argvalues=[
+        (delete_incident_command, {'incident_id': TEST_INCIDENT_ID}, TEST_INCIDENT_ID),
+        (delete_watchlist_command, {'watchlist_alias': TEST_WATCHLIST_ALIAS}, TEST_WATCHLIST_ALIAS),
+        (delete_watchlist_item_command, {'watchlist_item_id': TEST_ITEM_ID,
+         'watchlist_alias': TEST_WATCHLIST_ALIAS}, TEST_ITEM_ID)
     ])
-    def test_generic_delete_items(self, deletion_command, args, mocker):
+    def test_generic_delete_items(self, deletion_command, args, mocker, item_id):
         """
         Given:
             - Item for deletion is exist
@@ -856,8 +863,7 @@ class TestHappyPath:
         readable_output = command_result.readable_output
 
         # validate
-        item_id = args.popitem()[1]
-        f'{item_id} was deleted successfully.' in readable_output
+        assert f'{item_id} was deleted successfully.' in readable_output
 
     def test_list_watchlist_items(self, mocker):
         """
@@ -875,7 +881,7 @@ class TestHappyPath:
         client = mock_client()
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS}
         mocker.patch.object(client, 'http_request', return_value=MOCKED_WATCHLIST_ITEMS)
-        with open('test_data/expected_watchlist_items.json', 'r') as file:
+        with open('test_data/expected_watchlist_items.json') as file:
             expected_items = json.load(file)
 
         # run
@@ -903,14 +909,14 @@ class TestHappyPath:
         args = {'watchlist_alias': TEST_WATCHLIST_ALIAS, 'watchlist_item_id': TEST_ITEM_ID}
         mocked_item = MOCKED_WATCHLIST_ITEMS['value'][0]
         mocker.patch.object(client, 'http_request', return_value=mocked_item)
-        with open('test_data/expected_watchlist_items.json', 'r') as file:
+        with open('test_data/expected_watchlist_items.json') as file:
             expected_item = json.load(file)[0]
 
         # run
         command_result = list_watchlist_items_command(client=client, args=args)
 
         # validate
-        client.http_request.call_args[0][1] == f'watchlists/{TEST_WATCHLIST_ALIAS}/watchlistItems/test_watchlist_id_1'
+        assert client.http_request.call_args[0][1] == f'watchlists/{TEST_WATCHLIST_ALIAS}/watchlistItems/test_watchlist_item_id_1'
         assert f'| {TEST_ITEM_ID} | name: test1<br>IP: 1.1.1.1 |' in command_result.readable_output
         assert command_result.raw_response == mocked_item
         assert command_result.outputs[0] == expected_item
@@ -943,7 +949,7 @@ class TestHappyPath:
             'content_type': demisto.get(mocked_watchlist, 'properties.contentType')
         }
         mocker.patch.object(client, 'http_request', return_value=mocked_watchlist)
-        with open('test_data/expected_watchlists.json', 'r') as file:
+        with open('test_data/expected_watchlists.json') as file:
             expected_watchlist = json.load(file)[0]
 
         # run
@@ -975,7 +981,7 @@ class TestHappyPath:
         }
 
         mocker.patch.object(client, 'http_request', return_value=mocked_item)
-        with open('test_data/expected_watchlist_items.json', 'r') as file:
+        with open('test_data/expected_watchlist_items.json') as file:
             expected_item = json.load(file)[0]
 
         # run
@@ -1314,7 +1320,7 @@ class TestHappyPath:
 
         # validate
         assert 'properties/createdTimeUtc ge' in call_args.get('params').get('$filter')
-        assert 'properties/createdTimeUtc asc' == call_args.get('params').get('$orderby')
+        assert call_args.get('params').get('$orderby') == 'properties/createdTimeUtc asc'
 
     @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 1)])
     def test_last_fetched_incident_for_various_severity_levels(self, mocker, min_severity, expected_incident_num):
@@ -1718,7 +1724,7 @@ def test_list_alert_rule_command(mocker, args):
         - Ensure the function returns the expected alert rule
     """
     prefix_file = 'get' if args.get('rule_id') else 'list'
-    with open(f'test_data/{prefix_file}_alert_rule-mock_response.json', 'r') as file:
+    with open(f'test_data/{prefix_file}_alert_rule-mock_response.json') as file:
         mock_response = json.load(file)
 
     client = mock_client()
@@ -1755,7 +1761,7 @@ def test_list_alert_rule_template_command(mocker, args):
         - Ensure the function returns the expected alert rule template
     """
     prefix_file = 'get' if args.get('template_id') else 'list'
-    with open(f'test_data/{prefix_file}_alert_rule_template-mock_response.json', 'r') as file:
+    with open(f'test_data/{prefix_file}_alert_rule_template-mock_response.json') as file:
         mock_response = json.load(file)
 
     client = mock_client()
@@ -1889,7 +1895,7 @@ def test_create_and_update_alert_rule_command(mocker):
     Then
         - Ensure the function returns the expected command results
     """
-    with open('test_data/create_alert_rule-mock_response.json', 'r') as file:
+    with open('test_data/create_alert_rule-mock_response.json') as file:
         mock_response = json.load(file)
 
     client = mock_client()
@@ -2010,3 +2016,37 @@ def test_update_incident_command_table_to_markdown(mocker):
     result = update_incident_command(client, args)
     expected_output = '### Updated incidents 123 details\n**No entries.**'
     assert result.readable_output.strip() == expected_output
+
+
+def test_update_incident_with_client_changed_etag(mocker):
+    """
+    Given:
+        - An old incident to update with a delta from xsoar.
+        - A newer version is returned from the client.
+
+    When:
+        - Updating the incident.
+
+    Then:
+        - Ensure the most updated etag is sent on update to avoid conflicts.
+    """
+    client = mock_client()
+    old_incident_data_in_xsoar = {
+        'etag': 'tag-version1', 'title': 'Title version 1', 'severity': 1, 'status': 2, 'classification': 'Undetermined'
+    }
+    delta_incident_changes = {
+        'severity': 2
+    }
+
+    # Changed etag and title.
+    newer_incident_from_azure = {
+        'etag': 'tag-version2',
+        'properties': {'title': 'Title version 2', 'severity': 1, 'status': 2, 'classification': 'Undetermined'}
+    }
+
+    # return newer version when requesting incident
+    http_request_mock = mocker.patch.object(client, 'http_request', side_effect=[newer_incident_from_azure, True])
+    update_incident_request(client, 'id-incident-1', old_incident_data_in_xsoar, delta_incident_changes, False)
+
+    assert http_request_mock.call_count == 2
+    assert http_request_mock.call_args[1].get('data', {}).get('etag') == newer_incident_from_azure.get('etag')

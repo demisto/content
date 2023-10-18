@@ -16,7 +16,7 @@ args:
 scripttarget: 0
 subtype: python3
 timeout: 60ns
-dockerimage: demisto/python3:3.10.10.47713
+dockerimage: demisto/python3:3.10.12.63474
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
