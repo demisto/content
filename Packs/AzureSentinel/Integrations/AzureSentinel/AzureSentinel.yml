@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Azure Sentinel
+  id: Azure Sentinel_debug
   version: -1
 configuration:
 - defaultvalue: Worldwide
