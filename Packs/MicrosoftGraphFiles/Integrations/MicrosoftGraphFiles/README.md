@@ -1,15 +1,42 @@
 Use the O365 File Management (Onedrive/Sharepoint/Teams) integration to enable your app to get authorized access to files in OneDrive, SharePoint, and MS Teams across your entire organization. This integration requires admin consent.
 
 ## Authentication
+
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
- ### Required Permissions
-- Directory.Read.All - Delegated
+## Required Permissions
+
 - Files.ReadWrite.All - Application
-- Files.ReadWrite.All - Delegated
 - Sites.ReadWrite.All - Application
-- Sites.ReadWrite.All - Delegated
-- User.Read - Delegated
+
+or you can select specific site:
+
+Note: that in this case, the command msgraph-list-sharepoint-sites cannot be run since the permission is not granted.
+
+1) It requires two applications, one for the administrator and one for the user
+2) Add the Sites.FullControl.All - Application permission to the admin application
+3) Add the Site.Selected - Application permission to the user application
+4) From the admin application run the following api:
+
+```
+GET "sites/{site_id}/permissions",
+body={
+    "roles": ["read", "write"],
+    "grantedToIdentities": [
+        {
+            "application": {
+                "id": {user_application_id},
+                "displayName": {user_application_display_name}
+            }
+        }
+    ],
+}
+```
+
+For more information see: 
+
+- [youtube tutorial](https://www.youtube.com/watch?v=pPfxHvugnTA) from microsoft 
+- [microsoft documentation](https://devblogs.microsoft.com/microsoft365dev/controlling-app-access-on-specific-sharepoint-site-collections/)
 
 ## Configure O365 File Management (Onedrive/Sharepoint/Teams) on Cortex XSOAR
 
@@ -32,17 +59,23 @@ For more details about the authentication used in this integration, see <a href=
 | self_deployed | Use a self-deployed Azure Application | False |
 
 1. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### msgraph-delete-file
+
 ***
 Deletes an item from OneDrive.
+Permissions: Files.ReadWrite.All.
 
 
 #### Base Command
 
 `msgraph-delete-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -57,22 +90,26 @@ Deletes an item from OneDrive.
 There is no context output for this command.
 
 #### Command Example
+
 ```!msgraph-delete-file object_type=drives object_type_id=test item_id=test```
 
 #### Human Readable Output
-| 123 |
-| ---------------------------------- |
-| Item was deleted successfully      |
+
+>| 123 |
+>| ---------------------------------- |
+>| Item was deleted successfully      |
 
 
 ### msgraph-upload-new-file
+
 ***
 Uploads a file from Cortex XSOAR to the specified MS Graph resource.
-
+Permissions: Files.ReadWrite.All .
 
 #### Base Command
 
 `msgraph-upload-new-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -113,6 +150,7 @@ Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 
 
 #### Command Example
+
 ```!msgraph-upload-new-file object_type=drives object_type_id=123 parent_id=123 file_name="test.txt" entry_id=123```
 
 ##### Context Example
@@ -159,19 +197,22 @@ Uploads a file from Cortex XSOAR to the specified MS Graph resource.
 ```
 
 #### Human Readable Output
-| CreatedBy       | CreatedDateTime      | ID   | LastModifiedBy  | Name     | Size | WebUrl |
-| --------------- | -------------------- | ---- | --------------- | -------- | ---- | ------ |
-| Microsoft Graph | 2020-01-22T20:03:00Z | Test | Microsoft Graph | test.txt | 15   | Test   |
+
+>| CreatedBy       | CreatedDateTime      | ID   | LastModifiedBy  | Name     | Size | WebUrl |
+>| --------------- | -------------------- | ---- | --------------- | -------- | ---- | ------ |
+>| Microsoft Graph | 2020-01-22T20:03:00Z | Test | Microsoft Graph | test.txt | 15   | Test   |
 
 
 ### msgraph-replace-existing-file
+
 ***
 Replaces the content of the file in the specified MS Graph resource.
-
+Permissions: Files.ReadWrite.All.
 
 #### Base Command
 
 `msgraph-replace-existing-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -211,6 +252,7 @@ Replaces the content of the file in the specified MS Graph resource.
 
 
 #### Command Example
+
 ```!msgraph-replace-existing-file object_type=drives entry_id=test item_id=test object_type_id=test ```
 
 
@@ -256,22 +298,25 @@ Replaces the content of the file in the specified MS Graph resource.
     }
 }
 ```
-#### Human Readable Output
-### MsGraphFiles - File information:
 
-| Created By     | Created Date Time    | ID   | Last Modified By | Name     | Size | Web Url |
-| -------------- | -------------------- | ---- | ---------------- | -------- | ---- | ------- |
-| SharePoint DEV | 2020-01-05T15:30:21Z | 123  | Microsoft Graph  | yaya.txt | 15   | 123     |
+#### Human Readable Output
+
+>### MsGraphFiles - File information:
+>| Created By     | Created Date Time    | ID   | Last Modified By | Name     | Size | Web Url |
+>| -------------- | -------------------- | ---- | ---------------- | -------- | ---- | ------- |
+>| SharePoint DEV | 2020-01-05T15:30:21Z | 123  | Microsoft Graph  | yaya.txt | 15   | 123     |
 
 
 ### msgraph-create-new-folder
+
 ***
 Creates a new folder in a drive with the specified parent item or path.
-
+Permissions: Files.ReadWrite.All.
 
 #### Base Command
 
 `msgraph-create-new-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -308,6 +353,7 @@ Creates a new folder in a drive with the specified parent item or path.
 
 
 #### Command Example
+
 ```!msgraph-create-new-folder object_type=drives object_type_id=123 parent_id=123 folder_name=test11```
 
 
@@ -349,22 +395,26 @@ Creates a new folder in a drive with the specified parent item or path.
     }
 }
 ```
-#### Human Readable Output
-### MsGraphFiles - Folder information:
 
-| Child Count   | Created By      | Created Date Time    | ID   | Last Modified By | Name      | Size | Web Url |
-| ------------- | --------------- | -------------------- | ---- | ---------------- | --------- | ---- | ------- |
-| ChildCount: 0 | Microsoft Graph | 2020-01-22T20:03:09Z | 123  | Microsoft Graph  | test11 19 | 0    | 123     |
+#### Human Readable Output
+
+>### MsGraphFiles - Folder information:
+
+>| Child Count   | Created By      | Created Date Time    | ID   | Last Modified By | Name      | Size | Web Url |
+>| ------------- | --------------- | -------------------- | ---- | ---------------- | --------- | ---- | ------- |
+>| ChildCount: 0 | Microsoft Graph | 2020-01-22T20:03:09Z | 123  | Microsoft Graph  | test11 19 | 0    | 123     |
 
 
 ### msgraph-list-drives-in-site
+
 ***
 Returns the list of document libraries (drives) available for a target site.
-
+Permissions: Sites.Read.All or Files.Read.All
 
 #### Base Command
 
 `msgraph-list-drives-in-site`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -393,6 +443,7 @@ Returns the list of document libraries (drives) available for a target site.
 
 
 #### Command Example
+
 ```!msgraph-list-drives-in-site limit=1 site_id=test limit=1```
 
 
@@ -427,22 +478,26 @@ Returns the list of document libraries (drives) available for a target site.
     }
 }
 ```
-#### Human Readable Output
-### MsGraphFiles - Drives information:
 
-| Created By     | Created Date Time    | Description | Drive Type      | ID   | Last Modified Date Time | Name      | Web Url |
-| -------------- | -------------------- | ----------- | --------------- | ---- | ----------------------- | --------- | ------- |
-| System Account | 2019-09-21T08:17:20Z |             | documentLibrary | Test | 2019-09-21T08:17:20Z    | Documents | Test    |
+#### Human Readable Output
+
+>### MsGraphFiles - Drives information:
+
+>| Created By     | Created Date Time    | Description | Drive Type      | ID   | Last Modified Date Time | Name      | Web Url |
+>| -------------- | -------------------- | ----------- | --------------- | ---- | ----------------------- | --------- | ------- |
+>| System Account | 2019-09-21T08:17:20Z |             | documentLibrary | Test | 2019-09-21T08:17:20Z    | Documents | Test    |
 
 
 ### msgraph-list-drive-content
+
 ***
 Returns a list of files and folders in the specified drive.
-
+Permissions: Files.Read.All or Site.Read.All.
 
 #### Base Command
 
 `msgraph-list-drive-content`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -480,6 +535,7 @@ Returns a list of files and folders in the specified drive.
 
 
 #### Command Example
+
 ```!msgraph-list-drive-content object_type=drives limit=1 object_type_id=test parent_id=test```
 
 ##### Context Example
@@ -527,22 +583,25 @@ Returns a list of files and folders in the specified drive.
     }
 }
 ```
-#### Human Readable Output
-### MsGraphFiles - drivesItems information:
 
-| Created By         | Created Date Time    | Description | ID   | Last Modified Date Time | Name        | Size | Web Url |
-| ------------------ | -------------------- | ----------- | ---- | ----------------------- | ----------- | ---- | ------- |
-| MS Graph Files Dev | 2019-12-29T11:57:41Z |             | 123  | 2019-12-29T11:57:41Z    | Attachments | 0    | 123     |
+#### Human Readable Output
+
+>### MsGraphFiles - drivesItems information:
+>| Created By         | Created Date Time    | Description | ID   | Last Modified Date Time | Name        | Size | Web Url |
+>| ------------------ | -------------------- | ----------- | ---- | ----------------------- | ----------- | ---- | ------- |
+>| MS Graph Files Dev | 2019-12-29T11:57:41Z |             | 123  | 2019-12-29T11:57:41Z    | Attachments | 0    | 123     |
 
 
 ### msgraph-list-sharepoint-sites
+
 ***
 Returns a list of the tenant sites.
-
+Permissions: Sites.Read.All.
 
 #### Base Command
 
 `msgraph-list-sharepoint-sites`
+
 #### Input
 
 There are no input arguments for this command.
@@ -566,6 +625,7 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!msgraph-list-share-point-sites site_id=123```
 
 ##### Context Example
@@ -593,19 +653,22 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
-| Created Date Time    | ID   | Last Modified Date Time | Name                 | Web Url |
-| -------------------- | ---- | ----------------------- | -------------------- | ------- |
-| 2016-09-14T11:12:59Z | 123  | 2016-09-14T11:13:53Z    | 123                  | 123     |
+
+>| Created Date Time    | ID   | Last Modified Date Time | Name                 | Web Url |
+>| -------------------- | ---- | ----------------------- | -------------------- | ------- |
+>| 2016-09-14T11:12:59Z | 123  | 2016-09-14T11:13:53Z    | 123                  | 123     |
 
 
 ### msgraph-download-file
+
 ***
 Downloads the file contents of the drive item.
-
+Permissions: Files.Read.All or Site.Read.All
 
 #### Base Command
 
 `msgraph-download-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -632,6 +695,7 @@ Downloads the file contents of the drive item.
 
 
 #### Command Example
+
 ```!msgraph-download-file object_type=drives object_type_id=123 item_id=123```
 
 
