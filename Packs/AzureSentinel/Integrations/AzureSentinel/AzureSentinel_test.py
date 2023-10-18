@@ -1670,33 +1670,37 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
     assert close_incident_in_remote(delta) == to_close
 
 
-@pytest.mark.parametrize("data, delta, expected_response, close_ticket", [
-    (
-        {'title': 'New Title', 'severity': 2, 'status': 1},
+@pytest.mark.parametrize("data, delta, mocked_fetch_data, expected_response, close_ticket", [
+    (   # Update title of active incident
+        {'title': 'Old Title', 'severity': 2, 'status': 1},
         {'title': 'New Title'},
+        {'title': 'Old Title', 'severity': 'Medium', 'status': 'Active'},
         {'title': 'New Title', 'severity': 'Medium', 'status': 'Active'},
         False
     ),
-    (
-        {'title': 'New Title', 'severity': 1, 'status': 2},
+    (   # Update title and classification and close incident
+        {'title': 'Old Title', 'severity': 1, 'status': 2},
         {'title': 'New Title', 'classification': 'Undetermined'},
+        {'title': 'Old Title', 'severity': 'Low', 'status': 'Active'},
         {'title': 'New Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     ),
-    (
-        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+    (   # Update title and classification of active incident without closing. Result in title update only.
+        {'title': 'Old Title', 'severity': 1, 'status': 2},
         {'title': 'New Title', 'classification': 'Undetermined'},
+        {'title': 'Old Title', 'severity': 'Low', 'status': 'Active'},
         {'title': 'New Title', 'severity': 'Low', 'status': 'Active'},
         False
     ),
-    (
+    (   # Update title and close incident with classification already in data. Result in closing with classification.
         {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
         {'title': 'New Title'},
+        {'title': 'New Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
         {'title': 'New Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     )
 ])
-def test_update_incident_request(mocker, data, delta, expected_response, close_ticket):
+def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, close_ticket):
     """
     Given
         - data
@@ -1707,7 +1711,7 @@ def test_update_incident_request(mocker, data, delta, expected_response, close_t
         - Ensure the client.http_request was called with the expected data
     """
     client = mock_client()
-    mocker.patch.object(client, 'http_request', return_value={})
+    mocker.patch.object(client, 'http_request', return_value=mocked_fetch_data)
 
     update_incident_request(client, 'id-incident-1', data, delta, close_ticket)
     assert client.http_request.call_args[1]['data'].get('properties') == expected_response
