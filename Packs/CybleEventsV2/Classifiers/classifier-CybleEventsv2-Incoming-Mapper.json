@@ -9,22 +9,22 @@
                 "Additional Data": {
                     "simple": "data_message"
                 },
-                "Card Brand": {
+                "CybleEventsV2 Card Brand": {
                     "simple": "card_brand"
                 },
-                "Card CVV": {
+                "CybleEventsV2 Card CVV": {
                     "simple": "card_cvv"
                 },
-                "Card Expiry": {
+                "CybleEventsV2 Card Expiry": {
                     "simple": "card_expiry"
                 },
-                "Card Level": {
+                "CybleEventsV2 Card Level": {
                     "simple": "card_level"
                 },
-                "Card No.": {
+                "CybleEventsV2 Card No.": {
                     "simple": "card_no"
                 },
-                "Card Type": {
+                "CybleEventsV2 Card Type": {
                     "simple": "card_type"
                 },
                 "Event ID": {

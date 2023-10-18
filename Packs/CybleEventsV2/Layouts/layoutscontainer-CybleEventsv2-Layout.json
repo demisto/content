@@ -205,7 +205,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cardno",
+                                "fieldId": "cybleeventsv2cardno",
                                 "height": 53,
                                 "id": "3e4d2670-6349-11ee-a524-b7d5eab87dde",
                                 "index": 2,
@@ -216,7 +216,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cardcvv",
+                                "fieldId": "cybleeventsv2cardcvv",
                                 "height": 53,
                                 "id": "3861a5b0-6349-11ee-a524-b7d5eab87dde",
                                 "index": 3,
@@ -227,7 +227,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cardexpiry",
+                                "fieldId": "cybleeventsv2cardexpiry",
                                 "height": 53,
                                 "id": "3acb52b0-6349-11ee-a524-b7d5eab87dde",
                                 "index": 4,
@@ -237,7 +237,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cardbrand",
+                                "fieldId": "cybleeventsv2cardbrand",
                                 "height": 53,
                                 "id": "36e65050-6349-11ee-a524-b7d5eab87dde",
                                 "index": 5,
@@ -246,7 +246,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cardtype",
+                                "fieldId": "cybleeventsv2cardtype",
                                 "height": 53,
                                 "id": "3f6ca030-6349-11ee-a524-b7d5eab87dde",
                                 "index": 6,
@@ -255,7 +255,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cardlevel",
+                                "fieldId": "cybleeventsv2cardlevel",
                                 "height": 53,
                                 "id": "3cbdfaf0-6349-11ee-a524-b7d5eab87dde",
                                 "index": 7,
