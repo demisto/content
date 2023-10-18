@@ -31,4 +31,4 @@ tests:
 - CheckDockerImageAvailableTest
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.75921
+dockerimage: demisto/python3:3.10.13.77674

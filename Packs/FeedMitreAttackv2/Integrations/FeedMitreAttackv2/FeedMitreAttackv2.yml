@@ -166,7 +166,7 @@ script:
     - contextPath: MITREATTACK.value
       description: MITRE ATTACK Attack Pattern value.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.76116
+  dockerimage: demisto/taxii2:1.0.0.78342
   feed: true
   runonce: false
   script: '-'
