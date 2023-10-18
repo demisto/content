@@ -3505,7 +3505,7 @@ def create_request_filters(
             'operator': 'in',
             'value': ip_list
         })
-    
+
     if public_ip_list:
         filters.append({
             'field': 'public_ip_list',
