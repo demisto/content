@@ -32,7 +32,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Integration to GitLab API
+description: Integration to GitLab API.
 display: GitLab v2
 name: GitLabv2
 script:
@@ -194,9 +194,9 @@ script:
       description: Whether to filter confidential or public issues.
       type: Boolean
     - name: created_after
-      description: Return issues created on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
+      description: Return issues created on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z.
     - name: created_before
-      description: Return issues created on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
+      description: Return issues created on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z.
     - auto: PREDEFINED
       name: partial_response
       defaultValue: 'true'
@@ -263,14 +263,14 @@ script:
       - asc
     - auto: PREDEFINED
       name: state
-      description: Return all issues or just those that are opened or closed
+      description: Return all issues or just those that are opened or closed.
       predefined:
       - opened
       - closed
     - name: updated_after
-      description: Return issues updated on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
+      description: Return issues updated on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z.
     - name: updated_before
-      description: Return issues updated on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
+      description: Return issues updated on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z.
     - defaultValue: 50
       name: limit
       description: Maximum number of results to return.
@@ -586,13 +586,13 @@ script:
     - name: labels
       description: Return merge requests matching a comma-separated list of labels. None lists all merge requests with no labels. Any lists all merge requests with at least one label. Predefined names are case-insensitive.
     - name: created_after
-      description: Return merge requests created on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
+      description: Return merge requests created on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z.
     - name: created_before
-      description: Return merge requests created on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
+      description: Return merge requests created on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z.
     - name: updated_after
-      description: Return merge requests updated on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
+      description: Return merge requests updated on or after the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z.
     - name: updated_before
-      description: Return merge requests updated on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z
+      description: Return merge requests updated on or before the given time in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days), or Format - YYYY-MM-DDThh:mm:ssZ. Example - 2020-02-02T01:02:03Z.
     - auto: PREDEFINED
       name: scope
       description: Return merge requests for the given scope.
@@ -3327,11 +3327,71 @@ script:
     - contextPath: GitLab.Pipeline.user.web_url
       description: Web URL of the user who triggered the pipeline.
       type: String
+  - name: gitlab-cancel-pipeline
+    arguments:
+    - description: Project ID on which to cancel the pipeline.
+      name: project_id
+    - description: The pipline ID to cancel.
+      name: pipeline_id
+      required: true
+    description: Cancels a GitLab pipeline.
+    outputs:
+    - contextPath: GitLab.Pipeline.id
+      description: Pipeline ID.
+      type: Number
+    - contextPath: GitLab.Pipeline.project_id
+      description: Project ID that the pipeline belongs to.
+      type: Number
+    - contextPath: GitLab.Pipeline.status
+      description: Status of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.ref
+      description: Reference of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.sha
+      description: SHA of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.created_at
+      description: Time when the pipeline was created.
+      type: Date
+    - contextPath: GitLab.Pipeline.updated_at
+      description: Time when the pipeline was last updated.
+      type: Date
+    - contextPath: GitLab.Pipeline.started_at
+      description: Time when the pipeline was started.
+      type: Date
+    - contextPath: GitLab.Pipeline.finished_at
+      description: Time when the pipeline was finished.
+      type: Date
+    - contextPath: GitLab.Pipeline.duration
+      description: Duration of the pipeline in seconds.
+      type: Number
+    - contextPath: GitLab.Pipeline.web_url
+      description: Web URL of the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.name
+      description: Name of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.username
+      description: Username that triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.id
+      description: ID of the user who triggered the pipeline.
+      type: Number
+    - contextPath: GitLab.Pipeline.user.state
+      description: State of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.avatar_url
+      description: Avatar URL of the user who triggered the pipeline.
+      type: String
+    - contextPath: GitLab.Pipeline.user.web_url
+      description: Web URL of the user who triggered the pipeline.
+      type: String
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.74666
 fromversion: 6.5.0
 tests:
 - Test-GitLab-v2
