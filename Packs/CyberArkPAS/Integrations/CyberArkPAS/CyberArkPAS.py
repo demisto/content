@@ -76,10 +76,8 @@ def order_properties_to_dict(properties: str | dict) -> dict:
     if not properties:
         return {}
     if isinstance(properties, dict):
-        demisto.debug('Properties is already a dict')
         return properties
     elif isinstance(properties, str):
-        demisto.debug('Properties is a string, parsing to dict')
         try:
             properties_dict: dict = json.loads(properties.replace("'", '"'))
             return properties_dict
