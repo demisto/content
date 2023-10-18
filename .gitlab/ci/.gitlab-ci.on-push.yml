@@ -691,8 +691,9 @@ tests_xsoar_server-test_playbooks_results:
     JIRA_LABELS: '["XSOAR"]'
   extends: .server_test_playbooks_report
   needs:
-    - tests_xsoar_server
-    - xsoar_ng_server_ga
+    - job: tests_xsoar_server
+    - job: xsoar_ng_server_ga
+      optional: true
   dependencies:
     - tests_xsoar_server
     - xsoar_ng_server_ga
