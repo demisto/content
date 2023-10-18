@@ -1454,8 +1454,8 @@ tasks:
     task:
       id: 54c04517-89fe-4aae-8271-4c49eacf64d2
       version: -1
-      name: Cortex ASM - ServiceNow ITSM Enrichment - EXPANDR_4377
-      playbookName: Cortex ASM - ServiceNow ITSM Enrichment - EXPANDR_4377
+      name: Cortex ASM - ServiceNow ITSM Enrichment
+      playbookName: Cortex ASM - ServiceNow ITSM Enrichment
       type: playbook
       iscommand: false
       brand: ''
