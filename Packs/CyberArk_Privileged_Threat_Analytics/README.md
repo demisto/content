@@ -12,7 +12,7 @@ Access your Cyberark PTA machine and follow these instructions [Product Document
 2. Copy the line containing the **syslog_outbound** property, and exit the file.
 3. Open the local **systemparm.properties** file using the ***LOCALPARM*** command.
 4. Press **i** to edit the file.
-5. Paste the line you copied, uncomment the **syslog_outbound** property and edit the parameters. Use the following table as a guide.
+5. Paste the line you copied, uncomment the **syslog_outbound** property and edit the parameters. Use the following as a guide.
    * format - CEF.
    * protocol - UDP
    * siem - Assign a name to your configuration.
