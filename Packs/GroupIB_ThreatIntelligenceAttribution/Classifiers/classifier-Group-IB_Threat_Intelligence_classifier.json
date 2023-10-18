@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Group-IB Threat Intelligence",
+    "id": "Group-IB Threat Intelligence (classifier)",
     "keyTypeMap": {
         "bp/phishing": "GIB Brand Protection Phishing",
         "bp/phishing_kit": "GIB Brand Protection Phishing Kit",

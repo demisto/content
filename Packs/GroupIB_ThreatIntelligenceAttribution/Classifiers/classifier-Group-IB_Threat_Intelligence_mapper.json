@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Group-IB Threat Intelligence - mapper",
+    "id": "Group-IB Threat Intelligence (mapper)",
     "mapping": {
         "GIB Brand Protection Domain": {
             "dontMapEventToLabels": true,
