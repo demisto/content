@@ -210,6 +210,20 @@ install-packs-in-server-master:
       - ${CI_PROJECT_DIR}/artifacts/*
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == "true"
+      when: always
+      variables:
+        CLOUD_MACHINES_TYPE: "testing"
+        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
+    - if: $TEST_UPLOAD == "true" && $BUCKET_UPLOAD == "true"
+      when: always
+      variables:
+        CLOUD_MACHINES_TYPE: "build"
+        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
+    - if: '$BUCKET_UPLOAD == "true"'
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
@@ -219,7 +233,6 @@ install-packs-in-server-master:
     CLOUD_MACHINES_TYPE: "upload"
     CLOUD_MACHINES_COUNT: 1
   extends:
-    - .bucket-upload-rule
     - .default-job-settings
   script:
     - EXIT_CODE=0
@@ -231,12 +244,6 @@ install-packs-in-server-master:
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
     - section_end "Secrets Fetch"
     - section_start "Lock Machine"
-    - |
-      if [[ $TEST_UPLOAD == "true" ]]; then
-        echo "Setting CLOUD_MACHINES_TYPE to build in test upload-flow"
-        CLOUD_MACHINES_TYPE="build"
-        GCS_LOCKS_PATH="content-locks/locks-xsiam-ga"
-      fi
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
     - echo "Auth done successfully"
