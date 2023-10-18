@@ -69,7 +69,10 @@ def incident_priority_to_dbot_score(score: float) -> int:
     return 0
 
 
-def normalize_properties_to_dict(properties: str | dict) -> dict:
+def order_properties_to_dict(properties: str | dict) -> dict:
+    """
+    ordering the properties so that they are valid json for the api
+    """
     if not properties:
         return {}
     if isinstance(properties, dict):
@@ -1035,12 +1038,20 @@ def add_account_command(
     :param access_restricted_to_remote_machines: Whether or not to restrict access only to specified remote machines.
     :return: CommandResults
     """
-    demisto.debug(f'Creating account {properties}')
-    properties = normalize_properties_to_dict(properties)
-    demisto.debug(f"type of properties is {type(properties)}")
-    response = client.add_account(account_name, address, username, platform_id, safe_name, password, secret_type,
-                                  properties, automatic_management_enabled, manual_management_reason, remote_machines,
-                                  access_restricted_to_remote_machines)
+    response = client.add_account(
+        account_name,
+        address,
+        username,
+        platform_id,
+        safe_name,
+        password,
+        secret_type,
+        order_properties_to_dict(properties),
+        automatic_management_enabled,
+        manual_management_reason,
+        remote_machines,
+        access_restricted_to_remote_machines,
+    )
     results = CommandResults(
         raw_response=response,
         outputs_prefix='CyberArkPAS.Accounts',
