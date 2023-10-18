@@ -1,5 +1,6 @@
 id: Test XDR Playbook general commands
-version: -1
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
 name: Test XDR Playbook general commands
 starttaskid: "0"
 tasks:
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "59"
@@ -629,7 +629,10 @@ tasks:
       id: 60f68df9-f41d-4737-88ff-bfaa46cecad6
       version: -1
       name: Get Endpoint aeec6a2cc92e46fab3b6f621722e9916
-      description: Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. Filtering
+        by multiple fields will be concatenated using AND condition (OR is not supported).
+        Maximum result set size is 100. Offset is the zero-based number of endpoint
+        from the start of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -943,7 +946,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1238,7 +1240,8 @@ tasks:
       id: b8eac6df-bd74-46f8-8932-1da6d69ba27f
       version: -1
       name: xdr-get-endpoint-device-control-violations
-      description: Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+      description: Gets a list of device control violations filtered by selected fields.
+        You can retrieve up to 100 violations.
       script: '|||xdr-get-endpoint-device-control-violations'
       type: regular
       iscommand: true
@@ -1390,7 +1393,11 @@ tasks:
       id: 0c3149cb-1676-4dff-803f-43aeef74f1ff
       version: -1
       name: xdr-get-endpoints
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -2020,7 +2027,8 @@ tasks:
       id: 130a85df-ba4c-4ffc-81c6-96e195b060c8
       version: -1
       name: xdr-replace-featured-field
-      description: Replace the featured hosts\users\ips\active-directory_groups listed in your environment.
+      description: Replace the featured hosts\users\ips\active-directory_groups listed
+        in your environment.
       script: '|||xdr-replace-featured-field'
       type: regular
       iscommand: true
@@ -2147,7 +2155,11 @@ tasks:
       id: e3d7421b-ed0b-4673-8f19-62655a30fd90
       version: -1
       name: Get endpoint
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -2270,7 +2282,9 @@ tasks:
       id: 678fff69-0790-494a-8fbc-719a342197b4
       version: -1
       name: Change alias name
-      description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
+      description: Gets a list of endpoints according to the passed filters, and changes
+        their alias name. Filtering by multiple fields will be concatenated using
+        the AND condition (OR is not supported).
       script: '|||xdr-endpoint-alias-change'
       type: regular
       iscommand: true
@@ -2307,7 +2321,11 @@ tasks:
       id: 7eebb593-574d-4a26-8f16-705a906bac52
       version: -1
       name: Verify the name was changed
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       type: condition
       iscommand: false
       brand: ""
@@ -2360,7 +2378,11 @@ tasks:
       id: a5df2c98-bc32-472b-88cc-8104223ebe4e
       version: -1
       name: Get endpoint
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -2395,7 +2417,9 @@ tasks:
       id: b8f94113-d51e-47b0-8d10-f562e7918c98
       version: -1
       name: Change alias name to the original name
-      description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
+      description: Gets a list of endpoints according to the passed filters, and changes
+        their alias name. Filtering by multiple fields will be concatenated using
+        the AND condition (OR is not supported).
       script: '|||xdr-endpoint-alias-change'
       type: regular
       iscommand: true
@@ -2508,7 +2532,9 @@ tasks:
       id: 93864493-d431-429d-83b4-52a71842849f
       version: -1
       name: xdr-list-risky-users
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in your environment along with the reason affecting each score.
+      description: Retrieve the risk score of a specific user or list of users with
+        the highest risk score in your environment along with the reason affecting
+        each score.
       script: '|||xdr-list-risky-users'
       type: regular
       iscommand: true
@@ -2543,7 +2569,9 @@ tasks:
       id: 8ca0b1ad-b5cf-43d2-8ad6-a1fa9c0ed0bc
       version: -1
       name: xdr-list-risky-hosts
-      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in your environment along with the reason affecting each score.
+      description: Retrieve the risk score of a specific host or list of hosts with
+        the highest risk score in your environment along with the reason affecting
+        each score.
       script: '|||xdr-list-risky-hosts'
       type: regular
       iscommand: true
@@ -2582,10 +2610,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
-      - "78"
       '#default#':
       - "85"
+      "yes":
+      - "78"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2696,7 +2724,11 @@ tasks:
       id: 5938152b-19e5-4317-87fe-da2babccee32
       version: -1
       name: get-correlation-alerts
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter
+        by built-in arguments or use the custom_filter to input a JSON filter object.
+        \nMultiple filter arguments will be concatenated using the AND operator, while
+        arguments that support a comma-separated list of values will use an OR operator
+        between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -2903,7 +2935,7 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},"
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 12255,
