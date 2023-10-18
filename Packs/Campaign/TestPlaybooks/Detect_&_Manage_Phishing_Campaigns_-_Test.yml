@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1778d4b0-8036-4925-81db-106cf3b8abbf
+    taskid: 2e5eefef-53d0-4427-849b-8dae39e091e5
     type: start
     task:
-      id: 1778d4b0-8036-4925-81db-106cf3b8abbf
+      id: 2e5eefef-53d0-4427-849b-8dae39e091e5
       version: -1
       name: ""
       iscommand: false
@@ -40,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 37052398-e5b3-4b71-83f9-9b8d2ac53874
+    taskid: 702e0955-8474-439a-8447-866fcc326837
     type: regular
     task:
-      id: 37052398-e5b3-4b71-83f9-9b8d2ac53874
+      id: 702e0955-8474-439a-8447-866fcc326837
       version: -1
       name: Delete context
       description: Delete field from context
@@ -82,10 +82,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 62781638-47a3-42e2-8ee4-dadfb7f9474b
+    taskid: f1eb29a7-e2e6-4d31-8681-dd2dc302fa07
     type: regular
     task:
-      id: 62781638-47a3-42e2-8ee4-dadfb7f9474b
+      id: f1eb29a7-e2e6-4d31-8681-dd2dc302fa07
       version: -1
       name: Create new low similarity incident victim 9
       description: commands.local.cmd.create.inc
@@ -151,10 +151,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: a395fcef-6c90-4bf5-8cdf-4a6cea38ccf2
+    taskid: 4faad9e7-c899-4448-8111-6bdca9964d65
     type: regular
     task:
-      id: a395fcef-6c90-4bf5-8cdf-4a6cea38ccf2
+      id: 4faad9e7-c899-4448-8111-6bdca9964d65
       version: -1
       name: Sleep to let incidents settle down
       description: Sleep for X seconds
@@ -186,10 +186,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: e8cb9033-ac5b-401e-83b7-b7ff0b13e54b
+    taskid: 6c0124f6-9473-48ba-88c6-4c4dcf75ad57
     type: regular
     task:
-      id: e8cb9033-ac5b-401e-83b7-b7ff0b13e54b
+      id: 6c0124f6-9473-48ba-88c6-4c4dcf75ad57
       version: -1
       name: Create new low similarity incident victim 8
       description: commands.local.cmd.create.inc
@@ -255,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: e6f892f6-104f-4c7f-8ab2-54457c9f93bf
+    taskid: 4c847e2a-fb0c-4d23-8265-c8c87c7241bf
     type: regular
     task:
-      id: e6f892f6-104f-4c7f-8ab2-54457c9f93bf
+      id: 4c847e2a-fb0c-4d23-8265-c8c87c7241bf
       version: -1
       name: Create new incident victim 2
       description: commands.local.cmd.create.inc
@@ -319,10 +319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: d25beb19-ec82-472e-824f-20cba35cf149
+    taskid: fb65fa25-d893-4336-8995-350906a42a4e
     type: regular
     task:
-      id: d25beb19-ec82-472e-824f-20cba35cf149
+      id: fb65fa25-d893-4336-8995-350906a42a4e
       version: -1
       name: Create new incident victim 5
       description: commands.local.cmd.create.inc
@@ -383,10 +383,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 1d7b26b3-7173-4167-866b-498132b66315
+    taskid: 4ebd8220-7050-4088-8c2b-16cd83563cd3
     type: regular
     task:
-      id: 1d7b26b3-7173-4167-866b-498132b66315
+      id: 4ebd8220-7050-4088-8c2b-16cd83563cd3
       version: -1
       name: Create new incident victim 6 (different sender)
       description: commands.local.cmd.create.inc
@@ -447,10 +447,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: a02a53de-a6ad-40e4-85f2-f300187f9134
+    taskid: 50bbe226-33d7-4c54-8206-a30d9ac49b44
     type: regular
     task:
-      id: a02a53de-a6ad-40e4-85f2-f300187f9134
+      id: 50bbe226-33d7-4c54-8206-a30d9ac49b44
       version: -1
       name: Create new incident victim 7 (different sender)
       description: commands.local.cmd.create.inc
@@ -511,10 +511,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 5a405682-3a07-4e0f-81a1-02b2d23c4191
+    taskid: e926aff7-ede8-42cc-8f8e-229bc5e163a5
     type: regular
     task:
-      id: 5a405682-3a07-4e0f-81a1-02b2d23c4191
+      id: e926aff7-ede8-42cc-8f8e-229bc5e163a5
       version: -1
       name: Create new incident victim 1
       description: commands.local.cmd.create.inc
@@ -575,10 +575,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 770d5d47-c172-4695-8c15-c3aea0db053d
+    taskid: ce8961fa-0af4-4363-8348-1ede79e1e5e2
     type: regular
     task:
-      id: 770d5d47-c172-4695-8c15-c3aea0db053d
+      id: ce8961fa-0af4-4363-8348-1ede79e1e5e2
       version: -1
       name: Sleep 30 sec
       description: Sleep for X seconds
@@ -610,10 +610,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 04fdd74f-f663-418d-899a-5e41db82f1ba
+    taskid: f77a6046-dfa2-4229-8b1f-bb8592ab9ac8
     type: regular
     task:
-      id: 04fdd74f-f663-418d-899a-5e41db82f1ba
+      id: f77a6046-dfa2-4229-8b1f-bb8592ab9ac8
       version: -1
       name: Create new incident victim 4
       description: commands.local.cmd.create.inc
@@ -673,10 +673,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: ba09c86f-785c-4d60-87d9-ae5b387ca2f1
+    taskid: 1f5b85d2-31c3-46ad-8f80-c4be24bb1e03
     type: regular
     task:
-      id: ba09c86f-785c-4d60-87d9-ae5b387ca2f1
+      id: 1f5b85d2-31c3-46ad-8f80-c4be24bb1e03
       version: -1
       name: Create new incident victim 3
       description: commands.local.cmd.create.inc
@@ -736,10 +736,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: e5e15e28-4df0-4e6d-8e4d-7d44fe79e684
+    taskid: 5597b01e-62a4-47bf-8d42-01b6d937fb17
     type: regular
     task:
-      id: e5e15e28-4df0-4e6d-8e4d-7d44fe79e684
+      id: 5597b01e-62a4-47bf-8d42-01b6d937fb17
       version: -1
       name: Delete previously created IDs
       description: Delete field from context
@@ -774,10 +774,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 67dbad02-696a-4b1c-8023-21e7dcbaf3e4
+    taskid: 22e69308-98de-4850-80e0-30fea18ad569
     type: regular
     task:
-      id: 67dbad02-696a-4b1c-8023-21e7dcbaf3e4
+      id: 22e69308-98de-4850-80e0-30fea18ad569
       version: -1
       name: Wait for a 5 minutes
       description: Sleep for X seconds
@@ -812,10 +812,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 17e9e424-71fc-472b-8914-b4ea566f0512
+    taskid: 84b6898d-39cd-4f52-8a95-ebac878d1c3c
     type: regular
     task:
-      id: 17e9e424-71fc-472b-8914-b4ea566f0512
+      id: 84b6898d-39cd-4f52-8a95-ebac878d1c3c
       version: -1
       name: Search for a campaign incident
       description: Searches Demisto incidents
@@ -857,10 +857,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: c048030b-dee7-4a4c-86d6-ba405a8b3e5d
+    taskid: 7256320e-8949-4a05-8bc3-e3cd6a2043ac
     type: condition
     task:
-      id: c048030b-dee7-4a4c-86d6-ba405a8b3e5d
+      id: 7256320e-8949-4a05-8bc3-e3cd6a2043ac
       version: -1
       name: Was a campaign incident created?
       type: condition
@@ -899,10 +899,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 2ebf65d7-85be-49f4-8951-d02b834beb2e
+    taskid: 4de06f44-cf70-4b6e-879b-058f846dd3d2
     type: title
     task:
-      id: 2ebf65d7-85be-49f4-8951-d02b834beb2e
+      id: 4de06f44-cf70-4b6e-879b-058f846dd3d2
       version: -1
       name: Done
       type: title
@@ -927,10 +927,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 7cf58719-531d-4051-8ab4-0a9802a69844
+    taskid: d97c5445-33bd-4e2c-873a-0b6e5ef317a2
     type: regular
     task:
-      id: 7cf58719-531d-4051-8ab4-0a9802a69844
+      id: d97c5445-33bd-4e2c-873a-0b6e5ef317a2
       version: -1
       name: Error - a campaign was not created
       description: Prints an error entry with a given message
@@ -962,10 +962,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 7b0e5ee4-336a-4b15-83e0-2f9bb231e693
+    taskid: cf1f9d14-03e1-4ec4-8acc-49a4f1fc0fc9
     type: regular
     task:
-      id: 7b0e5ee4-336a-4b15-83e0-2f9bb231e693
+      id: cf1f9d14-03e1-4ec4-8acc-49a4f1fc0fc9
       version: -1
       name: Get campaign context
       description: Gets a value from the specified incident's context.
@@ -1015,12 +1015,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 3f968473-2b82-4b95-8ba7-3fa5b0b62cad
+    taskid: d2772ae2-b953-41c7-80c0-e621fc0ffef0
     type: condition
     task:
-      id: 3f968473-2b82-4b95-8ba7-3fa5b0b62cad
+      id: d2772ae2-b953-41c7-80c0-e621fc0ffef0
       version: -1
-      name: Does the campaign context contain 9 incidents?
+      name: Does the campaign context not empty?
       type: condition
       iscommand: false
       brand: ""
@@ -1033,7 +1033,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: greaterThanOrEqual
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -1043,8 +1043,7 @@ tasks:
                 - operator: count
             iscontext: true
           right:
-            value:
-              simple: "9"
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1062,10 +1061,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 26bce15a-7769-4430-8eb7-5a6e6d7bde2f
+    taskid: 373a7182-e756-4466-8353-a0f2b37e7f1a
     type: regular
     task:
-      id: 26bce15a-7769-4430-8eb7-5a6e6d7bde2f
+      id: 373a7182-e756-4466-8353-a0f2b37e7f1a
       version: -1
       name: Campaign lacks data
       description: Prints an error entry with a given message
