@@ -8,11 +8,12 @@ from CommonServerUserPython import *  # noqa: F401
 import json
 import urllib3
 from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, List, TypeVar, Union
+from typing import Any, Dict, List, Type, TypeVar, Union
 import pytmv1
 from pytmv1 import (
     AccountTask,
     AccountTaskResp,
+    BaseTaskResp,
     BlockListTaskResp,
     CollectFileTaskResp,
     EmailActivity,
@@ -321,7 +322,7 @@ class Client(BaseClient):
             poll_time_sec=poll_time_sec,
         )
         # Assign values on a successful call
-        message = task_resp.response.__dict__
+        message = unwrap(task_resp.response).dict()
         return CommandResults(
             readable_output=tableToMarkdown(
                 table_name[CHECK_TASK_STATUS_COMMAND],
@@ -551,7 +552,7 @@ def _get_ot_enum(obj_type: str) -> ObjectType:
 
 
 # Use response action type and return task class associated
-def _get_task_type(action: str) -> Any:
+def _get_task_type(action: str) -> Type[BaseTaskResp]:
     task_dict: Dict[Any, List[str]] = {
         AccountTaskResp: [
             "enableAccount",
@@ -568,6 +569,7 @@ def _get_task_type(action: str) -> Any:
     for task, task_values in task_dict.items():
         if action in task_values:
             return task
+    raise ValueError()
 
 
 def run_polling_command(
