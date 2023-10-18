@@ -7,6 +7,7 @@ from CommonServerPython import *  # noqa: F401
 import re
 from datetime import datetime
 import time
+import dateutil.parser
 # 3-rd party imports
 import requests
 import urllib3
@@ -1901,15 +1902,17 @@ class Client(BaseClient):
                                   headers={"accept": "application/json"},
                                   )
 
-    def list_cidr_blocks(self, last_action: str = '', effective_date_gt: str = '') -> dict:
+    def list_cidr_blocks(self, effective_date_gt: Optional[datetime], last_action: str = '') -> dict:
         """
             List all CIDR blocks for all services you are subscribed to.
             To see additional CIDR blocks, subscribe yourself to more services and run this operation again
         Args:
             last_action:
                 Whether a CIDR block was added, updated, or removed from service.
-                You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete.
-                Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules.
+                You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add,
+                update, or delete.
+                Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your
+                firewall rules.
             effective_date_gt:
                 The ISO 8601 date the CIDR block starts serving traffic to your origin.
                 Expected format MM-DD-YYYY or YYYY-MM-DD
@@ -1954,10 +1957,10 @@ class Client(BaseClient):
     def update_cps_enrollment(self,
                               enrollment_id: str,
                               updates: dict,
+                              deploy_not_after: Optional[datetime],
+                              deploy_not_before: Optional[datetime],
                               allow_cancel_pending_changes: str = 'true',
                               allow_staging_bypass: str = 'true',
-                              deploy_not_after: str = "",
-                              deploy_not_before: str = "",
                               force_renewal: str = 'true',
                               renewal_date_check_override: str = 'true',
                               allow_missing_certificate_addition: str = 'true') -> dict:
@@ -2020,11 +2023,11 @@ class Client(BaseClient):
                                   )
 
     def update_cps_enrollment_schedule(self,
+                                       deploy_not_before: datetime,
                                        enrollment_path: str = '',
                                        enrollment_id: str = '',
                                        change_id: str = '',
-                                       deploy_not_before: str = '',
-                                       deploy_not_after: str = None,
+                                       deploy_not_after: Optional[datetime] = None,
                                        ) -> dict:
         """
             Returns the enrollment change path.
@@ -2049,10 +2052,9 @@ class Client(BaseClient):
             The response provides the enrollment change path
 
         """
-        if enrollment_path == '':
-            if not all(s != '' for s in [enrollment_id, change_id]):
-                raise DemistoException(
-                    'If "enrollment_path" is blank than "enrollment_id" and "change_id" should both contain a value')
+        if enrollment_path == '' and not all(s != '' for s in [enrollment_id, change_id]):
+            raise DemistoException(
+                'If "enrollment_path" is blank than "enrollment_id" and "change_id" should both contain a value')
         method = "PUT"
         headers = {
             'Accept': 'application/vnd.akamai.cps.change-id.v1+json',
@@ -2087,10 +2089,9 @@ class Client(BaseClient):
             The response to provide the change status
 
         """
-        if enrollment_path == '':
-            if not all(s != '' for s in [enrollment_id, change_id]):
-                raise DemistoException(
-                    'If "enrollment_path" is blank than "enrollment_id" and "change_id" should both contain a value')
+        if enrollment_path == '' and not all(s != '' for s in [enrollment_id, change_id]):
+            raise DemistoException(
+                'If "enrollment_path" is blank than "enrollment_id" and "change_id" should both contain a value')
         headers = {"accept": "application/vnd.akamai.cps.change.v2+json"}
         method = "GET"
         if enrollment_path == "":
@@ -5639,8 +5640,10 @@ def list_cidr_blocks_command(client: Client,
     Args:
         client:
         last_action: Whether a CIDR block was added, updated, or removed from service.
-                     You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add, update, or delete.
-                     Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your firewall rules.
+                     You can use this parameter as a sorting mechanism and return only CIDR blocks with a change status of add,
+                     update, or delete.
+                     Note that a status of delete means the CIDR block is no longer in service, and you can remove it from your
+                     firewall rules.
         effective_date_gt: The ISO 8601 date the CIDR block starts serving traffic to your origin.
                            Expected format MM-DD-YYYY or YYYY-MM-DD.
                            Ensure your firewall rules are updated to allow this traffic to pass through before the effective date.
@@ -5648,8 +5651,8 @@ def list_cidr_blocks_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-
-    raw_response: dict = client.list_cidr_blocks()
+    effective_date_gt = dateutil.parser.parse(effective_date_gt) if effective_date_gt else None
+    raw_response: dict = client.list_cidr_blocks(last_action=last_action, effective_date_gt=effective_date_gt)
 
     title = f'{INTEGRATION_NAME} - list cidr blocks command'
     entry_context, human_readable_ec = list_cidr_blocks_ec(raw_response=raw_response)
@@ -5716,7 +5719,8 @@ def update_cps_enrollment_command(client: Client,
         allow_cancel_pending_changes:
             All pending changes to be cancelled when updating an enrollment.
         allow_staging_bypass:
-            Bypass staging and push meta_data updates directly to production network. Current change will also be updated with the same changes.
+            Bypass staging and push meta_data updates directly to production network. Current change will also be updated with 
+            the same changes.
         deploy_not_after:
             Don't deploy after this date (UTC). Sample: 2021-01-31T00:00:00.000Z
         deploy_not_before:
@@ -5735,8 +5739,8 @@ def update_cps_enrollment_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    deploy_not_after = datetime.strptime(deploy_not_after, '%Y-%m-%dT%H:%M:%SZ')
-    deploy_not_before = datetime.strptime(deploy_not_before, '%Y-%m-%dT%H:%M:%SZ')
+    deploy_not_after = datetime.strptime(deploy_not_after, '%Y-%m-%dT%H:%M:%SZ') if deploy_not_after else None
+    deploy_not_before = datetime.strptime(deploy_not_before, '%Y-%m-%dT%H:%M:%SZ') if deploy_not_before else None
     if enrollment == {}:
         enrollment = client.get_enrollment_byid(enrollment_id=enrollment_id, json_version='11')
     # Remove the fields that are not supposed to be changed.
@@ -5797,7 +5801,7 @@ def update_cps_enrollment_schedule_command(client: Client,
             Chnage ID on which to perform the desired operation.
             And it can be retrived via list_enrollments_command.
         deploy_not_after:
-            The time after when the change will no longer be in effect.
+            The time after, when the change will no longer be in effect.
             This value is an ISO-8601 timestamp. (UTC)
             Sample: 2021-01-31T00:00:00.000Z
         deploy_not_before:
@@ -5809,6 +5813,8 @@ def update_cps_enrollment_schedule_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
+    deploy_not_after = datetime.strptime(deploy_not_after, '%Y-%m-%dT%H:%M:%SZ') if deploy_not_after else None
+    deploy_not_before = datetime.strptime(deploy_not_before, '%Y-%m-%dT%H:%M:%SZ')  # required
     if enrollment_path == enrollment_id == change_id == "":
         raise DemistoException('enrollment_path, enrollment_id, change_id can not all be blank.')
     raw_response: dict = client.update_cps_enrollment_schedule(enrollment_path=enrollment_path,

@@ -4,6 +4,7 @@ from Akamai_WAF import Client
 from CommonServerPython import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 
+
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
