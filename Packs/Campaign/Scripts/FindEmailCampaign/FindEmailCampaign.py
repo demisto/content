@@ -150,12 +150,12 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         if invalid_context_keys:
             return_warning(INVALID_KEY_WARNING.format(fields=invalid_context_keys))
 
-        incident_df = incidents_df[list(context_keys)]  # lgtm [py/hash-unhashable-value]
+        incidents_context_df = incidents_df.copy(deep=True)
+        incident_df = incidents_context_df[list(context_keys)]  # lgtm [py/hash-unhashable-value]
         if not SELF_IN_CONTEXT:
             incident_df = incident_df[incident_df['id'] != incident_id]
 
-        incidents_context_df = incidents_df.copy()
-        incidents_context_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
+        incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
         datetimes: pd.DataFrame = incidents_context_df['created_dt'].dropna()
         min_datetime = min(datetimes).isoformat()
