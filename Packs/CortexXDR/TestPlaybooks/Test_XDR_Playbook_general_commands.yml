@@ -2672,7 +2672,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Account Admin
+              simple: Admin
     continueonerrortype: ""
     view: |-
       {
