@@ -15,4 +15,5 @@ def write_to_gcs_with_mutex(data, bucket_name, file_name):
 
 
 if __name__ == "__main__":
+    print("starting to write to the bucket")
     write_to_gcs_with_mutex("Hello World!", "https://console.cloud.google.com/storage/browser/", "file.txt")
