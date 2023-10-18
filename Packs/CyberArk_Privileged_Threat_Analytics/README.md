@@ -10,7 +10,7 @@ You need to configure CyberArk Privileged Threat Analytics (PTA) to forward Sysl
 Access your Cyberark PTA machine and follow these instructions [Product Documentation](https://docs.cyberark.com/PAS/Latest/en/Content/PTA/Outbound-Sending-%20PTA-syslog-Records-to-SIEM.htm):
 1. On the PTA machine, open the default **systemparm.properties** file using the ***DEFAULTPARM*** command.
 2. Copy the line containing the **syslog_outbound** property, and exit the file.
-3. Open the local **systemparm.properties** file using the **LOCALPARM** command.
+3. Open the local **systemparm.properties** file using the ***LOCALPARM*** command.
 4. Press **i** to edit the file.
 5. Paste the line you copied, uncomment the **syslog_outbound** property and edit the parameters. Use the following table as a guide.
    * format - CEF.
