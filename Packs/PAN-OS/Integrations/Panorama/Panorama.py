@@ -169,7 +169,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'questionable',
     'real-estate',
     'recreation-and-hobbies',
-    'reference-and-research    ',
+    'reference-and-research',
     'religion',
     'search-engines',
     'sex-education',
