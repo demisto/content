@@ -5,7 +5,7 @@ Learn more at [Vectra Website](https://www.vectra.ai).
 
 This pack is designed to quickly integrate with Vectra Detect platform to detect and analyze malicious attacks in progress by creating incident based on Accounts, Hosts or Detections. It gives security engineers visibility into advanced threats to speed detection and remediation response times.
 
-<~XSIAM>This pack includes Cortex XSIAM content.</~XSIAM>
+
 
 ## What does this pack do?
 
@@ -27,10 +27,9 @@ To get up and running with this pack, you must have a valid API token on your Ve
 
 Be sure that the user has a role with sufficient permissions to do all the actions.
 
-<~XSIAM>
-## Collect Events from Vendor
-### REST API
+### Pack Contributors:
 
-The integration uses the 2.2 API version of `detections` and `audits` endpoints to collect events.
+---
+ - DUDA Olivier
 
-</~XSIAM>
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
