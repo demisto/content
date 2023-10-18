@@ -79,12 +79,11 @@ def order_properties_to_dict(properties: str | dict) -> dict:
         return properties
     elif isinstance(properties, str):
         try:
-            properties_dict: dict = json.loads(properties.replace("'", '"'))
-            return properties_dict
+            return json.loads(properties.replace("'", '"'))
         except json.decoder.JSONDecodeError:
-            raise ValueError("Properties are not valid JSON")
+            raise ValueError(f"Properties ({properties}) are not valid JSON")
     else:
-        raise ValueError("Properties must be a JSON string or dictionary")
+        raise ValueError(f"Properties must be a JSON string or dictionary (got {properties})")
 
 
 def filter_by_score(events_data: list, score: int) -> list:
@@ -1013,7 +1012,7 @@ def add_account_command(
         safe_name: str = "",
         password: str = "",
         secret_type: str = "password",
-        properties: str = "",
+        properties: dict | str = "",
         automatic_management_enabled: str = "true",
         manual_management_reason: str = "",
         remote_machines: str = "",

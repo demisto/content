@@ -495,7 +495,7 @@ def test_pas_safe_members_list(mocker, response: dict, count_or_total: str, expe
     ({'a': 1}, {"a": 1}),
     ("{'a': 1}", {"a": 1}),
     ('{"a": 1}', {"a": 1}),
-    ("not json", ValueError)
+    ("", {})
 ])
 def test_order_properties_to_dict(properties, expected):
     """
@@ -506,8 +506,20 @@ def test_order_properties_to_dict(properties, expected):
     Then:
         - it returns the expected output
     """
-    if not isinstance(expected, dict):
-        with pytest.raises(expected):
-            order_properties_to_dict(properties)
-    else:
-        assert order_properties_to_dict(properties) == expected
+    assert order_properties_to_dict(properties) == expected
+
+
+@pytest.mark.parametrize("properties,expected", [
+    ("not json", ValueError),
+])
+def test_order_properties_to_dict_failure(properties, expected):
+    """
+    Given:
+        - Invalid properties as input
+    When:
+        - order_properties_to_dict is called on properties
+    Then:
+        - An error is raised
+    """
+    with pytest.raises(expected):
+        order_properties_to_dict(properties)
