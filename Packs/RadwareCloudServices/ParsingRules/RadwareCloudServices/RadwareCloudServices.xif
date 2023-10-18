@@ -1,0 +1,15 @@
+[INGEST:vendor="radware", product="access_logs", target_dataset="radware_access_logs_raw", no_hit=keep]
+// Split grouped events
+filter json_extract_array(_raw_log, "$") != null
+| alter _raw_log = json_extract_array(_raw_log, "$")
+| alter _raw_log_records = _raw_log
+| arrayexpand _raw_log
+| alter tmp_time = json_extract_scalar(_raw_log, "$.time")
+| alter _time = if(tmp_time != null and tmp_time != "", parse_timestamp("%d/%b/%Y:%X %z", tmp_time), _insert_time)
+| fields -tmp_time;
+
+filter json_extract_array(_raw_log, "$") = null
+| alter _raw_log = to_json_string(_raw_log)
+| alter tmp_time = json_extract_scalar(_raw_log, "$.time")
+| alter _time = if(tmp_time != null and tmp_tme != "", parse_timestamp("%d/%b/%Y:%X %z", tmp_time), _insert_time)
+| fields -tmp_time;
