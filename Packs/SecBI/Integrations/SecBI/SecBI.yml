@@ -14,9 +14,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: A threat, intelligence, and investigation platform, enabled by automation of detection and investigation, including remediation and prevention policy enforcements on all integrated appliances.
 display: SecBI
 name: SecBI

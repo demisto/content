@@ -18,10 +18,12 @@ configuration:
   additionalinfo: When selecting the Custom option, the Azure AD endpoint parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
   advanced: true
+  required: false
 - display: Application ID
   name: app_id
   defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
   type: 0
+  required: false
 - display: Authentication Type
   name: auth_type
   required: true
@@ -35,25 +37,30 @@ configuration:
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
   type: 0
+  required: false
 - display: Client Secret (for authorization code mode)
   name: credentials
   type: 9
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
+  required: false
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   type: 0
+  required: false
 - additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section
   displaypassword: Authorization code
   name: auth_code
   hiddenusername: true
   type: 9
   display: Authorization code
+  required: false
 - name: managed_identities_client_id
   type: 9
   additionalinfo: The Managed Identities client ID for authentication. Relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
+  required: false
 - display: Subscription ID
   name: subscription_id
   required: true
@@ -65,9 +72,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -75,6 +84,7 @@ configuration:
   advanced: true
   additionalinfo: Use this option when required to customize the URL to the Azure Active Directory endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
   section: Connect
+  required: false
 description: Deploy and manage containerized applications with a fully managed Kubernetes service.
 display: Azure Kubernetes Services
 name: Azure Kubernetes Services

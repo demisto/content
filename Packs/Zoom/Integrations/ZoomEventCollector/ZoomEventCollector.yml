@@ -28,16 +28,19 @@ configuration:
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: This is the Zoom event collector integration for Cortex XSIAM.
 display: Zoom Event Collector
 name: ZoomEventCollector

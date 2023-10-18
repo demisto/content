@@ -20,15 +20,18 @@ configuration:
   display: Redirect stdout
   type: 8
   additionalinfo: Used for troubleshooting purposes.
+  required: false
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   defaultvalue: "false"
   type: 8
   additionalinfo:
+  required: false
 description: VMware vCenter server is a centralized management application that lets you manage virtual machines and ESXi hosts centrally.
 display: VMware
 name: VMware

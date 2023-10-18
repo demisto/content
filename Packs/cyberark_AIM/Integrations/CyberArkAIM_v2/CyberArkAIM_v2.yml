@@ -11,6 +11,7 @@ configuration:
 - display: AppID as configured in AIM
   name: app_id
   type: 0
+  required: false
 - display: Folder to search in safe
   name: folder
   required: true
@@ -23,32 +24,40 @@ configuration:
   additionalinfo: Partial names are not supported. If left empty, no credentials will be fetched.
   name: credential_names
   type: 12
+  required: false
 - display: Username
   name: credentials
   type: 9
+  required: false
 - additionalinfo: Add a certificate file in text format to use to connect to the CyberArk AIM server.
   display: Certificate File as Text
   name: cert_text
   type: 12
+  required: false
 - additionalinfo: Add a key file in text format to use to connect to the CyberArk AIM server.
   display: Key File as Text
   name: key_text
   type: 4
   hidden: true
+  required: false
 - name: key_text_creds
   type: 9
   displaypassword: Key File as Text
   hiddenusername: true
+  required: false
 - display: Fetch credentials
   name: isFetchCredentials
   type: 8
   defaultvalue: 'true'
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM.
 display: CyberArk AIM v2
 name: CyberArkAIM v2

@@ -17,35 +17,42 @@ configuration:
   displaypassword: ID (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
   section: Connect
+  required: false
 - name: creds_tenant_id
   type: 9
   displaypassword: Token (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
   section: Connect
+  required: false
 - name: creds_enc_key
   type: 9
   displaypassword: Key (received from the admin consent - see Detailed Instructions)
   hiddenusername: true
   section: Connect
+  required: false
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   type: 4
   hidden: true
   section: Connect
+  required: false
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   type: 4
   section: Connect
   hidden: true
+  required: false
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   type: 4
   hidden: true
+  required: false
 - display: Certificate Thumbprint
   name: creds_certificate
   type: 9
   displaypassword: Private Key
   section: Connect
+  required: false
 - display: Certificate Thumbprint
   name: certificate_thumbprint
   type: 4
@@ -53,59 +60,70 @@ configuration:
   advanced: true
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   hidden: true
+  required: false
 - display: Private Key
   name: private_key
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
   section: Connect
+  required: false
 - display: Use a self-deployed Azure application
   name: self_deployed
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
   type: 0
   section: Connect
+  required: false
 - name: creds_auth_code
   type: 9
   displaypassword: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions)
   hiddenusername: true
+  required: false
 - display: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section)
   name: auth_code
   type: 4
   hidden: true
   section: Connect
+  required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Suppress Errors for Non Found Users
   name: handle_error
   defaultvalue: 'true'
   type: 8
   section: Collect
   advanced: true
+  required: false
 description: Unified gateway to security insights - all from a unified Microsoft Graph User API.
 display: Azure Active Directory Users
 name: Microsoft Graph User

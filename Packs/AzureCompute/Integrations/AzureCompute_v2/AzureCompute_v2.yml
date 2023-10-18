@@ -12,57 +12,71 @@ configuration:
   name: auth_id
   type: 4
   hidden: true
+  required: false
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   type: 4
   hidden: true
+  required: false
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   type: 4
   hidden: true
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   type: 4
   hidden: true
+  required: false
 - name: cred_auth_id
   type: 9
   displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
   hiddenusername: true
+  required: false
 - name: cred_token
   type: 9
   displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
   hiddenusername: true
+  required: false
 - name: cred_enc_key
   type: 9
   displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
   hiddenusername: true
+  required: false
 - name: cred_certificate_thumbprint
   type: 9
   displaypassword: Certificate Thumbprint
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   hiddenusername: true
+  required: false
 - display: Private Key
   name: private_key
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  required: false
 - display: Default Subscription ID
   name: subscription_id
   type: 4
   hidden: true
+  required: false
 - displaypassword: Default Subscription ID
   name: cred_subscription_id
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use a self-deployed Azure Application
   name: self_deployed
   type: 8
+  required: false
 description: Create and Manage Azure Virtual Machines
 display: Azure Compute v2
 name: Azure Compute v2

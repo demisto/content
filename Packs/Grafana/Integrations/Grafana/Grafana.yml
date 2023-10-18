@@ -15,32 +15,40 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - additionalinfo: Maximum is limited to 200.
   defaultvalue: '20'
   display: Maximum number of incidents to fetch
   name: max_fetch
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - defaultvalue: 3 days
   display: First fetch time interval
   name: first_fetch
   type: 0
+  required: false
 - additionalinfo: A comma-separated list of dashboard IDs. Can be found by running the "grafana-dashboards-search" command.
   display: Dashboard IDs to fetch
   name: dashboard_id
   type: 0
+  required: false
 - additionalinfo: See "help".
   display: Panel ID to fetch
   name: panel_id
   type: 0
+  required: false
 - display: Alert name to fetch
   name: alert_name
   type: 0
+  required: false
 - display: States to fetch
   name: state
   options:
@@ -52,9 +60,11 @@ configuration:
   - pending
   - unknown
   type: 16
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 description: Grafana alerting service.
 display: Grafana
 name: Grafana

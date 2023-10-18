@@ -21,28 +21,34 @@ configuration:
   defaultvalue: admin
   type: 0
   hidden: true
+  required: false
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - display: Username
   name: user_creds
   type: 9
   displaypassword: Password
+  required: false
 - display: Validate server certificate
   name: secure
   defaultvalue: 'true'
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: 'false'
   type: 8
+  required: false
 - defaultvalue: ''
   display: Expiration time
   name: expiry
   type: 0
 
+  required: false
 script:
   script: ''
   type: javascript

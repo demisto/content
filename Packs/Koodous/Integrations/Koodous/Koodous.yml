@@ -11,10 +11,12 @@ configuration:
   name: APIKey
   defaultvalue:
   type: 0
+  required: false
 - display: Server URL
   name: ServerURL
   defaultvalue: https://api.koodous.com/
   type: 0
+  required: false
 script:
   script: ''
   type: javascript

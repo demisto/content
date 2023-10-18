@@ -25,6 +25,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - additionalinfo: Threshold for IP related threats' severity.
   defaultvalue: Major
   display: IP Threshold
@@ -35,6 +36,7 @@ configuration:
   - Moderate
   - Major
   type: 15
+  required: false
 - additionalinfo: Threshold for file related threats' severity.
   defaultvalue: Major
   display: File Threshold
@@ -45,6 +47,7 @@ configuration:
   - Moderate
   - Major
   type: 15
+  required: false
 - additionalinfo: Threshold for URL related threats' severity.
   defaultvalue: Major
   display: URL Threshold
@@ -55,6 +58,7 @@ configuration:
   - Moderate
   - Major
   type: 15
+  required: false
 - additionalinfo: Threshold for email related threats' severity.
   defaultvalue: Major
   display: Email Threshold
@@ -65,6 +69,7 @@ configuration:
   - Moderate
   - Major
   type: 15
+  required: false
 - additionalinfo: Threshold for domain related threats' severity.
   defaultvalue: Major
   display: Domain Threshold
@@ -75,11 +80,13 @@ configuration:
   - Moderate
   - Major
   type: 15
+  required: false
 - additionalinfo: The maximum number of days from which to start returning data. 90 days is recommended by Cofense.
   defaultvalue: '90'
   display: Time limit for collecting data
   name: days_back
   type: 0
+  required: false
 - additionalinfo: |-
     Mapping of Cofense Intelligence indicator rating to XSOAR DBOT Score
     standard rating.
@@ -90,17 +97,21 @@ configuration:
   display: Score Mapping
   name: scoreMapping
   type: 0
+  required: false
 - additionalinfo: Create relationships between indicators as part of Enrichment.
   defaultvalue: 'true'
   display: Create relationships
   name: createRelationship
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Use the Cofense Intelligence integration to check the reputation of domains, URLs, IP addresses, file hashes, and email addresses.
 display: Cofense Intelligence v2
 name: CofenseIntelligenceV2

@@ -23,9 +23,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: From a war-room, query your Hackuity cockpit in order to seamlessly retrieve information related to your vulnerability stock.
 display: Hackuity
 name: Hackuity

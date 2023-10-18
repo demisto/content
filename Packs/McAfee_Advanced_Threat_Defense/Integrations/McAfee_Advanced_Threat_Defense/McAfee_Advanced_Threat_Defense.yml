@@ -11,20 +11,25 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
+  required: false
 - display: 'Trust any certificate (not secure)'
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Username (Deprecated)
   name: username
   hidden: true
   type: 0
+  required: false
 - display: Password (Deprecated)
   name: password
   hidden: true
   type: 4
+  required: false
 description: 'Integrated advanced threat detection: Enhancing protection from network edge to endpoint'
 display: McAfee Advanced Threat Defense
 name: McAfee Advanced Threat Defense

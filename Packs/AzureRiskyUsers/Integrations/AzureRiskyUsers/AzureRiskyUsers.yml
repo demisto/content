@@ -8,6 +8,7 @@ configuration:
   type: 9
   hiddenusername: true
   displaypassword: Client ID
+  required: false
 - additionalinfo: Type of authentication - could be Client Credentials Authorization Flow (recommended) or Device Code Flow.
   defaultvalue: Device Code
   display: Authentication Type
@@ -21,22 +22,27 @@ configuration:
 - display: Tenant ID (for Client Credentials mode)
   name: tenant_id
   type: 0
+  required: false
 - display: Client Secret (for Client Credentials mode)
   name: client_secret
   type: 9
   hiddenusername: true
   displaypassword: Client Secret (for Client Credentials mode)
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Azure Risky Users provides access to all at-risk users and risk detections in the Azure AD environment.
 display: Azure Risky Users
 name: AzureRiskyUsers

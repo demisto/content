@@ -18,12 +18,15 @@ configuration:
 - display: Isolation Role ID
   name: isolation_id
   type: 0
+  required: false
 - display: Trust any certificate (unsecure)
   name: trust
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: 'This integration is intended to aid companies in integrating with the Stealth EcoAPI service.  Using the included commands, security teams can trigger dynamically isolation of users or endpoints from the rest of the Stealth network.  '
 display: Unisys Stealth
 name: Unisys Stealth

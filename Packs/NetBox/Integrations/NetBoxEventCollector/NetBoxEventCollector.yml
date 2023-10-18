@@ -21,21 +21,25 @@ configuration:
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: '1000'
   display: The maximum number of alerts per fetch
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: NetBox event collector integration for Cortex XSIAM.
 display: 'NetBox Event Collector'
 name: NetBox Event Collector

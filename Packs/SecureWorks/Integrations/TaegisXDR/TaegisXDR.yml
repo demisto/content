@@ -19,9 +19,11 @@ configuration:
   name: insecure
   type: 8
   defaultvalue: "false"
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Client ID
   name: client_id
   type: 4
@@ -33,28 +35,34 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - name: max_fetch
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
   type: 0
   additionalinfo: The maximum limit is 200.
+  required: false
 - name: first_fetch
   defaultvalue: 3 days
   display: First fetch time interval
   type: 0
   additionalinfo: 'Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
+  required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Include Assets in Fetch
   name: include_assets
   defaultvalue: "true"
   type: 8
   additionalinfo: An error can occur when the API is slow or there are a large numbers of assets being added to a new incident/investigation. Disabling this will fetch incidents without including asset information, allowing time for the investigation creation to be completed.
+  required: false
 script:
   script: ''
   type: python

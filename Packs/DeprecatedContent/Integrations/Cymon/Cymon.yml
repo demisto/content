@@ -6,9 +6,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: useProxy
   type: 8
+  required: false
 description: Deprecated. Analyzes suspicious domains and IP addresses
 display: Cymon (Deprecated)
 deprecated: true

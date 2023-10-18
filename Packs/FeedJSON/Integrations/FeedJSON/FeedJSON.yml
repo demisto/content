@@ -7,6 +7,7 @@ configuration:
   display: Fetch indicators
   name: feed
   type: 8
+  required: false
 - additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
@@ -17,6 +18,7 @@ configuration:
   - Suspicious
   - Bad
   type: 18
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -39,6 +41,7 @@ configuration:
   - GREEN
   - WHITE
   type: 15
+  required: false
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy
@@ -48,14 +51,17 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
   type: 1
+  required: false
 - defaultvalue: '240'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
+  required: false
 - display: URL
   name: url
   required: true
@@ -65,13 +71,16 @@ configuration:
   display: Auto detect indicator type
   name: auto_detect_type
   type: 8
+  required: false
 - additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
   display: Indicator Type
   name: indicator_type
   type: 0
+  required: false
 - display: Username
   name: credentials
   type: 9
+  required: false
 - additionalinfo: JMESPath expression for extracting the indicators. You can use http://jmespath.org/ to identify the proper expression.
   display: JMESPath Extractor
   name: extractor
@@ -81,32 +90,40 @@ configuration:
   display: JSON Indicator Attribute
   name: indicator
   type: 0
+  required: false
 - additionalinfo: "Send specified data in a POST request. When specified, by default will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify a different Content-Type (for example: application/json) use the Headers config param."
   display: POST Data
   name: data
   type: 0
+  required: false
 - additionalinfo: "Headers to add to the http request. Specify each header on a single line in the format: 'Name: Value'. For example: 'User-Agent: XSOAR Feed'"
   display: Headers
   name: headers
   type: 12
+  required: false
 - additionalinfo: "When using a custom classifier and mapper with this feed, use this option to include the indicator type in the raw json used for classification and mapping."
   display: Include indicator type for mapping
   name: rawjson_include_indicator_type
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
+  required: false
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   type: 0
+  required: false
 description: Fetches indicators from a JSON feed.
 display: JSON Feed
 name: JSON Feed

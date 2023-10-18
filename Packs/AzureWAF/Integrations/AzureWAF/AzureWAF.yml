@@ -10,6 +10,7 @@ configuration:
   name: app_id
   type: 0
   section: Connect
+  required: false
 - display: Default Subscription ID
   name: subscription_id
   required: true
@@ -37,16 +38,19 @@ configuration:
   name: tenant_id
   type: 0
   section: Connect
+  required: false
 - display: Client Secret (for authorization code mode)
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
   name: credentials
   type: 9
   section: Connect
+  required: false
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   type: 0
   section: Connect
+  required: false
 - display: Authorization code
   displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed Instructions (?) section
@@ -54,12 +58,14 @@ configuration:
   name: auth_code
   type: 9
   section: Connect
+  required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   section: Connect
+  required: false
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
@@ -72,16 +78,19 @@ configuration:
   additionalinfo: Azure AD endpoint associated with a national cloud.
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: |-
   The Azure WAF (Web Application Firewall) integration provides centralized protection of your web applications from common exploits and vulnerabilities.
   It enables you to control policies that are configured in the Azure Firewall management platform, and allows you to add, delete, or update policies,

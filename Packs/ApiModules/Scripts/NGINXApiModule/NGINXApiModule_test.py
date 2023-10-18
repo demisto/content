@@ -69,7 +69,7 @@ def test_nginx_conf(tmp_path: Path, mocker):
     conf_file = str(tmp_path / "nginx-test-server.conf")
     mocker.patch.object(demisto, 'callingContext', return_value={'context': {}})
     create_nginx_server_conf(conf_file, 12345, params={})
-    with open(conf_file, 'rt') as f:
+    with open(conf_file) as f:
         conf = f.read()
         assert 'listen 12345 default_server' in conf
 
@@ -79,7 +79,7 @@ def test_nginx_conf_taxii2(tmp_path: Path, mocker):
     mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': 'TAXII2 Server'}})
     conf_file = str(tmp_path / "nginx-test-server.conf")
     create_nginx_server_conf(conf_file, 12345, params={'version': '2.0', 'credentials': {'identifier': 'identifier'}})
-    with open(conf_file, 'rt') as f:
+    with open(conf_file) as f:
         conf = f.read()
         assert '$http_authorization' in conf
         assert '$http_accept' in conf
@@ -111,7 +111,7 @@ def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
     """Test that nginx fails when config is invalid
     """
     def nginx_bad_conf(file_path: str, port: int, params: dict):
-        with open(file_path, 'wt') as f:
+        with open(file_path, "w") as f:
             f.write('server {bad_stuff test;}')
     import NGINXApiModule as module
     mocker.patch.object(module, 'create_nginx_server_conf', side_effect=nginx_bad_conf)
@@ -191,3 +191,16 @@ def test_nginx_web_server_is_up_running(requests_mock):
         module.test_nginx_web_server(9009, {})
     except DemistoException as ex:
         pytest.fail(f'Failed to test nginx server. {ex}')
+
+
+def test_lost_connection_engine_to_server(mocker):
+    import NGINXApiModule as module
+    from flask import Flask
+    module.APP = Flask('demisto-edl')
+
+    mocker.patch.object(demisto, 'info', side_effect=ValueError("Try to write when connection closed"))
+    mocker.patch.object(demisto, 'error', side_effect=ValueError("Try to write when connection closed"))
+    mocker.patch.object(demisto, 'params', return_value={'longRunningPort': '8080'})
+    with pytest.raises(SystemExit) as e:
+        module.run_long_running()
+        assert e.value.code == 1

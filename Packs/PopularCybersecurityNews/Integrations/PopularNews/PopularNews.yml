@@ -6,6 +6,7 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Popular News integration fetches from three sources of news - Threatpost, The Hacker News and Krebs on Security. It outputs the title, links of the news articles and other metadata as a markdown table. The integration commands can either fetch the news from one source or all sources at a time.
 display: Popular News
 name: Popular News

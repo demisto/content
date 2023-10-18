@@ -10,9 +10,11 @@ configuration:
 - display: Port
   name: port
   type: 0
+  required: false
 - display: Database Name
   name: dbname
   type: 0
+  required: false
 - display: Username
   name: credentials
   required: true
@@ -20,12 +22,15 @@ configuration:
 - display: 'Connection Arguments (ex: arg1=val1&arg2=val2)'
   name: connect_parameters
   type: 0
+  required: false
 - display: Use an SSL connection
   name: ssl_connect
   type: 8
+  required: false
 - display: Use Persistent Connection
   name: use_persistent
   type: 8
+  required: false
 description: Integration to provide connectivity to IBM DB2 using the python ibm_db2 library.
 display: DB2
 name: DB2

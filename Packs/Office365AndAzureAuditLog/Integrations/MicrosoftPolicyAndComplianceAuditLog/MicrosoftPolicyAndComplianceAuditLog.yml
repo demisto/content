@@ -16,6 +16,7 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Use the integration to get logs from the O365 service.
 display: Microsoft Policy And Compliance (Audit Log)
 name: MicrosoftPolicyAndComplianceAuditLog

@@ -16,13 +16,16 @@ configuration:
   display: Provide extended information when available
   name: extended
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'true'
   display: Verify host certificates
   name: verify
   type: 8
+  required: false
 description: Deprecated. Use the ReversingLabs A1000 v2 integration instead.
 display: ReversingLabs A1000 (Deprecated)
 name: ReversingLabs A1000

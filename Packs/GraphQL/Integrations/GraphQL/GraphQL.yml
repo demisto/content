@@ -10,17 +10,21 @@ configuration:
 - display: Username / Header Name
   name: credentials
   type: 9
+  required: false
 - display: Fetch the schema from the transport
   name: fetch_schema_from_transport
   type: 8
   defaultvalue: 'true'
   additionalinfo: Whether to fetch the schema from the transport using an introspection query. When set to false, schema validation will not be performed.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: The Generic GraphQL client can interact with any GraphQL server API.
 display: GraphQL
 name: GraphQL

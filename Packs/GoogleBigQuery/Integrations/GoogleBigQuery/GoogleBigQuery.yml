@@ -11,32 +11,40 @@ configuration:
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
   name: credentials_google_service
   hiddenusername: true
   type: 9
+  required: false
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: '1 days'
   type: 0
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: max_fetch
   type: 0
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Fetch query
   name: fetch_query
   type: 0
+  required: false
 - display: Fetch time field
   additionalinfo: Will be used for determining the time-specifying field of each row. Default is CreationTime.
   name: fetch_time_field
   defaultvalue: 'CreationTime'
   type: 0
+  required: false
 script:
   script: ''
   type: python

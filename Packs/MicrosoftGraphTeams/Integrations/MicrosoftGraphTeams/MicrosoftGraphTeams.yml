@@ -25,25 +25,31 @@ configuration:
   hiddenusername: true
   name: secret
   type: 4
+  required: false
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   type: 4
+  required: false
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   type: 4
+  required: false
 - display: Use a self deployed Azure Application
   name: self_deployed
   type: 8
+  required: false
 - display: Application redirect URI (for Authorization Code flow mode)
   name: redirect_uri
   type: 0
+  required: false
 - additionalinfo: Authorization code on behalf of a user, used with self deployed Azure Applications.
   display: Authorization Code
   hiddenusername: true
   name: auth_code
   type: 4
+  required: false
 - display: Email address of the XSOAR delegated Teams user (e.g. "example@demisto.com")
   name: delegated_user
   required: true
@@ -52,14 +58,17 @@ configuration:
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: "true"
   display: Suppress Errors for Non Found Users
   name: handle_error
   type: 8
+  required: false
 description: Microsoft Graph lets your app get authorized access to a user's Teams app in a personal or organization account.
 display: O365 Teams (Using Graph API)
 name: MicrosoftGraphTeams

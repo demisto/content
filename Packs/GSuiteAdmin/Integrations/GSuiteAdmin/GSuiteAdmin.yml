@@ -7,22 +7,27 @@ configuration:
   name: user_service_account_json
   type: 4
   hidden: true
+  required: false
 - display: Admin Email
   name: admin_email_creds
   type: 9
   displaypassword: User's Service Account JSON
+  required: false
 - display: Admin Email
   name: admin_email
   type: 0
   additionalinfo: An admin email is required for the Test validation to run. If not configured, then each command can receive an optional admin_email argument.
   hidden: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
 
+  required: false
 description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users, update settings, and more administrative tasks.
 display: Google Workspace Admin
 name: GSuiteAdmin

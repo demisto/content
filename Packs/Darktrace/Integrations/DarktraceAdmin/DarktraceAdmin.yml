@@ -18,15 +18,18 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 - additionalinfo: Public token obtained by creating an API token pair on the /config configuration page
   display: Public API Token
   name: publicApiKey

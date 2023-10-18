@@ -24,6 +24,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 description: ReversingLabs TitaniumCloud provides threat analysis data from various ReversingLabs cloud services.
 display: ReversingLabs TitaniumCloud v2
 name: ReversingLabs TitaniumCloud v2

@@ -22,9 +22,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: |-
   The BMC Service Request Management application enables an IT department and other business departments to easily define available services, publish those services in a service catalog, and automate fulfillment of those services for the user community, enabling users to help themselves.
   This integration uses SOAP API and supports SRM 9.0 version.

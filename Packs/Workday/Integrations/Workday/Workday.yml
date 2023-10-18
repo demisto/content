@@ -16,24 +16,30 @@ configuration:
   name: tenant_name
   type: 4
   hidden: true
+  required: false
 - display: Tenant name
   name: cred_tenant_name
   type: 9
   hiddenusername: true
+  required: false
 - display: Token
   name: token
   type: 4
   hidden: true
+  required: false
 - display: Token
   name: cred_token
   type: 9
   hiddenusername: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Workday offers enterprise-level software solutions for financial management, human resources, and planning.
 display: Workday
 name: Workday

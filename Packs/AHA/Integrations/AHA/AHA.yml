@@ -26,10 +26,12 @@ configuration:
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
+  required: false
 description: Use the Aha! integration to list and manage Cortex XSOAR features from Aha.
 display: Aha
 name: Aha

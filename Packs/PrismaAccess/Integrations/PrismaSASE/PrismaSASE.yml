@@ -27,12 +27,14 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Provides commands for interaction with Prisma SASE API.
 display: Palo Alto Networks - Prisma SASE
 name: Palo Alto Networks - Prisma SASE

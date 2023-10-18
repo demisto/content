@@ -6,13 +6,16 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
+  required: false
 - display: The raw JSON string to use as the sample data
   name: JSON
   required: true
@@ -20,6 +23,7 @@ configuration:
 - display: The incident name to give to the created incident
   name: name
   type: 0
+  required: false
 description: |-
   A utility for testing incident fetching with mock JSON data.
 display: JSON Sample Incident Generator

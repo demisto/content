@@ -12,23 +12,29 @@ configuration:
 - display: Web API Username (see Detailed Instructions (?))
   name: web_api_credentials
   type: 9
+  required: false
 - display: Data Exchange (DEX) Username (see Detailed Instructions (?))
   name: dex_credentials
   type: 9
+  required: false
 - display: Data Exchange (DEX) Account (see Detailed Instructions (?))
   name: dex_account
   type: 0
+  required: false
 - display: HTTP Timeout
   additionalinfo: Sets the timeout of the HTTP requests sent to Forescout API (in seconds).
   defaultvalue: 60
   name: timeout
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Unified device visibility and control platform for IT and OT Security.
 display: Forescout CounterACT
 name: Forescout

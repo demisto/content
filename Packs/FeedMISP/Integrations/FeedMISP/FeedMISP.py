@@ -465,7 +465,7 @@ def update_indicator_fields(indicator_obj: Dict[str, Any], tlp_color: Optional[s
     timestamp = raw_json_value.get('timestamp', None)
     category = raw_json_value.get('category', None)
     comment = raw_json_value.get('comment', None)
-    tags = raw_json_value.get('Tag', None)
+    tags = raw_json_value.get('Tag', []) or []
 
     if first_seen:
         indicator_obj['fields']['First Seen By Source'] = first_seen

@@ -7,12 +7,15 @@ configuration:
   displaypassword: User's Service Account JSON
   name: credentials
   type: 9
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: G Suite Auditor is an integration that receives Audit logs from G Suite's different applications - admin, drive, calender, and more.
 display: G Suite Auditor
 name: GSuiteAuditor

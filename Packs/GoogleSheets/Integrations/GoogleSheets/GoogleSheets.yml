@@ -15,10 +15,12 @@ configuration:
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
+  required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
+  required: false
 - name: user_id
   display: Email - Associate to Google Drive
   defaultvalue:
@@ -28,6 +30,7 @@ configuration:
     spreadsheets is created in the associated Google Drive and is
     easily accessible from a UI. This parameter is used during the
     authentication process.
+  required: false
 description: Google Sheets is a spreadsheet program that is part of the free web-based Google applications to create and format spreadsheets. Use this integration to create and modify spreadsheets.
 display: Google Sheets
 name: GoogleSheets

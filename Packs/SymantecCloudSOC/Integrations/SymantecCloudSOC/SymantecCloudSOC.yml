@@ -21,12 +21,14 @@ configuration:
   type: 0
   additionalinfo: The investigation logs start with a 'first_fetch' maximum of 180 days.
   section: Collect
+  required: false
 - defaultvalue: 1000
   display: Maximum number of incidents per fetch.
   name: max_fetch
   additionalinfo: max_fetch can be up to 10,000 events.
   type: 0
   section: Collect
+  required: false
 description: Gets Events from Symantec CloudSOC.
 display: Symantec CloudSOC Event Collector
 name: SymantecCloudSOCEventCollector

@@ -12,12 +12,15 @@ configuration:
   defaultvalue: https://analyze.intezer.com/api/
   type: 0
   additionalinfo: The API address to intezer Analyze - i.e. http(s)://<address>/api/
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Malware detection and analysis based on code reuse
 display: Intezer v2
 name: Intezer v2

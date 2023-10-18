@@ -14,17 +14,21 @@ configuration:
 - display: SEPM domain for the user
   name: domain
   type: 0
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Local time zone (e.g., +02:30,-06:00)
   name: timeZone
   type: 0
+  required: false
 description: Query the Symantec Endpoint Protection Manager using the official REST API.
 display: Symantec Endpoint Protection v2
 name: Symantec Endpoint Protection V2

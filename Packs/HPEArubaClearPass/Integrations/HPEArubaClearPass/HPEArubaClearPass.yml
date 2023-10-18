@@ -12,22 +12,27 @@ configuration:
   name: client_id
   type: 0
   hidden: true
+  required: false
 - additionalinfo: HPE Aruba ClearPass client secret.
   display: Client Secret
   name: client_secret
   type: 4
   hidden: true
+  required: false
 - display: Client ID
   name: client_id_creds
   type: 9
   displaypassword: Client Secret
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
 
+  required: false
 description: Aruba ClearPass Policy Manager provides role and device-based network access control for employees, contractors, and guests across any multi-vendor wired, wireless, and VPN infrastructure.
 display: HPE Aruba ClearPass
 name: HPEArubaClearPass

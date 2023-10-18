@@ -26,40 +26,50 @@ configuration:
   name: insecure
   defaultvalue: ""
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: Timezone offset in minutes of the RSA Archer server machine (+60, -60, in minutes)
   name: timeZone
   defaultvalue: ""
   type: 0
+  required: false
 - display: Application ID for fetch
   name: fetchApplicationId
   defaultvalue: ""
   type: 0
+  required: false
 - display: The application's base ID. For example "Incident ID"
   name: fieldsToDisplay
   defaultvalue: ""
   type: 0
+  required: false
 - display: fetchFilter - Specific filters for fetching in the form of an xml string
   name: fetchFilter
   defaultvalue: ""
   type: 0
+  required: false
 - display: Use Archer's REST API instead of its SOAP API
   name: useRest
   defaultvalue: "false"
   type: 8
+  required: false
 - display: Use European Time format (dd/mm/yyyy) instead of the American one
   name: useEuropeanTime
   defaultvalue: "false"
   type: 8
+  required: false
 script:
   script: ''
   type: javascript

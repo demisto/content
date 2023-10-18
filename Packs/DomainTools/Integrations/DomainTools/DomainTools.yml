@@ -17,22 +17,27 @@ configuration:
   displaypassword: API Key
   name: credentials
   type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: API Key (Deprecated)
   hidden: true
   name: key
   defaultvalue: ""
   type: 4
+  required: false
 - display: API Username
   name: username
   defaultvalue: ""
   type: 0
   hidden: true
+  required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -46,6 +51,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -55,10 +61,12 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 script:
   script: ''
   type: javascript

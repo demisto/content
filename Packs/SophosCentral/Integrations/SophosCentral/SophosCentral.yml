@@ -18,9 +18,11 @@ configuration:
   additionalinfo: Tenant ID on which the commands would be executed by default. Keep it empty if using tenant level credentials.
   type: 0
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen, all severity levels will be returned.
   display: Fetch Severity
   name: fetch_severity
@@ -29,6 +31,7 @@ configuration:
   - medium
   - high
   type: 16
+  required: false
 - additionalinfo: Choose one or more categories to fetch. If none is chosen, all categories will be returned.
   display: Fetch Category
   name: fetch_category
@@ -69,26 +72,31 @@ configuration:
   type: 16
   section: Collect
   advanced: true
+  required: false
 - additionalinfo: Maximum number of alerts per fetch. Default is 50. Maximum is 100.
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 description: The unified console for managing Sophos products.
 display: Sophos Central
 name: Sophos Central

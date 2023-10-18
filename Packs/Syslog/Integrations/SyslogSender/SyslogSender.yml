@@ -11,12 +11,14 @@ configuration:
   type: 0
   section: Connect
   additionalinfo: A Syslog server address must be provided. Note, the maximal supported length of a label inside an address is 64 characters.
+  required: false
 - defaultvalue: '514'
   display: Port
   name: port
   type: 0
   section: Connect
   additionalinfo: When using UDP or TCP, port 514 is the default. When using TLS, port 6514 is the default.
+  required: false
 - defaultvalue: UDP
   display: Protocol
   name: protocol
@@ -28,15 +30,18 @@ configuration:
   section: Connect
   advanced: true
   additionalinfo: TLS versions supported are 1.2 and above.
+  required: false
 - name: certificate
   type: 9
   displaypassword: Certificate
   hiddenusername: true
   additionalinfo: Required for TLS.
+  required: false
 - display: Self Signed Certificate
   name: self_signed_certificate
   type: 8
   additionalinfo: Required for TLS. Check if the certificate is self signed.
+  required: false
 - defaultvalue: LOG_USER
   display: Facility
   name: facility
@@ -64,6 +69,7 @@ configuration:
   type: 15
   section: Connect
   advanced: true
+  required: false
 - defaultvalue: LOG_INFO
   display: Log level to send
   name: priority
@@ -76,6 +82,7 @@ configuration:
   type: 15
   section: Collect
   advanced: true
+  required: false
 - defaultvalue: Low
   display: Minimum severity of incidents to send messages on
   name: severity
@@ -86,6 +93,7 @@ configuration:
   - High
   - Critical
   type: 15
+  required: false
 description: Use the Syslog Sender integration to send messages and mirror incident War Room entries to Syslog.
 display: Syslog Sender
 name: Syslog Sender

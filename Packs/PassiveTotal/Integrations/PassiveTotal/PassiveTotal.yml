@@ -11,6 +11,7 @@ configuration:
   name: ServerURL
   defaultvalue: https://api.passivetotal.org/
   type: 0
+  required: false
 - display: Username/API Key
   name: Username
   type: 0
@@ -22,9 +23,11 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Tags to signify this is a malicious domain
   name: tags
   defaultvalue: malware,blacklist,phishing,typo-squatting

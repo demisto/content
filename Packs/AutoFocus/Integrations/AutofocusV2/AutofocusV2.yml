@@ -7,11 +7,13 @@ configuration:
   type: 9
   displaypassword: API Key
   hiddenusername: true
+  required: false
 - additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   type: 4
   hidden: true
+  required: false
 - display: Source Reliability
   name: integrationReliability
   required: true
@@ -29,21 +31,26 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Suppress errors for non found indicators
   name: handle_error
   type: 8
   defaultvalue: 'true'
+  required: false
 - display: Additional malicious verdicts
   name: mark_as_malicious
   type: 0
+  required: false
 - additionalinfo: Create relationships between indicators as part of Enrichment.
   defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
   type: 8
+  required: false
 description: Use the Palo Alto Networks AutoFocus integration to distinguish the most important threats from everyday commodity attacks.
 display: Palo Alto Networks AutoFocus v2
 name: AutoFocus V2

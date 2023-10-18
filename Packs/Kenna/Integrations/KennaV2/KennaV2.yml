@@ -7,22 +7,27 @@ configuration:
   display: Server URL (e.g.  https://api.kennasecurity.com)
   name: url
   type: 0
+  required: false
 - display: Kenna API key
   name: key
   type: 4
   hidden: true
+  required: false
 - displaypassword: Kenna API key
   name: credentials_key
   hiddenusername: true
   type: 9
+  required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 description: Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.
 display: Kenna v2
 name: Kennav2

@@ -16,17 +16,20 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - additionalinfo: ID of Trello board used both to fetch incidents and as the default for all integration commands.
   display: Default and Fetch Board ID
   name: board_id
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: API Key
   name: credentials
   required: true
@@ -38,10 +41,12 @@ configuration:
   type: 0
   section: Collect
   advanced: true
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
+  required: false
 description: Interact with the Trello task manager
 display: Trello
 name: Trello

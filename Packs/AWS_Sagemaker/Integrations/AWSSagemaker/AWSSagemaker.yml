@@ -10,20 +10,24 @@ configuration:
   name: credentials
   type: 9
   displaypassword: AWS secret key
+  required: false
 - display: AWS access key
   name: AWSAccessKey
   defaultvalue: ""
   type: 0
   hidden: true
+  required: false
 - display: AWS secret key
   name: AWSSecretKey
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - display: AWS Region code
   name: AWSRegion
   defaultvalue: "us-east-2"
   type: 0
+  required: false
 - display: Endpoint Name
   name: EndpointName
   type: 0
@@ -32,6 +36,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 script:
   script: ''
   type: python

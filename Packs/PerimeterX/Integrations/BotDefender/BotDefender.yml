@@ -16,9 +16,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: DBot Scoring - Bad Score Threshold
   name: dbotBadThreshold
   required: true
@@ -47,6 +49,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   type: 15
+  required: false
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -56,10 +59,12 @@ configuration:
   - indicatorType
   - suddenDeath
   type: 17
+  required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   type: 1
+  required: false
 description: Gathers PerimeterX related data
 detaileddescription: This integration will query the PerimeterX API for useful information regarding the supplied item (IP, User Agent, path, etc...)
 display: PerimeterX BotDefender

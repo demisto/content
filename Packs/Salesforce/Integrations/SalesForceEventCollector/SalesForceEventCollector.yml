@@ -44,12 +44,15 @@ configuration:
   name: after
   type: 0
   defaultvalue: 3 days
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: verify
   type: 8
+  required: false
 script:
   script: ""
   type: python

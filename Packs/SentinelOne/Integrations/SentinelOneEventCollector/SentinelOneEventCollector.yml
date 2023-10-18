@@ -19,14 +19,17 @@ configuration:
   name: insecure
   type: 8
   section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
+  required: false
 - display: Fetch events
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - defaultvalue: Activities, Threats, Alerts
   display: Event types
   name: event_type
@@ -36,17 +39,20 @@ configuration:
   - Alerts
   type: 16
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 1000
   display: The maximum number of events per fetch should be between 1-1000
   additionalinfo: The limit is per event type. For example, if you choose 3 event types (ACTIVITIES, THREATS, ALERTS) with a limit of 100, the actually limit will be 300.
   name: fetch_limit
   type: 0
   section: Collect
+  required: false
 description: This integration fetches activities, threats, and alerts from SentinelOne.
 display: SentinelOne Event Collector
 name: SentinelOneEventCollector

@@ -11,22 +11,26 @@ configuration:
   displaypassword: API Token
   hiddenusername: true
   section: Connect
+  required: false
 - display: API Token
   name: token
   type: 4
   hidden: true
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Provides data enrichment for domains and IP addresses.
 display: JsonWhoIs
 name: JsonWhoIs

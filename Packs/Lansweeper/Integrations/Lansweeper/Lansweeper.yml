@@ -11,9 +11,11 @@ configuration:
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: The Lansweeper integration allows users to retrieve the asset details.
 display: Lansweeper
 name: Lansweeper

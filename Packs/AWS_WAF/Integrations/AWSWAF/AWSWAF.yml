@@ -10,10 +10,12 @@ configuration:
   name: roleArn
   type: 0
   section: Connect
+  required: false
 - display: Role Session Name
   name: roleSessionName
   type: 0
   section: Connect
+  required: false
 - display: AWS Default Region
   name: defaultRegion
   required: true
@@ -43,16 +45,19 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - name: access_key
   hiddenusername: true
   type: 9
   displaypassword: Access Key
   section: Connect
+  required: false
 - name: secret_key
   hiddenusername: true
   type: 9
   displaypassword: Secret Key
   section: Connect
+  required: false
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
@@ -60,6 +65,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+  required: false
 - display: Retries
   name: retries
   type: 0
@@ -67,16 +73,19 @@ configuration:
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   section: Connect
   advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
+  required: false
 description: Amazon Web Services Web Application Firewall (WAF)
 display: AWS-WAF
 name: AWS-WAF

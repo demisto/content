@@ -20,24 +20,30 @@ configuration:
 - display: Default Organization
   name: defaultOrg
   type: 0
+  required: false
 - display: ProxyIP  (or http://${ip} )
   name: proxyIp
   type: 0
+  required: false
 - display: ProxyPort
   name: proxyPort
   type: 0
+  required: false
 - defaultvalue: '3'
   display: Rating threshold for Malicious Indicators
   name: rating
   type: 0
+  required: false
 - defaultvalue: '50'
   display: Confidence threshold for Malicious Indicators
   name: confidence
   type: 0
+  required: false
 - defaultvalue: '7'
   display: Indicator Reputation Freshness (in days)
   name: freshness
   type: 0
+  required: false
 description: Deprecated. Use the ThreatConnect v3 integration instead.
 display: ThreatConnect (Deprecated)
 name: ThreatConnect

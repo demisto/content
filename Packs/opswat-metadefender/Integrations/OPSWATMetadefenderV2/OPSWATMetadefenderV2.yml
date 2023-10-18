@@ -16,29 +16,36 @@ configuration:
   defaultvalue: ""
   type: 4
   hidden: true
+  required: false
 - name: api_key_creds
   type: 9
   displaypassword: API Key - Needed in cloud based solutions
   hiddenusername: true
+  required: false
 - display: Cloud based
   name: cloud
   type: 8
   defaultvalue: 'false'
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 - display: The high threshold
   name: highPercnt
   defaultvalue: '66'
   type: 0
+  required: false
 - defaultvalue: '34'
   display: The low threshold
   name: lowPercnt
   type: 0
 
+  required: false
 script:
   script: ''
   type: python

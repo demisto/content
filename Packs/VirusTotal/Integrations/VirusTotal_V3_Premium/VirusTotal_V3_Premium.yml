@@ -12,28 +12,35 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   defaultvalue: VirusTotal Intelligence LiveHunt Notification
   name: incidentType
   type: 13
+  required: false
 - defaultvalue: '40'
   name: max_fetch
   display: Maximum number of incidents per fetch
   type: 0
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) or a date or epoch timestamp.
   name: first_fetch
   type: 0
+  required: false
 - defaultvalue: ''
   display: "Tag: The ruleset's name or the identifier for the YARA rule matching the file to fetch its notifications. Leave blank to fetch all."
   name: tag
   type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  required: false
 description: Analyse retro hunts, read live hunt notifications and download files from VirusTotal.
 display: VirusTotal - Premium (API v3)
 name: VirusTotal - Premium (API v3)

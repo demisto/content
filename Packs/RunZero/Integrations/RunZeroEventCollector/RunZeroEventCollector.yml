@@ -31,25 +31,30 @@ configuration:
   name: insecure
   type: 8
   section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
   section: Collect
+  required: false
 - display: Max events per fetch
   additionalinfo: The maximum number of events to retrieve for each event type (up to 10000 events). For more information about event types, see the help section.
   defaultvalue: '1000'
   name: max_fetch
   type: 0
   section: Collect
+  required: false
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   section: Collect
+  required: false
 description: This is the RunZero event collector integration for XSIAM.
 display: RunZero Event Collector
 name: RunZero Event Collector

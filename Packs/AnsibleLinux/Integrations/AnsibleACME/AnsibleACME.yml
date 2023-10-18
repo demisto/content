@@ -46,10 +46,12 @@ configuration:
   name: become_user
   type: 0
   defaultvalue: 'root'
+  required: false
 - display: Privilege Escalation Password
   additionalinfo: Set the privilege escalation password.
   name: become_password
   type: 4
+  required: false
 description: Control Automatic Certificate Management Environment on Linux hosts
 display: Ansible ACME
 fromversion: 6.0.0

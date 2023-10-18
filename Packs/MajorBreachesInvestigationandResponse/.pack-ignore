@@ -51,3 +51,6 @@ ignore=RM106
 
 [file:playbook-SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_6_5.yml]
 ignore=BA110
+
+[file:1_6_35.md]
+ignore=RN113,RN114

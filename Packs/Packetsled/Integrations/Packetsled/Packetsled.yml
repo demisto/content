@@ -14,9 +14,11 @@ configuration:
 - display: Fetch incidents
   name: isFetch
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
+  required: false
 - display: "Username"
   name: credentials
   defaultvalue: ""
@@ -27,11 +29,13 @@ configuration:
   defaultvalue: 7 days
   type: 0
   additionalinfo: ""
+  required: false
 - additionalinfo: the maximum number of incidents to fetch
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   type: 0
+  required: false
 script:
   script: ''
   type: python
