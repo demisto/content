@@ -254,7 +254,10 @@ class TestClient(unittest.TestCase):
             ],
             files=[('file', ('test.txt', b'test file data', 'application/octet-stream'))]
         )
-        assert result == {'uuid': 'c89d310b-7862-4534-998a-3eb39d9a9d42', 'message': 'You have successfully submitted a submission.'}
+        assert result == {
+            'uuid': 'c89d310b-7862-4534-998a-3eb39d9a9d42',
+            'message': 'You have successfully submitted a submission.'
+        }
 
     @patch('ThreatZone.BaseClient._http_request')
     def test_threatzone_get(self, mock_http_request):
@@ -302,7 +305,16 @@ class TestClient(unittest.TestCase):
 
         result = self.client.threatzone_check_limits("sandbox")
 
-        assert result == {'avaliable': True, 'Limits': {'E_Mail': 'name@company.com', 'Daily_Submission_Limit': '5/999', 'Concurrent_Limit': '0/2', 'API_Limit': '5/9999'}}
+        assert result == {
+            'avaliable': True,
+            'Limits':
+                {
+                    'E_Mail': 'name@company.com',
+                    'Daily_Submission_Limit': '5/999',
+                    'Concurrent_Limit': '0/2',
+                    'API_Limit': '5/9999'
+                }
+        }
 
 
 @patch("ThreatZone.Client.threatzone_me", return_value=MockClient.threatzone_me)
