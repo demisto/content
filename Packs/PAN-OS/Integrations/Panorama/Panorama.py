@@ -837,7 +837,6 @@ def start_tsf_export():
     Start export of tech support file (TSF) from PAN-OS:
     https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-panorama-api/pan-os-xml-api-request-types/export-files-api/export-technical-support-data
     """
-    return_results('Starting TSF export...')
     params = {
         'type': 'export',
         'category': 'tech-support',
