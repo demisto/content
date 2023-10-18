@@ -2628,7 +2628,7 @@ tasks:
       - "79"
     scriptarguments:
       role_names:
-        simple: Account Admin
+        simple: Admin
     separatecontext: false
     continueonerrortype: ""
     view: |-
