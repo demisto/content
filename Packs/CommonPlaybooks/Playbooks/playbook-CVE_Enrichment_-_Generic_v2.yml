@@ -3,8 +3,7 @@ version: -1
 fromversion: 5.0.0
 name: CVE Enrichment - Generic v2
 description: |-
-  This playbook performs CVE Enrichment using one or more integrations.
-  Supported integrations:
+  This playbook performs CVE Enrichment using the following integrations:
   - VulnDB
   - CIRCL CVE Search
   - IBM X-Force Exchange
@@ -99,7 +98,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 820
+          "y": 1130
         }
       }
     note: false
@@ -110,14 +109,50 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
-    taskid: 54844794-c82a-4e73-8cf6-52e5598dbc89
+  "6":
+    id: "6"
+    taskid: 18920167-4098-40d7-8781-16125c58e9c9
     type: regular
     task:
-      id: 54844794-c82a-4e73-8cf6-52e5598dbc89
+      id: 18920167-4098-40d7-8781-16125c58e9c9
       version: -1
-      name: Get vulnerability details by CVE
+      name: Get vulnerability details by CVE ID
+      description: Returns CVE information by CVE ID.
+      script: '|||cve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      cve:
+        complex:
+          root: inputs.cve_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 3831c20e-46bd-4d20-8cc8-e64dc5addb6f
+    type: regular
+    task:
+      id: 3831c20e-46bd-4d20-8cc8-e64dc5addb6f
+      version: -1
+      name: Get vulnerability details by CVE ID
       description: Search for details about the given CVE.
       script: '|||cve-search'
       type: regular
@@ -135,7 +170,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
+          "x": 380,
           "y": 650
         }
       }
@@ -160,13 +195,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '13'
+      - "6"
       - "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 600,
+          "x": 790,
           "y": 510
         }
       }
@@ -180,38 +216,132 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 38a9e31d-b066-4c7d-8a90-19d9b7f2e8d4
+    taskid: 41a6cae9-f4c7-4ec5-8c64-b5e00e2fa060
     type: regular
     task:
-      id: 38a9e31d-b066-4c7d-8a90-19d9b7f2e8d4
+      id: 41a6cae9-f4c7-4ec5-8c64-b5e00e2fa060
       version: -1
-      name: Get vulnerability details by CVE
-      description: Returns CVE information by CVE ID.
-      script: '|||cve'
+      name: VulnDB - Get vulnerability details by CVE
+      description: Returns full details about vulnerabilities, by CVE ID.
+      script: VulnDB|||vulndb-get-vuln-by-cve-id
       type: regular
       iscommand: true
-      brand: ""
+      brand: VulnDB
     nexttasks:
       '#none#':
       - '2'
     scriptarguments:
-      cve:
+      cve_id:
         complex:
           root: inputs.cve_id
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 400,
+          "x": 1390,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 2c6008cc-e42b-4976-86c8-92123558d6b6
+    type: title
+    task:
+      id: 2c6008cc-e42b-4976-86c8-92123558d6b6
+      version: -1
+      name: VulnDB
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
           "y": 650
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    continueonerror: true
     continueonerrortype: ""
-    skipunavailable: true
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: e55035e4-334c-404d-8d69-6e861966f1cb
+    type: condition
+    task:
+      id: e55035e4-334c-404d-8d69-6e861966f1cb
+      version: -1
+      name: Is VulnDB integration enabled?
+      description: Verify that there's a valid instance of "VulnDB" enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VulnDB
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -219,12 +349,13 @@ view: |-
   {
     "linkLabelsPosition": {
       "1_11_yes": 0.52,
-      "1_2_#default#": 0.25
+      "1_2_#default#": 0.25,
+      "27_2_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 685,
-        "width": 1017.5,
+        "height": 995,
+        "width": 1607.5,
         "x": 162.5,
         "y": 200
       }
@@ -403,9 +534,6 @@ outputs:
   description: Classification description (human readable).
   type: string
 tests:
-- No test
-marketplaces:
-  - xsoar
-  - marketplacev2
+- No tests (auto formatted)
 contentitemexportablefields:
   contentitemfields: {}
