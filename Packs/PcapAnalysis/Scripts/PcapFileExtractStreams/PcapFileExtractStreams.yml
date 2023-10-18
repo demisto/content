@@ -41,7 +41,7 @@ enabled: true
 name: PcapFileExtractStreams
 outputs:
 - contextPath: PCAPStream.entry_id
-  description: The entry ID of the pcap file parsed
+  description: The entry ID of the pcap file parsed.
   type: string
 - contextPath: PCAPStream.protocol
   description: Protocol.
