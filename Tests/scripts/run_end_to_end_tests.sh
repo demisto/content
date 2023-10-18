@@ -13,9 +13,9 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR_NG" ]]; 
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
       echo "Running end-to-end tests on ${CLOUD_CHOSEN_MACHINE_ID}"
       if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
-        python3 -m pytest ./Tests/tests_end_to_end_xsiam -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --disable-warnings
+        python3 -m pytest ./Tests/tests_end_to_end/xsiam -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --disable-warnings
       else
-        python3 -m pytest ./Tests/tests_end_to_end_xsoar_ng -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --disable-warnings
+        python3 -m pytest ./Tests/tests_end_to_end/xsoar_ng -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --disable-warnings
       fi
       if [[ $? -ne 0 ]]; then
         exit_code=1

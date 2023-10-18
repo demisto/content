@@ -1,0 +1,75 @@
+import json
+import os
+from typing import Dict
+
+import pytest
+
+from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (
+    XsiamApiClient,
+    XsiamApiClientConfig
+)
+from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarApiClientConfig, XsoarNGApiClient
+
+from Tests.configure_and_test_integration_instances import CloudBuild
+
+
+def pytest_addoption(parser):
+    parser.addoption("--cloud_machine", action="store")
+    parser.addoption("--cloud_servers_path", action="store")
+    parser.addoption("--cloud_servers_api_keys", action="store")
+
+
+def get_cloud_machine_credentials(request):
+    cloud_machine = request.config.option.cloud_machine
+    cloud_servers_path = request.config.option.cloud_servers_path
+    cloud_servers_api_keys = request.config.option.cloud_servers_api_keys
+
+    if not cloud_machine or not cloud_servers_path or not cloud_servers_api_keys:
+        pytest.skip()
+
+    api_key, _, url, api_key_id = CloudBuild.get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys)
+    return url, api_key, api_key_id
+
+
+def get_integration_params(instance_name: str):
+    with open(os.getenv("SECRET_CONF_PATH")) as file:
+        integrations_config = json.load(file)["integrations"]
+
+    for config in integrations_config:
+        if config.get("instance_name") == instance_name:
+            return config.get("params")
+
+    raise ValueError(f'Could not find integration parameters for {instance_name}')
+
+
+@pytest.fixture(scope="function")
+def integration_params(request) -> Dict:
+    return get_integration_params(request.param)
+
+
+@pytest.fixture(scope="module")
+def xsiam_client(request) -> XsiamApiClient:
+
+    xsiam_url, api_key, api_key_id = get_cloud_machine_credentials(request)
+
+    # initialize xsiam client
+    xsiam_client_cfg = XsiamApiClientConfig(
+        base_url=xsiam_url,
+        api_key=api_key,
+        auth_id=api_key_id,  # type: ignore[arg-type]
+        token='test',
+        collector_token='test',  # type: ignore[arg-type]
+    )
+    return XsiamApiClient(xsiam_client_cfg)
+
+
+@pytest.fixture(scope="module")
+def xsoar_ng_client(request) -> XsoarNGApiClient:
+    xsoar_ng_url, api_key, api_key_id = get_cloud_machine_credentials(request)
+
+    xsoar_client_config = XsoarApiClientConfig(
+        base_url=xsoar_ng_url,
+        api_key=api_key,
+        auth_id=api_key_id,  # type: ignore[arg-type]
+    )
+    return XsoarNGApiClient(xsoar_client_config)
