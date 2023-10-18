@@ -80,7 +80,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Setting the Network Scheme.
+      description: Setting the network scheme.
       name: net_scheme_name
       predefined:
       - Isolated

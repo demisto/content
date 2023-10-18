@@ -71,7 +71,7 @@ Submits a sample to VMRay for analysis.
 | max_jobs | Maximum number of jobs to create (number). Default is 1. | Optional | 
 | tags | A CSV list of tags to add to the sample. | Optional | 
 | reanalyze | Deprecated. Analyze even if analyses already exist. To control analysis caching, use the API Key settings instead, which are available via the Analysis Settings page, in the VMRay Web Interface. Possible values are: true, false. | Optional | 
-| net_scheme_name | The Network Scheme to use | Optional |
+| net_scheme_name | The network scheme to use. | Optional |
 
 #### Context Output
 
@@ -1149,7 +1149,7 @@ Retrieves screenshots taken during a specific dynamic analysis. The screenshots 
 
 ### vmray-get-license-usage-verdicts
 ***
-Gets the usage of verdicts from VMRay
+Gets the usage of verdicts from VMRay.
 
 
 #### Base Command
@@ -1164,10 +1164,10 @@ There is no input for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMRay.VerdictQuota.PeriodEndDate | string | License end date | 
-| VMRay.VerdictQuota.VerdictQuota | number | Total number of available verdicts (per month) |
-| VMRay.VerdictQuota.VerdictRemaining | number | Remaining number of verdicts (per month)|
-| VMRay.VerdictQuota.VerdictUsage | number | Percentages used | 
+| VMRay.VerdictQuota.PeriodEndDate | string | License end date. | 
+| VMRay.VerdictQuota.VerdictQuota | number | Total number of available verdicts (per month). |
+| VMRay.VerdictQuota.VerdictRemaining | number | Remaining number of verdicts (per month). |
+| VMRay.VerdictQuota.VerdictUsage | number | Percentages used. | 
 
 
 #### Command Example
@@ -1197,7 +1197,7 @@ There is no input for this command.
 
 ### vmray-get-license-usage-reports
 ***
-Gets the usage of reports from VMRay
+Gets the usage of reports from VMRay.
 
 
 #### Base Command
@@ -1212,10 +1212,10 @@ There is no input for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VMRay.ReportQuota.PeriodEndDate | string | License end date | 
-| VMRay.ReportQuota.VerdictQuota | number | Total number of available reports (per month) |
-| VMRay.ReportQuota.VerdictRemaining | number | Remaining number of reports (per month)|
-| VMRay.ReportQuota.VerdictUsage | number | Percentages used | 
+| VMRay.ReportQuota.PeriodEndDate | string | License end date. | 
+| VMRay.ReportQuota.VerdictQuota | number | Total number of available reports (per month). |
+| VMRay.ReportQuota.VerdictRemaining | number | Remaining number of reports (per month). |
+| VMRay.ReportQuota.VerdictUsage | number | Percentages used. | 
 
 #### Context Example
 
