@@ -8,6 +8,7 @@
     "verbose": "",
     "server_ports": "",
     "contents": [{
+            "entry_id": "./test_data/1.pcap",
             "protocol": "tcp",
             "client_ip": "192.168.10.100",
             "client_port": 52537,
@@ -64,6 +65,7 @@
     "verbose": "",
     "server_ports": "",
     "contents": [{
+            "entry_id": "./test_data/2.pcap",
             "protocol": "tcp",
             "client_ip": "192.168.10.8",
             "client_port": 51130,
@@ -90,6 +92,7 @@
     "verbose": "",
     "server_ports": "",
     "contents": [{
+            "entry_id": "./test_data/3.pcap",
             "protocol": "tcp",
             "client_ip": "192.168.10.103",
             "client_port": 57659,
