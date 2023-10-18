@@ -18,6 +18,7 @@ Access your Cyberark PTA machine and follow these instructions [Product Document
    * siem - Assign a name to your configuration.
    * host - Write the dedicated hostname or IP address.
    * port - Write the dedicated port number.
+   * syslogType - RFC5424.
  
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
