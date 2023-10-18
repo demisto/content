@@ -9,7 +9,7 @@ description: Send messages, create rooms and more, via the Cisco Spark API.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: https://api.ciscospark.com
+  defaultvalue: https://webexapis.com
   type: 0
   required: true
 - display: API Key
