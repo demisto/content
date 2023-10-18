@@ -1,5 +1,5 @@
 id: Test XDR Playbook general commands
-version: 2
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Test XDR Playbook general commands
 starttaskid: "0"
