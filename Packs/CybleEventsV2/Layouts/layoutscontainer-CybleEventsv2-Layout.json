@@ -413,27 +413,27 @@
                 "description": "Compromised Card Details",
                 "fields": [
                     {
-                        "fieldId": "incident_cardno",
+                        "fieldId": "incident_cybleeventsv2cardno",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cardcvv",
+                        "fieldId": "incident_cybleeventsv2cardcvv",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cardexpiry",
+                        "fieldId": "incident_cybleeventsv2cardexpiry",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cardbrand",
+                        "fieldId": "incident_cybleeventsv2cardbrand",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cardtype",
+                        "fieldId": "incident_cybleeventsv2cardtype",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_cardlevel",
+                        "fieldId": "incident_cybleeventsv2cardlevel",
                         "isVisible": true
                     }
                 ],
