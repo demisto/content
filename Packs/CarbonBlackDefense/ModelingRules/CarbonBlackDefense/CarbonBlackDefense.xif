@@ -35,6 +35,7 @@ alter
         xdm.observer.name = report_name,
         xdm.observer.action = report_description,
         xdm.observer.product = report_link,
+        xdm.alert.mitre_tactics = arraycreate(report_link),
         xdm.source.process.pid = process_pid,
         xdm.source.process.executable.path = process_name,
         xdm.source.process.executable.filename= arrayindex(regextract(process_name, "[^\\]+$"),0),
