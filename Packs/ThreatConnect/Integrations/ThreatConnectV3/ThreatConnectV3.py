@@ -448,7 +448,7 @@ def fetch_incidents(client: Client, *args) -> str:
     demisto.debug(f'[ThreatConnect] last run: {last_run}')
 
     last_fetch_time = last_run.get('last_time')
-    last_fetch_id = last_run.get('last_id', 0)
+    last_fetch_id = int(last_run.get('last_id', 0))
     if not last_fetch_time:
         last_fetch_time = f"{params.get('first_fetch') or '3 days'} ago"
         last_fetch_time = dateparser.parse(last_fetch_time)
@@ -461,13 +461,14 @@ def fetch_incidents(client: Client, *args) -> str:
         threatconnect_id = int(incident.get('id'))
         if threatconnect_id > last_fetch_id:
             last_fetch_id = threatconnect_id
-            incidents.extend(detection_to_incident(incident, incident.get('dateAdded')))
+            incidents.append(detection_to_incident(incident, incident.get('dateAdded')))
 
+    demisto.debug(incidents)
     demisto.incidents(incidents)
-    set_last = get_last_run_time(response, last_run)
-    demisto.debug(f'Setting last run to: last_time: {set_last}, last_id: {last_fetch_id}')
-    demisto.setLastRun({'last_time': set_last, 'last_id': last_fetch_id})
-    return set_last
+    set_last_fetch_time = get_last_run_time(response, last_fetch_time)
+    demisto.debug(f'Setting last run to: last_time: {set_last_fetch_time}, last_id: {last_fetch_id}')
+    demisto.setLastRun({'last_time': set_last_fetch_time, 'last_id': last_fetch_id})
+    return set_last_fetch_time
 
 
 def tc_fetch_incidents_command(client: Client, args: dict) -> None:  # pragma: no cover
