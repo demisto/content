@@ -78,7 +78,7 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     webApp = arrayindex(regextract(_raw_log, "webApp=\"([^\"]+)"), 0) // Web application name (in the security policy).
 | alter 
     vhost = replace(replace(vhost, "&lt;", "<"), "&gt;", ">"),
-    is_passive_mode = to_boolean(uppercase(isPassive))
+    is_passive_mode = to_boolean(uppercase(isPassive)) // an event log is generated for any security policy violation. In passive mode these events will indicate a violation which was allowed while in active mode the log will indicate that an attack was blocked.
 | alter // Extract HTTP request header fields 
     http_method = if(http_method  != null, http_method, arrayindex(regextract(request, "(\w+)"), 0)),
     user_agent = arrayindex(regextract(request, "(?i)User-Agent:\s*(.+?)\\n"), 0),
@@ -87,8 +87,8 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     x_forwarded_for = arrayindex(regextract(request, "(?i)X-Forwarded-For:\s*(.+?)\\n"), 0),
     x_ms_forwarded_client_app = arrayindex(regextract(request, "(?i)X-MS-Client-Application:\s*(.+?)\\n"), 0),
     x_ms_forwarded_client_ip = arrayindex(regextract(request, "(?i)X-MS-Forwarded-Client-IP:\s*(.+?)\\n"), 0),
-    x_radware_ip = arrayindex(regextract(request, "X-RDWR-IP:\s*(.+?)\\n"), 0),
-    x_radware_port = arrayindex(regextract(request, "X-RDWR-PORT:\s*(.+?)\\n"), 0),
+    x_radware_ip = arrayindex(regextract(request, "X-RDWR-IP:\s*(.+?)\\n"), 0), // client originating IP. see https://support.radware.com/app/answers/answer_view/a_id/19026/loc/en_US
+    x_radware_port = arrayindex(regextract(request, "X-RDWR-PORT:\s*(.+?)\\n"), 0), // X-RDWR-PORT-Specifies the TCP port of the incoming transaction. Example: 15234. see https://support.radware.com/app/search/kw/X-RDWR-PORT/okcsSearchSession/10886275347f7e-9e5a-4e7f-8841-ebe6f258e5ea/page/1/priorTransactionID/1809232382/transactionID/1809232382
     x_radware_app_id = arrayindex(regextract(request, "X-RDWR-APP-ID:\s*(.+?)\\n"), 0),
     full_url = concat(lowercase(protocol), "://", request_host, uri)
 | alter // Extract Cloud WAF originated information from the enrichmentContainer
