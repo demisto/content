@@ -114,10 +114,10 @@ script:
         Example: group_name1,group_name2.
       isArray: true
       name: group_name
-    - auto: PREDEFINED
-      description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
+    - description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
       isArray: true
       name: platform
+      auto: PREDEFINED
       predefined:
       - windows
       - linux
@@ -126,19 +126,20 @@ script:
     - description: |-
         A comma-separated list of alias names.
         Examples: alias_name1,alias_name2.
-      isArray: true
       name: alias_name
-    - auto: PREDEFINED
-      description: Specifies whether the endpoint was isolated or unisolated.
+      isArray: true
+    - description: |-
+        Specifies whether the endpoint was isolated or unisolated.
       name: isolate
+      auto: PREDEFINED
       predefined:
       - isolated
       - unisolated
     - description: |-
         Hostname
         Example: hostname1,hostname2.
-      isArray: true
       name: hostname
+      isArray: true
     - description: |-
         All the agents that were first seen after {first_seen_gte}.
         Supported values:
@@ -170,9 +171,9 @@ script:
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
       name: page
-    - defaultValue: '30'
-      description: Maximum number of endpoints to return per page. The default and maximum is 30.
+    - description: Maximum number of endpoints to return per page. The default and maximum is 30.
       name: limit
+      defaultValue: '30'
     - auto: PREDEFINED
       description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
       name: sort_by
@@ -180,16 +181,16 @@ script:
       - first_seen
       - last_seen
     - auto: PREDEFINED
-      defaultValue: asc
       description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc.
       name: sort_order
       predefined:
       - asc
       - desc
-    - auto: PREDEFINED
+      defaultValue: asc
+    - name: status
       description: A comma-separated list of endpoints statuses to filter.
-      name: status
       isArray: true
+      auto: PREDEFINED
       predefined:
       - connected
       - disconnected
@@ -2862,7 +2863,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.77674
 tests:
 - No tests
 fromversion: 6.2.0
