@@ -264,7 +264,7 @@ class Client(BaseClient):
             headers = {}
 
         headers["Content-Type"] = "application/json"
-        headers["x-traceable-xsoar"] = "traceable-xsoar-integration; version=1.0.4"
+        headers["x-traceable-xsoar"] = "traceable-xsoar-integration; version=1.1.0"
         self.headers = headers
         self.url = base_url + "/graphql"
         self.securityScoreCategoryList = None
