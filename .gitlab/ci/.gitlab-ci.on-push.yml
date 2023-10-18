@@ -551,7 +551,6 @@ xsoar_ng_end_to_end_tests:
     - .default-job-settings
   rules:
     - if: '$NIGHTLY'
-    - when: always
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -580,9 +579,7 @@ xsoar_ng_end_to_end_tests:
     - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
     - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
 
-    - section_start "Clean Machine"
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
-    - section_end "Clean Machine"
+    - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Run xsoar-ng end to end sanity tests"
     - ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?
@@ -590,7 +587,7 @@ xsoar_ng_end_to_end_tests:
 
   after_script:
     - source .gitlab/helper_functions.sh
-    - !reference [ .unlock-machine ]
+    - !reference [.unlock-machine]
 
 test-upload-flow:
   tags:
