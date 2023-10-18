@@ -13,7 +13,7 @@ class Client(BaseClient):
             url_suffix='/api/public/endpoints?filter[organizationIds]=0'
         )
 
-    def get_profile_id(self, profile: str, organization_id: int) -> Dict[Any, str]:
+    def get_profile_id(self, profile: str, organization_id: int) -> str:
         '''Gets the profile ID based on the profile name and organization ID by making a GET request to the
         '/api/public/acquisitions/profiles' endpoint.
         Args:
@@ -24,10 +24,14 @@ class Client(BaseClient):
         Raises:
         DemistoException: If there is an error making the HTTP request or processing the API response.
         '''
-        return self._http_request(
-            method='GET',
-            url_suffix=f'/api/public/acquisitions/profiles?filter[name]='
-                       f'{profile}&filter[organizationIds]={organization_id}')['result']['entities'][0]['_id']
+        preset_profiles = ["browsing-history", "compromise-assessment", "event-logs", "full", "memory-ram-pagefile", "quick"]
+        if profile in preset_profiles:
+            return profile
+        else:
+            return self._http_request(
+                method='GET',
+                url_suffix=f'/api/public/acquisitions/profiles?filter[name]='
+                           f'{profile}&filter[organizationIds]={organization_id}')['result']['entities'][0]['_id']
 
     def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: int) -> Dict[Any, str]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
@@ -55,7 +59,7 @@ class Client(BaseClient):
             "acquisitionProfileId": self.get_profile_id(profile, organization_id),
             "filter": {
                 "name": hostname,
-                "organizationIds": [arg_to_number(organization_id)]
+                "organizationIds": [organization_id]
             }
         }
         return self._http_request(
@@ -79,7 +83,7 @@ class Client(BaseClient):
             "enabled": True,
             "filter": {
                 "name": hostname,
-                "organizationIds": [arg_to_number(organization_id)]
+                "organizationIds": [organization_id]
             }
         }
 
@@ -115,7 +119,7 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get('case_id', '')
     organization_id = args.get('organization_id', '')
 
-    result: Dict[Any, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
+    result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, arg_to_number(organization_id))
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
                                       headerTransform=string_to_table_header)
@@ -141,7 +145,7 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     organization_id = args.get('organization_id', '')
     isolation = args.get('isolation', '')
 
-    result: Dict[Any, Any] = client.air_isolate(hostname, organization_id, isolation)
+    result: Dict[str, Any] = client.air_isolate(hostname, arg_to_number(organization_id), isolation)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
                                       headerTransform=string_to_table_header)
