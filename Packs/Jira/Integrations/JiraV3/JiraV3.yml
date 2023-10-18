@@ -1,4 +1,4 @@
-commonfields:
+\commonfields:
   id: Jira V3
   version: -1
 name: Jira V3
@@ -1398,7 +1398,7 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/btfl-soup:1.0.1.76010
+  dockerimage: demisto/btfl-soup:1.0.1.78187
   isfetch: true
   ismappable: true
   isremotesyncin: true
