@@ -41,10 +41,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f8e4afc5-0287-485c-804d-31a0af084eb9
+    taskid: b802bcac-638f-4d66-80bd-28e966a4b086
     type: regular
     task:
-      id: f8e4afc5-0287-485c-804d-31a0af084eb9
+      id: b802bcac-638f-4d66-80bd-28e966a4b086
       version: -1
       name: ThreatZone Submit File for Analysis
       description: Submits a sample to ThreatZone for CDR.
@@ -57,7 +57,9 @@ tasks:
       - "2"
     scriptarguments:
       entry_id:
-        simple: ${File.EntryID}
+        complex:
+          root: inputs.File
+          accessor: EntryID
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -76,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: fe1f6e26-3ee3-450f-87bd-b9fd1c451046
+    taskid: c5b0991f-bd94-4481-8e98-89e2756334dd
     type: playbook
     task:
-      id: fe1f6e26-3ee3-450f-87bd-b9fd1c451046
+      id: c5b0991f-bd94-4481-8e98-89e2756334dd
       version: -1
       name: GenericPolling
       description: |-
@@ -100,7 +102,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: ThreatZone.Analysis
+          root: ThreatZone.Submission
           accessor: UUID
       Interval:
         complex:
@@ -113,7 +115,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: ThreatZone.Result(val.STATUS!==5).REPORT
+        simple: ThreatZone.Analysis(val.STATUS!==5).REPORT
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -153,7 +155,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1140
+          "y": 1240
         }
       }
     note: false
@@ -272,14 +274,51 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: cc090152-e2b8-4e74-8d02-e1b0e70c2fc3
+    taskid: 39f51bd4-885c-408c-8487-65bd88c0a0f7
     type: regular
     task:
-      id: cc090152-e2b8-4e74-8d02-e1b0e70c2fc3
+      id: 39f51bd4-885c-408c-8487-65bd88c0a0f7
       version: -1
-      name: ThreatZone Get Report & Sanitized File
+      name: ThreatZone Get Report
       description: Retrive the analysis result from ThreatZone Sandbox.
       script: '|||tz-get-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      uuid:
+        complex:
+          root: ThreatZone.Submission
+          accessor: UUID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 12689403-fec9-4436-80a9-bdeee3f57ab7
+    type: regular
+    task:
+      id: 12689403-fec9-4436-80a9-bdeee3f57ab7
+      version: -1
+      name: Threatzone Get Sanitized File
+      description: Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
+      script: '|||tz-get-sanitized'
       type: regular
       iscommand: true
       brand: ""
@@ -288,14 +327,16 @@ tasks:
       - "5"
     scriptarguments:
       uuid:
-        simple: ${ThreatZone.Analysis.UUID}
+        complex:
+          root: ThreatZone.Submission
+          accessor: UUID
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 275,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -310,7 +351,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1155,
+        "height": 1255,
         "width": 605,
         "x": 50,
         "y": 50
@@ -338,34 +379,34 @@ inputs:
   description: The duration after which to stop pooling and to resume the playbook (in minutes)
   playbookInputQuery:
 outputs:
-- contextPath: ThreatZone.Result.STATUS
+- contextPath: ThreatZone.Analysis.STATUS
   description: The status of the submission scanning process.
   type: String
-- contextPath: ThreatZone.Result.LEVEL
+- contextPath: ThreatZone.Analysis.LEVEL
   description: Threat Level of the scanned file. (malicious, suspicious or informative).
   type: String
-- contextPath: ThreatZone.Result.URL
+- contextPath: ThreatZone.Analysis.URL
   description: The result page url of the submission.
   type: String
-- contextPath: ThreatZone.Result.INFO
+- contextPath: ThreatZone.Analysis.INFO
   description: Contains the file name, scan process status and public status.
   type: String
-- contextPath: ThreatZone.Result.REPORT
+- contextPath: ThreatZone.Analysis.REPORT
   description: The analysis report of the submission.
   type: String
-- contextPath: ThreatZone.Result.MD5
+- contextPath: ThreatZone.Analysis.MD5
   description: The md5 hash of the submission.
   type: String
-- contextPath: ThreatZone.Result.SHA1
+- contextPath: ThreatZone.Analysis.SHA1
   description: The sha1 hash of the submission.
   type: String
-- contextPath: ThreatZone.Result.SHA256
+- contextPath: ThreatZone.Analysis.SHA256
   description: The sha256 hash of the submission.
   type: String
-- contextPath: ThreatZone.Result.UUID
+- contextPath: ThreatZone.Analysis.UUID
   description: The UUID of the submission.
   type: String
-- contextPath: ThreatZone.Result.SANITIZED
+- contextPath: ThreatZone.Analysis.SANITIZED
   description: The url of the sanitized file.
   type: String
 tests:

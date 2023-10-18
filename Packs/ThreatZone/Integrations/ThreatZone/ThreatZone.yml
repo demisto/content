@@ -46,7 +46,7 @@ script:
   - name: tz-sandbox-upload-sample
     arguments:
     - name: environment
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - w7_x64
@@ -55,7 +55,7 @@ script:
       description: Choose what environment you want to run your submission.
       defaultValue: w7_x64
     - name: private
-      required: true
+      required: false
       auto: PREDEFINED
       predefined:
       - "true"

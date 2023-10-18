@@ -20,8 +20,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* tz-get-result
 * tz-static-upload-sample
+* tz-get-result
 
 ## Playbook Inputs
 
@@ -39,16 +39,16 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| ThreatZone.Result.STATUS | The status of the submission scanning process. | String |
-| ThreatZone.Result.LEVEL | Threat Level of the scanned file. \(malicious, suspicious or informative\). | String |
-| ThreatZone.Result.URL | The result page url of the submission. | String |
-| ThreatZone.Result.INFO | Contains the file name, scan process status and public status. | String |
-| ThreatZone.Result.REPORT | The analysis report of the submission. | String |
-| ThreatZone.Result.MD5 | The md5 hash of the submission. | String |
-| ThreatZone.Result.SHA1 | The sha1 hash of the submission. | String |
-| ThreatZone.Result.SHA256 | The sha256 hash of the submission. | String |
-| ThreatZone.Result.UUID | The UUID of the submission. | String |
-| ThreatZone.Result.SANITIZED | The url of the sanitized file. | String |
+| ThreatZone.Analysis.STATUS | The status of the submission scanning process. | String |
+| ThreatZone.Analysis.LEVEL | Threat Level of the scanned file. \(malicious, suspicious or informative\). | String |
+| ThreatZone.Analysis.URL | The result page url of the submission. | String |
+| ThreatZone.Analysis.INFO | Contains the file name, scan process status and public status. | String |
+| ThreatZone.Analysis.REPORT | The analysis report of the submission. | String |
+| ThreatZone.Analysis.MD5 | The md5 hash of the submission. | String |
+| ThreatZone.Analysis.SHA1 | The sha1 hash of the submission. | String |
+| ThreatZone.Analysis.SHA256 | The sha256 hash of the submission. | String |
+| ThreatZone.Analysis.UUID | The UUID of the submission. | String |
+| ThreatZone.Analysis.SANITIZED | The url of the sanitized file. | String |
 
 ## Playbook Image
 
