@@ -17,6 +17,7 @@ DBOT_SCORES = {
     'Type': DBotScoreType.FILE
 }
 
+
 class MockClient:
     def threatzone_me(self):
         return {
@@ -24,20 +25,21 @@ class MockClient:
                 "email": "name@company.com",
                 "fullName": "Test User",
                 "limitsCount": {
-                "apiRequestCount": 5,
-                "dailySubmissionCount": 5,
-                "concurrentSubmissionCount": 2
+                    "apiRequestCount": 5,
+                    "dailySubmissionCount": 5,
+                    "concurrentSubmissionCount": 2
                 }
             },
             "plan": {
                 "submissionLimits": {
-                "apiLimit": 9999,
-                "dailyLimit": 999,
-                "concurrentLimit": 2
+                    "apiLimit": 9999,
+                    "dailyLimit": 999,
+                    "concurrentLimit": 2
                 }
             },
             "modules": []
         }
+
     def threatzone_check_limits(self, _):
         api_me = self.threatzone_me()
         acc_email = api_me["userInfo"]["email"]
@@ -61,7 +63,7 @@ class MockClient:
 class Test_ThreatZone_Helper_Functions(unittest.TestCase):
     def setUp(self):
         self.client = MockClient()
-        
+
     def test_threatzone_return_results(self):
         uuid = "12345"
         url = "http://example.com"
@@ -86,9 +88,9 @@ class Test_ThreatZone_Helper_Functions(unittest.TestCase):
     def test_encode_file_name(self):
         file_name = "Sample_File_名字.png"
         encoded_name = encode_file_name(file_name)
-        
+
         self.assertEqual(encoded_name, b'Sample_File_.png')
-        
+
     def test_generate_dbotscore(self):
         with patch('ThreatZone.get_reputation_reliability', return_value=DBotScoreReliability.A):
             dbot_score = generate_dbotscore(
@@ -100,6 +102,7 @@ class Test_ThreatZone_Helper_Functions(unittest.TestCase):
         self.assertIsInstance(dbot_score, Common.DBotScore)
         for k, v in list(dbot_score.to_context().values())[0].items():
             self.assertEqual(v, DBOT_SCORES[k])
+
 
 @patch("ThreatZone.Client.threatzone_me", return_value=MockClient.threatzone_me)
 @patch.object(demisto, 'getFilePath', return_value={'id': 'id', 'path': 'README.md', 'name': 'README.md'})
@@ -121,16 +124,15 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
     def test_threatzone_sandbox_upload_sample(self, _, __):
         results = threatzone_sandbox_upload_sample(self.client, self.args)
-        
+
         self.assertEqual(len(results), 2)
-        
+
         first_result, second_result = results
         self.assertEqual(first_result.outputs_prefix, 'ThreatZone.Submission')
         self.assertEqual(first_result.outputs_key_field, "UUID")
 
         self.assertEqual(second_result.outputs_prefix, 'ThreatZone.Limits')
         self.assertEqual(second_result.outputs_key_field, "E_Mail")
-
 
     def test_fail_threatzone_sandbox_upload_sample(self, _, __):
         return_value = {
@@ -145,7 +147,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
     def test_threatzone_static_upload_sample(self, _, __):
         results = threatzone_static_upload_sample(self.client, self.args)
-        
+
         self.assertEqual(len(results), 2)
 
         first_result, second_result = results
@@ -155,13 +157,12 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
         self.assertEqual(second_result.outputs_prefix, 'ThreatZone.Limits')
         self.assertEqual(second_result.outputs_key_field, "E_Mail")
-
 
     def test_threatzone_cdr_upload_sample(self, _, __):
         results = threatzone_cdr_upload_sample(self.client, self.args)
-        
+
         self.assertEqual(len(results), 2)
-        
+
         first_result, second_result = results
 
         self.assertEqual(first_result.outputs_prefix, 'ThreatZone.Submission')
@@ -169,6 +170,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
         self.assertEqual(second_result.outputs_prefix, 'ThreatZone.Limits')
         self.assertEqual(second_result.outputs_key_field, "E_Mail")
+
 
 if __name__ == '__main__':
     unittest.main()
