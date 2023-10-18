@@ -794,13 +794,14 @@ Get a list of all your internet exposures filtered by ip address, domain, type, 
 `asm-list-asset-internet-exposure`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ip_address | IP address on which to search. | Optional | 
-| name | Name of asset on which to search. | Optional | 
-| type | Type of the external service. Possible values are: certificate, cloud_compute_instance, on_prem, domain, unassociated_responsive_ip. | Optional | 
-| has_active_external_services | Whether the internet exposure has an active external service. Possible values are: yes, no. | Optional | 
-
+| **Argument Name**            | **Description**                                                                                                                      | **Required** |
+|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------| --- |
+| ip_address                   | IP address on which to search.                                                                                                       | Optional | 
+| name                         | Name of asset on which to search.                                                                                                    | Optional | 
+| type                         | Type of the external service. Possible values are: certificate, cloud_compute_instance, on_prem, domain, unassociated_responsive_ip. | Optional | 
+| has_active_external_services | Whether the internet exposure has an active external service. Possible values are: yes, no.                                          | Optional | 
+| search_from                  | Represents the start offset index of results. Default is 0.                                                                          | Optional | 
+| search_to                    | Represents the end offset index of results. Default is 100.                                                                          | Optional | 
 
 #### Context Output
 
