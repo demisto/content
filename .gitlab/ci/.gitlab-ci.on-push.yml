@@ -445,6 +445,8 @@ slack-notify-nightly-build:
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
+    # todo: reinstall packs with ingested dataset: use '$ARTIFACTS_FOLDER/packs_reinstall_to_test.txt'
+
     - !reference [.cloud-machine-information]
     - job-done
     - exit $EXIT_CODE

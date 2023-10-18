@@ -53,6 +53,7 @@ class PathManager:
         self.output_packs_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_install.txt'
         self.output_packs_to_upload_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_upload.txt'
         self.output_machines_file = PathManager.ARTIFACTS_PATH / 'filter_envs.json'
+        self.output_packs_to_reinstall_test_file = PathManager.ARTIFACTS_PATH / 'packs_reinstall_to_test.txt'
 
     def _glob_single(self, relative_path: str) -> set[Path]:
         """

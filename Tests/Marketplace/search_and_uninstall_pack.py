@@ -1,20 +1,27 @@
 import argparse
 import ast
+import json
 import math
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
+from pathlib import Path
 from time import sleep
 from typing import Any
 
 import demisto_client
 
-from Tests.Marketplace.common import generic_request_with_retries, wait_until_not_updating, ALREADY_IN_PROGRESS
+from Tests.Marketplace.common import generic_request_with_retries, wait_until_not_updating, ALREADY_IN_PROGRESS, \
+    send_api_request_with_retries
 from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.configure_and_test_integration_instances import CloudBuild, get_custom_user_agent
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
+
+
+TEST_DATA_PATTERN = '*_testdata.json'
+DATASET_NOT_FOUND_ERROR_CODE = 599
 
 
 def check_if_pack_still_installed(client: demisto_client,
@@ -334,6 +341,89 @@ def sync_marketplace(client: demisto_client,
     return success
 
 
+def delete_datasets(dataset_names, base_url, api_key, auth_id):
+    """
+    Return dataset names from testdata files.
+    Args:
+        dataset_names (set):dataset names to delete
+        base_url (str): The base url of the machine.
+        api_key (str): API key of the machine.
+        auth_id (str): authentication parameter for the machine.
+    Returns:
+        Boolean - If the operation succeeded.
+    """
+    def should_try_handler(response) -> Any:
+        if response is not None and response.status_code == DATASET_NOT_FOUND_ERROR_CODE:
+            return False
+        else:
+            return True
+
+    success = True
+    for dataset in dataset_names:
+        headers = {
+            "x-xdr-auth-id": auth_id,
+            "Authorization": api_key,
+            "Content-Type": "application/json",
+        }
+        body = {'dataset_name': dataset}
+        success &= send_api_request_with_retries(
+            base_url=base_url,
+            retries_message='Retrying to delete dataset.',
+            exception_message=f'Failed to delete dataset: "{dataset}".',
+            prior_message=f'Trying to delete dataset: "{dataset}".',
+            endpoint='/public_api/v1/xql/delete_dataset',
+            method='POST',
+            headers=headers,
+            accept='application/json',
+            body=json.dumps(body),
+            should_try_handler=should_try_handler,
+        )
+    return success
+
+
+def get_dataset_and_packs_from_collected_modeling_rules_to_test(test_data_filenames):
+    """
+    Return dataset names from testdata files.
+    Args:
+        test_data_filenames (str): test data files that collected to test in this build.
+    Returns:
+        Set - datasets to delete.
+    """
+    datasets_to_delete = set()
+    with open(test_data_filenames) as f:
+        for modeling_rule_to_test in f.readlines():
+            modeling_rule_path = Path(f'Packs/{modeling_rule_to_test}')
+            test_data_matches = list(modeling_rule_path.glob(TEST_DATA_PATTERN))
+            if test_data_matches:
+                modeling_rule_testdata_path = test_data_matches[0]
+                test_data = json.loads(modeling_rule_testdata_path.read_text())
+                for data in test_data.get('data', []):
+                    dataset_name = data.get('dataset')
+                    if dataset_name:
+                        datasets_to_delete.add(dataset_name)
+    return datasets_to_delete
+
+
+def handle_delete_datasets_by_testdata(base_url, api_key, auth_id, test_data_filenames):
+    """
+    Delete all datasets that the build will test in this job.
+
+    Args:
+        base_url (str): The base url of the machine.
+        api_key (str): API key of the machine.
+        auth_id (str): authentication parameter for the machine.
+        test_data_filenames (str): test data files that collected to test in this build.
+
+    Returns:
+        Boolean - If the operation succeeded.
+    """
+    dataset_names = get_dataset_and_packs_from_collected_modeling_rules_to_test(
+        test_data_filenames=test_data_filenames
+    )
+    success = delete_datasets(dataset_names=dataset_names, base_url=base_url, api_key=api_key, auth_id=auth_id)
+    return success
+
+
 def options_handler() -> argparse.Namespace:
     """
 
@@ -347,6 +437,7 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('--non-removable-packs', help='List of packs that cant be removed.')
     parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
+    parser.add_argument('--modeling_rules_to_test_files', help='List of modeling rules test data to check.', required=True)
 
     options = parser.parse_args()
 
@@ -377,6 +468,12 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
             success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
                 wait_for_uninstallation_to_complete(client, non_removable_packs)
     success &= sync_marketplace(client=client)
+    success &= handle_delete_datasets_by_testdata(
+        base_url=base_url,
+        api_key=api_key,
+        auth_id=xdr_auth_id,
+        test_data_filenames=options.modeling_rules_to_test_files,
+    )
     return success
 
 
