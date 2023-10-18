@@ -16,7 +16,7 @@ description: |-
     * FireEye EX and FireEye CM
     * Proofpoint Protection Server
     * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
-    * Mimecast.
+    * Mimecast
 starttaskid: '0'
 tasks:
   '0':
