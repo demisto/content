@@ -264,7 +264,7 @@ class Client(BaseClient):
             headers = {}
 
         headers["Content-Type"] = "application/json"
-        headers["x-traceable-xsoar"] = "traceable-xsoar-integration; version=1.1.0"
+        headers["x-traceable-xsoar"] = f"traceable-xsoar-integration; version={get_pack_version()}"
         self.headers = headers
         self.url = base_url + "/graphql"
         self.securityScoreCategoryList = None
@@ -1072,7 +1072,7 @@ def main() -> None:
     :return:
     :rtype:
     """
-
+    demisto.info(f"Pack version - {get_pack_version()}")
     base_url = demisto.params()["url"]
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
