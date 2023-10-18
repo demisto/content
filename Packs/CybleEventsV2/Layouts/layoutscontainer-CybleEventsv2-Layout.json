@@ -437,6 +437,26 @@
                         "isVisible": true
                     }
                 ],
+                "filters": [
+                    [
+                        {
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "eventtype"
+                                }
+                            },
+                            "operator": "isEqualString",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "compromised_cards"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
                 "isVisible": true,
                 "name": "Compromised Card Details",
                 "query": null,
