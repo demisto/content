@@ -3,7 +3,8 @@ version: -1
 fromversion: 5.0.0
 name: CVE Enrichment - Generic v2
 description: |-
-  This playbook performs CVE Enrichment using the following integrations:
+  This playbook performs CVE Enrichment using one or more integrations.
+  Supported integrations:
   - VulnDB
   - CIRCL CVE Search
   - IBM X-Force Exchange
@@ -98,7 +99,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1130
+          "y": 820
         }
       }
     note: false
@@ -106,187 +107,22 @@ tasks:
     ignoreworker: false
     continueonerrortype: ""
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '4':
-    id: '4'
-    taskid: 5199c9bb-9a57-4d36-80fe-3bc1035e785e
-    type: condition
-    task:
-      id: 5199c9bb-9a57-4d36-80fe-3bc1035e785e
-      version: -1
-      name: Is IBM X-Force Exchange integration enabled?
-      description: Verify that there's a valid instance of "IBM X-Force Exchange" enabled.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '2'
-      'yes':
-      - '7'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: XFE_v2
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1530,
-          "y": 790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: e2170ae3-622d-45d9-882b-b1ee14f1e1b3
-    type: condition
-    task:
-      id: e2170ae3-622d-45d9-882b-b1ee14f1e1b3
-      version: -1
-      name: Is CIRCL CVE Search integration enabled?
-      description: Verify that there's a valid instance of "CIRCL CVE Search" enabled.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '2'
-      'yes':
-      - '6'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: CIRCL CVE Search
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          right:
-            value: {}
-    view: |-
-      {
-        "position": {
-          "x": 970,
-          "y": 790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: d967878f-480e-4e27-8eb0-a193826cd386
-    type: regular
-    task:
-      id: d967878f-480e-4e27-8eb0-a193826cd386
-      version: -1
-      name: Get CVE info from CIRCL CVE Search
-      description: Returns CVE information by CVE ID.
-      script: 'CIRCL CVE Search|||cve'
-      type: regular
-      iscommand: true
-      brand: CIRCL CVE Search
-    nexttasks:
-      '#none#':
-      - '2'
-    scriptarguments:
-      cve:
-        complex:
-          root: inputs.cve_id
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 960
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    taskid: 4d4c7479-f69e-4d8d-8e9e-d24913c46a48
+    taskid: 54844794-c82a-4e73-8cf6-52e5598dbc89
     type: regular
     task:
-      id: 4d4c7479-f69e-4d8d-8e9e-d24913c46a48
+      id: 54844794-c82a-4e73-8cf6-52e5598dbc89
       version: -1
-      name: Get CVE information from XFE
+      name: Get vulnerability details by CVE
       description: Search for details about the given CVE.
-      script: 'XFE_v2|||cve-search'
+      script: '|||cve-search'
       type: regular
       iscommand: true
-      brand: "XFE_v2"
+      brand: ""
     nexttasks:
       '#none#':
       - '2'
@@ -299,8 +135,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1720,
-          "y": 960
+          "x": 800,
+          "y": 650
         }
       }
     note: false
@@ -324,14 +160,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '13'
-      - '14'
-      - '26'
+      - "12"
+      - "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 970,
+          "x": 600,
           "y": 510
         }
       }
@@ -345,30 +180,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: fa071711-fc63-4650-86e8-1928ca83bc8c
+    taskid: 38a9e31d-b066-4c7d-8a90-19d9b7f2e8d4
     type: regular
     task:
-      id: fa071711-fc63-4650-86e8-1928ca83bc8c
+      id: 38a9e31d-b066-4c7d-8a90-19d9b7f2e8d4
       version: -1
-      name: VulnDB - Get vulnerability details by CVE
-      description: Returns full details about vulnerabilities, by CVE ID.
-      script: VulnDB|||vulndb-get-vuln-by-cve-id
+      name: Get vulnerability details by CVE
+      description: Returns CVE information by CVE ID.
+      script: '|||cve'
       type: regular
       iscommand: true
-      brand: VulnDB
+      brand: ""
     nexttasks:
       '#none#':
       - '2'
     scriptarguments:
-      cve_id:
+      cve:
         complex:
           root: inputs.cve_id
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 590,
-          "y": 960
+          "x": 400,
+          "y": 650
         }
       }
     note: false
@@ -380,177 +215,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '13':
-    id: '13'
-    taskid: 2c6008cc-e42b-4976-86c8-92123558d6b6
-    type: title
-    task:
-      id: 2c6008cc-e42b-4976-86c8-92123558d6b6
-      version: -1
-      name: VulnDB
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '27'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 400,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
-    taskid: 18b9102f-d968-40d5-8cc3-0e4a1c634e2e
-    type: title
-    task:
-      id: 18b9102f-d968-40d5-8cc3-0e4a1c634e2e
-      version: -1
-      name: CIRCL CVE Search
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '5'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 970,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '26':
-    id: '26'
-    taskid: 85a2fa30-ef67-4272-8867-18116129def3
-    type: title
-    task:
-      id: 85a2fa30-ef67-4272-8867-18116129def3
-      version: -1
-      name: IBM X-Force Exchange
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '4'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1530,
-          "y": 650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
-    taskid: e55035e4-334c-404d-8d69-6e861966f1cb
-    type: condition
-    task:
-      id: e55035e4-334c-404d-8d69-6e861966f1cb
-      version: -1
-      name: Is VulnDB integration enabled?
-      description: Verify that there's a valid instance of "VulnDB" enabled.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '2'
-      'yes':
-      - '12'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: VulnDB
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
-          right:
-            value: {}
-    view: |-
-      {
-        "position": {
-          "x": 400,
-          "y": 790
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    continueonerrortype: ""
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "1_11_yes": 0.52,
-      "1_2_#default#": 0.25,
-      "27_2_#default#": 0.39,
-      "4_2_#default#": 0.1,
-      "4_7_yes": 0.46,
-      "5_2_#default#": 0.15
+      "1_2_#default#": 0.25
     },
     "paper": {
       "dimensions": {
-        "height": 995,
-        "width": 1937.5,
+        "height": 685,
+        "width": 1017.5,
         "x": 162.5,
         "y": 200
       }

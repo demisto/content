@@ -1,4 +1,5 @@
-This playbook performs CVE Enrichment using the following integrations:
+This playbook performs CVE Enrichment using one or more integrations.
+Supported integrations:
 - VulnDB
 - CIRCL CVE Search
 - IBM X-Force Exchange
@@ -13,9 +14,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* VulnDB
-* CIRCL CVE Search
-* XFE_v2
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -23,9 +22,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* cve
-* vulndb-get-vuln-by-cve-id
 * cve-search
+* cve
 
 ## Playbook Inputs
 
