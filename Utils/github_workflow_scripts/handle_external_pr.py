@@ -53,6 +53,7 @@ SECURITY_CONTENT_ITEMS = [
     "Classifiers",
     "Wizards"
 ]
+TIM_LABEL = "TIM Review"
 
 
 def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
@@ -86,6 +87,20 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
                                key=assigned_prs_per_potential_reviewer.get)[0]  # type: ignore
     print(f'{selected_reviewer=}')
     return selected_reviewer
+
+
+def packs_to_check_in_pr(file_paths: list[str]):
+    pack_dirs_to_check = set()
+
+    for file_path in file_paths:
+        try:
+            if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
+                pack_dirs_to_check.add(f'Packs/{pack_name}')
+        except Exception as err:
+            print(f'Could not retrieve pack name from file {file_path}, {err=}')
+
+    print(f'{pack_dirs_to_check=}')
+    return pack_dirs_to_check
 
 
 def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str) -> str:
@@ -180,19 +195,22 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_reviewer_needed(pr_files: list[str], metadata: dict) -> bool:
-    print("is tim reviewer needed function start")
-    for pr_file in pr_files:
-        if "yml" in pr_file:
-            if "feed: true" in pr_file:
-                return True
-    print ("feed is not true")
-    tags = metadata.get("tags")
-    print(f'tags are: {tags}')
-    categories = metadata.get("categories")
-    print(f'categories are: {categories}')
-    if "Threat Intelligence Management" in tags or "Data Enrichment & Threat Intelligence" in categories:
-        return True
+def is_tim_reviewer_needed(packs_in_pr: list[str]) -> bool:
+    for pack in packs_in_pr:
+        pack_metadata = get_pack_metadata(pack)
+        print(f'the pack metadata is: {pack_metadata}')
+        print("is tim reviewer needed function start")
+        for pr_file in pack:
+            if "yml" in pr_file:
+                if "feed: true" in pr_file:
+                    return True
+        print ("feed is not true")
+        tags = pack_metadata.get("tags")
+        print(f'tags are: {tags}')
+        categories = pack_metadata.get("categories")
+        print(f'categories are: {categories}')
+        if "Threat Intelligence Management" in tags or "Data Enrichment & Threat Intelligence" in categories:
+            return True
 
 def main():
     """Handles External PRs (PRs from forks)
@@ -280,12 +298,11 @@ def main():
         pr.add_to_labels(SECURITY_LABEL)
 
     print("start of tim reveiwer addon")
-    pack_metadata = get_pack_metadata(pr_files[0])
-    print(f'the pack metadata is: {pack_metadata}')
-    if is_tim_reviewer_needed(pr_files, pack_metadata):
+    packs_in_pr = packs_to_check_in_pr(pr_files)
+    if is_tim_reviewer_needed(packs_in_pr):
         if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
             reviewers.append(tim_reviewer)
-            pr.add_to_labels("TIM Review")
+            pr.add_to_labels(TIM_LABEL)
 
     pr.create_review_request(reviewers=reviewers)
     print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
