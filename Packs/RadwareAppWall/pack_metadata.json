@@ -1,6 +1,6 @@
 {
     "name": "Radware AppWall",
-    "description": "Radware AppWall is a Web Application Firewall (WAF) solution that provides a comprehensive protection against web application attacks, access violations, attacks disguised behind CDNs, API manipulations, advanced HTTP-based assaults, and brute force attacks on login pages, among others.",
+    "description": "Radware AppWall is a Web Application Firewall (WAF) solution that provides a comprehensive protection against web application attacks.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
