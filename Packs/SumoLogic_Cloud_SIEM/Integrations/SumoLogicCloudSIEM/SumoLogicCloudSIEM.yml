@@ -4,7 +4,7 @@ commonfields:
 name: SumoLogicSEC
 display: Sumo Logic Cloud SIEM
 category: Analytics & SIEM
-description: Freeing the analyst with autonomous decisions
+description: Freeing the analyst with autonomous decisions.
 configuration:
 - display: Sumo Logic API Endpoint
   name: api_endpoint
@@ -224,7 +224,7 @@ script:
       description: The insight ID for which to retrieve comments.
     - name: comment
       required: true
-      description: The comment to be added to the Insight ID
+      description: The comment to be added to the Insight ID.
     outputs:
     - contextPath: SumoLogicSec.InsightComments.Id
       description: ID of comment.
@@ -331,9 +331,9 @@ script:
       - Last 24 hours
       description: When the insight was created. Defaults to 'All time' if no time arguments are specified.
     - name: status
-      description: 'Comma separated list of values from the options: new,inprogress,closed'
+      description: 'Comma separated list of values from the options: new,inprogress,closed.'
     - name: asignee
-      description: User assigned to Insights
+      description: User assigned to Insights.
     - name: offset
       description: The number of items to skip before starting to collect the result set.
       defaultValue: "0"
@@ -522,7 +522,7 @@ script:
     - name: tag
       description: Tag contains value.
     - name: offset
-      description: The number of items to skip before starting to collect the result. set
+      description: The number of items to skip before starting to collect the result set.
       defaultValue: "0"
     - name: limit
       description: The maximum number of items to return.
@@ -735,7 +735,7 @@ script:
       description: Description of match list item.
     - name: expiration
       required: true
-      description: Expiration of match list item, e.g. "2021-03-25T23:52:23.508Z"
+      description: Expiration of match list item, e.g. "2021-03-25T23:52:23.508Z".
     - name: value
       required: true
       description: Value of match list item.
@@ -859,7 +859,7 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
