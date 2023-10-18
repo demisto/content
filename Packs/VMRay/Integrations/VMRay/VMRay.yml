@@ -1119,7 +1119,7 @@ script:
     description: Get the used quota of verdicts.
   - name: vmray-get-license-usage-reports
     description: Get the used quota of reports.
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.77674
   runonce: false
   script: ''
   subtype: python3
