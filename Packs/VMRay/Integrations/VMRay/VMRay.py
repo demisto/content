@@ -1411,7 +1411,7 @@ def vmray_get_license_usage_verdicts_command():
     entry['VerdictsQuota'] = data.get('verdict_quota')
     entry['VerdictsRemaining'] = data.get('verdict_remaining')
     entry['VerdictsUsage'] = round((100 / float(data.get('verdict_quota')))
-                                     * (float(data.get('verdict_quota')) - float(data.get('verdict_remaining'))), 2)
+                                   * (float(data.get('verdict_quota')) - float(data.get('verdict_remaining'))), 2)
     entry['PeriodEndDate'] = data.get('end_date')
 
     markdown = tableToMarkdown('VMRay Verdicts Quota Information', entry, headers=[
