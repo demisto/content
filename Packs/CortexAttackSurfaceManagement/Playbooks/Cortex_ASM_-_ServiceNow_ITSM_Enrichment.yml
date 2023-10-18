@@ -1,0 +1,467 @@
+id: Cortex ASM - ServiceNow ITSM Enrichment
+version: 33
+vcShouldKeepItemLegacyProdMachine: false
+name: Cortex ASM - ServiceNow ITSM Enrichment
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 7cda1a19-0074-4569-868c-731d1b432ecf
+    type: start
+    task:
+      id: 7cda1a19-0074-4569-868c-731d1b432ecf
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: e5028c5b-cee6-444d-811e-b13290662aaf
+    type: regular
+    task:
+      id: e5028c5b-cee6-444d-811e-b13290662aaf
+      version: -1
+      name: Get timestamp from 30 days prior to now
+      description: "Retrieves the date and time from 30 days prior.\n"
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      daysAgo:
+        simple: '30'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: d856b687-3c19-42e2-8a89-802a9cdc6a63
+    type: regular
+    task:
+      id: d856b687-3c19-42e2-8a89-802a9cdc6a63
+      version: -1
+      name: Search ServiceNow tickets for accounts
+      description: Retrieves ticket information according to the supplied query.
+      script: ServiceNow v2|||servicenow-query-tickets
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      additional_fields:
+        simple: caller_id,assigned_to
+      limit:
+        simple: '100'
+      query:
+        complex:
+          root: sn_query
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: ce88f2b3-c30a-45ac-80a7-a55932e84072
+    type: regular
+    task:
+      id: ce88f2b3-c30a-45ac-80a7-a55932e84072
+      version: -1
+      name: Set asmserviceownerunrankedraw
+      description: Set asmserviceownerunrankedraw with ServiceNow user ID information.
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        complex:
+          root: ServiceNow.Record
+          accessor: name
+      val2:
+        complex:
+          root: ServiceNow.Record
+          accessor: email
+      val3:
+        simple: ServiceNow ITSM
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 3cad6f84-e1ef-4add-85dc-1920fef8b5c3
+    type: regular
+    task:
+      id: 3cad6f84-e1ef-4add-85dc-1920fef8b5c3
+      version: -1
+      name: Look up ServiceNow user ID
+      description: Retrieves ServiceNow user ID using provided ServiceNow user system IDs.
+      script: ServiceNow v2|||servicenow-get-record
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      fields:
+        simple: email,name
+      id:
+        complex:
+          root: ServiceNow.Ticket.assigned_to
+          accessor: value
+      table_name:
+        simple: sys_user
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: dc3c6576-27f8-4ef3-87b2-8e9b243a0364
+    type: title
+    task:
+      id: dc3c6576-27f8-4ef3-87b2-8e9b243a0364
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '25':
+    id: '25'
+    taskid: 4d629794-7c93-40b4-8d4e-5db95c764fda
+    type: regular
+    task:
+      id: 4d629794-7c93-40b4-8d4e-5db95c764fda
+      version: -1
+      name: Build ServiceNow query - description
+      description: Set the beginning of a key used for querying ServiceNow using SN descriptions and a timestamp.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments:
+      key:
+        simple: sn_query
+      value:
+        complex:
+          root: inputs.search_terms
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ^ORshort_descriptionLIKE
+              suffix: {}
+          - operator: join
+            args:
+              separator: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: TimeNow
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ^createdON>=
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: 8aa4e3af-7655-44b1-84b7-5f7e888f8345
+    type: regular
+    task:
+      id: 8aa4e3af-7655-44b1-84b7-5f7e888f8345
+      version: -1
+      name: Build ServiceNow query - short description
+      description: Set the remaining query value with SN short descriptions for querying ServiceNow.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      key:
+        simple: sn_query
+      value:
+        complex:
+          root: inputs.search_terms
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ^ORdescriptionLIKE
+              suffix: {}
+          - operator: join
+            args:
+              separator: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: sn_query
+                iscontext: true
+              suffix: {}
+          - operator: replace
+            args:
+              limit:
+                value:
+                  simple: '1'
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: OR
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: bde57db7-ccaf-411e-863e-3e43c0324bfd
+    type: condition
+    task:
+      id: bde57db7-ccaf-411e-863e-3e43c0324bfd
+      version: -1
+      name: Were search terms provided?
+      description: Conditional to check if values were provided to the search terms input or not.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '21'
+      yes:
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.search_terms
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '32':
+    id: '32'
+    taskid: daac2685-ca9f-4b7d-8377-d2715dc41833
+    type: condition
+    task:
+      id: daac2685-ca9f-4b7d-8377-d2715dc41833
+      version: -1
+      name: Were any assignees found?
+      description: Conditional to check if any assignees were found in the assigned_to property of retrieved ServiceNow tickets.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '21'
+      yes:
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ServiceNow.Ticket.assigned_to
+                accessor: value
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "27_21_#default#": 0.29,
+      "32_21_#default#": 0.23,
+      "32_9_yes": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2005,
+        "width": 720,
+        "x": 120,
+        "y": -810
+      }
+    }
+  }
+inputs:
+- key: search_terms
+  value: {}
+  required: true
+  description: Search terms to be used in the ServiceNow ITSM query search
+  playbookInputQuery:
+outputs: []
+description: Given search terms, this playbook will query ServiceNow ticket descriptions and short descriptions over the last 30 days and set users that were found in the assigned_to field in those ServiceNow tickets.
