@@ -1,6 +1,7 @@
 import json
 import traceback
 from contextlib import contextmanager
+from uuid import UUID, uuid5
 
 from websockets.exceptions import InvalidStatus, ConnectionClosed
 from websockets.sync.client import connect
@@ -9,6 +10,7 @@ from CommonServerPython import *  # noqa: F401
 
 VENDOR = "Kali Dog Security"
 PRODUCT = "CertStream"
+SCO_DET_ID_NAMESPACE = UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 FETCH_SLEEP = 5
 
 
@@ -220,6 +222,7 @@ def create_xsoar_certificate_indicator(certificate: dict):
         "value": certificate_data["fingerprint"],
         "sourcetimestamp": datetime.fromtimestamp(certificate["seen"]).strftime('%Y-%m-%d %H:%M:%S'),
         "fields": {
+            "stixid": create_stix_id(certificate_data["serial_number"]),
             "serialnumber": certificate_data["serial_number"],
             "validitynotbefore": datetime.fromtimestamp(certificate_data["not_before"]).strftime('%Y-%m-%d %H:%M:%S'),
             "validitynotafter": datetime.fromtimestamp(certificate_data["not_after"]).strftime('%Y-%m-%d %H:%M:%S'),
@@ -234,6 +237,21 @@ def create_xsoar_certificate_indicator(certificate: dict):
         "rawJSON": certificate,
         "relationships": create_relationship_list(certificate_data["fingerprint"], certificate_data["all_domains"])
     }])
+
+
+def create_stix_id(serial_number: str) -> str:
+    """Generates a STIX ID for the indicator
+
+    Args:
+        serial_number (str): The certificate serial number
+
+    Returns:
+        str: A STIX ID
+    """
+
+    jsonize = json.dumps({"serial_number": serial_number}).replace(" ", "")
+    uuid = uuid5(SCO_DET_ID_NAMESPACE, jsonize)
+    return f'x509-certificate--{str(uuid)}'
 
 
 def create_relationship_list(value: str, domains: list[str]) -> list[EntityRelationship]:
