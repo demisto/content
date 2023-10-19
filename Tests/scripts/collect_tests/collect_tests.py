@@ -634,11 +634,10 @@ class TestCollector(ABC):
         relative_path_of_mr = PACK_MANAGER.relative_to_packs(changed_file_path)
         modeling_rule_to_test = relative_path_of_mr.parent
         logging.info(f"Darya: {changed_file_path=}, {changed_file_path.parent=}, {TEST_DATA_PATTERN=}")
-        files = [f for f in changed_file_path.parent.iterdir()]
         test_data_file_for_mr = list(changed_file_path.parent.glob(TEST_DATA_PATTERN))
         if test_data_file_for_mr:
             pack_to_reinstall = pack_id
-        logging.info(f"Darya: {test_data_file_for_mr=}, {pack_to_reinstall=}, {files=}")
+        logging.info(f"Darya: {test_data_file_for_mr=}, {pack_to_reinstall=}, {[f for f in changed_file_path.parent.iterdir()]}")
 
         return CollectionResult(
             test=None,

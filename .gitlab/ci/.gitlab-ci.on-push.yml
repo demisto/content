@@ -117,6 +117,7 @@ validate-content-conf:
     policy: pull-push
   variables:
     KUBERNETES_CPU_REQUEST: 2000m
+    EXTRACT_PRIVATE_TESTDATA: "true"
   needs: []
   stage: prepare-testing-bucket
   script:
@@ -446,7 +447,13 @@ slack-notify-nightly-build:
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
-    # todo: reinstall packs with ingested dataset: use '$ARTIFACTS_FOLDER/packs_reinstall_to_test.txt'
+    - section_start "Packs re-installation test"
+    - |
+      if [ -s $ARTIFACTS_FOLDER/packs_reinstall_to_test.txt ]; then
+        echo "Running the packs re-installation test."
+        # todo: reinstall packs with ingested dataset: use '$ARTIFACTS_FOLDER/packs_reinstall_to_test.txt'
+      fi
+    - section_end "Packs re-installation test"
 
     - !reference [.cloud-machine-information]
     - job-done
