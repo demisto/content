@@ -635,7 +635,7 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
                         'Tags': ["FromOTRS"],  # the list of tags to add to the entry
                         'Note': False  # boolean, True for Note, False otherwise
                     })
-    return [ticket] + entries
+    return GetRemoteDataResponse(ticket, entries)
 
 
 def update_remote_system_command(client: Client, args: dict[str, str]):
