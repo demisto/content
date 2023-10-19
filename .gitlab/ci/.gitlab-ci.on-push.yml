@@ -239,30 +239,6 @@ xpanse-prepare-testing-bucket:
   extends:
     - .generic-prepare-testing-bucket
 
-.run-tests:
-  - section_start "Run Tests"
-  - |
-    if [[ -f "${ARTIFACTS_FOLDER}/conf.json" ]]; then	
-      cp "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    fi
-    ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
-    if [[ -f "./Tests/failed_tests.txt" ]]; then	
-      cp "./Tests/failed_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/failed_tests.txt"	
-    fi
-    if [[ -f "./Tests/succeeded_tests.txt" ]]; then	
-      cp "./Tests/succeeded_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/succeeded_tests.txt"	
-    fi
-    if [[ -f "./Tests/skipped_tests.txt" ]]; then	
-      cp "./Tests/skipped_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_tests.txt"	
-    fi
-    if [[ -f "./Tests/skipped_integrations.txt" ]]; then	
-      cp "./Tests/skipped_integrations.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_integrations.txt"	
-    fi
-    if [[ -f "./Tests/test_playbooks_report.json" ]]; then	
-      cp "./Tests/test_playbooks_report.json" "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.json"	
-    fi
-  - section_end "Run Tests"
-
 .test_content_on_xsoar_server_instances_base:
   tags:
     - gke
@@ -327,7 +303,28 @@ xpanse-prepare-testing-bucket:
     - sleep-with-progress 900 30 "Sleeping... " 150
     - echo "Done sleeping!"
     - section_end "Wait Until Server Ready"
-    - !reference [.run-tests]
+    - section_start "Run Tests"
+    - |
+      if [[ -f "${ARTIFACTS_FOLDER}/conf.json" ]]; then	
+        cp "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+      fi
+      ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
+      if [[ -f "./Tests/failed_tests.txt" ]]; then	
+        cp "./Tests/failed_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/failed_tests.txt"	
+      fi
+      if [[ -f "./Tests/succeeded_tests.txt" ]]; then	
+        cp "./Tests/succeeded_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/succeeded_tests.txt"	
+      fi
+      if [[ -f "./Tests/skipped_tests.txt" ]]; then	
+        cp "./Tests/skipped_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_tests.txt"	
+      fi
+      if [[ -f "./Tests/skipped_integrations.txt" ]]; then	
+        cp "./Tests/skipped_integrations.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_integrations.txt"	
+      fi
+      if [[ -f "./Tests/test_playbooks_report.json" ]]; then	
+        cp "./Tests/test_playbooks_report.json" "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.json"	
+      fi
+    - section_end "Run Tests"
     - job-done
     - exit $EXIT_CODE
   after_script:
@@ -511,7 +508,28 @@ slack-notify-on-push-build:
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - section_end "Install Packs and run Test-Module"
-    - reference [.run-tests]
+    - section_start "Run Tests"
+    - |
+      if [[ -f "${ARTIFACTS_FOLDER}/conf.json" ]]; then	
+        cp "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+      fi
+      ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
+      if [[ -f "./Tests/failed_tests.txt" ]]; then	
+        cp "./Tests/failed_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/failed_tests.txt"	
+      fi
+      if [[ -f "./Tests/succeeded_tests.txt" ]]; then	
+        cp "./Tests/succeeded_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/succeeded_tests.txt"	
+      fi
+      if [[ -f "./Tests/skipped_tests.txt" ]]; then	
+        cp "./Tests/skipped_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_tests.txt"	
+      fi
+      if [[ -f "./Tests/skipped_integrations.txt" ]]; then	
+        cp "./Tests/skipped_integrations.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_integrations.txt"	
+      fi
+      if [[ -f "./Tests/test_playbooks_report.json" ]]; then	
+        cp "./Tests/test_playbooks_report.json" "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.json"	
+      fi
+    - section_end "Run Tests"
     - section_start "Test Modeling Rules"
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
