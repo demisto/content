@@ -2,6 +2,8 @@ from CommonServerPython import *
 import urllib3
 from minio import Minio
 import io
+from minio.commonconfig import REPLACE, CopySource
+from minio.commonconfig import Tags
 
 
 class Client(Minio):
@@ -246,6 +248,94 @@ def put_object_command(client, args):
     return command_results
 
 
+def copy_object_command(client, args):
+
+    bucket_name_src = args.get('bucket_name_src', '')
+    object_name_src = args.get('name_src')
+    bucket_name_dst = args.get('bucket_name_dst', '')
+    object_name_dst = args.get('name_dst')
+
+    metadata = args.get('metadata', None)
+
+    client.copy_object(
+        bucket_name_dst,
+        object_name_dst,
+        CopySource(bucket_name_src, object_name_src),
+        metadata=metadata,
+        metadata_directive=REPLACE
+    )
+
+    res = {
+        'bucket': bucket_name_dst,
+        'object': object_name_dst,
+        'status': 'copied'
+    }
+
+    command_results = CommandResults(
+        outputs_prefix='MinIO.Objects',
+        outputs_key_field=['bucket', 'object'],
+        outputs=res,
+        raw_response=res,
+    )
+
+    return command_results
+
+
+def get_tags_command(client, args):
+
+    bucket_name = args.get('bucket_name', '')
+    object_name = args.get('name')
+    tag = client.get_object_tags(bucket_name=bucket_name, object_name=object_name)
+    res = {
+        'bucket': bucket_name,
+        'object': object_name,
+        'status': 'completed'
+    }
+    if tag:
+        res['tags'] = tag
+
+    command_results = CommandResults(
+        outputs_prefix='MinIO.Objects',
+        outputs_key_field=['bucket', 'object'],
+        outputs=res,
+        raw_response=res,
+    )
+
+    return command_results
+
+
+def set_tag_command(client, args):
+
+    bucket_name = args.get('bucket_name', '')
+    object_name = args.get('name')
+    tag_key = args.get('tag_key')
+    tag_value = args.get('tag_value')
+
+    existing_tag = client.get_object_tags(bucket_name=bucket_name, object_name=object_name)
+
+    tags = Tags.new_object_tags()
+    tags[tag_key] = tag_value
+    if existing_tag:
+        tags.update(existing_tag)
+    client.set_object_tags(bucket_name, object_name, tags)
+
+    res = {
+        'bucket': bucket_name,
+        'object': object_name,
+        'tags': tags,
+        'status': 'completed'
+    }
+
+    command_results = CommandResults(
+        outputs_prefix='MinIO.Objects',
+        outputs_key_field=['bucket', 'object'],
+        outputs=res,
+        raw_response=res,
+    )
+
+    return command_results
+
+
 def test_module(client):
     # Test functions here
     client.list_buckets()
@@ -286,7 +376,10 @@ def main():
             'minio-stat-object': stat_object_command,
             'minio-remove-object': remove_object_command,
             'minio-fput-object': fput_object_command,
-            'minio-put-object': put_object_command
+            'minio-put-object': put_object_command,
+            'minio-copy-object': copy_object_command,
+            'minio-get-tags': get_tags_command,
+            'minio-set-tag': set_tag_command
         }
 
         if command == 'test-module':
