@@ -239,6 +239,35 @@ xpanse-prepare-testing-bucket:
   extends:
     - .generic-prepare-testing-bucket
 
+.run-tests:
+  - section_start "Run Tests"
+  - |
+    if [[ -f "${ARTIFACTS_FOLDER}/conf.json" ]]; then	
+      cp "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    fi
+  - ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
+  - |
+    if [[ -f "./Tests/failed_tests.txt" ]]; then	
+      cp "./Tests/failed_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/failed_tests.txt"	
+    fi
+  - |
+    if [[ -f "./Tests/succeeded_tests.txt" ]]; then	
+      cp "./Tests/succeeded_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/succeeded_tests.txt"	
+    fi
+  - |
+    if [[ -f "./Tests/skipped_tests.txt" ]]; then	
+      cp "./Tests/skipped_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_tests.txt"	
+    fi
+  - |
+    if [[ -f "./Tests/skipped_integrations.txt" ]]; then	
+      cp "./Tests/skipped_integrations.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_integrations.txt"	
+    fi
+  - |
+    if [[ -f "./Tests/test_playbooks_report.json" ]]; then	
+      cp "./Tests/test_playbooks_report.json" "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.json"	
+    fi
+  - section_end "Run Tests"
+
 .test_content_on_xsoar_server_instances_base:
   tags:
     - gke
@@ -257,10 +286,6 @@ xpanse-prepare-testing-bucket:
       optional: true
   script:
     - EXIT_CODE=0
-    - section_start "Create Artifacts instance directory" --collapsed
-    - |
-      [ -d "${ARTIFACTS_FOLDER_INSTANCE}" ] || mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
-    - section_end "Create Artifacts instance directory"
     - section_start "Check if should run Server Master"
     - |
       echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE}"
@@ -270,6 +295,11 @@ xpanse-prepare-testing-bucket:
         exit 0
       fi
     - section_end "Check if should run Server Master"
+    - section_start "Create Artifacts instance directory" --collapsed
+    - echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
+    - |
+      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+    - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - export TEMP=$(cat "${ARTIFACTS_FOLDER}/filter_envs.json" | jq ".\"$INSTANCE_ROLE\"")
@@ -302,9 +332,7 @@ xpanse-prepare-testing-bucket:
     - sleep-with-progress 900 30 "Sleeping... " 150
     - echo "Done sleeping!"
     - section_end "Wait Until Server Ready"
-    - section_start "Run Tests"
-    - ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
-    - section_end "Run Tests"
+    - !reference [.run-tests]
     - job-done
     - exit $EXIT_CODE
   after_script:
@@ -312,12 +340,10 @@ xpanse-prepare-testing-bucket:
     - !reference [.install_ssh_keys]
     - !reference [.ssh-config-setup]
     - section_start "Destroy Instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ARTIFACTS_FOLDER}/env_results.json" --instance-role "$INSTANCE_ROLE"
-    - if [ $? -ne 0 ]; then
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ARTIFACTS_FOLDER}/env_results.json" --instance-role "${INSTANCE_ROLE}"
     - destroy_instances_exit_code=$?
     - |
-      if [ ${destroy_instances_exit_code} -ne 0 ]; then
+      if [ "${destroy_instances_exit_code}" -ne 0 ]; then
         echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
       fi
     - section_end "Destroy Instances"
@@ -465,8 +491,9 @@ slack-notify-on-push-build:
   script:
     - EXIT_CODE=0
     - section_start "Create Artifacts instance directory" --collapsed
+    - echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
     - |
-      [ -d "${ARTIFACTS_FOLDER_INSTANCE}" ] || mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -489,12 +516,7 @@ slack-notify-on-push-build:
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - section_end "Install Packs and run Test-Module"
-
-    - section_start "Run Tests"
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
-    - section_end "Run Tests"
-
+    - reference [.run-tests]
     - section_start "Test Modeling Rules"
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
@@ -642,13 +664,13 @@ test-upload-flow:
     - section_start "Create Testing Branch"
     - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
     - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a "${ARTIFACTS_FOLDER}" -g $GITLAB_PUSH_TOKEN
-    - echo $BRANCH
+    - echo "Created test branch:${BRANCH}"
     - section_end "Create Testing Branch"
 
     - section_start "Trigger Test Upload Flow On Testing Branch"
     # retry mechanism for trigger upload pipeline in case it failed because of gitlab connectivity issues.
     - for _ in {1..3}; do
-    -   export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
+    -   export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct "${GITLAB_SVC_USER_TOKEN}" -b "${BRANCH}" | jq .id)
     -   if [ "${pipeline_id}" != "null" ]; then
     -     break
     -   fi

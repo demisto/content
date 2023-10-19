@@ -139,9 +139,11 @@
   - source ./.venv/bin/activate
   - |
     if [[ -n "${DEMISTO_SDK_NIGHTLY}" || -n "${OVERRIDE_SDK_REF}" ]]; then
-      echo "Installing SDK from $SDK_REF" | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
+      echo "Installing SDK from ${SDK_REF}" | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
       pip3 uninstall -y demisto-sdk | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
       pip3 install "git+https://github.com/demisto/demisto-sdk@${SDK_REF}#egg=demisto-sdk" | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
+    else
+      echo "Using SDK from pyproject.toml" | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
     fi
   - |
       python3 --version | tee -a "${ARTIFACTS_FOLDER}/installed_python_libraries.txt"

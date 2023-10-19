@@ -14,7 +14,7 @@ if [ "$#" -lt "1" ]; then
   [-ct, --ci-token]                         The ci gitlab trigger token.
   [-b, --branch]                            The branch name. Default is the current branch.
   [-ch, --slack-channel]                    A Slack channel to send notifications to. Default is dmst-build-test.
-  [-s, --sdk-ref]                           The sdk ref to use. Default is the latest nightly.
+  [-sr, --sdk-ref]                          The sdk ref to use. Default is the latest nightly.
   [-tmr, --test-modeling-rule-jira-tickets] Whether to enable test modeling rule jira tickets creation.
   [-tpr, --test-playbooks-jira-tickets]     Whether to enable test playbooks jira tickets creation.
   "
@@ -26,6 +26,8 @@ _branch="$(git branch  --show-current)"
 _slack_channel="dmst-build-test"
 TEST_MODELING_RULE_JIRA_TICKETS="false"
 TEST_PLAYBOOKS_JIRA_TICKETS="false"
+_sdk_ref="${SDK_REF:-master}"
+_override_sdk_ref="${DEMISTO_SDK_NIGHTLY:-}"
 
 # Parsing the user inputs.
 
@@ -44,7 +46,9 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -s|--sdk-ref) DEMISTO_SDK_NIGHTLY="$2"
+  -sr|--sdk-ref)
+    _sdk_ref="${2}"
+    _override_sdk_ref="true"
     shift
     shift;;
 
@@ -68,7 +72,8 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source ${SCRIPT_DIR}/trigger_build_url.sh
 
 curl "$BUILD_TRIGGER_URL" --form "ref=${_branch}" --form "token=${_ci_token}" \
-    --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
+    --form "variables[SDK_REF]=${_sdk_ref}" \
+    --form "variables[OVERRIDE_SDK_REF]=${_override_sdk_ref}" \
     --form "variables[NIGHTLY]=true" \
     --form "variables[IS_NIGHTLY]=true" \
     --form "variables[IFRA_ENV_TYPE]=Nightly" \
