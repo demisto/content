@@ -1,0 +1,233 @@
+id: IAM - Configuration
+version: -1
+description: As the default playbook for the "IAM - Configuration" incident type, when an "IAM - Configuration" incident is created this playbook runs automatically and closes any previous incidents of the same type.
+name: IAM - Configuration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a1dc7878-c77c-42ad-8262-1d85fd1285d4
+    type: start
+    task:
+      id: a1dc7878-c77c-42ad-8262-1d85fd1285d4
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8e45b7e6-d8eb-42b5-87a6-e0133278e6d4
+    type: regular
+    task:
+      id: 8e45b7e6-d8eb-42b5-87a6-e0133278e6d4
+      version: -1
+      name: Find incidents of type "IAM - Configuration"
+      description: |-
+        Uses the "type" field to identify incidents of the type "IAM - Configuration".
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filterQuery: {}
+      hoursBack: {}
+      ignoreClosedIncidents: {}
+      incidentFieldsAppliedCondition: {}
+      maxNumberOfIncidents: {}
+      maxResults: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentFields: {}
+      similarIncidentKeys:
+        simple: type
+      similarLabelsKeys: {}
+      skipMissingValues: {}
+      timeField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 46bbc906-7b60-40f8-8f3d-44c5af39c43c
+    type: condition
+    task:
+      id: 46bbc906-7b60-40f8-8f3d-44c5af39c43c
+      version: -1
+      name: Found incidents?
+      type: condition
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: isSimilarIncidentFound
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 98adaae3-1b82-41ab-889a-a83701fd8c0f
+    type: regular
+    task:
+      id: 98adaae3-1b82-41ab-889a-a83701fd8c0f
+      version: -1
+      name: Close duplicate incidents
+      description: Closes all previous incidents identified as related and keeps the current incident as the active IAM Configuration incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${similarIncidentList.rawId}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7b5f18eb-b0a0-4616-8693-c0dade53129b
+    type: title
+    task:
+      id: 7b5f18eb-b0a0-4616-8693-c0dade53129b
+      version: -1
+      name: Done
+      type: title
+      description: ""
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b70c7ce7-37c4-4560-8054-a51da31f2d1f
+    type: regular
+    task:
+      id: b70c7ce7-37c4-4560-8054-a51da31f2d1f
+      version: -1
+      name: Add description to layout
+      description: A Markdown field where you can write instructions for how to use the layout. The description should be a maximum of two lines.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      iamconfigurationdescription:
+        simple: |-
+          Select an **Okta instance** to view and manage your configuration, and connect XSOAR instances to Okta apps to establish app synchronization from Okta. **Use the sections on the left to add/remove connections.**
+
+          For more information, refer to the [IAM Configuration](https://xsoar.pan.dev/docs/reference/articles/iam-configuration) article.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests

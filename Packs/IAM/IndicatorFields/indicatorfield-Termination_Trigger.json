@@ -1,0 +1,31 @@
+{
+    "id": "indicator_terminationtrigger",
+    "version": -1,
+    "modified": "2021-10-19T07:59:24.468049115Z",
+    "name": "Termination Trigger",
+    "ownerOnly": false,
+    "description": "The cause of the termination of the user. For example: Workday/Wand/Orphan/TUFE.",
+    "cliName": "terminationtrigger",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": true,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "User Profile"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

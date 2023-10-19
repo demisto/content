@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "User Profile"
+    ],
+    "caseInsensitive": true,
+    "cliName": "temporaryuserprofile",
+    "closeForm": false,
+    "content": true,
+    "description": "If true, it has not yet been decided whether or not to provision this user profile.",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_temporaryuserprofile",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Temporary User Profile",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

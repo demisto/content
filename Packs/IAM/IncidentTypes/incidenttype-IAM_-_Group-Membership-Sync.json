@@ -1,0 +1,30 @@
+{
+    "id": "IAM - Group Membership Update",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "IAM - Group Membership Update",
+    "prevName": "IAM - Group Membership Update",
+    "color": "#7A7A7A",
+    "playbookId": "IAM - App Sync",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "IAM - App Sync",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.0.0"
+}

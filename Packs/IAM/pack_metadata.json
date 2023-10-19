@@ -1,0 +1,27 @@
+{
+    "name": "Identity Lifecycle Management - Core",
+    "description": "Perform common IAM operations instantly and automatically. Let this Pack take care of all your provisioning needs.",
+    "support": "xsoar",
+    "currentVersion": "1.8.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "eulaLink": "https://www.paloaltonetworks.com/legal",
+    "email": "",
+    "created": "2020-10-19T17:26:54Z",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [
+        "IAM"
+    ],
+    "useCases": [
+        "Identity and Access Management"
+    ],
+    "keywords": [
+        "ILM"
+    ],
+    "price": 0,
+    "marketplaces": [
+        "xsoar"
+    ]
+}
