@@ -5653,7 +5653,7 @@ def list_cidr_blocks_command(client: Client,
     # if there is an effective_date_gt check that it is in the correct format. if yes, continue with the str (API need),
     # else raise ValueError
     if effective_date_gt:
-        try_parsing_date(effective_date_gt, ['%Y-%m-%d', '%m-%d-%y'])
+        try_parsing_date(effective_date_gt, ['%Y-%m-%d', '%m-%d-%Y'])
 
     raw_response: dict = client.list_cidr_blocks(last_action=last_action, effective_date_gt=effective_date_gt)
 

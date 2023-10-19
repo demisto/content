@@ -171,3 +171,28 @@ def test_get_cps_change_status_command(mocker, akamai_waf_client):
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
+
+
+def test_try_parsing_date():
+    """
+    Given:
+        - An arr contains the allowed date formats and dates.
+    When:
+        - Running every command that has a date validation.
+    Then:
+        - date1-3 pass, date4 fails.
+    """
+    from Akamai_WAF import try_parsing_date
+    arr_fmt = ['%Y-%m-%d', '%m-%d-%Y', '%Y-%m-%dT%H:%M:%SZ']
+    date1 = '2020-10-31'
+    date2 = '10-31-2020'
+    date3 = '2020-10-31T00:00:00Z'
+    date4 = '31 oct 2020'
+    value_error = f'The date you provided does not match the wanted format {arr_fmt}'
+
+    assert try_parsing_date(date1, arr_fmt)
+    assert try_parsing_date(date2, arr_fmt)
+    assert try_parsing_date(date3, arr_fmt)
+    with pytest.raises(ValueError) as e:
+        try_parsing_date(date4, arr_fmt)
+        assert value_error == str(e.value)
