@@ -170,6 +170,7 @@ def send_api_request_with_retries(
     base_url: str,
     retries_message: str,
     exception_message: str,
+    success_message: str,
     prior_message: str,
     endpoint: str,
     method: str,
@@ -190,6 +191,7 @@ def send_api_request_with_retries(
         body: request body.
         base_url: base url to send request
         headers: headers for the request.
+        success_message:  message to print after success response.
         retries_message: message to print after failure when we have more attempts.
         exception_message: message to print when we get and exception that is not API or HTTP exception.
         prior_message: message to print when a new retry is made.
@@ -230,6 +232,8 @@ def send_api_request_with_retries(
                     timeout=request_timeout,
                 )
                 if 200 <= response.status_code < 300 and response.status_code != 204:
+                    logging.debug(f"Got successful response: {response.status_code=},  {response.content=}.")
+                    logging.info(success_message)
                     if success_handler:
                         return success_handler(response)
 
@@ -241,7 +245,7 @@ def send_api_request_with_retries(
                 if not attempts_left:
                     raise Exception(err)
 
-                logging.info(f"Got error: {err}")
+                logging.warning(f"Got error: {err}")
 
             except ApiException as ex:
                 if api_exception_handler:
