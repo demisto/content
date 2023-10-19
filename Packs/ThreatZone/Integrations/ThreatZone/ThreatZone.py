@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import urllib3
 import requests
-from typing import Any
+from typing import Any, Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -26,7 +26,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def threatzone_add(self, param: dict) -> dict[str, Any]:
+    def threatzone_add(self, param: dict) -> Dict[str, Any]:
         """Sends the sample to ThreatZone url using the '/public-api/scan/' API endpoint
 
         :return: dict containing the sample uuid as returned from the API
@@ -54,7 +54,7 @@ class Client(BaseClient):
 
         )
 
-    def threatzone_get(self, param: dict) -> dict[str, Any]:
+    def threatzone_get(self, param: dict) -> Dict[str, Any]:
         """Gets the sample scan result from ThreatZone using the '/public-api/get/submission/' API endpoint
 
         :return: dict containing the sample scan results as returned from the API
@@ -251,7 +251,7 @@ def generate_indicator(indicator, report, type=None):
     return None
 
 
-def threatzone_get_result(client: Client, args: dict[str, Any]) -> CommandResults:
+def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Retrive the sample scan result from ThreatZone.
         :param - uuid: For filtering with status
         :type uuid: ``str``
@@ -388,14 +388,14 @@ def threatzone_return_results(uuid, url, readable_output, availability) -> List[
     ]
 
 
-def threatzone_get_sanitized_file(client: Client, args: dict[str, Any]) -> None:
+def threatzone_get_sanitized_file(client: Client, args: Dict[str, Any]) -> None:
     """Downloads and uploads sanitized file to WarRoom & Context Data."""
     submission_uuid = args.get('uuid')
     data = client.threatzone_get_sanitized(submission_uuid)
     return_results(fileResult(f"sanitized-{submission_uuid}.zip", data))
 
 
-def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("sandbox")
     if not availability["avaliable"]:
@@ -443,7 +443,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Li
     return threatzone_return_results(uuid, url, readable_output, availability)
 
 
-def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+def threatzone_static_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
     scan_type = args.get('scan_type')
     availability = client.threatzone_check_limits(scan_type)

@@ -4,8 +4,7 @@ from unittest.mock import patch
 from ThreatZone import (generate_dbotscore,
                         threatzone_return_results,
                         encode_file_name,
-                        threatzone_cdr_upload_sample,
-                        threatzone_static_upload_sample,
+                        threatzone_static_cdr_upload_sample,
                         threatzone_sandbox_upload_sample,
                         threatzone_check_limits,
                         generate_indicator,
@@ -358,7 +357,10 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
             threatzone_sandbox_upload_sample(self.client, self.args)
 
     def test_threatzone_static_upload_sample(self, _, __):
-        results = threatzone_static_upload_sample(self.client, self.args)
+        args ={}
+        args["entry_id"] = self.args["entry_id"]
+        args["scan_type"] = "static"
+        results = threatzone_static_cdr_upload_sample(self.client, args)
 
         assert len(results) == 2
 
@@ -371,8 +373,11 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
         assert second_result.outputs_key_field == 'E_Mail'
 
     def test_threatzone_cdr_upload_sample(self, _, __):
-        results = threatzone_cdr_upload_sample(self.client, self.args)
-
+        args ={}
+        args["entry_id"] = self.args["entry_id"]
+        args["scan_type"] = "cdr"
+        results = threatzone_static_cdr_upload_sample(self.client, args)
+        
         assert len(results) == 2
 
         first_result, second_result = results
