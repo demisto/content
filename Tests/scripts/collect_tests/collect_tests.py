@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import sys
 from abc import ABC, abstractmethod
@@ -632,9 +633,12 @@ class TestCollector(ABC):
         # the modeling rule to test will be the containing directory of the modeling rule's component files
         relative_path_of_mr = PACK_MANAGER.relative_to_packs(changed_file_path)
         modeling_rule_to_test = relative_path_of_mr.parent
+        logging.info(f"Darya: {changed_file_path=}, {changed_file_path.parent=}, {TEST_DATA_PATTERN=}")
+        files = [f for f in changed_file_path.parent.iterdir()]
         test_data_file_for_mr = list(changed_file_path.parent.glob(TEST_DATA_PATTERN))
         if test_data_file_for_mr:
             pack_to_reinstall = pack_id
+        logging.info(f"Darya: {test_data_file_for_mr=}, {pack_to_reinstall=}, {files=}")
 
         return CollectionResult(
             test=None,
@@ -1387,7 +1391,7 @@ def output(result: CollectionResult | None):
     num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
     logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
-    logger.info(f'collected {len(packs_to_reinstall_test)} modeling rules to test:\n{packs_to_reinstall_test_str}')
+    logger.info(f'collected {len(packs_to_reinstall_test)} packs to reinstall to test:\n{packs_to_reinstall_test_str}')
 
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(packs_to_install_str)

@@ -353,7 +353,10 @@ def delete_datasets(dataset_names, base_url, api_key, auth_id):
         Boolean - If the operation succeeded.
     """
     def should_try_handler(response) -> Any:
-        return not (response is not None and response.status_code == DATASET_NOT_FOUND_ERROR_CODE)
+        if response is not None and response.status_code == DATASET_NOT_FOUND_ERROR_CODE:
+            logging.info(f"Failed to delete dataset, probably it is not exist on the machine.")
+            return False
+        return True
 
     success = True
     for dataset in dataset_names:
@@ -365,9 +368,9 @@ def delete_datasets(dataset_names, base_url, api_key, auth_id):
         body = {'dataset_name': dataset}
         success &= send_api_request_with_retries(
             base_url=base_url,
-            retries_message='Retrying to delete dataset.',
-            exception_message=f'Failed to delete dataset: "{dataset}".',
-            prior_message=f'Trying to delete dataset: "{dataset}".',
+            retries_message='Retrying to delete dataset',
+            exception_message=f'Failed to delete dataset: "{dataset}"',
+            prior_message=f'Trying to delete dataset: "{dataset}"',
             endpoint='/public_api/v1/xql/delete_dataset',
             method='POST',
             headers=headers,
