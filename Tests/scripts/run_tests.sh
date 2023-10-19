@@ -16,7 +16,7 @@ while [[ "$#" -gt 0 ]]; do
     --generate-empty-result-file) generate_empty_results_file="true"
       shift;;
     *)  # unknown option.
-      shift;;
+      shift;;  # FIXME! echo warning
   esac
 done
 

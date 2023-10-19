@@ -1,4 +1,4 @@
-import copy
+import copy  # FIXME! rename file
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
@@ -24,7 +24,7 @@ RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
 
 
-class TestSuiteDataCell:
+class TestSuiteDataCell:  # FIXME! TestSuiteStatistics
     def __init__(self, failures: int = 0, errors: int = 0, skipped: int = 0, tests: int = 0):
         self.failures = failures
         self.errors = errors
@@ -69,7 +69,7 @@ def search_ticket_in_jira(jira_server: JIRA, playbook_id: str) -> Issue | None:
         for issue in search_issues:
             if playbook_id_lower in issue.get_field("summary").lower():
                 return issue
-        logging.debug(f"Failed to find a jira ticket for playbook id: {playbook_id}")
+        logging.info(f"Failed to find a jira ticket for playbook id: {playbook_id}")
     return None
 
 
