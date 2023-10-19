@@ -26,7 +26,7 @@ args:
   description: If "yes", will return all generated files. If "no", will return only the main file. Relevant for formats that might generate multiple files, such as html (which will generate image files additionally to the main html file). Default is "no".
   defaultValue: "no"
 - name: test_test_test
-  required: true
+  required: false
   default: true
   description: test test test.
 outputs:
