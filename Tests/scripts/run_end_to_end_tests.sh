@@ -12,7 +12,7 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
     IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
       echo "Running end-to-end tests on ${CLOUD_CHOSEN_MACHINE_ID}"
-      if [[ "${SERVER_TYPE}" == "XSOAR_NG" ]]; then
+      if [[ "${MARKETPLACE_NAME}" == "xsoar_saas" ]]; then
         path="./Tests/tests_end_to_end/xsoar_ng"
       else
         path="./Tests/tests_end_to_end/xsiam"

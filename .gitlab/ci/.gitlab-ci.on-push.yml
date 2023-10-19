@@ -546,7 +546,6 @@ xsoar_ng_server_ga:
 xsoar_ng_end_to_end_tests:
   tags:
     - gke
-    - us-west1
   extends:
     - .default-job-settings
   rules:
@@ -564,7 +563,7 @@ xsoar_ng_end_to_end_tests:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR_SAAS}/env_results.json"
     GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
-    SERVER_TYPE: "XSOAR_NG"
+    SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
   needs:
