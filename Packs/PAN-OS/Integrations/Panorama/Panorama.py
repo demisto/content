@@ -1014,6 +1014,7 @@ def panorama_command(args: dict):
     )
 
     return_results(CommandResults(
+        outputs_prefix='Panorama.Command',
         outputs=result,
         readable_output='Command was executed successfully.'
     ))
