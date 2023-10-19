@@ -57,20 +57,20 @@ def xsiam_client(request) -> XsiamApiClient:
     xsiam_client_cfg = XsiamApiClientConfig(
         base_url=xsiam_url,
         api_key=api_key,
-        auth_id=api_key_id,  # type: ignore[arg-type]
+        auth_id=api_key_id,
         token='test',
-        collector_token='test',  # type: ignore[arg-type]
+        collector_token='test'
     )
     return XsiamApiClient(xsiam_client_cfg)
 
 
 @pytest.fixture(scope="module")
 def xsoar_ng_client(request) -> XsoarNGApiClient:
-    # xsoar_ng_url, api_key, api_key_id = get_cloud_machine_credentials(request)
+    xsoar_ng_url, api_key, api_key_id = get_cloud_machine_credentials(request)
 
     xsoar_client_config = XsoarApiClientConfig(
-        # base_url=xsoar_ng_url,
-        # api_key=api_key,
-        # auth_id=api_key_id,  # type: ignore[arg-type]
+        base_url=xsoar_ng_url,
+        api_key=api_key,
+        auth_id=api_key_id
     )
     return XsoarNGApiClient(xsoar_client_config)
