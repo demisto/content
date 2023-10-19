@@ -551,6 +551,7 @@ xsoar_ng_end_to_end_tests:
     - .default-job-settings
   rules:
     - if: '$NIGHTLY'
+    - when: always
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1

@@ -35,7 +35,7 @@ Beta_Integrations/*/*_unified.yml
 Packs/*/*/*/*_unified.yml
 conftest.py
 !Tests/scripts/dev_envs/pytest/conftest.py
-!Tests/tests_end_to_end/xsoar_ng/conftest.py
+!Tests/tests_end_to_end/conftest.py
 Tests/tests_end_to_end/conftest.py
 venv
 failed_unittests.txt

@@ -44,7 +44,8 @@ def get_integration_params(instance_name: str):
 
 @pytest.fixture(scope="function")
 def integration_params(request) -> Dict:
-    return get_integration_params(request.param)
+    instance_name = getattr(request.cls, "instance_name_gsm")
+    return get_integration_params(instance_name)
 
 
 @pytest.fixture(scope="module")
@@ -65,11 +66,11 @@ def xsiam_client(request) -> XsiamApiClient:
 
 @pytest.fixture(scope="module")
 def xsoar_ng_client(request) -> XsoarNGApiClient:
-    xsoar_ng_url, api_key, api_key_id = get_cloud_machine_credentials(request)
+    # xsoar_ng_url, api_key, api_key_id = get_cloud_machine_credentials(request)
 
     xsoar_client_config = XsoarApiClientConfig(
-        base_url=xsoar_ng_url,
-        api_key=api_key,
-        auth_id=api_key_id,  # type: ignore[arg-type]
+        # base_url=xsoar_ng_url,
+        # api_key=api_key,
+        # auth_id=api_key_id,  # type: ignore[arg-type]
     )
     return XsoarNGApiClient(xsoar_client_config)

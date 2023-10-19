@@ -373,18 +373,18 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.28.65"
+version = "1.28.66"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "boto3-1.28.65-py3-none-any.whl", hash = "sha256:ff3d0116e0ca6c096547652390025780eace3a28f6c04c9ffbf38448f1e5a87b"},
-    {file = "boto3-1.28.65.tar.gz", hash = "sha256:9d52a1605657aeb5b19b09cfc01d9a92f88a616a5daf5479a59656d6341ea6b3"},
+    {file = "boto3-1.28.66-py3-none-any.whl", hash = "sha256:a8228522c7db33694c0746dec8b48c05473671626359dd62ab6829eb7871eddc"},
+    {file = "boto3-1.28.66.tar.gz", hash = "sha256:38658585791f47cca3fc6aad03838de0136778b533e8c71c6a9590aedc60fbde"},
 ]
 
 [package.dependencies]
-botocore = ">=1.31.65,<1.32.0"
+botocore = ">=1.31.66,<1.32.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.7.0,<0.8.0"
 
@@ -393,14 +393,14 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "boto3-stubs"
-version = "1.28.65"
-description = "Type annotations for boto3 1.28.65 generated with mypy-boto3-builder 7.19.0"
+version = "1.28.66"
+description = "Type annotations for boto3 1.28.66 generated with mypy-boto3-builder 7.19.0"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "boto3-stubs-1.28.65.tar.gz", hash = "sha256:26bd79d43f4e65512f7226994cba9a60a59e52526d1c59ef62eae9fadaa71e6a"},
-    {file = "boto3_stubs-1.28.65-py3-none-any.whl", hash = "sha256:ce29db1fd5f5ce5088018fd3cc9f3676223ced485743c4d0748b0da0348006aa"},
+    {file = "boto3-stubs-1.28.66.tar.gz", hash = "sha256:b85689c50a6768bb0fcb85e06394d7898b330b82f34cec26c36d912e6a41280d"},
+    {file = "boto3_stubs-1.28.66-py3-none-any.whl", hash = "sha256:06e696ce8529f899a2ba388d6604ca8ed8ba367dd53898e27b4ce49e8b3fd2aa"},
 ]
 
 [package.dependencies]
@@ -466,7 +466,7 @@ batch = ["mypy-boto3-batch (>=1.28.0,<1.29.0)"]
 bedrock = ["mypy-boto3-bedrock (>=1.28.0,<1.29.0)"]
 bedrock-runtime = ["mypy-boto3-bedrock-runtime (>=1.28.0,<1.29.0)"]
 billingconductor = ["mypy-boto3-billingconductor (>=1.28.0,<1.29.0)"]
-boto3 = ["boto3 (==1.28.65)", "botocore (==1.31.65)"]
+boto3 = ["boto3 (==1.28.66)", "botocore (==1.31.66)"]
 braket = ["mypy-boto3-braket (>=1.28.0,<1.29.0)"]
 budgets = ["mypy-boto3-budgets (>=1.28.0,<1.29.0)"]
 ce = ["mypy-boto3-ce (>=1.28.0,<1.29.0)"]
@@ -793,14 +793,14 @@ xray = ["mypy-boto3-xray (>=1.28.0,<1.29.0)"]
 
 [[package]]
 name = "botocore"
-version = "1.31.65"
+version = "1.31.66"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 files = [
-    {file = "botocore-1.31.65-py3-none-any.whl", hash = "sha256:f74e3da98dfcec17bc63ef58f82c643bf5bd7ec6cc11a26ede21cc4cd064917f"},
-    {file = "botocore-1.31.65.tar.gz", hash = "sha256:90716c6f1af97e5c2f516e9a3379767ebdddcc6cbed79b026fa5038ce4e5e43e"},
+    {file = "botocore-1.31.66-py3-none-any.whl", hash = "sha256:8d161a97a25eb381721b4b7251d5126ef4ec57e452114250b3e51ba5e4ff45a4"},
+    {file = "botocore-1.31.66.tar.gz", hash = "sha256:70e94a5f9bd46b26b63a41fb441ad35f2ae8862ad9d90765b6fa31ccc02c0a19"},
 ]
 
 [package.dependencies]
@@ -816,14 +816,14 @@ crt = ["awscrt (==0.16.26)"]
 
 [[package]]
 name = "botocore-stubs"
-version = "1.31.65"
+version = "1.31.66"
 description = "Type annotations and code completion for botocore"
 category = "dev"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "botocore_stubs-1.31.65-py3-none-any.whl", hash = "sha256:a923f0f1fceec68affcf878be3d2af906763d68dce95a9562c4c3a529834167e"},
-    {file = "botocore_stubs-1.31.65.tar.gz", hash = "sha256:466d448eb4da3e808999b8cb2eabdc3d8c6f851b017ab06af48a598a2443082d"},
+    {file = "botocore_stubs-1.31.66-py3-none-any.whl", hash = "sha256:b65fa3ff36e8a70518a143b5025559918a68d7a20b85c88f8a1f067f6620a205"},
+    {file = "botocore_stubs-1.31.66.tar.gz", hash = "sha256:5ea5f4af18ee654cf510d69b3bc7c1ed3236b50fcd4e3eb98c11d28033ff05c3"},
 ]
 
 [package.dependencies]
@@ -1519,7 +1519,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "xsoar_client"
-resolved_reference = "0f5d727f4525b4466cd37df0c5c0f7361d3dec99"
+resolved_reference = "ee59f60c1692b051fc92ab01ccad3773389731b6"
 
 [[package]]
 name = "deprecated"
@@ -1961,14 +1961,14 @@ smmap = ">=3.0.1,<6"
 
 [[package]]
 name = "gitpython"
-version = "3.1.38"
+version = "3.1.40"
 description = "GitPython is a Python library used to interact with Git repositories"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "GitPython-3.1.38-py3-none-any.whl", hash = "sha256:9e98b672ffcb081c2c8d5aa630d4251544fb040fb158863054242f24a2a2ba30"},
-    {file = "GitPython-3.1.38.tar.gz", hash = "sha256:4d683e8957c8998b58ddb937e3e6cd167215a180e1ffd4da769ab81c620a89fe"},
+    {file = "GitPython-3.1.40-py3-none-any.whl", hash = "sha256:cf14627d5a8049ffbf49915732e5eddbe8134c3bdb9d476e6182b676fc573f8a"},
+    {file = "GitPython-3.1.40.tar.gz", hash = "sha256:22b126e9ffb671fdd0c129796343a02bf67bf2994b35449ffc9321aa755e18a4"},
 ]
 
 [package.dependencies]
@@ -3392,14 +3392,14 @@ typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.12\""}
 
 [[package]]
 name = "mypy-boto3-dynamodb"
-version = "1.28.55"
-description = "Type annotations for boto3.DynamoDB 1.28.55 service generated with mypy-boto3-builder 7.19.0"
+version = "1.28.66"
+description = "Type annotations for boto3.DynamoDB 1.28.66 service generated with mypy-boto3-builder 7.19.0"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "mypy-boto3-dynamodb-1.28.55.tar.gz", hash = "sha256:a3039f8ada07a218f97f0c70a82ed9cf461a0cb5133194fcf1e0e87b15c899a5"},
-    {file = "mypy_boto3_dynamodb-1.28.55-py3-none-any.whl", hash = "sha256:c4c16a00e90db5857cbeee207f6dec954ca142bd52e2de0f3d52be6d50d83d16"},
+    {file = "mypy-boto3-dynamodb-1.28.66.tar.gz", hash = "sha256:62431d3d9072dd71551623d3d933f5c3aff0f011730281449ff2f56bb742033c"},
+    {file = "mypy_boto3_dynamodb-1.28.66-py3-none-any.whl", hash = "sha256:e2caf668d9861cc354543e456ca3f7d930bd46d4d2a3cf52f9e93f1073a3dc18"},
 ]
 
 [package.dependencies]
