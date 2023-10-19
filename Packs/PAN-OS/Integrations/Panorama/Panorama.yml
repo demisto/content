@@ -9350,18 +9350,13 @@ script:
     arguments:
     - name: interval_in_seconds
       description: The polling interval (in seconds).
-      defaultValue: "60"
+      defaultValue: "30"
     - name: timeout
       description: The polling timeout (in seconds).
       defaultValue: "1200"
     - name: job_id
       hidden: true
       description: The job ID to use when polling.
-    outputs:
-    - contextPath: Panorama.TSF.JobID
-      description: Job ID of export tech support file job.
-    - contextPath: Panorama.TSF.Status
-      description: Status of export tech support file job.
     description: Exports a tech support file (TSF).
     polling: true
   dockerimage: demisto/pan-os-python:1.0.0.76078

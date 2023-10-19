@@ -892,7 +892,7 @@ def download_tsf(job_id: str):
 
 @polling_function(
     name=demisto.command(),
-    interval=arg_to_number(demisto.args().get('interval_in_seconds', 60)),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 30)),
     timeout=arg_to_number(demisto.args().get('timeout', 1200)),
     requires_polling_arg=False
 )
@@ -903,10 +903,6 @@ def export_tsf_command(args: dict):
     if job_id := args.get('job_id'):
         export_tsf_status = get_tsf_export_status(job_id).get('response', {}).get('result', {})
         job_status = export_tsf_status.get('job', {}).get('status')
-        context_output = {
-            'JobID': job_id,
-            'Status': job_status
-        }
         return PollResult(
             response=download_tsf(job_id),
             continue_to_poll=job_status != 'FIN',  # continue polling if job isn't done
@@ -920,17 +916,11 @@ def export_tsf_command(args: dict):
                 'Status': 'Pending'
             }
             continue_to_poll = True
-            export_tsf_output = CommandResults(  # type: ignore[assignment]
-                outputs_prefix='Panorama.TSF',
-                outputs_key_field='JobID',
-                outputs=context_output,
-                readable_output=tableToMarkdown('Export Status:', context_output, removeNull=True)
-            )
         else:  # no job ID which is unexpected
             raise DemistoException("Failed to start tech support file export.")
 
         return PollResult(
-            response=export_tsf_output,
+            response=download_tsf(job_id),
             continue_to_poll=continue_to_poll,
             args_for_next_run={
                 'job_id': job_id,
