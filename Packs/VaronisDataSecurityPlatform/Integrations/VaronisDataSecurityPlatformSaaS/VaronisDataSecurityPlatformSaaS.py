@@ -17,6 +17,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 MAX_USERS_TO_SEARCH = 5
+MAX_DAYS_BACK = 180
 THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
 ALERT_SEVERITIES = ['high', 'medium', 'low']
@@ -119,13 +120,13 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
         
-        days_back = 7
+        days_back = MAX_DAYS_BACK
         if start_time is None and end_time is None and last_days is None:
             last_days = days_back
         elif start_time is None and end_time is not None:
-            start_time = datetime.now() - datetime.timedelta(days=days_back)
+            start_time = end_time - timedelta(days=days_back)
         elif end_time is None and start_time is not None:
-            last_days = datetime.now()
+            end_time = start_time + timedelta(days=days_back)
         
         data = {
             'RuleIds': [],
@@ -208,19 +209,19 @@ class Client(BaseClient):
         
         data = {
             'AlertIds': [],
-            'StartDate': None,
-            'EndDate': None,
+            'StartTime': None,
+            'EndTime': None,
             'LastDays': None,
             'DescendingOrder': 'False'
         }
         
-        days_back = 7
+        days_back = MAX_DAYS_BACK
         if start_time is None and end_time is None and last_days is None:
             last_days = days_back
         elif start_time is None and end_time is not None:
-            start_time = datetime.now() - datetime.timedelta(days=days_back)
+            start_time = end_time - timedelta(days=days_back)
         elif end_time is None and start_time is not None:
-            end_time = datetime.now()
+            end_time = start_time + timedelta(days=days_back)
         
         if alertIds and len(alertIds) > 0:
             data['AlertIds'] = alertIds
@@ -766,6 +767,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
         ``args['alert_id']`` List of alert ids
         ``args['start_time']`` Start time of the range of events
         ``args['end_time']`` End time of the range of events
+        ``args['last_days']`` Number of days you want the search to go back to
         ``args['descending_order']`` Indicates whether events should be ordered in newest to oldest order
 
     :return:
@@ -776,6 +778,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     alertIds = args.get('alert_id', None)
     start_time = args.get('start_time', None)
     end_time = args.get('end_time', None)
+    last_days = args.get('last_days', None)
     descending_order = args.get('descending_order', True)
 
     alertIds = try_convert(alertIds, lambda x: argToList(x))
@@ -791,7 +794,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     )
     
     events = client.varonis_get_alerted_events(alertIds=alertIds, start_time=start_time, end_time=end_time,
-                                               last_days=None,
+                                               last_days=last_days,
                                                descending_order=descending_order)
     outputs = dict()
     outputs['Event'] = events
@@ -877,7 +880,7 @@ def main() -> None:
     if not is_xsoar_env():
         url = 'https://dev66f47.varonis-preprod.com'
         apiKey = 'vkey1_15536d2768e1493bac596dfe2b66e5c2_XNZhl8VzALAx2jSIEAM/I1gp4CnYJVOcvptxquXx0Hg='
-        command = 'fetch-incidents'  # 'test-module'|
+        command = 'varonis-get-alerted-events'  # 'test-module'|
                                  # 'varonis-get-alerts'|
                                  # 'varonis-get-alerted-events'|
                                  # 'varonis-update-alert-status'|
@@ -910,9 +913,10 @@ def main() -> None:
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
 
         elif command == 'varonis-get-alerted-events':
-            args['alert_id'] = None  # List of alert ids
-            args['start_time'] = None  # Start time of the range of events
+            args['alert_id'] = "978625cf-3102-4fe9-8f89-5ef35c95b27e,2ca92ab1-b225-4eee-85ec-393875ed5389"  # Array of alert ids
+            args['start_time'] = "2022-02-16T13:00:00"  # Start time of the range of events
             args['end_time'] = None  # End time of the range of events
+            args['last_days'] = None  # Number of days you want the search to go back to
             args['descending_order'] = None  # Indicates whether events should be ordered in newest to oldest order
 
         elif command == 'varonis-update-alert-status':

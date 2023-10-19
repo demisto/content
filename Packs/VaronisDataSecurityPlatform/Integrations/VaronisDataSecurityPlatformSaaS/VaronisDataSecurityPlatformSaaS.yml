@@ -279,6 +279,24 @@ script:
       required: true
       secret: false
     - default: false
+      description: Start time of alert range
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: End time of alert range
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: Number of days you want the search to go back to
+      isArray: false
+      name: last_days
+      required: false
+      secret: false  
+    - default: false
       description: Indicates whether events should be ordered in newest to oldest order
       isArray: false
       name: descending_order
