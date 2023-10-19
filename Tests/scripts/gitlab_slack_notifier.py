@@ -60,7 +60,7 @@ def get_artifact_data(artifact_folder: Path, artifact_relative_path: str) -> str
     """
     Retrieves artifact data according to the artifact relative path from 'ARTIFACTS_FOLDER' given.
     Args:
-        artifact_folder (str): Full path of the artifact root folder.
+        artifact_folder (Path): Full path of the artifact root folder.
         artifact_relative_path (str): Relative path of an artifact file.
 
     Returns:
@@ -87,55 +87,83 @@ def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
     return f"{properties['modeling_rule_file_name']} ({properties['pack_id']})"
 
 
-def test_modeling_rules_results(artifact_folder: Path, title: str) -> list[dict[str, Any]]:
+def get_test_report_pipeline_url(pipeline_url: str) -> str:
+    return f"{pipeline_url}/test_report"
+
+
+def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
     failed_test_modeling_rules = artifact_folder / 'modeling_rules_results.xml'
     if not failed_test_modeling_rules.exists():
-        return []
+        title = f"{title} - Failed to get Test Modeling rules results"
+        return [{
+            'fallback': title,
+            'color': 'warning',
+            'title': title,
+        }]
     xml = JUnitXml.fromfile(failed_test_modeling_rules.as_posix())
-    content_team_fields = []
     failed_test_suites = []
     total_test_suites = 0
     for test_suite in xml.iterchildren(TestSuite):
         total_test_suites += 1
         if test_suite.failures or test_suite.errors:
             failed_test_suites.append(get_failed_modeling_rule_name_from_test_suite(test_suite))
-    if failed_test_suites:
-        content_team_fields.append({
-            "title": f"{title} - Failed Tests Modeling rules - ({len(failed_test_suites)}/{total_test_suites})",
-            "value": ' ,'.join(failed_test_suites),
-            "short": False
-        })
-    else:
-        content_team_fields.append({
-            "title": f"{title} - All Test Modeling rules Passed - ({total_test_suites})",
-            "value": '',
-            "short": False
-        })
 
-    return content_team_fields
+    if failed_test_suites:
+        title = f"{title} - Failed Tests Modeling rules - ({len(failed_test_suites)}/{total_test_suites})"
+        return [{
+            'fallback': title,
+            'color': 'danger',
+            'title': title,
+            'title_link': get_test_report_pipeline_url(pipeline_url),
+            'fields': [
+                {
+                    "title": f"Failed Tests Modeling rules - ({len(failed_test_suites)}/{total_test_suites})",
+                    "value": ' ,'.join(failed_test_suites),
+                    "short": False
+                }
+            ]
+        }]
+
+    title = f"{title} - All Test Modeling rules Passed - ({total_test_suites})"
+    return [{
+        'fallback': title,
+        'color': 'good',
+        'title': title,
+        'title_link': get_test_report_pipeline_url(pipeline_url),
+    }]
 
 
 def test_playbooks_results_to_slack_msg(instance_role: str,
                                         failed_tests: list[str],
                                         skipped_integrations: list[str],
                                         skipped_tests: list[str],
-                                        title: str) -> list[dict[str, Any]]:
+                                        title: str,
+                                        pipeline_url: str) -> list[dict[str, Any]]:
     if failed_tests:
+        title = f"{title} ({instance_role}) - Test Playbooks Failed ({len(failed_tests)}) Skipped - {len(skipped_tests)}, "\
+                f"Skipped Integrations - {len(skipped_integrations)}"
         return [{
-            "title": f"{title} ({instance_role}) - Test Playbooks Failed ({len(failed_tests)}) Skipped - {len(skipped_tests)}, "
-                     f"Skipped Integrations - {len(skipped_integrations)}",
-            "value": ', '.join(failed_tests),
-            "short": False
+            'fallback': title,
+            'color': 'danger',
+            'title': title,
+            'title_link': get_test_report_pipeline_url(pipeline_url),
+            'fields': [{
+                "title": "Failed Tests",
+                "value": ', '.join(failed_tests),
+                "short": False
+            }]
         }]
+    title = f"{title} ({instance_role}) - All Tests Playbooks Passed (Skipped - {len(skipped_tests)}, "\
+            f"Skipped Integrations - {len(skipped_integrations)})"
     return [{
-        "title": f"{title} ({instance_role}) - All Tests Playbooks Passed (Skipped - {len(skipped_tests)}, "
-                 f"Skipped Integrations - {len(skipped_integrations)})",
-        "value": '',
-        "short": False
+        'fallback': title,
+        'color': 'good',
+        'title': title,
+        'title_link': get_test_report_pipeline_url(pipeline_url),
     }]
 
 
-def test_playbooks_results(artifact_folder: Path, title: str) -> list[dict[str, Any]]:
+def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
 
     content_team_fields = []
     for instance_role, instance_directory in get_instance_directories(artifact_folder).items():
@@ -148,8 +176,8 @@ def test_playbooks_results(artifact_folder: Path, title: str) -> list[dict[str, 
         skipped_integrations_data = get_artifact_data(instance_directory, 'skipped_integrations.txt')
         skipped_integrations = skipped_integrations_data.split('\n') if skipped_integrations_data else []
 
-        content_team_fields += test_playbooks_results_to_slack_msg(instance_role,
-                                                                   failed_tests, skipped_integrations, skipped_tests, title)
+        content_team_fields += test_playbooks_results_to_slack_msg(instance_role, failed_tests, skipped_integrations,
+                                                                   skipped_tests, title, pipeline_url)
 
     return content_team_fields
 
@@ -233,23 +261,23 @@ def construct_slack_msg(triggering_workflow: str,
         content_fields += bucket_upload_results(ARTIFACTS_FOLDER_MPV2, False)
         content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE, False)
 
+    slack_msg_append = []
     # report failing test-playbooks and test modeling rules.
     if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR}:
-        content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, title="XSOAR")
-        content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
-        content_fields += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
-        content_fields += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR)
+        slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, pipeline_url, title="XSOAR")
+        slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
+        slack_msg_append += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
+        slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR)
 
-    coverage_slack_msg = []
     title = triggering_workflow
-    if triggering_workflow == CONTENT_PR:
-        if pull_request:
-            pr_number = pull_request.data.get('number')
-            pr_title = pull_request.data.get('title')
-            title += f' (PR#{pr_number} - {pr_title})'
-        else:
-            # The coverage Slack message is only relevant for nightly and not for PRs.
-            coverage_slack_msg += construct_coverage_slack_msg()
+
+    if pull_request:
+        pr_number = pull_request.data.get('number')
+        pr_title = pull_request.data.get('title')
+        title += f' (PR#{pr_number} - {pr_title})'
+    elif triggering_workflow == CONTENT_NIGHTLY:
+        # The coverage Slack message is only relevant for nightly and not for PRs.
+        slack_msg_append += construct_coverage_slack_msg()
 
     if pipeline_failed_jobs:
         title += ' - Failure'
@@ -263,21 +291,28 @@ def construct_slack_msg(triggering_workflow: str,
         'title': title,
         'title_link': pipeline_url,
         'fields': content_fields
-    }] + coverage_slack_msg
+    }] + slack_msg_append
     return slack_msg
 
 
 def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any]]:
-    missing_packs = get_artifact_data(artifact_folder, 'missing_content_packs_test_conf.txt')
-    content_fields = []
-    if missing_packs:
-        missing_packs_lst = missing_packs.split('\n')
-        content_fields.append({
-            "title": f"Notice - Missing packs - ({len(missing_packs_lst)})",
-            "value": f"The following packs exist in content-test-conf, but not in content: {', '.join(missing_packs_lst)}",
-            "short": False
-        })
-    return content_fields
+    if missing_packs := get_artifact_data(artifact_folder, 'missing_content_packs_test_conf.txt'):
+        missing_packs_list = list(filter(None, missing_packs.split('\n')))
+        title = f"Notice - Missing packs - ({len(missing_packs_list)})"
+        return [{
+            'fallback': title,
+            'color': 'warning',
+            'title': title,
+            'fields': [
+                {
+                    "title": f"The following packs exist in content-test-conf, "
+                             f"but not in content: {', '.join(missing_packs_list)}",
+                    "value": '',
+                    "short": False
+                }
+            ]
+        }]
+    return []
 
 
 def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
