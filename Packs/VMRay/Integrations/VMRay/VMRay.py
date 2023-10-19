@@ -1397,7 +1397,7 @@ def get_screenshots_command():
     return_results(file_results)
 
 
-def vmray_get_license_usage_verdicts_command():
+def vmray_get_license_usage_verdicts_command():     # pragma: no cover
     """
 
     Returns:
@@ -1427,7 +1427,7 @@ def vmray_get_license_usage_verdicts_command():
     return_results(results)
 
 
-def vmray_get_license_usage_reports_command():
+def vmray_get_license_usage_reports_command():      # pragma: no cover
     """
 
     Returns:
@@ -1457,7 +1457,7 @@ def vmray_get_license_usage_reports_command():
     return_results(results)
 
 
-def main():    # pragma: no cover
+def main():    
     try:
         command = demisto.command()
         if command == 'test-module':
