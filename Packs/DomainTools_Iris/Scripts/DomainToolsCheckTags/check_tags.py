@@ -10,7 +10,7 @@ def check_tags(args: Dict[str, Any]) -> CommandResults:
     domain_tags_set = set([domain_tag['label'] for domain_tag in domain_tags])
 
     malicious_tags = args['malicious_tags']
-    malicious_tags_set = set(json.loads(malicious_tags))
+    malicious_tags_set = set(tag.strip() for tag in malicious_tags.split(","))
 
     tag_intersection = None
     human_readable_str = 'No matching tags found.'
@@ -34,7 +34,7 @@ def main():
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(
-            f"Failed to execute check_pivotable_domains. Error: {str(ex)}")
+            f"Failed to execute CheckTags. Error: {str(ex)}")
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

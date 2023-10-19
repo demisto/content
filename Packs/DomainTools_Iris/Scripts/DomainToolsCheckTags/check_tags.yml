@@ -13,8 +13,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: Array of tags in the form of ["tag1","tag2","tag3"]
-  isArray: true
+  description: Comma-seperated value of malicious tags to check. tag1,tag2,tag3
+  isArray: false
   name: malicious_tags
   required: true
   secret: false

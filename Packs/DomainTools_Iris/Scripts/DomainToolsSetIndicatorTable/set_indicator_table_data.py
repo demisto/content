@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from typing import Dict, Any
+from typing import Dict, Any, Optional, List
 from enum import Enum
 import traceback
 
@@ -11,8 +11,8 @@ class ReputationEnum(Enum):
     UNKNOWN = "Unknown"
 
 
-def find_age(create_date: str) -> int:
-    time_diff = datetime.now() - datetime.strptime(create_date, "%Y-%m-%d")
+def find_age(first_seen: str) -> int:
+    time_diff = datetime.utcnow() - datetime.strptime(first_seen, "%Y-%m-%dT%H:%M:%SZ")
     return time_diff.days
 
 
@@ -32,21 +32,45 @@ def find_indicator_reputation(domain_age: int, proximity_score: int, threat_prof
         return ReputationEnum.GOOD
 
 
+def format_attribute(attribute: List[dict], key: Optional[str] = None) -> str:
+    """Format list of attribute to str
+
+    Args:
+        attribute (List[dict]): The attribute to format
+        key (str): The key to lookup, supports nested dict (e.g "host.value")
+
+    Returns:
+        str: The string formatted attribute
+    """
+    formatted_str = []
+    for attr in attribute:
+        if isinstance(attr, dict):
+            keys = key.split(".")
+            value = attr[keys[0]][keys[1]] if len(keys) > 1 else attr[keys[0]]
+            formatted_str.append(value)
+        else:  # for list only values
+            formatted_str.append(attr)
+
+    return ",".join(formatted_str) if formatted_str else ""
+
+
 def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
     human_readable_str = "No context data for domain."
+    required_keys = ("Name", "Hosting", "Identity", "Analytics")
 
     domaintools_data = args["domaintools_data"]
-    if domaintools_data:
+    if isinstance(domaintools_data, dict) and all(
+        k in domaintools_data.keys() for k in required_keys
+    ):
         domain_name = domaintools_data.get("Name")
         domaintools_hosting_data = domaintools_data.get("Hosting", {})
         domaintools_identity_data = domaintools_data.get("Identity", {})
         domaintools_analytics_data = domaintools_data.get("Analytics", {})
 
-        create_date = domaintools_data.get(
-            "Registration", {}).get("CreateDate")
+        first_seen = domaintools_data.get("FirstSeen") or ""
         domain_age = 0
-        if create_date:
-            domain_age = find_age(create_date)
+        if first_seen:
+            domain_age = find_age(first_seen)
 
         try:
             threat_profile_score = domaintools_analytics_data.get(
@@ -60,29 +84,46 @@ def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
         except Exception:
             reputation = ReputationEnum.UNKNOWN
 
-        demisto_indicator = {
-            "type": "Domain",
+        riskscore_component_mapping = {
+            "proximity": "ProximityRiskScore",
+            "malware": "MalwareRiskScore",
+            "phishing": "PhishingRiskScore",
+            "spam": "SpamRiskScore"
+        }
+
+        domaintools_iris_indicator = {
+            "type": "DomainTools Iris",
             "value": domain_name,
             "source": "DomainTools",
             "reputation": reputation.value,
             "seenNow": "true",
-            "ipaddresses": json.dumps(domaintools_hosting_data.get("IPAddresses")),
-            "ipcountrycode": domaintools_hosting_data.get("IPCountryCode"),
-            "mailservers": json.dumps(domaintools_hosting_data.get("MailServers")),
-            "spfrecord": domaintools_hosting_data.get("SPFRecord"),
-            "nameservers": domaintools_hosting_data.get("NameServers"),
-            "sslcertificate": json.dumps(
-                domaintools_hosting_data.get("SSLCertificate")
-            ),
-            "soaemail": domaintools_identity_data.get("SOAEmail"),
-            "sslcertificateemail": domaintools_identity_data.get("SSLCertificateEmail"),
-            "emaildomains": domaintools_identity_data.get("EmailDomains"),
-            "additionalwhoisemails": domaintools_identity_data.get(
-                "AdditionalWhoisEmails"
-            ),
             "domainage": domain_age,
+            "firstseen": first_seen,
+            "domaintoolsirisriskscore": domaintools_analytics_data.get("OverallRiskScore"),
+            "domaintoolsirisfirstseen": first_seen,
+            "domaintoolsiristags": format_attribute(domaintools_analytics_data.get("Tags"), key="label"),
+            "additionalwhoisemails": format_attribute(domaintools_identity_data.get(
+                "AdditionalWhoisEmails",
+            ), key="value"),
+            "emaildomains": format_attribute(domaintools_identity_data.get("EmailDomains")),
+            "nameservers": format_attribute(domaintools_hosting_data.get("NameServers"), key="host.value"),
+            "ipaddresses": format_attribute(domaintools_hosting_data.get("IPAddresses"), key="address.value"),
+            "mailservers": format_attribute(domaintools_hosting_data.get("MailServers"), key="domain.value"),
+            "ipcountrycode": domaintools_hosting_data.get("IPCountryCode"),
+            "registrantorg": domaintools_identity_data.get("RegistrantOrg"),
+            "registrantname": domaintools_identity_data.get("RegistrantName"),
+            "soaemail": format_attribute(domaintools_identity_data.get("SOAEmail"), key="value"),
+            "expirationdate": domaintools_identity_data.get("Registration", {}).get("ExpirationDate"),
+            "domaintoolsriskscorecomponents": {
+                key: domaintools_analytics_data.get(val, "")
+                for key, val in riskscore_component_mapping.items()
+            },
         }
-        demisto.executeCommand("createNewIndicator", demisto_indicator)
+
+        demisto.info(
+            f"Creating new domaintools iris indicator: {domaintools_iris_indicator}")
+        demisto.executeCommand("createNewIndicator",
+                               domaintools_iris_indicator)
 
         human_readable_str = "Data for {} enriched.".format(domain_name)
 

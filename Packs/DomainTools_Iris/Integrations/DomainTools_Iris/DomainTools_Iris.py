@@ -222,6 +222,9 @@ def create_domain_context_outputs(domain_result):
     domain_status = domain_result.get('active')
 
     proximity_risk_score = 0
+    threat_profile_malware_riskscore = 0
+    threat_profile_phishing_risk_score = 0
+    threat_profile_spam_risk_score = 0
     threat_profile_risk_score = 0
     threat_profile_threats = ''
     threat_profile_evidence = ''
@@ -240,6 +243,16 @@ def create_domain_context_outputs(domain_result):
             threat_profile_risk_score = threat_profile_data.get('risk_score')
             threat_profile_threats = threat_profile_data.get('threats')
             threat_profile_evidence = threat_profile_data.get('evidence')
+
+        threat_profile_malware = utils.get_threat_component(risk_components, "threat_profile_malware")
+        if threat_profile_malware:
+            threat_profile_malware_riskscore = threat_profile_malware.get("risk_score")
+        threat_profile_phishing = utils.get_threat_component(risk_components, "threat_profile_phishing")
+        if threat_profile_phishing:
+            threat_profile_phishing_risk_score = threat_profile_phishing.get("risk_score")
+        threat_profile_spam = utils.get_threat_component(risk_components, "threat_profile_spam")
+        if threat_profile_spam:
+            threat_profile_spam_risk_score = threat_profile_spam.get("risk_score")
 
     website_response = domain_result.get('website_response')
     google_adsense = domain_result.get('adsense')
@@ -286,6 +299,9 @@ def create_domain_context_outputs(domain_result):
         'Analytics': {
             'OverallRiskScore': overall_risk_score,
             'ProximityRiskScore': proximity_risk_score,
+            'MalwareRiskScore': threat_profile_malware_riskscore,
+            'PhishingRiskScore': threat_profile_phishing_risk_score,
+            'SpamRiskScore': threat_profile_spam_risk_score,
             'ThreatProfileRiskScore': {'RiskScore': threat_profile_risk_score,
                                        'Threats': threat_profile_threats,
                                        'Evidence': threat_profile_evidence},
