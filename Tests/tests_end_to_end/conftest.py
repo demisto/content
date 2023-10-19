@@ -1,7 +1,7 @@
 import json
 import os
 from typing import Dict
-
+import logging
 import pytest
 
 from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (
@@ -67,10 +67,10 @@ def xsiam_client(request) -> XsiamApiClient:
 @pytest.fixture(scope="module")
 def xsoar_ng_client(request) -> XsoarNGApiClient:
     xsoar_ng_url, api_key, api_key_id = get_cloud_machine_credentials(request)
-
     xsoar_client_config = XsoarApiClientConfig(
         base_url=xsoar_ng_url,
         api_key=api_key,
         auth_id=api_key_id
     )
+    logging.info(f'{xsoar_client_config.base_url=}')
     return XsoarNGApiClient(xsoar_client_config)

@@ -70,7 +70,7 @@ class TestEDL:
         from requests.auth import HTTPBasicAuth
 
         instance_name = create_instance
-        url = f'{xsoar_ng_client.external_base_url}/xsoar/instance/execute/{instance_name}'
+        url = f'{xsoar_ng_client.external_base_url}/instance/execute/{instance_name}'
 
         basic_auth = HTTPBasicAuth(integration_params["credentials"]["identifier"], integration_params["credentials"]["password"])
         response = requests.get(url, auth=basic_auth)

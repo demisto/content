@@ -346,6 +346,7 @@ class TestCollector(ABC):
         """
 
     def collect(self) -> CollectionResult | None:
+        logger.info(f'Collecting using class {self}')
         result: CollectionResult | None = self._collect()
 
         if not result:
@@ -1351,7 +1352,8 @@ class XSOARNGEndToEndTestCollector(TestCollector):
     def _collect(self) -> CollectionResult | None:
 
         collected_packs = []
-        for pack in ("TAXIIServer", "EDL", "QRadar", "Slack"):
+        packs = ("TAXIIServer", "EDL", "QRadar", "Slack")
+        for pack in packs:
             collected_packs.append(
                 CollectionResult(
                     test=None,
@@ -1366,6 +1368,7 @@ class XSOARNGEndToEndTestCollector(TestCollector):
                     only_to_install=True
                 )
             )
+        logger.info(f'Collected {packs} for the xsoar-end-to-end-job')
         return CollectionResult.union(collected_packs)
 
 
