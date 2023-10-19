@@ -238,7 +238,7 @@ tasks:
       id: d3007e79-c33c-4f6f-83f3-e7ee98dfb3b2
       version: -1
       name: Build ServiceNow query - description
-      description: Set the beginning of a key used for querying ServiceNow using SN descriptions and a timestamp.
+      description: Set the beginning of a key used for querying ServiceNow using ServiceNow descriptions and a timestamp.
       scriptName: Set
       type: regular
       iscommand: false
@@ -299,7 +299,7 @@ tasks:
       id: 962733bf-859d-4823-8d39-478d4fb092e8
       version: -1
       name: Build ServiceNow query - short description
-      description: Set the remaining query value with SN short descriptions for querying ServiceNow.
+      description: Set the remaining query value with ServiceNow short descriptions for querying ServiceNow.
       scriptName: Set
       type: regular
       iscommand: false
@@ -363,7 +363,7 @@ tasks:
       id: 449135ee-dbef-48c5-8e00-597ce6f55cf0
       version: -1
       name: Were search terms provided?
-      description: Conditional to check if values were provided to the search terms input or not.
+      description: Check if values were provided to the search terms input or not.
       type: condition
       iscommand: false
       brand: ""
@@ -407,7 +407,7 @@ tasks:
       id: c9c5b720-7cd3-406e-8a2e-3af77876dc8b
       version: -1
       name: Were any assignees found?
-      description: Conditional to check if any assignees were found in the assigned_to property of retrieved ServiceNow tickets.
+      description: Check if any assignees were found in the assigned_to property of retrieved ServiceNow tickets.
       type: condition
       iscommand: false
       brand: ""
@@ -526,7 +526,7 @@ inputs:
 - key: search_terms
   value: {}
   required: true
-  description: Search terms to be used in the ServiceNow ITSM query search
+  description: Search terms to be used in the ServiceNow ITSM query search.
   playbookInputQuery:
 outputs: []
 fromversion: 6.8.0
