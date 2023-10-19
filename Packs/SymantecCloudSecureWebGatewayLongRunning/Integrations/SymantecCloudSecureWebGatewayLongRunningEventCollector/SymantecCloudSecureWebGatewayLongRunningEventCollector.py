@@ -230,7 +230,7 @@ def extract_logs_from_response(file_path: Path) -> list[bytes]:
                             nested_zip_file, "rb"
                         ) as f:
                             demisto.debug("test test test")
-                            chunk_size = (1024 ** 2) * 500
+                            chunk_size = (1024 ** 2) * 200
                             end_part: bytes
                             while True:
                                 parts = f.read(chunk_size)
