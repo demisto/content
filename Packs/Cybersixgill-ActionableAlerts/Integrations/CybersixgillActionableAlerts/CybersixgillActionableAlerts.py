@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-
 import json
 import copy
 import requests
@@ -36,20 +35,42 @@ TO_DEMISTO_STATUS = {
 }
 VERIFY = not demisto.params().get("insecure", True)
 SESSION = requests.Session()
+NORMALIZED_CONTEXT_KEYS = ["Actor", "BIN", "breach_date", "Date", "email", "Field", "Full_number",
+                           "hash_type", "host", "host_domain", "stealer_malware", "name",
+                           "Nameservers", "password", "Registrar", "Site", "Text", "Value"]
+NON_NORMALIZED_CONTEXT_KEYS_MAPPING = {
+    'Additional Keywords': 'AdditionalKeywords',
+    'Customer Keywords': 'CustomerKeywords',
+    'Detection time': 'DetectionTime',
+    'Domain Creation Date': 'DomainCreationDate',
+    'Domain Status': 'DomainStatus',
+    'IP Addresses': 'IPAddresses',
+    'MX servers': 'MXServers',
+    'Name Servers': 'NameServers',
+    'Repository name': 'RepositoryName',
+    'Repository owner URL': 'RepositoryOwnerURL',
+    'Repository url': 'RepositoryUrl',
+    'Rogue MX host detection': 'RogueMXHostDetection',
+    'Suspicious domain': 'SuspiciousDomain',
+    'Triggered domain': 'TriggeredDomain',
+}
+CONTEXT_KEYS = {k: k for k in NORMALIZED_CONTEXT_KEYS}
+CONTEXT_KEYS.update(NON_NORMALIZED_CONTEXT_KEYS_MAPPING)
 
 ''' HELPER FUNCTIONS '''
 
 
 def get_incident_init_params():
+    params = demisto.params()
     params_dict = {
-        'threat_level': demisto.params().get('threat_level', None),
-        'threat_type': demisto.params().get('threat_type', None)
+        'threat_level': params.get('threat_level', None),
+        'threat_type': params.get('threat_type', None)
     }
     return {param_k: param_v for param_k, param_v in params_dict.items() if param_v}
 
 
 def item_to_incidents(item_info, sixgill_alerts_client):
-    incident: Dict[str, Any] = {}
+    incident: dict[str, Any] = {}
     incidents = []
     items = []
     # get fields that are shared in case of sub alerts
@@ -124,6 +145,7 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
 
 def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
     # cve alert
+    params = demisto.params()
     cve_id = item_info.get('additional_info').get('cve_id')
     es_id = item_info.get('es_id')
     if cve_id:
@@ -144,7 +166,7 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
     elif es_id == "Not Applicable":
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
                                                                      fetch_only_current_item=True,
-                                                                     organization_id=demisto.params().get('org_id', None))
+                                                                     organization_id=params.get('org_id', None))
         content_items = content.get('items')
         if content_items:
             for item in content_items:
@@ -179,7 +201,7 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
         content = sixgill_alerts_client.get_actionable_alert_content(actionable_alert_id=item_info.get('id'),
                                                                      aggregate_alert_id=aggregate_alert_id,
                                                                      fetch_only_current_item=True,
-                                                                     organization_id=demisto.params().get('org_id', None))
+                                                                     organization_id=params.get('org_id', None))
         # get item full content
         content = content.get('items', None)
         if content and content[0].get('_id'):
@@ -197,8 +219,9 @@ def test_module():
     """
     Performs basic Auth request
     """
-    response = SESSION.send(request=SixgillAuthRequest(demisto.params()['client_id'],
-                                                       demisto.params()['client_secret'],
+    params = demisto.params()
+    response = SESSION.send(request=SixgillAuthRequest(params['client_id'],
+                                                       params['client_secret'],
                                                        CHANNEL_CODE).prepare(), verify=VERIFY)
     if not response.ok:
         raise Exception("Auth request failed - please verify client_id, and client_secret.")
@@ -206,25 +229,26 @@ def test_module():
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
+    params = demisto.params()
 
     if 'last_fetch_time' in last_run:
         last_fetch_time = last_run['last_fetch_time']
         demisto.info(f'Found last run, fetching new alerts from {last_fetch_time}')
     else:
-        days_back = int(demisto.params().get('first_fetch_days', DEFAULT_DAYS_BACK))
+        days_back = int(params.get('first_fetch_days', DEFAULT_DAYS_BACK))
         if days_back > MAX_DAYS_BACK:
             demisto.info(f'Days back({days_back}) is larger than the maximum, setting to {MAX_DAYS_BACK}')
             days_back = MAX_DAYS_BACK
         last_fetch_time = (datetime.now() - timedelta(days=days_back)).strftime(DATETIME_FORMAT)
         demisto.info(f'First run, fetching alerts from {last_fetch_time}')
 
-    max_incidents_to_return = int(demisto.params().get('max_fetch', DEFAULT_INCIDENTS))
+    max_incidents_to_return = int(params.get('max_fetch', DEFAULT_INCIDENTS))
     if max_incidents_to_return > MAX_INCIDENTS:
         demisto.info(f'Max incidents({max_incidents_to_return}) is larger than the maximum, setting to {MAX_INCIDENTS}')
         max_incidents_to_return = MAX_INCIDENTS
 
-    sixgill_alerts_client = SixgillActionableAlertClient(client_id=demisto.params()['client_id'],
-                                                         client_secret=demisto.params()['client_secret'],
+    sixgill_alerts_client = SixgillActionableAlertClient(client_id=params['client_id'],
+                                                         client_secret=params['client_secret'],
                                                          channel_id=CHANNEL_CODE,
                                                          logger=demisto,
                                                          session=SESSION,
@@ -234,7 +258,7 @@ def fetch_incidents():
     filter_alerts_kwargs = get_incident_init_params()
     items = sixgill_alerts_client.get_actionable_alerts_bulk(limit=max_incidents_to_return, from_date=last_fetch_time,
                                                              sort_order='asc', **filter_alerts_kwargs,
-                                                             organization_id=demisto.params().get('org_id', None))
+                                                             organization_id=params.get('org_id', None))
     if len(items) > 0:
         demisto.info(f'Found {len(items)} new alerts since {last_fetch_time}')
 
@@ -244,7 +268,7 @@ def fetch_incidents():
         for item in items:
             try:
                 item_info = sixgill_alerts_client.get_actionable_alert(actionable_alert_id=item.get('id'),
-                                                                       organization_id=demisto.params().get('org_id', None))
+                                                                       organization_id=params.get('org_id', None))
                 item_info['date'] = item.get('date')
                 new_incidents = item_to_incidents(item_info, sixgill_alerts_client)
                 incidents.extend(new_incidents)
@@ -273,6 +297,7 @@ def update_alert_status():
     Updates the actionable alert status.
     """
     args = demisto.args()
+    params = demisto.params()
     alert_status = args.get('alert_status')
     alert_id = args.get('alert_id')
     aggregate_alert_id = args.get('aggregate_alert_id')
@@ -285,8 +310,8 @@ def update_alert_status():
         }
     }
 
-    sixgill_alerts_client = SixgillActionableAlertClient(client_id=demisto.params()['client_id'],
-                                                         client_secret=demisto.params()['client_secret'],
+    sixgill_alerts_client = SixgillActionableAlertClient(client_id=params['client_id'],
+                                                         client_secret=params['client_secret'],
                                                          channel_id=CHANNEL_CODE,
                                                          logger=demisto,
                                                          session=SESSION,
@@ -294,10 +319,61 @@ def update_alert_status():
 
     res = sixgill_alerts_client.update_actionable_alert(actionable_alert_id=alert_id, json_body=alert_body,
                                                         sub_alert_indexes=aggregate_alert_id,
-                                                        organization_id=demisto.params().get('org_id', None))
+                                                        organization_id=params.get('org_id', None))
 
     if res.get('status') == 200:
         demisto.results("Actionable alert status updated")
+
+
+def cybersixgill_get_context() -> list[Optional[CommandResults]] | None:
+    try:
+        args = demisto.args()
+        params = demisto.params()
+        alert_id = args.get('alert_id')
+        sixgill_alerts_client = SixgillActionableAlertClient(
+            client_id=params['client_id'],
+            client_secret=params['client_secret'],
+            channel_id=CHANNEL_CODE,
+            logger=demisto,
+            session=SESSION,
+            verify=VERIFY,
+            num_of_attempts=3
+        )
+        final_context: list[Optional[CommandResults]] = []
+        alert = sixgill_alerts_client.get_actionable_alert(
+            actionable_alert_id=alert_id, organization_id=params.get('org_id', None))
+        if "additional_info" in alert and "tables" in alert["additional_info"]:
+            tables = alert["additional_info"]["tables"]
+            table = tables[0] if tables else {}
+            headers = table.get("headers", [])
+            rows = table.get("values", [])
+            if not headers or not rows:
+                return None
+            build_alert_context(final_context, rows, headers=headers)
+        elif "es_item" in alert and "leaks" in alert["es_item"]:
+            build_alert_context(final_context, alert["es_item"]["leaks"])
+        else:
+            demisto.info("No context to add")
+        return final_context
+    except Exception as ex:
+        demisto.error(ex)
+        return None
+
+
+def build_alert_context(final_context, alert_items, headers=None, prefix="Cybersixgill"):
+    for alert_item in alert_items:
+        context_item = {}
+        alert_obj = zip(headers, alert_item) if headers else alert_item.items()
+        for k, v in alert_obj:
+            key = CONTEXT_KEYS.get(k)
+            if key is None:
+                continue
+            context_item[key] = v
+        if context_item:
+            final_context.append(CommandResults(
+                outputs_prefix=prefix,
+                outputs=context_item,
+            ))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -316,6 +392,8 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
 
         elif command == "cybersixgill-update-alert-status":
             update_alert_status()
+        elif command == "cybersixgill-enrich-context":
+            return_results(results=cybersixgill_get_context())
 
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")

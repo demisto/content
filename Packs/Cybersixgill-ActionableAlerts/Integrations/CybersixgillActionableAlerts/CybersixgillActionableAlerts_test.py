@@ -249,6 +249,133 @@ expected_alert_output_es_id_na = {
     "user_id": "5d233575f8db38787dbe24b6",
 }
 
+sample_context_data_alert = {
+    "actor_information": {},
+    "additional_info": {
+        "aliases_reference": [
+            "brand",
+            "BRAND"
+        ],
+        "assets_counter": {},
+        "brand": "BRAND",
+        "discover_time": "04-10-2023 07:23:51 UTC",
+        "excluded_assets": {},
+        "ip": "34.xxx.xx.xxx",
+        "organization_reference": "Brand",
+        "tables": [
+            {
+                "headers": [
+                    "Field",
+                    "Value"
+                ],
+                "table_description": "Phishing Site Info",
+                "values": [
+                    [
+                        "URL",
+                        "http://#####[.]xxxx[.]com/tsatt"
+                    ],
+                    [
+                        "IP",
+                        "34.xx.xx.xx"
+                    ],
+                    [
+                        "Brand",
+                        "AT&T"
+                    ],
+                    [
+                        "Sector",
+                        "N/A"
+                    ],
+                    [
+                        "Discover time",
+                        "xx-10-xxxx 07:23:51 UTC"
+                    ],
+                    [
+                        "ASN name",
+                        "xxx LLC"
+                    ],
+                    [
+                        "ASN",
+                        "AS396982"
+                    ],
+                    [
+                        "Host",
+                        "****.####.com"
+                    ],
+                    [
+                        "Country Code",
+                        "US"
+                    ],
+                    [
+                        "Country Name",
+                        "United States of America"
+                    ],
+                    [
+                        "TLD",
+                        "com"
+                    ],
+                    [
+                        "Phishing Kit",
+                        "N/A"
+                    ],
+                    [
+                        "Emails",
+                        "N/A"
+                    ]
+                ]
+            }
+        ],
+        "url": "http://####[.]xxxx[.]com/tsatt",
+        "vendor": "Sixgill"
+    },
+    "alert_id": "5ecb50d55b6b38357xxxxxx",
+    "alert_name": "OpenPhishPhishingAlertRule",
+    "alert_type": "OpenPhishPhishingAlertRule",
+    "assessment": "Customer credentials and data may be compromised.",
+    "asset_information": {},
+    "available_services": [
+        "information",
+        "takedown"
+    ],
+    "category": "regular",
+    "content_type": "tables_item",
+    "create_time": "2023-10-04 08:15:05",
+    "description": "The phishing page http://######[.]xxxxxxx[.]com/tsatt is actively targeting Brand customers.",
+    "es_item": {
+        "content": "URL: http://#####[.]xxxxxx[.]com/tsatt\nIP: 34.xx.xx.xxx\nBrand: AT&T\nSector: N/A",
+        "date": "2023-10-04T08:15:05",
+        "rep_grade": 1
+    },
+    "id": "hnl32hkjh32jk32hjk3ff",
+    "iq_information": {},
+    "is_deleted": False,
+    "read": False,
+    "recommendations": [
+        "Understand if the phishing page has been used in phishing campaigns against Brand customers.",
+        "Request takedown of the page.",
+        "Monitor customer accounts for suspicious behavior."
+    ],
+    "severity": 10,
+    "site_information": {},
+    "status": {
+        "name": "treatment_required"
+    },
+    "summary": "",
+    "template_id": "OpenPhishPhishingAlertRule",
+    "threat_level": "imminent",
+    "threats": [
+        "Phishing"
+    ],
+    "title": "An active phishing page is targeting Brand",
+    "trigger_actions": [],
+    "update_time": "2023-10-04 10:29:50",
+    "user_id": "vhjek32bnk5b2jrl43r4klbkj4m"
+}
+
+sample_context_data_alert_leaks = copy.deepcopy(sample_context_data_alert)
+del sample_context_data_alert_leaks["additional_info"]
+sample_context_data_alert_leaks["es_item"]["leaks"] = {}
+
 
 class MockedResponse:
     def __init__(self, status_code):
@@ -467,3 +594,91 @@ def test_get_alert_content_es_id_na(mocker):
     )
     assert alert_content is None
     assert incident == expected_alert_output_es_id_na
+
+
+def test_cybersixgill_get_context_fail(mocker):
+    mocker.patch.object(demisto, "params", return_value=init_params())
+    from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
+
+    mocker.patch.object(
+        SixgillActionableAlertClient,
+        "get_actionable_alert",
+        return_value=get_info_item(),
+    )
+
+    from CybersixgillActionableAlerts import cybersixgill_get_context
+
+    response = cybersixgill_get_context()
+    assert response == []
+
+
+def test_cybersixgill_get_context_additional_info(mocker):
+    mocker.patch.object(demisto, "params", return_value=init_params())
+    from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
+    from CommonServerPython import CommandResults
+
+    mocker.patch.object(
+        SixgillActionableAlertClient,
+        "get_actionable_alert",
+        return_value=sample_context_data_alert,
+    )
+
+    from CybersixgillActionableAlerts import cybersixgill_get_context, CONTEXT_KEYS
+
+    response = cybersixgill_get_context()
+    assert isinstance(response, list)
+    assert all(isinstance(item, CommandResults) for item in response)
+    assert all(item.outputs_prefix == "Cybersixgill" for item in response)
+    for item in response:
+        keys = item.outputs.keys()
+        for key in keys:
+            assert key in CONTEXT_KEYS
+
+
+def test_cybersixgill_get_context_leaks(mocker):
+    mocker.patch.object(demisto, "params", return_value=init_params())
+    from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
+
+    mocker.patch.object(
+        SixgillActionableAlertClient,
+        "get_actionable_alert",
+        return_value=sample_context_data_alert_leaks,
+    )
+
+    from CybersixgillActionableAlerts import cybersixgill_get_context
+
+    response = cybersixgill_get_context()
+    assert response == []
+
+
+def test_cybersixgill_get_context_exception(mocker):
+    mocker.patch.object(demisto, "params", return_value=init_params())
+    from sixgill.sixgill_actionable_alert_client import SixgillActionableAlertClient
+
+    mocker.patch.object(
+        SixgillActionableAlertClient,
+        "get_actionable_alert",
+        return_value={},
+    )
+
+    from CybersixgillActionableAlerts import cybersixgill_get_context
+
+    response = cybersixgill_get_context()
+    assert response == []
+
+
+def test_build_alert_context(mocker):
+    mocker.patch.object(demisto, "params", return_value=init_params())
+    from CybersixgillActionableAlerts import build_alert_context, CONTEXT_KEYS
+    from CommonServerPython import CommandResults
+
+    out = []
+    header = sample_context_data_alert["additional_info"]["tables"][0]["headers"]
+    rows = sample_context_data_alert["additional_info"]["tables"][0]["values"]
+    build_alert_context(out, rows, headers=header)
+    assert all(isinstance(item, CommandResults) for item in out)
+    assert all(item.outputs_prefix == "Cybersixgill" for item in out)
+    for item in out:
+        keys = item.outputs.keys()
+        for key in keys:
+            assert key in CONTEXT_KEYS

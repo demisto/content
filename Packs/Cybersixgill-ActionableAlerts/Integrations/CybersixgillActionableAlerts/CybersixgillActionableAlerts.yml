@@ -11,29 +11,34 @@ configuration:
   required: true
   type: 0
   section: Connect
+  additionalinfo: client ID for Cybersixgill Alerts API
 - display: Cybersixgill API client secret
   name: client_secret
   required: true
   type: 4
   section: Connect
+  additionalinfo: client secret for Cybersixgill Alerts API
 - display: Cybersixgill Organization ID
   name: org_id
   type: 0
   defaultvalue: ''
   section: Connect
   required: false
+  additionalinfo: Organization ID for Cybersixgill Alerts API
 - defaultvalue: '25'
   display: Maximum number of incidents to fetch - maximum is 25
   name: max_fetch
   type: 0
   section: Collect
   required: false
+  additionalinfo: Maximum number of incidents to fetch - maximum is 25
 - defaultvalue: '1'
   display: How many days back to fetch incidents on the first run - maximum is 30
   name: first_fetch_days
   type: 0
   section: Collect
   required: false
+  additionalinfo: How many days back to fetch incidents on the first run - maximum is 30
 - display: Filter by alert threat level
   name: threat_level
   options:
@@ -43,6 +48,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo:
 - display: Filter by alert threat type
   name: threat_type
   options:
@@ -62,12 +68,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Filter by alert threat type
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
   required: false
+  additionalinfo: Use system proxy settings
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -98,7 +106,7 @@ display: Cybersixgill Actionable Alerts
 name: Cybersixgill_Actionable_Alerts
 script:
   commands:
-  - description: updates the existing actionable alert status
+  - description: updates the existing actionable alert status.
     name: cybersixgill-update-alert-status
     arguments:
     - required: true
@@ -109,7 +117,113 @@ script:
       name: alert_status
     - description: The aggregate alert id.
       name: aggregate_alert_id
-  dockerimage: demisto/sixgill:1.0.0.77671
+  - description: Fetch and add context Data for certain alert types.
+    name: cybersixgill-enrich-context
+    arguments:
+    - required: true
+      description: The alert id to fetch context.
+      name: alert_id
+    outputs:
+    - contextPath: Cybersixgill.Actor
+      description: Actor for Compromised CC alert.
+      type: string
+    - contextPath: Cybersixgill.AdditionalKeywords
+      description: Additional keywords for Github alert.
+      type: string
+    - contextPath: Cybersixgill.BIN
+      description: BIN for Compromised CC alert.
+      type: string
+    - contextPath: Cybersixgill.BreachDate
+      description: Breach Date for Credentials leak alert.
+      type: string
+    - contextPath: Cybersixgill.CustomerKeywords
+      description: Customer Keywords for Github alert.
+      type: string
+    - contextPath: Cybersixgill.Date
+      description: Date for Compromised CC alert.
+      type: string
+    - contextPath: Cybersixgill.DetectionTime
+      description: Detection time for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.DomainCreationDate
+      description: Domain creation date for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.DomainStatus
+      description: Domain status for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.Email
+      description: Email ID for Credentials leak alert.
+      type: string
+    - contextPath: Cybersixgill.Full_number
+      description: Full CC number for Compromised CC alert.
+      type: string
+    - contextPath: Cybersixgill.Hash
+      description: Password hash for Credentials leak alert.
+      type: string
+    - contextPath: Cybersixgill.Host
+      description: Host for Credentials leak alert.
+      type: string
+    - contextPath: Cybersixgill.HostDomain
+      description: Host Domain for Credentials leak alert.
+      type: string
+    - contextPath: Cybersixgill.IPAddresses
+      description: IPAddresses for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.MXServers
+      description: MX Servers for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.Malware
+      description: Malware for Credentials leak alert.
+      type: string
+    - contextPath: Cybersixgill.Name
+      description: Name for Credentials leak alert.
+      type: string
+    - contextPath: Cybersixgill.NameServers
+      description: Name Servers for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.Nameservers
+      description: Name Servers for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.Password
+      description: Password for Credentials leak alert.
+      type: string
+    - contextPath: Cybersixgill.Registrar
+      description: Registrar for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.RepositoryName
+      description: Repository name for Github alert.
+      type: string
+    - contextPath: Cybersixgill.RepositoryOwnerURL
+      description: Repositor Owner URL for Github alert.
+      type: string
+    - contextPath: Cybersixgill.RepositoryUrl
+      description: Repository URL for Github alert.
+      type: string
+    - contextPath: Cybersixgill.RogueMXHostDetection
+      description: Rogue MX hosts detection for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.Site
+      description: Site for Compromised CC alert.
+      type: string
+    - contextPath: Cybersixgill.SuspiciousDomain
+      description: Suspicious domain for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.Text
+      description: The actual post text for Compromised CC alert.
+      type: string
+    - contextPath: Cybersixgill.TriggeredDomain
+      description: domain that tirggered the Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.IPAddresses
+      description: IP Addresses for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.DetectionTime
+      description: Detection time for Phishing alert.
+      type: string
+    - contextPath: Cybersixgill.MXServers
+      description: MX Servers for Phishing alert.
+      type: string
+  dockerimage: demisto/sixgill:1.0.0.78354
   isfetch: true
   runonce: false
   script: '-'

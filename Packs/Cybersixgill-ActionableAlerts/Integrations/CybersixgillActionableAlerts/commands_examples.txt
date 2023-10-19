@@ -1,0 +1,3 @@
+!cybersixgill-update-alert-status alert_id=6524d72be6ee01241b57a579 alert_status=in_treatment
+!cybersixgill-update-alert-status alert_id=6524d72be6ee01241b57a579 alert_status=resolved aggregate_alert_id=0
+!cybersixgill-enrich-context alert_id=6524d72be6ee01241b57a579
