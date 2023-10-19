@@ -70,6 +70,39 @@ configuration:
   defaultvalue: 500
   additionalinfo: When a small set of domains share an attribute (e.g. registrar), that can often be pivoted on in order to find other similar domains of interest. DomainTools tracks how many domains share each attribute and can highlight it for further investigation when the number of domains is beneath the set threshold.
   type: 1
+- display: 'Enabled on Monitoring Domains by Iris Search Hash'
+  name: monitor_iris_search_hash
+  defaultvalue: Import Indicators Only
+  type: 15
+  required: false
+  options:
+  - Import Indicators Only
+  - Create Incident and Import Indicators
+- display: Domaintools Iris Investigate Search Hash
+  name: domaintools_iris_search_hash
+  type: 12
+  required: false
+  additionalinfo: The DomainTools Iris Investigate Search hash
+- display: 'Enabled on Monitoring Domains by Iris Tags'
+  name: monitor_iris_tags
+  defaultvalue: Import Indicators Only
+  type: 15
+  required: false
+  options:
+  - Import Indicators Only
+  - Create Incident and Import Indicators
+- display: Domaintools Iris Tags
+  name: domaintools_iris_tags
+  type: 12
+  required: false
+  additionalinfo: The DomainTools Iris Tags (Values should be a comma separated value. e.g. (tag1,tag2))
+- display: Maximum number of incidents to fetch
+  defaultvalue: '2'
+  hidden: true
+  name: max_fetch
+  required: false
+  type: 0
+  additionalinfo: This is a required field by XSOAR and should be set to 2, one for each possible feed type iris search hash and iris tags.
 description: A threat intelligence and investigation platform for domain names, IP
   addresses, email addresses, name servers and so on.
 display: DomainTools Iris
@@ -1812,7 +1845,6 @@ script:
     - contextPath: DomainTools.Pivots.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code Google Analytics.
       type: Number
-
   - arguments:
       - default: true
         description: A domain name to query (e.g. example.com)
@@ -1890,7 +1922,6 @@ script:
         description: Domain Nameserver history data
       - contextPath: DomainTools.RegistrarHistory
         description: Domain Registrar history data
-
   - arguments:
       - default: true
         description: (mandatory and default) List of one or more terms to search for
@@ -1919,7 +1950,6 @@ script:
         required: true
     description: The DomainTools Domain Profile API provides basic domain name registration details and a preview of additional data available from DomainTools classic products.
     name: domainProfile
-
   - arguments:
       - default: true
         description: A domain name or IP address (e.g. example.com or 192.168.1.1)
@@ -1932,7 +1962,6 @@ script:
         description: Requested domain name
       - contextPath: Domain.Whois
         description: Whois data
-
   - arguments:
     description: Reverse loopkup of an IP address
     name: reverseIP
@@ -1940,7 +1969,7 @@ script:
     description: Reverse nameserver lookup
     name: reverseNameServer
   dockerimage: 793789081071.dkr.ecr.us-west-2.amazonaws.com/domaintools/demisto:1.0
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
