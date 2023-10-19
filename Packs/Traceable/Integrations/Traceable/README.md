@@ -1,4 +1,4 @@
-Traceable Platform Integration enables publishing Traceable Detected Security Events to be published to Cortex Xsoar for further action.
+Traceable Platform Integration enables publishing Traceable Detected Security Events to be published to Cortex XSOAR for further action.
 
 ## Configure Traceable on Cortex XSOAR
 
@@ -17,7 +17,7 @@ Traceable Platform Integration enables publishing Traceable Detected Security Ev
     | Max number of records to fetch per API call to Traceable API Endpoint | False |
     | Number of span queries to run in parallel | False |
     | Max spans per thread (1 to 1000) | False |
-    | Comma Separated Environment List To Process | False |
+    | Comma-Separated Environment List To Process | False |
     | Security Score Category | False |
     | Threat Category | False |
     | IP Reputation Level | False |
@@ -56,8 +56,8 @@ List the entries present in the Traceable instance cache.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Traceable.Instancecache.id | string | Cache entry id. | 
-| Traceable.Instancecache.expiry | date | Cache entry expire date. | 
+| Traceable.Instancecache.id | string | Cache entry ID. | 
+| Traceable.Instancecache.expiry | date | Cache entry expiration date. | 
 
 ### purge_incident_cache
 
@@ -77,6 +77,6 @@ Delete all entries in the incident cache.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Traceable.Instancecache.id | string | Cache entry id. | 
-| Traceable.Instancecache.expiry | date | Cache entry expire date. | 
+| Traceable.Instancecache.id | string | Cache entry ID. | 
+| Traceable.Instancecache.expiry | date | Cache entry expiration date. | 
 | Traceable.Instancecache.deletion_status | string | Cache entry deletion status. | 
