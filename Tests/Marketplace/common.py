@@ -241,7 +241,7 @@ def send_api_request_with_retries(
                 if not attempts_left:
                     raise Exception(err)
 
-                logging.warning(err)
+                logging.info(f"Got error: {err}")
 
             except ApiException as ex:
                 if api_exception_handler:

@@ -356,6 +356,7 @@ def delete_datasets(dataset_names, base_url, api_key, auth_id):
         if response is not None and response.status_code == DATASET_NOT_FOUND_ERROR_CODE:
             logging.info(f"Failed to delete dataset, probably it is not exist on the machine.")
             return False
+        logging.info(f"Got here {response=}.")
         return True
 
     success = True
