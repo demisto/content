@@ -513,7 +513,7 @@ class Client(BaseClient):
 
     def get_span_for_trace_id(self, starttime, endtime, traceid=None, spanid=None):
         demisto.info(f"get_span_for_trace_id: Starting span query for traceid {traceid} and spanid {spanid}")
-        if (spanid is None or (type(spanid) is list and len(spanid) == 0)):
+        if not spanid:
             msg = f"spanid cannot be None. Will not query span for the span list: {spanid}"
             demisto.info(msg)
             return None
@@ -683,13 +683,13 @@ class Client(BaseClient):
                 span_id = domain_event["spanId"]["value"]
                 if (
                     "apiId" in domain_event
-                    and domain_event["apiId"] is not None
-                    and domain_event["apiId"] != "null"
-                    and domain_event["apiId"] != ""
-                    and "value" in domain_event["apiId"]
-                    and domain_event["apiId"]["value"] is not None
-                    and domain_event["apiId"]["value"] != "null"
-                    and domain_event["apiId"]["value"] != ""
+                    and domain_event.get("apiId")
+                    and domain_event.get("apiId") != "null"
+                    and domain_event.get("apiId") != ""
+                    and "value" in domain_event.get("apiId")
+                    and domain_event.get("apiId", {}).get("value")
+                    and domain_event.get("apiId", {}).get("value") != "null"
+                    and domain_event.get("apiId", {}).get("value") != ""
                 ):
                     api_id_map[domain_event["apiId"]["value"]] = True
 
@@ -729,10 +729,11 @@ class Client(BaseClient):
                 if len(trace_results["data"]["spans"]["results"]) > 0:
                     traces = trace_results["data"]["spans"]["results"]
                     for trace in traces:
-                        if ("id" in trace
-                            and trace["id"] is not None
-                            and trace["id"] != ""
-                                and trace["id"] not in span_id_map):
+                        if (
+                            "id" in trace
+                            and trace.get("id") != ""
+                            and trace.get("id") not in span_id_map
+                        ):
                             span_id_map[trace["id"]] = trace
                 else:
                     demisto.info("Didn't find any spans. Span array length:"
@@ -755,12 +756,11 @@ class Client(BaseClient):
         for domain_event in results:
             if (
                 "spanId" in domain_event
-                    and "value" in domain_event["spanId"]
-                    and domain_event["spanId"]["value"] is not None
-                    and domain_event["spanId"]["value"] != ""
-                    and domain_event["spanId"]["value"] in span_id_map
+                and "value" in domain_event.get("spanId")
+                and domain_event.get("spanId", {}).get("value") != ""
+                and domain_event.get("spanId", {}).get("value") in span_id_map
             ):
-                domain_event["spans"] = span_id_map[domain_event["spanId"]["value"]]
+                domain_event["spans"] = span_id_map.get(domain_event.get("spanId").get("value"))
             demisto.info("Done waiting for the future object...")
             domain_event["type"] = "Exploit"
             if (
