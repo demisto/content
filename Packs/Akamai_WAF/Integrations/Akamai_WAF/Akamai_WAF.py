@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa: F401
 import re
 from datetime import datetime
 import time
-import dateutil.parser
 # 3-rd party imports
 import requests
 import urllib3
@@ -1902,7 +1901,7 @@ class Client(BaseClient):
                                   headers={"accept": "application/json"},
                                   )
 
-    def list_cidr_blocks(self, effective_date_gt: Optional[datetime], last_action: str = '') -> dict:
+    def list_cidr_blocks(self, effective_date_gt: str = '', last_action: str = '') -> dict:
         """
             List all CIDR blocks for all services you are subscribed to.
             To see additional CIDR blocks, subscribe yourself to more services and run this operation again
@@ -1957,8 +1956,8 @@ class Client(BaseClient):
     def update_cps_enrollment(self,
                               enrollment_id: str,
                               updates: dict,
-                              deploy_not_after: Optional[datetime],
-                              deploy_not_before: Optional[datetime],
+                              deploy_not_after: str = '',
+                              deploy_not_before: str = '',
                               allow_cancel_pending_changes: str = 'true',
                               allow_staging_bypass: str = 'true',
                               force_renewal: str = 'true',
@@ -2023,11 +2022,11 @@ class Client(BaseClient):
                                   )
 
     def update_cps_enrollment_schedule(self,
-                                       deploy_not_before: datetime,
+                                       deploy_not_before: str,
                                        enrollment_path: str = '',
                                        enrollment_id: str = '',
                                        change_id: str = '',
-                                       deploy_not_after: Optional[datetime] = None,
+                                       deploy_not_after: Optional[str] = '',
                                        ) -> dict:
         """
             Returns the enrollment change path.
@@ -2951,24 +2950,6 @@ def list_siteshield_maps_ec(raw_response: dict) -> tuple[list, list]:
     return entry_context, human_readable
 
 
-def list_cidr_blocks_ec(raw_response: dict) -> tuple[list, list]:
-    """
-        Parse siteshield map
-
-    Args:
-        raw_response:
-
-    Returns:
-        List of site shield maps
-    """
-    entry_context = []
-    human_readable = []
-    if raw_response:
-        entry_context.append(raw_response.get('cidrBlocks'))
-        human_readable.append(raw_response.get('cidrBlocks'))
-    return entry_context, human_readable
-
-
 def update_cps_enrollment_ec(raw_response: dict) -> tuple[list, list]:
     """
         Parse enrollment change path
@@ -3028,6 +3009,24 @@ def update_cps_enrollment_schedule_ec(raw_response: dict) -> tuple[list, list]:
         }))
         human_readable = entry_context
     return entry_context, human_readable
+
+
+def try_parsing_date(date: str, arr_fmt: list):
+    """
+    Check if the date that the user provided as an argument to a command is valid.
+    Args:
+        date: str - The string representation of the date that the user provided
+        arr_fmt: list - A list of possible date formats.
+    Returns:
+        If the string date from the user is ok - returns the datetime value.
+        Else raises a ValueError.
+    """
+    for fmt in arr_fmt:
+        try:
+            return datetime.strptime(date, fmt)
+        except ValueError:
+            pass
+    raise ValueError(f'The date you provided does not match the wanted format {arr_fmt}')
 
 
 ''' COMMANDS '''
@@ -5651,18 +5650,21 @@ def list_cidr_blocks_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    effective_date_gt = dateutil.parser.parse(effective_date_gt) if effective_date_gt else None
+    # if there is an effective_date_gt check that it is in the correct format. if yes, continue with the str (API need),
+    # else raise ValueError
+    if effective_date_gt:
+        try_parsing_date(effective_date_gt, ['%Y-%m-%d', '%m-%d-%y'])
+
     raw_response: dict = client.list_cidr_blocks(last_action=last_action, effective_date_gt=effective_date_gt)
 
     title = f'{INTEGRATION_NAME} - list cidr blocks command'
-    entry_context, human_readable_ec = list_cidr_blocks_ec(raw_response=raw_response)
     context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.CdirBlocks": entry_context
+        f"{INTEGRATION_CONTEXT_NAME}.CdirBlocks": raw_response
     }
 
     human_readable = tableToMarkdown(
         name=title,
-        t=human_readable_ec,
+        t=raw_response,
         removeNull=True,
     )
     demisto.debug(f'{human_readable=} , {context_entry=} , {raw_response}')
@@ -5739,8 +5741,15 @@ def update_cps_enrollment_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    deploy_not_after = datetime.strptime(deploy_not_after, '%Y-%m-%dT%H:%M:%SZ') if deploy_not_after else None
-    deploy_not_before = datetime.strptime(deploy_not_before, '%Y-%m-%dT%H:%M:%SZ') if deploy_not_before else None
+    # if there is a deploy_not_after check that it is in the correct format. if yes, continue with the str (API need),
+    # else raise ValueError
+    if deploy_not_after:
+        try_parsing_date(deploy_not_after, ['%Y-%m-%dT%H:%M:%SZ'])
+    # if there is a deploy_not_before check that it is in the correct format. if yes, continue with the str (API need),
+    # else raise ValueError
+    if deploy_not_before:
+        try_parsing_date(deploy_not_before, ['%Y-%m-%dT%H:%M:%SZ'])
+
     if enrollment == {}:
         enrollment = client.get_enrollment_byid(enrollment_id=enrollment_id, json_version='11')
     # Remove the fields that are not supposed to be changed.
@@ -5813,8 +5822,15 @@ def update_cps_enrollment_schedule_command(client: Client,
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    deploy_not_after = datetime.strptime(deploy_not_after, '%Y-%m-%dT%H:%M:%SZ') if deploy_not_after else None
-    deploy_not_before = datetime.strptime(deploy_not_before, '%Y-%m-%dT%H:%M:%SZ')  # required
+    # if there is a deploy_not_after check that it is in the correct format. if yes, continue with the str (API need),
+    # else raise ValueError
+    if deploy_not_after:
+        try_parsing_date(deploy_not_after, ['%Y-%m-%dT%H:%M:%SZ'])
+    # if there is a deploy_not_before check that it is in the correct format. if yes, continue with the str (API need),
+    # else raise ValueError
+    if deploy_not_before:
+        try_parsing_date(deploy_not_before, ['%Y-%m-%dT%H:%M:%SZ'])
+
     if enrollment_path == enrollment_id == change_id == "":
         raise DemistoException('enrollment_path, enrollment_id, change_id can not all be blank.')
     raw_response: dict = client.update_cps_enrollment_schedule(enrollment_path=enrollment_path,
