@@ -437,9 +437,13 @@ def get_events_command(
 
     demisto.debug(f"{time_of_last_fetched_event=}")
     if time_of_last_fetched_event:
-        start_date_for_next_fetch = date_to_timestamp(
-            date_str_or_dt=time_of_last_fetched_event, date_format="%Y-%m-%d %H:%M:%S"
-        )
+        try:
+            start_date_for_next_fetch = date_to_timestamp(
+                date_str_or_dt=time_of_last_fetched_event, date_format="%Y-%m-%d %H:%M:%S"
+            )
+        except Exception:
+            demisto.debug("time_of_last_fetched_event is not datetime")
+            start_date_for_next_fetch = start_date
     else:
         start_date_for_next_fetch = start_date
 
@@ -480,7 +484,11 @@ def perform_long_running_loop(
                     LastRun(**integration_context) if integration_context else LastRun()
                 )
             else:
-                last_run_obj = last_run_obj
+                integration_context = get_integration_context().get("last_run")
+                last_run_obj = (
+                    LastRun(**integration_context) if integration_context else LastRun()
+                )
+                # last_run_obj = last_run_obj
 
             # if last_run_obj.last_fetch and is_more_than_half_an_hour_since_last_fetch(
             #     last_run_obj.last_fetch, int(get_current_time_as_timestamp() / 1000)
@@ -554,7 +562,7 @@ def main() -> None:  # pragma: no cover
             )
         if command == "long-running-execution":
             demisto.debug("Starting long running execution")
-            perform_long_running_loop(client, args, True)
+            perform_long_running_loop(client, args, False)
         elif command == "fetch-events":
             should_push_events = False
             demisto.debug("the command is fetch-events")
