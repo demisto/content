@@ -12,6 +12,7 @@ from scipy.spatial.distance import cdist
 from typing import List, Dict, Union
 
 warnings.simplefilter("ignore")
+warnings.filterwarnings('ignore', category=UserWarning)
 
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected  " \
                          " 2) Selected field are empty for this incident  3) Fields are misspelled"
@@ -776,8 +777,6 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
     similar_incidents = similar_incidents.replace(np.nan, '', regex=True)
     current_incident = current_incident.replace(np.nan, '', regex=True)
 
-    similar_incidents = pd.DataFrame(similar_incidents, errors='ignore')
-    current_incident = pd.DataFrame(current_incident, errors='ignore')
     similar_incidents_json = similar_incidents.to_dict(orient='records')
     incident_json = current_incident.to_dict(orient='records')
 
