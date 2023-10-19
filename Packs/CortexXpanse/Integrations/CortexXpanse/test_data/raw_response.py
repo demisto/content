@@ -1511,7 +1511,7 @@ INCIDENT_GET_RAW = {
                     "asset_ids": "3aa22188-b754-3b7d-8ab9-e6a716590d16",
                     "certificate": {
                         "issuerName": "GlobalSign GCC R3 DV TLS CA 2020",
-                        "subjectName": "*.zaorotec.ru",
+                        "subjectName": "*.acme.com",
                         "validNotBefore": 1694321753000,
                         "validNotAfter": 1728622552000,
                         "serialNumber": "13753674210934031867582050232"
