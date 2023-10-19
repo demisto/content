@@ -1,3 +1,6 @@
+Note: Support for this Pack moved to the partner on October, 19 2023.
+Please contact the partner directly via the support link on the right.
+
 The integration between Palo Alto Networks Cortex XSOAR and CyberArk enables Cortex XSOAR to securely pull privileged credentials from the CyberArk Vault using CyberArk’s Secrets Manager.
 
 This eliminates the need for Cortex XSOAR to store or embed these credentials within their solution and the need for customers to rotate these credentials within Cortex XSOAR.
