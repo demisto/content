@@ -45,6 +45,9 @@ script:
   commands:
   - name: tz-sandbox-upload-sample
     arguments:
+    - name: entry_id
+      description: Entry ID of the file to submit.
+      required: true
     - name: environment
       required: false
       auto: PREDEFINED
@@ -62,11 +65,6 @@ script:
       - "false"
       description: Privacy of the submission.
       defaultValue: "true"
-    - name: entry_id
-      description: Entry ID of the file to submit.
-      predefined:
-      - ''
-      required: true
     - name: timeout
       auto: PREDEFINED
       predefined:
@@ -145,8 +143,6 @@ script:
     arguments:
     - name: entry_id
       description: Entry ID of the file to submit.
-      predefined:
-      - ''
       required: true
     outputs:
     - contextPath: ThreatZone.Submission.UUID
@@ -172,8 +168,6 @@ script:
     arguments:
     - name: entry_id
       description: Entry ID of the file to submit.
-      predefined:
-      - ''
       required: true
     outputs:
     - contextPath: ThreatZone.Submission.UUID
@@ -201,34 +195,34 @@ script:
       required: true
       description: UUID of the submission.
     outputs:
-    - contextPath: ThreatZone.Result.STATUS
+    - contextPath: ThreatZone.Analysis.STATUS
       description: The status of the submission scanning process.
       type: String
-    - contextPath: ThreatZone.Result.LEVEL
+    - contextPath: ThreatZone.Analysis.LEVEL
       description: Threat Level of the scanned file. (malicious, suspicious or informative).
       type: String
-    - contextPath: ThreatZone.Result.URL
+    - contextPath: ThreatZone.Analysis.URL
       description: The result page url of the submission.
       type: String
-    - contextPath: ThreatZone.Result.INFO
+    - contextPath: ThreatZone.Analysis.INFO
       description: Contains the file name, scan process status and public status.
       type: String
-    - contextPath: ThreatZone.Result.REPORT
+    - contextPath: ThreatZone.Analysis.REPORT
       description: The analysis report of the submission.
       type: String
-    - contextPath: ThreatZone.Result.MD5
+    - contextPath: ThreatZone.Analysis.MD5
       description: The md5 hash of the submission.
       type: String
-    - contextPath: ThreatZone.Result.SHA1
+    - contextPath: ThreatZone.Analysis.SHA1
       description: The sha1 hash of the submission.
       type: String
-    - contextPath: ThreatZone.Result.SHA256
+    - contextPath: ThreatZone.Analysis.SHA256
       description: The sha256 hash of the submission.
       type: String
-    - contextPath: ThreatZone.Result.UUID
+    - contextPath: ThreatZone.Analysis.UUID
       description: The UUID of the submission.
       type: String
-    - contextPath: ThreatZone.Result.SANITIZED
+    - contextPath: ThreatZone.Analysis.SANITIZED
       description: The url of the sanitized file.
       type: String
     - contextPath: DBotScore.Indicator

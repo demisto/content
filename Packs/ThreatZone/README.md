@@ -7,7 +7,7 @@ Threat.Zone enrichments are adaptable and can seamlessly integrate into various 
 * tz-sandbox-upload-sample
 * tz-static-upload-sample
 * tz-cdr-upload-sample
-* tz-get-report
+* tz-get-result
 
 ## Ready-to-Use Playbooks
 

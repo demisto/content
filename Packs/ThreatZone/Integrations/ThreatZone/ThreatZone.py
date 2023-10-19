@@ -294,11 +294,11 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
 
     try:
         report_type = ""
-        if result["reports"]["dynamic"]["enabled"]:
+        if result.get("reports", {}).get("dynamic", {}).get("enabled"):
             report_type = "dynamic"
-        elif result["reports"]["static"]["enabled"]:
+        elif result.get("reports", {}).get("static", {}).get("enabled"):
             report_type = "static"
-        elif result["reports"]["cdr"]["enabled"]:
+        elif result.get("reports", {}).get("cdr", {}).get("enabled"):
             report_type = "cdr"
 
         status = result["reports"][report_type]['status']
@@ -363,6 +363,7 @@ def threatzone_check_limits(client: Client) -> CommandResults:
     readable_output = tableToMarkdown('LIMITS', availability["Limits"])
     return CommandResults(
         outputs_prefix='ThreatZone.Limits',
+        outputs_key_field="E_Mail",
         readable_output=readable_output,
         outputs=availability["Limits"]
     )
@@ -440,40 +441,10 @@ def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> Li
     return threatzone_return_results(uuid, url, readable_output, availability)
 
 
-def threatzone_static_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    """Uploads the sample to the ThreatZone static engine to analyse with required or optional selections."""
-    availability = client.threatzone_check_limits("static")
-    if not availability["avaliable"]:
-        raise DemistoException(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}")
-
-    file_id = args.get('entry_id')
-    file_obj = demisto.getFilePath(file_id)
-    file_name = encode_file_name(file_obj['name'])
-    file_path = file_obj['path']
-    files = [
-        ('file', (file_name, open(file_path, 'rb'), 'application/octet-stream'))
-    ]
-    param = {
-        'scan_type': "static-scan",
-        'files': files
-    }
-
-    result = client.threatzone_add(param=param)
-    uuid = result['uuid']
-    url = f"https://app.threat.zone/submission/{uuid}"
-    readable = {
-        "Message": result["message"],
-        "UUID": result["uuid"],
-        "URL": url
-    }
-    readable_output = tableToMarkdown('SAMPLE UPLOADED', readable)
-    availability = client.threatzone_check_limits("static")
-    return threatzone_return_results(uuid, url, readable_output, availability)
-
-
-def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def threatzone_static_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
-    availability = client.threatzone_check_limits("cdr")
+    scan_type = args.get('scan_type')
+    availability = client.threatzone_check_limits(scan_type)
     if not availability["avaliable"]:
         raise DemistoException(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}")
 
@@ -485,7 +456,7 @@ def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> List[C
         ('file', (file_name, open(file_path, 'rb'), 'application/octet-stream'))
     ]
     param = {
-        'scan_type': "cdr",
+        'scan_type': scan_type,
         'files': files
     }
 
@@ -498,7 +469,7 @@ def threatzone_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> List[C
         "URL": url
     }
     readable_output = tableToMarkdown('SAMPLE UPLOADED', readable)
-    availability = client.threatzone_check_limits("cdr")
+    availability = client.threatzone_check_limits(scan_type)
     return threatzone_return_results(uuid, url, readable_output, availability)
 
 
@@ -538,9 +509,11 @@ def main() -> None:
         elif command == 'tz-sandbox-upload-sample':
             return_results(threatzone_sandbox_upload_sample(client, args))
         elif command == 'tz-static-upload-sample':
-            return_results(threatzone_static_upload_sample(client, args))
+            args["scan_type"] = "static"
+            return_results(threatzone_static_cdr_upload_sample(client, args))
         elif command == 'tz-cdr-upload-sample':
-            return_results(threatzone_cdr_upload_sample(client, args))
+            args["scan_type"] = "cdr"
+            return_results(threatzone_static_cdr_upload_sample(client, args))
         elif command == 'tz-get-result':
             return_results(threatzone_get_result(client, args))
         elif command == 'tz-get-sanitized':

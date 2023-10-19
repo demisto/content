@@ -1,4 +1,5 @@
-*Threat.Zone* is a hypervisor-based, automated and interactive tool for analyzing malware , you can fight new generation malwares.
+ThreatZone malware analysis sandboxing.
+This integration was integrated and tested with version xx of ThreatZone.
 
 ## Configure ThreatZone on Cortex XSOAR
 
@@ -34,9 +35,9 @@ Submits a sample to ThreatZone for sandbox analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| environment | Choose what environment you want to run your submission. Possible values are: w7_x64, w10_x64, w11_x64. Default is w7_x64. | Required | 
-| private | Privacy of the submission. Possible values are: true, false. Default is true. | Required | 
-| entry_id | Entry ID of the file to submit. Possible values are: . | Required | 
+| entry_id | Entry ID of the file to submit. | Required | 
+| environment | Choose what environment you want to run your submission. Possible values are: w7_x64, w10_x64, w11_x64. Default is w7_x64. | Optional | 
+| private | Privacy of the submission. Possible values are: true, false. Default is true. | Optional | 
 | timeout | Duration of the submission analysis. Possible values are: 60, 120, 180, 300. Default is 60. | Optional | 
 | work_path | The working path of the submission. Possible values are: desktop, root, appdata, windows, temp. Default is desktop. | Optional | 
 | mouse_simulation | Enable mouse simulation. Possible values are: true, false. Default is false. | Optional | 
@@ -69,7 +70,7 @@ Submits a sample to ThreatZone for static analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Entry ID of the file to submit. Possible values are: . | Required | 
+| entry_id | Entry ID of the file to submit. | Required | 
 
 #### Context Output
 
@@ -95,7 +96,7 @@ Submits a sample to ThreatZone for CDR.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Entry ID of the file to submit. Possible values are: . | Required | 
+| entry_id | Entry ID of the file to submit. | Required | 
 
 #### Context Output
 
@@ -127,16 +128,16 @@ Retrive the analysis result from ThreatZone.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatZone.Result.STATUS | String | The status of the submission scanning process. | 
-| ThreatZone.Result.LEVEL | String | Threat Level of the scanned file. \(malicious, suspicious or informative\). | 
-| ThreatZone.Result.URL | String | The result page url of the submission. | 
-| ThreatZone.Result.INFO | String | Contains the file name, scan process status and public status. | 
-| ThreatZone.Result.REPORT | String | The analysis report of the submission. | 
-| ThreatZone.Result.MD5 | String | The md5 hash of the submission. | 
-| ThreatZone.Result.SHA1 | String | The sha1 hash of the submission. | 
-| ThreatZone.Result.SHA256 | String | The sha256 hash of the submission. | 
-| ThreatZone.Result.UUID | String | The UUID of the submission. | 
-| ThreatZone.Result.SANITIZED | String | The url of the sanitized file. | 
+| ThreatZone.Analysis.STATUS | String | The status of the submission scanning process. | 
+| ThreatZone.Analysis.LEVEL | String | Threat Level of the scanned file. \(malicious, suspicious or informative\). | 
+| ThreatZone.Analysis.URL | String | The result page url of the submission. | 
+| ThreatZone.Analysis.INFO | String | Contains the file name, scan process status and public status. | 
+| ThreatZone.Analysis.REPORT | String | The analysis report of the submission. | 
+| ThreatZone.Analysis.MD5 | String | The md5 hash of the submission. | 
+| ThreatZone.Analysis.SHA1 | String | The sha1 hash of the submission. | 
+| ThreatZone.Analysis.SHA256 | String | The sha256 hash of the submission. | 
+| ThreatZone.Analysis.UUID | String | The UUID of the submission. | 
+| ThreatZone.Analysis.SANITIZED | String | The url of the sanitized file. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | The reliability of the source providing the intelligence data. | 
 | DBotScore.Score | Number | The actual score. | 
@@ -195,7 +196,6 @@ Check the plan limits from ThreatZone API.
 | ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
 | ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
 | ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. | 
-
 
 
 #### Command Example
