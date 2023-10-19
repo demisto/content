@@ -489,8 +489,8 @@ slack-notify-on-push-build:
   script:
     - EXIT_CODE=0
     - section_start "Create Artifacts instance directory" --collapsed
-    - echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
     - |
+      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
