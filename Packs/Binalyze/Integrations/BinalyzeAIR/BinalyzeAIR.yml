@@ -35,15 +35,9 @@ script:
       description: Hostname of endpoint.
     - name: organization_id
       required: true
-      auto: PREDEFINED
-      predefined:
-      - '0'
-      - '1'
-      - '2'
-      description: Organization ID of the endpoint.
+      description: Organization ID of the endpoint(int).
     - name: isolation
       required: true
-      auto: PREDEFINED
       predefined:
       - enable
       - disable
@@ -56,7 +50,7 @@ script:
       description: Isolation task name.
       type: string
     - contextPath: BinalyzeAIR.Isolate.result.organizationId
-      description: Organization Id of endpoint.
+      description: Organization Id of endpoint(int).
       type: number
     description: Isolate an endpoint.
   - name: binalyze-air-acquire
@@ -66,26 +60,13 @@ script:
       description: Hostname of endpoint.
     - name: profile
       required: true
-      auto: PREDEFINED
-      predefined:
-      - compromise-assessment
-      - browsing-history
-      - event-logs
-      - memory-ram-pagefile
-      - quick
-      - full
       description: Acquisition profile.
     - name: case_id
       required: true
       description: ID for the case,e.g. C-2022-0001.
     - name: organization_id
       required: true
-      auto: PREDEFINED
-      predefined:
-      - '0'
-      - '1'
-      - '2'
-      description: Organization ID of the endpoint.
+      description: Organization ID of the endpoint(int).
     outputs:
     - contextPath: BinalyzeAIR.Acquire.result._id
       description: Acquisition unique task ID.
