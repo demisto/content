@@ -357,7 +357,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
             threatzone_sandbox_upload_sample(self.client, self.args)
 
     def test_threatzone_static_upload_sample(self, _, __):
-        args ={}
+        args = {}
         args["entry_id"] = self.args["entry_id"]
         args["scan_type"] = "static"
         results = threatzone_static_cdr_upload_sample(self.client, args)
@@ -373,11 +373,11 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
         assert second_result.outputs_key_field == 'E_Mail'
 
     def test_threatzone_cdr_upload_sample(self, _, __):
-        args ={}
+        args = {}
         args["entry_id"] = self.args["entry_id"]
         args["scan_type"] = "cdr"
         results = threatzone_static_cdr_upload_sample(self.client, args)
-        
+
         assert len(results) == 2
 
         first_result, second_result = results
