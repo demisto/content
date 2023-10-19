@@ -1,5 +1,4 @@
-ThreatZone malware analysis sandboxing.
-This integration was integrated and tested with version xx of ThreatZone.
+*Threat.Zone* is a hypervisor-based, automated and interactive tool for analyzing malware , you can fight new generation malwares.
 
 ## Configure ThreatZone on Cortex XSOAR
 
