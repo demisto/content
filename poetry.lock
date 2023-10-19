@@ -1519,7 +1519,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "xsoar_client"
-resolved_reference = "8f168b8a8737cddf63677462100368ea23f276e7"
+resolved_reference = "9559ae264ccf47f4e4f702ea3e3766493c6606bf"
 
 [[package]]
 name = "deprecated"
@@ -5667,14 +5667,14 @@ msg-parse = ["extract-msg (>=0.27)"]
 
 [[package]]
 name = "ruamel-yaml"
-version = "0.17.38"
+version = "0.17.39"
 description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
 category = "dev"
 optional = false
 python-versions = ">=3"
 files = [
-    {file = "ruamel.yaml-0.17.38-py3-none-any.whl", hash = "sha256:c29d92cd41897d3a4d74c69e5014955c08f8e7aef49fb35c2215993db057c0e0"},
-    {file = "ruamel.yaml-0.17.38.tar.gz", hash = "sha256:a1d740449e96e9a43330f0b8448dc206d090fc9d10a384be68275ac18e0bc9ae"},
+    {file = "ruamel.yaml-0.17.39-py3-none-any.whl", hash = "sha256:8df81a51384f2e6af73d88bede63ec437df4854a5a74841f40e7622471298457"},
+    {file = "ruamel.yaml-0.17.39.tar.gz", hash = "sha256:ee9a9178a231306d2b260e67ba497c136d4639d58b08775ab67f5fb0f21e73f0"},
 ]
 
 [package.dependencies]
