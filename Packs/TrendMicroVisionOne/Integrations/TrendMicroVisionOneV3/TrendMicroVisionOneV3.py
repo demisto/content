@@ -121,7 +121,6 @@ DISABLE_ACCOUNT = "Disable User Account."
 ADD_SUSPICIOUS = "Add to Suspicious List."
 REMOVE_BLOCKLIST = "Remove from Blocklist."
 FAILED_CONNECTIVITY = "Connectivity failed!"
-PASSED_CONNECTIVITY = "Connectivity Passed!"
 ADD_EXCEPTION_LIST = "Add To Exception List."
 QUARANTINE_EMAIL = "Quarantine Email Message."
 FORCE_PASSWORD_RESET = "Force Password Reset."
@@ -286,7 +285,7 @@ class Client(BaseClient):
         self.base_url = base_url
         self.api_key = api_key
         self.status = None
-        self.app = "Trend Micro Vision One V3"
+        self.app = APP_NAME
 
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
 
@@ -657,7 +656,7 @@ def test_module(client: Client) -> str:
     resp = v1_client.check_connectivity()
     if _is_pytmv1_error(resp.result_code):
         return FAILED_CONNECTIVITY
-    return PASSED_CONNECTIVITY
+    return "ok"
 
 
 def enable_or_disable_user_account(
