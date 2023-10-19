@@ -53,7 +53,7 @@ script:
   - name: cisco-spark-create-person
     arguments:
     - name: emails
-      description: Email addresses of the person (comma separated).
+      description: Comma-separated list of mail addresses of the person.
       isArray: true
     - name: displayName
       description: Full name of the person.
@@ -66,7 +66,7 @@ script:
     - name: orgId
       description: ID of the organization to which this person belongs.
     - name: roles
-      description: Roles of the person (comma separated).
+      description: Comma-separated list of roles of the person.
       isArray: true
     - name: licenses
       description: Licenses allocated to the person.
@@ -81,7 +81,7 @@ script:
   - name: cisco-spark-update-person
     arguments:
     - name: emails
-      description: Email addresses of the person (comma separated).
+      description: Comma-separated list of email addresses of the person.
       isArray: true
     - name: displayName
       description: Full name of the person.
@@ -94,10 +94,10 @@ script:
     - name: orgId
       description: ID of the organization to which this person belongs.
     - name: roles
-      description: Roles of the person (comma separated).
+      description: Comma-separated list of roles of the person.
       isArray: true
     - name: licenses
-      description: Licenses allocated to the person (comma separated).
+      description: Comma-separated list of licenses allocated to the person.
       isArray: true
     - name: personId
       required: true
