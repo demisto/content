@@ -4,7 +4,7 @@ import base64
 import codecs
 import unicodedata
 import logging
-from typing import Any, Optional
+from typing import Any
 
 import pyshark
 
@@ -44,7 +44,7 @@ class Streams:
 
     def __make_item(self,
                     bin2txt_mode: str,
-                    filter_keys: Optional[list[str]],
+                    filter_keys: list[str] | None,
                     protocol: str,
                     sender_ip: str,
                     sender_port: int,
@@ -78,7 +78,7 @@ class Streams:
                 sender_port: int,
                 recipient_ip: str,
                 recipient_port: int,
-                payload: Optional[bytes]) -> None:
+                payload: bytes | None) -> None:
         """
         Add a tcp packet to the streams.
 
@@ -135,7 +135,7 @@ class Streams:
                 sender_port: int,
                 recipient_ip: str,
                 recipient_port: int,
-                payload: Optional[bytes]) -> None:
+                payload: bytes | None) -> None:
         """
         Add a udp packet to the streams.
 
@@ -164,7 +164,7 @@ class Streams:
                 'stream': payload
             }
 
-    def build(self, bin2txt_mode: str, filter_keys: Optional[list[str]] = None) -> list[dict[str, Any]]:
+    def build(self, bin2txt_mode: str, filter_keys: list[str] | None = None) -> list[dict[str, Any]]:
         """
         Build the streams
 
@@ -251,7 +251,7 @@ class PcapParser:
                 )
         return streams
 
-    def parse_file(self, pcap_file_path: str, wpa_password: str, rsa_key_file_path: Optional[str], pcap_filter: str) -> Streams:
+    def parse_file(self, pcap_file_path: str, wpa_password: str, rsa_key_file_path: str | None, pcap_filter: str) -> Streams:
         """
         Parse a pcap file
 
