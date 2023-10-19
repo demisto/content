@@ -157,7 +157,7 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
         return resp_err.text
 
 
-def reset_graph_auth(error_codes: list, error_desc: str):
+def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     """
     Reset the Graph API authorization in the integration context.
     This function clears the current authorization data and informs the user to regenerate the Authorization code.
@@ -2724,6 +2724,8 @@ def main():   # pragma: no cover
         elif command in commands_auth_code:
             validate_auth_code_flow_params(command)  # raises error in case one of the required params is missing
             commands_auth_code[command]()
+        elif command == 'microsoft-teams-reset-auth-code':
+            reset_graph_auth()
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
     # Log exceptions
