@@ -1,0 +1,21 @@
+{
+    "name": "SecLytics Augur IOCs Feed",
+    "description": "Receive Seclytics predictive intelligence to provide actionable data for the Palo Alto Networks firewall as well as third party TIP and SIEM solutions. Seclytics feed return a list which includes IP addresses, domains, URLs, and hash indicators which are updated daily.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "SecLytics",
+    "url": "",
+    "email": "",
+    "created": "2023-10-19T17:14:19Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "nafooesi"
+    ]
+}
