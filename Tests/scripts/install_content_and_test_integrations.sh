@@ -44,7 +44,7 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; 
         --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET"
       if [ $? -ne 0 ]; then
         exit_code=1
-        "Failed to configure_and_test_integration_instances.sh script on ${CLOUD_CHOSEN_MACHINE_ID}"
+        "Failed to $0 script on ${CLOUD_CHOSEN_MACHINE_ID}"
       fi
     done
     exit_on_error "${exit_code}" "Finished configure_and_test_integration_instances.sh script"
@@ -61,7 +61,7 @@ elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
       --is-nightly "${IS_NIGHTLY}" --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY" \
       --server-type "${SERVER_TYPE}"  --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" \
       --cloud_servers_path "$CLOUD_SERVERS_PATH" --cloud_servers_api_keys "cloud_api_keys.json" \
-      --marketplace_name "$MARKETPLACE_NAME" --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET"
+      --marketplace_name "$MARKETPLACE_NAME" --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET"  # FIXME! change $0
     exit_on_error $? "Failed to configure_and_test_integration_instances.sh script"
 
     echo "Finished configure_and_test_integration_instances.sh successfully"

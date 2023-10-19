@@ -37,7 +37,7 @@ def read_file_contents(file_path: Path) -> list | None:
     return None
 
 
-def old_print_test_summary(artifacts_path: Path) -> None:
+def old_print_test_summary(artifacts_path: Path) -> None:  # FIXME!
     """
     Takes the information stored in the files and prints it in a human-readable way.
     """
@@ -75,7 +75,7 @@ def filter_skipped_playbooks(playbooks_results):
     filtered_playbooks_ids = []
     for playbook_id, playbook_results in playbooks_results.items():
         skipped_count = 0
-        for test_suite in playbook_results.values():
+        for test_suite in playbook_results.values():  # FIXME! add logging
             if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
                 skipped_count += 1
 
@@ -116,7 +116,7 @@ def print_test_summary(artifacts_path: Path, without_jira: bool) -> bool:
         playbooks_ids = filter_skipped_playbooks(playbooks_results)
         logging.info(f"Found {len(playbooks_ids)} playbooks out of {len(playbooks_results)} after filtering skipped playbooks")
         jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(jira_server, playbooks_ids)
-        logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_ids)} playbooks")
+        logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_ids)} filtered playbooks")
 
     headers, tabulate_data, xml, total_errors = calculate_test_playbooks_results_table(jira_tickets_for_playbooks,
                                                                                        playbooks_results,
@@ -125,7 +125,7 @@ def print_test_summary(artifacts_path: Path, without_jira: bool) -> bool:
     xml.write(test_playbooks_report.as_posix(), pretty=True)
     table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
     logging.info(f"Test Playbook Results:\n{table}")
-    logging.info(f"Writing test playbook report to {test_playbooks_report}")
+    logging.info(f"Writing test playbook report to {test_playbooks_report}")  # FIXME! move closer to the write
     return True
 
 
