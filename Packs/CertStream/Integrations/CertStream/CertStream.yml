@@ -45,7 +45,9 @@ configuration:
 script:
   script: ""
   type: python
-  commands: []
+  commands:
+    - name: threat-summit
+      description: Create a fake incident and indicator
   dockerimage: demisto/websockets:11.0.3.76119
   longRunning: true
   subtype: python3

@@ -12,6 +12,7 @@ VENDOR = "Kali Dog Security"
 PRODUCT = "CertStream"
 SCO_DET_ID_NAMESPACE = UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
 FETCH_SLEEP = 5
+XSOAR_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
 
 
 def test_module(host: str):
@@ -126,7 +127,7 @@ def threat_summit_example():
   "cert_link": "https://ct.googleapis.com/testtube/ct/v1/get-entries?start=824806432&end=824806432",
   "leaf_cert": {
     "all_domains": [
-      "papa1.xyz"
+      "test.paypa1.xyz"
     ],
     "extensions": {
       "authorityInfoAccess": "CA Issuers - URI:http://stg-e1.i.lencr.org/\nOCSP - URI:http://stg-e1.o.lencr.org\n",
@@ -136,7 +137,7 @@ def threat_summit_example():
       "ctlPoisonByte": true,
       "extendedKeyUsage": "TLS Web server authentication, TLS Web client authentication",
       "keyUsage": "Digital Signature",
-      "subjectAltName": "DNS:papa1.xyz",
+      "subjectAltName": "DNS:test.paypa1.xyz",
       "subjectKeyIdentifier": "10:26:DE:54:97:48:8D:90:2B:FF:21:2A:C9:75:9A:A2:59:4F:11:95"
     },
     "fingerprint": "78:6B:41:06:89:F9:E1:1F:6A:95:96:54:AB:0B:9F:BF:CB:B4:4F:AA",
@@ -156,12 +157,12 @@ def threat_summit_example():
     "signature_algorithm": "sha384, ecdsa",
     "subject": {
       "C": null,
-      "CN": "papa1.xyz",
+      "CN": "test.paypa1.xyz",
       "L": null,
       "O": null,
       "OU": null,
       "ST": null,
-      "aggregated": "/CN=papa1.xyz",
+      "aggregated": "/CN=test.paypa1.xyz",
       "emailAddress": null
     }
   },
@@ -175,7 +176,7 @@ def threat_summit_example():
     """
 
     data = json.loads(data)
-    create_xsoar_incident(data, "paypa1.xyz", datetime.now(), {"similarity": 0.9, "homograph": "paypa1", "asset": "paypal"})
+    create_xsoar_incident(data, "test.paypa1.xyz", datetime.now(), {"similarity": 0.9, "homograph": "paypa1", "asset": "paypal"})
     create_xsoar_certificate_indicator(data)
     return_error('Done')
 
@@ -198,7 +199,7 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
         "severity": set_incident_severity(result["similarity"]),
         "CustomFields": {
             "fingerprint": certificate["leaf_cert"]["fingerprint"],
-            "levenshtein_distance": result["similarity"],
+            "levenshteindistance": result["similarity"],
             "userasset": result["asset"]
         }
     }
@@ -220,12 +221,12 @@ def create_xsoar_certificate_indicator(certificate: dict):
     demisto.createIndicators([{
         "type": "X509 Certificate",
         "value": certificate_data["fingerprint"],
-        "sourcetimestamp": datetime.fromtimestamp(certificate["seen"]).strftime('%Y-%m-%d %H:%M:%S'),
+        "sourcetimestamp": datetime.fromtimestamp(certificate["seen"]).strftime(XSOAR_TIME_FORMAT),
         "fields": {
             "stixid": create_stix_id(certificate_data["serial_number"]),
             "serialnumber": certificate_data["serial_number"],
-            "validitynotbefore": datetime.fromtimestamp(certificate_data["not_before"]).strftime('%Y-%m-%d %H:%M:%S'),
-            "validitynotafter": datetime.fromtimestamp(certificate_data["not_after"]).strftime('%Y-%m-%d %H:%M:%S'),
+            "validitynotbefore": datetime.fromtimestamp(certificate_data["not_before"]).strftime(XSOAR_TIME_FORMAT),
+            "validitynotafter": datetime.fromtimestamp(certificate_data["not_after"]).strftime(XSOAR_TIME_FORMAT),
             "source": certificate["source"]["name"],
             "domains": [{"domain": domain} for domain in certificate_data["all_domains"]],
             "signaturealgorithm": certificate_data["signature_algorithm"].replace(" ", "").split(","),
