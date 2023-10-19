@@ -8,7 +8,7 @@ import urllib3
 import dateparser
 import statistics
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, List
 from domaintools import API
 from domaintools import utils
 import urllib.parse
@@ -30,6 +30,19 @@ VERIFY_CERT = not demisto.params().get('insecure', False)
 PROXIES = handle_proxy()
 GUIDED_PIVOT_THRESHOLD = arg_to_number(demisto.params().get('pivot_threshold'))
 IRIS_LINK = 'https://iris.domaintools.com/investigate/search/'
+
+DOMAINTOOLS_MONITOR_DOMAINS_INCIDENT_NAME_BY_IRIS_SEARCH_HASH = "DomainTools Iris Monitor Domain Search Hash"
+DOMAINTOOLS_MONITOR_DOMAINS_INCIDENT_NAME_BY_IRIS_TAGS = "DomainTools Iris Monitor Domain Tags"
+
+INCIDENT_TYPES = {
+    DOMAINTOOLS_MONITOR_DOMAINS_INCIDENT_NAME_BY_IRIS_SEARCH_HASH: "DomainTools Iris Monitor Domains - Iris Search Hash",
+    DOMAINTOOLS_MONITOR_DOMAINS_INCIDENT_NAME_BY_IRIS_TAGS: "DomainTools Iris Monitor Domains - Iris Tags",
+}
+
+DOMAINTOOLS_IRIS_INDICATOR_TYPE = "DomainTools Iris"
+MONITOR_DOMAIN_IRIS_SEARCH_HASH_TIMESTAMP = "monitor_domain_iris_search_hash_last_run"
+MONITOR_DOMAIN_IRIS_TAG_TIMESTAMP = "monitor_domain_iris_tags_last_run"
+BATCH_SIZE = 200
 
 ''' HELPER FUNCTIONS '''
 
@@ -99,8 +112,10 @@ def get_dbot_score(proximity_score, age, threat_profile_score):
     else:
         return 1
 
+
 def should_include_context(include_context):
     return include_context == "true"
+
 
 def prune_context_data(data_obj):
     """
@@ -126,6 +141,7 @@ def prune_context_data(data_obj):
                 items_to_prune.append(index)
         data_obj[:] = [item for index, item in enumerate(data_obj) if index not in items_to_prune and len(item)]
 
+
 def format_contact_grid(title, contact_dict):
     name = contact_dict.get('Name', {}).get('value')
     org = contact_dict.get('Org', {}).get('value')
@@ -144,6 +160,7 @@ def format_contact_grid(title, contact_dict):
     ]
 
     return [item for item in formatted_contact if item]
+
 
 def format_dns_grid(type, dns_dict):
     return [{
@@ -167,8 +184,26 @@ def format_risk_grid(domain_risk):
 
     return result
 
+
 def format_tags(tags):
     return ' '.join([tag.get('label') for tag in tags])
+
+
+def convert_and_format_date(
+    string_date: str, string_date_format: str = "%Y-%m-%dT%H:%M:%SZ", new_format: str = "%Y-%m-%d"
+) -> str:
+    """Converts a date string to a datetime object then returns a string formatted date
+
+    Args:
+        string_date (str): The string date to be converted.
+        string_date_format (str, optional): Defaults to "%Y-%m-%dT%H:%M:%SZ".
+        new_format (str, optional): The desired return string format. Defaults to "%Y-%m-%d".
+
+    Returns:
+        str: The formatted string date
+    """
+    return datetime.strptime(string_date, string_date_format).strftime(new_format)
+
 
 def create_domain_context_outputs(domain_result):
     """
@@ -187,6 +222,9 @@ def create_domain_context_outputs(domain_result):
     domain_status = domain_result.get('active')
 
     proximity_risk_score = 0
+    threat_profile_malware_riskscore = 0
+    threat_profile_phishing_risk_score = 0
+    threat_profile_spam_risk_score = 0
     threat_profile_risk_score = 0
     threat_profile_threats = ''
     threat_profile_evidence = ''
@@ -205,6 +243,16 @@ def create_domain_context_outputs(domain_result):
             threat_profile_risk_score = threat_profile_data.get('risk_score')
             threat_profile_threats = threat_profile_data.get('threats')
             threat_profile_evidence = threat_profile_data.get('evidence')
+
+        threat_profile_malware = utils.get_threat_component(risk_components, "threat_profile_malware")
+        if threat_profile_malware:
+            threat_profile_malware_riskscore = threat_profile_malware.get("risk_score")
+        threat_profile_phishing = utils.get_threat_component(risk_components, "threat_profile_phishing")
+        if threat_profile_phishing:
+            threat_profile_phishing_risk_score = threat_profile_phishing.get("risk_score")
+        threat_profile_spam = utils.get_threat_component(risk_components, "threat_profile_spam")
+        if threat_profile_spam:
+            threat_profile_spam_risk_score = threat_profile_spam.get("risk_score")
 
     website_response = domain_result.get('website_response')
     google_adsense = domain_result.get('adsense')
@@ -235,15 +283,15 @@ def create_domain_context_outputs(domain_result):
     additional_whois_emails = domain_result.get('additional_whois_email')
     domain_registrar = domain_result.get('registrar')
     registrar_status = domain_result.get('registrar_status')
-    ip_country_code = ip_addresses[0].get('country_code', {}).get('value') if len(ip_addresses) else ''
+    ip_country_code = ip_addresses[0].get('country_code', {}).get('value') if len(ip_addresses) else ""
     mx_servers = domain_result.get('mx')
     spf_info = domain_result.get('spf_info')
     ssl_certificates = domain_result.get('ssl_info')
     redirects_to = domain_result.get('redirect')
     redirect_domain = domain_result.get('redirect_domain')
-    website_title = domain_result.get('website_title', {}).get('value') if domain_result.get('website_title') else ''
-    server_type = domain_result.get('server_type', {}).get('value') if domain_result.get('server_type') else ''
-    first_seen = domain_result.get('first_seen', {}).get('value') if domain_result.get('first_seen') else ''
+    website_title = domain_result.get('website_title', {}).get('value') if domain_result.get('website_title') else ""
+    server_type = domain_result.get('server_type', {}).get('value') if domain_result.get('server_type') else ""
+    first_seen = domain_result.get('first_seen', {}).get('value') if domain_result.get('first_seen') else ""
 
     domain_tools_context = {
         'Name': domain,
@@ -251,6 +299,9 @@ def create_domain_context_outputs(domain_result):
         'Analytics': {
             'OverallRiskScore': overall_risk_score,
             'ProximityRiskScore': proximity_risk_score,
+            'MalwareRiskScore': threat_profile_malware_riskscore,
+            'PhishingRiskScore': threat_profile_phishing_risk_score,
+            'SpamRiskScore': threat_profile_spam_risk_score,
             'ThreatProfileRiskScore': {'RiskScore': threat_profile_risk_score,
                                        'Threats': threat_profile_threats,
                                        'Evidence': threat_profile_evidence},
@@ -323,8 +374,9 @@ def create_domain_context_outputs(domain_result):
     }
 
     dbot_score = 0
-    if create_date != '':
-        domain_age = utils.get_domain_age(create_date)
+    if first_seen:
+        first_seen = convert_and_format_date(first_seen)
+        domain_age = utils.get_domain_age(first_seen)
         dbot_score = get_dbot_score(proximity_risk_score, domain_age, threat_profile_risk_score)
     dbot_context = {'Indicator': domain,
                     'Type': 'domain',
@@ -354,6 +406,7 @@ def domain_investigate(domain):
     """
     return http_request('iris-investigate', {'domains': domain})
 
+
 def domain_enrich(domain):
     """
     Profiles domain and gives back all relevant domain data
@@ -377,20 +430,26 @@ def domain_pivot(search_params):
     """
     return http_request('iris-pivot', search_params)
 
+
 def whois_history(**kwargs):
     return http_request('whois-history', kwargs)
+
 
 def hosting_history(domain):
     return http_request('hosting-history', {'domain': domain})
 
+
 def reverse_whois(**kwargs):
     return http_request('reverse-whois', kwargs)
+
 
 def domain_profile(domain):
     return http_request('domain-profile', {'domain': domain})
 
+
 def parsed_whois(domain):
     return http_request('parsed-whois', {'domain': domain})
+
 
 def profile_headers():
     return [
@@ -435,6 +494,7 @@ def profile_headers():
             'Popularity'
         ]
 
+
 def add_key_to_json(cur, to_add):
     if not cur:
         return to_add
@@ -442,6 +502,7 @@ def add_key_to_json(cur, to_add):
         return [cur, to_add]
     cur.append(to_add)
     return cur
+
 
 def chunks(lst, n):
     """Yield successive n-sized chunks from lst."""
@@ -509,6 +570,7 @@ def format_enrich_output(result):
 
     return (human_readable, context)
 
+
 def format_ips(ips):
     for ip in ips:
         address = ip['address']
@@ -526,6 +588,7 @@ def format_ips(ips):
 
     return ips
 
+
 def format_nameserver(nameservers):
     for ns in nameservers:
         host = ns['host']
@@ -539,7 +602,6 @@ def format_nameserver(nameservers):
         domain['count'] = format_guided_pivot_link("ns.nsd", domain)
 
     return nameservers
-
 
 
 def format_mailserver(mailservers):
@@ -589,6 +651,7 @@ def format_ssl_info(certs):
 
     return certs
 
+
 def format_contact(contact, domain, email_type):
     country = contact['country']
     country['count'] = format_guided_pivot_link('cons.cc', country)
@@ -631,6 +694,7 @@ def format_list_value(link_type, list, domain=None):
         item['count'] = format_guided_pivot_link(link_type, item, domain)
 
     return list
+
 
 def format_guided_pivot_link(link_type, item, domain=None):
     query = item.get('value')
@@ -705,8 +769,8 @@ def format_investigate_output(result):
     )
 
     return (human_readable, context)
-''' COMMANDS '''
 
+''' COMMANDS '''
 
 def domain_command():
     """
@@ -817,9 +881,10 @@ def domain_analytics_command():
         prune_context_data(outputs)
         domaintools_analytics_data = context.get('domaintools', {}).get('Analytics', {})
         domain_age = 0
-        create_date = context.get('domaintools').get('Registration').get('CreateDate', '')
-        if create_date != '':
-            domain_age = utils.get_domain_age(create_date)
+        first_seen = context.get('domaintools').get('FirstSeen', '')
+        if first_seen:
+            first_seen = convert_and_format_date(first_seen)
+            domain_age = utils.get_domain_age(first_seen)
         human_readable_data = {
             'Overall Risk Score': domaintools_analytics_data.get('OverallRiskScore', ''),
             'Proximity Risk Score': domaintools_analytics_data.get('ProximityRiskScore', ''),
@@ -978,21 +1043,23 @@ def domain_pivot_command():
     risk_list = []
     age_list = []
     count = 0
+    pivot_result = {}
     human_readable = 'No results found.'
     include_context = demisto.args().get('include_context', False)
+
 
     if response.get('results_count'):
         for domain_result in results:
             risk_score = domain_result.get('domain_risk', {}).get('risk_score')
-            first_seen = domain_result.get('first_seen', {}).get('value') if domain_result.get('first_seen') else False
+            first_seen = domain_result.get('first_seen', {}).get('value') if domain_result.get('first_seen') else ""
             output.append({'domain': domain_result.get('domain'), 'risk_score': risk_score})
 
             if risk_score is not None:
                 risk_list.append(risk_score)
             if first_seen:
-                timestamp = datetime.strptime(first_seen, "%Y-%m-%dT%H:%M:%SZ")
-                age = (current_date - timestamp).days
-                age_list.append(age)
+                first_seen = convert_and_format_date(first_seen)
+                domain_age = utils.get_domain_age(first_seen)
+                age_list.append(domain_age)
             if should_include_context(include_context):
                 domain_context = create_domain_context_outputs(domain_result)
                 domain_context_list.append(domain_context.get('domaintools'))
@@ -1027,6 +1094,7 @@ def domain_pivot_command():
         ignore_auto_extract=True
     )
     return_results(results)
+
 
 def to_camel_case(value):
     str = f' {value.strip()}'
@@ -1095,6 +1163,7 @@ def create_history_table(data, headers):
 
     return table
 
+
 def hosting_history_command():
     """
     Command to get hosting history for a domain using the hosting-history API endpoint.
@@ -1136,6 +1205,7 @@ def hosting_history_command():
     )
     return_results(results)
 
+
 def reverse_whois_command():
     """
     Command to get list of domains that share same registrant info using the reverse-whois API endpoint.
@@ -1168,6 +1238,7 @@ def reverse_whois_command():
     )
     return_results(results)
 
+
 def domain_profile_command():
     """
     Command to get registration details for a domain using domain-profile API endpoint.
@@ -1177,10 +1248,6 @@ def domain_profile_command():
     results = domain_profile(domain)
     return_results({'response': results})
 
-def to_camel_case(string):
-    str_with_space = ' ' + string.strip()
-    str_with_space = re.sub(r' ([a-zA-Z])', lambda g: g.group(1).upper(), str_with_space)
-    return str_with_space
 
 def change_keys(conv, obj):
     output = {}
@@ -1190,6 +1257,8 @@ def change_keys(conv, obj):
         else:
             output[conv(key)] = value
     return output
+
+
 def parsed_whois_command():
     domain = demisto.args()['query']
     response = parsed_whois(domain)
@@ -1222,17 +1291,20 @@ def parsed_whois_command():
     )
     return_results(results)
 
+
 def reverse_ip_command():
     """
     Command to deprecate the reverse-ip API endpoint.
     """
     return_error('replaced by domaintoolsiris-pivot ip=')
 
+
 def reverse_ns_command():
     """
     Command to deprecate the reverse-ns API endpoint.
     """
     return_error('replaced by domaintoolsiris-pivot name_server=')
+
 
 def test_module():
     """
@@ -1243,6 +1315,220 @@ def test_module():
         demisto.results('ok')
     except Exception:
         raise
+
+
+def find_indicator_reputation(domain_age: int, proximity_score: int, threat_profile_score: int) -> str:
+    proximity_score_threshold = arg_to_number(
+        demisto.args().get('proximity_score_threshold', 70))
+    age_threshold = arg_to_number(demisto.args().get('age_threshold', 7))
+    threat_profile_score_threshold = arg_to_number(
+        demisto.args().get('threat_profile_score_threshold', 70))
+
+    if proximity_score > proximity_score_threshold or threat_profile_score > threat_profile_score_threshold:
+        return "Bad"
+    elif domain_age < age_threshold and (
+            proximity_score < proximity_score_threshold or threat_profile_score < threat_profile_score_threshold):
+        return "Suspicious"
+    else:
+        return "Good"
+
+
+def create_indicator_from_dt_domain(domain: Dict[str, Any], source: str) -> Dict[str, Any]:
+    """Create an Indicator object from the Domaintools Iris domain.
+
+    Args:
+        domain (Dict[str, Any]): The domain to be created as indicator.
+        source (str): The domain source.
+
+    Returns:
+        Dict[str, Any]: The DomainTools Iris Indicator Attributes
+    """
+    ip_addresses = domain.get("ip") or []
+    ip_country_code = ip_addresses[0].get('country_code', {}).get('value') if len(ip_addresses) else ''
+    ssl_email = [ssl_email for ssl_email in domain.get('ssl_email')]
+    domain_age = 0
+
+    first_seen = domain_result.get('first_seen', {}).get('value') or ""
+    if first_seen:
+        first_seen = convert_and_format_date(first_seen)
+        domain_age = utils.get_domain_age(first_seen)
+
+    try:
+        threat_profile_risk_score = 0
+        proximity_risk_score = 0
+        risk_components = domain.get('domain_risk', {}).get('components')
+        if risk_components:
+            proximity_data = utils.get_threat_component(risk_components, 'proximity')
+            blacklist_data = utils.get_threat_component(risk_components, 'blacklist')
+            if proximity_data:
+                proximity_risk_score = proximity_data.get('risk_score')
+            elif blacklist_data:
+                proximity_risk_score = blacklist_data.get('risk_score')
+            threat_profile_data = utils.get_threat_component(risk_components, 'threat_profile')
+            if threat_profile_data:
+                threat_profile_risk_score = threat_profile_data.get('risk_score')
+
+        reputation = find_indicator_reputation(domain_age, proximity_risk_score, threat_profile_risk_score)
+    except Exception:
+        reputation = "Unknown"
+
+    return {
+        "type": "DomainTools Iris",
+        "value": domain.get("domain"),
+        "occured": str(datetime.utcnow()),
+        "source": source,
+        "reputation": reputation,
+        "seenNow": "true",
+        "ipaddresses": json.dumps(ip_addresses),
+        "ipcountrycode": ip_country_code,
+        "mailservers": json.dumps(domain.get("mx")),
+        "spfrecord": domain.get('spf_info'),
+        "nameservers": domain.get("name_server"),
+        "sslcertificate": json.dumps(domain.get("ssl_info")),
+        "soaemail": domain.get("soa_email"),
+        "sslcertificateemail": ssl_email,
+        "emaildomains": domain.get("email_domain"),
+        "additionalwhoisemails": domain.get("additional_whois_email"),
+        "domainage": domain_age,
+    }
+
+
+def fetch_domains_from_dt_api(search_type: str, search_value: str) -> List[Dict[str, Any]]:
+    """Fetch Domains from Domaintools API
+
+    Args:
+        search_type (str): The pivot search type
+        search_value (str): The search value
+
+    Returns:
+        List[Dict[str, Any]]: DomainTools Iris response
+    """
+    dt_query = domain_pivot({search_type: search_value})
+    dt_results = dt_query['results']
+    while dt_query['has_more_results']:
+        search_data['position'] = dt_query['position']
+        response = domain_pivot(search_data)
+        dt_results.extend(response['results'])
+
+    return dt_results
+
+
+def fetch_and_process_domains(iris_search_hash: Dict[str, str], iris_tags: Dict[str, str]) -> None:
+    """
+    Fetch and Process Domaintools Domain by given search hash or iris tags.
+    Creates incidents/indicators in XSOAR.
+
+    Args:
+        iris_search_hash (Dict[str, str]): The iris_search_hash key value attribute (keys: search_hash, import_only)
+        iris_tags (Dict[str, str]): The iris_tags key value attribute (keys: search_hash, import_only)
+    """
+
+    def process_domains(
+        domains_list: list[Dict[str, Any]] = [],
+        import_only: bool = True,
+        incident_name: str = "",
+        source: str = ""
+    ) -> str:
+        """ Process domains by the given iris search hash. Creates incidents/indicator in XSOAR.
+
+            domains_list (list): A list of DomainTools Iris domain objects.
+            import_only (bool): If True, import only indicators. Otherwise it will create an incident. Defaults to True.
+            incident_name (str): The incident name
+            source (str): The source name e.g (Domaintools Iris Search Hash)
+        """
+        last_run = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        indicators = [
+            create_indicator_from_dt_domain(domain, source=source)
+            for domain in domains_list
+        ]
+
+        for batched in batch(indicators, batch_size=BATCH_SIZE):
+            demisto.createIndicators(batched)
+        demisto.info(f"Added {len(indicators)} indicators to demisto (source: {source})")
+
+        if not import_only:
+            incident_long_name = f"{incident_name} Since {last_run}"
+            demisto.info(f"Creating incident object for {incident_long_name}")
+            incidents.append({
+                "name": incident_long_name,
+                "details": json.dumps(domains_list),
+                "occured": last_run,
+                "rawJSON": json.dumps({"sample": "sucess"}), #json.dumps({"incidents": domains_list}),
+                "type": INCIDENT_TYPES[incident_name],
+            })
+
+        return last_run
+
+    incidents: List[Any] = []
+
+    # DT Iris Tags Results
+    dt_iris_tags_result = fetch_domains_from_dt_api(search_type="tagged_with_any", search_value=iris_tags["tags"])
+
+    # DT Iris Search Hash Results
+    dt_iris_search_hash_result = fetch_domains_from_dt_api(
+        search_type="search_hash", search_value=iris_search_hash["search_hash"])
+
+    domains_to_process = [
+        (
+            dt_iris_tags_result,
+            iris_tags["import_only"],
+            DOMAINTOOLS_MONITOR_DOMAINS_INCIDENT_NAME_BY_IRIS_TAGS,
+            "DomainTools Iris Tag",
+            MONITOR_DOMAIN_IRIS_TAG_TIMESTAMP
+        ),
+        (
+            dt_iris_search_hash_result,
+            iris_search_hash["import_only"],
+            DOMAINTOOLS_MONITOR_DOMAINS_INCIDENT_NAME_BY_IRIS_SEARCH_HASH,
+            "DomainTools Iris Search Hash",
+            MONITOR_DOMAIN_IRIS_SEARCH_HASH_TIMESTAMP
+        )
+    ]
+
+    last_runs = {MONITOR_DOMAIN_IRIS_TAG_TIMESTAMP: "", MONITOR_DOMAIN_IRIS_SEARCH_HASH_TIMESTAMP: ""}
+
+    for domains_list, import_only, incident_name, source, timestamp_key in domains_to_process:
+        last_runs[timestamp_key] = process_domains(
+            domains_list=domains_list,
+            import_only=import_only,
+            incident_name=incident_name,
+            source=source
+        )
+
+    demisto.setIntegrationContext(last_runs)
+    demisto.info(f"Adding {len(incidents)} incidents to demisto")
+    demisto.incidents(incidents)
+
+
+def fetch_domains():
+    # iris search hash
+    monitor_domain_by_search_hash = demisto.params().get("monitor_iris_search_hash", ) or "Import Indicators Only"
+    iris_search_hash = demisto.params().get("domaintools_iris_search_hash") or False
+    # iris tags
+    monitor_domain_by_iris_tags = demisto.params().get("monitor_iris_tags") or "Import Indicators Only"
+    iris_tags = demisto.params().get("domaintools_iris_tags") or False
+
+    fetch_limit = arg_to_number(demisto.params().get('max_fetch', 2))
+
+    if False in [iris_search_hash, iris_tags]:
+        demisto.incidents([])
+        return False
+
+    iris_search_hash_params = {
+        "import_only": monitor_domain_by_search_hash == "Import Indicators Only",
+        "search_hash": iris_search_hash
+    }
+    iris_tags_params = {
+        "import_only": monitor_domain_by_iris_tags == "Import Indicators Only",
+        "tags": iris_tags
+    }
+
+    fetch_and_process_domains(
+        iris_search_hash=iris_search_hash_params,
+        iris_tags=iris_tags_params
+    )
+
+    return True
 
 
 def main():
@@ -1276,6 +1562,8 @@ def main():
             reverse_ip_command()
         elif demisto.command() == 'reverseNameServer':
             reverse_ns_command()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_domains()
     except Exception as e:
         return_error(
             f'Unable to perform command : {demisto.command()}, Reason: {str(e)}, Stack: {traceback.format_exc()}'

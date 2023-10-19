@@ -31,8 +31,9 @@ def main():
     try:
         return_results(add_domain_riskscore_to_context(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+        demisto.error(traceback.format_exc())
+        return_error(
+            f'Failed to execute AddDomainRiskScoreToContext. Error: {str(ex)}')
 
 
 ''' ENTRY POINT '''

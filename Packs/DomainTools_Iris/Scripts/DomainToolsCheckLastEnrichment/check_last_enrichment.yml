@@ -14,10 +14,10 @@ name: CheckLastEnrichment
 outputs:
 - contextPath: 'yes'
   description: Refresh Enrichment Data
-  type: Unknown
+  type: String
 - contextPath: 'no'
   description: Don't Refresh Enrichment Data
-  type: Unknown
+  type: String
 script: '-'
 system: false
 tags:
