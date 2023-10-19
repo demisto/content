@@ -358,7 +358,7 @@ def delete_datasets(dataset_names, base_url, api_key, auth_id):
     success = True
     for dataset in dataset_names:
         headers = {
-            "x-xdr-auth-id": auth_id,
+            "x-xdr-auth-id": str(auth_id),
             "Authorization": api_key,
             "Content-Type": "application/json",
         }
