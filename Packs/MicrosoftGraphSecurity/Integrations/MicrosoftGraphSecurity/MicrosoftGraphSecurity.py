@@ -268,11 +268,11 @@ class MsGraphClient:
 
     def get_threat_assessment_request(self, request_id):
         return self.ms_client.http_request(method='GET', url_suffix=
-        f'informationProtection/threatAssessmentRequests{request_id}', params={'$expand': 'results'})
+        f'informationProtection/threatAssessmentRequests/{request_id}', params={'$expand': 'results'})
 
     def get_threat_assessment_request_status(self, request_id):
         return self.ms_client.http_request(method='GET', url_suffix=
-        f'informationProtection/threatAssessmentRequests{request_id}', params={'$select': 'status'})
+        f'informationProtection/threatAssessmentRequests/{request_id}', params={'$select': 'status'})
 
     def create_email_file_assessment_request(self, recipient_email, expected_assessment, category, content_data):
         url = 'informationProtection/threatAssessmentRequests'
@@ -307,7 +307,7 @@ class MsGraphClient:
         }
         return self.ms_client.http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def list_threat_assessment_requests(self, filters=None, order_by=None, sort_order=None, limit=None, next_token=None):
+    def list_threat_assessment_requests(self, filters=None, order_by=None, sort_order=None, next_token=None):
         url = 'informationProtection/threatAssessmentRequests'
         params = {}
         if next_token:
@@ -317,8 +317,7 @@ class MsGraphClient:
             params['$filter'] = filters
         if order_by:
             params['$orderby'] = order_by
-        if limit:
-            params['limit'] = limit
+
         return self.ms_client.http_request(method='GET', url_suffix=url,
                                            params=params, retries=1, status_list_to_retry=[405])
 
@@ -1554,7 +1553,6 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args):
         args.get('filter'),
         args.get('order_by'),
         args.get('sort_order'),
-        args.get('limit'),
         args.get('next_token')
     )
 
