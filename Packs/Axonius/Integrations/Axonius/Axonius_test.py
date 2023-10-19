@@ -72,7 +72,7 @@ def test_client():
 
     client = DummyConnect()
     expected = "ok"
-    args = {}
+    args: dict = {}
     result = run_command(client=client, args=args, command="test-module")
     assert expected == result
 
@@ -80,7 +80,7 @@ def test_client():
 @pytest.mark.filterwarnings("ignore::RemovedInMarshmallow4Warning")
 def test_get_saved_queries():
     client = DummyConnect()
-    args = {"type": "users"}
+    args: dict = {"type": "users"}
     result = run_command(client=client, args=args, command="axonius-get-saved-queries")
     assert len(EXPECTED_USERS_SQS) == len(result.outputs)
 
@@ -88,7 +88,7 @@ def test_get_saved_queries():
 @pytest.mark.filterwarnings("ignore::RemovedInMarshmallow4Warning")
 def test_get_tags():
     client = DummyConnect()
-    args = {"type": "devices"}
+    args: dict = {"type": "devices"}
     result = run_command(client=client, args=args, command="axonius-get-tags")
     assert EXPECTED_DEVICE_TAGS == result.outputs
 
@@ -96,7 +96,7 @@ def test_get_tags():
 @pytest.mark.filterwarnings("ignore::RemovedInMarshmallow4Warning")
 def test_add_tags():
     client = DummyConnect()
-    args = {"type": "devices", "ids": DUMMY_DEVICES_IDS, "tag_name": "test"}
+    args: dict = {"type": "devices", "ids": DUMMY_DEVICES_IDS, "tag_name": "test"}
     result = run_command(client=client, args=args, command="axonius-add-tag")
     assert len(DUMMY_DEVICES_IDS) == result.outputs
 
@@ -104,7 +104,7 @@ def test_add_tags():
 @pytest.mark.filterwarnings("ignore::RemovedInMarshmallow4Warning")
 def test_remove_tags():
     client = DummyConnect()
-    args = {"type": "users", "ids": DUMMY_USER_IDS, "tag_name": "test"}
+    args: dict = {"type": "users", "ids": DUMMY_USER_IDS, "tag_name": "test"}
     result = run_command(client=client, args=args, command="axonius-remove-tag")
     assert len(DUMMY_USER_IDS) == result.outputs
 
@@ -112,6 +112,6 @@ def test_remove_tags():
 @pytest.mark.filterwarnings("ignore::RemovedInMarshmallow4Warning")
 def test_get_device():
     client = DummyConnect()
-    args = {"value": "DESKTOP-Gary-Gaither"}
+    args: dict = {"value": "DESKTOP-Gary-Gaither"}
     result = run_command(client=client, args=args, command="axonius-get-devices-by-hostname")
     assert EXPECTED_DEVICE["internal_axon_id"] == result.outputs["internal_axon_id"]
