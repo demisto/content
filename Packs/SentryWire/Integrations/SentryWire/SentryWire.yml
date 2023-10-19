@@ -11,7 +11,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-description: Utilize SentryWire's search capabilities. For more information please refer to SentryWire documentation
+description: Utilize SentryWire's search capabilities. For more information please refer to SentryWire documentation.
 display: SentryWire
 name: SentryWire
 script:
@@ -19,57 +19,57 @@ script:
   - arguments:
     - default: false
       isArray: false
-    - description: Name of the search to run
+    - description: Name of the search to run.
       name: search_name
       required: true
       secret: false
     - default: false
       isArray: false
-    - description: KQL Search Filter
+    - description: KQL Search Filter.
       name: search_filter
       required: true
       secret: false
     - default: false
       isArray: false
-    - description: The earliest date time a search should target
+    - description: The earliest date time a search should target.
       name: begin_time
       required: true
       secret: false
     - default: false
       isArray: false
-    - description: The latest date time a search should target
+    - description: The latest date time a search should target.
       name: end_time
       required: true
       secret: false
     - default: false
       isArray: false
-    - description: Maximum number of packets to retrieve
+    - description: Maximum number of packets to retrieve.
       name: max_packets
       required: false
       secret: false
     - default: false
       isArray: false
-    - description: Controls the list of federated nodes this request is sent to
+    - description: Controls the list of federated nodes this request is sent to.
       name: fmgroups
       required: false
       secret: false
     - default: false
       isArray: false
-    - description: Output links to search results
+    - description: Output links to search results.
       name: generate_links
     - auto: PREDEFINED
       defaultValue: 'false'
     deprecated: false
-    description: Create a search on SentryWire unit
+    description: Create a search on SentryWire unit.
     execution: false
     name: sentrywire-create-search
     outputs:
-      - contextPath: SentryWire.Investigator.Search.SearchID
-        description: ID of the search.
-        type: String
-      - contextPath: SentryWire.Investigator.Search.NodeName
-        description: List of the node ID(s) that the search was executed on.
-        type: Array
+    - contextPath: SentryWire.Investigator.Search.SearchID
+      description: ID of the search.
+      type: String
+    - contextPath: SentryWire.Investigator.Search.NodeName
+      description: List of the node ID(s) that the search was executed on.
+      type: Array
   - arguments:
     - default: false
       isArray: false
@@ -84,40 +84,40 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Download search pcap packaged in a zip file
+    description: Download search pcap packaged in a zip file.
     execution: false
     name: sentrywire-get-pcap
     outputs:
-      - contextPath: File.Size
-        description: The size of the file.
-        type: Number
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.Name
-        description: The name of the file.
-        type: String
-      - contextPath: File.SSDeep
-        description: The SSDeep hash of the file.
-        type: String
-      - contextPath: File.EntryID
-        description: The entry ID of the file.
-        type: String
-      - contextPath: File.Info
-        description: File information.
-        type: String
-      - contextPath: File.Type
-        description: The file type.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.Extension
-        description: The file extension.
-        type: String
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -132,34 +132,34 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the current status of a search
+    description: Get the current status of a search.
     execution: false
     name: sentrywire-get-search-status
     outputs:
-      - contextPath: SentryWire.Investigator.Begintime
-        description: The earliest date time a search should target (ISO 8601 format) UTC time - YYYY-MM-DD hh:mm:ss.
-        type: String
-      - contextPath: SentryWire.Investigator.Endtime
-        description: The latest date time a search should target (ISO 8601 format) UTC time - YYYY-MM-DD hh:mm:ss.
-        type: String
-      - contextPath: SentryWire.Investigator.MaxPacketCount
-        description: Maximum number of packets
-        type: String
-      - contextPath: SentryWire.Investigator.NodeName
-        description: Node where status of search is being checked.
-        type: String
-      - contextPath: SentryWire.Investigator.SearchFilter
-        description: The filter being used by the search.
-        type: String
-      - contextPath: SentryWire.Investigator.SearchID
-        description: The ID of the search.
-        type: String
-      - contextPath: SentryWire.Investigator.SearchResult
-        description: Results of the search being run.
-        type: String
-      - contextPath: SentryWire.Investigator.SearchStatus
-        description: Status of the search pending/completed/cancelled.
-        type: String
+    - contextPath: SentryWire.Investigator.Begintime
+      description: The earliest date time a search should target (ISO 8601 format) UTC time - YYYY-MM-DD hh:mm:ss.
+      type: String
+    - contextPath: SentryWire.Investigator.Endtime
+      description: The latest date time a search should target (ISO 8601 format) UTC time - YYYY-MM-DD hh:mm:ss.
+      type: String
+    - contextPath: SentryWire.Investigator.MaxPacketCount
+      description: Maximum number of packets.
+      type: String
+    - contextPath: SentryWire.Investigator.NodeName
+      description: Node where status of search is being checked.
+      type: String
+    - contextPath: SentryWire.Investigator.SearchFilter
+      description: The filter being used by the search.
+      type: String
+    - contextPath: SentryWire.Investigator.SearchID
+      description: The ID of the search.
+      type: String
+    - contextPath: SentryWire.Investigator.SearchResult
+      description: Results of the search being run.
+      type: String
+    - contextPath: SentryWire.Investigator.SearchStatus
+      description: Status of the search pending/completed/cancelled.
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -168,16 +168,16 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete a search
+    description: Delete a search.
     execution: false
     name: sentrywire-delete-search
     outputs:
-      - contextPath: SentryWire.Investigator.Deleted.SearchID
-        description: The ID of the search.
-        type: String
-      - contextPath: SentryWire.Investigator.Deleted.message
-        description: Message from the SentryWire unit
-        type: String
+    - contextPath: SentryWire.Investigator.Deleted.SearchID
+      description: The ID of the search.
+      type: String
+    - contextPath: SentryWire.Investigator.Deleted.message
+      description: Message from the SentryWire unit.
+      type: String
   - arguments:
     - default: false
       isArray: false
@@ -192,60 +192,60 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Download the metadata json of a search packaged in a zip file
+    description: Download the metadata json of a search packaged in a zip file.
     execution: false
     name: sentrywire-get-metadata
     outputs:
-      - contextPath: File.Size
-        description: The size of the file.
-        type: Number
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.Name
-        description: The name of the file.
-        type: String
-      - contextPath: File.SSDeep
-        description: The SSDeep hash of the file.
-        type: String
-      - contextPath: File.EntryID
-        description: The entry ID of the file.
-        type: String
-      - contextPath: File.Info
-        description: File information.
-        type: String
-      - contextPath: File.Type
-        description: The file type.
-        type: String
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.Extension
-        description: The file extension.
-        type: String
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
   - deprecated: false
-    description: Get status of instance's SentryWire unit
+    description: Get status of instance's SentryWire unit.
     execution: false
     name: sentrywire-get-server-status
     outputs:
-      - contextPath: SentryWire.Investigator.Server.ServerInfo
-        description: General information regarding SentryWire unit
-        type: String
-      - contextPath: SentryWire.Investigator.Server.FMNodes
-        description: General information regarding nodes
-        type: String
-      - contextPath: SentryWire.Investigator.Server.Version
-        description: Current SentryWire version
-        type: String
-      - contextPath: SentryWire.Investigator.Server.ApiVersion
-        description: API version in use
-        type: String
-      - contextPath: SentryWire.Investigator.Server.NodeName
-        description: NodeName of the SentryWire unit
-        type: String
+    - contextPath: SentryWire.Investigator.Server.ServerInfo
+      description: General information regarding SentryWire unit.
+      type: String
+    - contextPath: SentryWire.Investigator.Server.FMNodes
+      description: General information regarding nodes.
+      type: String
+    - contextPath: SentryWire.Investigator.Server.Version
+      description: Current SentryWire version.
+      type: String
+    - contextPath: SentryWire.Investigator.Server.ApiVersion
+      description: API version in use.
+      type: String
+    - contextPath: SentryWire.Investigator.Server.NodeName
+      description: NodeName of the SentryWire unit.
+      type: String
   dockerimage: demisto/python3:3.10.4.30607
   feed: false
   isfetch: false
@@ -255,3 +255,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

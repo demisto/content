@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 import urllib3
 import json
 import re
-from typing import Any, Dict
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -23,7 +23,7 @@ class Client(BaseClient):
                          headers={'Content-Type': "application/json"})
         self._session.cookies.set(name='rest_token', value=self._get_auth(), domain=address)
 
-    def create_search(self, args: Dict[str, Any]):
+    def create_search(self, args: dict[str, Any]):
         endpoint = 'fmsearch'
         json_data = {
             'rest_token': self._session.cookies.get('rest_token'),
@@ -115,7 +115,7 @@ class Client(BaseClient):
             full_url=urljoin(self._base_url, endpoint),
             json_data=json_data)
 
-        if isinstance(response, Dict):
+        if isinstance(response, dict):
             return str(response.get('rest_token'))
         else:
             raise Exception(f'Authentication failed, unexpected response: {response}')
@@ -149,7 +149,8 @@ def parse_search_status(response):
         try:
             response, readable_output = bytes_to_readable(response)
         except Exception:
-            raise DemistoException(f'Could not get the size of SearchResult, got the following object: {response["SearchResult"]}')
+            raise DemistoException(
+                f'Could not get the size of SearchResult, got the following object: {response["SearchResult"]}')
     return response, readable_output
 
 
@@ -172,6 +173,7 @@ def bytes_to_readable(response):
     except Exception:
         raise DemistoException(f'Could not parse PCAP size from the following response: {response}')
 
+
 def parse_create_search(response):
     try:
         # Search ID handling
@@ -193,7 +195,7 @@ def parse_create_search(response):
 ''' COMMANDS '''
 
 
-def create_search_command(client: Client, args: Dict[str, Any]):
+def create_search_command(client: Client, args: dict[str, Any]):
     if args.get('generate_links'):
         generate_links = argToBoolean(args.get('generate_links'))
     else:
@@ -228,7 +230,7 @@ def create_search_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def delete_search_command(client: Client, args: Dict[str, Any]):
+def delete_search_command(client: Client, args: dict[str, Any]):
     search_id = args.get("search_id")
     response = client.delete_search(search_id=str(search_id))
     response["SearchID"] = search_id
@@ -240,7 +242,7 @@ def delete_search_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def download_pcap_command(client: Client, args: Dict[str, Any]):
+def download_pcap_command(client: Client, args: dict[str, Any]):
     search_id = args.get('search_id')
     node_name = args.get('node_name')
     file_entry = fileResult(
@@ -250,7 +252,7 @@ def download_pcap_command(client: Client, args: Dict[str, Any]):
     return file_entry
 
 
-def download_metadata_command(client: Client, args: Dict[str, Any]):
+def download_metadata_command(client: Client, args: dict[str, Any]):
     search_id = args.get('search_id')
     node_name = args.get('node_name')
     file_entry = fileResult(
@@ -260,7 +262,7 @@ def download_metadata_command(client: Client, args: Dict[str, Any]):
     return file_entry
 
 
-def get_search_status_command(client: Client, args: Dict[str, Any]):
+def get_search_status_command(client: Client, args: dict[str, Any]):
     search_id = args.get('search_id')
     node_name = args.get('node_name')
 

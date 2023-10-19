@@ -16,15 +16,12 @@ REDUNDANT_SEARCH_STATUS = [
 
 
 def load_json_util(filename: str) -> dict:
-    with open(filename, 'r') as f:
+    with open(filename) as f:
         return json.load(f)
 
 
 def check_redundancy(data: dict, keys: list) -> bool:
-    for key in keys:
-        if key in data.keys():
-            return True
-    return False
+    return any(key in data for key in keys)
 
 
 def test_sentrywire_create_search(requests_mock):
