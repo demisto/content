@@ -45,7 +45,9 @@ def create_instance(request, integration_params, xsoar_ng_client: XsoarNGApiClie
 
 
 class TestEDL:
-
+    """
+    Tests EDL on xsoar-8
+    """
     indicators = [
         ("1.1.1.1", "IP", 0),
         ("2.2.2.2", "IP", 0),
@@ -54,7 +56,16 @@ class TestEDL:
     instance_name_gsm = "edl_auto_from_8_0_0"
     integration_id = "EDL"
 
-    def test_edl(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance, integration_params):
+    def test_edl(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: Dict):
+        """
+        Given:
+            - 3 IP indicators that's being created in xsoar
+            - long-running EDL instance
+        When:
+            - Trying to query the URL of edl
+        Then:
+            - make sure the 3 IP indicators is returned in the response of edl instance
+        """
         import requests
         from requests.auth import HTTPBasicAuth
 
@@ -62,12 +73,12 @@ class TestEDL:
         url = f'{xsoar_ng_client.external_base_url}/xsoar/instance/execute/{instance_name}'
 
         basic_auth = HTTPBasicAuth(integration_params["credentials"]["identifier"], integration_params["credentials"]["password"])
-        response = requests.get(url, verify=False, auth=basic_auth)
+        response = requests.get(url, auth=basic_auth)
 
         num_of_tries = 20
         i = 0
         while i < num_of_tries and response.status_code != 200:
-            response = requests.get(url, verify=False, auth=basic_auth)
+            response = requests.get(url, auth=basic_auth)
             i += 1
 
-        assert response.text == '3.3.3.3\n2.2.2.2\n1.1.1.1'
+        assert response.text == '3.3.3.3\n2.2.2.2\n1.1.1.1', f'could not get {self.indicators=}, status code={response.status_code}, response={response.text}'
