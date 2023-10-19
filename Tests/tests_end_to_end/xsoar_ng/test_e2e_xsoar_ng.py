@@ -64,7 +64,7 @@ class TestEDL:
         When:
             - Trying to query the URL of edl
         Then:
-            - make sure the 3 IP indicators is returned in the response of edl instance
+            - make sure the 3 IP indicators are returned in the response of edl instance
         """
         import requests
         from requests.auth import HTTPBasicAuth
