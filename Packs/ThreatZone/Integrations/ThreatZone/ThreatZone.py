@@ -284,17 +284,19 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
             readable_output = tableToMarkdown('Submission Result', readable_dict)
         else:
             readable_output = tableToMarkdown('Submission Result', {"Exception": str(exception)})
+
         return [
             CommandResults(
                 outputs_prefix='ThreatZone.Analysis',
                 readable_output=readable_output,
                 outputs_key_field="UUID",
                 outputs=output,
-                indicator=generate_indicator(readable_dict["SHA256"], output, "file")
+                indicator=generate_indicator(output["SHA256"], output, "file")
             )
         ]
 
     try:
+
         report_type = ""
         if result.get("reports", {}).get("dynamic", {}).get("enabled"):
             report_type = "dynamic"
@@ -304,6 +306,11 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
             report_type = "cdr"
 
         status = result["reports"][report_type]['status']
+        if status == 0:
+            return_error(
+                "Submission is declined by the scanner." + " "
+                + "The reason behind this could be about your file is broken or the analyzer has crashed."
+            )
         md5 = result['fileInfo']['hashes']['md5']
         sha1 = result['fileInfo']['hashes']['sha1']
         sha256 = result['fileInfo']['hashes']['sha256']
@@ -511,7 +518,7 @@ def main() -> None:
         elif command == 'tz-sandbox-upload-sample':
             return_results(threatzone_sandbox_upload_sample(client, args))
         elif command == 'tz-static-upload-sample':
-            args["scan_type"] = "static"
+            args["scan_type"] = "static-scan"
             return_results(threatzone_static_cdr_upload_sample(client, args))
         elif command == 'tz-cdr-upload-sample':
             args["scan_type"] = "cdr"
