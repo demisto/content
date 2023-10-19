@@ -30,5 +30,5 @@ Example:
 
 ### How to execute
 ```bash
-python -m pytest Tests/xsiam -v --disable-warnings --cloud_machine machine1 --cloud_servers_path Tests/xsiam/test_cloud_server_path.json --cloud_servers_api_keys Tests/xsiam/test_cloud_api_keys.json
+python -m pytest Tests/tests_end_to_end/xsiam -v --disable-warnings --cloud_machine machine1 --cloud_servers_path Tests/tests_end_to_end/xsiam/test_cloud_server_path.json --cloud_servers_api_keys Tests/xsiam/test_cloud_api_keys.json
 ```
