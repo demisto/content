@@ -15,7 +15,7 @@ disable_warnings()
 
 VENDOR = "symantec_long_running"
 PRODUCT = "swg"
-FETCH_SLEEP = 240
+FETCH_SLEEP = 900
 FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR = 180
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
@@ -230,7 +230,15 @@ def extract_logs_from_response(file_path: Path) -> list[bytes]:
                             nested_zip_file, "rb"
                         ) as f:
                             demisto.debug("test test test")
-                            logs.extend(f.readlines())
+                            chunk_size = (1024 ** 2) * 500
+                            end_part: bytes
+                            while True:
+                                parts = f.read(chunk_size)
+                                if not parts:
+                                    break
+                                end_part = parts
+                            logs_end_part = end_part.splitlines()
+                            logs.extend(logs_end_part)
                     except Exception as e:
                         demisto.debug(
                             f"Crashed at the open the internal file {file.filename} file, Error: {e}"
