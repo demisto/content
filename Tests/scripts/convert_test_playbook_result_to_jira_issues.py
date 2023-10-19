@@ -19,7 +19,7 @@ from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
     jira_server_information
-from Tests.scripts.test_playbooks import get_test_playbook_results_files, calculate_test_playbooks_results, \
+from Tests.scripts.test_playbooks_report import get_test_playbook_results_files, calculate_test_playbooks_results, \
     get_jira_tickets_for_playbooks, calculate_test_playbooks_results_table, get_all_failed_playbooks, TEST_SUITE_DATA_CELL_HEADER
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging

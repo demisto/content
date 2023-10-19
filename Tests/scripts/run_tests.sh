@@ -16,7 +16,9 @@ while [[ "$#" -gt 0 ]]; do
     --generate-empty-result-file) generate_empty_results_file="true"
       shift;;
     *)  # unknown option.
-      shift;;  # FIXME! echo warning
+      shift
+      echo "Unknown option was received: $1"
+      ;;
   esac
 done
 

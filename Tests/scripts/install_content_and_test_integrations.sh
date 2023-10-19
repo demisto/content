@@ -47,9 +47,9 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; 
         "Failed to $0 script on ${CLOUD_CHOSEN_MACHINE_ID}"
       fi
     done
-    exit_on_error "${exit_code}" "Finished configure_and_test_integration_instances.sh script"
+    exit_on_error "${exit_code}" "Finished $0 script"
 
-    echo "Finished configure_and_test_integration_instances.sh successfully"
+    echo "Finished $0 successfully"
     exit 0
   else
     exit_on_error 1 "No machines were chosen"
@@ -61,10 +61,10 @@ elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
       --is-nightly "${IS_NIGHTLY}" --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY" \
       --server-type "${SERVER_TYPE}"  --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" \
       --cloud_servers_path "$CLOUD_SERVERS_PATH" --cloud_servers_api_keys "cloud_api_keys.json" \
-      --marketplace_name "$MARKETPLACE_NAME" --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET"  # FIXME! change $0
-    exit_on_error $? "Failed to configure_and_test_integration_instances.sh script"
+      --marketplace_name "$MARKETPLACE_NAME" --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET"
+    exit_on_error $? "Failed to $0 script"
 
-    echo "Finished configure_and_test_integration_instances.sh successfully"
+    echo "Finished $0 successfully"
     exit 0
 else
   exit_on_error 1 "Unknown server type: ${SERVER_TYPE}"

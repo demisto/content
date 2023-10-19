@@ -10,7 +10,7 @@ from tabulate import tabulate
 
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
     JIRA_API_KEY, jira_server_information
-from Tests.scripts.test_playbooks import calculate_test_playbooks_results, get_jira_tickets_for_playbooks, \
+from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, get_jira_tickets_for_playbooks, \
     calculate_test_playbooks_results_table, get_test_playbook_results_files
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
@@ -37,7 +37,7 @@ def read_file_contents(file_path: Path) -> list | None:
     return None
 
 
-def old_print_test_summary(artifacts_path: Path) -> None:  # FIXME!
+def print_test_summary_without_junit_report(artifacts_path: Path) -> None:
     """
     Takes the information stored in the files and prints it in a human-readable way.
     """
@@ -75,8 +75,9 @@ def filter_skipped_playbooks(playbooks_results):
     filtered_playbooks_ids = []
     for playbook_id, playbook_results in playbooks_results.items():
         skipped_count = 0
-        for test_suite in playbook_results.values():  # FIXME! add logging
+        for test_suite in playbook_results.values():
             if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
+                logging.debug(f"Skipping playbook {playbook_id} because it was skipped in the test")
                 skipped_count += 1
 
         # If all the test suites were skipped, don't add the row to the table.
@@ -122,10 +123,10 @@ def print_test_summary(artifacts_path: Path, without_jira: bool) -> bool:
                                                                                        playbooks_results,
                                                                                        server_versions,
                                                                                        without_jira=without_jira)
+    logging.info(f"Writing test playbook report to {test_playbooks_report}")
     xml.write(test_playbooks_report.as_posix(), pretty=True)
     table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
     logging.info(f"Test Playbook Results:\n{table}")
-    logging.info(f"Writing test playbook report to {test_playbooks_report}")  # FIXME! move closer to the write
     return True
 
 
@@ -136,7 +137,7 @@ def main():
         artifacts_path = Path(options.artifacts_path)
         logging.info(f"Printing test playbook summary - artifacts path: {artifacts_path}")
         if not print_test_summary(artifacts_path, options.without_jira):
-            old_print_test_summary(artifacts_path)
+            print_test_summary_without_junit_report(artifacts_path)
         logging.info("Finished printing test summary")
     except Exception as e:
         logging.error(f'Failed to get the test playbook summary: {e}')
