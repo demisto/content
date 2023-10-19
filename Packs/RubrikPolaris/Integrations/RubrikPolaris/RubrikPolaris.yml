@@ -97,14 +97,16 @@ script:
       description: The ID of the cluster.
       type: String
   - arguments:
-    - description: |
+    - description: |-
         The name of the Rubrik object to check for sensitive hits.  When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.
 
         Note: Users can get the list of the object names by executing the "rubrik-polaris-object-list" or "rubrik-polaris-object-search" command.
+        .
       name: objectName
     - defaultValue: 7
-      description: |
+      description: |-
         The number of days in the past to look for sensitive hits. If no value is provided, then today's data will be returned and, if there is no data for today then the argument will default to 7 days.
+        .
       name: searchTimePeriod
     description: Find data classification hits on an object.
     name: rubrik-sonar-sensitive-hits
@@ -703,10 +705,11 @@ script:
       description: Whether the result has the next page or not.
       type: Boolean
   - arguments:
-    - description: |
+    - description: |-
         Name of the scan. If not provided, it defaults to "<today's date> Classification".
+        .
       name: scan_name
-    - description: "List of sonar policies to scan.\n\nNote: Users can get the list of analyzer groups by executing the \"rubrik-sonar-policy-analyzer-groups-list\" command. \n\nFormat Accepted: \n[\n        {\n            \"id\": \"543dd5e0-c72c-50e2-a3d9-1688343f472c\",\n            \"name\": \"HIPAA\",\n            \"groupType\": \"HIPAA\",\n            \"analyzers\": [\n                {\n                    \"id\": \"9da675b3-944b-5da3-a2da-ed149d300075\",\n                    \"name\": \"US/UK Passport\",\n                    \"analyzerType\": \"PASSPORT\"\n                },\n                {\n                    \"id\": \"18665533-c28c-5a40-b747-4b6508fecdfa\",\n                    \"name\": \"US NPI\",\n                    \"analyzerType\": \"US_HEALTHCARE_NPI\"\n                }\n            ]\n      }\n]"
+    - description: "List of sonar policies to scan.\n\nNote: Users can get the list of analyzer groups by executing the \"rubrik-sonar-policy-analyzer-groups-list\" command. \n\nFormat Accepted: \n[\n        {\n            \"id\": \"543dd5e0-c72c-50e2-a3d9-1688343f472c\",\n            \"name\": \"HIPAA\",\n            \"groupType\": \"HIPAA\",\n            \"analyzers\": [\n                {\n                    \"id\": \"9da675b3-944b-5da3-a2da-ed149d300075\",\n                    \"name\": \"US/UK Passport\",\n                    \"analyzerType\": \"PASSPORT\"\n                },\n                {\n                    \"id\": \"18665533-c28c-5a40-b747-4b6508fecdfa\",\n                    \"name\": \"US NPI\",\n                    \"analyzerType\": \"US_HEALTHCARE_NPI\"\n                }\n            ]\n      }\n]."
       name: sonar_policy_analyzer_groups
       required: true
     - description: "List of VM object IDs to scan.\n\nNote: Users can get the list of VM object IDs by executing the \"rubrik-polaris-vm-objects-list\" command."
@@ -957,9 +960,9 @@ script:
     - description: "The Snapshot ID of the file that needs to be downloaded.\n\nNote: Users can retrieve the list of the snapshot IDs by executing the \"rubrik-polaris-vm-object-snapshot-list\" command."
       name: snapshot_id
       required: true
-    - description: "The path of the folder to list the sub-files. If not provided the root directory files will be returned.\n\nFormat accepted : \"/<directory name>/<sub directory name or file name>\"\n\nExample: \"/C:\", \"/C:/Users\""
+    - description: "The path of the folder to list the sub-files. If not provided the root directory files will be returned.\n\nFormat accepted : \"/<directory name>/<sub directory name or file name>\"\n\nExample: \"/C:\", \"/C:/Users\"."
       name: path
-    - description: "Provide a keyword to search in the file names.\n\nExample: \"admin\""
+    - description: "Provide a keyword to search in the file names.\n\nExample: \"admin\"."
       name: search_prefix
     - defaultValue: 50
       description: Number of results to retrieve in the response. Maximum size allowed is 1000.
@@ -1448,10 +1451,10 @@ script:
                   "name": <string>
                 }
               }
-            ]
+            ].
       name: vnic_bindings
     - description: |-
-        Point in time to recover to, e.g.: "2023-03-04T05:06:07.890"
+        Point in time to recover to, e.g.: "2023-03-04T05:06:07.890".
       name: recovery_point
     description: "Performs a live mount of a virtual machine snapshot.\n\nNote: To know about the live mount status, use the \"rubrik-gps-async-result\" command."
     name: rubrik-gps-vm-livemount
@@ -1890,7 +1893,7 @@ script:
 
         Note: To provide multiple IOCs use the argument "advance_ioc".
       name: ioc_value
-    - description: "Json encoded Indicators Of Compromise to scan. Json keys signify the type of IOC and the corresponding list of values are the values of the IOC's. If provided, will ignore the ioc_type and ioc_value arguments.\n\nPossible keys to indicate type of indicator: \nINDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME, INDICATOR_OF_COMPROMISE_TYPE_HASH, INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\n\nFormat Accepted:\n{\n\"<ioc_type1>\": [\"<ioc_value1>\", \"<ioc_value2>\"],\n\"<ioc_type2>\": \"<ioc_value2>\"\n}\n\nExample:\n{\n\"INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME\": [\"C:\\Users\\Malware_Executible.ps1\", \"\\bin\\Malware_Executible\"],\n\"INDICATOR_OF_COMPROMISE_TYPE_HASH\": [\"e5c1b9c44be582f895eaea3d3738c5b4\", \"f541b9844be897f895eaea3d3738cfb2\"],\n\"INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\": \"rule match_everything {condition:true}\"\n}"
+    - description: "Json encoded Indicators Of Compromise to scan. Json keys signify the type of IOC and the corresponding list of values are the values of the IOC's. If provided, will ignore the ioc_type and ioc_value arguments.\n\nPossible keys to indicate type of indicator: \nINDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME, INDICATOR_OF_COMPROMISE_TYPE_HASH, INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\n\nFormat Accepted:\n{\n\"<ioc_type1>\": [\"<ioc_value1>\", \"<ioc_value2>\"],\n\"<ioc_type2>\": \"<ioc_value2>\"\n}\n\nExample:\n{\n\"INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME\": [\"C:\\Users\\Malware_Executible.ps1\", \"\\bin\\Malware_Executible\"],\n\"INDICATOR_OF_COMPROMISE_TYPE_HASH\": [\"e5c1b9c44be582f895eaea3d3738c5b4\", \"f541b9844be897f895eaea3d3738cfb2\"],\n\"INDICATOR_OF_COMPROMISE_TYPE_YARA_RULE\": \"rule match_everything {condition:true}\"\n}."
       name: advance_ioc
     - description: |-
         Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.
@@ -1929,21 +1932,21 @@ script:
         Paths to include in the scan. Supports comma separated values.
 
         Format accepted:
-        path_to_include_1, path_to_include_2
+        path_to_include_1, path_to_include_2.
       isArray: true
       name: paths_to_include
     - description: |-
         Paths to exclude from the scan. Supports comma separated values.
 
         Format accepted:
-        path_to_exclude_1, path_to_exclude_2
+        path_to_exclude_1, path_to_exclude_2.
       isArray: true
       name: paths_to_exclude
     - description: |-
         Paths to exempt from exclusion. Supports comma separated values.
 
         Format accepted:
-        path_to_exempt_1, path_to_exempt_2
+        path_to_exempt_1, path_to_exempt_2.
       isArray: true
       name: paths_to_exempt
     - description: |-
@@ -2252,7 +2255,7 @@ script:
     - contextPath: RubrikPolaris.GPSVMRecoverFiles.id
       description: Recover files request ID.
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.69220
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.75015
   isfetch: true
   runonce: false
   script: '-'

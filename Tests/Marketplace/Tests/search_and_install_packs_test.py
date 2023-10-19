@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 import requests
@@ -10,6 +11,8 @@ import Tests.Marketplace.search_and_install_packs as script
 from demisto_client.demisto_api.rest import ApiException
 from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
+
+CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
 
 
 def load_json_file(directory: str, file_name: str):
@@ -82,13 +85,13 @@ MOCK_PACKS_INSTALLATION_RESULT = [
 PACKS_PACK_META_FILE_NAME = 'pack_metadata.json'
 
 
-def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None, response_type='object'):
+def mocked_generic_request_func(self, path: str, method, body=None, **kwargs):
     if body:
         if body[0].get('id') == 'HelloWorld':
             return MOCK_HELLOWORLD_SEARCH_RESULTS, 200, None
         elif body and body[0].get('id') == 'AzureSentinel':
             return MOCK_AZURESENTINEL_SEARCH_RESULTS, 200, None
-    return None, None, None
+    raise ApiException(status=400)
 
 
 class MockConfiguration:
@@ -141,7 +144,10 @@ def test_search_and_install_packs_and_their_dependencies(mocker, use_multithread
 
     client = MockClient()
 
-    mocker.patch.object(script, 'install_packs')
+    import time
+    mocker.patch.object(time, 'sleep')
+
+    mocker.patch.object(script, 'install_packs', return_value=(True, []))
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     mocker.patch.object(script, 'is_pack_deprecated', return_value=False)  # Relevant only for post-update unit-tests
 
@@ -178,8 +184,9 @@ def test_search_and_install_packs_and_their_dependencies_with_error(mocker, erro
         Ensure the function returns a 'success' value of 'False'.
     """
     client = MockClient()
-
-    mocker.patch.object(script, 'install_packs')
+    import time
+    mocker.patch.object(time, 'sleep')
+    mocker.patch.object(script, 'install_packs', return_value=(False, []))
     mocker.patch.object(script, 'fetch_pack_metadata_from_gitlab', return_value={"hidden": False})
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(status=error_code))
 
@@ -214,12 +221,12 @@ def test_install_nightly_packs_endless_loop(mocker):
     mocker.patch.object(demisto_client, 'generic_request_func', generic_request_mock)
     mocker.patch("Tests.Marketplace.search_and_install_packs.logging")
     packs_to_install = [
-        {'id': 'HelloWorld'},
-        {'id': 'TestPack'},
-        {'id': 'AzureSentinel'},
-        {'id': 'Base'},
-        {'id': 'bad_integration1'},
-        {'id': 'bad_integration2'},
+        {'id': 'HelloWorld', 'version': '1.0.0'},
+        {'id': 'TestPack', 'version': '1.0.0'},
+        {'id': 'AzureSentinel', 'version': '1.0.0'},
+        {'id': 'Base', 'version': '1.0.0'},
+        {'id': 'bad_integration1', 'version': '1.0.0'},
+        {'id': 'bad_integration2', 'version': '1.0.0'},
     ]
     script.install_packs(client, 'my_host', packs_to_install)
 
@@ -359,7 +366,7 @@ def test_fetch_pack_metadata_from_gitlab(mocker):
 
     # Assert API call is valid
     requests_mock.assert_called_with(
-        "https://example.com/api/v4/projects/2596/repository/files/Packs%2FTestPack%2Fpack_metadata.json",
+        f"https://example.com/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/Packs%2FTestPack%2Fpack_metadata.json",
         headers={"PRIVATE-TOKEN": "API_KEY"},
         params={"ref": "COMMIT_HASH"},
     )
@@ -406,7 +413,12 @@ class TestInstallPacks:
         http_resp = MockHttpRequest(GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY)
         mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
         client = MockClient()
-        assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack3'}])
+        success, _ = script.install_packs(client, 'my_host',
+                                          packs_to_install=[
+                                              {'id': 'pack1', 'version': '1.0.0'},
+                                              {'id': 'pack3', 'version': '1.0.0'}
+                                          ])
+        assert not success
 
     def test_malformed_pack_exception(self, mocker):
         """
@@ -422,7 +434,11 @@ class TestInstallPacks:
         http_resp = MockHttpRequest(MALFORMED_PACK_RESPONSE_BODY)
         mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(http_resp=http_resp))
         client = MockClient()
-        assert not script.install_packs(client, 'my_host', packs_to_install=[{'id': 'pack1'}, {'id': 'pack2'}])
+        success, _ = script.install_packs(client, 'my_host', packs_to_install=[
+            {'id': 'pack1', 'version': '1.0.0'},
+            {'id': 'pack3', 'version': '1.0.0'}
+        ])
+        assert not success
 
 
 def test_malformed_pack_id():

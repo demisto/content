@@ -1,0 +1,175 @@
+{
+  "results": [{
+    "@timestamp": "2023-07-25T09:07:24.192Z",
+    "@version": "1",
+    "_id": "IKpNjIkBWK2kIefhuEoN",
+    "agent": {
+      "ephemeral_id": "068737ef-d3c2-4903-b71b-5a955bd32ba5",
+      "hostname": "host",
+      "id": "9f305fa4-6db1-485c-81f9-598dce1469e3",
+      "name": "host",
+      "type": "filebeat",
+      "version": "7.17.8"
+    },
+    "alert": {
+      "action": "allowed",
+      "category": "A Network Trojan was detected",
+      "gid": 2,
+      "metadata": {
+        "affected_product": [
+          "Windows_XP_Vista_7_8_10_Server_32_64_Bit"
+        ],
+        "attack_target": [
+          "Client_Endpoint"
+        ],
+        "created_at": [
+          "2018_11_29"
+        ],
+        "deployment": [
+          "Perimeter"
+        ],
+        "former_category": [
+          "TROJAN"
+        ],
+        "malware_family": [
+          "IcedID"
+        ],
+        "signature_severity": [
+          "Major"
+        ],
+        "updated_at": [
+          "2020_09_16"
+        ]
+      },
+      "rev": 5,
+      "severity": 1,
+      "signature": "IcedID WebSocket Request",
+      "signature_id": 1002026673
+    },
+    "alerted": true,
+    "app_proto": "http",
+    "asset": "10.7.5.101",
+    "dest_ip": "95.142.46.236",
+    "dest_port": 80,
+    "ether": {
+      "dest_mac": "20:e5:2a:b6:93:f1",
+      "src_mac": "00:08:02:1c:47:ae"
+    },
+    "event_type": "stamus",
+    "flow": {
+      "bytes_toclient": 351,
+      "bytes_toserver": 336,
+      "dest_ip": "95.142.46.236",
+      "dest_port": 80,
+      "pkts_toclient": 3,
+      "pkts_toserver": 4,
+      "src_ip": "10.7.5.101",
+      "src_port": 49669,
+      "start": "2023-07-25T11:07:24.016182+0200"
+    },
+    "flow_id": 1195403822721444,
+    "geoip": {
+      "continent": {
+        "code": "EU",
+        "geoname_id": 6255148,
+        "name": "Europe"
+      },
+      "continent_code": "EU",
+      "coordinate": [
+        37.6068,
+        55.7386
+      ],
+      "country": {
+        "geoname_id": 2017370,
+        "iso_code": "RU",
+        "name": "Russia"
+      },
+      "country_code2": "RU",
+      "country_code3": "RU",
+      "country_name": "Russia",
+      "ip": "95.142.46.236",
+      "latitude": 55.7386,
+      "location": {
+        "lat": 55.7386,
+        "lon": 37.6068
+      },
+      "longitude": 37.6068,
+      "registered_country": {
+        "geoname_id": 2017370,
+        "iso_code": "RU",
+        "name": "Russia"
+      },
+      "timezone": ""
+    },
+    "host": "nico-probe-2-ssp-2",
+    "hostname_info": {
+      "domain": "germakhya.xyz",
+      "domain_without_tld": "germakhya",
+      "host": "germakhya.xyz",
+      "tld": "xyz",
+      "url": "germakhya.xyz"
+    },
+    "http": {
+      "hostname": "germakhya.xyz",
+      "http_method": "GET",
+      "length": 0,
+      "protocol": "HTTP/1.1",
+      "server": "openresty",
+      "status": 101,
+      "url": "/data2.php?697F79036433CFE3"
+    },
+    "in_iface": "tppdummy0",
+    "info": "Hostname: germakhya.xyz",
+    "input": {
+      "type": "log"
+    },
+    "killchain": "command_and_control",
+    "log": {
+      "file": {
+        "path": "/var/log/suricata/eve-stamus-0.json"
+      },
+      "offset": 93437693
+    },
+    "logger": "logstash-manager",
+    "metadata": {
+      "flowbits": [
+        "min.gethttp"
+      ]
+    },
+    "method": "IcedID WebSocket Request",
+    "offender": "95.142.46.236",
+    "packet": "IOUqtpPxAAgCHEeuCABFAAAqISRAAIAGO8QKBwVlX44u7MIFAFC0RXwWYCcE0VAY+jc99QAAgg0=",
+    "packet_info": {
+      "linktype": 1
+    },
+    "payload_printable": "GET /data2.php?697F79036433CFE3 HTTP/1.1\\r\\nHost: germakhya.xyz\\r\\nUpgrade: websocket\\r\\nConnection: Upgrade\\r\\n\\r\\n",
+    "proto": "TCP",
+    "see_id": "0a00af96dd83",
+    "see_name": "stamus-central-server",
+    "src_ip": "10.7.5.101",
+    "src_port": 49669,
+    "stamus": {
+      "asset": "10.7.5.101",
+      "asset_net_info": "",
+      "asset_type": "ip",
+      "event_id": "24",
+      "extra_info": null,
+      "family_id": 4,
+      "family_name": "Data Theft",
+      "family_type": "family",
+      "kill_chain": "command_and_control",
+      "method_id": 1002026673,
+      "pk": 2358,
+      "source": "95.142.46.236",
+      "threat_id": 17,
+      "threat_name": "IcedID"
+    },
+    "stream": 1,
+    "tags": [
+      "beats_input_codec_json_applied"
+    ],
+    "timestamp": "2023-07-25T11:07:24.192879+0200",
+    "tx_id": 0,
+    "type": "json-log"
+  }]
+}

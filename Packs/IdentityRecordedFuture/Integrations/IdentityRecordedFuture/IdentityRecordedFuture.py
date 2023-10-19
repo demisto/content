@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 """Recorded Future Identity Integration for Demisto."""
-from typing import Dict, Any, List, Union, Optional
+from typing import Dict, Any, Union, Optional
 import requests
 import json
 

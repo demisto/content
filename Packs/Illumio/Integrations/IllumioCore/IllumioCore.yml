@@ -54,7 +54,7 @@ script:
       description: |-
         Communication protocol.
 
-        Supported values are: 'tcp' and 'udp'
+        Supported values are: 'tcp' and 'udp'.
       name: protocol
       predefined:
       - tcp
@@ -65,7 +65,7 @@ script:
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: start_time
     - defaultValue: now
       description: |-
@@ -73,13 +73,13 @@ script:
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: end_time
     - defaultValue: potentially_blocked, unknown
       description: |-
         List of policy decisions to include in the search results. Supports comma-separated values.
 
-        Supported values are: 'potentially_blocked', 'blocked', 'unknown', and 'allowed'
+        Supported values are: 'potentially_blocked', 'blocked', 'unknown', and 'allowed'.
       isArray: true
       name: policy_decisions
     description: Retrieves traffic flow of a particular port & protocol within the specified time range based on policy decisions.
@@ -497,7 +497,7 @@ script:
       description: The URI of the report to which this vulnerability belongs to.
       type: String
     - contextPath: Illumio.Workloads.agent.config.mode
-      description: DEPRECATED AND REPLACED (Use workload enforcement_mode instead)
+      description: DEPRECATED AND REPLACED (Use workload enforcement_mode instead).
       type: String
     - contextPath: Illumio.Workloads.agent.config.log_traffic
       description: True if we want to log traffic events from this workload.
@@ -862,7 +862,7 @@ script:
       description: The URI of the report to which this vulnerability belongs to.
       type: String
     - contextPath: Illumio.Workloads.agent.config.mode
-      description: DEPRECATED AND REPLACED (Use workload enforcement_mode instead)
+      description: DEPRECATED AND REPLACED (Use workload enforcement_mode instead).
       type: String
     - contextPath: Illumio.Workloads.agent.config.log_traffic
       description: True if we want to log traffic events from this workload.
@@ -1285,14 +1285,14 @@ script:
       description: |-
         Provider objects the rule should apply to. Supports comma separated values.
 
-        Supported values are: 'workloads' and 'virtual_services'
+        Supported values are: 'workloads' and 'virtual_services'.
       isArray: true
       name: resolve_providers_as
     - defaultValue: workloads
       description: |-
         Consumer objects the rule should apply to. Supports comma separated values.
 
-        Supported values are: 'workloads' and 'virtual_services'
+        Supported values are: 'workloads' and 'virtual_services'.
       isArray: true
       name: resolve_consumers_as
     - description: Service URIs. Supports comma separated values.
@@ -1400,7 +1400,7 @@ script:
     - contextPath: Illumio.Rule.resolve_labels_as.consumers
       description: Consumers resolve labels.
       type: String
-  dockerimage: demisto/illumio:1.0.0.69458
+  dockerimage: demisto/illumio:1.0.0.73482
   runonce: false
   script: '-'
   subtype: python3

@@ -735,7 +735,7 @@ def cleanup_records(signal: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]
     for rec in signal['allRecords']:
         field_names = list(rec.keys())
         for field_name in field_names:
-            if (field_name.startswith('bro') and len(rec.get(field_name)) == 0):
+            if (field_name.startswith('bro') and rec.get(field_name) in ([], (), {}, "")):
                 rec.pop(field_name, None)
             if (field_name == 'timestamp'):
                 rec['lastlog_timestamp'] = rec['timestamp']
@@ -999,9 +999,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
 
         # Append incidents to the signal list so the signals will be created first:
         final_incidents.extend(signal_incidents)
-        del(signal_incidents)
+        del (signal_incidents)
     final_incidents.extend(incidents)
-    del(incidents)
+    del (incidents)
 
     # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
     next_run = cast(

@@ -1793,11 +1793,16 @@ function Main {
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
 
+    if ($integration_params.insecure -eq $true) {
+        # Bypass SSL verification if insecure is true
+        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+    }
+
     try {
         $Demisto.Debug("Command being called is $Command")
 
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false)
 
         # Executing oauth2 commands
         switch ($command) {

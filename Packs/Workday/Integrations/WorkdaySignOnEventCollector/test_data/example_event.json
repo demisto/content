@@ -1,0 +1,39 @@
+{
+  "Workday_Account_Signon": {
+    "Signon_DateTime": "2023-08-08T23:04:01.788-07:00",
+    "User_Name": 123456,
+    "Successful": 1,
+    "Failed_Signon": 0,
+    "Invalid_Credentials": 0,
+    "Password_Changed": 0,
+    "Forgotten_Password_Reset_Request": 0,
+    "Signon_IP_Address": "Workday Internal",
+    "Signoff_DateTime": "2023-08-08T23:10:17.310-07:00",
+    "Authentication_Channel": "Web Services",
+    "Authentication_Type": "Trusted",
+    "Workday_Account_Reference": {
+      "ID": {
+        "WID": "1234567890qwertyuiop",
+        "System_User_ID": 123456,
+        "WorkdayUserName": 123456
+      }
+    },
+    "System_Account_Signon_Reference": {
+      "ID": "1234567890"
+    },
+    "Request_Originator_Reference": {
+      "ID": "1234567890qwertyuiop"
+    },
+    "Invalid_for_Authentication_Channel": 0,
+    "Invalid_for_Authentication_Policy": 0,
+    "Required_Password_Change": 0,
+    "Account_Disabled_or_Expired": 0,
+    "MFA_Authentication_Exempt": 0,
+    "Has_Grace_Period_for_MFA": 0,
+    "MFA_Enrollment": 0,
+    "Short_Session_ID": "abc123",
+    "Device_is_Trusted": 0,
+    "Tenant_Access_Read_Only": 0
+  }
+}
+

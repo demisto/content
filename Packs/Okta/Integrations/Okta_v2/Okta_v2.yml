@@ -17,6 +17,7 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - display: API Token (see detailed instructions)
   name: apitoken
   type: 4
@@ -90,7 +91,7 @@ script:
       description: Okta account factor ID.
       type: String
     - contextPath: Account.Factor.Provider
-      description: Okta account factor provider
+      description: Okta account factor provider.
       type: String
     - contextPath: Account.Factor.Profile
       description: Okta account factor profile.
@@ -102,7 +103,7 @@ script:
       description: Okta account factor status.
       type: Unknown
   - arguments:
-    - description: The user ID
+    - description: The user ID.
       name: userId
     - description: Username for which to un-enroll an existing factor.
       name: username
@@ -149,7 +150,7 @@ script:
       name: groupId
     - description: Name of the group to remove the user from.
       name: groupName
-    description: Removes a user from a group with OKTA_GROUP type
+    description: Removes a user from a group with OKTA_GROUP type.
     name: okta-remove-from-group
   - arguments:
     - default: true
@@ -212,10 +213,8 @@ script:
     - default: true
       description: Term by which to search. Can be a first name, last name, or email address. The argument `term` or `advanced_search` is required.
       name: term
-      required: false
     - description: Searches for users with a supported filtering expression for most properties, including custom-defined properties. The argument `term` or `advanced_search` is required.
       name: advanced_search
-      required: false
     - description: The maximum number of results to return. The default and maximum is 200.
       name: limit
     - auto: PREDEFINED
@@ -322,7 +321,7 @@ script:
       - 'false'
     - description: Searches the name property of groups for matching values.
       name: query
-    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \ntype eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       name: filter
     description: Lists users in your organization.
     name: okta-list-users
@@ -616,7 +615,7 @@ script:
   - arguments:
     - description: Searches the name property of groups for matching values.
       name: query
-    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \ntype eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       name: filter
     - defaultValue: '200'
       description: The maximum number of results to return. The default is 200.
@@ -649,9 +648,9 @@ script:
       description: Description of the group.
       type: String
   - arguments:
-    - description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z.'
       name: since
-    - description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+    - description: 'Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z.'
       name: until
     - auto: PREDEFINED
       defaultValue: ASCENDING
@@ -1241,7 +1240,7 @@ script:
   - arguments:
     - description: The maximum number of results to return.
       name: limit
-    description: Get an Okta Zone object
+    description: Get an Okta Zone object.
     name: okta-list-zones
     outputs:
     - contextPath: Okta.Zone.created
@@ -1263,7 +1262,7 @@ script:
       description: Zone name.
       type: String
     - contextPath: Okta.Zone.proxies.type
-      description: Proxies IP entry type e.g. CIDR
+      description: Proxies IP entry type e.g. CIDR.
       type: String
     - contextPath: Okta.Zone.proxies.value
       description: Proxies IP entry value, e.g., 34.103.1.108/32.
@@ -1289,7 +1288,7 @@ script:
     - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
       isArray: true
       name: proxyIPs
-    description: Update an Okta Zone
+    description: Update an Okta Zone.
     name: okta-update-zone
     outputs:
     - contextPath: Okta.Zone.created
@@ -1326,10 +1325,10 @@ script:
       description: Zone type, e.g., IP.
       type: String
   - arguments:
-    - description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7
+    - description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7.
       name: zoneID
       required: true
-    description: Get a Zone by its ID
+    description: Get a Zone by its ID.
     name: okta-get-zone
     outputs:
     - contextPath: Okta.Zone.created
@@ -1366,14 +1365,14 @@ script:
       description: Zone type, e.g., IP.
       type: String
   - arguments:
-    - description: Zone name
+    - description: Zone name.
       name: name
       required: true
     - description: 'Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
       name: gateway_ips
     - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2).'
       name: proxies
-    description: Creates a Zone with the specified name
+    description: Creates a Zone with the specified name.
     name: okta-create-zone
   - arguments:
     - description: Name of the group to add.
@@ -1386,16 +1385,16 @@ script:
     name: okta-create-group
     outputs:
     - contextPath: OktaGroup.ID
-      description: Group ID in Okta,
+      description: Group ID in Okta,.
       type: Unknown
     - contextPath: OktaGroup.Name
-      description: Group name in Okta,
+      description: Group name in Okta,.
       type: Unknown
     - contextPath: OktaGroup.Description
-      description: Group description in Okta,
+      description: Group description in Okta,.
       type: Unknown
     - contextPath: OktaGroup.Type
-      description: Group type in Okta,
+      description: Group type in Okta,.
       type: Unknown
   - arguments:
     - description: Name of the group to assign to the app.
@@ -1404,11 +1403,57 @@ script:
       name: groupId
     - description: Friendly name of the app that the group will be assigned to.
       name: appName
-    description: Assign a group to an application
+    description: Assign a group to an application.
     name: okta-assign-group-to-app
-  dockerimage: demisto/python3:3.10.12.68714
+  - arguments:
+    - default: true
+      description: Okta username for which to expire the password.
+      name: username
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: When true, you'll need to change the password in the next login.
+      name: temporary_password
+      predefined:
+      - 'true'
+      - 'false'
+    description: Expires a password for an existing Okta user.
+    execution: true
+    name: okta-expire-password
+    outputs:
+    - contextPath: Account.Activated
+      description: Timestamp for when the user was activated.
+      type: Date
+    - contextPath: Account.Created
+      description: Timestamp for when the user was created.
+      type: Date
+    - contextPath: Account.DisplayName
+      description: Okta account display name.
+      type: String
+    - contextPath: Account.Email
+      description: Okta account email.
+      type: String
+    - contextPath: Account.ID
+      description: Created Okta account ID.
+      type: String
+    - contextPath: Account.PasswordChanged
+      description: Timestamp for when the user's password was last changed.
+      type: Date
+    - contextPath: Account.Status
+      description: Okta account current status.
+      type: String
+    - contextPath: Account.StatusChanged
+      description: Timestamp for when the user's status was last changed.
+      type: Date
+    - contextPath: Account.Type
+      description: Okta account type.
+      type: String
+    - contextPath: Account.Username
+      description: Okta account usernames returned by the search.
+      type: String
+  dockerimage: demisto/python3:3.10.13.74666
   runonce: false
-  script: '-'
+  script: ""
   subtype: python3
   type: python
 fromversion: 5.0.0

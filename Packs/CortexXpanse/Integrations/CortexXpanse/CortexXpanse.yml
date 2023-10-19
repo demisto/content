@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+- additionalinfo: For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported.
   display: API Key ID
   displaypassword: API Key
   name: credentials
@@ -399,7 +399,7 @@ script:
       - resolved_contested_asset
       - resolved_remediated_automatically
       - resolved
-    - description: Comma-separated list of strings of the business units
+    - description: Comma-separated list of strings of the business units.
       name: business_units_list
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time
@@ -680,12 +680,14 @@ script:
     - contextPath: ASM.UpdatedAlerts
       description: IDs of the updated alerts.
     description: Updates the state of one or more alerts.
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.75921
   isFetchSamples: true
   isfetch: true
   script: ''
   subtype: python3
   type: python
+defaultmapperin: Xpanse - Incoming Mapper
+defaultclassifier: Xpanse - Classifier
 fromversion: 6.5.0
 tests:
 - CortexXpanse_Test

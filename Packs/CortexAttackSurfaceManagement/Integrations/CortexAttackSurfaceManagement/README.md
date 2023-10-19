@@ -11,7 +11,7 @@ This integration was integrated and tested with version 1.2.0 of Cortex Attack S
     | --- | --- | --- |
     | Server URL | Should be the web UI with \`api-\` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see: [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis). | True |
     | API Key ID | See [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis). | True |
-    | API Key | See [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis). | True |
+    | API Key | See [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis).  **Only standard API key type is supported**. | True |
     
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

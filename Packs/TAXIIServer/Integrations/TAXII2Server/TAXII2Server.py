@@ -5,7 +5,7 @@ import uuid
 import json
 from collections.abc import Callable
 from flask import Flask, request, make_response, jsonify, Response
-from urllib.parse import ParseResult, urlparse
+from urllib.parse import ParseResult, urlparse, urlunparse
 from secrets import compare_digest
 from dateutil.parser import parse
 from requests.utils import requote_uri
@@ -1026,6 +1026,18 @@ def parse_manifest_and_object_args() -> tuple:
     return added_after, offset, limit, types
 
 
+def get_stix_object_value(stix_ioc):
+    demisto.debug(f'{stix_ioc=}')
+    if stix_ioc.get('type') == "file":
+        for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
+            if hash_value := stix_ioc.get("hashes").get(hash_type):
+                return hash_value
+        return None
+
+    else:
+        return stix_ioc.get('value') or stix_ioc.get('name')
+
+
 ''' ROUTE FUNCTIONS '''
 
 
@@ -1249,9 +1261,39 @@ def test_module(params: dict) -> str:
     return 'ok'
 
 
+def edit_server_info(server_info: dict) -> dict:
+    """Edits the server info dictionary if the server version >= 8.0.0
+
+    Args:
+        server_info (dict): The server info
+    """
+    if is_demisto_version_ge('8.0.0'):
+        altered_api_roots = []
+        for api_root in server_info.get('api_roots', []):
+            altered_api_roots.append(alter_url(api_root))
+        server_info['api_roots'] = altered_api_roots
+        server_info['default'] = alter_url(server_info['default'])
+
+    return server_info
+
+
+def alter_url(url: str) -> str:
+    """Alters the URL's netloc with the "ext-" prefix.
+
+    Args:
+        url (str): The URL to alter.
+    """
+    parsed_url = urlparse(url)
+    new_netloc = "ext-" + parsed_url.netloc
+    new_url_tuple = (parsed_url.scheme, new_netloc, parsed_url.path, parsed_url.params, parsed_url.query, parsed_url.fragment)
+    new_url = urlunparse(new_url_tuple)
+    return new_url
+
+
 def get_server_info_command(integration_context):
     server_info = integration_context.get('server_info', None)
 
+    server_info = edit_server_info(server_info)
     metadata = '**In case the default/api_roots URL is incorrect, you can override it by setting' \
                '"TAXII2 Service URL Address" field in the integration configuration**\n\n'
     hr = tableToMarkdown('Server Info', server_info, metadata=metadata)
@@ -1285,16 +1327,6 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
     :param extensions: A list of dictionaries representing extension properties to include in the generated STIX objects.
     :return: A list of dictionaries representing the relationships objects, including entityBs objects
     """
-    def get_stix_object_value(stix_ioc):
-        if stix_ioc.get('type') == "file":
-            for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
-                if hash_value := stix_ioc.get("hashes").get(hash_type):
-                    return hash_value
-            return None
-
-        else:
-            return stix_ioc.get('value') or stix_ioc.get('name')
-
     relationships_list: list[dict[str, Any]] = []
     iocs_value_to_id = {get_stix_object_value(stix_ioc): stix_ioc.get('id') for stix_ioc in stix_iocs}
     search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data') or []
@@ -1308,6 +1340,7 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
             continue
 
         if not iocs_value_to_id.get(relationship.get('entityB')):
+            demisto.debug(f'TAXII: {iocs_value_to_id=} When {relationship.get("entityB")=}')
             demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
                           f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")
             continue
@@ -1377,6 +1410,8 @@ def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value
     entity_b_objects: list[dict[str, Any]] = []
     entity_b_values = ""
     for relationship in relationships:
+        if relationship.get('CustomFields', {}).get('revoked', False):
+            continue
         if (entity_b_value := relationship.get('entityB')) and entity_b_value not in iocs_value_to_id:
             iocs_value_to_id[entity_b_value] = ""
             entity_b_values += f'\"{entity_b_value}\" '
@@ -1397,8 +1432,8 @@ def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value
                 extensions.append(extension_definition)
         elif stix_ioc:
             entity_b_objects.append(stix_ioc)
-        iocs_value_to_id[(stix_ioc.get('value') or stix_ioc.get('name'))] = stix_ioc.get('id')
 
+        iocs_value_to_id[(get_stix_object_value(stix_ioc))] = stix_ioc.get('id')
     demisto.debug(f"Generated {len(entity_b_objects)} STIX objects for 'entityB' values.")
     return entity_b_objects
 
