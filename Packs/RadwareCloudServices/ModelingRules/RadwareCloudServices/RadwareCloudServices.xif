@@ -49,7 +49,7 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     directory = arrayindex(regextract(_raw_log, "directory=\"([^\"]+)"), 0), // The HTTP request folder.
     enrichmentContainer = arrayindex(regextract(_raw_log, "enrichmentContainer=\"([^\"]+)"), 0),
     externalIp = arrayindex(regextract(_raw_log, "externalIp=\"([^\"]+)"), 0),
-    event_id = arrayindex(regextract(_raw_log, "eventId=\"([^\"]+)"), 0), 
+    eventId = arrayindex(regextract(_raw_log, "eventId=\"([^\"]+)"), 0), 
     request_host = arrayindex(regextract(_raw_log, "host=\"([^\"]+)"), 0), // The host header in the HTTP request that triggered the security violation.
     aw_hostIP = arrayindex(regextract(_raw_log, "hostIP=\"([^\"]+)"), 0),
     aw_hostName = arrayindex(regextract(_raw_log, "hostName=\"([^\"]+)"), 0), 
@@ -57,7 +57,7 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     paramName = arrayindex(regextract(_raw_log, "paramName=\"([^\"]+)"), 0), // HTTP parameter name that triggered the security violation.
     paramType = arrayindex(regextract(_raw_log, "paramType=\"([^\"]+)"), 0), // Type of parameter: Query/Path/Body URL Encoded
     paramValue = arrayindex(regextract(_raw_log, "paramValue=\"([^\"]+)"), 0), // HTTP parameter value that triggered the security violation.
-    isPassive = arrayindex(regextract(_raw_log, "passive=\"([^\"]+)\""), 0), // Whether there were any actions applied to the violating request or response, or it is passive-mode detection only.
+    isPassive = arrayindex(regextract(_raw_log, "(?i)passive=\"([^\"]+)\""), 0), // Whether there were any actions applied to the violating request or response, or it is passive-mode detection only.
     protocol = arrayindex(regextract(_raw_log, "protocol=\"([^\"]+)"), 0), // HTTP or HTTPS.
     request = arrayindex(regextract(_raw_log, "request=\"([^\"]+)"), 0), // The actual HTTP/S request as received by Cloud WAF.
     role = arrayindex(regextract(_raw_log, "role=\"([^\"]+)"), 0), // Web user role. If no web roles are defined and mapped to LDAP server, “Public” role will be used. Within Cloud WAF, this field should always be Public.
@@ -119,8 +119,8 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     xdm.alert.category = if(violationCategory = "Information Leakage", XDM_CONST.THREAT_CATEGORY_INFO_LEAK,  violationType = "SQL Injection", XDM_CONST.THREAT_CATEGORY_SQL_INJECTION, violationCategory),
     xdm.alert.subcategory = violationType,
     xdm.alert.severity = severity,
-    xdm.alert.original_alert_id = event_id,
-    xdm.event.id = event_id,
+    xdm.alert.original_alert_id = eventId,
+    xdm.event.id = eventId,
     xdm.event.outcome = if(is_passive_mode, XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
     xdm.event.outcome_reason = if(is_passive_mode, "passive mode (detection only)", "active mode"),
     xdm.event.original_event_type = "WAF",
@@ -171,4 +171,3 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     xdm.target.resource.value = paramValue,
     xdm.target.port = to_integer(destinationPort),
     xdm.target.url = full_url;
-
