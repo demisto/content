@@ -10,6 +10,7 @@ from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_
 
 from Tests.Marketplace.marketplace_services import Pack
 
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 
 # disable-secrets-detection-start
 
@@ -549,9 +550,9 @@ class TestCorepacksFiles:
         with open(os.path.join(artifacts_dir, GCPConfig.CORE_PACK_FILE_NAME), 'r') as corepacks_file:
             corepacks_file_contents = json.load(corepacks_file)
             pack_paths = corepacks_file_contents.get('corePacks')
-            assert set(pack_paths) == {'https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_1/1.4.0'
+            assert set(pack_paths) == {f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/packs/pack_1/1.4.0'
                                        '/pack_1.zip',
-                                       'https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_2/2.2.3'
+                                       f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/packs/pack_2/2.2.3'
                                        '/pack_2.zip'}
 
         # Assert that the paths in the versioned corepacks file are relative paths:
