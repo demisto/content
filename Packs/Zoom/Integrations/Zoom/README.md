@@ -52,6 +52,7 @@ In the Team Chat Subscription section under BOT endpoint URL add:
    - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
    - For Cortex XSOAR 8 you need to run using engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
 
+
 ![enter image description here](doc_files/bot_endpoint_url.gif)
 
 1. Click **Scopes** > **+ Add Scopes** to add the following scope permissions. 
@@ -66,17 +67,21 @@ In the Team Chat Subscription section under BOT endpoint URL add:
 1. Click **Local Test** >**Add** to test your app and authorize your Cortex XSOAR app.
  ![enter image description here](doc_files/test-zoom-app.gif)
 
- 1. If mirroring is enabled in the integration configuration:
+ 1. **If mirroring is enabled in the integration configuration**:
+**Endpoint URL Requirements-**
+    To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:
+   *  Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
+   *   Be able to accept HTTP POST requests.
+   *   Be able to respond with a 200 or 204 HTTP Status Code.
     <a name="secret-token"></a>
       1. Copy the **secret token** from the "Feature" page under the "Token" section and add it
     to the instance configuration.
     ![enter image description here](doc_files/zoom-token.png)
-
       2. Configure Event Subscriptions. 
          1. In the "Feature" page
    under the "General Features" section, enable "Event Subscriptions".
-      3. Click **+Add New Event Subscription**.
-      4. Enter the following information:
+         2. Click **+Add New Event Subscription**.
+         3. Enter the following information:
          - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
          - Authentication Header Option - 
              1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.(can only use in XSOAR 6.x)
