@@ -172,6 +172,8 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]):
     object_id = args.get('object_id')
     object_ip = args.get('object_ip')
     object_id_list = []
+    list_target = args.get('list_target', 'proxy-routed')
+
     if not object_id and not object_ip:
         raise DemistoException("At least one of the following should be given: object_ip, object_id.")
 
@@ -186,9 +188,11 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]):
         human_readable = ""
         for object_id in object_id_list:
             url_suffix = f'{list_type}/ip_objects/{object_id}'
-            client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
+            client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={
+                                      'list_target': list_target}, resp_type='content')
             human_readable += f"IP object with ID: {object_id} deleted successfully from the {list_type} list. \n"
         return CommandResults(readable_output=human_readable)
+    return None
 
 
 def get_object_id_by_ip(client, list_type, object_ip):
