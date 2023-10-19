@@ -1117,8 +1117,34 @@ script:
     name: upload_sample
   - name: vmray-get-license-usage-verdicts
     description: Get the used quota of verdicts.
+    outputs:
+    - contextPath: VMRay.VerdictQuota.PeriodEndDate
+      description: License end date.
+      type: String
+    - contextPath: VMRay.VerdictQuota.VerdictQuota
+      description: Total number of available verdicts (per month).
+      type: Number
+    - contextPath: VMRay.VerdictQuota.VerdictRemaining
+      description: Remaining number of verdicts (per month).
+      type: Number
+    - contextPath: VMRay.VerdictQuota.VerdictUsage
+      description: Percentages used.
+      type: Number
   - name: vmray-get-license-usage-reports
     description: Get the used quota of reports.
+    outputs:
+    - contextPath: VMRay.ReportQuota.PeriodEndDate
+      description: License end date.
+      type: String
+    - contextPath: VMRay.ReportQuota.VerdictQuota
+      description: Total number of available reports (per month).
+      type: Number
+    - contextPath: VMRay.ReportQuota.VerdictRemaining
+      description: Remaining number of reports (per month).
+      type: Number
+    - contextPath: VMRay.ReportQuota.VerdictUsage
+      description: Percentages used.
+      type: Number
   dockerimage: demisto/python3:3.10.13.77674
   runonce: false
   script: ''
