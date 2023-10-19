@@ -75,3 +75,99 @@ def test_list_cidr_blocks_command(mocker, akamai_waf_client):
     assert expected_raw_response == raw_response
     assert expected_human_readable == human_readable
     assert expected_context_entry == context_entry
+
+
+def test_update_cps_enrollment_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - An enrollment_id, updates, deploy_not_after, deploy_not_before.
+    When:
+        - running the command update_cps_enrollment.
+    Then:
+        - The returned value is correct.
+    """
+    from Akamai_WAF import update_cps_enrollment_command
+
+    enrollment_id = "11111"
+    updates = {
+        "thirdParty": {
+            "excludeSans": False
+        }
+    }
+    deploy_not_after = "2023-11-30T00:00:00Z"
+    deploy_not_before = "2023-11-23T00:00:00Z"
+    test_data = util_load_json('test_data/update-cps-enrollment_test.json')
+    enrollment = test_data.get('enrollment')
+
+    expected_raw_response = test_data.get('raw_response')
+    expected_human_readable = test_data.get('human_readable')
+    expected_context_entry = test_data.get('context_entry')
+
+    mocker.patch.object(akamai_waf_client, 'update_cps_enrollment', return_value=expected_raw_response)
+
+    human_readable, context_entry, raw_response = update_cps_enrollment_command(client=akamai_waf_client,
+                                                                                enrollment_id=enrollment_id,
+                                                                                updates=updates,
+                                                                                deploy_not_before=deploy_not_before,
+                                                                                deploy_not_after=deploy_not_after,
+                                                                                enrollment=enrollment)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_update_cps_enrollment_schedule_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - An enrollment_id, change_id, deploy_not_after, deploy_not_before.
+    When:
+        - running the command update_cps_enrollment_schedule.
+    Then:
+        - The returned value is correct.
+    """
+    from Akamai_WAF import update_cps_enrollment_schedule_command
+
+    enrollment_id = '111111'
+    change_id = '1111111'
+    deploy_not_before = "2023-11-30T00:00:00Z"
+
+    test_data = util_load_json('test_data/update-cps-enrollment-schedule_test.json')
+    expected_raw_response = test_data.get('raw_response')
+    expected_human_readable = test_data.get('human_readable')
+    expected_context_entry = test_data.get('context_entry')
+
+    mocker.patch.object(akamai_waf_client, 'update_cps_enrollment_schedule', return_value=expected_raw_response)
+
+    human_readable, context_entry, raw_response = update_cps_enrollment_schedule_command(client=akamai_waf_client,
+                                                                                         enrollment_id=enrollment_id,
+                                                                                         change_id=change_id,
+                                                                                         deploy_not_before=deploy_not_before)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
+def test_get_cps_change_status_command(mocker, akamai_waf_client):
+    """
+    Given:
+        - An enrollment_path.
+    When:
+        - running the command get_cps_change_status.
+    Then:
+        - The returned value is correct.
+    """
+    from Akamai_WAF import get_cps_change_status_command
+    enrollment_path = "/cps/v2/enrollments/111111/changes/1111111"
+
+    test_data = util_load_json('test_data/get_cps_change_status_test.json')
+    expected_raw_response = test_data.get('raw_response')
+    expected_human_readable = test_data.get('human_readable')
+    expected_context_entry = test_data.get('context_entry')
+
+    mocker.patch.object(akamai_waf_client, 'get_cps_change_status', return_value=expected_raw_response)
+
+    human_readable, context_entry, raw_response = get_cps_change_status_command(client=akamai_waf_client,
+                                                                                enrollment_path=enrollment_path)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
