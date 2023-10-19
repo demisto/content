@@ -1750,7 +1750,7 @@ Fetches ASM incidents that match provided filters. Incidents are an aggregation 
 ### asm-get-incident
 
 ***
-Returns additional details about a specific incident. Note: Incident IDs may also be references as "Case IDs' elsewhere in the API.
+Returns additional details about a specific incident. Note: Incident IDs may also be references as "Case IDs" elsewhere in the API.
 
 #### Base Command
 
@@ -1760,7 +1760,7 @@ Returns additional details about a specific incident. Note: Incident IDs may als
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- |--------------|
-| incident_id | The ID of the incident to be fetched | Required |
+| incident_id | The ID of the incident to be fetched. | Required |
 
 #### Context Output
 | **Path** | **Type** | **Description** |
@@ -2031,7 +2031,7 @@ Returns enrichment for an IP address.
 | DBotScore.Indicator     | String   | The indicator value.                                       |
 | DBotScore.Type          | String   | The vendor used to calculate the score.                    |
 | DBotScore.Reliability   | String   | Reliability of the source providing the intelligence data. |
-| IP.Address              | String   | IP Address.                                                |
+| IP.Address              | String   | IP address.                                                |
 
 
 #### Command example
@@ -2120,7 +2120,7 @@ Returns enrichment for an IP address.
 ### domain
 
 ***
-Returns enrichment for a Domain.
+Returns enrichment for a domain.
 
 #### Base Command
 
@@ -2152,7 +2152,7 @@ Returns enrichment for a Domain.
 | DBotScore.Indicator         | String   | The indicator value.                                       |
 | DBotScore.Type              | String   | The vendor used to calculate the score.                    |
 | DBotScore.Reliability       | String   | Reliability of the source providing the intelligence data. |
-| Domain.Name                 | String   | Name of the Domain.                                        |
+| Domain.Name                 | String   | Name of the domain.                                        |
 
 #### Command example
 ```!domain domain="*.acme.com"```

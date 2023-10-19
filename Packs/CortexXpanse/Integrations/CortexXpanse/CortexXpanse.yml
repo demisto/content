@@ -701,7 +701,7 @@ script:
   - name: ip
     arguments:
     - name: ip
-      description: IP Address to enrich.
+      description: IP address to enrich.
       required: true
       default: true
       isArray: true
@@ -804,7 +804,7 @@ script:
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
       type: String
-    description: Returns enrichment for a Domain.
+    description: Returns enrichment for a domain.
   - name: asm-get-incident
     arguments:
     - name: incident_id
