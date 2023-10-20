@@ -566,7 +566,6 @@ xsoar_ng_end_to_end_tests:
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
-    END_TO_END_TEST_SERVER: "xsoar-ng"
   needs:
     - job: xsoar-saas-prepare-testing-bucket
       optional: true
@@ -583,6 +582,7 @@ xsoar_ng_end_to_end_tests:
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Install e2e necessary packs"
+    - echo -e "TAXIIServer\nEDL\nQRadar\nSlack" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
     - section_end "Install e2e necessary packs"
 

@@ -91,4 +91,4 @@ class TestEDL:
             return requests.get(url, auth=basic_auth)
 
         response = run_edl_request()
-        assert response.text, f'could not get indicators from {url=} with available indicators={xsoar_ng_client.list_indicators()}, status code={response.status_code}, response={response.text}'
+        assert response.text, f'could not get indicators from {url=} with available indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, status code={response.status_code}, response={response.text}'
