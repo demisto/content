@@ -729,10 +729,10 @@ outputs:
   description: Description of the incident.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.severity
-  description: The severity of the incident
+  description: The severity of the incident.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
-  description: The incident status
+  description: The incident status.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
   description: The score.
@@ -759,14 +759,100 @@ outputs:
   description: Description of the incident.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.severity
-  description: The severity of the incident
+  description: The severity of the incident.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.status
-  description: The incident status
+  description: The incident status.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
   description: The score.
   type: string
+- contextPath: Core
+  description: An object containing risky users and risky hosts as identified by the Core ITDR module.
+  type: unknown
+- contextPath: Core.RiskyUser
+  description: The risky user object.
+  type: unknown
+- contextPath: Core.RiskyUser.type
+  description: Form of identification element.
+- contextPath: Core.RiskyUser.id
+  description: Identification value of the type field.
+- contextPath: Core.RiskyUser.score
+  description: The score assigned to the user.
+- contextPath: Core.RiskyUser.reasons
+  description: The reasons for the user risk level.
+  type: unknown
+- contextPath: Core.RiskyUser.reasons.date created
+  description: Date when the incident was created.
+- contextPath: Core.RiskyUser.reasons.description
+  description: Description of the incident.
+- contextPath: Core.RiskyUser.reasons.severity
+  description: The severity of the incident.
+- contextPath: Core.RiskyUser.reasons.status
+  description: The incident status.
+- contextPath: Core.RiskyUser.reasons.points
+  description: The score.
+- contextPath: Core.Endpoint
+  description: The endpoint object.
+  type: unknown
+- contextPath: Core.RiskyHost
+  description: The risky host object.
+  type: unknown
+- contextPath: Core.Endpoint.endpoint_id
+  description: The endpoint ID.
+- contextPath: Core.Endpoint.endpoint_name
+  description: The endpoint name.
+- contextPath: Core.Endpoint.endpoint_type
+  description: The endpoint type.
+- contextPath: Core.Endpoint.endpoint_status
+  description: The status of the endpoint.
+- contextPath: Core.Endpoint.os_type
+  description: The endpoint OS type.
+- contextPath: Core.Endpoint.ip
+  description: A list of IP addresses.
+- contextPath: Core.Endpoint.users
+  description: A list of users.
+- contextPath: Core.Endpoint.domain
+  description: The endpoint domain.
+- contextPath: Core.Endpoint.alias
+  description: The endpoint's aliases.
+- contextPath: Core.Endpoint.first_seen
+  description: First seen date/time in Epoch (milliseconds).
+- contextPath: Core.Endpoint.last_seen
+  description: Last seen date/time in Epoch (milliseconds).
+- contextPath: Core.Endpoint.content_version
+  description: Content version.
+- contextPath: Core.Endpoint.installation_package
+  description: Installation package.
+- contextPath: Core.Endpoint.active_directory
+  description: Active directory.
+- contextPath: Core.Endpoint.install_date
+  description: Install date in Epoch (milliseconds).
+- contextPath: Core.Endpoint.endpoint_version
+  description: Endpoint version.
+- contextPath: Core.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+- contextPath: Core.Endpoint.group_name
+  description: The name of the group to which the endpoint belongs.
+- contextPath: Core.RiskyHost.type
+  description: Form of identification element.
+- contextPath: Core.RiskyHost.id
+  description: Identification value of the type field.
+- contextPath: Core.RiskyHost.score
+  description: The score assigned to the host.
+- contextPath: Core.RiskyHost.reasons
+  description: The reasons for the risk level.
+  type: unknown
+- contextPath: Core.RiskyHost.reasons.date created
+  description: Date when the incident was created.
+- contextPath: Core.RiskyHost.reasons.description
+  description: Description of the incident.
+- contextPath: Core.RiskyHost.reasons.severity
+  description: The severity of the incident.
+- contextPath: Core.RiskyHost.reasons.status
+  description: The incident status.
+- contextPath: Core.RiskyHost.reasons.points
+  description: The score.
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
