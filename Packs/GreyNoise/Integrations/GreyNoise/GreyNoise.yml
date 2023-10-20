@@ -31,9 +31,15 @@ configuration:
   display: ''
   type: 1
   required: false
-- display: ''
+- display: 'API Key'
   name: apikey
-  required: true
+  required: false
+  type: 4
+  displaypassword: API Key
+  hidden: true
+- display: 'API Key Credentials'
+  name: api_credentials
+  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
