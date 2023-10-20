@@ -64,6 +64,7 @@ class CollectionReason(str, Enum):
     XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
     README_FILE_CHANGED = 'readme file was changed'
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
+    PACK_TEST_END_TO_END = "pack was chosen to be tested in end2end tests"
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -345,6 +346,7 @@ class TestCollector(ABC):
         """
 
     def collect(self) -> CollectionResult | None:
+        logger.info(f'Collecting using class {self}')
         result: CollectionResult | None = self._collect()
 
         if not result:
@@ -1345,6 +1347,31 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         ))
 
 
+class XSOARNGEndToEndTestCollector(TestCollector):
+
+    def _collect(self) -> CollectionResult | None:
+
+        collected_packs = []
+        packs = ("TAXIIServer", "EDL", "QRadar", "Slack")
+        for pack in packs:
+            collected_packs.append(
+                CollectionResult(
+                    test=None,
+                    modeling_rule_to_test=None,
+                    pack=pack,
+                    reason=CollectionReason.PACK_TEST_END_TO_END,
+                    version_range=None,
+                    reason_description="end to end tests",
+                    conf=None,
+                    id_set=None,
+                    is_nightly=True,
+                    only_to_install=True
+                )
+            )
+        logger.info(f'Collected {packs} for the xsoar-end-to-end-job')
+        return CollectionResult.union(collected_packs)
+
+
 def output(result: CollectionResult | None):
     """
     writes to both log and files
@@ -1433,8 +1460,10 @@ if __name__ == '__main__':
         match (nightly, marketplace):
             case False, _:  # not nightly
                 collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
-            case (True, (MarketplaceVersions.XSOAR | MarketplaceVersions.XSOAR_SAAS)):
+            case (True, (MarketplaceVersions.XSOAR)):
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
+            case (True, MarketplaceVersions.XSOAR_SAAS):
+                collector = XSOARNGEndToEndTestCollector(marketplace)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.XPANSE:
