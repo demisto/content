@@ -1,10 +1,8 @@
-# XSIAM End to End Tests
-The purpose of XSIAM end to end tests is to run basic regression tests. The tests run against a real tenant of XSIAM, 
-check for total number of packs. 
-
+# XSOAR-NG End to End Tests
+The purpose of XSOAR-NG end to end tests is to run basic regression tests for specific integrations. The tests run against a real tenant of XSOAR-NG.
 
 ### Prerequisites
-The tests use XSIAM client. XSIAM authentication requires api key, api url and api key id.
+The tests use XSOAR-NG client. XSIAM authentication requires api key, api url and api key id.
 You need to pass 3 arguments to the tests.
 
 **--cloud_machine (string)** - tenant name, for example *test_machine*, a string indicates a specific tenant. should be consistent with other files (cloud_servers_path, cloud_servers_api_keys)
@@ -30,5 +28,5 @@ Example:
 
 ### How to execute
 ```bash
-python -m pytest Tests/tests_end_to_end/xsiam -v --disable-warnings --cloud_machine machine1 --cloud_servers_path Tests/tests_end_to_end/xsiam/test_cloud_server_path.json --cloud_servers_api_keys Tests/tests_end_to_end/xsiam/test_cloud_api_keys.json
+python -m pytest Tests/tests_end_to_end/xsoar_ng -v --disable-warnings --cloud_machine machine1 --cloud_servers_path Tests/tests_end_to_end/xsoar_ng/test_cloud_server_path.json --cloud_servers_api_keys Tests/tests_end_to_end/xsoar_ng/test_cloud_api_keys.json
 ```
