@@ -993,7 +993,6 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     demisto.debug(f'Exclude ID list: {exclude_ids}')
 
     for item in qs:
-        demisto.debug(f'Looking on {item=}')
         try:
             demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
                 item.subject, item.message_id, item.datetime_created, item.datetime_received))
