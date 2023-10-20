@@ -11,10 +11,15 @@ configuration:
   defaultvalue: https://api.recordedfuture.com/gw/xsoar-identity
   type: 0
   required: true
-- name: token
+- display: API Token
+  name: token
+  type: 4
+  required: false
+  hidden: true
+- displaypassword: API Token
+  name:  token
   type: 9
-  required: true
-  displaypassword: API Token
+  required: false
   hiddenusername: true
 - display: Trust any certificate (not secure)
   name: unsecure
