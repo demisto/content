@@ -37,7 +37,7 @@ def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
 
 
 @pytest.fixture()
-def create_instance(request, integration_params, xsoar_ng_client: XsoarNGApiClient):
+def create_instance(request, integration_params: Dict, xsoar_ng_client: XsoarNGApiClient):
 
     integration_id = getattr(request.cls, "integration_id")
     instance_name = integration_params.pop("integrationInstanceName", f'test-{integration_params.get("name")}')

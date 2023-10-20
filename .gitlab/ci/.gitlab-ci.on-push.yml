@@ -582,6 +582,10 @@ xsoar_ng_end_to_end_tests:
 
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
+    - section_start "Install e2e necessary packs"
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
+    - section_end "Install e2e necessary packs"
+
     - section_start "Run xsoar-ng end to end sanity tests"
     - ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?
     - section_end "Run xsoar-ng end to end sanity tests"
