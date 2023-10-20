@@ -604,38 +604,39 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
 
     while retry_count:
         ticket = client.get_ticket(ticket_id)
-        if not ticket or not isinstance(ticket, dict):
-            demisto.debug("Ticket was not found.")
+        if not ticket:
+            demisto.debug(f"Ticket with id {ticket_id} was not found.")
             retry_count -= 1
         else:
             break
-    ticket_last_update = ticket["UnlockTimeout"]
-    entries = []
+    if ticket:
+        ticket_last_update = ticket["UnlockTimeout"]
+        entries = []
 
-    if last_update > ticket_last_update:
-        demisto.debug(f"Nothing new in the ticket since {last_update}")
-        ticket = {}
-    else:
-        demisto.debug(f"ticket is updated: {ticket}")
-        # get latest comments and files
-        articles = ticket.get("Article")
-        if articles:
-            for article in articles:
+        if last_update > ticket_last_update:
+            demisto.debug(f"Nothing new in the ticket since {last_update}")
+            ticket = {}
+        else:
+            demisto.debug(f"ticket is updated: {ticket}")
+            # get latest comments and files
+            articles = ticket.get("Article")
+            if articles:
+                for article in articles:
 
-                # Get article details
-                description = f'ID: {str(article["ArticleID"])}\nTo: {article.get("To")}\nCC: {article.get("Cc")}\n'\
-                              f'Subject: {article.get("Subject")}\nCreateTime: {article.get("CreateTime")}\n'\
-                              f'From: {article.get("From")}\nContentType: {article.get("ContentType")}\nBody:\n\n{article.get("Body")}'
+                    # Get article details
+                    description = f'ID: {str(article["ArticleID"])}\nTo: {article.get("To")}\nCC: {article.get("Cc")}\n'\
+                                f'Subject: {article.get("Subject")}\nCreateTime: {article.get("CreateTime")}\n'\
+                                f'From: {article.get("From")}\nContentType: {article.get("ContentType")}\nBody:\n\n{article.get("Body")}'
 
-                if article["IncomingTime"] > last_update:
-                    entries.append({
-                        'Type': EntryType.NOTE,
-                        'Contents': description,
-                        'ContentsFormat': EntryFormat.TEXT,
-                        'Tags': ["FromOTRS"],  # the list of tags to add to the entry
-                        'Note': False  # boolean, True for Note, False otherwise
-                    })
-    return GetRemoteDataResponse(ticket, entries)
+                    if article["IncomingTime"] > last_update:
+                        entries.append({
+                            'Type': EntryType.NOTE,
+                            'Contents': description,
+                            'ContentsFormat': EntryFormat.TEXT,
+                            'Tags': ["FromOTRS"],  # the list of tags to add to the entry
+                            'Note': False  # boolean, True for Note, False otherwise
+                        })
+        return GetRemoteDataResponse(ticket, entries)
 
 
 def update_remote_system_command(client: Client, args: dict[str, str]):

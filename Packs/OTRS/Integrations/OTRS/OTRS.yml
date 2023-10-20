@@ -185,7 +185,7 @@ script:
     - description: Ticket Queues to filter by in CSV format (e.g., Raw,Misc).
       name: queue
     - auto: PREDEFINED
-      description: Ticket Priority to filter by in CSV format (e.g., 4High,5VeryHigh).
+      description: Ticket Priority to filter by in CSV format (e.g., 4High,5VeryHigh). For the use of a custom priority, you can specify a custom value outside the predefined set.
       name: priority
       predefined:
       - 1VeryLow
@@ -238,7 +238,7 @@ script:
       name: queue
       required: true
     - auto: PREDEFINED
-      description: State to assign to the new ticket.
+      description: State to assign to the new ticket. For the use of a custom state, you can specify a custom value outside the predefined set.
       name: state
       predefined:
       - New
@@ -248,7 +248,7 @@ script:
       - PendingReminder
       required: true
     - auto: PREDEFINED
-      description: Priority to assign to the new ticket.
+      description: Priority to assign to the new ticket. For the use of a custom priority, you can specify a custom value outside the predefined set.
       name: priority
       predefined:
       - 1VeryLow
@@ -320,7 +320,7 @@ script:
     - description: Ticket Title of the ticket to update.
       name: title
     - auto: PREDEFINED
-      description: Ticket State of the ticket to update.
+      description: Ticket State of the ticket to update. For the use of a custom state, you can specify a custom value outside the predefined set.
       name: state
       predefined:
       - New
@@ -329,7 +329,7 @@ script:
       - Open
       - PendingReminder
     - auto: PREDEFINED
-      description: Priority of the ticket to update.
+      description: Priority of the ticket to update. For the use of a custom priority, you can specify a custom value outside the predefined set.
       name: priority
       predefined:
       - 1VeryLow
