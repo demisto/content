@@ -3,7 +3,6 @@ import hashlib
 import subprocess
 import warnings
 from multiprocessing import Process
-from typing import Optional
 
 import dateparser  # type: ignore
 import exchangelib
@@ -596,7 +595,7 @@ def is_empty_object(obj):
     return size == 0
 
 
-def get_time_zone() -> Optional[EWSTimeZone]:
+def get_time_zone() -> EWSTimeZone | None:
     """get the XSOAR user time zone
     :return:
         returns an ``EWSTimeZone`` if TZ available or ``None`` if not
