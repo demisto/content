@@ -9,10 +9,27 @@ configuration:
   required: true
   type: 0
 - display: API Token
-  name: credentials
+  name: credential_token
   required: true
   type: 9
-  displaypassword: API Secret
+  displaypassword: API Token
+  hiddenusername: true
+- display: API Key
+  name: credential_key
+  required: true
+  type: 9
+  displaypassword: API Key
+  hiddenusername: true
+- display: API Token
+  name: apitoken
+  required: false
+  type: 4
+  hidden: true
+- display: API Key
+  name: apikey
+  required: false
+  type: 4
+  hidden: true
 - display: First fetch time
   name: first_fetch
   required: false
