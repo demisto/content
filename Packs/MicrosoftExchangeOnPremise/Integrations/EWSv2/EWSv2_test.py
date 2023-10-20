@@ -195,6 +195,52 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
     assert len(x) == expected_result
 
 
+def test_fetch_last_emails_fail(mocker):
+    """
+    This UT is added due to the following issue: XSUP-28730
+    where an ErrorMimeContentConversionFailed exception is raised if there was a corrupt object in the stream of
+    results returned from the fetch process (exchangelib module behavior).
+    If such exception is encountered, it would be handled internally so that the integration would not crash.
+
+    Given:
+        - First exception raised is ErrorMimeContentConversionFailed
+        - First exception raised is ValueError
+
+    When:
+        - Iterating over mail objects when fetching last emails
+
+    Then:
+        - Catch ErrorMimeContentConversionFailed, print relevant debug message
+          for encountered corrupt object and continue iteration to next object
+        - Catch ValueError, and raise it forward
+    """
+    from EWSv2 import ErrorMimeContentConversionFailed
+
+    class MockObject:
+        def filter(self, datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            return [Message(), Message(), Message(), Message(), Message()]
+
+    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
+    EWSv2.MAX_FETCH = 1
+    client = TestNormalCommands.MockClient()
+
+    mocker.patch('EWSv2.isinstance', side_effect=[ErrorMimeContentConversionFailed(AttributeError()), ValueError()])
+
+    with pytest.raises(ValueError) as e:
+        fetch_last_emails(client, since_datetime='since_datetime')
+        assert str(e) == 'Got an error when pulling incidents. You might be using the wrong exchange version.'
+
+
 def test_dateparser():
     """Test that dateparser works fine. See: https://github.com/demisto/etc/issues/39240 """
     now = datetime.datetime.now()
