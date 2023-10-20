@@ -418,7 +418,7 @@ script:
   type: python
   isremotesyncin: true
   isremotesyncout: true
-  ismappable: true
+  ismappable: false
 
 tests:
 - OTRS Test

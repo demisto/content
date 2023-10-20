@@ -184,6 +184,7 @@ def test_get_remote_data(mocker):
 
     res = OTRS.get_remote_data_command(otrs_client, args)
 
-    assert res[1]['Tags'] == ['FromOTRS']
-    assert res[1]['Contents'] == 'ID: 9999\nTo: IncidentResponse\nCC: \nSubject: test\nCreateTime: 2023-09-26 11:33:28' \
-                                 '\nFrom: demistobot\nContentType: text/plain; charset=utf8\nBody:\n\ntest123'
+    assert res.__dict__["entries"][0]['Tags'] == ['FromOTRS']
+    assert res.__dict__["entries"][0]['Contents'] == 'ID: 9999\nTo: IncidentResponse\nCC: \nSubject: test\nCreateTime: '\
+                                                     '2023-09-26 11:33:28\nFrom: demistobot\nContentType: text/plain; '\
+                                                     'charset=utf8\nBody:\n\ntest123'

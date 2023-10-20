@@ -625,8 +625,9 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
 
                     # Get article details
                     description = f'ID: {str(article["ArticleID"])}\nTo: {article.get("To")}\nCC: {article.get("Cc")}\n'\
-                                f'Subject: {article.get("Subject")}\nCreateTime: {article.get("CreateTime")}\n'\
-                                f'From: {article.get("From")}\nContentType: {article.get("ContentType")}\nBody:\n\n{article.get("Body")}'
+                                  f'Subject: {article.get("Subject")}\nCreateTime: {article.get("CreateTime")}\n'\
+                                  f'From: {article.get("From")}\nContentType: {article.get("ContentType")}\n'\
+                                  f'Body:\n\n{article.get("Body")}'
 
                     if article["IncomingTime"] > last_update:
                         entries.append({
