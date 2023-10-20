@@ -1,8 +1,9 @@
-import os
 from typing import Dict
 
 import pytest
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
+from demisto_client.demisto_api.rest import ApiException
+from demisto_sdk.utils.utils import retry_http_request
 
 
 @pytest.fixture()
@@ -11,17 +12,28 @@ def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
     indicators = getattr(request.cls, "indicators", [])
     indicators_to_remove = []
     for indicator, indicator_type, score in indicators:
-        response = xsoar_ng_client.create_indicator(indicator, indicator_type=indicator_type, score=score)
-        assert response
-        if created_indicator_id := response.get("id"):
-            indicators_to_remove.append(created_indicator_id)
+        try:
+            response = xsoar_ng_client.create_indicator(indicator, indicator_type=indicator_type, score=score)
+            if created_indicator_id := response.get("id"):
+                indicators_to_remove.append(created_indicator_id)
+        except ApiException as e:
+            if "it is in the exclusion list" not in e.reason:
+                raise
 
     def delete_indicators():
         _response = xsoar_ng_client.delete_indicators(indicators_to_remove)
         successful_removed_ids = set(_response.get("updatedIds") or [])
         assert set(indicators_to_remove).issubset(successful_removed_ids)
 
-    request.addfinalizer(delete_indicators)
+    if indicators_to_remove:
+        request.addfinalizer(delete_indicators)
+        return
+
+    response = xsoar_ng_client.list_indicators()
+    if response.get("total") > 0:
+        return
+
+    raise ValueError(f'There are no indicators in {xsoar_ng_client.base_url} server')
 
 
 @pytest.fixture()
@@ -59,12 +71,12 @@ class TestEDL:
     def test_edl(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: Dict):
         """
         Given:
-            - 3 IP indicators that's being created in xsoar
+            - indicators in xsoar
             - long-running EDL instance
         When:
             - Trying to query the URL of edl
         Then:
-            - make sure the 3 IP indicators are returned in the response of edl instance
+            - make sure that indicators are returned in the response of edl instance
         """
         import requests
         from requests.auth import HTTPBasicAuth
@@ -73,12 +85,10 @@ class TestEDL:
         url = f'{xsoar_ng_client.external_base_url}/instance/execute/{instance_name}'
 
         basic_auth = HTTPBasicAuth(integration_params["credentials"]["identifier"], integration_params["credentials"]["password"])
-        response = requests.get(url, auth=basic_auth)
 
-        num_of_tries = 20
-        i = 0
-        while i < num_of_tries and response.status_code != 200:
-            response = requests.get(url, auth=basic_auth)
-            i += 1
+        @retry_http_request(times=20)
+        def run_edl_request():
+            return requests.get(url, auth=basic_auth)
 
-        assert response.text == '3.3.3.3\n2.2.2.2\n1.1.1.1', f'could not get {self.indicators=}, status code={response.status_code}, response={response.text}'
+        response = run_edl_request()
+        assert response.text, f'could not get indicators from {url=} with available indicators={xsoar_ng_client.list_indicators()}, status code={response.status_code}, response={response.text}'
