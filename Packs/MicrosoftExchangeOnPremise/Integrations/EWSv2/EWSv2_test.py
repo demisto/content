@@ -204,7 +204,7 @@ def test_fetch_last_emails_fail(mocker):
 
     Given:
         - First exception raised is ErrorMimeContentConversionFailed
-        - First exception raised is ValueError
+        - Second exception raised is ValueError
 
     When:
         - Iterating over mail objects when fetching last emails
