@@ -1,0 +1,21 @@
+{
+    "name": "getCurrentDatetime",
+    "description": "This automation can get the current date time information. You can also specify the different the timezone.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jie Liau",
+    "url": "",
+    "email": "",
+    "created": "2023-10-20T03:23:28Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "jieliau"
+    ]
+}
