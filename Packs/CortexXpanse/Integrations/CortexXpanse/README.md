@@ -7,20 +7,21 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
 2. Search for Cortex Xpanse.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
+    | **Parameter** | **Description**                                                                                                                                                                                                                                     | **Required** |
+    | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
     | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-    | API Key ID | For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-    | API Key | **Only standard API key type is supported**. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
-    | Maximum number of alerts per fetch | The maximum number of alerts per fetch. Cannot exceed 100. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched. | False |
-   
+    | API Key ID | For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.                                                                                              | True |
+    | API Key | **Only standard API key type is supported**.                                                                                                                                                                                                        | True |
+    | Trust any certificate (not secure) |                                                                                                                                                                                                                                                     | False |
+    | Use system proxy settings |                                                                                                                                                                                                                                                     | False |
+    | Fetch incidents |                                                                                                                                                                                                                                                     | False |
+    | Incidents Fetch Interval |                                                                                                                                                                                                                                                     | False |
+    | Incident type |                                                                                                                                                                                                                                                     | False |
+    | Maximum number of alerts per fetch | The maximum number of alerts per fetch. Cannot exceed 100.                                                                                                                                                                                          | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                     | False |
+    | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.            | False |
+   | Source Reliability | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                       | False |
+4. 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

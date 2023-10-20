@@ -573,8 +573,8 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
     name = args.get('name')
     asm_type = args.get('type')
     has_active_external_services = args.get('has_active_external_services')
-    search_from = args.get('search_from', 0)
-    search_to = args.get('search_to', DEFAULT_SEARCH_LIMIT)
+    search_from = int(args.get('search_from', 0))
+    search_to = int(args.get('search_to', DEFAULT_SEARCH_LIMIT))
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
@@ -585,10 +585,6 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
         search_params.append({"field": "type", "operator": "in", "value": [asm_type]})
     if has_active_external_services:
         search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
-    if search_from:
-        search_from = int(search_from)
-    if search_to:
-        search_to = int(search_to)
 
     response = client.list_asset_internet_exposure_request(
         search_params=search_params, search_to=search_to, search_from=search_from)
