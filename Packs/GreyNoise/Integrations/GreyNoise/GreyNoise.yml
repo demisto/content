@@ -96,7 +96,7 @@ script:
       type: string
   - arguments:
     - default: true
-      description: A list of IP addresses to run a quick check on
+      description: A list of IP addresses to run a quick check on.
       isArray: true
       name: ip
       required: true
@@ -139,7 +139,7 @@ script:
       - 'false'
     - description: The actor the device has been associated with.
       name: actor
-    - description: A CVE to get scanning data about, example CVE-2021-12345
+    - description: A CVE to get scanning data about, example CVE-2021-12345.
       name: cve
     - defaultValue: '10'
       description: Maximum amount of results to grab.
@@ -283,7 +283,7 @@ script:
       - 'false'
     - description: The actor the device has been associated with.
       name: actor
-    - description: A CVE to get scanning data about, example CVE-2021-12345
+    - description: A CVE to get scanning data about, example CVE-2021-12345.
       name: cve
     - defaultValue: '10'
       description: Maximum amount of results to grab.
@@ -373,7 +373,7 @@ script:
       type: number
   - arguments:
     - default: true
-      description: The IP address to be checked if it is potentially harmful or not
+      description: The IP address to be checked if it is potentially harmful or not.
       name: ip
       required: true
     description: Identifies IPs from known benign services and organizations that commonly cause false positives in network security and threat intelligence products. The collection of IPs in RIOT is continually curated and verified to provide accurate results. These IPs are extremely unlikely to pose a threat to your network.
@@ -383,7 +383,7 @@ script:
       description: The IP given to check riot information about.
       type: String
     - contextPath: GreyNoise.Riot.riot
-      description: The riot of the IP. "True" or "False"
+      description: The riot of the IP. "True" or "False".
       type: String
     - contextPath: GreyNoise.Riot.category
       description: The category of the IP if riot is "True".
@@ -405,7 +405,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The IP address to query in GreyNoise Context Command
+      description: The IP address to query in GreyNoise Context Command.
       name: ip
       required: true
     description: Identifies IPs that have been observed mass-scanning the internet.
@@ -508,7 +508,7 @@ script:
     arguments:
     - name: ip
       default: true
-      description: IP address to find similar IPs to
+      description: IP address to find similar IPs to.
       required: true
     - name: minimum_score
       description: >-
@@ -528,7 +528,7 @@ script:
     arguments:
     - name: ip
       default: true
-      description: IP address to find similar IPs to
+      description: IP address to find similar IPs to.
       required: true
     - name: days
       description: >-
@@ -542,7 +542,7 @@ script:
     - contextPath: GreyNoise.Timeline.ip_address
       description: Timeline IP address.
       type: string
-  dockerimage: demisto/greynoise:1.0.0.76362
+  dockerimage: demisto/greynoise:1.0.0.78224
   runonce: false
   script: ''
   subtype: python3
