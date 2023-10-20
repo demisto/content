@@ -126,7 +126,7 @@ def main() -> None:
         base_url = demisto_params.get("server_url", "").rstrip("/")
         verify_ssl = not demisto_params.get("unsecure", False)
         proxy = demisto_params.get("proxy", False)
-        api_token = demisto_params.get("token", {}).get("password") or demisto_params.get("token")
+        api_token = demisto_params.get("credential", {}).get("password") or demisto_params.get("token")
         if not api_token:
             return_error('Please provide a valid API token')
 
