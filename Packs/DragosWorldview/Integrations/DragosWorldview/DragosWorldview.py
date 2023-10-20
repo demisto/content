@@ -1,15 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 import json
 from datetime import datetime, timedelta
 from typing import Any, Callable, Dict, Tuple
-
 import dateparser
-
 import urllib3
-
 
 """Dragos Worldview Integration for XSOAR."""
 
@@ -197,10 +192,16 @@ def main() -> None:
         base_url = base_url + "/api/v1"
         verify_ssl = not demisto_params.get("insecure", False)
         proxy = demisto_params.get("proxy", False)
+        api_token = demisto_params.get("credential_token", {}).get("password") or demisto_params.get("apitoken")
+        if not api_token:
+            return_error('Please provide a valid API token')
+        api_key = demisto_params.get("credential_key", {}).get("password") or demisto_params.get("apikey")
+        if not api_key:
+            return_error('Please provide a valid API key')
         headers = {
             "accept": "*/*",
-            "API-TOKEN": demisto_params.get('credentials', {}).get('identifier'),
-            "API-SECRET": demisto_params.get('credentials', {}).get('password'),
+            "API-TOKEN": api_token,
+            "API-SECRET": api_key,
         }
         client = Client(
             base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy
