@@ -638,6 +638,8 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
                             'Note': False  # boolean, True for Note, False otherwise
                         })
         return GetRemoteDataResponse(ticket, entries)
+    else:
+        return None
 
 
 def update_remote_system_command(client: Client, args: dict[str, str]):
