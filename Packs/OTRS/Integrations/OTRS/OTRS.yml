@@ -337,6 +337,12 @@ script:
       - 3Normal
       - 4High
       - 5VeryHigh
+    - auto: PREDEFINED
+      description: Wether to change the lock state of the ticket.
+      name: lock
+      predefined:
+      - lock
+      - unlock
     - description: Article Subject of the ticket to update.
       name: article_subject
     - description: Article Body of the ticket to update.

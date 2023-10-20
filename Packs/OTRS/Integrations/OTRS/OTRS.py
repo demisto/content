@@ -157,7 +157,7 @@ class OTRSClient:
     def update_ticket(self, ticket_id: str, title: str | None = None, queue: str | None = None, state: str | None = None,
                       priority: str | None = None, article: Article | None = None, ticket_type: str | None = None,
                       df: list[Any] | None = None, attachments: list[Any] | None = None, owner: str | None = None,
-                      customer_user: str | None = None):
+                      customer_user: str | None = None, lock: str | None = None):
         args = {
             'ticket_id': ticket_id,
             'Title': title,
@@ -169,7 +169,8 @@ class OTRSClient:
             'attachments': attachments,
             'Owner': owner,
             'CustomerUser': customer_user,
-            'Type': ticket_type
+            'Type': ticket_type,
+            'Lock': lock
         }
         return self.execute_otrs_method(self.client.ticket_update, args)
 
@@ -432,6 +433,7 @@ def update_ticket_command(client: Client, args: dict[str, str]):
     queue = args.get('queue')
     state = args.get('state')
     owner = args.get("owner", None)
+    lock = args.get("lock", "").lower() if args.get("lock", "").lower() in ["lock", "unlock"] else None
     customer_user = args.get("customer_user")
     priority = args.get('priority')
     article_subject = args.get('article_subject')
@@ -476,7 +478,7 @@ def update_ticket_command(client: Client, args: dict[str, str]):
         attachments = demisto_entry_to_otrs_attachment(attachments_list)
 
     ticket = client.update_ticket(ticket_id, title, queue, state, priority, article, ticket_type, df, attachments, owner=owner,
-                                  customer_user=customer_user)
+                                  customer_user=customer_user, lock=lock)
 
     context = {
         'ID': ticket['TicketID'],
