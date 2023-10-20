@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 """Recorded Future Identity Integration for Demisto."""
 from typing import Dict, Any, Union, Optional
 import requests
@@ -129,15 +128,11 @@ def main() -> None:
         proxy = demisto_params.get("proxy", False)
         api_token = demisto_params.get("token", {}).get("password") or demisto_params.get("token")
         if not api_token:
-            return_error('Plesae provide a valid API token')
-        
+            return_error('Please provide a valid API token')
+
         # If user has not set password properties we will get empty string but client require empty list
-        
         headers = {
             "X-RFToken": api_token,
-
-        headers = {
-            "X-RFToken": demisto_params["token"]["password"],
             "X-RF-User-Agent": f"xsoar-identity/{__version__} rfclient (Cortex_XSOAR_"
             f'{demisto.demistoVersion()["version"]})',
         }
