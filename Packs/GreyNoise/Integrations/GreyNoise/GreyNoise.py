@@ -1,4 +1,3 @@
-import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
@@ -1135,7 +1134,8 @@ def main() -> None:
         if packs.get("name") == "GreyNoise":
             pack_version = packs.get("currentVersion")
 
-    api_key = demisto.params().get('apikey', {}).get('password')
+    credentials = demisto.params().get('api_credentials', {}).get('password')
+    api_key = credentials if credentials is not None else demisto.params().get("apikey")
     proxy = demisto.params().get("proxy", False)
     reliability = demisto.params().get("integrationReliability", "B - Usually reliable")
     reliability = reliability if reliability else DBotScoreReliability.B
