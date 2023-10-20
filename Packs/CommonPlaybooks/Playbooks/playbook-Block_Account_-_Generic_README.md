@@ -1,34 +1,46 @@
-Blocks malicious usernames using all integrations that you have enabled.
+Deprecated. Use 'Block Account - Generic v2' instead. This playbook blocks malicious usernames using all integrations that you have enabled.
 
 Supported integrations for this playbook:
 * Active Directory
+* PAN-OS - This requires PAN-OS 9.1 or higher.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
+### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
-## Integrations
+### Integrations
+
 * activedir
 
-## Scripts
+### Scripts
+
 This playbook does not use any scripts.
 
-## Commands
+### Commands
+
+* pan-os-register-user-tag
 * ad-disable-account
 
 ## Playbook Inputs
+
 ---
 
-| **Name** | **Description** |  **Required** |
-| --- | --- | --- | 
-| Username | The array of malicious usernames to block. |  Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Username | Array of malicious usernames to block. |  | Optional |
+| Tag | PAN-OS tag name to apply to the username that you want to block. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Block_Account_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_Account_Generic.png)
+
+![Block Account - Generic](../doc_files/Block_Account_-_Generic.png)

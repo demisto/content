@@ -6,6 +6,7 @@ Search for and analyze data in real time.
 The permissions required to use this integration depends on which operations you need to perform. The API user should have the same permissions a regular user would have in order to access the data via the UI. Following are the permissions needed for certain commands:
 - **!es-eql-search/search/es-search/fetch-incidents** - If the Elasticsearch security features are enabled, you must have the *read* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 - **!get-mapping-fields** - If the Elasticsearch security features are enabled, you must have the *view_index_metadata* or *manage* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
+- **!es-index** - If the Elasticsearch security features are enabled, you must have the *write* [index privilege](https://www.elastic.co/guide/en/elasticsearch/reference/current/security-privileges.html#privileges-list-indices) for the target data stream, index, or alias.
 
 ## Configure Elasticsearch v2 on Cortex XSOAR
 
@@ -179,3 +180,53 @@ Search using EQL query
 | Elasticsearch.Search.took | Number | The time in milliseconds taken for the search to complete. | 
 | Elasticsearch.Search.Page | Number | The page number from which the search started. | 
 | Elasticsearch.Search.Size | Number | The maximum number of scores that a search can return. |
+
+### es-index
+***
+Indexes a document into an Elasticsearch index.
+
+
+#### Base Command
+
+`es-index`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| index_name | The name of the index to ingest into. | Required | 
+| document | The document object (JSON format) to be indexed. See [Elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/examples.html#ex-index) for further information about indexing documents via the Elasticsearch client. | Required | 
+| id | The ID of the indexed document (will be generated if empty). The document will be updated if one with a corresponding ID exists. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Index.id | String | The ID of the indexed document. |
+| Elasticsearch.Index.index | String | The name of the index which the document was ingested to. |  
+| Elasticsearch.Index.version | Number | The version number of the indexed document. | 
+| Elasticsearch.Index.result | String | The result of the index operation. | 
+
+#### Command Example
+```!es-index index_name=test-xsoar document="{\"name\":\"test\"}" id=1234```
+
+#### Context Example
+```
+{
+    "Elasticsearch": {
+        "Index": {
+            "id": "1234",
+            "index": "test-xsoar",
+            "version": 1,
+            "result": "created"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+> ### Indexed document
+>|ID|Index name|Version|Result|
+>|---|---|---|---|
+>| 1234 | test-xsoar | 1 | created | 

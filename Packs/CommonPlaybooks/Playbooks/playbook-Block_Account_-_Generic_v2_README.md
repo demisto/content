@@ -38,13 +38,14 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* ad-disable-account
 * gsuite-user-update
 * identityiq-disable-account
 * pan-os-register-user-tag
-* iam-disable-user
-* msgraph-user-account-disable
 * pingone-deactivate-user
+* identityiq-get-accounts
+* msgraph-user-account-disable
+* ad-disable-account
+* iam-disable-user
 
 ## Playbook Inputs
 
