@@ -15,6 +15,7 @@ def pytest_addoption(parser):
     parser.addoption("--cloud_machine", action="store")
     parser.addoption("--cloud_servers_path", action="store")
     parser.addoption("--cloud_servers_api_keys", action="store")
+    parser.addoption("--integration_secrets_path", action="store", default=None)
 
 
 def get_cloud_machine_credentials(request):
@@ -29,8 +30,9 @@ def get_cloud_machine_credentials(request):
     return url, api_key, api_key_id
 
 
-def get_integration_params(instance_name: str):
-    with open(os.getenv("SECRET_CONF_PATH")) as file:
+def get_integration_params(request, instance_name: str):
+    integration_secrets_path = request.config.option.integration_secrets_path
+    with open(integration_secrets_path) as file:
         integrations_config = json.load(file)["integrations"]
 
     for config in integrations_config:
