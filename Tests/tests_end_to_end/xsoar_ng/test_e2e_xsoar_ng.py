@@ -1,4 +1,3 @@
-from typing import Dict
 
 import pytest
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
@@ -37,9 +36,9 @@ def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
 
 
 @pytest.fixture()
-def create_instance(request, integration_params: Dict, xsoar_ng_client: XsoarNGApiClient):
+def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGApiClient):
 
-    integration_id = getattr(request.cls, "integration_id")
+    integration_id = request.cls.integration_id
     instance_name = integration_params.pop("integrationInstanceName", f'test-{integration_params.get("name")}')
     response = xsoar_ng_client.create_integration_instance(
         _id=integration_id,
@@ -68,7 +67,7 @@ class TestEDL:
     instance_name_gsm = "edl_auto_from_8_0_0"
     integration_id = "EDL"
 
-    def test_edl(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: Dict):
+    def test_edl(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: dict):
         """
         Given:
             - indicators in xsoar

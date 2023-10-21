@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Set
+from typing import Optional
 from collections.abc import Iterable, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
@@ -1351,15 +1351,12 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
 class EndToEndTestCollector(TestCollector, ABC):
 
     @abstractmethod
-    def get_end_to_end_packs(self) -> Set[str]:
+    def get_end_to_end_packs(self) -> set[str]:
         pass
 
     def _collect(self) -> CollectionResult | None:
-        collected_packs = []
-        packs = self.get_end_to_end_packs()
-
-        for pack in packs:
-            collected_packs.append(
+        return CollectionResult.union(
+            [
                 CollectionResult(
                     test=None,
                     modeling_rule_to_test=None,
@@ -1370,14 +1367,14 @@ class EndToEndTestCollector(TestCollector, ABC):
                     conf=None,
                     id_set=None,
                     only_to_install=True
-                )
-            )
-        return CollectionResult.union(collected_packs)
+                ) for pack in self.get_end_to_end_packs()
+            ]
+        )
 
 
 class XSOARNGEndToEndTestCollector(EndToEndTestCollector):
 
-    def get_end_to_end_packs(self) -> Set[str]:
+    def get_end_to_end_packs(self) -> set[str]:
         return {"TAXIIServer", "EDL", "QRadar", "Slack"}
 
 

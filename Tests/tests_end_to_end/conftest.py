@@ -1,14 +1,12 @@
 import json
 import os
-from typing import Dict
-import logging
 import pytest
 
 from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (
     XsiamApiClient,
     XsiamApiClientConfig
 )
-from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarApiClientConfig, XsoarNGApiClient
+from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClientConfig, XsoarNGApiClient
 
 from Tests.configure_and_test_integration_instances import CloudBuild
 
@@ -42,9 +40,9 @@ def get_integration_params(instance_name: str):
     raise ValueError(f'Could not find integration parameters for {instance_name}')
 
 
-@pytest.fixture(scope="function")
-def integration_params(request) -> Dict:
-    instance_name = getattr(request.cls, "instance_name_gsm")
+@pytest.fixture()
+def integration_params(request) -> dict:
+    instance_name = request.cls.instance_name_gsm
     return get_integration_params(instance_name)
 
 
@@ -67,10 +65,10 @@ def xsiam_client(request) -> XsiamApiClient:
 @pytest.fixture(scope="module")
 def xsoar_ng_client(request) -> XsoarNGApiClient:
     xsoar_ng_url, api_key, api_key_id = get_cloud_machine_credentials(request)
-    xsoar_client_config = XsoarApiClientConfig(
+
+    xsoar_client_config = XsoarNGApiClientConfig(
         base_url=xsoar_ng_url,
         api_key=api_key,
         auth_id=api_key_id
     )
-    logging.info(f'{xsoar_client_config.base_url=}')
     return XsoarNGApiClient(xsoar_client_config)
