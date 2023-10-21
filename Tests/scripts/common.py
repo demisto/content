@@ -1,3 +1,5 @@
+from pathlib import Path
+
 CONTENT_NIGHTLY = 'Content Nightly'
 CONTENT_PR = 'Content PR'
 BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
@@ -16,3 +18,14 @@ WORKFLOW_TYPES = {
     SECURITY_SCANS,
     BUILD_MACHINES_CLEANUP
 }
+
+
+def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
+    test_playbooks_result_files_list: dict[str, Path] = {}
+    for directory in artifacts_path.iterdir():
+        if directory.is_dir() and directory.name.startswith("instance_"):
+            instance_role_txt = directory / "instance_role.txt"
+            if instance_role_txt.exists():
+                instance_role: str = instance_role_txt.read_text().replace("\n", "")
+                test_playbooks_result_files_list[instance_role] = directory
+    return test_playbooks_result_files_list

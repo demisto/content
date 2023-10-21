@@ -10,6 +10,7 @@ from jira.client import ResultList
 from junitparser import JUnitXml, TestSuite
 from tqdm import tqdm
 
+from Tests.scripts.common import get_instance_directories
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -24,7 +25,16 @@ RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
 
 
+def green_text(text: str) -> str:
+    return f"{GREEN_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
+
+
+def red_text(text: str) -> str:
+    return f"{RED_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
+
+
 class TestSuiteStatistics:
+
     def __init__(self, failures: int = 0, errors: int = 0, skipped: int = 0, tests: int = 0):
         self.failures = failures
         self.errors = errors
@@ -60,7 +70,7 @@ def calculate_test_playbooks_results(test_playbooks_result_files_list: list[Path
     retry=tenacity.retry_if_exception_type(JIRAError),
     before_sleep=tenacity.before_sleep_log(logging.getLogger(), logging.DEBUG)
 )
-def search_ticket_in_jira(jira_server: JIRA, playbook_id: str) -> Issue | None:
+def search_in_jira_ticket_for_playbook(jira_server: JIRA, playbook_id: str) -> Issue | None:
     jira_ticket_summary = generate_ticket_summary(playbook_id)
     jql_query = generate_query(jira_ticket_summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query)  # type: ignore[assignment]
@@ -80,7 +90,7 @@ def get_jira_tickets_for_playbooks(jira_server: JIRA,
     logging.info(f"Searching for Jira tickets for {len(playbook_ids)} playbooks, using {max_workers} workers")
     with ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix='jira-search') as executor:
         futures = {
-            executor.submit(search_ticket_in_jira, jira_server, playbook_id): playbook_id
+            executor.submit(search_in_jira_ticket_for_playbook, jira_server, playbook_id): playbook_id
             for playbook_id in playbook_ids
         }
         for future in tqdm(as_completed(futures.keys()), total=len(futures), desc='Searching for Jira tickets', unit='ticket',
@@ -92,14 +102,6 @@ def get_jira_tickets_for_playbooks(jira_server: JIRA,
                 logging.error(f'Failed to search for a jira ticket for playbook id:"{futures[future]}"')
 
     return playbook_ids_to_jira_tickets
-
-
-def green_text(text: str) -> str:
-    return f"{GREEN_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
-
-
-def red_text(text: str) -> str:
-    return f"{RED_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
 
 
 def get_all_failed_playbooks(playbooks_results: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -194,15 +196,4 @@ def get_test_playbook_results_files(artifacts_path: Path) -> list[Path]:
         if has_test_playbooks_result_files_list.exists():
             logging.info(f"Found test playbook result files list file: {has_test_playbooks_result_files_list}")
             test_playbooks_result_files_list.append(Path(artifacts_path) / directory / "test_playbooks_report.xml")
-    return test_playbooks_result_files_list
-
-
-def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
-    test_playbooks_result_files_list: dict[str, Path] = {}
-    for directory in artifacts_path.iterdir():
-        if directory.is_dir() and directory.name.startswith("instance_"):
-            instance_role_txt = directory / "instance_role.txt"
-            if instance_role_txt.exists():
-                instance_role: str = instance_role_txt.read_text().replace("\n", "")
-                test_playbooks_result_files_list[instance_role] = directory
     return test_playbooks_result_files_list

@@ -43,9 +43,7 @@ def options_handler() -> argparse.Namespace:
                         help='The max days to reopen a closed issue')
     parser.add_argument('-f', '--max-failures-to-handle', default=JIRA_MAX_TEST_PLAYBOOKS_FAILURES_TO_HANDLE,
                         type=int, required=False, help='The max days to reopen a closed issue')
-    options = parser.parse_args()
-
-    return options
+    return parser.parse_args()
 
 
 def generate_description(playbook_id: str, build_number: str, junit_file_name: str, table_data: Any, failed: bool) -> str:
@@ -134,7 +132,6 @@ def main():
         test_playbooks_result_files_list = get_test_playbook_results_files(Path(options.artifacts_path))
 
         if not test_playbooks_result_files_list:
-            # Write an empty report file to avoid failing the build artifacts collection.
             logging.critical(f"Could not find any test playbook result files in {options.artifacts_path}")
             sys.exit(1)
 

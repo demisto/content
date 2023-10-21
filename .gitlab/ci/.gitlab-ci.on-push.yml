@@ -353,8 +353,8 @@ xpanse-prepare-testing-bucket:
         - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
     paths:
       - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
-      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
-      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 tests_xsoar_server:
   extends:
@@ -389,7 +389,19 @@ fan-in-nightly:
 jobs-done-check-nightly:
   extends:
     - .jobs-done-check
-  needs: ['run-unittests-and-lint', 'run-validations', 'trigger-private-build', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsoar-saas-prepare-testing-bucket', 'xsiam_server_ga', 'tests_xsoar_server', 'xsiam_server_ga-test_playbooks_results', 'tests_xsoar_server-test_playbooks_results']
+  needs:
+    - run-unittests-and-lint
+    - run-validations
+    - trigger-private-build
+    - mpv2-prepare-testing-bucket
+    - xpanse-prepare-testing-bucket
+    - xsoar-prepare-testing-bucket
+    - xsoar-saas-prepare-testing-bucket
+    - xsiam_server_ga
+    - tests_xsoar_server
+    - tests_xsoar_server-test_playbooks_results
+    - xsiam_server_ga-test_playbooks_results
+    - xsiam_server_ga-test_modeling_rule_results
   tags:
     - gke
   rules:
@@ -429,6 +441,7 @@ jobs-done-check-on-push:
     - xsoar_ng_server_ga
     - tests_xsoar_server-test_playbooks_results
     - xsiam_server_ga-test_playbooks_results
+    - xsiam_server_ga-test_modeling_rule_results
   tags:
     - gke
   variables:
@@ -575,9 +588,6 @@ xsiam_server_ga:
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     MARKETPLACE_NAME: "marketplacev2"
     NON_REMOVABLE_PACKS: "Base"
-    JIRA_COMPONENT: "Test Modeling Failure"
-    JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
-    JIRA_LABELS: '["XSIAM"]'
   needs:
     - job: mpv2-prepare-testing-bucket
       optional: true
@@ -635,8 +645,8 @@ xsoar_ng_server_ga:
         - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
     paths:
       - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
-      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
-      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
 test-upload-flow:
   tags:
@@ -688,8 +698,8 @@ test-upload-flow:
     - section_end "Verify Created Testing Bucket"
     - job-done
 
-.server_test_playbooks_report:
-  stage: test_playbooks_report
+.server_test_playbooks_results:
+  stage: results
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
@@ -698,7 +708,7 @@ test-upload-flow:
   extends:
     - .default-job-settings
   script:
-    - ./Tests/scripts/test_playbooks_report.sh
+    - ./Tests/scripts/test_playbooks_results.sh
     - job-done
   artifacts:
     when: always
@@ -708,8 +718,21 @@ test-upload-flow:
         - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
     paths:
       - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
-      - /builds/xsoar/content/artifacts/*  # restoring the default artifacts path from the job default settings
-      - /builds/xsoar/content/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+
+.test_modeling_rule_results:
+  stage: results
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+      when: always
+  extends:
+    - .default-job-settings
+  script:
+    - ./Tests/scripts/test_modeling_rule_results.sh
+    - job-done
 
 tests_xsoar_server-test_playbooks_results:
   variables:
@@ -719,7 +742,7 @@ tests_xsoar_server-test_playbooks_results:
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
     JIRA_LABELS: '["XSOAR"]'
-  extends: .server_test_playbooks_report
+  extends: .server_test_playbooks_results
   needs:
     - job: tests_xsoar_server
     - job: xsoar_ng_server_ga
@@ -736,7 +759,21 @@ xsiam_server_ga-test_playbooks_results:
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
     JIRA_LABELS: '["XSIAM"]'
-  extends: .server_test_playbooks_report
+  extends: .server_test_playbooks_results
+  needs:
+    - xsiam_server_ga
+  dependencies:
+    - xsiam_server_ga
+
+xsiam_server_ga-test_modeling_rule_results:
+  variables:
+    SERVER_TYPE: "XSIAM"
+    PRODUCT_TYPE: "XSIAM"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    JIRA_COMPONENT: "Test Modeling Failure"
+    JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
+    JIRA_LABELS: '["XSIAM"]'
+  extends: .test_modeling_rule_results
   needs:
     - xsiam_server_ga
   dependencies:

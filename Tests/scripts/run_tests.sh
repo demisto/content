@@ -12,7 +12,7 @@ EOF
 # Parsing the user inputs.
 generate_empty_results_file="false"
 while [[ "$#" -gt 0 ]]; do
-  case $1 in
+  case "${1}" in
     --generate-empty-result-file) generate_empty_results_file="true"
       shift;;
     *)  # unknown option.
@@ -51,7 +51,7 @@ echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
 if DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk test-content --help 2>&1 | grep -q 'artifacts-path'; then
   TEST_PLAYBOOKS_RESULTS_ARG=(--artifacts-path="${ARTIFACTS_FOLDER_INSTANCE}" --product-type="${PRODUCT_TYPE}")
   echo "Test Playbooks - Results will be saved to artifacts folder:${ARTIFACTS_FOLDER_INSTANCE}"
-echo "${TEST_PLAYBOOKS_RESULTS_FILE_NAME}" >> "${ARTIFACTS_FOLDER_INSTANCE}/has_test_playbooks_result_files_list.txt"
+  echo "${TEST_PLAYBOOKS_RESULTS_FILE_NAME}" >> "${ARTIFACTS_FOLDER_INSTANCE}/has_test_playbooks_result_files_list.txt"
 else
   echo "Test Playbooks - demisto-sdk version is too old, creating empty JUnit file to artifacts folder:${ARTIFACTS_FOLDER_INSTANCE}"
   TEST_PLAYBOOKS_RESULTS_ARG=()
@@ -93,16 +93,11 @@ fi
 if [ "${exit_code}" -eq 0 ]; then
   role="$(echo -e "${INSTANCE_ROLE}" | tr -d '[:space:]')"
   filepath="${ARTIFACTS_FOLDER}/is_build_passed_${role}.txt"
-  echo "Build passed for role: ${INSTANCE_ROLE} writing it passed to artifacts folder in file: ${filepath}"
+  echo "Build passed for instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} writing it passed to artifacts folder in file: ${filepath}"
   touch "${filepath}"
 else
-  echo "Build failed for role: ${INSTANCE_ROLE} with exit code: ${exit_code}"
+  echo "Build failed for instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} with exit code: ${exit_code}"
 fi
 
-if [[ "${IS_NIGHTLY}" == "true" ]]; then
-  echo "Finish running server tests on role: ${INSTANCE_ROLE} it's the nightly build, exiting with code 0"
-  exit 0
-fi
-
-echo "Finish running server tests on role: ${INSTANCE_ROLE}, exiting with code ${exit_code}"
-exit "${exit_code}"
+echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} error handling will be done on the results job, exiting with code 0"
+exit 0
