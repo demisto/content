@@ -10,7 +10,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 JIRA_KEY_REGEX = r"[A-Z]+-\d+"  # Matches Jira issue key format, e.g. PROJECT-123
 JIRA_DOMAINS = r"https:\/\/jira-dc\.paloaltonetworks\.com|https:\/\/jira-hq\.paloaltonetworks\.local"
 
-JIRA_HOST_FOR_REGEX = fr"{JIRA_DOMAINS}\/browse\/({JIRA_KEY_REGEX})"
+JIRA_HOST_FOR_REGEX = fr"({JIRA_DOMAINS})\/browse\/({JIRA_KEY_REGEX})"
 
 JIRA_FIXED_ISSUE_REGEX = fr"fixe[ds]:\s?.*({JIRA_HOST_FOR_REGEX})"
 JIRA_RELATED_ISSUE_REGEX = fr"relate[ds]:\s?.*({JIRA_HOST_FOR_REGEX})"
@@ -52,12 +52,12 @@ def find_fixed_issue_in_body(body_text, is_merged):
     # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
     # If the PR is merged, we only send issues that should be closed by it.
     # Assuming If the PR was merged, all the related links were fetched when the PR last edited.
-    fixed_issue = [{"link": link, "id": issue_id, "action": 'fixes'} for link, issue_id in fixed_jira_issues]
+    fixed_issue = [{"link": link, "id": issue_id, "action": 'fixes'} for link, _, issue_id in fixed_jira_issues]
     related_issue = []
 
     if not is_merged:
         print("Not merging, getting related issues.")  # noqa: T201
-        related_issue = [{"link": link, "id": issue_id, "action": 'relates'} for link, issue_id in related_jira_issue]
+        related_issue = [{"link": link, "id": issue_id, "action": 'relates'} for link, _, issue_id in related_jira_issue]
 
     return fixed_issue + related_issue
 
