@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Set
 from collections.abc import Iterable, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
@@ -1347,12 +1347,16 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         ))
 
 
-class XSOARNGEndToEndTestCollector(TestCollector):
+class EndToEndTestCollector(TestCollector, ABC):
+
+    @abstractmethod
+    def get_end_to_end_packs(self) -> Set[str]:
+        pass
 
     def _collect(self) -> CollectionResult | None:
-
         collected_packs = []
-        packs = ("TAXIIServer", "EDL", "QRadar", "Slack")
+        packs = self.get_end_to_end_packs()
+
         for pack in packs:
             collected_packs.append(
                 CollectionResult(
@@ -1368,8 +1372,13 @@ class XSOARNGEndToEndTestCollector(TestCollector):
                     only_to_install=True
                 )
             )
-        logger.info(f'Collected {packs} for the xsoar-end-to-end-job')
         return CollectionResult.union(collected_packs)
+
+
+class XSOARNGEndToEndTestCollector(EndToEndTestCollector):
+
+    def get_end_to_end_packs(self) -> Set[str]:
+        return {"TAXIIServer", "EDL", "QRadar", "Slack"}
 
 
 def output(result: CollectionResult | None):
@@ -1463,7 +1472,7 @@ if __name__ == '__main__':
             case (True, (MarketplaceVersions.XSOAR)):
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
             case (True, MarketplaceVersions.XSOAR_SAAS):
-                collector = XSOARNGEndToEndTestCollector(marketplace)
+                collector = XSOARNGEndToEndTestCollector(marketplace=marketplace, graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.XPANSE:
