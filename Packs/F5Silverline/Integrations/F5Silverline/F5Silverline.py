@@ -121,7 +121,7 @@ def add_ip_objects_command(client: Client, args: dict[str, Any]):
     if success_list:
 
         success_lines = '\n'.join(success_list)
-        human_readable = f"IP objects where added successfully into the {list_type}\n| IP |\n| - |\n{success_lines}"
+        human_readable = f"IP objects were added successfully into the {list_type}\n| IP |\n| - |\n{success_lines}"
         return_results(CommandResults(readable_output=human_readable))
     if errors_list:
         return_error('\n'.join(errors_list))

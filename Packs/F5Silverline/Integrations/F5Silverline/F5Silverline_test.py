@@ -15,11 +15,11 @@ def util_load_json(path):
 
 IP_ADDRESSES_TO_ADD = [
     ({'list_type': 'denylist', 'cidr_range': '1.2.3.4'},
-     'IP objects wehre added successfully into the denylist\n| IP |\n| - |\n| 1.2.3.4/32 |'),
+     'IP objects were added successfully into the denylist\n| IP |\n| - |\n| 1.2.3.4/32 |'),
     ({'list_type': 'allowlist', 'cidr_range': '1.2.3.4', 'note': "test"},
-     "IP objects wehre added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |"),
+     "IP objects were added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |"),
     ({'list_type': 'allowlist', 'cidr_range': '1.2.3.4,1.2.3.4/23', 'note': "test"},
-     "IP objects wehre added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |\n| 1.2.3.4/23 |"),
+     "IP objects were added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |\n| 1.2.3.4/23 |"),
 ]
 
 IP_ADDRESSES_TO_DELETE = [
