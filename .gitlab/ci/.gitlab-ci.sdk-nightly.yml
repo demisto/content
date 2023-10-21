@@ -208,9 +208,9 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_end "Unlock HelloWorld Integration and Playbook"
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld_V2 --artifacts-folder $ARTIFACTS_FOLDER
+    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - *upload-entities-to-cortex-xsoar
-    - demisto-sdk upload -i Packs/HelloWorld_V2 -z --insecure
+    - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
     - section_end "Create and Upload Entities to XSOAR Instance"
     - section_start "Download Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -lf
@@ -283,16 +283,18 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
   needs: ["demisto-sdk-nightly:mpv2-prepare-testing-bucket"]
   stage: run-instances
   script:
     - |
       echo "Starting e2e tests for mpv2"
-      mkdir $ARTIFACTS_FOLDER_MPV2R/demisto-sdk
-      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER_MPV2/demisto-sdk
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      echo "ARTIFACTS_FOLDER_MPV2: $ARTIFACTS_FOLDER"
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
 
-      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER_MPV2/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER_MPV2/env_results.json | jq -r '.[0].InstanceDNS')"
+      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
       unset DEMISTO_API_KEY # a temporary fix 
     - job-done
@@ -312,6 +314,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
   needs: ["demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -324,16 +327,17 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - |
-      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER_XSOAR_SAAS/env_results.json | jq -r '.[0].InstanceDNS')"
+      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
+      echo "ARTIFACTS_FOLDER_xsoar_saas: $ARTIFACTS_FOLDER"
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
     - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
     - section_end "Unlock HelloWorld Integration and Playbook"
     - section_start "Create and Upload Entities to XSOAR SAAS Instance" --collapsed
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER_XSOAR_SAAS
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld_V2 --artifacts-folder $ARTIFACTS_FOLDER_XSOAR_SAAS
+    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
+    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - *upload-entities-to-cortex-xsoar
-    - demisto-sdk upload -i Packs/HelloWorld_V2 -z --insecure
+    - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
     - section_end "Create and Upload Entities to XSOAR SAAS Instance"
     - section_start "Download Entities from XSOAR SAAS Instance" --collapsed
     - demisto-sdk download -lf
@@ -358,7 +362,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - demisto-sdk download -a -o Packs/ -f -fmt
     - section_end "Download Custom Entities from XSOAR SAAS Instance"
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER_XSOAR_SAAS --env-file $ARTIFACTS_FOLDER_XSOAR_SAAS/env_results.json --instance-role "$INSTANCE_ROLE"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - section_end "Destroy instances"
     - job-done
 demisto-sdk-nightly:fan-in:
