@@ -172,7 +172,7 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
     object_id = args.get('object_id')
     object_ip = args.get('object_ip')
     object_id_list = []
-    list_target = args.get('list_target', 'proxy-routed')
+    list_target = args.get('list_target', 'proxy')
 
     if not object_id and not object_ip:
         raise DemistoException("At least one of the following should be given: object_ip, object_id.")
