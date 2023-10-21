@@ -17,7 +17,7 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
       else
         path="./Tests/tests_end_to_end/xsiam"
       fi
-      echo "running end-to-end tests using path $path"
+      echo "Running end-to-end tests on ${CLOUD_CHOSEN_MACHINE_ID} from ${path}"
       python3 -m pytest "$path" -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --integration_secrets_path "${SECRET_CONF_PATH}" --disable-warnings
       if [[ $? -ne 0 ]]; then
         exit_code=1
