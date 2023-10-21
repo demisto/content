@@ -550,7 +550,7 @@ xsoar_ng_end_to_end_tests:
     - .default-job-settings
   rules:
     - if: '$NIGHTLY'
-    - when: always
+    # - when: always
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -583,7 +583,7 @@ xsoar_ng_end_to_end_tests:
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - section_start "Install e2e necessary packs"
-    - echo -e "TAXIIServer\nEDL\nQRadar\nSlack" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    # - echo -e "TAXIIServer\nEDL\nQRadar\nSlack" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE" || EXIT_CODE=$?
     - section_end "Install e2e necessary packs"
 
