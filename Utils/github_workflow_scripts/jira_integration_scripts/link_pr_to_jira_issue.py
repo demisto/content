@@ -44,6 +44,7 @@ def find_fixed_issue_in_body(body_text, is_merged):
     Getting the issues url in the PR's body as part of `fixing: <issue>` format.
     Return list of issues found: [{"link": link, "id": issue_id}]
     """
+    print(f"###### {JIRA_FIXED_ISSUE_REGEX=}")
     fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text, re.IGNORECASE)
     related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text, re.IGNORECASE)
     print(f'Detected {related_jira_issue=}, {fixed_jira_issues=}')  # noqa: T201
