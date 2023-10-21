@@ -1369,7 +1369,6 @@ class EndToEndTestCollector(TestCollector, ABC):
                     reason_description="end to end tests",
                     conf=None,
                     id_set=None,
-                    is_nightly=True,
                     only_to_install=True
                 )
             )
