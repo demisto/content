@@ -566,7 +566,6 @@ xsoar_ng_end_to_end_tests:
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
-    END_TO_END_TEST_SERVER: "xsoar-ng"
   needs:
     - job: xsoar-saas-prepare-testing-bucket
       optional: true

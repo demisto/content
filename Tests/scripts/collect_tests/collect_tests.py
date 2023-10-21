@@ -70,7 +70,8 @@ class CollectionReason(str, Enum):
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
     # these may be used without an id_set or conf.json object, see _validate_collection.
     CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
-    CollectionReason.ALWAYS_INSTALLED_PACKS
+    CollectionReason.ALWAYS_INSTALLED_PACKS,
+    CollectionReason.PACK_TEST_END_TO_END
 }
 
 
