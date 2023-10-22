@@ -30,7 +30,7 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
     # iterate over the artifacts path and find all the test modeling rule result files
     if not (test_modeling_rules_results_files := get_test_modeling_rules_results_files(artifacts_path)):
         logging.error(f"Could not find any test modeling rule result files in {artifacts_path}")
-        return False
+        return True
 
     logging.info(f"Found {len(test_modeling_rules_results_files)} test modeling rules files")
 
@@ -47,8 +47,8 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
-    jira_tickets_for_modeling_rule, modeling_rules_to_test_suite, server_versions = (
-        calculate_test_modeling_rule_results(jira_server, test_modeling_rules_results_files)
+    modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions = (
+        calculate_test_modeling_rule_results(test_modeling_rules_results_files, jira_server)
     )
 
     if modeling_rules_to_test_suite:
@@ -66,7 +66,7 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
         return total_errors != 0
 
     logging.info("Test Modeling rule Results - No test modeling rule results found")
-    return True
+    return False
 
 
 def main():

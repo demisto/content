@@ -63,8 +63,8 @@ def main():
 
         logging.info(f"Found {len(test_modeling_rules_results_files)} test modeling rules files")
 
-        jira_tickets_for_modeling_rule, modeling_rules_to_test_suite, server_versions = (
-            calculate_test_modeling_rule_results(jira_server, test_modeling_rules_results_files)
+        modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions = (
+            calculate_test_modeling_rule_results(test_modeling_rules_results_files, jira_server)
         )
 
         logging.info(f"Found {len(jira_tickets_for_modeling_rule)} Jira tickets out "

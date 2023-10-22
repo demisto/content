@@ -9,7 +9,7 @@ from typing import Any
 
 import gitlab
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
-from junitparser import TestSuite, JUnitXml
+from junitparser import TestSuite
 from slack_sdk import WebClient
 
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
@@ -17,6 +17,7 @@ from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, TEST_NATIVE_CANDIDATE, WORKFLOW_TYPES, get_instance_directories, \
     get_properties_for_test_suite
 from Tests.scripts.github_client import GithubPullRequest
+from Tests.scripts.test_modeling_rule_report import get_test_modeling_rules_results_files, calculate_test_modeling_rule_results
 from Tests.scripts.utils.log_util import install_logging
 
 ROOT_ARTIFACTS_FOLDER = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
@@ -92,21 +93,36 @@ def get_test_report_pipeline_url(pipeline_url: str) -> str:
 
 
 def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
-    failed_test_modeling_rules = artifact_folder / 'modeling_rules_results.xml'
-    if not failed_test_modeling_rules.exists():
+
+    if not (test_modeling_rules_results_files := get_test_modeling_rules_results_files(artifact_folder)):
+        logging.error(f"Could not find any test modeling rule result files in {artifact_folder}")
         title = f"{title} - Failed to get Test Modeling rules results"
         return [{
             'fallback': title,
             'color': 'warning',
             'title': title,
         }]
-    xml = JUnitXml.fromfile(failed_test_modeling_rules.as_posix())
+
+    modeling_rules_to_test_suite, _, _ = (
+        calculate_test_modeling_rule_results(test_modeling_rules_results_files)
+    )
+
+    if not modeling_rules_to_test_suite:
+        logging.info("Test Modeling rule Results - No test modeling rule results found")
+        title = f"{title} - No Test Modeling rules results found"
+        return [{
+            'fallback': title,
+            'color': 'good',
+            'title': title,
+        }]
+
     failed_test_suites = []
     total_test_suites = 0
-    for test_suite in xml.iterchildren(TestSuite):
-        total_test_suites += 1
-        if test_suite.failures or test_suite.errors:
-            failed_test_suites.append(get_failed_modeling_rule_name_from_test_suite(test_suite))
+    for test_suites in modeling_rules_to_test_suite.values():
+        for test_suite in test_suites.values():
+            total_test_suites += 1
+            if test_suite.failures or test_suite.errors:
+                failed_test_suites.append(get_failed_modeling_rule_name_from_test_suite(test_suite))
 
     if failed_test_suites:
         title = f"{title} - Failed Tests Modeling rules - ({len(failed_test_suites)}/{total_test_suites})"

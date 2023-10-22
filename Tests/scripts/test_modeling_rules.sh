@@ -34,20 +34,12 @@ fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then
   echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-  # FIXME! remove
-  echo "--- cloud_api_keys.json ---"
-  cat -n cloud_api_keys.json
-  echo "---------------------------"
 else
   exit_on_error 1 "CLOUD_API_KEYS is empty"
 fi
 
 if [ -n "${CLOUD_API_TOKENS}" ]; then
   echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
-  # FIXME! remove
-  echo "--- cloud_api_tokens.json ---"
-  cat -n cloud_api_tokens.json
-  echo "---------------------------"
 else
   exit_on_error 1 "CLOUD_API_TOKENS is empty"
 fi

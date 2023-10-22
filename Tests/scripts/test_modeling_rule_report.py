@@ -32,7 +32,7 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
     junit_file_name = (f"unit-test{ci_pipeline_id_dash}-{properties['start_time']}-{properties['pack_id']}-"
                        f"{properties['file_name']}.xml")
     description = generate_description_for_test_modeling_rule(ci_pipeline_id, properties, test_suite, junit_file_name)
-    summary = generate_ticket_summary(get_summary_for_test_modeling_rule(properties))
+    summary = generate_ticket_summary(get_summary_for_test_modeling_rule(properties))  # type: ignore[arg-type]
     jql_query = generate_query(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen,
@@ -96,20 +96,9 @@ def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
     return description
 
 
-def get_test_modeling_rules_results_files(artifacts_path: Path) -> dict[str, Path]:
-    instance_role_to_results_file: dict[str, Path] = {}
-    for instance_role, directory in get_instance_directories(artifacts_path).items():
-        logging.info(f"Found instance directory: {directory} for instance role: {instance_role}")
-        test_playbooks_report_file = Path(artifacts_path) / directory / "test_playbooks_report.xml"
-        if test_playbooks_report_file.exists():
-            logging.info(f"Found test playbook result files list file: {test_playbooks_report_file}")
-            instance_role_to_results_file[instance_role] = test_playbooks_report_file
-    return instance_role_to_results_file
-
-
-def calculate_test_modeling_rule_results(jira_server: JIRA | None,
-                                         test_modeling_rules_results_files: dict[str, Path]
-                                         ) -> tuple[dict[str, Issue], dict[str, dict[str, TestSuite]], set[str]]:
+def calculate_test_modeling_rule_results(test_modeling_rules_results_files: dict[str, Path],
+                                         jira_server: JIRA | None = None
+                                         ) -> tuple[dict[str, dict[str, TestSuite]], dict[str, Issue], set[str]]:
     modeling_rules_to_test_suite: dict[str, dict[str, TestSuite]] = defaultdict(dict)
     jira_tickets_for_modeling_rule: dict[str, Issue] = {}
     server_versions: set[str] = set()
@@ -127,4 +116,15 @@ def calculate_test_modeling_rule_results(jira_server: JIRA | None,
                     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)
                     if search_issues:
                         jira_tickets_for_modeling_rule[summary] = search_issues[0]  # type: ignore[assignment]
-    return jira_tickets_for_modeling_rule, modeling_rules_to_test_suite, server_versions
+    return modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions
+
+
+def get_test_modeling_rules_results_files(artifacts_path: Path) -> dict[str, Path]:
+    instance_role_to_results_file: dict[str, Path] = {}
+    for instance_role, directory in get_instance_directories(artifacts_path).items():
+        logging.info(f"Found instance directory: {directory} for instance role: {instance_role}")
+        test_playbooks_report_file = Path(artifacts_path) / directory / "test_playbooks_report.xml"
+        if test_playbooks_report_file.exists():
+            logging.info(f"Found test playbook result files list file: {test_playbooks_report_file}")
+            instance_role_to_results_file[instance_role] = test_playbooks_report_file
+    return instance_role_to_results_file
