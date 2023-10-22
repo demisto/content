@@ -671,7 +671,7 @@ THREAT_ASSESSMENT_COMMANDS = {
 
 
 def test_list_threat_assessment_requests_command(mocker):
-    raw_response = load_json(f"./test_data/list_threat_assessment.json")
+    raw_response = load_json("./test_data/list_threat_assessment.json")
     mocker.patch.object(client_mocker, "list_threat_assessment_requests",
                         return_value=raw_response)
 
