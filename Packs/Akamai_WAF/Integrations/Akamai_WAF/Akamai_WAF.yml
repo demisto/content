@@ -512,7 +512,7 @@ script:
       name: trust_chain
       type: textArea
     - auto: PREDEFINED
-      description: RSA or ECDSA.
+      description: Type of encryption.
       name: key_algorithm
       predefined:
       - RSA
@@ -1356,20 +1356,20 @@ script:
       description: Akamai SiteShield Maps.
       type: List
   - arguments:
-    - description: Unique Identifier of the Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command.
+    - description: Unique identifier of the enrollment on which to perform the desired operation. And it can be retrieved via the akamai-list-enrollments command.
       name: enrollment_id
       required: true
     - auto: PREDEFINED
-      description: 'Environment where the certificate is deployed: production or staging.'
+      description: Environment where the certificate is deployed.
       name: environment
       predefined:
       - production
       - staging
-    description: 'Returns the certification/Enarollment deployment status for specific a environtment: production or staging.'
+    description: 'Returns the certification/enrollment deployment status for specific a environment: production or staging.'
     name: akamai-get-cps-enrollment-deployment
     outputs:
     - contextPath: Akamai.Cps.Enrollments.Deployment
-      description: Akamai Cps Enrollments Deployment.
+      description: A collection of settings for the Akami CPS enrollments deployment.
       type: Dictionary
   - arguments:
     - auto: PREDEFINED
@@ -1388,27 +1388,27 @@ script:
     name: akamai-list-cidr-blocks
     outputs:
     - contextPath: Akamai.CidrBlocks
-      description: A List of CIDR Blocks.
+      description: A list of CIDR blocks.
       type: List
   - arguments:
-    - description: Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command.
+    - description: Enrollment on which to perform the desired operation. It can be retrieved via the akamai-list-enrollments command.
       name: enrollment_id
       required: true
-    - description: 'the modification(s) to the enrollment in the dict format. The possible modifications are: ra, validationType, certificateType, networkConfiguration, changeManagement, csr, org, adminContact, techContact, thirdParty, enableMultiStackedCertificates.'
+    - description: 'The modification(s) to the enrollment in the dict format. The possible modifications are: ra, validationType, certificateType, networkConfiguration, changeManagement, csr, org, adminContact, techContact, thirdParty, enableMultiStackedCertificates.'
       isArray: true
       name: updates
       required: true
-    - description: Enrollment info in dict format. If provided, the script will not make another API call to get the enrollmont info.             if not, another API call will be issued to retrieve the Enrollment info.
+    - description: Enrollment information in dict format. If provided, the script will not make another API call to get the enrollment information. If not provided, another API call will be issued to retrieve the enrollment information.
       isArray: true
       name: enrollment
-    - description: All pending changes to be cancelled when updating an enrollment.
+    - description: Whether all pending changes are to be cancelled when updating an enrollment.
       name: allow_cancel_pending_changes
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
-    - description: Bypass staging and push meta_data updates directly to production network. Current change will also be updated with the same changes.
+    - description: Whether to bypass staging and push meta_data updates directly to the production network. Current change will also be updated with the same changes.
       name: allow_staging_bypass
       auto: PREDEFINED
       defaultValue: 'true'
@@ -1419,63 +1419,63 @@ script:
       name: deploy_not_after
     - description: "Don't deploy before this date (UTC). Sample: 2021-01-31T00:00:00.000Z."
       name: deploy_not_before
-    - description: Force certificate renewal for Enrollment.
+    - description: Whether to force certificate renewal for enrollment.
       name: force_renewal
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-    - description: CPS will automatically start a Change to renew certificates in time before they expire.
+    - description: Whether CPS will automatically start a change to renew certificates in time before they expire.
       name: renewal_date_check_override
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
-    - description: Applicable for Third Party Dual Stack Enrollments, allows to update missing certificate. Option supported from v10.
+    - description: Applicable for Third Party Dual Stack Enrollment. Whether to update a missing certificate. Option supported from v10.
       name: allow_missing_certificate_addition
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-    description: 'Updates an enrollment with changes. Response type will vary depending on the type and impact of change. For example, changing SANs list may return HTTP 202 Accepted since the operation require a new certificate and network deployment operations, and thus cannot be completed without a change. On the contrary, for example a Technical Contact name change may return HTTP 200 OK assuming there are no active change and when the operation does not require a new certificate. Reference: https://techdocs.akamai.com/cps/reference/put-enrollment  NOTES: Depending on the type of the modification, additional steps might be required to complete the update. These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowleging the warnings raised then waiting for the certificate to be deployed into PRODUCTION. However these additional steps are not included in this command. User needs to conduct those steps once the update command is completed.'
+    description: 'Updates an enrollment with changes. Response type will vary depending on the type and impact of change. For example, changing SANs list may return HTTP 202 Accepted since the operation requires new certificate and network deployment operations, and thus cannot be completed without a change. On the contrary, for example a Technical Contact name change may return HTTP 200 OK assuming there are no active changes and the operation does not require a new certificate. Reference: https://techdocs.akamai.com/cps/reference/put-enrollment  Note: Depending on the type of the modification, additional steps might be required to complete the update. These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowledging the warnings raised then waiting for the certificate to be deployed into Production. However, these additional steps are not included in this command. You need to perform those steps once the update command is completed.'
     name: akamai-update-cps-enrollment
     outputs:
     - contextPath: Akamai.Enrollment.Changes
-      description: Akamai Enrollment Changes.
+      description: Akamai enrollment changes.
       type: Dictionary
   - arguments:
     - description: Enrollment path found in the pending change location field.
       name: enrollment_path
-    - description: Enrollment ID on which to perform the desired operation. And it can be retrived via list_enrollments_command.
+    - description: Enrollment ID on which to perform the desired operation. The ID can be retrieved via the akamai-list-enrollments command.
       name: enrollment_id
-    - description: Chnage ID on which to perform the desired operation. And it can be retrived via list_enrollments_command.
+    - description: Change ID on which to perform the desired operation. It can be retrieved via the akamai-list-enrollments command.
       name: change_id
-    - description: 'The time after when the change will no longer be in effect.             This value is an ISO-8601 timestamp. (UTC)             Sample: 2021-01-31T00:00:00.000Z.'
+    - description: 'The time after when the change will no longer be in effect. This value is an ISO-8601 timestamp. (UTC) Sample: 2021-01-31T00:00:00.000Z.'
       name: deploy_not_after
-    - description: 'The time that you want change to take effect. If you do not set this, the change occurs immediately,             although most changes take some time to take effect even when they are immediately effective.             This value is an ISO-8601 timestamp. (UTC)             Sample: 2021-01-31T00:00:00.000Z.'
+    - description: 'The time that you want the change to take effect. If you do not set this, the change occurs immediately, although most changes take some time to take effect even when they are immediately effective. This value is an ISO-8601 timestamp. (UTC) Sample: 2021-01-31T00:00:00.000Z.'
       name: deploy_not_before
       required: true
     description: Updates the current deployment schedule.
     name: akamai-update-cps-enrollment-schedule
     outputs:
     - contextPath: Akamai.Enrollment.Changes
-      description: Akamai Enrollment Changes.
+      description: Akamai enrollment changes.
       type: Dictionary
   - arguments:
     - description: 'Enrollment path found in the pending change location field.'
       name: enrollment_path
-    - description: The enrollment ID on which to perform the desired operation. And it can be retrived via list_enrollments_command.
+    - description: The enrollment ID on which to perform the desired operation. It can be retrieved via the akamai-list-enrollments command.
       name: enrollment_id
-    - description: The change for this enrollment on which to perform the desired operation.  And it can be retrived via list_enrollments_command.
+    - description: The change for this enrollment on which to perform the desired operation.  It can be retrieved via the akamai-list-enrollments command.
       name: change_id
     description: Gets the status of a pending change.
     name: akamai-get-cps-change-status
     outputs:
     - contextPath: Akamai.Enrollments.Change.Status
-      description: Akamai Enrollments Change Status.
+      description: Akamai enrollments change status.
       type: Dictionary
   dockerimage: demisto/auth-utils:1.0.0.78306
   script: ''
