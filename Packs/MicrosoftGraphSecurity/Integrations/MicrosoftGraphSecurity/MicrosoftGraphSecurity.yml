@@ -181,7 +181,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: When the alert was last modified in the following string format - YYYY-MM-DD
+      description: When the alert was last modified in the following string format - YYYY-MM-DD.
       name: last_modified
       predefined:
       - Last24Hours
@@ -198,11 +198,11 @@ script:
       - high
     - description: Category of the alert, e.g. credentialTheft, ransomware (Categories can be added or removed by vendors.)
       name: category
-    - description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD
+    - description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD.
       name: time_from
-    - description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD
+    - description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD.
       name: time_to
-    - description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
+    - description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'".
       name: filter
     - auto: PREDEFINED
       description: Relevant only for Alerts v2. Use this field to filter by an alert's classification.
@@ -295,7 +295,7 @@ script:
       description: Relevant only for Alerts v2. Alert determination.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.@odata.Type
-      description: Relevant only for Alerts v2. Alert evidence type
+      description: Relevant only for Alerts v2. Alert evidence type.
       type: String
     - contextPath: MsGraph.Alert.Evidence.AzureAdDeviceId
       description: Relevant only for Alerts v2. Evidence azure device ID.
@@ -450,7 +450,7 @@ script:
       description: Relevant only for Alerts v2. Alert comment creator name.
       type: String
     - contextPath: MsGraph.Alert.Comments.CreatedDate
-      description: Relevant only for Alerts v2. Alert comment creation time
+      description: Relevant only for Alerts v2. Alert comment creation time.
       type: Date
     - contextPath: MsGraph.Alert.Description
       description: Relevant only for Alerts v2. Alert description.
@@ -709,7 +709,7 @@ script:
     name: msg-update-alert
     outputs:
     - contextPath: MsGraph.Alert.ID
-      description: Alert ID
+      description: Alert ID.
       type: string
     - contextPath: MsGraph.Alert.Status
       description: Alert status, will appear only if changed.
@@ -765,16 +765,16 @@ script:
     name: msg-get-user
     outputs:
     - contextPath: MsGraph.User.Email
-      description: User email address
+      description: User email address.
       type: string
     - contextPath: MsGraph.User.ID
-      description: User ID
+      description: User ID.
       type: string
     - contextPath: MsGraph.User.Title
-      description: User job title
+      description: User job title.
       type: string
     - contextPath: MsGraph.User.Name
-      description: User name
+      description: User name.
       type: string
   - description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
@@ -1661,46 +1661,46 @@ script:
     polling: true
     outputs:
     - contextPath: MSGraphMail.MailAssessment.ID
-      description: 'mail assessment id'
+      description: 'mail assessment id.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.CreatedDateTime
-      description: 'mail assessment Created DateTime'
+      description: 'mail assessment Created DateTime/'
       type: String
     - contextPath: MSGraphMail.MailAssessment.ContentType
-      description: 'Content Type'
+      description: 'Content Type.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.ExpectedAssessment
-      description: 'Expected Assessment'
+      description: 'Expected Assessment.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.Category
-      description: 'Category'
+      description: 'Category.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.Status
-      description: 'Status'
+      description: 'Status.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.RequestSource
-      description: 'Request Source'
+      description: 'Request Source.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.RecipientEmail
-      description: 'Recipient Email'
+      description: 'Recipient Email.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.DestinationRoutingReason
-      description: 'Destination Routing Reason'
+      description: 'Destination Routing Reason.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.MessageID
-      description: 'Message ID'
+      description: 'Message ID.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.CreatedUserID
-      description: 'Created user id '
+      description: 'Created user id.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.CreatedUsername
-      description: 'Created user name'
+      description: 'Created user name.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.ResultType
-      description: 'Result Type'
+      description: 'Result Type.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.ResultMessage
-      description: 'Result message'
+      description: 'Result message.'
       type: String
   - arguments:
     - description: The email of the user who recieved the mail.
@@ -1740,43 +1740,43 @@ script:
     polling: true
     outputs:
     - contextPath: MSGraphMail.EmailAssessment.ID
-      description: 'mail assessment id'
+      description: 'mail assessment id.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.CreatedDateTime
-      description: 'mail assessment Created DateTime'
+      description: 'mail assessment Created DateTime.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.ContentType
-      description: 'Content Type'
+      description: 'Content Type.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.ExpectedAssessment
-      description: 'Expected Assessment'
+      description: 'Expected Assessment.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.Category
-      description: 'Category'
+      description: 'Category.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.Status
-      description: 'Status'
+      description: 'Status.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.RequestSource
-      description: 'Request Source'
+      description: 'Request Source.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.RecipientEmail
-      description: 'Recipient Email'
+      description: 'Recipient Email.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.DestinationRoutingReason
-      description: 'Destination Routing Reason'
+      description: 'Destination Routing Reason.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.CreatedUserID
-      description: 'Created user id '
+      description: 'Created user id.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.CreatedUsername
-      description: 'Created user name'
+      description: 'Created user name.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.ResultType
-      description: 'Result Type'
+      description: 'Result Type.'
       type: String
     - contextPath: MSGraphMail.EmailAssessment.ResultMessage
-      description: 'Result message'
+      description: 'Result message.'
       type: String
   - arguments:
     - description: expected assessment.
@@ -1815,40 +1815,40 @@ script:
     polling: true
     outputs:
     - contextPath: MSGraphMail.FileAssessment.ID
-      description: 'mail assessment id'
+      description: 'mail assessment id.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.CreatedDateTime
-      description: 'mail assessment Created DateTime'
+      description: 'mail assessment Created DateTime.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.ContentType
-      description: 'Content Type'
+      description: 'Content Type.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.ExpectedAssessment
-      description: 'Expected Assessment'
+      description: 'Expected Assessment.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.Category
-      description: 'Category'
+      description: 'Category.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.Status
-      description: 'Status'
+      description: 'Status.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.RequestSource
-      description: 'Request Source'
+      description: 'Request Source.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.FileName
-      description: 'File name'
+      description: 'File name.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.CreatedUserID
-      description: 'Created user id '
+      description: 'Created user id.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.CreatedUsername
-      description: 'Created user name'
+      description: 'Created user name.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.ResultType
-      description: 'Result Type'
+      description: 'Result Type.'
       type: String
     - contextPath: MSGraphMail.FileAssessment.ResultMessage
-      description: 'Result message'
+      description: 'Result message.'
       type: String
   - arguments:
     - description: expected assessment.
@@ -1879,46 +1879,46 @@ script:
     polling: true
     outputs:
     - contextPath: MSGraphMail.UrlAssessment.ID
-      description: 'mail assessment id'
+      description: 'mail assessment id.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.Url
       description: 'the URL.'
       type: string
     - contextPath: MSGraphMail.UrlAssessment.CreatedDateTime
-      description: 'mail assessment Created DateTime'
+      description: 'mail assessment Created DateTime.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.ContentType
-      description: 'Content Type'
+      description: 'Content Type.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.ExpectedAssessment
-      description: 'Expected Assessment'
+      description: 'Expected Assessment.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.Category
-      description: 'Category'
+      description: 'Category.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.Status
-      description: 'Status'
+      description: 'Status.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.RequestSource
-      description: 'Request Source'
+      description: 'Request Source.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.RecipientEmail
-      description: 'Recipient Email'
+      description: 'Recipient Email.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.DestinationRoutingReason
-      description: 'Destination Routing Reason'
+      description: 'Destination Routing Reason.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.CreatedUserID
-      description: 'Created user id'
+      description: 'Created user id.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.CreatedUsername
-      description: 'Created user name'
+      description: 'Created user name.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.ResultType
-      description: 'Result Type'
+      description: 'Result Type.'
       type: String
     - contextPath: MSGraphMail.UrlAssessment.ResultMessage
-      description: 'Result message'
+      description: 'Result message.'
       type: String
   - arguments:
     - description: request id.
@@ -1964,52 +1964,52 @@ script:
     polling: true
     outputs:
     - contextPath: MsGraph.AssessmentRequestNextToken.next_token
-      description: 'next token'
+      description: 'next token.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ID
-      description: 'assessment request id'
+      description: 'assessment request id.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.CreatedDateTime
-      description: 'assessment request DateTime'
+      description: 'assessment request DateTime.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ContentType
-      description: 'Content Type'
+      description: 'Content Type.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ExpectedAssessment
-      description: 'Expected Assessment'
+      description: 'Expected Assessment.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.Category
-      description: 'Category'
+      description: 'Category.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.Status
-      description: 'Status'
+      description: 'Status.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.URL
-      description: 'url'
+      description: 'url.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.RequestSource
-      description: 'Request Source'
+      description: 'Request Source.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.RecipientEmail
-      description: 'Recipient Email'
+      description: 'Recipient Email.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.FileName
-      description: 'file name'
+      description: 'file name.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.DestinationRoutingReason
-      description: 'Destination Routing Reason'
+      description: 'Destination Routing Reason.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.CreatedUserID
-      description: 'Created user id'
+      description: 'Created user id.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.CreatedUsername
-      description: 'Created user name'
+      description: 'Created user name.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ResultType
-      description: 'Result Type'
+      description: 'Result Type.'
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ResultMessage
-      description: 'Result message'
+      description: 'Result message.'
       type: String
   dockerimage: demisto/crypto:1.0.0.79207
   isfetch: true
