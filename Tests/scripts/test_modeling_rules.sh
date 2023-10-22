@@ -32,6 +32,26 @@ if [[ "${generate_empty_results_file,,}" == "true" ]]; then
   exit 0
 fi
 
+if [ -n "${CLOUD_API_KEYS}" ]; then
+  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  # FIXME! remove
+  echo "--- cloud_api_keys.json ---"
+  cat -n cloud_api_keys.json
+  echo "---------------------------"
+else
+  exit_on_error 1 "CLOUD_API_KEYS is empty"
+fi
+
+if [ -n "${CLOUD_API_TOKENS}" ]; then
+  echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
+  # FIXME! remove
+  echo "--- cloud_api_tokens.json ---"
+  cat -n cloud_api_tokens.json
+  echo "---------------------------"
+else
+  exit_on_error 1 "CLOUD_API_TOKENS is empty"
+fi
+
 if [[ ! -s "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt" ]]; then
   echo "No modeling rules were marked for testing during test collection - writing empty junit file to ${MODELING_RULES_RESULTS_FILE_NAME}"
   write_empty_test_results_file
@@ -57,26 +77,6 @@ done
 if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
     echo "There was a problem reading the list of modeling rules that require testing from '${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt'"
     exit 1
-fi
-
-if [ -n "${CLOUD_API_KEYS}" ]; then
-  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-  # FIXME! remove
-  echo "--- cloud_api_keys.json ---"
-  cat -n cloud_api_keys.json
-  echo "---------------------------"
-else
-  exit_on_error 1 "CLOUD_API_KEYS is empty"
-fi
-
-if [ -n "${CLOUD_API_TOKENS}" ]; then
-  echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
-  # FIXME! remove
-  echo "--- cloud_api_tokens.json ---"
-  cat -n cloud_api_tokens.json
-  echo "---------------------------"
-else
-  exit_on_error 1 "CLOUD_API_TOKENS is empty"
 fi
 
 if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
