@@ -8,7 +8,12 @@ from GetDataCollectionLink import (
 )
 
 
-def test_main():
+def test_main(mocker):
+    mocker.patch.object(
+        demisto,
+        "demistoVersion",
+        return_value={"platform": "xsoar", "version": "6.12.0"},
+    )
     assert encode_string("abcde") == "59574a6a5a47553d"
     assert get_data_collection_url("1", ["t"]) == [
         {
