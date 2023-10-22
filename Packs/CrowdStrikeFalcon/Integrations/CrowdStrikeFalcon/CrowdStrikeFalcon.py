@@ -2677,15 +2677,15 @@ def fetch_incidents():
                                                                       fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
 
         current_fetch_info_idp_detections = update_last_run_object(last_run=current_fetch_info_idp_detections,
-                                                                    incidents=idp_detections,
-                                                                    fetch_limit=fetch_limit,
-                                                                    start_fetch_time=start_fetch_time,
-                                                                    end_fetch_time=end_fetch_time,
-                                                                    look_back=look_back,
-                                                                    created_time_field='occurred',
-                                                                    id_field='name',
-                                                                    date_format=IDP_DATE_FORMAT,
-                                                                    new_offset=idp_detections_offset)
+                                                                   incidents=idp_detections,
+                                                                   fetch_limit=fetch_limit,
+                                                                   start_fetch_time=start_fetch_time,
+                                                                   end_fetch_time=end_fetch_time,
+                                                                   look_back=look_back,
+                                                                   created_time_field='occurred',
+                                                                   id_field='name',
+                                                                   date_format=IDP_DATE_FORMAT,
+                                                                   new_offset=idp_detections_offset)
         demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(idp_detections)}")
 
     if 'Indicator of Misconfiguration' in fetch_incidents_or_detections:
