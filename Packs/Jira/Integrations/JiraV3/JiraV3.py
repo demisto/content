@@ -1175,7 +1175,9 @@ class JiraIssueFieldsParser:
         # (which holds nested dictionaries that includes the content and also metadata about it), we check if the response
         # returns the fields rendered in HTML format (by accessing the renderedFields).
         rendered_issue_fields = issue_data.get('renderedFields', {}) or {}
-        return {'Description': BeautifulSoup(rendered_issue_fields.get('description'), features="html.parser").get_text() if rendered_issue_fields
+        return {'Description': BeautifulSoup(rendered_issue_fields.get('description'),
+                                             features="html.parser").get_text()
+                if rendered_issue_fields
                 else (demisto.get(issue_data, 'fields.description', '') or '')}
 
     @staticmethod
@@ -2174,7 +2176,9 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
         }
     res = client.add_comment(issue_id_or_key=issue_id_or_key, json_data=payload)
     markdown_dict = {
-        'Comment': BeautifulSoup(res.get('renderedBody'), features="html.parser").get_text() if res.get('renderedBody') else res.get('body'),
+        'Comment': BeautifulSoup(res.get('renderedBody'), features="html.parser").get_text()
+        if res.get('renderedBody')
+        else res.get('body'),
         'Id': res.get('id', ''),
         'Ticket Link': res.get('self', ''),
     }
