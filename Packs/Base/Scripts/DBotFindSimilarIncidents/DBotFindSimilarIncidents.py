@@ -894,11 +894,14 @@ def main():
         return_outputs_error(error_msg="%s \n" % MESSAGE_NO_CURRENT_INCIDENT % incident_id)
         return None, global_msg
 
+    demisto.debug(f'{exact_match_fields=}, {populate_high_level_fields=}')
+
     # load the related incidents
     populate_fields.remove('id')
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(exact_match_fields, populate_high_level_fields,
                                                                        incident,
                                                                        from_date, to_date, query, limit)
+    demisto.debug(f'Found {len(incidents)} incidents for {incident_id=}')
     global_msg += "%s \n" % msg
 
     if not incidents:
