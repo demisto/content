@@ -57,7 +57,7 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     paramName = arrayindex(regextract(_raw_log, "paramName=\"([^\"]+)"), 0), // HTTP parameter name that triggered the security violation.
     paramType = arrayindex(regextract(_raw_log, "paramType=\"([^\"]+)"), 0), // Type of parameter: Query/Path/Body URL Encoded
     paramValue = arrayindex(regextract(_raw_log, "paramValue=\"([^\"]+)"), 0), // HTTP parameter value that triggered the security violation.
-    isPassive = arrayindex(regextract(_raw_log, "(?i)passive=\"([^\"]+)\""), 0), // Whether there were any actions applied to the violating request or response, or it is passive-mode detection only.
+    isPassive = arrayindex(regextract(_raw_log, "(?i)passive=\"([^\"]+)"), 0), // Whether there were any actions applied to the violating request or response, or it is passive-mode detection only.
     protocol = arrayindex(regextract(_raw_log, "protocol=\"([^\"]+)"), 0), // HTTP or HTTPS.
     request = arrayindex(regextract(_raw_log, "request=\"([^\"]+)"), 0), // The actual HTTP/S request as received by Cloud WAF.
     role = arrayindex(regextract(_raw_log, "role=\"([^\"]+)"), 0), // Web user role. If no web roles are defined and mapped to LDAP server, “Public” role will be used. Within Cloud WAF, this field should always be Public.
@@ -69,7 +69,8 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     title = arrayindex(regextract(_raw_log, "title=\"([^\"]+)"), 0), // Event short description.
     transId = arrayindex(regextract(_raw_log, "transId=\"([^\"]+)"), 0), // HTTP/S unique transaction ID.
     tunnel = arrayindex(regextract(_raw_log, "tunnel=\"([^\"]+)"), 0), // The network object name in the configuration.
-    tunnelListenIP = arrayindex(regextract(_raw_log, "tunnelListenIP=\"([^\"]+)"), 0), // The network object name in the configuration.
+    tunnelListenIP = arrayindex(regextract(_raw_log, "tunnelListenIP=\"([^\"]+)"), 0), 
+    tunnelListenPort = arrayindex(regextract(_raw_log, "tunnelListenPort=\"(\d{1,5})"), 0), // The network object name in the configuration.
     uri = arrayindex(regextract(_raw_log, "uri=\"([^\"]+)"), 0), // User HTTP/S request URI.
     user = arrayindex(regextract(_raw_log, "user=\"([^\"]+)"), 0), // The name of the user who logged in to the web application. A name will be presented when either Authentication server was defined (LDAP, RADIUS) or when Successful login detection was configured. In the context of Cloud WAF, should always be Public.
     vhost = arrayindex(regextract(_raw_log, "vhost=\"([^\"]+)"), 0), // The name of the host in the security policy. In a scenario where there is a group of hosts under the same policy, Vhost contains the group name. 
@@ -77,7 +78,7 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     violationType = arrayindex(regextract(_raw_log, "violationType=\"([^\"]+)"), 0), // The type of the security violation, for example: SQL Injection, LDAP Injection, Code Injection.
     webApp = arrayindex(regextract(_raw_log, "webApp=\"([^\"]+)"), 0) // Web application name (in the security policy).
 | alter 
-    vhost = replace(replace(vhost, "&lt;", "<"), "&gt;", ">"),
+    vhost = replace(replace(vhost, "&lt;", "<"), "&gt;", ">"), //reformat vhost 
     is_passive_mode = to_boolean(uppercase(isPassive)) // an event log is generated for any security policy violation. In passive mode these events will indicate a violation which was allowed while in active mode the log will indicate that an attack was blocked.
 | alter // Extract HTTP request header fields 
     http_method = if(http_method  != null, http_method, arrayindex(regextract(request, "(\w+)"), 0)),
@@ -92,20 +93,19 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     x_radware_app_id = arrayindex(regextract(request, "X-RDWR-APP-ID:\s*(.+?)\\n"), 0),
     full_url = concat(lowercase(protocol), "://", request_host, uri)
 | alter // Extract Cloud WAF originated information from the enrichmentContainer
-    waf_tenant_id = arrayindex(regextract(enrichmentContainer, "tenant=([a-fA-F\d\-]+)"), 0),
-    waf_app_id = arrayindex(regextract(_raw_log, "applicationId=([a-fA-F\d\-]+)"), 0)
-| alter // extract additional details 
+    tenant = arrayindex(regextract(enrichmentContainer, "tenant=([a-fA-F\d\-]+)"), 0),
+    applicationId = arrayindex(regextract(enrichmentContainer, "applicationId=([a-fA-F\d\-]+)"), 0)
+| alter // Extract additional details 
     http_response_code = arrayindex(regextract(details, "HTTP Status code:\s*(\d+)"), 0),
     details_rule_id = arrayindex(regextract(details, "Rule ID:\s*(.+?)\\n"), 0)
-// Additional processing 
+// Additional processing for IP addresses 
 | alter xff_address_chain = arraymap(split(x_forwarded_for, ","), trim("@element"))
 | alter xff_left_most_address = arrayindex(xff_address_chain, 0)
 | alter xff_intermediate_address_chain = arrayrange(xff_address_chain, 1, array_length(xff_address_chain))
 | alter 
     all_src_ip_addresses = arraydistinct(arrayconcat(xff_address_chain, arraycreate(x_radware_ip, xff_left_most_address,externalIp, x_ms_forwarded_client_ip, sourceIp))),
-    all_intermediate_ip_addresses = arraydistinct(arrayconcat(arraycreate(aw_hostIP, awClusterManagerIp), xff_intermediate_address_chain)),
+    all_intermediate_ip_addresses = arraydistinct(arrayconcat(arraycreate(tunnelListenIP, aw_hostIP, awClusterManagerIp), xff_intermediate_address_chain)),
     all_target_ip_addresses = arraydistinct(arraycreate(request_host, destinationIp))
-| alter all_intermediate_ip_addresses = if(destinationIp = tunnelListenIP, all_intermediate_ip_addresses, arraydistinct(arrayconcat(all_intermediate_ip_addresses, arraycreate(tunnelListenIP))))
 | alter 
     src_ipv4_addresses = arrayfilter(all_src_ip_addresses, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
     src_ipv6_addresses = arrayfilter(all_src_ip_addresses, "@element" ~= "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"),
@@ -125,14 +125,15 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     xdm.event.outcome_reason = if(is_passive_mode, "passive mode (detection only)", "active mode"),
     xdm.event.original_event_type = "WAF",
     xdm.intermediate.agent.identifier = tunnel,
-    xdm.intermediate.agent.type = targetModule,
-    xdm.intermediate.application.name = coalesce(waf_app_id, x_radware_app_id),
-    xdm.intermediate.host.device_id = waf_tenant_id,
+    xdm.intermediate.application.name = coalesce(applicationId, x_radware_app_id),
+    xdm.intermediate.host.device_id = tenant,
+    xdm.intermediate.host.device_category = devType,
     xdm.intermediate.host.hostname = aw_hostName, 
     xdm.intermediate.ipv4 = arrayindex(intermediate_ipv4_addresses, 0),
     xdm.intermediate.ipv6 = arrayindex(intermediate_ipv6_addresses, 0),
     xdm.intermediate.host.ipv4_addresses = intermediate_ipv4_addresses,
     xdm.intermediate.host.ipv6_addresses = intermediate_ipv6_addresses,
+    xdm.intermediate.port = to_integer(tunnelListenPort),
     xdm.network.application_protocol = protocol,
     xdm.network.http.domain = request_host,
     xdm.network.http.method = if(http_method = "GET", XDM_CONST.HTTP_METHOD_GET, http_method = "POST", XDM_CONST.HTTP_METHOD_POST,http_method = "PUT", XDM_CONST.HTTP_METHOD_PUT, http_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH, http_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS, http_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD, http_method = "ACL", XDM_CONST.HTTP_METHOD_ACL, http_method = "BASELINE_CONTROL", XDM_CONST.HTTP_METHOD_BASELINE_CONTROL, http_method = "BIND", XDM_CONST.HTTP_METHOD_BIND, http_method = "CHECKIN", XDM_CONST.HTTP_METHOD_CHECKIN, http_method = "CHECKOUT", XDM_CONST.HTTP_METHOD_CHECKOUT, http_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT, http_method = "COPY", XDM_CONST.HTTP_METHOD_COPY, http_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE, http_method = "LABEL", XDM_CONST.HTTP_METHOD_LABEL, http_method = "LINK", XDM_CONST.HTTP_METHOD_LINK, http_method = "LOCK", XDM_CONST.HTTP_METHOD_LOCK, http_method = "MERGE", XDM_CONST.HTTP_METHOD_MERGE, http_method = "MKACTIVITY", XDM_CONST.HTTP_METHOD_MKACTIVITY, http_method = "MKCALENDAR", XDM_CONST.HTTP_METHOD_MKCALENDAR, http_method = "MKCOL", XDM_CONST.HTTP_METHOD_MKCOL, http_method = "MKREDIRECTREF", XDM_CONST.HTTP_METHOD_MKREDIRECTREF, http_method = "MKWORKSPACE", XDM_CONST.HTTP_METHOD_MKWORKSPACE, http_method = "MOVE", XDM_CONST.HTTP_METHOD_MOVE,  http_method = "ORDERPATCH", XDM_CONST.HTTP_METHOD_ORDERPATCH,   http_method = "PRI", XDM_CONST.HTTP_METHOD_PRI, http_method = "PROPFIND", XDM_CONST.HTTP_METHOD_PROPFIND, http_method = "PROPPATCH", XDM_CONST.HTTP_METHOD_PROPPATCH,  http_method = "REBIND", XDM_CONST.HTTP_METHOD_REBIND, http_method = "REPORT", XDM_CONST.HTTP_METHOD_REPORT, http_method = "SEARCH", XDM_CONST.HTTP_METHOD_SEARCH, http_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE, http_method = "UNBIND", XDM_CONST.HTTP_METHOD_UNBIND, http_method = "UNCHECKOUT", XDM_CONST.HTTP_METHOD_UNCHECKOUT, http_method = "UNLINK", XDM_CONST.HTTP_METHOD_UNLINK, http_method = "UNLOCK", XDM_CONST.HTTP_METHOD_UNLOCK, http_method = "UPDATE", XDM_CONST.HTTP_METHOD_UPDATE, http_method = "UPDATEREDIRECTREF", XDM_CONST.HTTP_METHOD_UPDATEREDIRECTREF, http_method = "VERSION_CONTROL", XDM_CONST.HTTP_METHOD_VERSION_CONTROL, to_string(http_method)),
@@ -145,8 +146,8 @@ filter _raw_log contains "AppWallAttackSysLogMessage"
     xdm.network.rule = coalesce(ruleId, details_rule_id),
     xdm.observer.action = action,
     xdm.observer.name = aw_hostName,
-    xdm.observer.type = devType,
-    xdm.observer.unique_identifier = waf_tenant_id,
+    xdm.observer.unique_identifier = tenant,
+    xdm.observer.type = targetModule,
     xdm.observer.version = awVersion,
     xdm.session_context_id = transId,
     xdm.source.application.name = x_ms_forwarded_client_app,
