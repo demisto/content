@@ -1,5 +1,5 @@
 [MODEL: dataset = microsoft_windows_raw]
-filter provider_name contains "Microsoft-Windows-Security-" or channel = "System" or channel = "Application" or provider_name = "Microsoft-Windows-PowerShell"
+filter provider_name contains "Microsoft-Windows-Security-" or channel = "System" or channel = "Application" or provider_name = "Microsoft-Windows-PowerShell" or provider_name = "Microsoft-Windows-TaskScheduler"
 | alter
         IpPort = json_extract_scalar(event_data ,"$.IpPort"),
         LogLevel = lowercase(log_level),
