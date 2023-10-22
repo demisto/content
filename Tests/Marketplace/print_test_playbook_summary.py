@@ -130,7 +130,7 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
     xml.write(test_playbooks_report.as_posix(), pretty=True)
     table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
     logging.info(f"Test Playbook Results:\n{table}")
-    return True, total_errors == 0
+    return True, total_errors != 0
 
 
 def main():

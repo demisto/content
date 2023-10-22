@@ -9,7 +9,7 @@ from jira.client import ResultList
 from junitparser import JUnitXml, TestSuite
 from tqdm import tqdm
 
-from Tests.scripts.common import get_instance_directories
+from Tests.scripts.common import get_instance_directories, get_properties_for_test_suite
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -22,11 +22,12 @@ def calculate_test_playbooks_results(test_playbooks_result_files_list: list[Path
     for test_playbook_result_file in test_playbooks_result_files_list:
         xml = JUnitXml.fromfile(test_playbook_result_file.as_posix())
         for test_suite_item in xml.iterchildren(TestSuite):
-            properties = {prop.name: prop.value for prop in test_suite_item.properties()}
-            playbooks_result = playbooks_results.setdefault(properties["playbook_id"], {})
-            server_version = properties["server_version"]
-            server_versions.add(server_version)
-            playbooks_result[server_version] = test_suite_item
+            properties = get_properties_for_test_suite(test_suite_item)
+            if "playbook_id" in properties:
+                playbooks_result = playbooks_results.setdefault(properties["playbook_id"], {})
+                server_version = properties["server_version"]
+                server_versions.add(server_version)
+                playbooks_result[server_version] = test_suite_item
     return playbooks_results, server_versions
 
 

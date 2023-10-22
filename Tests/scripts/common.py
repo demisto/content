@@ -39,11 +39,10 @@ GREEN_COLOR = "\033[92m"
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
     instance_directories: dict[str, Path] = {}
     for directory in artifacts_path.iterdir():
-        if directory.is_dir() and directory.name.startswith("instance_"):
-            instance_role_txt = directory / "instance_role.txt"
-            if instance_role_txt.exists():
-                instance_role: str = instance_role_txt.read_text().replace("\n", "")
-                instance_directories[instance_role] = directory
+        if directory.is_dir() and directory.name.startswith("instance_") and \
+                (instance_role_txt := directory / "instance_role.txt").exists():
+            instance_role: str = instance_role_txt.read_text().replace("\n", "")
+            instance_directories[instance_role] = directory
     return instance_directories
 
 

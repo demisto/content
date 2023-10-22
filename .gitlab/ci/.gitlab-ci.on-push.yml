@@ -399,9 +399,9 @@ jobs-done-check-nightly:
     - xsoar-saas-prepare-testing-bucket
     - xsiam_server_ga
     - tests_xsoar_server
-    - tests_xsoar_server-test_playbooks_results
-    - xsiam_server_ga-test_playbooks_results
-    - xsiam_server_ga-test_modeling_rule_results
+    - xsoar-test_playbooks_results
+    - xsiam-test_playbooks_results
+    - xsiam-test_modeling_rule_results
   tags:
     - gke
   rules:
@@ -439,9 +439,9 @@ jobs-done-check-on-push:
     - xsiam_server_ga
     - tests_xsoar_server
     - xsoar_ng_server_ga
-    - tests_xsoar_server-test_playbooks_results
-    - xsiam_server_ga-test_playbooks_results
-    - xsiam_server_ga-test_modeling_rule_results
+    - xsoar-test_playbooks_results
+    - xsiam-test_playbooks_results
+    - xsiam-test_modeling_rule_results
   tags:
     - gke
   variables:
@@ -734,7 +734,7 @@ test-upload-flow:
     - ./Tests/scripts/test_modeling_rule_results.sh
     - job-done
 
-tests_xsoar_server-test_playbooks_results:
+xsoar-test_playbooks_results:
   variables:
     SERVER_TYPE: "XSOAR"
     PRODUCT_TYPE: "XSOAR"
@@ -751,7 +751,7 @@ tests_xsoar_server-test_playbooks_results:
     - tests_xsoar_server
     - xsoar_ng_server_ga
 
-xsiam_server_ga-test_playbooks_results:
+xsiam-test_playbooks_results:
   variables:
     SERVER_TYPE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
@@ -765,7 +765,7 @@ xsiam_server_ga-test_playbooks_results:
   dependencies:
     - xsiam_server_ga
 
-xsiam_server_ga-test_modeling_rule_results:
+xsiam-test_modeling_rule_results:
   variables:
     SERVER_TYPE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"

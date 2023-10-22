@@ -14,7 +14,8 @@ from slack_sdk import WebClient
 
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
-from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, TEST_NATIVE_CANDIDATE, WORKFLOW_TYPES, get_instance_directories
+from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, TEST_NATIVE_CANDIDATE, WORKFLOW_TYPES, get_instance_directories, \
+    get_properties_for_test_suite
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.utils.log_util import install_logging
 
@@ -81,7 +82,7 @@ def get_artifact_data(artifact_folder: Path, artifact_relative_path: str) -> str
 
 def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
 
-    properties = {prop.name: prop.value for prop in test_suite.properties()}
+    properties = get_properties_for_test_suite(test_suite)
 
     return f"{properties['modeling_rule_file_name']} ({properties['pack_id']})"
 
@@ -139,7 +140,7 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
                                         title: str,
                                         pipeline_url: str) -> list[dict[str, Any]]:
     if failed_tests:
-        title = f"{title} ({instance_role}) - Test Playbooks Failed ({len(failed_tests)}) Skipped - {len(skipped_tests)}, "\
+        title = f"{title} ({instance_role}) - Test Playbooks - Failed:{len(failed_tests)}, Skipped - {len(skipped_tests)}, "\
                 f"Skipped Integrations - {len(skipped_integrations)}"
         return [{
             'fallback': title,

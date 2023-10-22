@@ -19,9 +19,9 @@ CONTENT_NIGHTLY_JOBS = [
     'tests_xsoar_server: [Server 6.11]',
     'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
-    'tests_xsoar_server-test_playbooks_results',
-    'xsiam_server_ga-test_playbooks_results',
-    'xsiam_server_ga-test_modeling_rule_results',
+    'xsoar-test_playbooks_results',
+    'xsiam-test_playbooks_results',
+    'xsiam-test_modeling_rule_results',
 ]
 
 SDK_NIGHTLY_JOBS = [
@@ -74,9 +74,9 @@ CONTENT_PR_JOBS = [
     'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
     'xsoar_ng_server_ga',
-    'tests_xsoar_server-test_playbooks_results',
-    'xsiam_server_ga-test_playbooks_results',
-    'xsiam_server_ga-test_modeling_rule_results',
+    'xsoar-test_playbooks_results',
+    'xsiam-test_playbooks_results',
+    'xsiam-test_modeling_rule_results',
 ]
 
 JOBS_PER_TRIGGERING_WORKFLOW = {

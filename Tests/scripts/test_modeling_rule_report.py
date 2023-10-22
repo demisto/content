@@ -16,7 +16,9 @@ from Tests.scripts.utils import logging_wrapper as logging
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
 
 
-def get_summary_for_test_modeling_rule(properties: dict[str, str]) -> str:
+def get_summary_for_test_modeling_rule(properties: dict[str, str]) -> str | None:
+    if 'pack_id' not in properties or 'file_name' not in properties:
+        return None
     return f"{properties['pack_id']} - {properties['file_name']}"
 
 
@@ -117,11 +119,12 @@ def calculate_test_modeling_rule_results(jira_server: JIRA | None,
         for test_suite in xml.iterchildren(TestSuite):
             properties = get_properties_for_test_suite(test_suite)
             summary = get_summary_for_test_modeling_rule(properties)
-            modeling_rules_to_test_suite[summary][instance_role] = test_suite
-            if jira_server:
-                ticket_summary = generate_ticket_summary(summary)
-                jql_query = generate_query(ticket_summary)
-                search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)
-                if search_issues:
-                    jira_tickets_for_modeling_rule[summary] = search_issues[0]  # type: ignore[assignment]
+            if summary:
+                modeling_rules_to_test_suite[summary][instance_role] = test_suite
+                if jira_server:
+                    ticket_summary = generate_ticket_summary(summary)
+                    jql_query = generate_query(ticket_summary)
+                    search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)
+                    if search_issues:
+                        jira_tickets_for_modeling_rule[summary] = search_issues[0]  # type: ignore[assignment]
     return jira_tickets_for_modeling_rule, modeling_rules_to_test_suite, server_versions

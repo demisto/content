@@ -447,5 +447,7 @@
 
 .jobs-done-check:
   stage: are-jobs-really-done
+  extends:
+    - .default-job-settings
   script:
     - python3 Tests/scripts/check_jobs_done.py --triggering-workflow "${WORKFLOW}" --job-done-files "${PIPELINE_JOBS_FOLDER}"
