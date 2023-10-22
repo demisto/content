@@ -10,7 +10,7 @@ It supports the following Radware Cloud Services event types:
 is still active, or when an ongoing attack status has changed. The generated security event
 includes the information relevant to the specific attack or security breach.
 
-See the documentation bellow for the configuration required for each event type you wish to collect into Cortex XSIAM.  
+See the documentation below for the configuration required for each event type to collect into Cortex XSIAM.  
 
 
 ## Collect Radware Cloud WAAP Service Access Logs
