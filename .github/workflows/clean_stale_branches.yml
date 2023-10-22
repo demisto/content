@@ -1,0 +1,30 @@
+name: 'Close stale PRs'
+on:
+  schedule:
+    # runs every day at midnight (UTC time).
+    - cron:  '0 0 * * *'
+env:
+  DAY_BEFORE_STALE: 30
+  DAY_BEFORE_CLOSE: 15
+  EXEMPT_LABELS: "ignore-stale"
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Stale
+        uses: actions/stale@v8
+        with:
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
+          days-before-pr-stale: ${{env.DAY_BEFORE_STALE}}
+          days-before-pr-close: ${{env.DAY_BEFORE_CLOSE}}
+          stale-pr-message: 'This PR is stale because it has been open ${{env.DAY_BEFORE_STALE}} days with no activity. Remove stale label or comment or this will be closed in ${{env.DAY_BEFORE_CLOSE}} days.'
+          delete-branch: true
+          remove-pr-stale-when-updated: true
+          exempt-pr-labels: ${{env.EXEMPT_LABELS}}
+          debug-only: true
