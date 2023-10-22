@@ -370,7 +370,7 @@ def main():
     project_id = options.gitlab_project_id
     server_url = options.url
     ci_token = options.ci_token
-    computed_slack_channel = options.slack_channel.lower()
+    computed_slack_channel = options.slack_channel
     gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
     slack_token = options.slack_token
     slack_client = WebClient(token=slack_token)
