@@ -12,6 +12,8 @@ alter
 	xdm.source.ipv6 = src_ip_v6,
 	xdm.target.ipv4 = tar_ip_v4,
 	xdm.target.ipv6 = tar_ip_v6,
+	xdm.source.user.user_type = if(suser ~= "@", XDM_CONST.USER_TYPE_REGULAR, suser ~= "Vault user", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+	xdm.target.user.user_type = if(duser ~= "@", XDM_CONST.USER_TYPE_REGULAR, duser ~= "Vault user", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
 	xdm.event.description = cs1,
 	xdm.alert.original_alert_id = cs2,
 	xdm.observer.unique_identifier = cs3,
