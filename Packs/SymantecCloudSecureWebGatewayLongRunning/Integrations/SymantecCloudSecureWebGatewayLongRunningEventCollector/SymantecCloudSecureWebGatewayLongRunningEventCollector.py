@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import Generator, NamedTuple
 import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -15,7 +15,7 @@ disable_warnings()
 
 VENDOR = "symantec_long_running"
 PRODUCT = "swg"
-FETCH_SLEEP = 900
+FETCH_SLEEP = 1800
 FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR = 180
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
@@ -211,7 +211,7 @@ def calculate_seek_file(bytes_read: int, last_line_subtract: bytes) -> int:
         return bytes_read - len(last_line_subtract)
 
 
-def extract_logs_from_response(file_path: Path) -> list[bytes]:
+def extract_logs_from_response(file_path: Path) -> Generator[list[bytes], None, None]:
     """
     - Extracts the data from the zip file returned from the API
       and then extracts the events from the gzip files into a list of events as bytes
@@ -223,7 +223,6 @@ def extract_logs_from_response(file_path: Path) -> list[bytes]:
     Returns:
         list[bytes]: list of events as bytes
     """
-    logs: list[bytes] = []
     demisto.debug(f"The file path: {file_path.name}")
     try:
         # extract the ZIP file
@@ -243,13 +242,22 @@ def extract_logs_from_response(file_path: Path) -> list[bytes]:
                             last_line_subtract = b""
                             while True:
                                 f.seek(calculate_seek_file(seek_file, last_line_subtract))
-                                parts = f.read(chunk_size)
+                                try:
+                                    parts = f.read(chunk_size)
+                                except Exception as e:
+                                    demisto.debug(f"Error occurred while reading file: {e}")
+                                    break
+                                seek_file += chunk_size
                                 if not parts:
                                     break
                                 end_part = parts
                                 logs_end_part = end_part.splitlines()
-                                last_line_subtract = logs_end_part[-1]
-                            logs.extend(logs_end_part)
+                                try:
+                                    last_line_subtract = logs_end_part[-1]
+                                except Exception as e:
+                                    demisto.debug(f"Error occurred while reading file 1: {e}")
+                                    break
+                                yield logs_end_part
                     except Exception as e:
                         demisto.debug(
                             f"Crashed at the open the internal file {file.filename} file, Error: {e}"
@@ -277,7 +285,6 @@ def extract_logs_from_response(file_path: Path) -> list[bytes]:
         raise ValueError(f"The external file type is not of type ZIP, Error: {e}")
     except Exception as e:
         raise ValueError(f"There is no specific error for the crash, Error: {e}")
-    return logs
 
 
 def is_first_fetch(last_run: dict[str, str | list[str]], args: dict[str, str]) -> bool:
@@ -326,17 +333,25 @@ def organize_of_events(
     max_time = time_of_last_fetched_event
     max_values = events_suspected_duplicates
 
-    if logs and not logs[-1].endswith(b"\n"):
-        logs = logs[:-1]
-
+    try:
+        if logs and not logs[-1].endswith(b"\n"):
+            logs = logs[:-1]
+    except Exception as e:
+        demisto.debug(f"Error occurred while reading file 2: {e}")
     demisto.debug(f"The len of the events before filter {len(logs)}")
     for log in logs:
         event = log.decode()
         if event.startswith("#"):
             continue
         parts = event.split(" ")
-        id_ = parts[-1]
-        cur_time = f"{parts[1]} {parts[2]}"
+        try:
+            id_ = parts[-1]
+        except Exception as e:
+            demisto.debug(f"Error occurred while splitting event: {e} -> {event}")
+        try:
+            cur_time = f"{parts[1]} {parts[2]}"
+        except Exception as e:
+            demisto.debug(f"Error occurred while splitting event 1: {e} -> {event}")
 
         if token_expired and (
             is_duplicate(
@@ -369,7 +384,9 @@ def get_events_command(
     """
     logs: list[bytes] = []
     token_expired: bool = False
-
+    time_of_last_fetched_event = ""
+    events_suspected_duplicates: list[str] = []
+    
     start_date, end_date = get_start_and_ent_date(
         args=args, start_date=last_run_model.start_date
     )
@@ -435,19 +452,22 @@ def get_events_command(
                 "and will start collecting them from the next time onwards"
             )
             continue
-        logs.extend(extract_logs_from_response(res))
+        for part_logs in extract_logs_from_response(res):
+            try:
+                (
+                    events,
+                    time_of_last_fetched_event,
+                    parts_events_suspected_duplicates,
+                ) = organize_of_events(
+                    part_logs,
+                    token_expired,
+                    time_of_last_fetched_event or last_run_model.time_of_last_fetched_event or "",
+                    events_suspected_duplicates or last_run_model.events_suspected_duplicates or [],
+                )
+                events_suspected_duplicates.extend(parts_events_suspected_duplicates)
+            except Exception as e:
+                demisto.debug(f"Error organizing events: {e}")
         res.unlink()
-
-    (
-        events,
-        time_of_last_fetched_event,
-        events_suspected_duplicates,
-    ) = organize_of_events(
-        logs,
-        token_expired,
-        last_run_model.time_of_last_fetched_event or "",
-        last_run_model.events_suspected_duplicates or [],
-    )
 
     demisto.debug(f"{time_of_last_fetched_event=}")
     if time_of_last_fetched_event:
@@ -520,21 +540,21 @@ def perform_long_running_loop(
             #     time.sleep(FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR)
             #     continue
 
-            logs, last_run_obj = get_events_command(
-                client, args, last_run_obj, is_first_fetch=is_first_fetch
-            )
-            is_first_fetch = False
+            # logs, last_run_obj = get_events_command(
+            #     client, args, last_run_obj, is_first_fetch=is_first_fetch
+            # )
+            # is_first_fetch = False
 
-            set_integration_context({"last_run": last_run_obj._asdict()})
-            integration_context_for_debug = get_integration_context()
-            demisto.debug(f"{integration_context_for_debug=}")
-            try:
-                if logs:
-                    send_events_to_xsiam(logs[:10000], VENDOR, PRODUCT)
-            except Exception:
-                demisto.debug(
-                    f"Failed to send events to XSOAR. Error: {traceback.format_exc()}"
-                )
+            # set_integration_context({"last_run": last_run_obj._asdict()})
+            # integration_context_for_debug = get_integration_context()
+            # demisto.debug(f"{integration_context_for_debug=}")
+            # try:
+            #     if logs:
+            #         send_events_to_xsiam(logs[:10000], VENDOR, PRODUCT)
+            # except Exception:
+                # demisto.debug(
+                #     f"Failed to send events to XSOAR. Error: {traceback.format_exc()}"
+                # )
         except Exception as e:
             demisto.debug(f"Failed to fetch logs from API. Error: {e}")
         time.sleep(FETCH_SLEEP)
