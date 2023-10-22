@@ -292,7 +292,7 @@ class MsGraphClient:
             "@odata.type": "#microsoft.graph.fileAssessmentRequest",
             "expectedAssessment": expected_assessment,
             "category": category,
-            "file_name": file_name,
+            "fileName": file_name,
             "contentData": content_data
         }
         return self.ms_client.http_request(method='POST', url_suffix=url, json_data=body)
@@ -317,6 +317,8 @@ class MsGraphClient:
             params['$filter'] = filters
         if order_by:
             params['$orderby'] = order_by
+            if sort_order:
+                params['$orderby'] = f"{order_by} {sort_order}"
 
         return self.ms_client.http_request(method='GET', url_suffix=url,
                                            params=params, retries=1, status_list_to_retry=[405])
@@ -1383,7 +1385,8 @@ def get_content_data(entry_id, content_data):
             file = demisto.getFilePath(entry_id)
             file_path = file['path']
             with open(file_path, 'rb') as fp:
-                return base64.b64encode(fp.read())
+                content = base64.b64encode(fp.read())
+                return str(content, encoding='utf-8')
         if content_data:
             return content_data if is_base_64(content_data) else base64.b64encode(content_data)
 
@@ -1419,6 +1422,7 @@ def get_threat_assessment_request(client:MsGraphClient, request_id):
 
     return CommandResults(readable_output=readable_output,
                           raw_response=result,
+                          outputs=outputs,
                           outputs_prefix='MSGraphMail.AssessmentRequest')
 
 @polling_function('msg-create-mail-assessment-request', requires_polling_arg=False)
@@ -1440,18 +1444,18 @@ def create_mail_assessment_request_command(client: MsGraphClient, args) -> Comma
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
-        outputs['Message ID'] = args.get('message_id') # todo: instead of getting it from the message uri
+        outputs['Message ID'] = args.get('message_id')
         readable_output = tableToMarkdown('Mail assessment request:', outputs, removeNull=True)
 
         results = CommandResults(readable_output=readable_output,
                                  raw_response=result,
+                                 outputs=outputs,
                                  outputs_prefix='MSGraphMail.MailAssessment')
         return PollResult(response=results)
     elif status == 'pending':
-        results = CommandResults(readable_output='API returned an error',
-                                 entry_type=entryTypes['error'])
+        args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
-                          response=results)
+                          response=result)
 
 @polling_function('msg-create-email-file-assessment-request', requires_polling_arg=False)
 def create_email_file_request_command(client: MsGraphClient, args) -> CommandResults | PollResult:
@@ -1465,23 +1469,23 @@ def create_email_file_request_command(client: MsGraphClient, args) -> CommandRes
                                                        args.get('category'),
                                                        content_data)
         request_id = result.get('id')
-        # status = result.get('status')
+    demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
-        readable_output = tableToMarkdown('Email file assessment request:', outputs, removeNull=True)
+        readable_output = tableToMarkdown('Email file assessment request results:', outputs, removeNull=True)
 
         results = CommandResults(readable_output=readable_output,
                                  raw_response=result,
+                                 outputs=outputs,
                                  outputs_prefix='MSGraphMail.EMailAssessment')
         return PollResult(response=results)
     elif status == 'pending':
-        results = CommandResults(readable_output='API returned an error',
-                                 entry_type=entryTypes['error'])
+        args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
-                          response=results)
+                          response=result)
 
 
 @polling_function('msg-create-file-assessment-request', requires_polling_arg=False)
@@ -1491,28 +1495,31 @@ def create_file_assessment_request_command(client: MsGraphClient, args) -> Comma
 
     if not request_id:
         content_data = get_content_data(args.get('entry_id'), args.get('content_data'))
+        demisto.debug(f"got content data: {content_data}")
         result = client.create_file_assessment_request(args.get('expected_assessment'),
                                                        args.get('category'),
                                                        args.get('file_name'),
                                                        content_data)
         request_id = result.get('id')
         # status = result.get('status')
+        # request_id = "33e8c68f-9a57-4332-1739-08dbd2e880ba"
+    demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
-        readable_output = tableToMarkdown('File assessment request:', outputs, removeNull=True)
+        readable_output = tableToMarkdown('File assessment request results:', outputs, removeNull=True)
 
         results = CommandResults(readable_output=readable_output,
                                  raw_response=result,
+                                 outputs=outputs,
                                  outputs_prefix='MSGraphMail.FileAssessment')
         return PollResult(response=results)
     elif status == 'pending':
-        results = CommandResults(readable_output='API returned an error',
-                                 entry_type=entryTypes['error'])
+        args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
-                          response=results)
+                          response=result)
 
 @polling_function('msg-create-url-assessment-request', requires_polling_arg=False)
 def create_url_assessment_request_command(client: MsGraphClient, args) -> CommandResults | PollResult:
@@ -1524,23 +1531,24 @@ def create_url_assessment_request_command(client: MsGraphClient, args) -> Comman
                                                        args.get('category'),
                                                        args.get('url'))
         request_id = result.get('id')
-        # status = result.get('status')
+        # request_id = "9203569d-313e-420e-fb3d-08dbd25dafbe"
+    demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
-        readable_output = tableToMarkdown('URL assessment request:', outputs, removeNull=True)
+        readable_output = tableToMarkdown('URL assessment request results:', outputs, removeNull=True)
 
         results = CommandResults(readable_output=readable_output,
                                  raw_response=result,
+                                 outputs=outputs,
                                  outputs_prefix='MSGraphMail.UrlAssessment')
         return PollResult(response=results)
     elif status == 'pending':
-        results = CommandResults(readable_output='API returned an error',
-                                 entry_type=entryTypes['error'])
+        args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
-                          response=results)
+                          response=result)
 
 def list_threat_assessment_requests_command(client: MsGraphClient, args):
 
@@ -1555,22 +1563,22 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args):
         args.get('sort_order'),
         args.get('next_token')
     )
-
     outputs = []
     requests_list = result.get('value')
     for req in requests_list:
         outputs.append(get_result_outputs(req))
-    readable_outputs = tableToMarkdown('Threat assessment request:', outputs, removeNull=True)
+    readable_outputs = tableToMarkdown('Threat assessment request results:', outputs, removeNull=True)
 
     skip_token_field = result.get('@odata.nextLink')
     token_output = ''
     if skip_token_field:
         next_token = skip_token_field.split('skipToken=')[1]
-        token_output = f'Next token is: {next_token}'
+        token_output = f'Next token is: {next_token}\n'
         outputs.append(next_token)
 
     return CommandResults(readable_output=token_output + readable_outputs,
                           raw_response=result,
+                          outputs=outputs,
                           outputs_prefix='MSGraphMail.AssessmentRequest')
 
 def main():

@@ -8,7 +8,9 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, purge_ediscovery_data_command, \
     list_ediscovery_non_custodial_data_source_command, list_ediscovery_case_command, activate_ediscovery_custodian_command, \
     release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command, \
-    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command,create_mail_assessment_request_command
+    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command,\
+    create_mail_assessment_request_command, create_email_file_request_command, create_file_assessment_request_command, \
+    create_url_assessment_request_command, list_threat_assessment_requests_command
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -628,7 +630,23 @@ def test_empty_list_ediscovery_custodian_command(mocker):
     assert list_ediscovery_custodian_command(client_mocker, {}).readable_output == '### Results:\n**No entries.**\n'
 
 
-def test_create_mail_assessment_request_command(mocker):
+THREAT_ASSESSMENT_COMMANDS = {
+    'mail_assessment_request': create_mail_assessment_request_command,
+    'email_file_assessment_request': create_email_file_request_command,
+    'file_assessment_request': create_file_assessment_request_command,
+    'url_assessment_request': create_url_assessment_request_command,
+    'list_assessment_requests': list_threat_assessment_requests_command
+}
+
+
+@pytest.mark.parametrize('mock_func, command_name, expected_result',
+                         [
+                             ('create_mail_assessment_request', 'mail_assessment_request', 'mail_assessment_request.json'),
+                             ('create_email_file_assessment_request', 'email_file_assessment_request',
+                              'email_file_assessment_request.json'),
+                             ('create_file_assessment_request', 'file_assessment_request', 'file_assessment_request'),
+                             ('create_url_assessment_request', 'url_assessment_request', 'url_assessment_request')])
+def test_create_mail_assessment_request_command(mocker, mock_func, command_name, expected_result):
     """
 
     Given:
@@ -636,17 +654,42 @@ def test_create_mail_assessment_request_command(mocker):
     When:
         calling list search command
     Then:
-    Prefixes are correct, nested value is in the readable output
+        Nested value is in the readable output
     """
-    raw_response = load_json("./test_data/mail_assessment_request.json")
-    mocker.patch.object(client_mocker, "create_mail_assessment_request",
+    raw_response = load_json(f"./test_data/{expected_result}")
+    mocker.patch.object(client_mocker, mock_func,
                         return_value={'request_id': '123'})
     mocker.patch.object(client_mocker, "get_threat_assessment_request_status",
                         return_value={'status': 'completed'})
     mocker.patch.object(client_mocker, "get_threat_assessment_request",
                         return_value=raw_response)
-    results = create_mail_assessment_request_command(client_mocker, {})
+    results = THREAT_ASSESSMENT_COMMANDS[command_name](client_mocker, {})
 
     assert results.raw_response == raw_response
-    assert results.outputs_prefix == 'MSGraphMail.MailAssessment'
     assert results.outputs.get('ID') == raw_response.get('id')
+    assert results.outputs.get("Content Type") == raw_response.get("contentType")
+
+#
+# def test_create_email_file_assessment_request_command(mocker):
+#     """
+#
+#     Given:
+#         A raw response result from the api call
+#     When:
+#         calling create email file assessment request command
+#     Then:
+#     Prefixes are correct, the readable output is built as expected
+#     """
+#     raw_response = load_json("./test_data/email_file_assessment_request.json")
+#     mocker.patch.object(client_mocker, "create_email_file_assessment_request",
+#                         return_value={'request_id': '456'})
+#     mocker.patch.object(client_mocker, "get_threat_assessment_request_status",
+#                         return_value={'status': 'completed'})
+#     mocker.patch.object(client_mocker, "get_threat_assessment_request",
+#                         return_value=raw_response)
+#     results = create_email_file_request_command(client_mocker, {})
+#
+#     assert results.raw_response == raw_response
+#     assert results.outputs_prefix == 'MSGraphMail.MailAssessment'
+#     assert results.outputs.get('ID') == raw_response.get('id')
+#     assert results.outputs.get("Content Type") == raw_response.get("contentType")
