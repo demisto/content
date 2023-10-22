@@ -1,4 +1,4 @@
-The "Remote PsExec-like LOLBIN Command Execution" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. 
+V The "Remote PsExec-like LOLBIN Command Execution" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. 
 The playbook aims to efficiently:
 
 - Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).
@@ -17,11 +17,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Command-Line Analysis
 * Threat Hunting - Generic
-* Block Indicators - Generic v3
 * Entity Enrichment - Generic v4
 * Cortex XDR - Endpoint Investigation
-* Command-Line Analysis
+* Block Indicators - Generic v3
 
 ### Integrations
 
@@ -46,7 +46,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | alerts_ids | The IDs of the relevant alerts. | incident.xdralerts.alert_id | Optional |
 | AutoRemediation | Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic. | false | Optional |
 | LOLBASFeedLimit | LOLBAS Feed results limit. | 100 | Optional |
-| EndpointIDs | The IDs of the victim endpoint | incident.xdralerts.endpoint_id | Optional |
+| EndpointIDs | The IDs of the victim endpoint. | incident.xdralerts.endpoint_id | Optional |
+| HighAlertsThreshold | The threshold number of additional high severity alerts. | 1 | Optional |
+| CriticalAlertsThreshold | The threshold number of additional critical severity alerts. | 1 | Optional |
 
 ## Playbook Outputs
 
@@ -57,4 +59,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Remote PsExec with LOLBIN command execution alert](../doc_files/Cortext_XDR_-_Remote_PsExec_with_LOLBIN_command_execution_alert.png)
+![Remote PsExec with LOLBIN command execution alert](../doc_files/Remote_PsExec_with_LOLBIN_command_execution_alert.png)

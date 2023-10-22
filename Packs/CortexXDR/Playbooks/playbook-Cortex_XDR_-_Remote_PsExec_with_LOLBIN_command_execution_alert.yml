@@ -1,15 +1,15 @@
 id: Remote PsExec with LOLBIN command execution alert
 version: -1
 name: Remote PsExec with LOLBIN command execution alert
-description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
+description: "V The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 55f49c4f-c36d-4bdf-8806-db9f294b7dd4
+    taskid: a835ff13-df47-46d5-865e-ddf2b89ba1ba
     type: start
     task:
-      id: 55f49c4f-c36d-4bdf-8806-db9f294b7dd4
+      id: a835ff13-df47-46d5-865e-ddf2b89ba1ba
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 8626643b-7a5a-42a3-8326-066bb37ed6a4
+    taskid: 1b3a4e8c-47fb-4735-8261-0bd30c965e37
     type: title
     task:
-      id: 8626643b-7a5a-42a3-8326-066bb37ed6a4
+      id: 1b3a4e8c-47fb-4735-8261-0bd30c965e37
       version: -1
       name: Enrichment
       type: title
@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 0eef6360-d9b4-4a68-8a85-ace6e10d5cca
+    taskid: 981c4a23-31ba-4e2a-8464-d7b6c918a987
     type: playbook
     task:
-      id: 0eef6360-d9b4-4a68-8a85-ace6e10d5cca
+      id: 981c4a23-31ba-4e2a-8464-d7b6c918a987
       version: -1
       name: Entity Enrichment - Generic v4
       description: Enrich entities using one or more integrations.
@@ -171,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7399f201-7b0b-4685-8fcf-96060318f157
+    taskid: d1e50280-0e8f-4b11-8da1-f9fb823df893
     type: condition
     task:
-      id: 7399f201-7b0b-4685-8fcf-96060318f157
+      id: d1e50280-0e8f-4b11-8da1-f9fb823df893
       version: -1
       name: Is the command execution was blocked?
       description: Check if the command execution was blocked.
@@ -230,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9dd61261-5d13-4cac-8811-b438fdcf9635
+    taskid: de09fcf9-c059-461e-84bd-6e8083f21cfb
     type: condition
     task:
-      id: 9dd61261-5d13-4cac-8811-b438fdcf9635
+      id: de09fcf9-c059-461e-84bd-6e8083f21cfb
       version: -1
       name: Should automatically terminate the process?
       description: Check if auto remediation is set to True.
@@ -276,10 +276,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 1236bff2-cb53-4af8-8538-1211fadb9a4d
+    taskid: 3cce95be-3ae7-4500-8b1d-7ebf6d9186cc
     type: playbook
     task:
-      id: 1236bff2-cb53-4af8-8538-1211fadb9a4d
+      id: 3cce95be-3ae7-4500-8b1d-7ebf6d9186cc
       version: -1
       name: Command-Line Analysis
       description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for a base64 string and decodes it if it exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you want to run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop' and check \"For Each Input\"."
@@ -322,10 +322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 9bd2516a-36d8-4fd0-8028-d67a4b564a1d
+    taskid: f7346273-c3b3-4f3f-89ce-8e0e53b09d06
     type: regular
     task:
-      id: 9bd2516a-36d8-4fd0-8028-d67a4b564a1d
+      id: f7346273-c3b3-4f3f-89ce-8e0e53b09d06
       version: -1
       name: Raise incident severity
       description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
@@ -357,10 +357,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: c741f536-4b08-4c61-8b51-22828cfe4d8a
+    taskid: ddbc6cb4-e3c4-4e24-8da2-8472be47627e
     type: title
     task:
-      id: c741f536-4b08-4c61-8b51-22828cfe4d8a
+      id: ddbc6cb4-e3c4-4e24-8da2-8472be47627e
       version: -1
       name: Remediation
       type: title
@@ -388,10 +388,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: c3ca42ab-0075-4263-8816-2e5bb3c27e62
+    taskid: 0c78e42d-dd9d-4df2-872b-d3530038f8f0
     type: title
     task:
-      id: c3ca42ab-0075-4263-8816-2e5bb3c27e62
+      id: 0c78e42d-dd9d-4df2-872b-d3530038f8f0
       version: -1
       name: Done
       type: title
@@ -416,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 2f0319f6-51bc-46a7-84eb-44a699e42778
+    taskid: 5bc3a7b0-66e6-44e0-85ed-6777c252f6cc
     type: title
     task:
-      id: 2f0319f6-51bc-46a7-84eb-44a699e42778
+      id: 5bc3a7b0-66e6-44e0-85ed-6777c252f6cc
       version: -1
       name: Investigation & Analysis
       type: title
@@ -449,10 +449,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 7aa6e453-3f8d-4655-8353-b9b8313766d8
+    taskid: f48383b3-576d-4e9b-8163-87ded56fb747
     type: playbook
     task:
-      id: 7aa6e453-3f8d-4655-8353-b9b8313766d8
+      id: f48383b3-576d-4e9b-8163-87ded56fb747
       version: -1
       name: Block Indicators - Generic v3
       description: |+
@@ -584,10 +584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: f0ed524b-de7c-4bcc-8cb2-f63f8157889c
+    taskid: 5a5a558a-56bb-41e5-8696-cf7198e7d1d3
     type: condition
     task:
-      id: f0ed524b-de7c-4bcc-8cb2-f63f8157889c
+      id: 5a5a558a-56bb-41e5-8696-cf7198e7d1d3
       version: -1
       name: Found additional alerts or suspicious command line?
       description: Check if a malicious verdict was found.
@@ -611,11 +611,27 @@ tasks:
             iscontext: true
           right:
             value: {}
-        - operator: isExists
+        - operator: greaterThanOrEqual
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR
+                root: PaloAltoNetworksXDR.Incident
+                accessor: critical_severity_alert_count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.CriticalAlertsThreshold
+            iscontext: true
+        - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.high_severity_alert_count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.HighAlertsThreshold
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -634,13 +650,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 48bb82e3-e243-42f4-8c2d-9464c1f6cde4
+    taskid: 9559f289-28e2-4e14-857e-2bc9e44bc594
     type: playbook
     task:
-      id: 48bb82e3-e243-42f4-8c2d-9464c1f6cde4
+      id: 9559f289-28e2-4e14-857e-2bc9e44bc594
       version: -1
       name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- PAN-OS \n- Cortex Data Lake \n- Autofocus\n- Microsoft 365 Defender"
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -656,22 +672,55 @@ tasks:
           - operator: uniq
       MD5:
         complex:
-          root: File
-          accessor: MD5
+          root: incident.xdralerts
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: incident.xdralerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alerts_ids
+                iscontext: true
+              ignorecase: true
+          accessor: causalityactorprocessimagemd5
           transformers:
           - operator: uniq
       QRadarTimeFrame:
         simple: LAST 7 DAYS
       SHA1:
         complex:
-          root: File
-          accessor: SHA1
+          root: incident.xdralerts
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: incident.xdralerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alerts_ids
+                iscontext: true
+              ignorecase: true
+          accessor: causalityactorprocessimagesha1
           transformers:
           - operator: uniq
       SHA256:
         complex:
-          root: File
-          accessor: SHA256
+          root: incident.xdralerts
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: incident.xdralerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alerts_ids
+                iscontext: true
+              ignorecase: true
+          accessor: causalityactorprocessimagesha256
           transformers:
           - operator: uniq
       SplunkEarliestTime:
@@ -701,10 +750,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: e4b0378f-9e89-44d7-8300-648920cfa34b
+    taskid: 3b0a4fe2-e158-4d20-87f3-eee26cf3b175
     type: playbook
     task:
-      id: e4b0378f-9e89-44d7-8300-648920cfa34b
+      id: 3b0a4fe2-e158-4d20-87f3-eee26cf3b175
       version: -1
       name: Cortex XDR - Endpoint Investigation
       description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -721,27 +770,27 @@ tasks:
           root: File
           accessor: SHA256
       HuntCnCTechniques:
-        simple: "True"
+        simple: "False"
       HuntCollectionTechniques:
         simple: "True"
       HuntDefenseEvasionTechniques:
-        simple: "True"
+        simple: "False"
       HuntDiscoveryTechniques:
         simple: "True"
       HuntExecutionTechniques:
-        simple: "True"
+        simple: "False"
       HuntImpactTechniques:
-        simple: "True"
+        simple: "False"
       HuntInitialAccessTechniques:
-        simple: "True"
+        simple: "False"
       HuntLateralMovementTechniques:
         simple: "True"
       HuntPersistenceTechniques:
-        simple: "True"
+        simple: "False"
       HuntPrivilegeEscalationTechniques:
-        simple: "True"
+        simple: "False"
       HuntReconnaissanceTechniques:
-        simple: "True"
+        simple: "False"
       RunAll:
         simple: "True"
       agentID:
@@ -772,10 +821,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: d080df0d-0131-42ff-8522-a46794f221bf
+    taskid: 5920bb35-c21a-424a-8d31-0666ec2a82d4
     type: regular
     task:
-      id: d080df0d-0131-42ff-8522-a46794f221bf
+      id: 5920bb35-c21a-424a-8d31-0666ec2a82d4
       version: -1
       name: Terminate suspicious process
       description: Initiates a new endpoint script execution of shell commands.
@@ -818,7 +867,7 @@ tasks:
         complex:
           root: incident.xdralerts
           filters:
-          - - operator: containsGeneral
+          - - operator: in
               left:
                 value:
                   simple: incident.xdralerts.alert_id
@@ -847,10 +896,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: ea4afe26-ba45-4cb7-82fb-6774d735083a
+    taskid: 50099466-0fe2-4a6b-8ca8-02bdcc2a48c7
     type: regular
     task:
-      id: ea4afe26-ba45-4cb7-82fb-6774d735083a
+      id: 50099466-0fe2-4a6b-8ca8-02bdcc2a48c7
       version: -1
       name: Set Command-Line Verdict to Layout
       description: commands.local.cmd.set.incident
@@ -889,15 +938,13 @@ view: |-
   {
     "linkLabelsPosition": {
       "10_1_Yes": 0.29,
-      "17_28_yes": 0.52,
-      "17_36_#default#": 0.57,
       "29_15_Malicious": 0.54,
       "29_22_#default#": 0.18
     },
     "paper": {
       "dimensions": {
-        "height": 2405,
-        "width": 1440,
+        "height": 2235,
+        "width": 1230,
         "x": 50,
         "y": -480
       }
@@ -960,7 +1007,19 @@ inputs:
           ignorecase: true
       accessor: endpoint_id
   required: false
-  description: The IDs of the victim endpoint
+  description: The IDs of the victim endpoint.
+  playbookInputQuery:
+- key: HighAlertsThreshold
+  value:
+    simple: "1"
+  required: false
+  description: The threshold number of additional high severity alerts.
+  playbookInputQuery:
+- key: CriticalAlertsThreshold
+  value:
+    simple: "1"
+  required: false
+  description: The threshold number of additional critical severity alerts.
   playbookInputQuery:
 outputs: []
 tests:
