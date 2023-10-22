@@ -73,7 +73,7 @@ The following steps demonstrate the configuration steps with Logstash used as th
 
 ### Configure Logstash  
 The downloaded SIEM configuration file that was downloaded from Radware portal (see the previous section) already contains a predefined SQS input plugin for retrieving events from Amazon SQS.
-You would need to update this file to include a syslog *output* plugin that would forward the retrieved event messages to your Cortex XSIAM Broker VM via syslog. 
+You need to update this file to include a syslog *output* plugin that would forward the retrieved event messages to your Cortex XSIAM Broker VM via syslog. 
 
 1. Open the *siemConfigFetchConfig_\<ID\>.txt* SIEM configuration file that was downloaded from the Radware portal in the previous section.
 2. Define a [Syslog output plugin](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-syslog.html) entry with the following properties:
