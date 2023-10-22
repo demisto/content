@@ -78,16 +78,18 @@ def filter_skipped_playbooks(playbooks_results: dict[str, dict[str, TestSuite]])
         skipped_count = 0
         for test_suite in playbook_results.values():
             if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
-                logging.debug(f"Skipping playbook {playbook_id} because it was skipped in the test")
                 skipped_count += 1
 
         # If all the test suites were skipped, don't add the row to the table.
         if skipped_count != len(playbook_results):
             filtered_playbooks_ids.append(playbook_id)
+        else:
+            logging.debug(f"Skipping playbook {playbook_id} because it was skipped in the test")
+
     return filtered_playbooks_ids
 
 
-def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> [bool, bool]:
+def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tuple[bool, bool]:
     test_playbooks_report = artifacts_path / "test_playbooks_report.xml"
 
     # iterate over the artifacts path and find all the test playbook result files
