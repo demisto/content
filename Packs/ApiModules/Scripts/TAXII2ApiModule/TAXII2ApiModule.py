@@ -300,18 +300,18 @@ class Taxii2FeedClient:
         Initializes the api roots (used to get taxii server objects)
         """
         if not self.server:
-            self.init_server()
+            self.init_server(version=TAXII_VER_2_1)
         try:
-            # disable logging as we might receive client error and try 2.1
+            # disable logging as we might receive client error and try 2.0
             logging.disable(logging.ERROR)
-            # try TAXII 2.0
+            # try TAXII 2.1
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
-            if "406 Client Error" not in str(e) and "version=2.1" not in str(e):
+            if "406 Client Error" not in str(e) and "version=2.0" not in str(e):
                 raise e
-            # switch to TAXII 2.1
-            self.init_server(version=TAXII_VER_2_1)
+            # switch to TAXII 2.0
+            self.init_server(version=TAXII_VER_2_0)
             self.set_api_root()
         finally:
             # enable logging
