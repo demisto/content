@@ -599,7 +599,7 @@ script:
   - arguments:
     - name: subscription_id
       description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
-    description: Gets the properties of a given public IP address.
+    description: Gets the properties of all public ip address in a subscription.
     name: azure-vm-get-all-public-ip-details
     outputs:
     - contextPath: Azure.Network.IPConfigurations.PublicIPAddress
