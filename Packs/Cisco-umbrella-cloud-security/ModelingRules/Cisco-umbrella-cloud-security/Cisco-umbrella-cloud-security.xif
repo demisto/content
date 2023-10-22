@@ -1,0 +1,30 @@
+[RULE: Cisco_Umbrella_Cloud_Security_Log_Type]
+alter Log_Fields = split(_raw_log, "\",")
+| alter Log_Fields = arraymap(Log_Fields, trim("@element", "\""))
+| alter FieldsNumber = array_length(Log_Fields)
+| alter logType = if(FieldsNumber = 13, "DNS", FieldsNumber = 35, "Proxy", FieldsNumber = 9, "Admin Audit")
+
+[MODEL: dataset = cisco_umbrella_raw]
+// Mapping DNS Logs
+call Cisco_Umbrella_Cloud_Security_Log_Type
+| filter logType = "DNS"
+| alter
+        Query_Type = uppercase(arrayindex(regextract(arrayindex(Log_Fields, 6), "\(([^\)]+)\)"),0)),
+        Response_Code = arrayindex(Log_Fields, 7)
+| alter
+        xdm.source.host.hostname = arrayindex(Log_Fields, 1),
+        xdm.source.ipv4 = if(arrayindex(Log_Fields, 3) ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(Log_Fields, 3), null),
+        xdm.source.ipv6 = if(arrayindex(Log_Fields, 3) ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", arrayindex(Log_Fields, 3), null),
+        xdm.intermediate.ipv4 = if(arrayindex(Log_Fields, 4) ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", arrayindex(Log_Fields, 4), null),
+        xdm.intermediate.ipv6 = if(arrayindex(Log_Fields, 4) ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", arrayindex(Log_Fields, 4), null),
+        xdm.observer.action = arrayindex(Log_Fields, 5),
+        xdm.network.dns.dns_question.type = if (Query_Type = "A",XDM_CONST.DNS_RECORD_TYPE_A, Query_Type = "AAAA",XDM_CONST.DNS_RECORD_TYPE_AAAA, Query_Type = "AFSDB",XDM_CONST.DNS_RECORD_TYPE_AFSDB, Query_Type = "APL",XDM_CONST.DNS_RECORD_TYPE_APL, Query_Type = "CAA",XDM_CONST.DNS_RECORD_TYPE_CAA, Query_Type = "CDNSKEY",XDM_CONST.DNS_RECORD_TYPE_CDNSKEY, Query_Type = "CDS",XDM_CONST.DNS_RECORD_TYPE_CDS, Query_Type = "CERT",XDM_CONST.DNS_RECORD_TYPE_CERT, Query_Type = "CNAME",XDM_CONST.DNS_RECORD_TYPE_CNAME, Query_Type = "CSYNC",XDM_CONST.DNS_RECORD_TYPE_CSYNC, Query_Type = "DHCID",XDM_CONST.DNS_RECORD_TYPE_DHCID, Query_Type = "DLV",XDM_CONST.DNS_RECORD_TYPE_DLV, Query_Type = "DNAME",XDM_CONST.DNS_RECORD_TYPE_DNAME, Query_Type = "DNSKEY",XDM_CONST.DNS_RECORD_TYPE_DNSKEY, Query_Type = "DS",XDM_CONST.DNS_RECORD_TYPE_DS, Query_Type = "EUI48",XDM_CONST.DNS_RECORD_TYPE_EUI48, Query_Type = "EUI64",XDM_CONST.DNS_RECORD_TYPE_EUI64, Query_Type = "HINFO",XDM_CONST.DNS_RECORD_TYPE_HINFO, Query_Type = "HIP",XDM_CONST.DNS_RECORD_TYPE_HIP, Query_Type = "HTTPS",XDM_CONST.DNS_RECORD_TYPE_HTTPS, Query_Type = "IPSECKEY",XDM_CONST.DNS_RECORD_TYPE_IPSECKEY, Query_Type = "KEY",XDM_CONST.DNS_RECORD_TYPE_KEY, Query_Type = "KX",XDM_CONST.DNS_RECORD_TYPE_KX, Query_Type = "LOC",XDM_CONST.DNS_RECORD_TYPE_LOC, Query_Type = "MX",XDM_CONST.DNS_RECORD_TYPE_MX, Query_Type = "NAPTR",XDM_CONST.DNS_RECORD_TYPE_NAPTR, Query_Type = "NS",XDM_CONST.DNS_RECORD_TYPE_NS, Query_Type = "NSEC",XDM_CONST.DNS_RECORD_TYPE_NSEC, Query_Type = "NSEC3",XDM_CONST.DNS_RECORD_TYPE_NSEC3, Query_Type = "NSEC3PARAM",XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM, Query_Type = "OPENPGPKEY",XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY, Query_Type = "PTR",XDM_CONST.DNS_RECORD_TYPE_PTR, Query_Type = "RRSIG",XDM_CONST.DNS_RECORD_TYPE_RRSIG, Query_Type = "RP",XDM_CONST.DNS_RECORD_TYPE_RP, Query_Type = "SIG",XDM_CONST.DNS_RECORD_TYPE_SIG, Query_Type = "SMIMEA",XDM_CONST.DNS_RECORD_TYPE_SMIMEA, Query_Type = "SOA",XDM_CONST.DNS_RECORD_TYPE_SOA, Query_Type = "SRV",XDM_CONST.DNS_RECORD_TYPE_SRV, Query_Type = "SSHFP",XDM_CONST.DNS_RECORD_TYPE_SSHFP, Query_Type = "SVCB",XDM_CONST.DNS_RECORD_TYPE_SVCB, Query_Type = "TA",XDM_CONST.DNS_RECORD_TYPE_TA, Query_Type = "TKEY",XDM_CONST.DNS_RECORD_TYPE_TKEY, Query_Type = "TLSA",XDM_CONST.DNS_RECORD_TYPE_TLSA, Query_Type = "TSIG",XDM_CONST.DNS_RECORD_TYPE_TSIG, Query_Type = "TXT",XDM_CONST.DNS_RECORD_TYPE_TXT, Query_Type = "URI",XDM_CONST.DNS_RECORD_TYPE_URI, Query_Type = "ZONEMD",XDM_CONST.DNS_RECORD_TYPE_ZONEMD, to_string(Query_Type)),
+        xdm.network.dns.response_code = if(Response_Code = "NOERROR",XDM_CONST.DNS_RESPONSE_CODE_NO_ERROR ,Response_Code = "FORMERR",XDM_CONST.DNS_RESPONSE_CODE_FORMAT_ERROR,Response_Code = "SERVFAIL",XDM_CONST.DNS_RESPONSE_CODE_SERVER_FAILURE,Response_Code = "NXDOMAIN",XDM_CONST.DNS_RESPONSE_CODE_NON_EXISTENT_DOMAIN,Response_Code = "NOTIMP",XDM_CONST.DNS_RESPONSE_CODE_NOT_IMPLEMENTED,Response_Code = "REFUSED",XDM_CONST.DNS_RESPONSE_CODE_QUERY_REFUSED,Response_Code = "YXDOMAIN",XDM_CONST.DNS_RESPONSE_CODE_NAME_EXISTS_WHEN_IT_SHOULD_NOT,Response_Code = "YXRRSET",XDM_CONST.DNS_RESPONSE_CODE_RR_SET_EXISTS_WHEN_IT_SHOULD_NOT,Response_Code = "NXRRSET",XDM_CONST.DNS_RESPONSE_CODE_RR_SET_THAT_SHOULD_EXIST_DOES_NOT,Response_Code = "NOTAUTH",XDM_CONST.DNS_RESPONSE_CODE_SERVER_NOT_AUTHORITATIVE_FOR_ZONE,Response_Code = "NOTZONE",XDM_CONST.DNS_RESPONSE_CODE_NAME_NOT_CONTAINED_IN_ZONE,Response_Code = "BADVERS",XDM_CONST.DNS_RESPONSE_CODE_BAD_OPT_VERSION,Response_Code = "BADSIG",XDM_CONST.DNS_RESPONSE_CODE_TSIG_SIGNATURE_FAILURE,Response_Code = "BADKEY",XDM_CONST.DNS_RESPONSE_CODE_KEY_NOT_RECOGNIZED,Response_Code = "BADTIME",XDM_CONST.DNS_RESPONSE_CODE_SIGNATURE_OUT_OF_TIME_WINDOW,Response_Code = "BADMODE",XDM_CONST.DNS_RESPONSE_CODE_BAD_TKEY_MODE,Response_Code = "BADNAME",XDM_CONST.DNS_RESPONSE_CODE_DUPLICATE_KEY_NAME, Response_Code = "BADALG",XDM_CONST.DNS_RESPONSE_CODE_ALGORITHM_NOT_SUPPORTED,Response_Code = "BADTRUNC",XDM_CONST.DNS_RESPONSE_CODE_BAD_TRUNCATION, to_string(Response_Code)),
+        xdm.network.dns.dns_question.name = rtrim(arrayindex(Log_Fields, 8), "\."),
+        xdm.event.description = arrayindex(Log_Fields, 9),
+        xdm.network.dns.opcode = to_integer(arrayindex(regextract(arrayindex(Log_Fields, 6), "(\d+)\s*\("),0)),
+        xdm.alert.subcategory = arrayindex(Log_Fields, 12);
+// Mapping Proxy Logs
+call Cisco_Umbrella_Cloud_Security_Log_Type
+| filter logType = "Proxy"
+| alter
