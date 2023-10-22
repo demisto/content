@@ -2511,7 +2511,7 @@ def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
         return [updated_last_run_detections, updated_last_run_incidents, {}, {}, {}]
 
 
-def calculate_new_offset(old_offset: int, num_incidents: int) -> int:
+def calculate_new_offset(old_offset: int, num_incidents: int, total_incidents: int) -> int:
     """ This calculates the new offset based on the response
 
     Args:
@@ -2521,6 +2521,8 @@ def calculate_new_offset(old_offset: int, num_incidents: int) -> int:
         int: The new offset for the next run.
     """
     if not num_incidents:
+        return 0
+    if total_incidents and num_incidents + old_offset > total_incidents:
         return 0
     return old_offset + num_incidents
 
@@ -2562,7 +2564,8 @@ def fetch_incidents():
         else:
             response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=detections_offset)
         detections_ids: list[dict] = demisto.get(response, "resources")
-        detections_offset = calculate_new_offset(detections_offset, len(detections_ids))
+        total_detections = demisto.get(response, "pagination.meta.total")
+        detections_offset = calculate_new_offset(detections_offset, len(detections_ids), total_detections)
 
         raw_res = get_detections_entities(detections_ids)
 
@@ -2619,7 +2622,8 @@ def fetch_incidents():
         else:
             response = get_incidents_ids(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=incidents_offset)
         incidents_ids: list[dict] = demisto.get(response, "resources")
-        incidents_offset = calculate_new_offset(incidents_offset, len(incidents_ids))
+        total_incidents = demisto.get(response, "pagination.meta.total")
+        incidents_offset = calculate_new_offset(incidents_offset, len(incidents_ids), total_incidents)
 
         if incidents_ids:
             raw_res = get_incidents_entities(incidents_ids)
@@ -2662,7 +2666,8 @@ def fetch_incidents():
             filter += f"+{fetch_query}"
         response = get_idp_detections_ids(filter_arg=filter, limit=fetch_limit, offset=idp_detections_offset)
         idp_detections_ids: list[dict] = demisto.get(response, "resources")
-        idp_detections_offset = calculate_new_offset(idp_detections_offset, len(idp_detections_ids))
+        total_idp_detections = demisto.get(response, "pagination.meta.total")
+        idp_detections_offset = calculate_new_offset(idp_detections_offset, len(idp_detections_ids), total_idp_detections)
         if idp_detections_ids:
             raw_res = get_idp_detection_entities(idp_detections_ids)
             if "resources" in raw_res:
