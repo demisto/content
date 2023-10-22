@@ -104,6 +104,9 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
     logging.info(f"Found {len(test_playbooks_result_files_list)} test playbook result files")
     playbooks_results, server_versions = calculate_test_playbooks_results(test_playbooks_result_files_list)
 
+    playbooks_ids = filter_skipped_playbooks(playbooks_results)
+    logging.info(f"Found {len(playbooks_ids)} playbooks out of {len(playbooks_results)} after filtering skipped playbooks")
+
     if without_jira:
         logging.info("Printing test playbook summary without Jira tickets")
         jira_tickets_for_playbooks = {}
@@ -117,8 +120,6 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
-        playbooks_ids = filter_skipped_playbooks(playbooks_results)
-        logging.info(f"Found {len(playbooks_ids)} playbooks out of {len(playbooks_results)} after filtering skipped playbooks")
         jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(jira_server, playbooks_ids)
         logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_ids)} filtered playbooks")
 
