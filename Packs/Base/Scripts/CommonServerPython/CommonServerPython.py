@@ -10827,7 +10827,6 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         # if we need to update the offset, we need to keep the old time and just update the offset
         new_last_run = {
             'time': last_run.get("time"),
-            'limit': fetch_limit,
         } 
     elif len(incidents) == 0:
         new_last_run = {
@@ -10847,6 +10846,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     
     if new_offset is not None:
         new_last_run['offset'] = new_offset
+        new_last_run['limit'] = fetch_limit
         
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
                                                                                        remove_incident_ids))
