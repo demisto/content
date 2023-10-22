@@ -18,7 +18,7 @@ Access your Cyberark PTA machine and follow these instructions [Product Document
 4. Press **i** to edit the file.
 5. Paste the line you copied, uncomment the **syslog_outbound** property and edit the parameters. Use the following as a guide.
    * format - CEF.
-   * protocol - UDP
+   * protocol - UDP.
    * siem - Assign a name to your configuration.
    * host - Write the dedicated hostname or IP address.
    * port - Write the dedicated port number.
