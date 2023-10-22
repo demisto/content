@@ -1552,6 +1552,7 @@ def create_url_assessment_request_command(client: MsGraphClient, args) -> Comman
 
 def list_threat_assessment_requests_command(client: MsGraphClient, args):
 
+    limit = args.get('limit')
     request_id = args.get('request_id')
     if request_id:
         return get_threat_assessment_request(client, request_id)
@@ -1565,6 +1566,8 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args):
     )
     outputs = []
     requests_list = result.get('value')
+    if limit:
+        requests_list = requests_list[:limit]
     for req in requests_list:
         outputs.append(get_result_outputs(req))
     readable_outputs = tableToMarkdown('Threat assessment request results:', outputs, removeNull=True)
