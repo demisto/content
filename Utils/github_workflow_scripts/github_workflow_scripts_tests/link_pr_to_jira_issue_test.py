@@ -27,7 +27,7 @@ relates: https://jira-dc.paloaltonetworks.com/browse/CIAC-3475
 something else to say"""
 PR_WITH_MULTIPLE_FIXES_BY_NEWLINE = """This pr is dummy
 fixes:https://jira-hq.paloaltonetworks.local/browse/CIAC-3473
-fixes: https://jira-dc.paloaltonetworks.com/browse/CIAC-3473
+fixes: https://jira-dc.paloaltonetworks.com/browse/CIAC-3475
 
 something else to say"""
 
