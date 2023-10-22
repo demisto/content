@@ -204,6 +204,13 @@ def get_file_size(file_path: Path) -> int:
 #     return logs
 
 
+def calculate_seek_file(bytes_read: int, last_line_subtract: bytes) -> int:
+    if last_line_subtract.endswith(b"\n"):
+        return bytes_read
+    else:
+        return bytes_read - len(last_line_subtract)
+
+
 def extract_logs_from_response(file_path: Path) -> list[bytes]:
     """
     - Extracts the data from the zip file returned from the API
@@ -232,12 +239,16 @@ def extract_logs_from_response(file_path: Path) -> list[bytes]:
                             demisto.debug("test test test")
                             chunk_size = (1024 ** 2) * 200
                             end_part: bytes
+                            seek_file = 0
+                            last_line_subtract = b""
                             while True:
+                                f.seek(calculate_seek_file(seek_file, last_line_subtract))
                                 parts = f.read(chunk_size)
                                 if not parts:
                                     break
                                 end_part = parts
-                            logs_end_part = end_part.splitlines()
+                                logs_end_part = end_part.splitlines()
+                                last_line_subtract = logs_end_part[-1]
                             logs.extend(logs_end_part)
                     except Exception as e:
                         demisto.debug(
@@ -314,6 +325,9 @@ def organize_of_events(
     events: list[str] = []
     max_time = time_of_last_fetched_event
     max_values = events_suspected_duplicates
+
+    if logs and not logs[-1].endswith(b"\n"):
+        logs = logs[:-1]
 
     demisto.debug(f"The len of the events before filter {len(logs)}")
     for log in logs:
