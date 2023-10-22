@@ -1881,6 +1881,9 @@ script:
     - contextPath: MSGraphMail.UrlAssessment.ID
       description: 'mail assessment id'
       type: String
+    - contextPath: MSGraphMail.UrlAssessment.Url
+      description: 'the URL.'
+      type: string
     - contextPath: MSGraphMail.UrlAssessment.CreatedDateTime
       description: 'mail assessment Created DateTime'
       type: String
@@ -1960,52 +1963,52 @@ script:
     name: msg-list-threat-assessment-requests
     polling: true
     outputs:
-    - contextPath: MsGraph.AssesmentRequestNextToken.next_token
+    - contextPath: MsGraph.AssessmentRequestNextToken.next_token
       description: 'next token'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.ID
+    - contextPath: MSGraphMail.AssessmentRequest.ID
       description: 'assessment request id'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.CreatedDateTime
+    - contextPath: MSGraphMail.AssessmentRequest.CreatedDateTime
       description: 'assessment request DateTime'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.ContentType
+    - contextPath: MSGraphMail.AssessmentRequest.ContentType
       description: 'Content Type'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.ExpectedAssessment
+    - contextPath: MSGraphMail.AssessmentRequest.ExpectedAssessment
       description: 'Expected Assessment'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.Category
+    - contextPath: MSGraphMail.AssessmentRequest.Category
       description: 'Category'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.Status
+    - contextPath: MSGraphMail.AssessmentRequest.Status
       description: 'Status'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.URL
+    - contextPath: MSGraphMail.AssessmentRequest.URL
       description: 'url'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.RequestSource
+    - contextPath: MSGraphMail.AssessmentRequest.RequestSource
       description: 'Request Source'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.RecipientEmail
+    - contextPath: MSGraphMail.AssessmentRequest.RecipientEmail
       description: 'Recipient Email'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.FileName
+    - contextPath: MSGraphMail.AssessmentRequest.FileName
       description: 'file name'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.DestinationRoutingReason
+    - contextPath: MSGraphMail.AssessmentRequest.DestinationRoutingReason
       description: 'Destination Routing Reason'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.CreatedUserID
+    - contextPath: MSGraphMail.AssessmentRequest.CreatedUserID
       description: 'Created user id'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.CreatedUsername
+    - contextPath: MSGraphMail.AssessmentRequest.CreatedUsername
       description: 'Created user name'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.ResultType
+    - contextPath: MSGraphMail.AssessmentRequest.ResultType
       description: 'Result Type'
       type: String
-    - contextPath: MSGraphMail.AssesmentRequest.ResultMessage
+    - contextPath: MSGraphMail.AssessmentRequest.ResultMessage
       description: 'Result message'
       type: String
   dockerimage: demisto/crypto:1.0.0.79207

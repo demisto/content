@@ -1757,7 +1757,7 @@ Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to acces
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.MailAssessment.ID | String | Request id.
+| MSGraphMail.MailAssessment.ID | String | Request id. |
 | MSGraphMail.MailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
 | MSGraphMail.MailAssessment.ContentType | String | The content type of threat assessment. | 
 | MSGraphMail.MailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
@@ -1848,7 +1848,7 @@ Note: File has to contain X-MS-Exchange-Organization-Network-Message-Id header i
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.EmailAssessment.ID | String | Request id.
+| MSGraphMail.EmailAssessment.ID | String | Request id. |
 | MSGraphMail.EmailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
 | MSGraphMail.EmailAssessment.ContentType | String | The content type of threat assessment. | 
 | MSGraphMail.EmailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
@@ -1929,7 +1929,7 @@ Create and retrieve a file threat assessment.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.FileAssessment.ID | String | Request id.
+| MSGraphMail.FileAssessment.ID | String | Request id. |
 | MSGraphMail.FileAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
 | MSGraphMail.FileAssessment.ContentType | String | The content type of threat assessment. | 
 | MSGraphMail.FileAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
@@ -2005,18 +2005,21 @@ Create and retrieve url threat assessment.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.UrlAssessment.ID | String | Request id.
-| MSGraphMail.UrlAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
-| MSGraphMail.UrlAssessment.ContentType | String | The content type of threat assessment. | 
-| MSGraphMail.UrlAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
-| MSGraphMail.UrlAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
-| MSGraphMail.UrlAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
-| MSGraphMail.UrlAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
-| MSGraphMail.UrlAssessment.Url | String | The url. | 
-| MSGraphMail.UrlAssessment.CreatedUserID | String | User id. | 
-| MSGraphMail.UrlAssessment.CreatedUsername | String | Username. | 
-| MSGraphMail.UrlAssessment.ResultType | String | Result of the request. | 
-| MSGraphMail.UrlAssessment.ResultMessage | String | Message of the result. | 
+| MSGraphMail.UrlAssessment.ID | String | Request id. |
+| MSGraphMail.UrlAssessment.CreatedDateTime | Date | Created data of the threat assessment request. |
+| MSGraphMail.UrlAssessment.ContentType | String | The content type of threat assessment. |
+| MSGraphMail.UrlAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. |
+| MSGraphMail.UrlAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. |
+| MSGraphMail.UrlAssessment.Status | String | The assessment process status. Possible values are: pending, completed. |
+| MSGraphMail.UrlAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. |
+| MSGraphMail.UrlAssessment.Url | String | The url. |
+| MSGraphMail.UrlAssessment.CreatedUserID | String | User id. |
+| MSGraphMail.UrlAssessment.CreatedUsername | String | Username. |
+| MSGraphMail.UrlAssessment.ResultType | String | Result of the request. |
+| MSGraphMail.UrlAssessment.ResultMessage | String | Message of the result. |
+| MSGraphMail.UrlAssessment.RecipientEmail | String | Recipient Email. |
+| MSGraphMail.UrlAssessment.DestinationRoutingReason | String | Destination Routing Reason. |
+
 
 #### Command example
 
@@ -2085,7 +2088,7 @@ Create and retrieve threat assessment requests.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.AssessmentRequest.ID | String | Request id.
+| MSGraphMail.AssessmentRequest.ID | String | Request id. |
 | MSGraphMail.AssessmentRequest.CreatedDateTime | Date | Created data of the threat assessment request. | 
 | MSGraphMail.AssessmentRequest.ContentType | String | The content type of threat assessment. | 
 | MSGraphMail.AssessmentRequest.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
@@ -2094,13 +2097,13 @@ Create and retrieve threat assessment requests.
 | MSGraphMail.AssessmentRequest.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
 | MSGraphMail.AssessmentRequest.DestinationRoutingReason | String | The destination Routing Reason. |
 | MSGraphMail.AssessmentRequest.RecipientEmail | String | The recipient email. |
-| MSGraphMail.AssessmentRequest.Url | String | The url. |
+| MSGraphMail.AssessmentRequest.URL | String | The url. |
 | MSGraphMail.AssessmentRequest.FileName | String | The file name. |
 | MSGraphMail.AssessmentRequest.CreatedUserID | String | User id. | 
 | MSGraphMail.AssessmentRequest.CreatedUsername | String | Username. | 
 | MSGraphMail.AssessmentRequest.ResultType | String | Result of the request. | 
 | MSGraphMail.AssessmentRequest.ResultMessage | String | Message of the result. | 
-|MsGraph.AssesmentRequestNextToken |String |the next token from the previous run.|
+| MsGraph.AssessmentRequestNextToken.next_token |String |the next token from the previous run.|
 
 #### Command example
 
