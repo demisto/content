@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
@@ -7,24 +8,29 @@ from jira.client import ResultList
 from junitparser import TestSuite, JUnitXml
 from tabulate import tabulate
 
-from Tests.scripts.common import get_instance_directories
+from Tests.scripts.common import get_instance_directories, get_properties_for_test_suite
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
     generate_build_markdown_link
 from Tests.scripts.utils import logging_wrapper as logging
+TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
+
+
+def get_summary_for_test_modeling_rule(properties: dict[str, str]) -> str:
+    return f"{properties['pack_id']} - {properties['file_name']}"
 
 
 def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
                                              test_suite: TestSuite,
                                              max_days_to_reopen: int,
                                              now: datetime) -> Issue | None:
-    properties = {prop.name: prop.value for prop in test_suite.properties()}
+    properties = get_properties_for_test_suite(test_suite)
     ci_pipeline_id = properties.get("ci_pipeline_id", "")
     ci_pipeline_id_dash = f"-{ci_pipeline_id}" if ci_pipeline_id else ""
     junit_file_name = (f"unit-test{ci_pipeline_id_dash}-{properties['start_time']}-{properties['pack_id']}-"
                        f"{properties['file_name']}.xml")
     description = generate_description_for_test_modeling_rule(ci_pipeline_id, properties, test_suite, junit_file_name)
-    summary = generate_ticket_summary(f"{properties['pack_id']} - {properties['file_name']}")
+    summary = generate_ticket_summary(get_summary_for_test_modeling_rule(properties))
     jql_query = generate_query(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen,
@@ -88,12 +94,34 @@ def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
     return description
 
 
-def get_test_modeling_rules_results_files(artifacts_path: Path) -> list[Path]:
-    result_files_list: list[Path] = []
+def get_test_modeling_rules_results_files(artifacts_path: Path) -> dict[str, Path]:
+    instance_role_to_results_file: dict[str, Path] = {}
     for instance_role, directory in get_instance_directories(artifacts_path).items():
         logging.info(f"Found instance directory: {directory} for instance role: {instance_role}")
         test_playbooks_report_file = Path(artifacts_path) / directory / "test_playbooks_report.xml"
         if test_playbooks_report_file.exists():
             logging.info(f"Found test playbook result files list file: {test_playbooks_report_file}")
-            result_files_list.append(test_playbooks_report_file)
-    return result_files_list
+            instance_role_to_results_file[instance_role] = test_playbooks_report_file
+    return instance_role_to_results_file
+
+
+def calculate_test_modeling_rule_results(jira_server: JIRA | None,
+                                         test_modeling_rules_results_files: dict[str, Path]
+                                         ) -> tuple[dict[str, Issue], dict[str, dict[str, TestSuite]], set[str]]:
+    modeling_rules_to_test_suite: dict[str, dict[str, TestSuite]] = defaultdict(dict)
+    jira_tickets_for_modeling_rule: dict[str, Issue] = {}
+    server_versions: set[str] = set()
+    for instance_role, result_file in test_modeling_rules_results_files.items():
+        xml = JUnitXml.fromfile(result_file.as_posix())
+        server_versions.add(instance_role)
+        for test_suite in xml.iterchildren(TestSuite):
+            properties = get_properties_for_test_suite(test_suite)
+            summary = get_summary_for_test_modeling_rule(properties)
+            modeling_rules_to_test_suite[summary][instance_role] = test_suite
+            if jira_server:
+                ticket_summary = generate_ticket_summary(summary)
+                jql_query = generate_query(ticket_summary)
+                search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)
+                if search_issues:
+                    jira_tickets_for_modeling_rule[summary] = search_issues[0]  # type: ignore[assignment]
+    return jira_tickets_for_modeling_rule, modeling_rules_to_test_suite, server_versions

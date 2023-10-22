@@ -48,16 +48,6 @@ source "${BASH_ENV}"
 echo "Running server tests on Instance role:${INSTANCE_ROLE}, nightly:${IS_NIGHTLY}, AMI run:${IS_AMI_RUN} mem check:${MEM_CHECK} ARTIFACTS_FOLDER:${ARTIFACTS_FOLDER}"
 echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
 
-if DEMISTO_SDK_SKIP_VERSION_CHECK=True demisto-sdk test-content --help 2>&1 | grep -q 'artifacts-path'; then
-  TEST_PLAYBOOKS_RESULTS_ARG=(--artifacts-path="${ARTIFACTS_FOLDER_INSTANCE}" --product-type="${PRODUCT_TYPE}")
-  echo "Test Playbooks - Results will be saved to artifacts folder:${ARTIFACTS_FOLDER_INSTANCE}"
-  echo "${TEST_PLAYBOOKS_RESULTS_FILE_NAME}" >> "${ARTIFACTS_FOLDER_INSTANCE}/has_test_playbooks_result_files_list.txt"
-else
-  echo "Test Playbooks - demisto-sdk version is too old, creating empty JUnit file to artifacts folder:${ARTIFACTS_FOLDER_INSTANCE}"
-  TEST_PLAYBOOKS_RESULTS_ARG=()
-  write_empty_test_results_file
-fi
-
 exit_code=0
 if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; then
 
@@ -65,9 +55,9 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; 
     IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
       demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
-        -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
+        -a "$CIRCLECI_TOKEN" -b "${CI_PIPELINE_ID}" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
         --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "${SERVER_TYPE}" \
-        --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" "${TEST_PLAYBOOKS_RESULTS_ARG[@]}"
+        --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts-path="${ARTIFACTS_FOLDER_INSTANCE}" --product-type="${PRODUCT_TYPE}"
       command_exit_code=$?
       if [ "${command_exit_code}" -ne 0 ]; then
         exit_code=1
@@ -81,9 +71,9 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; 
 
 elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
     demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
-      -a "$CIRCLECI_TOKEN" -b "$CI_BUILD_ID" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
+      -a "$CIRCLECI_TOKEN" -b "${CI_PIPELINE_ID}" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
       --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "${SERVER_TYPE}" \
-      --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" "${TEST_PLAYBOOKS_RESULTS_ARG[@]}"
+      --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts-path="${ARTIFACTS_FOLDER_INSTANCE}" --product-type="${PRODUCT_TYPE}"
     exit_code=$?
     echo "Failed to run test content with exit code:${exit_code}"
 else

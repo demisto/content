@@ -1,4 +1,3 @@
-import copy
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
@@ -14,39 +13,7 @@ from Tests.scripts.common import get_instance_directories
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query
 from Tests.scripts.utils import logging_wrapper as logging
 
-TOTAL_HEADER = "Total"
-NOT_AVAILABLE = "N/A"
-TEST_SUITE_JIRA_HEADERS = ["Jira Ticket", "Jira Ticket Resolution"]
-TEST_SUITE_BASE_HEADERS = ["Playbook ID"]
-TEST_SUITE_FIXED_HEADERS = TEST_SUITE_BASE_HEADERS + TEST_SUITE_JIRA_HEADERS
-TEST_SUITE_DATA_CELL_HEADER = "S/F/E/T"
-NO_COLOR_ESCAPE_CHAR = "\033[0m"
-RED_COLOR = "\033[91m"
-GREEN_COLOR = "\033[92m"
-
-
-def green_text(text: str) -> str:
-    return f"{GREEN_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
-
-
-def red_text(text: str) -> str:
-    return f"{RED_COLOR}{text}{NO_COLOR_ESCAPE_CHAR}"
-
-
-class TestSuiteStatistics:
-
-    def __init__(self, failures: int = 0, errors: int = 0, skipped: int = 0, tests: int = 0):
-        self.failures = failures
-        self.errors = errors
-        self.skipped = skipped
-        self.tests = tests
-
-    def __add__(self, other):
-        return TestSuiteStatistics(self.failures + other.failures, self.errors + other.errors, self.skipped + other.skipped,
-                                   self.tests + other.tests)
-
-    def __str__(self):
-        return f"{self.skipped}/{self.failures}/{self.errors}/{self.tests}"
+TEST_PLAYBOOKS_BASE_HEADERS = ["Playbook ID"]
 
 
 def calculate_test_playbooks_results(test_playbooks_result_files_list: list[Path]) -> tuple[dict[str, dict[str, Any]], set[str]]:
@@ -104,96 +71,11 @@ def get_jira_tickets_for_playbooks(jira_server: JIRA,
     return playbook_ids_to_jira_tickets
 
 
-def get_all_failed_playbooks(playbooks_results: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    failed_playbooks = {}
-    for playbook_id, playbook_results in playbooks_results.items():
-        for test_suite in playbook_results.values():
-            if test_suite.errors or test_suite.failures:
-                failed_playbooks[playbook_id] = playbooks_results
-                break
-
-    return failed_playbooks
-
-
-def calculate_test_playbooks_results_table(jira_tickets_for_playbooks: dict[str, Issue],
-                                           playbooks_results: dict[str, dict[str, Any]],
-                                           server_versions: set[str],
-                                           add_total_row: bool = True,
-                                           no_color: bool = False,
-                                           without_jira: bool = False,
-                                           with_skipped: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
-    xml = JUnitXml()
-    headers = copy.copy(TEST_SUITE_BASE_HEADERS if without_jira else TEST_SUITE_FIXED_HEADERS)
-    fixed_headers_length = len(headers)
-    server_versions_list: list[str] = sorted(server_versions)
-    for server_version in server_versions_list:
-        headers.append(f"{server_version} ({TEST_SUITE_DATA_CELL_HEADER})")
-    tabulate_data = []
-    total_row: list[Any] = ([NOT_AVAILABLE] * fixed_headers_length + [TestSuiteStatistics()
-                                                                      for _ in range(len(server_versions_list))])
-    total_errors = 0
-    for playbook_id, playbook_results in tqdm(playbooks_results.items(), desc="Generating test summary", unit="playbook",
-                                              leave=True, colour='green', miniters=10, mininterval=5.0):
-        row: list[Any] = []
-        if not without_jira:
-            if jira_ticket := jira_tickets_for_playbooks.get(playbook_id):
-                row.extend(
-                    (
-                        jira_ticket.key,
-                        jira_ticket.get_field("resolution")
-                        if jira_ticket.get_field("resolution")
-                        else NOT_AVAILABLE,
-                    )
-                )
-            else:
-                row.extend([NOT_AVAILABLE] * len(TEST_SUITE_JIRA_HEADERS))
-
-        skipped_count = 0
-        errors_count = 0
-        for server_version in server_versions_list:
-            test_suite: TestSuite = playbook_results.get(server_version)
-            if test_suite:
-                xml.add_testsuite(test_suite)
-                row.append(
-                    TestSuiteStatistics(
-                        test_suite.failures,
-                        test_suite.errors,
-                        test_suite.skipped,
-                        test_suite.tests,
-                    )
-                )
-                errors_count += test_suite.errors + test_suite.failures
-                if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
-                    skipped_count += 1
-            else:
-                row.append(NOT_AVAILABLE)
-
-        total_errors += errors_count
-        # If all the test suites were skipped, don't add the row to the table.
-        if skipped_count != len(server_versions_list) or with_skipped:
-            row.insert(0,
-                       (red_text(playbook_id) if errors_count else green_text(playbook_id) if not no_color else playbook_id))
-            tabulate_data.append(row)
-
-            # Offset the total row by the number of fixed headers
-            for i, cell in enumerate(row[fixed_headers_length:], start=fixed_headers_length):
-                if isinstance(cell, TestSuiteStatistics):
-                    total_row[i] += cell
-        else:
-            logging.debug(f"Skipping playbook {playbook_id} since all the test suites were skipped")
-    if add_total_row:
-        total_row[0] = (green_text(TOTAL_HEADER) if total_errors == 0 else red_text(TOTAL_HEADER)) \
-            if not no_color else TOTAL_HEADER
-        tabulate_data.append(total_row)
-    return headers, tabulate_data, xml, total_errors
-
-
 def get_test_playbook_results_files(artifacts_path: Path) -> list[Path]:
     test_playbooks_result_files_list: list[Path] = []
-    for instance_role, directory in get_instance_directories(artifacts_path).items():
-        logging.info(f"Found instance directory: {directory} for instance role: {instance_role}")
-        has_test_playbooks_result_files_list = Path(artifacts_path) / directory / "has_test_playbooks_result_files_list.txt"
-        if has_test_playbooks_result_files_list.exists():
-            logging.info(f"Found test playbook result files list file: {has_test_playbooks_result_files_list}")
-            test_playbooks_result_files_list.append(Path(artifacts_path) / directory / "test_playbooks_report.xml")
+    for _instance_role, directory in get_instance_directories(artifacts_path).items():
+        test_playbooks_report = Path(artifacts_path) / directory / "test_playbooks_report.xml"
+        if test_playbooks_report.exists():
+            logging.info(f"Found test playbook result files list file: {test_playbooks_report}")
+            test_playbooks_result_files_list.append(test_playbooks_report)
     return test_playbooks_result_files_list

@@ -11,7 +11,8 @@ from tabulate import tabulate
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
     JIRA_API_KEY, jira_server_information
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, get_jira_tickets_for_playbooks, \
-    calculate_test_playbooks_results_table, get_test_playbook_results_files
+    get_test_playbook_results_files, TEST_PLAYBOOKS_BASE_HEADERS
+from Tests.scripts.common import calculate_results_table
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -55,10 +56,10 @@ def print_test_playbooks_summary_without_junit_report(artifacts_path: Path) -> b
     failed_count = len(failed_playbooks)
 
     logging.info("TEST RESULTS:")
-    logging.info(f"Number of playbooks tested - { succeeded_count + failed_count}")
+    logging.info(f"Number of playbooks tested - {succeeded_count + failed_count}")
 
     if succeeded_count:
-        logging.success(f"Number of succeeded tests - { succeeded_count}")
+        logging.success(f"Number of succeeded tests - {succeeded_count}")
         logging.success("Successful Tests:")
         for playbook_id in succeeded_playbooks:
             logging.success(f"\t- {playbook_id}")
@@ -75,11 +76,10 @@ def print_test_playbooks_summary_without_junit_report(artifacts_path: Path) -> b
 def filter_skipped_playbooks(playbooks_results: dict[str, dict[str, TestSuite]]) -> list[str]:
     filtered_playbooks_ids = []
     for playbook_id, playbook_results in playbooks_results.items():
-        skipped_count = 0
-        for test_suite in playbook_results.values():
-            if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
-                skipped_count += 1
-
+        skipped_count = sum(bool(test_suite.skipped
+                                 and test_suite.failures == 0
+                                 and test_suite.errors == 0)
+                            for test_suite in playbook_results.values())
         # If all the test suites were skipped, don't add the row to the table.
         if skipped_count != len(playbook_results):
             filtered_playbooks_ids.append(playbook_id)
@@ -93,9 +93,7 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
     test_playbooks_report = artifacts_path / "test_playbooks_report.xml"
 
     # iterate over the artifacts path and find all the test playbook result files
-    test_playbooks_result_files_list = get_test_playbook_results_files(artifacts_path)
-
-    if not test_playbooks_result_files_list:
+    if not (test_playbooks_result_files_list := get_test_playbook_results_files(artifacts_path)):
         # Write an empty report file to avoid failing the build artifacts collection.
         JUnitXml().write(test_playbooks_report.as_posix(), pretty=True)
         logging.error(f"Could not find any test playbook result files in {artifacts_path}")
@@ -123,10 +121,11 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
         jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(jira_server, playbooks_ids)
         logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_ids)} filtered playbooks")
 
-    headers, tabulate_data, xml, total_errors = calculate_test_playbooks_results_table(jira_tickets_for_playbooks,
-                                                                                       playbooks_results,
-                                                                                       server_versions,
-                                                                                       without_jira=without_jira)
+    headers, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
+                                                                        playbooks_results,
+                                                                        server_versions,
+                                                                        TEST_PLAYBOOKS_BASE_HEADERS,
+                                                                        without_jira=without_jira)
     logging.info(f"Writing test playbook report to {test_playbooks_report}")
     xml.write(test_playbooks_report.as_posix(), pretty=True)
     table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")

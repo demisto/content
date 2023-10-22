@@ -20,7 +20,8 @@ from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
     jira_server_information
 from Tests.scripts.test_playbooks_report import get_test_playbook_results_files, calculate_test_playbooks_results, \
-    get_jira_tickets_for_playbooks, calculate_test_playbooks_results_table, get_all_failed_playbooks, TEST_SUITE_DATA_CELL_HEADER
+    get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_BASE_HEADERS
+from Tests.scripts.common import TEST_SUITE_DATA_CELL_HEADER, calculate_results_table, get_all_failed_results
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -36,7 +37,7 @@ JIRA_TICKET_HEADERS = ["Platform", TEST_SUITE_DATA_CELL_HEADER]
 
 
 def options_handler() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description='Converts Test Playbook JUnit report to Jira issues')
+    parser = argparse.ArgumentParser(description='Converts Test Playbook report to Jira issues')
     parser.add_argument("-a", "--artifacts-path", help='Artifacts path', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
     parser.add_argument('-d', '--max-days-to-reopen', default=JIRA_MAX_DAYS_TO_REOPEN, type=int, required=False,
@@ -128,10 +129,8 @@ def main():
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
-        # iterate over the artifacts path and find all the test playbook result files
-        test_playbooks_result_files_list = get_test_playbook_results_files(Path(options.artifacts_path))
 
-        if not test_playbooks_result_files_list:
+        if not (test_playbooks_result_files_list := get_test_playbook_results_files(Path(options.artifacts_path))):
             logging.critical(f"Could not find any test playbook result files in {options.artifacts_path}")
             sys.exit(1)
 
@@ -144,15 +143,16 @@ def main():
 
         # Search if we have too many test playbooks that failed beyond the max allowed limit to open, if so we print the
         # list and exit. This is to avoid opening too many Jira issues.
-        failed_playbooks = get_all_failed_playbooks(playbooks_results)
+        failed_playbooks = get_all_failed_results(playbooks_results)
 
         if len(failed_playbooks) >= options.max_failures_to_handle:
-            headers, tabulate_data, xml, total_errors = calculate_test_playbooks_results_table(jira_tickets_for_playbooks,
-                                                                                               failed_playbooks,
-                                                                                               server_versions)
+            headers, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_playbooks,
+                                                                   failed_playbooks,
+                                                                   server_versions,
+                                                                   TEST_PLAYBOOKS_BASE_HEADERS)
             table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
-            logging.critical(f"Found {len(failed_playbooks)} failed test playbooks, which is more than the max allowed "
-                             f"limit of {options.max_failures_to_handle} to handle.\n{table}")
+            logging.critical(f"Found {len(failed_playbooks)} failed test playbooks, "
+                             f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.\n{table}")
 
             sys.exit(1)
 
@@ -162,15 +162,16 @@ def main():
             # The table should be created without colors, as we don't want to have them within the Jira issue.
             # We also don't want to have the total row, as we don't want to have it within the Jira issue
             # since it's a single playbook.
-            headers, tabulate_data, xml, total_errors = calculate_test_playbooks_results_table(jira_tickets_for_playbooks,
-                                                                                               {
-                                                                                                   playbook_id: test_suites
-                                                                                               },
-                                                                                               server_versions,
-                                                                                               add_total_row=False,
-                                                                                               no_color=True,
-                                                                                               without_jira=True,
-                                                                                               with_skipped=True)
+            headers, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
+                                                                                {
+                                                                                    playbook_id: test_suites
+                                                                                },
+                                                                                server_versions,
+                                                                                TEST_PLAYBOOKS_BASE_HEADERS,
+                                                                                add_total_row=False,
+                                                                                no_color=True,
+                                                                                without_jira=True,
+                                                                                with_skipped=True)
 
             if (jira_ticket := jira_tickets_for_playbooks.get(playbook_id)) or total_errors:
                 # if the ticket isn't resolved, or we found new errors, we update it, otherwise we skip it.

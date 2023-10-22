@@ -7,12 +7,14 @@ from datetime import datetime, timezone
 import urllib3
 from jira import JIRA
 from junitparser import TestSuite, JUnitXml
+from tabulate import tabulate
 
-from Tests.scripts.jira_issues import GITLAB_PROJECT_ID, GITLAB_SERVER_URL, JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
+from Tests.scripts.common import get_all_failed_results, calculate_results_table
+from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     jira_server_information
 from Tests.scripts.test_modeling_rule_report import create_jira_issue_for_test_modeling_rule, \
-    get_test_modeling_rules_results_files
+    get_test_modeling_rules_results_files, TEST_MODELING_RULES_BASE_HEADERS, calculate_test_modeling_rule_results
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -20,15 +22,20 @@ urllib3.disable_warnings()  # Disable insecure warnings
 JIRA_MAX_DAYS_TO_REOPEN_DEFAULT = 30
 JIRA_MAX_DAYS_TO_REOPEN = (os.environ.get("JIRA_MAX_DAYS_TO_REOPEN", JIRA_MAX_DAYS_TO_REOPEN_DEFAULT)
                            or JIRA_MAX_DAYS_TO_REOPEN_DEFAULT)
+JIRA_MAX_TEST_MODELING_RULE_FAILURES_TO_HANDLE_DEFAULT = 20
+JIRA_MAX_TEST_MODELING_RULE_FAILURES_TO_HANDLE = (os.environ.get("JIRA_MAX_TEST_MODELING_RULE_FAILURES_TO_HANDLE",
+                                                                 JIRA_MAX_TEST_MODELING_RULE_FAILURES_TO_HANDLE_DEFAULT)
+                                                  or JIRA_MAX_TEST_MODELING_RULE_FAILURES_TO_HANDLE_DEFAULT)
 
 
 def options_handler() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description='Converts Test modeling report to Jira issues')
+    parser = argparse.ArgumentParser(description='Converts Test modeling rule report to Jira issues')
     parser.add_argument("-a", "--artifacts-path", help='Artifacts path', required=True)
-    parser.add_argument('-u', '--url', help='The gitlab server url', default=GITLAB_SERVER_URL)
-    parser.add_argument('-gp', '--gitlab-project-id', help='The gitlab project id', default=GITLAB_PROJECT_ID)
-    parser.add_argument('-d', '--max-days-to-reopen', default=JIRA_MAX_DAYS_TO_REOPEN, type=int,
+    parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
+    parser.add_argument('-d', '--max-days-to-reopen', default=JIRA_MAX_DAYS_TO_REOPEN, type=int, required=False,
                         help='The max days to reopen a closed issue')
+    parser.add_argument('-f', '--max-failures-to-handle', default=JIRA_MAX_TEST_MODELING_RULE_FAILURES_TO_HANDLE,
+                        type=int, required=False, help='The max days to reopen a closed issue')
     return parser.parse_args()
 
 
@@ -38,8 +45,6 @@ def main():
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
         logging.info(f'Artifacts path: {options.artifacts_path}\n'
-                     f'Gitlab server url: {options.url}\n'
-                     f'Gitlab project id: {options.gitlab_project_id}\n'
                      f'Jira server url: {JIRA_SERVER_URL}\n'
                      f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
                      f'Jira project id: {JIRA_PROJECT_ID}\n'
@@ -52,13 +57,35 @@ def main():
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
-        if not (result_files_list := get_test_modeling_rules_results_files(options.artifacts_path)):
+        if not (test_modeling_rules_results_files := get_test_modeling_rules_results_files(options.artifacts_path)):
             logging.critical(f"Could not find any test modeling rules result files in {options.artifacts_path}")
             sys.exit(1)
 
-        logging.info(f"Found {len(result_files_list)} test modeling rules files")
+        logging.info(f"Found {len(test_modeling_rules_results_files)} test modeling rules files")
 
-        for result_file in result_files_list:
+        jira_tickets_for_modeling_rule, modeling_rules_to_test_suite, server_versions = (
+            calculate_test_modeling_rule_results(jira_server, test_modeling_rules_results_files)
+        )
+
+        logging.info(f"Found {len(jira_tickets_for_modeling_rule)} Jira tickets out "
+                     f"of {len(modeling_rules_to_test_suite)} Test modeling rules")
+
+        # Search if we have too many test modeling rules that failed beyond the max allowed limit to open, if so we print the
+        # list and exit. This is to avoid opening too many Jira issues.
+        failed_test_modeling_rule = get_all_failed_results(modeling_rules_to_test_suite)
+
+        if len(failed_test_modeling_rule) >= options.max_failures_to_handle:
+            headers, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_modeling_rule,
+                                                                   failed_test_modeling_rule,
+                                                                   server_versions,
+                                                                   TEST_MODELING_RULES_BASE_HEADERS)
+            table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
+            logging.critical(f"Found {len(failed_test_modeling_rule)} failed test modeling rule, "
+                             f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.\n{table}")
+
+            sys.exit(1)
+
+        for result_file in test_modeling_rules_results_files.values():
             xml = JUnitXml.fromfile(result_file.as_posix())
             for test_suite in xml.iterchildren(TestSuite):
                 create_jira_issue_for_test_modeling_rule(jira_server, test_suite, options.max_days_to_reopen, now)
