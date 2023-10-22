@@ -8,15 +8,15 @@ description: |-
   - Verify the execution of containment actions.
   - Validate the blocking of indicators.
   - Test raising severity of the incident
-  - Test file detonation
+  - Test file detonation.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a8d7741f-828b-480e-881d-9fca26419369
+    taskid: 158c126e-3caa-4a6b-85a3-8ac21bfcaeec
     type: start
     task:
-      id: a8d7741f-828b-480e-881d-9fca26419369
+      id: 158c126e-3caa-4a6b-85a3-8ac21bfcaeec
       version: -1
       name: ""
       iscommand: false
@@ -43,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 93c5d134-9146-4cbd-8d97-195c97925201
+    taskid: 67df3bc4-c873-4992-8cd7-fdef290d3f92
     type: regular
     task:
-      id: 93c5d134-9146-4cbd-8d97-195c97925201
+      id: 67df3bc4-c873-4992-8cd7-fdef290d3f92
       version: -1
       name: Set alert data
       description: commands.local.cmd.set.incident
@@ -56,7 +56,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "27"
+      - "28"
     scriptarguments:
       agentid:
         complex:
@@ -67,7 +67,7 @@ tasks:
       alertname:
         simple: test
       initiatorpath:
-        simple: c:\Windows\System32\calc.exe
+        simple: C:\Users\administrator\Downloads\fortestplaybook.txt
       initiatorsha256:
         simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364
       name:
@@ -78,7 +78,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 100
+          "y": 40
         }
       }
     note: false
@@ -90,10 +90,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d7a33165-5963-488e-8759-aeeaa798cb36
+    taskid: c7bb79f1-e963-421d-8c37-27e38b0d2bfc
     type: condition
     task:
-      id: d7a33165-5963-488e-8759-aeeaa798cb36
+      id: c7bb79f1-e963-421d-8c37-27e38b0d2bfc
       version: -1
       name: Testing Enrichment for Verdict by DBotScore Exist
       type: condition
@@ -132,10 +132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0054f330-ac10-4e7b-8405-5a620cf52736
+    taskid: 7d88ad93-6927-485f-8771-7fe462c28e72
     type: condition
     task:
-      id: 0054f330-ac10-4e7b-8405-5a620cf52736
+      id: 7d88ad93-6927-485f-8771-7fe462c28e72
       version: -1
       name: Testing WildFire internal-wildfire-get-report by retrieved files Succeeded
       type: condition
@@ -183,10 +183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 4ee6bf31-0d22-44eb-8af9-351c94638de5
+    taskid: 3449b51d-f236-4a1a-8e9f-b6c90a6bed95
     type: regular
     task:
-      id: 4ee6bf31-0d22-44eb-8af9-351c94638de5
+      id: 3449b51d-f236-4a1a-8e9f-b6c90a6bed95
       version: -1
       name: Get Endpoint ids
       description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
@@ -208,7 +208,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -70
+          "y": -130
         }
       }
     note: false
@@ -220,10 +220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: bb710871-5f96-42f9-85d5-65f21a354c40
+    taskid: a0b866b1-8ef5-4de1-8aa1-5ee510721721
     type: title
     task:
-      id: bb710871-5f96-42f9-85d5-65f21a354c40
+      id: a0b866b1-8ef5-4de1-8aa1-5ee510721721
       version: -1
       name: Test with Inputs
       type: title
@@ -251,10 +251,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 1f0910ea-8384-4f2a-82c8-f66129ae5f1d
+    taskid: 665bd021-7763-46e2-8554-ea9296bd84e8
     type: regular
     task:
-      id: 1f0910ea-8384-4f2a-82c8-f66129ae5f1d
+      id: 665bd021-7763-46e2-8554-ea9296bd84e8
       version: -1
       name: Delete all context
       description: |-
@@ -291,10 +291,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 20a213a1-ff02-4833-8c25-52491f49d409
+    taskid: c2f7cd8f-cac6-4636-8830-9ef97b5bc903
     type: title
     task:
-      id: 20a213a1-ff02-4833-8c25-52491f49d409
+      id: c2f7cd8f-cac6-4636-8830-9ef97b5bc903
       version: -1
       name: Done
       type: title
@@ -307,7 +307,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2050
+          "y": 2440
         }
       }
     note: false
@@ -319,10 +319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a3c6ecfa-c4ae-4401-8dcc-887824844e28
+    taskid: 6e4b4f75-e1ad-4ffd-8cee-c5bf5d8b00c5
     type: regular
     task:
-      id: a3c6ecfa-c4ae-4401-8dcc-887824844e28
+      id: 6e4b4f75-e1ad-4ffd-8cee-c5bf5d8b00c5
       version: -1
       name: Error Occured
       description: Prints an error entry with a given message
@@ -351,10 +351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: fad71e65-49ee-4608-83f3-ab852a735942
+    taskid: c9c870cc-fe7b-44a0-8729-0a8830916c36
     type: condition
     task:
-      id: fad71e65-49ee-4608-83f3-ab852a735942
+      id: c9c870cc-fe7b-44a0-8729-0a8830916c36
       version: -1
       name: Test core-retrieve file from endpoint
       type: condition
@@ -396,10 +396,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 142180ea-7d98-4ab8-8ff4-381202cdebcf
+    taskid: da4886a1-f16e-4ce3-8ef3-8050243e376c
     type: regular
     task:
-      id: 142180ea-7d98-4ab8-8ff4-381202cdebcf
+      id: da4886a1-f16e-4ce3-8ef3-8050243e376c
       version: -1
       name: Delete all context
       description: |-
@@ -436,10 +436,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 161d56ce-43d9-4f38-8673-17af099f20a6
+    taskid: b7190a50-4ab3-4534-8951-b0d990155587
     type: condition
     task:
-      id: 161d56ce-43d9-4f38-8673-17af099f20a6
+      id: b7190a50-4ab3-4534-8951-b0d990155587
       version: -1
       name: Test Raise Severity of the incident
       type: condition
@@ -482,10 +482,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 287b111e-6c34-475a-8e6e-df0480df9dcc
+    taskid: 1da445a4-677d-4ef2-893f-cf2ef67d6dc1
     type: title
     task:
-      id: 287b111e-6c34-475a-8e6e-df0480df9dcc
+      id: 1da445a4-677d-4ef2-893f-cf2ef67d6dc1
       version: -1
       name: Test without inputs
       type: title
@@ -513,10 +513,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: cd8e049f-bb65-4863-821c-87d014377285
+    taskid: fb99e92d-0655-4e98-81ad-d6463440283d
     type: condition
     task:
-      id: cd8e049f-bb65-4863-821c-87d014377285
+      id: fb99e92d-0655-4e98-81ad-d6463440283d
       version: -1
       name: Test file hash is blocked
       type: condition
@@ -526,7 +526,7 @@ tasks:
       '#default#':
       - "16"
       "yes":
-      - "24"
+      - "30"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -555,10 +555,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 40a58049-2b93-48cb-89d1-d52784e11587
+    taskid: 2b4121cf-c94b-4b2c-8502-ef44c7d660a5
     type: regular
     task:
-      id: 40a58049-2b93-48cb-89d1-d52784e11587
+      id: 2b4121cf-c94b-4b2c-8502-ef44c7d660a5
       version: -1
       name: Unisolate test endpoint
       description: Reverses the isolation of an endpoint.
@@ -580,7 +580,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1860
+          "y": 2250
         }
       }
     note: false
@@ -592,10 +592,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 28ee446e-a045-4a88-8019-1c9343af7015
+    taskid: 63d7db28-8a6b-4313-8921-744c4c31aeda
     type: playbook
     task:
-      id: 28ee446e-a045-4a88-8019-1c9343af7015
+      id: 63d7db28-8a6b-4313-8921-744c4c31aeda
       version: -1
       name: Local Analysis alert Investigation
       description: |-
@@ -660,10 +660,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 25eb20ea-b0c8-4943-8ab9-4609994169c5
+    taskid: 1b6e745c-050c-4e7f-875c-8768b4fe1744
     type: playbook
     task:
-      id: 25eb20ea-b0c8-4943-8ab9-4609994169c5
+      id: 1b6e745c-050c-4e7f-875c-8768b4fe1744
       version: -1
       name: Local Analysis alert Investigation
       description: |-
@@ -815,10 +815,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 7ff966be-560a-49dc-8691-d8d74867983a
+    taskid: f65688eb-6ae7-4c84-87a1-7eb32f64368e
     type: regular
     task:
-      id: 7ff966be-560a-49dc-8691-d8d74867983a
+      id: f65688eb-6ae7-4c84-87a1-7eb32f64368e
       version: -1
       name: Set Host IP
       description: commands.local.cmd.set.incident
@@ -840,7 +840,120 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 310
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d2bdb0dd-2a63-48b6-84c8-b740f2526a69
+    type: regular
+    task:
+      id: d2bdb0dd-2a63-48b6-84c8-b740f2526a69
+      version: -1
+      name: Create file
+      description: Initiate a new endpoint script execution of shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      commands:
+        simple: echo Hello >> "C:\Users\administrator\Downloads\fortestplaybook.txt"
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      timeout:
+        simple: "120"
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: a2e6649a-c368-49c2-83b2-dceab82a2edf
+    type: regular
+    task:
+      id: a2e6649a-c368-49c2-83b2-dceab82a2edf
+      version: -1
+      name: Delete file
+      description: Initiates a new endpoint script execution to delete the specified file.
+      script: '|||core-run-script-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      file_path:
+        simple: C:\Users\administrator\Downloads\fortestplaybook.txt
+      timeout_in_seconds:
+        simple: "60"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 87c12042-4c95-4d6d-84a0-d3ef9714f95a
+    type: title
+    task:
+      id: 87c12042-4c95-4d6d-84a0-d3ef9714f95a
+      version: -1
+      name: Revert testing ENV
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1950
         }
       }
     note: false
@@ -860,7 +973,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3335,
+        "height": 3725,
         "width": 890,
         "x": -60,
         "y": -1220
@@ -869,6 +982,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.6.0
-marketplaces:
-  - marketplacev2
+fromversion: 6.9.0
