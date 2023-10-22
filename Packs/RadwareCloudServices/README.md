@@ -82,7 +82,7 @@ You need to update this file to include a syslog *output* plugin that would forw
    | `host`        | Enter The IP address of the Cortex XSIAM Broker VM syslog server.             
    | `port`        | Enter the syslog service port number that Cortex XSIAM Broker VM should listen on for receiving Radware AppWall security events that would be forwarded from Logstash. 
    | `rfc`         | Enter **rfc5424**
-   | `appname`     | Enter a meaningful application name for the syslog message. For e.g. **RadwareAppWall**.
+   | `appname`     | Enter a meaningful application name for the syslog message. For e.g., **RadwareAppWall**.
 
    The following example demonstrates a sample configuration with a syslog output plugin (values surrounded by angle brackets represent placeholders for dynamic values): 
    ```python
