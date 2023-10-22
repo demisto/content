@@ -603,7 +603,7 @@ def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_tim
         if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
             demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
             return True
-    # the incident was not modified
+        # the incident was not modified
     return False
 
 
@@ -807,19 +807,23 @@ def sort_all_list_incident_fields(incident_data):
     if incident_data.get('incident_sources', []):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
 
+    format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
     if incident_data.get('alerts', []):
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
-        reformat_sublist_fields(incident_data['alerts'])
+        if format_sublists:
+            reformat_sublist_fields(incident_data['alerts'])
 
     if incident_data.get('file_artifacts', []):
         incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
                                                       fallback_key='file_sha256')
-        reformat_sublist_fields(incident_data['file_artifacts'])
+        if format_sublists:
+            reformat_sublist_fields(incident_data['file_artifacts'])
 
     if incident_data.get('network_artifacts', []):
         incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
                                                          main_key='network_domain', fallback_key='network_remote_ip')
-        reformat_sublist_fields(incident_data['network_artifacts'])
+        if format_sublists:
+            reformat_sublist_fields(incident_data['network_artifacts'])
 
 
 def sync_incoming_incident_owners(incident_data):
