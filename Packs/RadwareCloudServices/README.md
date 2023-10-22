@@ -63,7 +63,7 @@ In order to collect AppWall Cloud WAF Security events, you would need to deploy 
 
 Radware recommends using [Logstash](https://www.elastic.co/logstash) as the log-collection solution, however, any other third-party log-collection solution can be used as long as it has an interface with [Amazon SQS](https://aws.amazon.com/sqs/) and supports syslog forwarding. 
 
-The following steps demonstrate the configuration steps with Logstash used as the log-collection solution, under the assumption that Logstash has already been installed & deployed on your environment. 
+The following steps demonstrate the configuration steps with Logstash used as the log-collection solution, under the assumption that Logstash has already been installed and deployed on your environment. 
 
 ### Obtain Amazon SQS Credentials 
 **On Radware Cloud WAF Portal**
