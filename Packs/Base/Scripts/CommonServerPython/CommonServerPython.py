@@ -10622,6 +10622,26 @@ def get_current_time(time_zone=0):
         demisto.debug('pytz is missing, will not return timeaware object.')
         return now
 
+def calculate_new_offset(old_offset, num_incidents, total_incidents):
+    """ This calculates the new offset based on the response
+    
+    :type old_offset: ``int``
+    :param old_offset: The offset from the previous run
+
+    :type num_incidents: ``int``
+    :param num_incidents: The number of incidents returned by the API.
+    
+    :type total_incidents: ``int``
+    :param total_incidents: The total number of incidents returned by the API.
+    
+    :return: The new offset for the next run.
+    :rtype: ``int``
+    """
+    if not num_incidents:
+        return 0
+    if total_incidents and num_incidents + old_offset > total_incidents:
+        return 0
+    return old_offset + num_incidents
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """

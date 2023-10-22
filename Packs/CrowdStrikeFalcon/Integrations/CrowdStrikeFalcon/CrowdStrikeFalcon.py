@@ -2511,22 +2511,6 @@ def migrate_last_run(last_run: dict[str, str] | list[dict]) -> list[dict]:
         return [updated_last_run_detections, updated_last_run_incidents, {}, {}, {}]
 
 
-def calculate_new_offset(old_offset: int, num_incidents: int, total_incidents: int) -> int:
-    """ This calculates the new offset based on the response
-
-    Args:
-        old_offset: The offset from the previous run
-        response: The response from the API
-    Returns:
-        int: The new offset for the next run.
-    """
-    if not num_incidents:
-        return 0
-    if total_incidents and num_incidents + old_offset > total_incidents:
-        return 0
-    return old_offset + num_incidents
-
-
 def fetch_incidents():
     incidents: list = []
     detections: list = []
