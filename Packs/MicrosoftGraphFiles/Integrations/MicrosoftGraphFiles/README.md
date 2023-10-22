@@ -19,7 +19,7 @@ Note: that in this case, the command msgraph-list-sharepoint-sites cannot be run
 4) From the admin application run the following api:
 
 ```
-GET "sites/{site_id}/permissions",
+POST "sites/{site_id}/permissions",
 body={
     "roles": ["read", "write"],
     "grantedToIdentities": [
