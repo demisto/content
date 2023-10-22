@@ -8250,6 +8250,53 @@ class TestFetchWithLookBack:
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
 
+    def test_lookback_with_offset_time_range(self):
+        """
+        Given:
+            A last run with an offset
+            
+        When:
+            Calling get_fetch_run_time_range
+            
+        Then:
+            The last run should be unchanged, even if there is a lookback.
+        """
+        from CommonServerPython import get_fetch_run_time_range
+        last_time = "2022-04-07T10:13:00"
+        last_run = {"time": last_time, "offset": 3}
+        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
+        # make sure that the start time is unchanged because of the offset
+        assert start_time == last_time
+    
+    def test_lookback_with_offset_update_last_run(self):
+        """
+        Given:
+            A last run
+        
+        When:
+            Calling create_updated_last_run_object with a new offset to change
+            
+        Then:
+            The last run is updated with the new offset, and the start time remains as it was.
+        """
+        from CommonServerPython import create_updated_last_run_object
+        last_time = "2022-04-07T10:13:00"
+        last_run = {"time": last_time, "offset": 3}
+        new_offset = 4
+        new_last_run, _ = create_updated_last_run_object(last_run,
+                                                         self.INCIDENTS,
+                                                         fetch_limit=3,
+                                                         look_back=1,
+                                                         start_fetch_time=last_time,
+                                                         end_fetch_time=datetime.now().isoformat(),
+                                                         created_time_field="occurred",
+                                                         new_offset=new_offset,
+                                                         )
+        # make sure that the start time is unchanged because of the offset, and the offset is updated
+        assert new_last_run["offset"] == 4
+        assert new_last_run["time"] == last_time
+
+
 
 class TestTracebackLineNumberAdgustment:
     @staticmethod
