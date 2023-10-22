@@ -10824,7 +10824,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     remove_incident_ids = True
     new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
     if new_offset:
-        # if we need to update the offset, we need to keep the old time and just update the offset
+        # if we need to update the offset, we need to keep the old time
         new_last_run = {
             'time': last_run.get("time"),
         } 
