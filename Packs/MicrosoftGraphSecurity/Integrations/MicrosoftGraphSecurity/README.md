@@ -1743,7 +1743,7 @@ Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to acces
 
 `msg-create-mail-assessment-request`
 
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -1753,7 +1753,7 @@ Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to acces
 | message_user | Message user, the user's id or the user's email. | Required | 
 | message_id | Message id, Message has to contain 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages. | Required |
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
