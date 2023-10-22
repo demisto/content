@@ -901,10 +901,12 @@ def main():
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(exact_match_fields, populate_high_level_fields,
                                                                        incident,
                                                                        from_date, to_date, query, limit)
-    demisto.debug(f'Found {len(incidents)} incidents for {incident_id=}')
     global_msg += "%s \n" % msg
 
-    if not incidents:
+    if incidents:
+        demisto.debug(f'Found {len(incidents)} incidents for {incident_id=}')
+    else:
+        demisto.debug(f'No incidents found for {incident_id=}')
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return None, global_msg
