@@ -10800,20 +10800,20 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :rtype: ``Dict``
     """
     demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
-                  "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
+                  "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit, new_offset))
     remove_incident_ids = True
     new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
-    if len(incidents) == 0:
-        new_last_run = {
-            'time': end_fetch_time,
-            'limit': fetch_limit
-        }
-    elif new_offset:
+    if new_offset:
         # if we need to update the offset, we need to keep the old time and just update the offset
         new_last_run = {
             'time': last_run.get("time"),
             'limit': fetch_limit,
             'offset': new_offset
+        } 
+    elif len(incidents) == 0:
+        new_last_run = {
+            'time': end_fetch_time,
+            'limit': fetch_limit
         }
     else:        
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
