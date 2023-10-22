@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Microsoft Graph Test
+  id: Microsoft Graph
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
@@ -175,8 +175,8 @@ configuration:
   advanced: true
   required: false
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
-display: Microsoft Graph Security Test
-name: Microsoft Graph Test
+display: Microsoft Graph Security
+name: Microsoft Graph
 script:
   commands:
   - arguments:
@@ -2008,7 +2008,7 @@ script:
     - contextPath: MSGraphMail.AssesmentRequest.ResultMessage
       description: 'Result message'
       type: String
-  dockerimage: demisto/crypto:1.0.0.68914
+  dockerimage: demisto/crypto:1.0.0.79207
   isfetch: true
   runonce: false
   script: '-'
