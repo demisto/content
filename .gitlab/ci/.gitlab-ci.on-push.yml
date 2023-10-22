@@ -451,7 +451,7 @@ slack-notify-nightly-build:
     - |
       if [ -s $ARTIFACTS_FOLDER/packs_reinstall_to_test.txt ]; then
         echo "Running the packs re-installation test."
-        # todo: reinstall packs with ingested dataset: use '$ARTIFACTS_FOLDER/packs_reinstall_to_test.txt'
+        ./Tests/scripts/reinstall_packs_on_cloud_instances.sh || EXIT_CODE=$?
       fi
     - section_end "Packs re-installation test"
 

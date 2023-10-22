@@ -431,7 +431,7 @@ def options_handler() -> argparse.Namespace:
     Returns: options parsed from input arguments.
 
     """
-    parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
+    parser = argparse.ArgumentParser(description='Utility for cleaning Cloud machines.')
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
     parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
