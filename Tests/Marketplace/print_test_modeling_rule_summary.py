@@ -51,15 +51,22 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
         calculate_test_modeling_rule_results(jira_server, test_modeling_rules_results_files)
     )
 
-    headers, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_modeling_rule,
-                                                                        modeling_rules_to_test_suite,
-                                                                        server_versions,
-                                                                        TEST_MODELING_RULES_BASE_HEADERS,
-                                                                        without_jira=without_jira)
+    if modeling_rules_to_test_suite:
+        logging.info(f"Found {len(jira_tickets_for_modeling_rule)} Jira tickets out of {len(modeling_rules_to_test_suite)} "
+                     "Test modeling rules")
 
-    table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
-    logging.info(f"Test Modeling rule Results:\n{table}")
-    return total_errors == 0
+        headers, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_modeling_rule,
+                                                                            modeling_rules_to_test_suite,
+                                                                            server_versions,
+                                                                            TEST_MODELING_RULES_BASE_HEADERS,
+                                                                            without_jira=without_jira)
+
+        table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
+        logging.info(f"Test Modeling rule Results:\n{table}")
+        return total_errors != 0
+
+    logging.info("Test Modeling rule Results - No test modeling rule results found")
+    return True
 
 
 def main():
