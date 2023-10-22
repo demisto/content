@@ -7,12 +7,13 @@ description: |-
   Enrich accounts using one or more integrations.
   Supported integrations:
   - Active Directory
+  - Microsoft Graph User
   - SailPoint IdentityNow
   - SailPoint IdentityIQ
   - PingOne
   - Okta
   - AWS IAM
-  - Cortex XDR / Core (account enrichment and reputation and risk)
+  - Cortex XDR (account enrichment and reputation)
 
   Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
 starttaskid: "0"
@@ -177,7 +178,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 575
+          "y": 565
         }
       }
     note: false
@@ -216,7 +217,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 770
+          "y": 760
         }
       }
     note: false
@@ -348,7 +349,7 @@ tasks:
       {
         "position": {
           "x": -640,
-          "y": 575
+          "y": 565
         }
       }
     note: false
@@ -387,7 +388,7 @@ tasks:
       {
         "position": {
           "x": 650,
-          "y": 575
+          "y": 565
         }
       }
     note: false
@@ -425,7 +426,7 @@ tasks:
       {
         "position": {
           "x": -640,
-          "y": 770
+          "y": 760
         }
       }
     note: false
@@ -463,7 +464,7 @@ tasks:
       {
         "position": {
           "x": 650,
-          "y": 770
+          "y": 760
         }
       }
     note: false
@@ -533,7 +534,7 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 575
+          "y": 565
         }
       }
     note: false
@@ -571,7 +572,7 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 770
+          "y": 760
         }
       }
     note: false
@@ -641,7 +642,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 575
+          "y": 565
         }
       }
     note: false
@@ -679,7 +680,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 770
+          "y": 760
         }
       }
     note: false
@@ -780,7 +781,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 575
+          "y": 565
         }
       }
     note: false
@@ -818,7 +819,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 770
+          "y": 760
         }
       }
     note: false
@@ -862,7 +863,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 940
+          "y": 930
         }
       }
     note: false
@@ -874,10 +875,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 04fff51c-4e58-4c1e-8625-1247f537d5b4
+    taskid: 82a4d18b-fcb9-416a-87e9-0c1b07255560
     type: playbook
     task:
-      id: 04fff51c-4e58-4c1e-8625-1247f537d5b4
+      id: 82a4d18b-fcb9-416a-87e9-0c1b07255560
       version: -1
       name: Active Directory - Get User Manager Details
       description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
@@ -920,7 +921,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -984,7 +985,7 @@ tasks:
       {
         "position": {
           "x": 1910,
-          "y": 575
+          "y": 565
         }
       }
     note: false
@@ -1022,7 +1023,7 @@ tasks:
       {
         "position": {
           "x": 1910,
-          "y": 770
+          "y": 760
         }
       }
     note: false
@@ -1034,10 +1035,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 0cc7d1db-2b59-42c7-846a-9859a3d851c9
+    taskid: 56bea608-c34d-4914-8b16-594603971e22
     type: condition
     task:
-      id: 0cc7d1db-2b59-42c7-846a-9859a3d851c9
+      id: 56bea608-c34d-4914-8b16-594603971e22
       version: -1
       name: Is there a manager?
       description: Is there a manager?
@@ -1070,7 +1071,7 @@ tasks:
       {
         "position": {
           "x": 1910,
-          "y": 940
+          "y": 930
         }
       }
     note: false
@@ -1205,7 +1206,7 @@ tasks:
       {
         "position": {
           "x": -1700,
-          "y": 760
+          "y": 750
         }
       }
     note: false
@@ -1272,7 +1273,7 @@ tasks:
       {
         "position": {
           "x": -1290,
-          "y": 760
+          "y": 750
         }
       }
     note: false
@@ -1315,7 +1316,7 @@ tasks:
       {
         "position": {
           "x": -1500,
-          "y": 580
+          "y": 570
         }
       }
     note: false
@@ -1327,12 +1328,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: f3a3b7c5-ed52-4271-8319-fe557f178170
+    taskid: 30472917-7825-4a09-89d8-b531bf61958c
     type: title
     task:
-      id: f3a3b7c5-ed52-4271-8319-fe557f178170
+      id: 30472917-7825-4a09-89d8-b531bf61958c
       version: -1
-      name: Cortex XDR / Core IR
+      name: Cortex XDR
       type: title
       iscommand: false
       brand: ""
@@ -1340,7 +1341,6 @@ tasks:
     nexttasks:
       '#none#':
       - "65"
-      - "70"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1386,7 +1386,7 @@ tasks:
       {
         "position": {
           "x": 2330,
-          "y": 575
+          "y": 565
         }
       }
     note: false
@@ -1431,7 +1431,7 @@ tasks:
       {
         "position": {
           "x": 2330,
-          "y": 770
+          "y": 760
         }
       }
     note: false
@@ -1606,101 +1606,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "70":
-    id: "70"
-    taskid: 72be4e51-cdb7-49a6-888b-e44299db19c7
-    type: condition
-    task:
-      id: 72be4e51-cdb7-49a6-888b-e44299db19c7
-      version: -1
-      name: Is Cortex Core - IR integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
-      scriptName: IsIntegrationAvailable
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "71"
-    scriptarguments:
-      brandname:
-        simple: Cortex Core - IR
-    results:
-    - brandInstances
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2790,
-          "y": 580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "71":
-    id: "71"
-    taskid: b726b45e-3135-4b8e-8051-3b987945e081
-    type: regular
-    task:
-      id: b726b45e-3135-4b8e-8051-3b987945e081
-      version: -1
-      name: Get account risk score
-      description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
-      script: '|||core-list-risky-users'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      user_id:
-        complex:
-          root: UsernamesWithDomains
-          transformers:
-          - operator: AppendIfNotEmpty
-            args:
-              item:
-                value:
-                  simple: Usernames
-                iscontext: true
-              raw: {}
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2790,
-          "y": 770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: User Risk Level
-      output:
-        complex:
-          root: Core.RiskyUser
-          accessor: risk_level
-    - incidentfield: User Risk Reasons
-      output:
-        complex:
-          root: Core.RiskyUser.reasons
-          accessor: description
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1713,7 +1618,6 @@ view: |-
       "51_3_#default#": 0.1,
       "56_3_#default#": 0.1,
       "58_3_#default#": 0.1,
-      "65_3_#default#": 0.1,
       "65_66_yes": 0.59,
       "68_3_#default#": 0.11,
       "68_69_yes": 0.11
@@ -1721,7 +1625,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1825,
-        "width": 4870,
+        "width": 4410,
         "x": -1700,
         "y": -200
       }
@@ -2110,36 +2014,80 @@ outputs:
   description: Description of the incident.
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.severity
-  description: The severity of the incident.
+  description: The severity of the incident
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
-  description: The incident status.
+  description: The incident status
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
   description: The score.
   type: string
-- contextPath: Core.RiskyUser
-  description: The risky user object.
-  type: unknown
-- contextPath: Core.RiskyUser.type
-  description: Form of identification element.
-- contextPath: Core.RiskyUser.id
-  description: Identification value of the type field.
-- contextPath: Core.RiskyUser.score
-  description: The score assigned to the user.
-- contextPath: Core.RiskyUser.reasons
-  description: The reasons for the user risk level.
-  type: unknown
-- contextPath: Core.RiskyUser.reasons.date created
-  description: Date when the incident was created.
-- contextPath: Core.RiskyUser.reasons.description
-  description: Description of the incident.
-- contextPath: Core.RiskyUser.reasons.severity
-  description: The severity of the incident.
-- contextPath: Core.RiskyUser.reasons.status
-  description: The incident status.demist
-- contextPath: Core.RiskyUser.reasons.points
-  description: The score.
+- contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_EXPIRE_PASSWORD
+  description: Whether to never expire the password on the account.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWORD_EXPIRED
+  description: Whether the user password expired.
+  type: string
+- contextPath: Account.ManagerEmail
+  description: The manager email.
+  type: string
+- contextPath: AWS.IAM.Users
+  description: AWS IAM output.
+  type: string
+- contextPath: AWS.IAM.Users.UserName
+  description: The friendly name identifying the user.
+  type: string
+- contextPath: AWS.IAM.Users.UserId
+  description: The stable and unique string identifying the user.
+  type: string
+- contextPath: AWS.IAM.Users.Arn
+  description: The Amazon Resource Name (ARN) that identifies the user.
+  type: string
+- contextPath: AWS.IAM.Users.CreateDate
+  description: The date and time when the user was created.
+  type: string
+- contextPath: AWS.IAM.Users.Path
+  description: The path to the user.
+  type: string
+- contextPath: AWS.IAM.Users.PasswordLastUsed
+  description: The date and time,  when the user's password was last used to sign in to an AWS website.
+  type: string
+- contextPath: MSGraphUser.MobilePhone
+  description: User's mobile phone number.
+  type: string
+- contextPath: MSGraphUser.OfficeLocation
+  description: User's office location.
+  type: string
+- contextPath: Account.JobTitle
+  description: User’s job title.
+  type: string
+- contextPath: Account.TelephoneNumber
+  description: User’s mobile phone number.
+  type: string
+- contextPath: Account.Office
+  description: User’s office location.
+  type: string
+- contextPath: Account.Type
+  description: The account entity type.
+  type: string
+- contextPath: Account.Email.Address
+  description: User’s mail address.
+  type: string
+- contextPath: MSGraphUserManager.Manager.BusinessPhones
+  description: User's business phone numbers.
+  type: string
+- contextPath: MSGraphUser.BusinessPhones
+  description: User's business phone numbers.
+  type: string
+- contextPath: MSGraphUserManager.Manager.JobTitle
+  description: User's job title.
+  type: string
+- contextPath: MSGraphUserManager.Manager.MobilePhone
+  description: User's mobile phone number.
+  type: string
+- contextPath: MSGraphUserManager.Manager.OfficeLocation
+  description: User's office location.
+  type: string
 tests:
 - Account Enrichment - Generic v2.1 - Test
 fromversion: 6.5.0
