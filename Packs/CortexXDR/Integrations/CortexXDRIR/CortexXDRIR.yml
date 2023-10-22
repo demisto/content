@@ -175,7 +175,7 @@ script:
     - defaultValue: '100'
       description: Maximum number of incidents to return per page. The default and maximum is 100.
       name: limit
-    - description: 'Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto'
+    - description: 'Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
       name: status
     - auto: PREDEFINED
       description: 'Whether the incident is starred (Boolean value: true or false).'
@@ -183,7 +183,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+    - description: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
       defaultValue: 3 days
       name: starred_incidents_fetch_window
     description: |-
@@ -195,7 +195,7 @@ script:
       description: Unique ID assigned to each returned incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
-      description: Incident severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high"
+      description: Incident severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.manual_description
       description: Incident description provided by the user.
@@ -225,9 +225,9 @@ script:
       description: Number of users involved in the incident.
       type: number
     - contextPath: PaloAltoNetworksXDR.Incident.severity
-      description: |
+      description: |-
         Calculated severity of the incident. Valid values are:
-        "low","medium","high"
+        "low","medium","high".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
       description: Number of alerts with the severity LOW.
@@ -282,10 +282,10 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.status
       description: |-
         Current status of the incident. Valid values are:
-        "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other"
+        "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other".
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.severity
-      description: 'Calculated severity of the incident. Valid values are: "low","medium","high"'
+      description: 'Calculated severity of the incident. Valid values are: "low","medium","high".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -312,7 +312,7 @@ script:
       description: Number of users involved in the incident.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Incident.host_count
-      description: Number of hosts involved in the incident
+      description: Number of hosts involved in the incident.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Incident.notes
       description: Comments entered by the user regarding the incident.
@@ -348,7 +348,7 @@ script:
       description: Source of the alert. The product/vendor this alert came from.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.severity
-      description: 'Severity of the alert.Valid values are: "low","medium","high"""'
+      description: 'Severity of the alert.Valid values are: "low","medium","high""".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
       description: Calculated name of the alert.
@@ -369,13 +369,13 @@ script:
       description: User name involved with the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.event_type
-      description: 'Event type. Valid values are: "Process Execution","Network Event","File Event","Registry Event","Injection Event","Load Image Event","Windows Event Log"'
+      description: 'Event type. Valid values are: "Process Execution","Network Event","File Event","Registry Event","Injection Event","Load Image Event","Windows Event Log".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action
-      description: 'The action that triggered the alert. Valid values are: "REPORTED", "BLOCKED", "POST_DETECTED", "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1", "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8", "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15", "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4", "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23"'
+      description: 'The action that triggered the alert. Valid values are: "REPORTED", "BLOCKED", "POST_DETECTED", "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1", "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8", "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15", "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4", "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
-      description: 'The action that triggered the alert. Valid values are: "Detected (Reported)" "Prevented (Blocked)" "Detected (Post Detected)" "Detected (Scanned)" "Detected (Download)" "Detected (Prompt Allow)" "Prevented (Prompt Block)" "Detected" "Prevented (Denied The Session)" "Prevented (Dropped The Session)" "Prevented (Dropped The Session And Sent a TCP Reset)" "Prevented (Blocked The URL)" "Prevented (Blocked The IP)" "Prevented (Dropped The Packet)" "Prevented (Dropped All Packets)" "Prevented (Terminated The Session And Sent a TCP Reset To Both Sides Of The Connection)" "Prevented (Terminated The Session And Sent a TCP Reset To The Client)" "Prevented (Terminated The Session And Sent a TCP Reset To The Server)" "Prevented (Continue)" "Prevented (Block-Override)" "Prevented (Override-Lockout)" "Prevented (Override)" "Prevented (Random-Drop)" "Prevented (Silently Dropped The Session With An ICMP Unreachable Message To The Host Or Application)" "Prevented (Block)" "Detected (Allowed The Session)" "Detected (Raised An Alert)" "Detected (Syncookie Sent)" "Detected (Forward)" "Detected (Wildfire Upload Success)" "Detected (Wildfire Upload Failure)" "Detected (Wildfire Upload Skip)" "Detected (Sinkhole)"'
+      description: 'The action that triggered the alert. Valid values are: "Detected (Reported)" "Prevented (Blocked)" "Detected (Post Detected)" "Detected (Scanned)" "Detected (Download)" "Detected (Prompt Allow)" "Prevented (Prompt Block)" "Detected" "Prevented (Denied The Session)" "Prevented (Dropped The Session)" "Prevented (Dropped The Session And Sent a TCP Reset)" "Prevented (Blocked The URL)" "Prevented (Blocked The IP)" "Prevented (Dropped The Packet)" "Prevented (Dropped All Packets)" "Prevented (Terminated The Session And Sent a TCP Reset To Both Sides Of The Connection)" "Prevented (Terminated The Session And Sent a TCP Reset To The Client)" "Prevented (Terminated The Session And Sent a TCP Reset To The Server)" "Prevented (Continue)" "Prevented (Block-Override)" "Prevented (Override-Lockout)" "Prevented (Override)" "Prevented (Random-Drop)" "Prevented (Silently Dropped The Session With An ICMP Unreachable Message To The Host Or Application)" "Prevented (Block)" "Detected (Allowed The Session)" "Detected (Raised An Alert)" "Detected (Syncookie Sent)" "Detected (Forward)" "Detected (Wildfire Upload Success)" "Detected (Wildfire Upload Failure)" "Detected (Wildfire Upload Skip)" "Detected (Sinkhole)".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_image_name
       description: Image name.
@@ -396,7 +396,7 @@ script:
       description: Command line.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_status
-      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash"'
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.causality_actor_process_signature_vendor
       description: Signature vendor.
@@ -414,7 +414,7 @@ script:
       description: Image SHA256.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_signature_status
-      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash"'
+      description: 'Signature status. Valid values are: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_signature_vendor
       description: Signature vendor name.
@@ -453,7 +453,7 @@ script:
       description: Firewall app id.
       type: Unknown
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.is_whitelisted
-      description: 'Is the alert on allow list. Valid values are: "Yes" "No"'
+      description: 'Is the alert on allow list. Valid values are: "Yes" "No".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.starred
       description: Alert starred.
@@ -477,13 +477,13 @@ script:
       description: The domain related to the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
-      description: 'The artifact type. Valid values are: "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY", "HOSTNAME"'
+      description: 'The artifact type. Valid values are: "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY", "HOSTNAME".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
       description: The country related to the artifact.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
-      description: 'Digital signature status of the file. Valid values are: "SIGNATURE_UNAVAILABLE" "SIGNATURE_SIGNED" "SIGNATURE_INVALID" "SIGNATURE_UNSIGNED" "SIGNATURE_WEAK_HASH"'
+      description: 'Digital signature status of the file. Valid values are: "SIGNATURE_UNAVAILABLE" "SIGNATURE_SIGNED" "SIGNATURE_INVALID" "SIGNATURE_UNSIGNED" "SIGNATURE_WEAK_HASH".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_process
       description: Whether the file artifact is related to a process execution.
@@ -504,7 +504,7 @@ script:
       description: Whether the artifact was created by the user (manually).
       type: boolean
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.type
-      description: 'The artifact type. Valid values are: "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY" "HOSTNAME"'
+      description: 'The artifact type. Valid values are: "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY" "HOSTNAME".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
       description: SHA256 hash of the file.
@@ -629,7 +629,7 @@ script:
       defaultValue: Medium
       description: |-
         String value of alert severity. Valid values are:
-        Informational, Low, Medium or High
+        Informational, Low, Medium or High.
       name: severity
       predefined:
       - Informational
@@ -670,7 +670,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -723,7 +723,7 @@ script:
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
     - description: |-
-        For polling use
+        For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -757,7 +757,7 @@ script:
       - 'true'
       - 'false'
   - arguments:
-    - description: 'A comma-separated list of endpoints statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated'
+    - description: 'A comma-separated list of endpoints statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated.'
       name: status
       isArray: true
     - description: A comma-separated list of endpoint IDs.
@@ -765,17 +765,17 @@ script:
       name: endpoint_id_list
     - description: |-
         A comma-separated list of distribution package names or installation package names.
-        Example: dist_name1,dist_name2
+        Example: dist_name1,dist_name2.
       isArray: true
       name: dist_name
     - description: |-
         A comma-separated list of IP addresses.
-        Example: 8.8.8.8,1.1.1.1
+        Example: 8.8.8.8,1.1.1.1.
       isArray: true
       name: ip_list
     - description: |-
         The group name to which the agent belongs.
-        Example: group_name1,group_name2
+        Example: group_name1,group_name2.
       isArray: true
       name: group_name
     - description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
@@ -789,7 +789,7 @@ script:
       - android
     - description: |-
         A comma-separated list of alias names.
-        Examples: alias_name1,alias_name2
+        Examples: alias_name1,alias_name2.
       isArray: true
       name: alias_name
     - auto: PREDEFINED
@@ -800,7 +800,7 @@ script:
       - unisolated
     - description: |-
         Hostname
-        Example: hostname1,hostname2
+        Example: hostname1,hostname2.
       isArray: true
       name: hostname
     - description: |-
@@ -808,28 +808,28 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_gte
     - description: |-
         All the agents that were first seen before {first_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_lte
     - description: |-
         All the agents that were last seen before {last_seen_gte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_gte
     - description: |-
         All the agents that were last seen before {last_seen_lte}.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_lte
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
@@ -958,12 +958,12 @@ script:
       name: endpoint_id_list
     - description: |-
         A comma-separated list of distribution package names or installation package names to use as a filter.
-        Example: dist_name1,dist_name2
+        Example: dist_name1,dist_name2.
       isArray: true
       name: dist_name
     - description: |-
         A comma-separated list of IP addresses to use as a filter.
-        Example: 8.8.8.8,1.1.1.1
+        Example: 8.8.8.8,1.1.1.1.
       isArray: true
       name: ip_list
     - description: A comma-separated list of group names to which the agent belongs to use as a filter.
@@ -980,7 +980,7 @@ script:
       - android
     - description: |-
         A comma-separated list of alias names to use as a filter.
-        Examples: alias_name1,alias_name2
+        Examples: alias_name1,alias_name2.
       isArray: true
       name: alias_name
     - auto: PREDEFINED
@@ -997,28 +997,28 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_gte
     - description: |-
         All the agents that were first seen before {first_seen_lte} to use as a filter.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: first_seen_lte
     - description: |-
         All the agents that were last seen after {last_seen_gte} to use as a filter.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_gte
     - description: |-
         All the agents that were last seen before {last_seen_lte} to use as a filter.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: last_seen_lte
     - name: username
       description: The usernames to use as a filter. Accepts a single user, or comma-separated list of usernames.
@@ -1060,7 +1060,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: "String, valid values are:\n• windows \n• linux\n• macos \n• android"
+      description: "String, valid values are:\n• windows \n• linux\n• macos \n• android."
       name: platform
       predefined:
       - windows
@@ -1072,7 +1072,7 @@ script:
       description: |-
         A string representing the type of package to create.
         standalone - An installation for a new agent
-        upgrade - An upgrade of an agent from ESM
+        upgrade - An upgrade of an agent from ESM.
       name: package_type
       predefined:
       - standalone
@@ -1117,7 +1117,7 @@ script:
         • deb - For Linux
         • pkg - For Mac
         • x86 - For Windows
-        • x64 - For Windows
+        • x64 - For Windows.
       name: package_type
       predefined:
       - upgrade
@@ -1183,7 +1183,7 @@ script:
     - description: The audit log subtype.
       name: sub_type
     - auto: PREDEFINED
-      description: Result type
+      description: Result type.
       name: result
       predefined:
       - SUCCESS
@@ -1194,14 +1194,14 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: timestamp_gte
     - description: |-
         Return logs for which the timestamp is before the 'log_time_after'.
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: timestamp_lte
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
@@ -1333,7 +1333,7 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: timestamp_gte
     - description: |-
         Return logs for which the timestamp is before the 'timestamp_lte'.
@@ -1341,7 +1341,7 @@ script:
         Supported values:
         1579039377301 (time in milliseconds)
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date)
+        "2019-10-21T23:45:00" (date).
       name: timestamp_lte
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
@@ -1504,7 +1504,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1551,7 +1551,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -1989,7 +1989,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2167,7 +2167,7 @@ script:
     - description: Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command.
       name: script_uid
       required: true
-    - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
+    - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
       name: parameters
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
@@ -2190,7 +2190,7 @@ script:
     - description: Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command.
       name: script_uid
       required: true
-    - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
+    - description: Dictionary containing the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}.
       name: parameters
     - defaultValue: '600'
       description: The timeout in seconds for this execution.
@@ -2260,7 +2260,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2414,7 +2414,7 @@ script:
       description: The SSDeep hash of the file.
       type: String
     - contextPath: File.EntryID
-      description: EntryID of the file
+      description: EntryID of the file.
       type: String
     - contextPath: File.Info
       description: Information about the file.
@@ -2444,7 +2444,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2498,7 +2498,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2554,7 +2554,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2610,7 +2610,7 @@ script:
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: For polling use
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -2687,19 +2687,19 @@ script:
       description: The integration name of the endpoint vendor.
       type: String
   - arguments:
-    - description: 'A comma-separated list of enpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated'
+    - description: 'A comma-separated list of enpoint statuses to filter. Valid values are: connected, disconnected, lost, uninstalled, windows, linux, macos, android, isolated, unisolated.'
       name: status
       required: true
       isArray: true
     - description: |-
         All the agents that were last seen before {last_seen_gte}. Supported
                 values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"
-                (date)
+                (date).
       name: last_seen_gte
     - description: |-
         All the agents that were last seen before {last_seen_lte}. Supported
                 values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"
-                (date)
+                (date).
       name: last_seen_lte
     description: Returns the number of the connected\disconnected endpoints.
     name: xdr-get-endpoints-by-status
@@ -2715,6 +2715,13 @@ script:
       isArray: true
       name: alert_ids
       required: true
+    - description: Whether to return only a subset of the alert fields. Filtering the fields can reduce response size for large alerts.
+      name: filter_alert_fields
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+        - 'true'
+        - 'false'
     description: Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
     outputs:
@@ -2856,7 +2863,7 @@ script:
       - low
       - medium
       - high
-    - description: "a custom filter, when using this argument, other filter arguments are not relevant. example: \n`{\n                \"OR\": [\n                    {\n                        \"SEARCH_FIELD\": \"actor_process_command_line\",\n                        \"SEARCH_TYPE\": \"EQ\",\n                        \"SEARCH_VALUE\": \"path_to_file\"\n                    }\n                ]\n            }`"
+    - description: "a custom filter, when using this argument, other filter arguments are not relevant. example: \n`{\n                \"OR\": [\n                    {\n                        \"SEARCH_FIELD\": \"actor_process_command_line\",\n                        \"SEARCH_TYPE\": \"EQ\",\n                        \"SEARCH_VALUE\": \"path_to_file\"\n                    }\n                ]\n            }`."
       name: custom_filter
     - auto: PREDEFINED
       description: Account type.
@@ -2910,7 +2917,7 @@ script:
     - description: The file name of the binary file.
       isArray: true
       name: actor_process_image_name
-    - description: CGO CMD
+    - description: CGO CMD.
       isArray: true
       name: causality_actor_process_image_command_line
     - description: |-
@@ -2949,7 +2956,7 @@ script:
       isArray: true
       name: action_remote_ip
     - auto: PREDEFINED
-      description: Alert action status
+      description: Alert action status.
       name: alert_action_status
       predefined:
       - detected
@@ -3036,7 +3043,7 @@ script:
       description: The unique ID of the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.source_insert_ts
-      description: The detection timestamp
+      description: The detection timestamp.
       type: Number
     - contextPath: PaloAltoNetworksXDR.Alert.alert_name
       description: The name of the alert.
@@ -3048,7 +3055,7 @@ script:
       description: The category of the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.alert_action_status
-      description: |
+      description: |-
         The alert action. Possible values.
 
         DETECTED: detected
@@ -3087,7 +3094,7 @@ script:
         BLOCKED_9: prevented (terminated the session and sent a tcp reset to both sides of the connection)
         BLOCKED_10: prevented (terminated the session and sent a tcp reset to the client)
         BLOCKED_11: prevented (terminated the session and sent a tcp reset to the server)
-        BLOCKED_TRIGGER_4: prevented (on write)
+        BLOCKED_TRIGGER_4: prevented (on write).
 
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.alert_action_status_readable
@@ -3127,7 +3134,7 @@ script:
     name: xdr-remove-allowlist-files
     outputs:
     - contextPath: PaloAltoNetworksXDR.allowlist.removed_hashes
-      description: Removed file hash
+      description: Removed file hash.
       type: Number
   - arguments:
     - description: Links the response action to the incident that triggered it.
@@ -3142,7 +3149,7 @@ script:
     name: xdr-remove-blocklist-files
     outputs:
     - contextPath: PaloAltoNetworksXDR.blocklist.removed_hashes
-      description: Removed fileHash from blocklist
+      description: Removed fileHash from blocklist.
       type: Number
   - arguments:
     - description: The alert ID's from where to retrieve the contributing events.
@@ -3208,7 +3215,7 @@ script:
     - description: Tag to add.
       name: tag
       required: true
-    description: Adds a tag to specified endpoint_ids
+    description: Adds a tag to specified endpoint_ids.
     name: xdr-endpoint-tag-add
   - arguments:
     - description: List of endpoint IDs. Supports comma-separated list.
@@ -3280,10 +3287,10 @@ script:
     arguments: []
     outputs:
     - contextPath: PaloAltoNetworksXDR.User.user_email
-      description: Email address of the user
+      description: Email address of the user.
       type: string
     - contextPath: PaloAltoNetworksXDR.User.user_first_name
-      description: First name of the user
+      description: First name of the user.
       type: string
     - contextPath: PaloAltoNetworksXDR.User.user_last_name
       description: Last name of the user.
@@ -3330,10 +3337,10 @@ script:
       description: Description of the incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.severity
-      description: The severity of the incident
+      description: The severity of the incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.status
-      description: The incident status
+      description: The incident status.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
       description: The score.
@@ -3363,10 +3370,10 @@ script:
       description: Description of the incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.severity
-      description: The severity of the incident
+      description: The severity of the incident.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.status
-      description: The incident status
+      description: The incident status.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
       description: The score.
@@ -3448,7 +3455,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   script: ''
   subtype: python3

@@ -53,7 +53,7 @@ args:
   - 'true'
   - 'false'
 - defaultValue: '0.99'
-  description: Threshold to consider incident as duplication, number between 0-1
+  description: Threshold to consider incident as duplication, number between 0-1.
   name: threshold
 - defaultValue: '20'
   description: Maximum number of duplicate incidents IDs to return.
@@ -109,7 +109,7 @@ tags:
 - phishing
 timeout: 600ns
 type: python
-dockerimage: demisto/sklearn:1.0.0.29944
+dockerimage: demisto/sklearn:1.0.0.78359
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
