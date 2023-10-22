@@ -1557,7 +1557,6 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args):
     if request_id:
         return get_threat_assessment_request(client, request_id)
 
-
     result = client.list_threat_assessment_requests(
         args.get('filter'),
         args.get('order_by'),
