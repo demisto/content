@@ -89,7 +89,12 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     return selected_reviewer
 
 
-def packs_to_check_in_pr(file_paths: list[str]):
+def packs_to_check_in_pr(file_paths: list[str]) -> set:
+    """
+    The function gets all files in the PR and returns the packs that are part of the PR
+    :param file_paths: the file paths of the PR files
+    :return: set of all packs that are part of the PR
+    """
     pack_dirs_to_check = set()
 
     for file_path in file_paths:
@@ -123,15 +128,7 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
     Returns:
         highest support level of the packs that were changed, empty string in case no packs were changed.
     """
-    pack_dirs_to_check_support_levels_labels = set()
-
-    for file_path in file_paths:
-        try:
-            if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
-                pack_dirs_to_check_support_levels_labels.add(f'Packs/{pack_name}')
-        except Exception as err:
-            print(f'Could not retrieve pack name from file {file_path}, {err=}')
-
+    pack_dirs_to_check_support_levels_labels = packs_to_check_in_pr(file_paths)
     print(f'{pack_dirs_to_check_support_levels_labels=}')
 
     # # we need to check out to the contributor branch in his forked repo in order to retrieve the files cause workflow
@@ -198,19 +195,15 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 def is_tim_reviewer_needed(packs_in_pr: list[str]) -> bool:
     for pack in packs_in_pr:
         pack_metadata = get_pack_metadata(pack)
-        print(f'the pack metadata is: {pack_metadata}')
-        print("is tim reviewer needed function start")
         for pr_file in pack:
             if "yml" in pr_file:
                 if "feed: true" in pr_file:
                     return True
-        print ("feed is not true")
         tags = pack_metadata.get("tags")
-        print(f'tags are: {tags}')
         categories = pack_metadata.get("categories")
-        print(f'categories are: {categories}')
         if "Threat Intelligence Management" in tags or "Data Enrichment & Threat Intelligence" in categories:
             return True
+
 
 def main():
     """Handles External PRs (PRs from forks)
@@ -297,7 +290,7 @@ def main():
         pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
 
-    print("start of tim reveiwer addon")
+    # adding TIM reviewer
     packs_in_pr = packs_to_check_in_pr(pr_files)
     if is_tim_reviewer_needed(packs_in_pr):
         if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):

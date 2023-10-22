@@ -175,7 +175,7 @@ class ChangeCWD:
         os.chdir(self.current)
 
 
-def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str]:
+def get_content_reviewers(content_roles: dict[str, Any]) -> tuple[list[str], str, str]:
     """
     Retrieve the content reviewers from the JSON file
 
