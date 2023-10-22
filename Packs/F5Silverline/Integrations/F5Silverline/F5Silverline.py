@@ -188,11 +188,12 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
         human_readable = ""
         for object_id in object_id_list:
             url_suffix = f'{list_type}/ip_objects/{object_id}'
+            # like the matching ip-object-add command, the list_target argument is added as a default value to the request if
+            # no other value explicitly selected, and is only relevant for denylist (ignored for allowlist)
             client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={
                                       'list_target': list_target}, resp_type='content')
             human_readable += f"IP object with ID: {object_id} deleted successfully from the {list_type} list. \n"
         return CommandResults(readable_output=human_readable)
-    return None
 
 
 def get_object_id_by_ip(client, list_type, object_ip):
