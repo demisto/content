@@ -61,7 +61,7 @@ For additional information, see this [doc](https://docs-cortex.paloaltonetworks.
 
 In order to collect AppWall Cloud WAF Security events, you would need to deploy a log-collection solution such as [Logstash](https://www.elastic.co/logstash) that can interact with [Amazon SQS](https://aws.amazon.com/sqs/), retrieve your queued event messages from Radware Cloud and forward them via Syslog to Cortex XSIAM. 
 
-Radware recommends using [Logstash](https://www.elastic.co/logstash) as the log-collection solution, however, any other third-party log-collection solution can be used as  as it has an interface with [Amazon SQS](https://aws.amazon.com/sqs/) and supports syslog forwarding. 
+Radware recommends using [Logstash](https://www.elastic.co/logstash) as the log-collection solution, however, any other third-party log-collection solution can be used as long as it has an interface with [Amazon SQS](https://aws.amazon.com/sqs/) and supports syslog forwarding. 
 
 The following steps demonstrate the configuration steps with Logstash used as the log-collection solution, under the assumption that Logstash has already been installed & deployed on your environment. 
 
