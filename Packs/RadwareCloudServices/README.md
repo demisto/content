@@ -69,7 +69,7 @@ The following steps demonstrate the configuration steps with Logstash used as th
 **On Radware Cloud WAF Portal**
 1. Connect to your Radware account on the Radware [Cloud WAF Portal](https://portal.cwp.radwarecloud.com/#/login).
 2. Navigate to **Account** &rarr; **Account Settings**. 
-3. Click **Download SIEM Configuration** to download a configuration file which includes the details of the SQS event queues & your credentials for accessing them. This file has the name convention of *siemConfigFetchConfig_\<ID\>.txt*. Use this file in the next section when configuring Logstash (or any other log-collection solution you wish to use).
+3. Click **Download SIEM Configuration** to download a configuration file which includes the details of the SQS event queues and your credentials for accessing them. This file has the name convention of *siemConfigFetchConfig_\<ID\>.txt*. Use this file in the next section when configuring Logstash (or any other log-collection solution you want to use).
 
 ### Configure Logstash  
 The downloaded SIEM configuration file that was downloaded from Radware portal (see the previous section) already contains a predefined SQS input plugin for retrieving events from Amazon SQS.
