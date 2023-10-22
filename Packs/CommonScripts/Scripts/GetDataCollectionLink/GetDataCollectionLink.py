@@ -2,6 +2,22 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from base64 import b64encode
 from typing import Any, Dict
+from packaging import version
+
+
+def is_machine_saas() -> bool:
+    demisto_version = demisto.demistoVersion()
+    if demisto_version["platform"] == "x2":
+        return True
+    else:
+        return version.parse(demisto_version["version"]) >= version.parse("8.0.0")
+
+
+def generate_url(server_url: str, encoded_task: str, encoded_user: str) -> str:
+    if is_machine_saas():
+        otp = execute_command("generateOTP", {})
+        return f'{server_url}/external/form/{encoded_task}/{encoded_user}?otp={otp}'
+    return f'{server_url}/#/external/form/{encoded_task}/{encoded_user}'
 
 
 def encode_string(value: str) -> str:
@@ -22,7 +38,7 @@ def get_data_collection_url(task_id: str, users: List[str]) -> List[Dict[str, st
         urls.append({
             'user': user,
             'task': task,
-            'url': f'{server_url}/#/external/form/{encoded_task}/{encoded_user}'
+            'url': generate_url(server_url, encoded_task, encoded_user)
         })
     return urls
 
