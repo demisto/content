@@ -4,6 +4,10 @@
  
 This pack includes Cortex XSIAM content.
  
+This pack contains a beta Modeling Rule, which lets you process CyberArk PTA log fields to XDM fields.
+Since the Modeling Rule is considered as beta, it might not contain some of the fields that are available from the logs.
+We appreciate your feedback on the quality and usability of the Modeling Rule to help us identify issues, fix them, and continually improve. 
+
 ## Configuration on Server Side
 You need to configure CyberArk Privileged Threat Analytics (PTA) to forward Syslog messages in CEF format.
  
