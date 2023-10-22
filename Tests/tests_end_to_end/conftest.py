@@ -30,8 +30,7 @@ def get_cloud_machine_credentials(request):
     return url, api_key, api_key_id
 
 
-def get_integration_params(request, instance_name: str):
-    integration_secrets_path = request.config.option.integration_secrets_path
+def get_integration_params(integration_secrets_path: str, instance_name: str):
     with open(integration_secrets_path) as file:
         integrations_config = json.load(file)["integrations"]
 
@@ -45,7 +44,8 @@ def get_integration_params(request, instance_name: str):
 @pytest.fixture()
 def integration_params(request) -> dict:
     instance_name = request.cls.instance_name_gsm
-    return get_integration_params(instance_name)
+    integration_secrets_path = request.config.option.integration_secrets_path
+    return get_integration_params(integration_secrets_path, instance_name=instance_name)
 
 
 @pytest.fixture(scope="module")
