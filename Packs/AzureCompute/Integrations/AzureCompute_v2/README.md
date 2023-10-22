@@ -237,6 +237,7 @@ Gets the properties of a given virtual machine.
 | Azure.Compute.PowerState | string | Whether the virtual machine instance is powered on or off. | 
 | Azure.Compute.ResourceGroup | string | The resource group to which the virtual machine belongs. | 
 | Azure.Compute.NetworkInterfaces | Unknown | The list of network interfaces attached to this machine. | 
+| Azure.Compute.UserData | string | User Data for the VM. | 
 
 #### Command example
 ```!azure-vm-get-instance-details resource_group=Compute-Labs virtual_machine_name=webserver```
