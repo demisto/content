@@ -12,7 +12,7 @@ from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PRO
     JIRA_API_KEY, jira_server_information
 from Tests.scripts.test_modeling_rule_report import get_test_modeling_rules_results_files
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, get_jira_tickets_for_playbooks, \
-    calculate_test_playbooks_results_table, get_test_playbook_results_files
+    calculate_test_playbooks_results_table
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -32,12 +32,14 @@ def filter_skipped_playbooks(playbooks_results: dict[str, dict[str, JUnitXml]]) 
         skipped_count = 0
         for test_suite in playbook_results.values():
             if test_suite.skipped and test_suite.failures == 0 and test_suite.errors == 0:
-                logging.debug(f"Skipping playbook {playbook_id} because it was skipped in the test")
                 skipped_count += 1
 
         # If all the test suites were skipped, don't add the row to the table.
         if skipped_count != len(playbook_results):
             filtered_playbooks_ids.append(playbook_id)
+        else:
+            logging.debug(f"Skipping playbook {playbook_id} because it was skipped in the test")
+
     return filtered_playbooks_ids
 
 
