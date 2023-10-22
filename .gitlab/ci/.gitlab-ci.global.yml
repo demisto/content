@@ -253,6 +253,7 @@
   - section_start "Unlock Machine" --collapsed
   - source CloudEnvVariables
   - |
+    sleep 3600
     if [[ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
       if [[ -e "$ARTIFACTS_FOLDER/logs/lock_file.txt" ]]; then
         echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
