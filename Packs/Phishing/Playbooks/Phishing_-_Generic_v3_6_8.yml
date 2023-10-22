@@ -3503,6 +3503,7 @@ inputs:
   value: {}
   required: true
   description: The default role to assign the incident to.
+  grouping: User Details
   playbookInputQuery:
 - key: SearchAndDelete
   value:
