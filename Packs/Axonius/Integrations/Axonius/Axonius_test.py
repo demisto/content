@@ -5,7 +5,7 @@ from TestData.Raw_data import USERS_SQS, DUMMY_TAGS, DUMMY_DEVICES_IDS, DUMMY_US
 from TestData.Expected_data import EXPECTED_USERS_SQS, EXPECTED_DEVICE_TAGS, EXPECTED_DEVICE
 from Axonius import run_command
 from marshmallow.warnings import RemovedInMarshmallow4Warning
-warnings.simplefilter("ignore", RemovedInMarshmallow4Warning)
+warnings.filterwarnings('ignore', category=RemovedInMarshmallow4Warning)
 
 
 class DummyDevices:
