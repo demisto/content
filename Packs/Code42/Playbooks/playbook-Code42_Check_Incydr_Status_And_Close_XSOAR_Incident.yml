@@ -58,14 +58,14 @@ tasks:
     conditions:
     - label: "Yes"
       condition:
-      - - operator: isEqualString
+      - - operator: inList
           left:
             value:
               simple: incydr_status
             iscontext: true
           right:
             value:
-              simple: RESOLVED
+              simple: RESOLVED,RESOLVED_TP,RESOLVED_FP
     continueonerrortype: ""
     view: |-
       {
