@@ -77,8 +77,8 @@ def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
 
 def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     exclude_suspect_domain = argToBoolean(args.get('exclude_suspect_domain', False))
-    page = int(args.get('page'))
-    page_size = int(args.get('page_size'))
+    page = args.get('page')
+    page_size = args.get('page_size')
     updated_after = args.get('updated_after')
     value = args.get('value')
     indicator_type = args.get('type')
@@ -116,7 +116,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
         api_query = f'indicators?updated_after={time}'
     raw_response = client.api_request(api_query)
     data = raw_response['indicators']
-    page_number = 2 if not page else page + 1
+    page_number = 2 if not page else int(page) + 1
     if page:   
         query_list.pop(0)
         query_string = '&'.join(query_list)
