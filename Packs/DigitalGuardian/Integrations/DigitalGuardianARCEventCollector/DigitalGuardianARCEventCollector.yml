@@ -43,9 +43,10 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: Digital Guardian ARC event collector
+description: Digital Guardian ARC event collector.
 display: Digital Guardian ARC Event Collector
 name: DigitalGuardianARCEventCollector
+supportlevelheader: xsoar
 script:
   commands:
   - arguments:
@@ -69,7 +70,7 @@ script:
     description: Gets events from Hello World.
     execution: false
     name: digital-guardian-get-events
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.78960
   isfetchevents: true
   runonce: false
   script: '-'
