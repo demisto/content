@@ -874,9 +874,9 @@ tasks:
           root: Core.Endpoint
           accessor: endpoint_id
       timeout:
-        simple: "240"
+        simple: "600"
       timeout_in_seconds:
-        simple: "360"
+        simple: "600"
     separatecontext: false
     continueonerrortype: ""
     view: |-
