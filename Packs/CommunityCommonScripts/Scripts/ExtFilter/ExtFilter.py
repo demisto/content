@@ -936,7 +936,7 @@ class ExtFilter:
                         r, conds, path, True) for r in root] if v])
                 elif not isinstance(root, dict):
                     return None
-                (parent, parent_path),\
+                (parent, parent_path), \
                     (child, child_name) = get_parent_child(root, path)
 
             for x in self.__conds_items(conds, root):
