@@ -150,7 +150,7 @@ class TestCreateFile:
 
     @staticmethod
     def get_file(path):
-        with open(path, 'r') as _file:
+        with open(path) as _file:
             return _file.read()
 
     @staticmethod
