@@ -1,16 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
 import copy
 from itertools import product
 from json import JSONDecodeError
 from typing import Any
 from collections.abc import Callable
-
+from CommonServerPython import *
 import urllib3
 from dateutil.parser import parse
 from requests import Response
-
 from MicrosoftApiModule import *  # noqa: E402
 
 # Disable insecure warnings
@@ -1309,7 +1305,7 @@ class MsClient:
 
         Args:
             machine_id (str): Machine ID
-            comment (str):     Comment to associate with the action
+            comment (str): 	Comment to associate with the action
             scan_type (str): Defines the type of the Scan (Quick, Full)
 
         Notes:
