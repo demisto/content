@@ -546,17 +546,26 @@ def test_test_auth_code_command(mocker, command_to_check):
     mock_ediscovery = mocker.patch.object(client_mocker, "list_ediscovery_cases",
                                           return_value=load_json("./test_data/list_cases_response.json"))
     mock_alerts = mocker.patch('MicrosoftGraphSecurity.test_function')
+    mock_threat_assessment = mocker.patch.object(client_mocker, "list_threat_assessment_requests",
+                                                 return_value=load_json("./test_data/list_threat_assessment.json"))
     test_auth_code_command(client_mocker, {'permission_type': command_to_check})
 
     if command_to_check == 'alerts':
         assert not mock_ediscovery.called
+        assert not mock_threat_assessment.called
         assert mock_alerts.called
     elif command_to_check == 'any':
         assert mock_ediscovery.called
         assert mock_alerts.called
+        assert mock_threat_assessment.called
     elif command_to_check == 'ediscovery':
         assert mock_ediscovery.called
         assert not mock_alerts.called
+        assert not mock_threat_assessment.called
+    elif command_to_check == 'threat assessment':
+        assert not mock_ediscovery.called
+        assert not mock_alerts.called
+        assert mock_threat_assessment.called
 
 
 def test_purge_ediscovery_data_command(mocker):
