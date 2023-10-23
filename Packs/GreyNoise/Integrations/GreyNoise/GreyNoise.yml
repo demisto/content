@@ -31,7 +31,7 @@ configuration:
   display: ''
   type: 1
   required: false
-- display: 'API Key'
+- display: API Key
   name: apikey
   required: false
   type: 4
