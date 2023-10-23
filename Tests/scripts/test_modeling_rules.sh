@@ -50,19 +50,33 @@ if [[ ! -s "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt" ]]; then
   exit 0
 fi
 
-XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
+echo "Found modeling rules to test, starting test modeling rules"
 
 CURRENT_DIR=$(pwd)
+echo "CURRENT_DIR: ${CURRENT_DIR}"
+echo "NIGHTLY: ${NIGHTLY}"
+echo "--- modeling_rules_to_test.txt ---"
+cat -n "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt"
+echo "---------------------------------"
+
 MODELING_RULES_ARRAY=($(cat "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt"))
+
+echo "MODELING_RULES_ARRAY size:${#MODELING_RULES_ARRAY[@]}"
+
 for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   MODELING_RULE_TEST_FILE_PATTERN="${CURRENT_DIR}/Packs/${modeling_rule}/*_testdata.json"
+  echo "looking for testdata file in ${MODELING_RULE_TEST_FILE_PATTERN} for ${modeling_rule}"
   # If it is nightly, run `test modeling rules` only on modeling rules that have `_testdata.json` file.
   if [ -z "${NIGHTLY}" ] || [ -e "${MODELING_RULE_TEST_FILE_PATTERN}" ]; then
+    echo "Found testdata file for ${modeling_rule}"
     if [[ -n "${MODELING_RULES_TO_TEST}" ]]; then
         MODELING_RULES_TO_TEST="${MODELING_RULES_TO_TEST} Packs/${modeling_rule}"
     else
         MODELING_RULES_TO_TEST="Packs/${modeling_rule}"
     fi
+  else
+    echo "No testdata file found for ${modeling_rule}"
+    ls -l "${CURRENT_DIR}/Packs/${modeling_rule}/"
   fi
 done
 
@@ -73,6 +87,7 @@ fi
 
 if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
 
+  XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
   echo "Testing Modeling Rules - Results will be saved to ${MODELING_RULES_RESULTS_FILE_NAME}"
 
   IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"

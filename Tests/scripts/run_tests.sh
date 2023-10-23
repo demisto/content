@@ -89,5 +89,5 @@ else
   echo "Build failed for instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} with exit code: ${exit_code}"
 fi
 
-echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} error handling will be done on the results job, exiting with code 0"
+echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - Error handling will be done on the results job, exiting with code 0"
 exit 0

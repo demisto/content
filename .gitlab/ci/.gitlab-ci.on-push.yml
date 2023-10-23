@@ -247,23 +247,6 @@ xpanse-prepare-testing-bucket:
     fi
   - |
     ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
-    if [[ -f "./Tests/failed_tests.txt" ]]; then	
-      cp "./Tests/failed_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/failed_tests.txt"	
-    fi
-  - |
-    if [[ -f "./Tests/succeeded_tests.txt" ]]; then	
-      cp "./Tests/succeeded_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/succeeded_tests.txt"	
-    fi
-    if [[ -f "./Tests/skipped_tests.txt" ]]; then	
-      cp "./Tests/skipped_tests.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_tests.txt"	
-    fi
-  - |
-    if [[ -f "./Tests/skipped_integrations.txt" ]]; then	
-      cp "./Tests/skipped_integrations.txt" "${ARTIFACTS_FOLDER_INSTANCE}/skipped_integrations.txt"	
-    fi
-    if [[ -f "./Tests/test_playbooks_report.json" ]]; then	
-      cp "./Tests/test_playbooks_report.json" "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.json"	
-    fi
   - section_end "Run Tests"
 
 .test_content_on_xsoar_server_instances_base:
