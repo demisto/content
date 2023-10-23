@@ -1,5 +1,7 @@
 id: Cortex XDR - Possible External RDP Brute-Force
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex XDR - Possible External RDP Brute-Force
 description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - The user that was identified in the attack was given a medium or high score by XDR's ITDR module.\n- Risky Host - The destination host that was identified in the attack was given a medium or high score by XDR's ITDR module.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
 starttaskid: "0"
@@ -526,7 +528,7 @@ tasks:
       {
         "position": {
           "x": 1175,
-          "y": 6790
+          "y": 6970
         }
       }
     note: false
@@ -1379,7 +1381,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "32"
+      - "100"
     scriptarguments:
       severity:
         simple: "1"
@@ -1392,6 +1394,37 @@ tasks:
         "position": {
           "x": 1175,
           "y": 4120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 8e759fac-7e62-4d0b-851e-1a9c9e990b58
+    type: regular
+    task:
+      id: 8e759fac-7e62-4d0b-851e-1a9c9e990b58
+      version: -1
+      name: Take notes before playbook ends
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 6745
         }
       }
     note: false
@@ -1459,7 +1492,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "32"
+      - "100"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3023,7 +3056,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7605,
+        "height": 7785,
         "width": 2400,
         "x": -530,
         "y": -750
@@ -3123,5 +3156,3 @@ outputs: []
 tests:
 - no tests
 fromversion: 6.8.0
-contentitemexportablefields:
-  contentitemfields: {}
