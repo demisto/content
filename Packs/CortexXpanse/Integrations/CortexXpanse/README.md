@@ -20,8 +20,8 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
     | Maximum number of alerts per fetch | The maximum number of alerts per fetch. Cannot exceed 100.                                                                                                                                                                                          | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                     | False |
     | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.            | False |
-   | Source Reliability | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                       | False |
-4. 
+    | Source Reliability | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                       | False |
+
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
