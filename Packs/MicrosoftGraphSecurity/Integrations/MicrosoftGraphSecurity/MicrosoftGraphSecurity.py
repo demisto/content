@@ -1506,20 +1506,20 @@ def create_file_assessment_request_command(client: MsGraphClient, args) -> Comma
     request_id = args.get('request_id')
 
     if not request_id:
-        # content_data = get_content_data(args.get('entry_id'), args.get('content_data'))
-        # demisto.debug(f"got content data: {content_data}")
-        # result = client.create_file_assessment_request(args.get('expected_assessment'),
-        #                                                args.get('category'),
-        #                                                args.get('file_name'),
-        #                                                content_data)
-        # request_id = result.get('id')
-        # status = result.get('status')
-        request_id = "33e8c68f-9a57-4332-1739-08dbd2e880ba"
+        content_data = get_content_data(args.get('entry_id'), args.get('content_data'))
+        demisto.debug(f"got content data: {content_data}")
+        result = client.create_file_assessment_request(args.get('expected_assessment'),
+                                                       args.get('category'),
+                                                       args.get('file_name'),
+                                                       content_data)
+        request_id = result.get('id')
+
+        # request_id = "33e8c68f-9a57-4332-1739-08dbd2e880ba"
     demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
     demisto.debug(f"status is: {status}")
-    status = "pending"
+    # status = "pending"
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
