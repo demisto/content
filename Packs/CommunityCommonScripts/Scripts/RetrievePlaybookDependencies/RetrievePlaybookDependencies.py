@@ -90,7 +90,8 @@ def get_subplaybook_tasks(playbooks, integrations, script_ids, commands, lists, 
 
 
 def create_markdown_list(lists, scripts, integrations, playbooks, parent_playbook):
-    markdown_lists = '* Lists\n  * None\n' if len(lists) == 0 else '* Lists\n  * ' + '\n  * '.join(lists) + '\n'
+    markdown_lists = '* Lists\n  * None\n' if len(lists) == 0 else '* Lists\n  * ' + \
+        '\n  * '.join(lists) + '\n'
     markdown_automations = '* Automations\n  * None\n' if len(
         scripts) == 0 else '* Automations\n  * ' + '\n  * '.join(scripts) + '\n'
     markdown_integrations = '* Integrations\n  * None\n' if len(
@@ -98,9 +99,19 @@ def create_markdown_list(lists, scripts, integrations, playbooks, parent_playboo
     markdown_playbooks = '* Playbooks\n  * None\n' if len(playbooks) == 0 else '* Playbooks\n  * ' + \
         '\n  * '.join(playbooks) + '\n'
 
-    markdown_string = 'Markdown List Generated: \n\n## XSOAR Objects\n* Incident Types\n  *\n* Layouts\n  *\n* Incident Fields\n  *\n* Indicator Fields\n  *\n* Jobs\n  *\n' + \
-        markdown_lists + '* Mappers\n  *\n* Pre-Process Rules\n  *\n' + '* Parent Playbook: ' + \
-        parent_playbook + '\n' + markdown_automations + markdown_integrations + markdown_playbooks
+    markdown_string = 'Markdown List Generated: \n\n## XSOAR Objects\n' + \
+        '* Incident Types\n  *\n' + \
+        '* Layouts\n  *\n' + \
+        '* Incident Fields\n  *\n' + \
+        '* Indicator Fields\n  *\n' + \
+        '* Jobs\n  *\n' + \
+        markdown_lists + \
+        '* Mappers\n  *\n' + \
+        '* Pre-Process Rules\n  *\n' + \
+        '* Parent Playbook: ' + parent_playbook + '\n' + \
+        markdown_automations + \
+        markdown_integrations + \
+        markdown_playbooks
 
     return markdown_string
 
@@ -161,7 +172,7 @@ def retrieve_playbook_dependencies(args: Dict[str, Any]) -> CommandResults:
     # Sort, format and display brandless commands' possible integrations and the playbooks they were located in
     if len(commands) > 0:
         integration_result = perform_rest_call('get', "settings/integration-commands")
-        integration_commands = {}
+        integration_commands: Dict[str, List[str]] = {}
         # Find the integrations connected to brand-less commands
         for integration in integration_result:
             for command in integration.get('commands', []):
@@ -170,11 +181,15 @@ def retrieve_playbook_dependencies(args: Dict[str, Any]) -> CommandResults:
 
         # Format into markdown table displaying integration, command, and playbook it was found in
         integration_commands_str = '## Warning\n\n'
-        integration_commands_str += 'Commands found with no clear integration connected to them. These integrations have been included in the main markdown list uncritically, but are listed below in case revisions are needed:\n'
-        integration_commands_str += 'Recommended Action: Locate command calls in playbooks and confirm tasks are using branded commands. EXAMPLE:\n\n'
+        integration_commands_str += 'Commands found with no clear integration connected to them. '
+        integration_commands_str += 'These integrations have been included in the main markdown list uncritically, '
+        integration_commands_str += 'but are listed below in case revisions are needed:\n'
+        integration_commands_str += 'Recommended Action: Locate command calls in playbooks and confirm tasks are using '
+        integration_commands_str += 'branded commands. EXAMPLE:\n\n'
         integration_commands_str += "  UNBRANDED:  'command_name'\n  BRANDED:    'command_name (Integration Name)'\n"
 
-        integration_commands_str += '| Integration | Brandless Command | Located in Playbook(s) |\n|---|---|---|'
+        integration_commands_str += '| Integration | Brandless Command | Located in Playbook(s) |\n'
+        integration_commands_str += '|---|---|---|'
 
         for key in integration_commands:
             integrations.append(key)
