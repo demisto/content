@@ -10639,7 +10639,7 @@ def calculate_new_offset(old_offset, num_incidents, total_incidents):
     """
     if not num_incidents:
         return 0
-    if total_incidents and num_incidents + old_offset > total_incidents:
+    if total_incidents and num_incidents + old_offset >= total_incidents:
         return 0
     return old_offset + num_incidents
 
