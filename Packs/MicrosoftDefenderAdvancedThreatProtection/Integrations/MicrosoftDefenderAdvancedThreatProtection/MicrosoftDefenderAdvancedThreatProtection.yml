@@ -1,7 +1,4 @@
 category: Endpoint
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Microsoft Defender Advanced Threat Protection
   version: -1
@@ -39,6 +36,7 @@ configuration:
   type: 9
   hiddenusername: true
   required: false
+  display: ''
 - display: Certificate Thumbprint
   name: creds_certificate
   type: 9
@@ -96,6 +94,7 @@ configuration:
   type: 9
   section: Connect
   required: false
+  display: ''
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
@@ -173,7 +172,6 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-  defaultvalue:
   additionalinfo: More information can be found on https://cortex.marketplace.pan.dev/marketplace/details/MicrosoftDefenderAdvancedThreatProtection/
   required: false
 - additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
@@ -181,7 +179,6 @@ configuration:
   name: self_deployed
   type: 8
   section: Connect
-  advanced: false
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
@@ -236,6 +233,11 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
 display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
@@ -806,6 +808,14 @@ script:
       - Malware
       - SecurityTesting
       - UnwantedSoftware
+      - MultiStagedAttack
+      - MaliciousUserActivity
+      - CompromisedUser
+      - Phishing
+      - LineOfBusinessApplication
+      - ConfirmedUserActivity
+      - Clean
+      - InsufficientData
       - Other
     - description: Comment to be added to the alert.
       name: comment
@@ -900,9 +910,9 @@ script:
       name: timeout
     - name: time_range
       description: Time range to look back. The expected syntax is a human-readable time range, e.g., 60 minutes, 6 hours, 1 day, etc. If specified with query_batch, applies to all queries in the array.
-      defaultValue: ''
       predefined:
       - ''
+      auto: PREDEFINED
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
@@ -1550,6 +1560,7 @@ script:
       name: offset
       predefined:
       - ''
+      auto: PREDEFINED
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
@@ -4830,7 +4841,6 @@ script:
     - name: ran_once_flag
       description: Flag for the rate limit retry.
       deprecated: true
-    outputs: []
     polling: true
     execution: true
   - name: microsoft-atp-advanced-hunting-lateral-movement-evidence
@@ -4840,7 +4850,6 @@ script:
       auto: PREDEFINED
       description: When you select a “query_purpose” argument, a designated query template is used. "network_connections" - The network connections initiated by the host/file to other internal hosts. "smb_connections" - SMB connections. "credential_dumping" - Was there a use of credential dumping? If so can we detect the use of the dumped users on other hosts on the network. "management_connection" - Management connection attempts to other hosts.
       required: true
-      defaultValue: ''
       predefined:
       - network_connections
       - smb_connections
@@ -4848,25 +4857,18 @@ script:
       - management_connection
     - name: device_name
       description: Device name to look for.
-      defaultValue: ''
     - name: remote_ip_count
       description: Threshold for network enumeration in smb_connection.
-      defaultValue: ''
     - name: file_name
       description: The file name to look for.
-      defaultValue: ''
     - name: sha1
       description: The SHA1 hash to look for.
-      defaultValue: ''
     - name: sha256
       description: The SHA256 hash to look for.
-      defaultValue: ''
     - name: md5
       description: The MD5 hash to look for.
-      defaultValue: ''
     - name: device_id
       description: The device ID to look for.
-      defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: The query operator to use with provided arguments.
@@ -4910,7 +4912,6 @@ script:
       name: query_purpose
       required: true
       auto: PREDEFINED
-      defaultValue: ''
       predefined:
       - scheduled_job
       - registry_entry
@@ -4925,22 +4926,16 @@ script:
       - host_file_change
     - description: Device name to look for.
       name: device_name
-      defaultValue: ''
     - name: file_name
       description: File name to look for.
-      defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
-      defaultValue: ''
     - name: sha256
       description: SHA256 hash to look for.
-      defaultValue: ''
     - name: md5
       description: MD5 hash to look for.
-      defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with the provided arguments.
@@ -5007,22 +5002,16 @@ script:
   - arguments:
     - description: Device name to look for.
       name: device_name
-      defaultValue: ''
     - description: File name to look for.
       name: file_name
-      defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
-      defaultValue: ''
     - name: sha256
       description: SHA256 hash to look for.
-      defaultValue: ''
     - name: md5
       description: MD5 hash to look for.
-      defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
@@ -5059,7 +5048,6 @@ script:
       name: query_purpose
       required: true
       auto: PREDEFINED
-      defaultValue: ''
       predefined:
       - parent_process
       - grandparent_process
@@ -5069,22 +5057,16 @@ script:
       - process_excecution_powershell
     - description: Device name to look for.
       name: device_name
-      defaultValue: ''
     - description: File name to look for.
       name: file_name
-      defaultValue: ''
     - description: SHA1 hash to look for.
       name: sha1
-      defaultValue: ''
     - description: SHA256 hash to look for.
       name: sha256
-      defaultValue: ''
     - description: MD5 hash to look for.
       name: md5
-      defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
@@ -5136,29 +5118,22 @@ script:
       name: query_purpose
       required: true
       auto: PREDEFINED
-      defaultValue: ''
       predefined:
       - external_addresses
       - dns_query
       - encoded_commands
     - description: Device name to look for.
       name: device_name
-      defaultValue: ''
     - description: File name to look for.
       name: file_name
-      defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
-      defaultValue: ''
     - name: sha256
       description: SHA256 hash to look for.
-      defaultValue: ''
     - name: md5
       description: MD5 hash to look for.
-      defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
@@ -5201,10 +5176,8 @@ script:
     arguments:
     - name: device_name
       description: Device name to look for.
-      defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
@@ -5238,10 +5211,8 @@ script:
     arguments:
     - name: device_name
       description: Device name to look for.
-      defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
@@ -5278,7 +5249,6 @@ script:
       auto: PREDEFINED
       description: When you select a “query_purpose” argument, a designated query template is used. "file_deleted" - Did the file delete itself? "event_log_cleared" - Was the event log cleared? Requires at least one of device arguments (device_name/device_id). "compromised_information" - Information on a compromised user and its activities. Requires only username argument. "connected_devices" - All connected devices by compromised user. Requires only username argument. "action_types" - All action types created by a user on each machine. Requires only username argument. "common_files" - Most common files associated with a user. Requires only username argument.
       required: true
-      defaultValue: ''
       predefined:
       - file_deleted
       - event_log_cleared
@@ -5288,25 +5258,18 @@ script:
       - common_files
     - name: device_name
       description: Device name to look for.
-      defaultValue: ''
     - name: file_name
       description: File name to look for.
-      defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
-      defaultValue: ''
     - name: sha256
       description: SHA256 hash to look for.
-      defaultValue: ''
     - name: md5
       description: MD5 hash to look for.
-      defaultValue: ''
     - name: device_id
       description: Device ID to look for.
-      defaultValue: ''
     - name: username
       description: Username to look for in relevant query types.
-      defaultValue: ''
     - name: query_operation
       auto: PREDEFINED
       description: Query operator to use with provided arguments.
@@ -5522,16 +5485,14 @@ script:
     name: microsoft-atp-generate-login-url
     arguments: []
   - description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
     name: microsoft-atp-auth-reset
     arguments: []
   dockerimage: demisto/crypto:1.0.0.78196
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
 - Microsoft Defender Advanced Threat Protection - Test
