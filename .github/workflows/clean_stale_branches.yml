@@ -1,8 +1,12 @@
 name: 'Close stale PRs'
+#on:
+#  schedule:
+#    # runs every day at midnight (UTC time).
+#    - cron:  '0 0 * * *'
 on:
-  schedule:
-    # runs every day at midnight (UTC time).
-    - cron:  '0 0 * * *'
+  push:
+    branches:
+      - 'Github_Action_Stale_Branches'
 env:
   DAY_BEFORE_STALE: 30
   DAY_BEFORE_CLOSE: 15
