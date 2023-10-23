@@ -1405,16 +1405,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: 8e759fac-7e62-4d0b-851e-1a9c9e990b58
+    taskid: ae3bfebf-92d7-4e0b-8cc3-0d314ae65511
     type: regular
     task:
-      id: 8e759fac-7e62-4d0b-851e-1a9c9e990b58
+      id: ae3bfebf-92d7-4e0b-8cc3-0d314ae65511
       version: -1
       name: Take notes before playbook ends
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -2280,7 +2279,6 @@ tasks:
       id: dcd1d3e7-e9d4-4fe6-8bc3-4b34cade926d
       version: -1
       name: IP block executed?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2327,7 +2325,6 @@ tasks:
       id: 6663c63c-2385-4491-8c16-c824eff03d1d
       version: -1
       name: User containment executed?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2444,7 +2441,6 @@ tasks:
       id: eab0c096-8fcf-4b32-8f4c-a481621a23df
       version: -1
       name: IP block executed?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2491,7 +2487,6 @@ tasks:
       id: 445ebaa4-d11c-4b27-8e85-f4fbee601ecf
       version: -1
       name: User containment executed?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2608,7 +2603,6 @@ tasks:
       id: 67cc761d-26b2-438a-8bed-cfc1a6bfcec8
       version: -1
       name: Check IP Reputation
-      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -2812,7 +2806,6 @@ tasks:
       id: 4567bca9-5d88-4092-8ed0-a56ca2170cdc
       version: -1
       name: Early containment enabled?
-      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -3031,7 +3024,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -3156,5 +3148,4 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- no tests
-fromversion: 6.8.0
+- No tests (auto formatted)
