@@ -54,7 +54,7 @@ def reinstall_packs(options: argparse.Namespace, cloud_machine: str) -> bool:
     for pack in packs_to_reinstall:
         if pack in non_removable_packs:
             continue
-        successful_uninstall, _ = uninstall_pack(client, pack)
+        # successful_uninstall, _ = uninstall_pack(client, pack)
         _, successful_install = search_and_install_packs_and_their_dependencies(
             pack_ids=[pack],
             client=client,
