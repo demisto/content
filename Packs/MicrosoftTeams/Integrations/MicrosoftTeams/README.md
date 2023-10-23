@@ -692,8 +692,8 @@ Retrieves a list of members from a channel.
 ***
 Creates a new chat. 
 
-Notes: 
 
+Notes:
 - Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, it will be returned.
 - This command works with the consent user, not with the bot. Which means, the chat is created between the consent user and the user provided in the command's argument.
 
