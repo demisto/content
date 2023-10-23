@@ -1337,6 +1337,7 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             "use_ip_nt_range_tags_include", "use_ip_nt_range_tags_exclude",
             "active",
             "scanners_in_network",
+            "fqdn",
             "recurrence",
             "end_after_mins",
             "iscanner_id",
@@ -1488,7 +1489,10 @@ class Client(BaseClient):
 
     @staticmethod
     def error_handler(res):
-        err_msg = f"Error in API call [{res.status_code}] - {res.reason}"
+        err_msg = ""
+        if res.status_code == 414 or res.status_code == 520:
+            err_msg += "If this error was produced by a schedule-scan-create, please execute it again with IP list of less than 5000 characters\n\n"
+        err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
             err_msg = f'{err_msg}\nError Code: {simple_response.get("CODE")}\nError Message: {simple_response.get("TEXT")}'
