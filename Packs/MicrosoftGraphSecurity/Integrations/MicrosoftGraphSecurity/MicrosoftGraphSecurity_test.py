@@ -8,7 +8,7 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     capitalize_dict_keys_first_letter, created_by_fields_to_hr, list_ediscovery_search_command, purge_ediscovery_data_command, \
     list_ediscovery_non_custodial_data_source_command, list_ediscovery_case_command, activate_ediscovery_custodian_command, \
     release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command, \
-    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command,\
+    create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command, \
     create_mail_assessment_request_command, create_email_file_request_command, create_file_assessment_request_command, \
     create_url_assessment_request_command, list_threat_assessment_requests_command
 from CommonServerPython import DemistoException
@@ -570,13 +570,13 @@ def test_test_auth_code_command(mocker, command_to_check):
 
 def test_purge_ediscovery_data_command(mocker):
     mocker.patch.object(client_mocker, 'purge_ediscovery_data', return_value=SimpleNamespace(headers={}))
-    assert 'eDiscovery purge status is success.' == purge_ediscovery_data_command(client_mocker, {}).readable_output
+    assert purge_ediscovery_data_command(client_mocker, {}).readable_output == 'eDiscovery purge status is success.'
 
 
 def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
     mocker.patch.object(client_mocker, 'list_ediscovery_noncustodial_datasources', return_value={'value': []})
-    assert '### Results:\n**No entries.**\n' == \
-           list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output
+    assert list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output == \
+        '### Results:\n**No entries.**\n'
 
 
 def test_list_ediscovery_case_command(mocker):

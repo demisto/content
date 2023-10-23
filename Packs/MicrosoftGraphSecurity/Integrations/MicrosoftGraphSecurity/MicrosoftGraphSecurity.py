@@ -8,7 +8,7 @@ import urllib3
 import re
 from CommonServerUserPython import *
 
-from typing import Any, Optional
+from typing import Any
 from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
@@ -73,7 +73,7 @@ class MsGraphClient:
     """
 
     def __init__(self, tenant_id, proxy,
-                 certificate_thumbprint: Optional[str] = None, api_version: str = "", **kwargs):
+                 certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
             proxy=proxy, certificate_thumbprint=certificate_thumbprint,
@@ -1710,7 +1710,7 @@ def main():
             if command not in commands:
                 raise NotImplementedError(f'The provided command {command} was not implemented.')
             command_res = commands[command](client, demisto.args())  # type: ignore
-            if isinstance(command_res, CommandResults) or isinstance(command_res, list):
+            if isinstance(command_res, CommandResults | list):
                 return_results(command_res)
             else:
                 human_readable, entry_context, raw_response = command_res  # pylint: disable=E0633  # type: ignore
