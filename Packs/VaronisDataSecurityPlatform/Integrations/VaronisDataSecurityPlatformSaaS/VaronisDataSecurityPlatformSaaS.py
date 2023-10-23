@@ -59,7 +59,6 @@ class Client(BaseClient):
         self.headers["authorization"] = None
         self.headers["content-type"] = 'application/json'
 
-
     def varonis_authenticate(self, apiKey: str) -> Dict[str, Any]:
         headers = {
             'x-api-key': apiKey
@@ -73,7 +72,6 @@ class Client(BaseClient):
 
         self.headers["authorization"] = f'{token_type} {token}'
         return response
-
 
     def varonis_get_alerts(self, ruleIds: Optional[List[str]], alertIds: Optional[List[str]], start_time: Optional[datetime],
                            end_time: Optional[datetime], ingest_time_from: Optional[datetime],
@@ -100,7 +98,7 @@ class Client(BaseClient):
 
         :type ingest_time_to: ``Optional[datetime]``
         :param ingest_time_to: End ingest time of the range of alerts
-        
+
         :type device_names: ``Optional[List[str]]``
         :param device_names: List of device names to filter by
 
@@ -119,7 +117,7 @@ class Client(BaseClient):
         :return: Alerts
         :rtype: ``List[Dict[str, Any]]``
         """
-        
+
         days_back = MAX_DAYS_BACK
         if start_time is None and end_time is None and last_days is None:
             last_days = days_back
@@ -127,7 +125,7 @@ class Client(BaseClient):
             start_time = end_time - timedelta(days=days_back)
         elif end_time is None and start_time is not None:
             end_time = start_time + timedelta(days=days_back)
-        
+
         data = {
             'RuleIds': [],
             'AlertIds': [],
@@ -159,7 +157,7 @@ class Client(BaseClient):
 
         if ingest_time_to:
             data['IngestTimeTo'] = ingest_time_to.isoformat()
-            
+
         if device_names and len(device_names) > 0:
             data['DeviceNames'] = device_names
 
@@ -168,13 +166,13 @@ class Client(BaseClient):
 
         if alert_statuses and len(alert_statuses) > 0:
             data['Statuses'] = alert_statuses
-        
+
         if alert_severities and len(alert_severities) > 0:
             data['Severities'] = alert_severities
-        
+
         if descending_order:
             data['DescendingOrder'] = descending_order
-        
+
         dataJSON = json.dumps(data)
         return self._http_request(
             'POST',
@@ -182,7 +180,6 @@ class Client(BaseClient):
             data=dataJSON,
             headers=self.headers
         )
-
 
     def varonis_get_alerted_events(self, alertIds: List[str], start_time: Optional[datetime], end_time: Optional[datetime],
                                    last_days: Optional[int], descending_order: bool) -> List[Dict[str, Any]]:
@@ -206,7 +203,7 @@ class Client(BaseClient):
         :return: Alerted events
         :rtype: ``List[Dict[str, Any]]``
         """
-        
+
         data = {
             'AlertIds': [],
             'StartTime': None,
@@ -214,7 +211,7 @@ class Client(BaseClient):
             'LastDays': None,
             'DescendingOrder': 'False'
         }
-        
+
         days_back = MAX_DAYS_BACK
         if start_time is None and end_time is None and last_days is None:
             last_days = days_back
@@ -222,7 +219,7 @@ class Client(BaseClient):
             start_time = end_time - timedelta(days=days_back)
         elif end_time is None and start_time is not None:
             end_time = start_time + timedelta(days=days_back)
-        
+
         if alertIds and len(alertIds) > 0:
             data['AlertIds'] = alertIds
 
@@ -237,7 +234,7 @@ class Client(BaseClient):
 
         if descending_order:
             data['DescendingOrder'] = descending_order
-        
+
         dataJSON = json.dumps(data)
         return self._http_request(
             'POST',
@@ -245,7 +242,6 @@ class Client(BaseClient):
             data=dataJSON,
             headers=self.headers
         )
-
 
     def varonis_get_enum(self, enum_id: int) -> List[Any]:
         """Gets an enum by enum_id. Usually needs for retrieving object required for a search
@@ -258,7 +254,6 @@ class Client(BaseClient):
         """
         response = self._http_request('GET', f'/api/entitymodel/enum/{enum_id}', headers=self.headers)
         return response
-
 
     def varonis_update_alert_status(self, query: Dict[str, Any]) -> bool:
         """Update alert status
@@ -276,9 +271,9 @@ class Client(BaseClient):
             json_data=query,
             headers=self.headers)
 
-    
-    
+
 ''' HELPER FUNCTIONS '''
+
 
 def convert_to_demisto_severity(severity: Optional[str]) -> int:
     """Maps Varonis severity to Cortex XSOAR severity
@@ -514,7 +509,7 @@ def convert_incident_alert_to_onprem_format(alert_saas_format):
             "Department": "" if len(departments) <= i else departments[i]
         }
         output["Users"].append(entry)
-        
+
     return output
 
 
@@ -589,9 +584,9 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
     
     last_fetched_ingest_time_str = last_run.get('last_fetched_ingest_time', first_fetch_time.isoformat())
     last_fetched_ingest_time = try_convert(
-            last_fetched_ingest_time_str,
-            lambda x: datetime.fromisoformat(x),
-            ValueError(f'last_fetched_ingest_time should be in iso format, but it is {last_fetched_ingest_time_str}.')
+                                            last_fetched_ingest_time_str,
+                                            lambda x: datetime.fromisoformat(x),
+                                            ValueError(f'last_fetched_ingest_time should be in iso format, but it is {last_fetched_ingest_time_str}.')
         )
     ingest_time_to = datetime.now()
 

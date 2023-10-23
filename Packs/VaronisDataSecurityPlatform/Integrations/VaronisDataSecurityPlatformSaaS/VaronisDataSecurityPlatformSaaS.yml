@@ -32,6 +32,12 @@ configuration:
   name: insecure
   required: false
   type: 8
+- defaultvalue: '1000'
+  display: Maximum number of incidents per fetch
+  additionalinfo: 
+  name: max_fetch
+  type: 0
+  required: false
 - defaultvalue: 1 week
   display: First fetch time
   hidden: false
@@ -427,7 +433,7 @@ script:
     - contextPath: Varonis.Event.Path
       description: Path of asset
       type: String
-  dockerimage: demisto/ntlm:1.0.0.31381
+  dockerimage: demisto/ntlm:1.0.0.78782
   feed: false
   isfetch: true
   longRunning: false
