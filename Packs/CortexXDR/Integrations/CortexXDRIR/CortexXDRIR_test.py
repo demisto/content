@@ -462,6 +462,28 @@ def test_sort_all_list_incident_fields():
     assert raw_incident.get('file_artifacts')[1].get('filename') == 'file2.exe'
 
 
+@pytest.mark.parametrize('dont_format_sublists', [False, True])
+def test_format_sublists_param(dont_format_sublists, mocker):
+
+    """
+    Given:
+        -  A raw incident
+    When
+        - running sort_all_list_incident_fields on it with dont_format_sublists
+    Then
+        - if dont_format_sublists is False, should be formatted, so should have underscore
+        - if dont_format_sublists is True, should not be formatted, so should not have underscore
+        - Underscre value should always be present
+    """
+    from CortexXDRIR import sort_all_list_incident_fields
+    raw_incident = load_test_data('test_data/raw_fetched_incident.json')
+    mocker.patch.object(demisto, 'params', return_value={"dont_format_sublists": dont_format_sublists})
+
+    sort_all_list_incident_fields(raw_incident)
+    assert bool(raw_incident.get('alerts')[0].get('alertid')) == (not dont_format_sublists)
+    assert raw_incident.get('alerts')[0].get('alert_id')
+
+
 def test_get_mapping_fields_command():
     """
     Given:
