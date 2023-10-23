@@ -164,7 +164,7 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
             'title': title,
             'title_link': get_test_report_pipeline_url(pipeline_url),
             'fields': [{
-                "title": "Failed Tests",
+                "title": "Failed Test Playbooks",
                 "value": ', '.join(failed_tests),
                 "short": False
             }]
@@ -284,6 +284,9 @@ def construct_slack_msg(triggering_workflow: str,
         slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
         slack_msg_append += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
         slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR)
+    if triggering_workflow == CONTENT_NIGHTLY:
+        # The coverage Slack message is only relevant for nightly and not for PRs.
+        slack_msg_append += construct_coverage_slack_msg()
 
     title = triggering_workflow
 
@@ -291,9 +294,6 @@ def construct_slack_msg(triggering_workflow: str,
         pr_number = pull_request.data.get('number')
         pr_title = pull_request.data.get('title')
         title += f' (PR#{pr_number} - {pr_title})'
-    elif triggering_workflow == CONTENT_NIGHTLY:
-        # The coverage Slack message is only relevant for nightly and not for PRs.
-        slack_msg_append += construct_coverage_slack_msg()
 
     if pipeline_failed_jobs:
         title += ' - Failure'
