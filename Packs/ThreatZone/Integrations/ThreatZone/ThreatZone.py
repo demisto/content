@@ -284,7 +284,6 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
             readable_output = tableToMarkdown('Submission Result', readable_dict)
         else:
             readable_output = tableToMarkdown('Submission Result', {"Exception": str(exception)})
-
         return [
             CommandResults(
                 outputs_prefix='ThreatZone.Analysis',
@@ -307,7 +306,7 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
 
         status = result["reports"][report_type]['status']
         if status == 0:
-            return_error(
+            raise Exception(
                 "Submission is declined by the scanner." + " "
                 + "The reason behind this could be about your file is broken or the analyzer has crashed."
             )
@@ -328,6 +327,7 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
         result_url = f"https://app.threat.zone/submission/{submission_uuid}"
         level = result['level']
         readable_dict = {
+            'ANALYSIS TYPE': report_type,
             'STATUS': stats[status],
             'MD5': md5,
             'SHA1': sha1,
@@ -341,6 +341,7 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
         }
 
         output = {
+            'TYPE': report_type,
             'STATUS': status,
             'MD5': md5,
             'SHA1': sha1,
@@ -349,7 +350,7 @@ def threatzone_get_result(client: Client, args: Dict[str, Any]) -> CommandResult
             'INFO': submission_info,
             'URL': result_url,
             'UUID': submission_uuid,
-            'REPORT': {report_type: result["reports"][report_type]},
+            'REPORT': result["reports"][report_type],
             'SANITIZED': None
         }
 
@@ -378,11 +379,18 @@ def threatzone_check_limits(client: Client) -> CommandResults:
     )
 
 
-def threatzone_return_results(uuid, url, readable_output, availability) -> List[CommandResults]:
+def threatzone_return_results(scan_type, uuid, url, readable_output, availability) -> List[CommandResults]:
     """Helper function for returning results with limits."""
+    scan_prefix = ""
+    if scan_type == "static-scan":
+        scan_prefix = "Static"
+    elif scan_type == "cdr":
+        scan_prefix = "CDR"
+    else:
+        scan_prefix = "Sandbox"
     return [
         CommandResults(
-            outputs_prefix='ThreatZone.Submission',
+            outputs_prefix=f'ThreatZone.Submission.{scan_prefix}',
             readable_output=readable_output,
             outputs_key_field="UUID",
             outputs={'UUID': uuid, 'URL': url}
@@ -447,7 +455,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> Li
     uuid = result['uuid']
     url = f"https://app.threat.zone/submission/{uuid}"
     availability = client.threatzone_check_limits("sandbox")
-    return threatzone_return_results(uuid, url, readable_output, availability)
+    return threatzone_return_results("sandbox", uuid, url, readable_output, availability)
 
 
 def threatzone_static_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
@@ -479,7 +487,7 @@ def threatzone_static_cdr_upload_sample(client: Client, args: Dict[str, Any]) ->
     }
     readable_output = tableToMarkdown('SAMPLE UPLOADED', readable)
     availability = client.threatzone_check_limits(scan_type)
-    return threatzone_return_results(uuid, url, readable_output, availability)
+    return threatzone_return_results(scan_type, uuid, url, readable_output, availability)
 
 
 ''' MAIN FUNCTION '''

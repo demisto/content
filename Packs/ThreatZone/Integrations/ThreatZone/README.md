@@ -49,8 +49,8 @@ Submits a sample to ThreatZone for sandbox analysis.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatZone.Submission.UUID | String | UUID of sample. | 
-| ThreatZone.Submission.URL | String | URL of analysis of sample. | 
+| ThreatZone.Submission.Sandbox.UUID | String | UUID of sample. | 
+| ThreatZone.Submission.Sandbox.URL | String | URL of analysis of sample. | 
 | ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
 | ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
 | ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
@@ -75,8 +75,8 @@ Submits a sample to ThreatZone for static analysis.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatZone.Submission.UUID | String | UUID of sample. | 
-| ThreatZone.Submission.URL | String | URL of analysis of sample. | 
+| ThreatZone.Submission.Static.UUID | String | UUID of sample. | 
+| ThreatZone.Submission.Static.URL | String | URL of analysis of sample. | 
 | ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
 | ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
 | ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
@@ -101,8 +101,8 @@ Submits a sample to ThreatZone for CDR.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatZone.Submission.UUID | String | UUID of sample. | 
-| ThreatZone.Submission.URL | String | URL of analysis of sample. | 
+| ThreatZone.Submission.CDR.UUID | String | UUID of sample. | 
+| ThreatZone.Submission.CDR.URL | String | URL of analysis of sample. | 
 | ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
 | ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
 | ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 

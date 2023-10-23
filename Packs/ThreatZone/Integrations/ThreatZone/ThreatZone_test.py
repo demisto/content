@@ -73,14 +73,14 @@ class Test_ThreatZone_Helper_Functions(unittest.TestCase):
         url = "http://example.com"
         readable_output = "Some readable output"
         availability = {"Limits": {"SomeLimit": "SomeValue"}}
-
-        results = threatzone_return_results(uuid, url, readable_output, availability)
+        scan_type = "cdr"
+        results = threatzone_return_results(scan_type, uuid, url, readable_output, availability)
 
         assert len(results) == 2
 
         first_result, second_result = results
 
-        assert first_result.outputs_prefix == 'ThreatZone.Submission'
+        assert first_result.outputs_prefix == 'ThreatZone.Submission.CDR'
         assert first_result.outputs_key_field == 'UUID'
         assert first_result.outputs == {'UUID': uuid, 'URL': url}
         assert first_result.readable_output == 'Some readable output'
@@ -340,7 +340,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
         assert len(results) == 2
 
         first_result, second_result = results
-        assert first_result.outputs_prefix == 'ThreatZone.Submission'
+        assert first_result.outputs_prefix == 'ThreatZone.Submission.Sandbox'
         assert first_result.outputs_key_field == 'UUID'
 
         assert second_result.outputs_prefix == 'ThreatZone.Limits'
@@ -366,7 +366,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
         first_result, second_result = results
 
-        assert first_result.outputs_prefix == 'ThreatZone.Submission'
+        assert first_result.outputs_prefix == 'ThreatZone.Submission.Static'
         assert first_result.outputs_key_field == 'UUID'
 
         assert second_result.outputs_prefix == 'ThreatZone.Limits'
@@ -382,7 +382,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
         first_result, second_result = results
 
-        assert first_result.outputs_prefix == 'ThreatZone.Submission'
+        assert first_result.outputs_prefix == 'ThreatZone.Submission.CDR'
         assert first_result.outputs_key_field == 'UUID'
 
         assert second_result.outputs_prefix == 'ThreatZone.Limits'

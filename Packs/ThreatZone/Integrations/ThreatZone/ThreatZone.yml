@@ -120,10 +120,10 @@ script:
       description: Snapshot.
       defaultValue: "false"
     outputs:
-    - contextPath: ThreatZone.Submission.UUID
+    - contextPath: ThreatZone.Submission.Sandbox.UUID
       description: UUID of sample.
       type: String
-    - contextPath: ThreatZone.Submission.URL
+    - contextPath: ThreatZone.Submission.Sandbox.URL
       description: URL of analysis of sample.
       type: String
     - contextPath: ThreatZone.Limits.E_Mail
@@ -145,10 +145,10 @@ script:
       description: Entry ID of the file to submit.
       required: true
     outputs:
-    - contextPath: ThreatZone.Submission.UUID
+    - contextPath: ThreatZone.Submission.Static.UUID
       description: UUID of sample.
       type: String
-    - contextPath: ThreatZone.Submission.URL
+    - contextPath: ThreatZone.Submission.Static.URL
       description: URL of analysis of sample.
       type: String
     - contextPath: ThreatZone.Limits.E_Mail
@@ -170,10 +170,10 @@ script:
       description: Entry ID of the file to submit.
       required: true
     outputs:
-    - contextPath: ThreatZone.Submission.UUID
+    - contextPath: ThreatZone.Submission.CDR.UUID
       description: UUID of sample.
       type: String
-    - contextPath: ThreatZone.Submission.URL
+    - contextPath: ThreatZone.Submission.CDR.URL
       description: URL of analysis of sample.
       type: String
     - contextPath: ThreatZone.Limits.E_Mail
@@ -293,7 +293,7 @@ script:
     - contextPath: ThreatZone.Limits.Daily_Submission_Limit
       description: The remaining/total daily submission limits of the current plan.
       type: String
-  dockerimage: demisto/python3:3.10.13.77674
+  dockerimage: demisto/python3:3.10.13.78960
   runonce: false
   subtype: python3
 fromversion: 6.9.0

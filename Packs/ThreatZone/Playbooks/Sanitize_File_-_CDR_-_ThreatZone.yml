@@ -102,7 +102,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: ThreatZone.Submission
+          root: ThreatZone.Submission.CDR
           accessor: UUID
       Interval:
         complex:
@@ -291,7 +291,7 @@ tasks:
     scriptarguments:
       uuid:
         complex:
-          root: ThreatZone.Submission
+          root: ThreatZone.Submission.CDR
           accessor: UUID
     separatecontext: false
     continueonerrortype: ""
@@ -328,9 +328,10 @@ tasks:
     scriptarguments:
       uuid:
         complex:
-          root: ThreatZone.Submission
+          root: ThreatZone.Submission.CDR
           accessor: UUID
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {

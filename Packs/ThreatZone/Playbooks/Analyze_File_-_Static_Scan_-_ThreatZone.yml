@@ -104,7 +104,7 @@ tasks:
     scriptarguments:
       Ids:
         complex:
-          root: ThreatZone.Submission
+          root: ThreatZone.Submission.Static
           accessor: UUID
       Interval:
         complex:
@@ -293,7 +293,7 @@ tasks:
     scriptarguments:
       uuid:
         complex:
-          root: ThreatZone.Submission
+          root: ThreatZone.Submission.Static
           accessor: UUID
     separatecontext: false
     continueonerrortype: ""
