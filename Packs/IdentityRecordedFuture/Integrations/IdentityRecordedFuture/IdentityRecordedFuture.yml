@@ -19,7 +19,7 @@ configuration:
 - displaypassword: API Token
   name: credential
   type: 9
-  required: true
+  required: false
   hiddenusername: true
 - display: Trust any certificate (not secure)
   name: unsecure
