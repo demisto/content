@@ -1,0 +1,428 @@
+id: c9995a1e-3e4e-46d7-8844-8b0a9e0cf359
+version: -1
+name: MSG-Threat-Assessment-tpb
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 945f2a4f-cf3d-435b-80d0-3d7d8b7ba13a
+    type: start
+    task:
+      id: 945f2a4f-cf3d-435b-80d0-3d7d8b7ba13a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 973e318d-d379-4077-8947-79b05c58d5b2
+    type: regular
+    task:
+      id: 973e318d-d379-4077-8947-79b05c58d5b2
+      version: -1
+      name: auth test
+      description: Tests connectivity to Microsoft Graph Security.
+      script: '|||msg-auth-test'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      permission_type:
+        simple: threat assessment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2893b9ef-a3ac-437f-8c49-9a1213884cf3
+    type: regular
+    task:
+      id: 2893b9ef-a3ac-437f-8c49-9a1213884cf3
+      version: -1
+      name: create URL assessment request
+      description: Create url assessment request.
+      script: '|||msg-create-url-assessment-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      category:
+        simple: malware
+      expected_assessment:
+        simple: block
+      url:
+        simple: api.interfacecache.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e4876147-087a-4614-8d2a-592b85e9b9c1
+    type: condition
+    task:
+      id: e4876147-087a-4614-8d2a-592b85e9b9c1
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.UrlAssessment.ContentType
+            iscontext: true
+          right:
+            value:
+              simple: url
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.UrlAssessment.ExpectedAssessment
+            iscontext: true
+          right:
+            value:
+              simple: block
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.UrlAssessment.Category
+            iscontext: true
+          right:
+            value:
+              simple: malware
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5c8a057d-1ac1-41b7-860a-01cb51d74d0c
+    type: regular
+    task:
+      id: 5c8a057d-1ac1-41b7-860a-01cb51d74d0c
+      version: -1
+      name: Create file assessment request
+      description: Create file assessment request.
+      script: '|||msg-create-file-assessment-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      category:
+        simple: malware
+      content_data:
+        simple: VGhpcyBpcyBhIHRlc3QgZmlsZQ==
+      expected_assessment:
+        simple: unblock
+      file_name:
+        simple: test.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 450ddad6-e43e-4ee0-8e23-b084dadf6ed6
+    type: condition
+    task:
+      id: 450ddad6-e43e-4ee0-8e23-b084dadf6ed6
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.FileAssessment.ContentType
+            iscontext: true
+          right:
+            value:
+              simple: file
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.FileAssessment.FileName
+            iscontext: true
+          right:
+            value:
+              simple: test.txt
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.FileAssessment.Category
+            iscontext: true
+          right:
+            value:
+              simple: malware
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1380e4c1-ee3f-4a98-87b6-3cd19e2f2888
+    type: regular
+    task:
+      id: 1380e4c1-ee3f-4a98-87b6-3cd19e2f2888
+      version: -1
+      name: List theat assessment requests with request id
+      description: Create url assessment request.
+      script: '|||msg-list-threat-assessment-requests'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      request_id:
+        simple: 3e8c68f-9a57-4332-1739-08dbd2e880ba
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e4b9ae7c-2a5d-409d-8cff-b4373de5c3da
+    type: condition
+    task:
+      id: e4b9ae7c-2a5d-409d-8cff-b4373de5c3da
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.AssesmentRequest.ContentType
+            iscontext: true
+          right:
+            value:
+              simple: file
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.AssesmentRequest.ID
+            iscontext: true
+          right:
+            value:
+              simple: 3e8c68f-9a57-4332-1739-08dbd2e880ba
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.AssesmentRequest.FileName
+            iscontext: true
+          right:
+            value:
+              simple: test.txt
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a04d8a64-b816-4f82-8680-3395a0a905e6
+    type: regular
+    task:
+      id: a04d8a64-b816-4f82-8680-3395a0a905e6
+      version: -1
+      name: List all threat assessment requests
+      description: Create url assessment request.
+      script: '|||msg-list-threat-assessment-requests'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9007910c-ca69-41a7-8f0f-1adb3ead0d9c
+    type: title
+    task:
+      id: 9007910c-ca69-41a7-8f0f-1adb3ead0d9c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1565,
+        "width": 380,
+        "x": 50,
+        "y": 10
+      }
+    }
+  }
+inputs: []
+outputs: []

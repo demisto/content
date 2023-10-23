@@ -672,6 +672,9 @@ def test_create_mail_assessment_request_command(mocker, mock_func, command_name,
                         return_value={'status': 'completed'})
     mocker.patch.object(client_mocker, "get_threat_assessment_request",
                         return_value=raw_response)
+    mocker.patch("MicrosoftGraphSecurity.get_content_data", return_value="content_data")
+    mocker.patch("MicrosoftGraphSecurity.get_message_user", return_value="user_mail")
+    mocker.patch("CommonServerPython.is_demisto_version_ge", return_value=True)
     results = THREAT_ASSESSMENT_COMMANDS[command_name](client_mocker, {})
 
     assert results.raw_response == raw_response
@@ -685,5 +688,7 @@ def test_list_threat_assessment_requests_command(mocker):
                         return_value=raw_response)
 
     result = list_threat_assessment_requests_command(client_mocker, {})
-    assert len(result.outputs) == 4
-    assert result.outputs_prefix == 'MSGraphMail.AssessmentRequest'
+    assert len(result) == 2
+    assert result[0].outputs_prefix == 'MSGraphMail.AssessmentRequest'
+    assert result[1].outputs_prefix == 'MsGraph.AssessmentRequestNextToken'
+    assert result[1].outputs == {'next_token': 'test_token'}

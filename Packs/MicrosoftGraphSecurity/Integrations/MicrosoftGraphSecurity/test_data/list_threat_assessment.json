@@ -1,4 +1,5 @@
 {
+    "@odata.nextLink": "testskiptoken=test_token",
   "value": [
     {
       "id": "email_id",

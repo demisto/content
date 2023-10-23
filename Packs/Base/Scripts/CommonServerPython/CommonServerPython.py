@@ -6126,7 +6126,7 @@ class ScheduledCommand:
             timeout_in_seconds=None,  # type: Optional[int]
             items_remaining=0,  # type: Optional[int]
     ):
-        # self.raise_error_if_not_supported()
+        self.raise_error_if_not_supported()
         self._command = command
         if next_run_in_seconds < 10:
             demisto.info('ScheduledCommandConfiguration provided value for next_run_in_seconds: '
@@ -10347,7 +10347,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                 **kwargs: additional keyword arguments to the command function.
             """
             if not requires_polling_arg or argToBoolean(args.get(polling_arg_name)):
-                # ScheduledCommand.raise_error_if_not_supported()
+                ScheduledCommand.raise_error_if_not_supported()
                 poll_result = func(args, *arguments, **kwargs)
 
                 should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \

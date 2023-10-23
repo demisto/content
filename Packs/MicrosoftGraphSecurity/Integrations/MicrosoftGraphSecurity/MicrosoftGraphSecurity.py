@@ -8,7 +8,7 @@ import urllib3
 import re
 from CommonServerUserPython import *
 
-from typing import Any, Optional, List
+from typing import Any, Optional
 from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
@@ -1431,9 +1431,9 @@ def get_threat_assessment_request(client: MsGraphClient, request_id):
     readable_output = tableToMarkdown('Threat assessment request:', outputs, removeNull=True)
 
     return [CommandResults(readable_output=readable_output,
-                          raw_response=result,
-                          outputs=outputs,
-                          outputs_prefix='MSGraphMail.AssessmentRequest')]
+                           raw_response=result,
+                           outputs=outputs,
+                           outputs_prefix='MSGraphMail.AssessmentRequest')]
 
 
 @polling_function('msg-create-mail-assessment-request', requires_polling_arg=False)
