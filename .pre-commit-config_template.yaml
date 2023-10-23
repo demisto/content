@@ -92,7 +92,7 @@ repos:
   rev: v0.982
   hooks:
   - id: mypy
-    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition, --namespace-packages]
+    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition]
     exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py"
 
     additional_dependencies:
