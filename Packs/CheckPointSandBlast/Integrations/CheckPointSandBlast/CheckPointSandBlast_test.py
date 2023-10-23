@@ -8,7 +8,7 @@ import os
 from unittest import mock
 import pytest
 from CommonServerPython import *
-from CheckPointSandBlast import Client,\
+from CheckPointSandBlast import Client, \
     file_command, query_command, quota_command, upload_command, download_command, get_dbotscore
 
 
