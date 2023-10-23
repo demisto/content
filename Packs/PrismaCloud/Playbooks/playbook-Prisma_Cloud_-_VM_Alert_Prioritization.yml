@@ -180,7 +180,7 @@ tasks:
       - "26"
     scriptarguments:
       query:
-        simple: config from cloud.resource where api.name = 'azure-vm-list' AND json.rule = ['properties.networkProfile'].networkInterfaces[*].ipConfigurations[*].publicIpAddress exists and id equals '${incident.resourceid}'
+        simple: config from cloud.resource where api.name = 'azure-vm-list' AND json.rule = ['properties.networkProfile'].networkInterfaces[*].ipConfigurations[*].publicIpAddress exists and id equals "${incident.resourceid}"
     separatecontext: false
     continueonerrortype: ""
     view: |-
