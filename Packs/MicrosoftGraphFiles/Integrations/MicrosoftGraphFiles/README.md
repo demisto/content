@@ -36,7 +36,7 @@ body={
 For more information see: 
 
 - [youtube tutorial](https://www.youtube.com/watch?v=pPfxHvugnTA) from microsoft 
-- [microsoft documentation](https://devblogs.microsoft.com/microsoft365dev/controlling-app-access-on-specific-sharepoint-site-collections/)
+- [microsoft documentation](https://learn.microsoft.com/en-us/graph/api/site-post-permissions?view=graph-rest-1.0&tabs=http)
 
 ## Configure O365 File Management (Onedrive/Sharepoint/Teams) on Cortex XSOAR
 
