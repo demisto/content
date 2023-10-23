@@ -1,4 +1,4 @@
-from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main,\
+from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main, \
     fetch_indicators_command, get_no_update_value
 import requests_mock
 import demistomock as demisto
