@@ -2,11 +2,12 @@ from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
     URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting, \
-    ReanalyzeFile, ImpHashSimilarity
+    ReanalyzeFile, ImpHashSimilarity, DomainThreatIntelligence, IPThreatIntelligence, NetworkReputation, \
+    NetworkReputationUserOverride
 from ReversingLabs.SDK.helper import NotFoundError
 
 
-VERSION = "v2.3.0"
+VERSION = "v2.4.0"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
 
 TICLOUD_URL = demisto.params().get("base")
@@ -1521,6 +1522,142 @@ def url_analyses_feed_from_date_output(response, start_time):
     return results, file_results
 
 
+def create_domain_ti_object():
+    """Creates a DomainThreatIntelligence object."""
+    domain_ti = DomainThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    return domain_ti
+
+
+def domain_report_command():
+    domain_ti = create_domain_ti_object()
+
+    domain = demisto.getArg("domain")
+
+    try:
+        response = domain_ti.get_domain_report(domain=domain)
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        sys.exit()
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+
+    results = domain_report_output(response_json=response_json, domain=domain)
+    return_results(results)
+
+
+def domain_report_output(response_json, domain):
+    last_dns_records = response_json.get("rl").get("last_dns_records", [])
+    dns_records_table = tableToMarkdown(name="Last DNS records", t=last_dns_records)
+    dns_records_time = response_json.get("rl").get("last_dns_records_time")
+
+    markdown = f"""## ReversingLabs Domain Report for {domain}\n {dns_records_table}
+    \n**Last DNS records time**: {dns_records_time}
+    """
+
+    top_threats = response_json.get("rl").get("top_threats", [])
+    if top_threats:
+        threats_table = tableToMarkdown(
+            name="Top threats",
+            t=top_threats
+        )
+        markdown = f"{markdown}\n {threats_table}"
+
+    third_party = response_json.get("rl").get("third_party_reputations")
+    if third_party:
+        statistics_table = tableToMarkdown(
+            name="Third party statistics",
+            t=third_party.get("statistics", [])
+        )
+        sources_table = tableToMarkdown(
+            name="Third party sources",
+            t=third_party.get("sources"),
+        )
+        markdown = f"{markdown}\n {statistics_table}\n {sources_table}"
+
+    files_statistics = response_json.get("rl").get("downloaded_files_statistics")
+    files_statistics_table = tableToMarkdown(
+        name="Downloaded files statistics",
+        t=files_statistics
+    )
+    markdown = f"{markdown}\n {files_statistics_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"domain_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def domain_downloaded_files_command():
+    pass
+
+
+def domain_urls_command():
+    pass
+
+
+def domain_ips_command():
+    pass
+
+
+def domain_related_domains_command():
+    pass
+
+
+def ip_report_command():
+    pass
+
+
+def ip_downloaded_files_command():
+    pass
+
+
+def ip_urls_command():
+    pass
+
+
+def ip_to_domain_command():
+    pass
+
+
+def network_reputation_command():
+    pass
+
+
+def network_reputation_override_command():
+    pass
+
+
+def network_reputation_overrides_list_command():
+    pass
+
+
 def main():
     command = demisto.command()
 
@@ -1601,6 +1738,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-url-analyses-feed-from-date":
         url_analyses_feed_from_date_command()
+
+    elif command == "reversinglabs-titaniumcloud-domain-report":
+        domain_report_command()
 
     else:
         return_error(f"Command {command} does not exist")

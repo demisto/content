@@ -543,7 +543,17 @@ script:
     - contextPath: ReversingLabs.url_analyses_feed_from_date
       description: The URL analyses feed from date.
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.73689
+  - name: reversinglabs-titaniumcloud-domain-report
+    description: Returns a domain analysis report.
+    arguments:
+      - name: domain
+        description: Domain string.
+        required: true
+    outputs:
+      - contextPath: ReversingLabs.domain_report
+        description: The domain analysis report.
+        type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.79362
   runonce: false
   script: '-'
   subtype: python3
