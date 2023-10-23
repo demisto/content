@@ -16,11 +16,19 @@ def is_machine_saas() -> bool:
 
 def generate_url(server_url: str, encoded_task: str, encoded_user: str) -> str:
     if is_machine_saas():
-        otp = execute_command("generateOTP", {})
+        try:
+            otp = execute_command("generateOTP", {})
+        except Exception:
+            return f'{server_url}/#/external/form/{encoded_task}/{encoded_user}'
         return f'{server_url}/external/form/{encoded_task}/{encoded_user}?otp={otp}'
     return f'{server_url}/#/external/form/{encoded_task}/{encoded_user}'
 
 
+def warning_message_for_unsupported_versions(urls: list[dict[str, str]]) -> CommandResults:
+    if is_machine_saas() and urls and "#" in urls[0]["url"]:
+        return CommandResults(
+            readable_output="In the current version, the url output is not properly supported, full support will be provided from version 8.4.0 and above.",
+        )
 def encode_string(value: str) -> str:
     b64 = b64encode(value.encode('ascii'))
     return b64.hex()
@@ -55,12 +63,12 @@ def get_data_collection_url_command(args: Dict[str, Any]) -> CommandResults:  # 
 
     result = get_data_collection_url(task_id, users)
 
-    return CommandResults(
+    return [CommandResults(
         outputs_prefix='DataCollectionURL',
         outputs_key_field='user',
         outputs=result,
         ignore_auto_extract=True
-    )
+    )].extend(warning_message_for_unsupported_versions(result))
 
 
 def main():  # pragma: no cover
