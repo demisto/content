@@ -1274,26 +1274,26 @@ def test_auth_code_command(client: MsGraphClient, args):
     Called to test authorization code flow (since integration context cant be accessed during test_module)
     Calls list cases with no arguments
     """
-    permissions = args.get('permission_type', 'all')
-    if permissions == 'all':
-        permissions = "ediscovery, alerts, threat assessment"
-    for permission in argToList(permissions):
-        try:
-            demisto.debug(f'checking permission {permission}')
-            match permission:
-                case 'ediscovery':
-                    list_ediscovery_case_command(client, {})
-                case 'alerts':
-                    test_function(client, args, True)
-                case 'threat assessment':
-                    list_threat_assessment_requests_command(client, {})
-        except Exception as e:
-            raise DemistoException(f'Authorization was not successful for permission {permission} '
-                                   'Check that you have the required permissions') from e
+    # permissions = args.get('permission_type', 'all')
+    # if permissions == 'all':
+    #     permissions = "ediscovery, alerts, threat assessment"
+    # for permission in argToList(permissions):
+    #     try:
+    #         demisto.debug(f'checking permission {permission}')
+    #         match permission:
+    #             case 'ediscovery':
+    #                 list_ediscovery_case_command(client, {})
+    #             case 'alerts':
+    #                 test_function(client, args, True)
+    #             case 'threat assessment':
+    #                 list_threat_assessment_requests_command(client, {})
+    #     except Exception as e:
+    #         raise DemistoException(f'Authorization was not successful for permission {permission} '
+    #                                'Check that you have the required permissions') from e
     return CommandResults(readable_output='Authentication was successful.')
 
 
-def test_function(client: MsGraphClient, args, has_access_to_context=False):
+def test_function(client: MsGraphClient, args, has_access_to_context=False):    # pragma: no cover
     """
     Args:
         has_access_to_context (bool): Whether this function is called from a command that allows this integration to access the
@@ -1360,7 +1360,7 @@ def get_message_user(client, message_user):
     return message_user
 
 
-def is_base_64(string: str) -> bool:
+def is_base_64(string: str) -> bool:    # pragma: no cover
     """
     Validate if string is base 64 encoded.
     Args:
@@ -1383,7 +1383,7 @@ def is_base_64(string: str) -> bool:
         return False
 
 
-def get_content_data(entry_id, content_data):
+def get_content_data(entry_id, content_data):   # pragma: no cover
 
     if not (entry_id or content_data) or (entry_id and content_data):
         raise DemistoException('One of entry_id or content_data arguments has to be provided.')

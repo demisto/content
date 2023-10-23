@@ -647,36 +647,36 @@ THREAT_ASSESSMENT_COMMANDS = {
     'list_assessment_requests': list_threat_assessment_requests_command
 }
 
-#
-# @pytest.mark.parametrize('mock_func, command_name, expected_result',
-#                          [
-#                              ('create_mail_assessment_request', 'mail_assessment_request', 'mail_assessment_request.json'),
-#                              ('create_email_file_assessment_request', 'email_file_assessment_request',
-#                               'email_file_assessment_request.json'),
-#                              ('create_file_assessment_request', 'file_assessment_request', 'file_assessment_request.json'),
-#                              ('create_url_assessment_request', 'url_assessment_request', 'url_assessment_request.json')])
-# def test_create_mail_assessment_request_command(mocker, mock_func, command_name, expected_result):
-#     """
-#
-#     Given:
-#         A raw response with one result
-#     When:
-#         calling list search command
-#     Then:
-#         Nested value is in the readable output
-#     """
-#     raw_response = load_json(f"./test_data/{expected_result}")
-#     mocker.patch.object(client_mocker, mock_func,
-#                         return_value={'request_id': '123'})
-#     mocker.patch.object(client_mocker, "get_threat_assessment_request_status",
-#                         return_value={'status': 'completed'})
-#     mocker.patch.object(client_mocker, "get_threat_assessment_request",
-#                         return_value=raw_response)
-#     results = THREAT_ASSESSMENT_COMMANDS[command_name](client_mocker, {})
-#
-#     assert results.raw_response == raw_response
-#     assert results.outputs.get('ID') == raw_response.get('id')
-#     assert results.outputs.get("Content Type") == raw_response.get("contentType")
+
+@pytest.mark.parametrize('mock_func, command_name, expected_result',
+                         [
+                             ('create_mail_assessment_request', 'mail_assessment_request', 'mail_assessment_request.json'),
+                             ('create_email_file_assessment_request', 'email_file_assessment_request',
+                              'email_file_assessment_request.json'),
+                             ('create_file_assessment_request', 'file_assessment_request', 'file_assessment_request.json'),
+                             ('create_url_assessment_request', 'url_assessment_request', 'url_assessment_request.json')])
+def test_create_mail_assessment_request_command(mocker, mock_func, command_name, expected_result):
+    """
+
+    Given:
+        A raw response with one result
+    When:
+        calling list search command
+    Then:
+        Nested value is in the readable output
+    """
+    raw_response = load_json(f"./test_data/{expected_result}")
+    mocker.patch.object(client_mocker, mock_func,
+                        return_value={'request_id': '123'})
+    mocker.patch.object(client_mocker, "get_threat_assessment_request_status",
+                        return_value={'status': 'completed'})
+    mocker.patch.object(client_mocker, "get_threat_assessment_request",
+                        return_value=raw_response)
+    results = THREAT_ASSESSMENT_COMMANDS[command_name](client_mocker, {})
+
+    assert results.raw_response == raw_response
+    assert results.outputs.get('ID') == raw_response.get('id')
+    assert results.outputs.get("Content Type") == raw_response.get("contentType")
 
 
 def test_list_threat_assessment_requests_command(mocker):
