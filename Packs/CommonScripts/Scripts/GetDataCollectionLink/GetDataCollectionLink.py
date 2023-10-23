@@ -2,7 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from base64 import b64encode
 from typing import Any, Dict
-from packaging import version
+from distutils.version import LooseVersion
+
 
 
 def is_machine_saas() -> bool:
@@ -10,7 +11,7 @@ def is_machine_saas() -> bool:
     if demisto_version["platform"] == "x2":
         return True
     else:
-        return version.parse(demisto_version["version"]) >= version.parse("8.0.0")
+        return LooseVersion(demisto_version["version"]) >= LooseVersion("8.0.0")
 
 
 def generate_url(server_url: str, encoded_task: str, encoded_user: str) -> str:
