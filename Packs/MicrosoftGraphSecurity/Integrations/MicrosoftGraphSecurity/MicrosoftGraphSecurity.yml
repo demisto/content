@@ -823,7 +823,7 @@ script:
       description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
-      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.Description
       description: The case description.
@@ -835,7 +835,7 @@ script:
       description: The external case number for customer reference.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
-      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
   - arguments:
     - description: The ID of the eDiscovery case.
@@ -915,7 +915,7 @@ script:
       description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
-      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.Description
       description: The case description.
@@ -927,7 +927,7 @@ script:
       description: The external case number for customer reference.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
-      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.ClosedBy.User.DisplayName
       description: The user who closed the case.
@@ -936,7 +936,7 @@ script:
       description: The user who last modified the case.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.ClosedDateTime
-      description: 'The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
   - arguments:
     - description: The ID of the eDiscovery case.
@@ -1311,7 +1311,7 @@ script:
       description: Display name of the noncustodialDataSource.
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.HoldStatus
-      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial'
+      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial.'
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.LastModifiedDateTime
       description: Last modified date and time of the nonCustodialDataSource.
@@ -1357,7 +1357,7 @@ script:
       description: Display name of the noncustodialDataSource.
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.HoldStatus
-      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial'
+      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial.'
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.LastModifiedDateTime
       description: Last modified date and time of the nonCustodialDataSource.
@@ -1664,7 +1664,7 @@ script:
       description: 'mail assessment id.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.CreatedDateTime
-      description: 'mail assessment Created DateTime/'
+      description: 'mail assessment Created DateTime.'
       type: String
     - contextPath: MSGraphMail.MailAssessment.ContentType
       description: 'Content Type.'

@@ -1670,6 +1670,9 @@ tasks:
     nexttasks:
       '#none#':
       - "38"
+    scriptarguments:
+      permission_type:
+        simple: ediscovery
     separatecontext: false
     continueonerrortype: ""
     view: |-
