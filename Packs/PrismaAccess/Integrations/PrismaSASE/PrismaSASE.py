@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 import urllib3
 
@@ -796,6 +796,21 @@ class Client(BaseClient):
         headers = self._headers
         headers['Authorization'] = f"Bearer {access_token}"
         return headers
+
+    def quarantine_host(self, tag: dict, host_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+        """Creating a new tag
+        Args:
+            host_id: Host ID that needs to be added to quarantine List
+            tsg_id: Target Prisma SASE tenant ID
+        """
+        uri = f'{CONFIG_URI_PREFIX}quarantined-devices'
+
+        return self.http_request(
+            method="POST",
+            url_suffix=uri,
+            json_data=tag,
+            tsg_id=tsg_id
+        )
 
 
 """HELPER FUNCTIONS"""
@@ -1977,6 +1992,26 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
+def quarantine_host_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Command quarantine a given host
+    """
+    tag = {}
+    host_id = args.get('host_id'),
+    tsg_id = args.get('tsg_id')
+    tag["host_id"] = host_id[0]
+
+    raw_response = client.quarantine_host(tag=tag, host_id=host_id, tsg_id=tsg_id)
+
+    outputs = raw_response
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Host Quarantined',
+                                        outputs),
+        raw_response=raw_response
+    )
+
+
 def run_push_jobs_polling_command(client: Client, args: dict):
     """
     This function is generically handling the polling flow. In the polling flow, there is always an initial call that
@@ -2109,6 +2144,8 @@ def main():  # pragma: no cover
         'prisma-sase-external-dynamic-list-create': create_external_dynamic_list_command,
         'prisma-sase-external-dynamic-list-update': update_external_dynamic_list_command,
         'prisma-sase-external-dynamic-list-delete': delete_custom_url_category_command,
+
+        'prisma-sase-quarantine-host': quarantine_host_command,
 
     }
     client = Client(
