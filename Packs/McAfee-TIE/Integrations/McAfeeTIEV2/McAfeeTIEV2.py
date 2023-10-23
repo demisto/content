@@ -7,7 +7,7 @@ from dxlclient.client import DxlClient
 from dxlclient.broker import Broker
 from dxltieclient import TieClient
 from typing import NamedTuple
-from dxltieclient.constants import FileReputationProp, FileGtiAttrib, FileEnterpriseAttrib, AtdAttrib, TrustLevel,\
+from dxltieclient.constants import FileReputationProp, FileGtiAttrib, FileEnterpriseAttrib, AtdAttrib, TrustLevel, \
     HashType, EnterpriseAttrib, FileProvider, FirstRefProp, AtdTrustLevel
 
 VENDOR_NAME = 'McAfee Threat Intelligence Exchange'
@@ -520,8 +520,8 @@ def create_temp_credentials(temp_file: tempfile._TemporaryFileWrapper, data_to_w
 
 @contextlib.contextmanager
 def create_dxl_config(instance_cert: InstanceCertificates) -> DxlClientConfig:
-    with tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as broker_certs_file,\
-            tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as client_cert_file,\
+    with tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as broker_certs_file, \
+            tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.crt') as client_cert_file, \
             tempfile.NamedTemporaryFile(mode='w+', dir='./', suffix='.key') as private_key_file:
         broker_certs_file.delete
         create_temp_credentials(broker_certs_file, instance_cert.broker_ca_bundle)
