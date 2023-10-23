@@ -57,6 +57,30 @@ repos:
     language: script
     pass_filenames: false
 
+- repo: https://github.com/demisto/demisto-sdk
+  rev: ""
+  hooks:
+  - id: update-additional-dependencies
+    args: [--pre_commit_config, .pre-commit-config_template.yaml]
+
+  - id: format
+          # update docker image to the latest version, assume no
+    args: ["-ud", "-n", "--no-validate"]
+
+  - id: validate
+    args: ["--skip-pack-dependencies"]
+
+          # enable with --test
+  - id: run-unit-tests
+    args: ["--no_mount_files"]
+
+  - id: secrets
+    args: ["--ignore-entropy"]
+
+  - id: no-implicit-optional
+      # remove this argument when this hook is ready to use
+    skip: true
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: "v1.6.0"
   hooks:
@@ -68,7 +92,7 @@ repos:
   rev: v0.982
   hooks:
   - id: mypy
-    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition]
+    args: [--ignore-missing-imports, --check-untyped-defs, --show-error-codes, --follow-imports=silent, --allow-redefinition, --namespace-packages]
     exclude: "test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py"
 
     additional_dependencies:
@@ -265,27 +289,3 @@ repos:
     - yamlordereddictloader==0.4.0 ; python_version >= "3.8" and python_version < "3.11"
     - z3-solver==4.12.2.0 ; python_version >= "3.8" and python_version < "3.11"
     - zipp==3.16.2 ; python_version >= "3.8" and python_version < "3.10"
-
-- repo: https://github.com/demisto/demisto-sdk
-  rev: ""
-  hooks:
-  - id: update-additional-dependencies
-    args: [--pre_commit_config, .pre-commit-config_template.yaml]
-
-  - id: format
-          # update docker image to the latest version, assume no
-    args: ["-ud", "-n", "--no-validate"]
-
-  - id: validate
-    args: ["--skip-pack-dependencies"]
-
-          # enable with --test
-  - id: run-unit-tests
-    args: ["--no_mount_files"]
-
-  - id: secrets
-    args: ["--ignore-entropy"]
-
-  - id: no-implicit-optional
-      # remove this argument when this hook is ready to use
-    skip: true
