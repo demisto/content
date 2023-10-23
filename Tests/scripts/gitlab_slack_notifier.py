@@ -353,7 +353,7 @@ def construct_coverage_slack_msg() -> list[dict[str, Any]]:
     yesterday = datetime.now() - timedelta(days=1)
     coverage_yesterday = get_total_coverage(date=yesterday)
     color = 'good' if coverage_today >= coverage_yesterday else 'danger'
-    title = f'content code coverage: {coverage_today:.3f}%'
+    title = f'Content code coverage: {coverage_today:.3f}%'
 
     return [{
         'fallback': title,

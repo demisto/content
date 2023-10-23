@@ -18,9 +18,12 @@ EOF
 
 # Parsing the user inputs.
 generate_empty_results_file="false"
+test_shit="false"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     --generate-empty-result-file) generate_empty_results_file="true"
+      shift;;
+    --test-shit) test_shit="true"
       shift;;
     *)  # unknown option.
       shift;;
@@ -55,20 +58,18 @@ echo "Found modeling rules to test, starting test modeling rules"
 CURRENT_DIR=$(pwd)
 echo "CURRENT_DIR: ${CURRENT_DIR}"
 echo "NIGHTLY: ${NIGHTLY}"
-echo "--- modeling_rules_to_test.txt ---"
-cat -n "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt"
-echo "---------------------------------"
 
 MODELING_RULES_ARRAY=($(cat "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt"))
 
 echo "MODELING_RULES_ARRAY size:${#MODELING_RULES_ARRAY[@]}"
-
+count=0
 for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   MODELING_RULE_TEST_FILE_PATTERN="${CURRENT_DIR}/Packs/${modeling_rule}/*_testdata.json"
   echo "looking for testdata file in ${MODELING_RULE_TEST_FILE_PATTERN} for ${modeling_rule}"
   # If it is nightly, run `test modeling rules` only on modeling rules that have `_testdata.json` file.
-  if [ -z "${NIGHTLY}" ] || [ -e "${MODELING_RULE_TEST_FILE_PATTERN}" ]; then
+  if [ -z "${NIGHTLY}" ] || [ -e ${MODELING_RULE_TEST_FILE_PATTERN} ]; then
     echo "Found testdata file for ${modeling_rule}"
+    count=$((count+1))
     if [[ -n "${MODELING_RULES_TO_TEST}" ]]; then
         MODELING_RULES_TO_TEST="${MODELING_RULES_TO_TEST} Packs/${modeling_rule}"
     else
@@ -80,9 +81,15 @@ for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   fi
 done
 
+echo "Found ${count} modeling rules to test out of ${#MODELING_RULES_ARRAY[@]} modeling rules"
+
+if [[ "${test_shit}" == "true" ]]; then
+  echo "finished testing shit!"
+  exit 0
+fi
+
 if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
-    echo "There was a problem reading the list of modeling rules that require testing from '${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt'"
-    exit 1
+    exit_on_error 1 "There was a problem reading the list of modeling rules that require testing from '${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt'"
 fi
 
 if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
