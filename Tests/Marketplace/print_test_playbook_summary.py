@@ -89,16 +89,6 @@ def filter_skipped_playbooks(playbooks_results: dict[str, dict[str, TestSuite]])
     return filtered_playbooks_ids
 
 
-def test_jira_access(server_url: str, verify_ssl: bool) -> None:
-    try:
-        logging.info(f"Testing Jira access to {server_url} with verify SSL {verify_ssl}")
-        jira_server = JIRA(server_url, token_auth=JIRA_API_KEY, options={'verify': verify_ssl})
-        jira_server_information(jira_server)
-        logging.success(f"Successfully connected to Jira server {server_url} with verify SSL {verify_ssl}")
-    except Exception as e:
-        logging.error(f'Failed to connect to Jira server {server_url}: {e}')
-
-
 def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tuple[bool, bool]:
     test_playbooks_report = artifacts_path / "test_playbooks_report.xml"
 
@@ -114,13 +104,6 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
 
     playbooks_ids = filter_skipped_playbooks(playbooks_results)
     logging.info(f"Found {len(playbooks_ids)} playbooks out of {len(playbooks_results)} after filtering skipped playbooks")
-
-    test_jira_access("https://jira-dc.paloaltonetworks.com", True)
-    test_jira_access("https://jira-dc.paloaltonetworks.com", False)
-    test_jira_access("https://jira-dc-gcp.paloaltonetworks.local", True)
-    test_jira_access("https://jira-dc-gcp.paloaltonetworks.local", False)
-    test_jira_access("https://10.184.255.100", True)  # disable-secrets-detection
-    test_jira_access("https://10.184.255.100", False)  # disable-secrets-detection
 
     if without_jira:
         logging.info("Printing test playbook summary without Jira tickets")

@@ -491,9 +491,6 @@ slack-notify-on-push-build:
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
-    - bash --version || true
-    - ./Tests/scripts/test_modeling_rules.sh --test-shit
-
     - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s "${ARTIFACTS_FOLDER}/content_packs_to_install.txt" || -s "${ARTIFACTS_FOLDER}/filter_file.txt" ]]; then

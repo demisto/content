@@ -108,8 +108,8 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
     )
 
     if not modeling_rules_to_test_suite:
-        logging.info("Test Modeling rule Results - No test modeling rule results found")
-        title = f"{title} - No Test Modeling rules results found"
+        logging.info("Test Modeling rules - No test modeling rule results found for this build")
+        title = f"{title} - Test Modeling rules - No test modeling rule results found for this build"
         return [{
             'fallback': title,
             'color': 'good',

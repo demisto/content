@@ -18,12 +18,9 @@ EOF
 
 # Parsing the user inputs.
 generate_empty_results_file="false"
-test_shit="false"
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     --generate-empty-result-file) generate_empty_results_file="true"
-      shift;;
-    --test-shit) test_shit="true"
       shift;;
     *)  # unknown option.
       shift;;
@@ -33,18 +30,6 @@ done
 if [[ "${generate_empty_results_file,,}" == "true" ]]; then
   write_empty_test_results_file
   exit 0
-fi
-
-if [ -n "${CLOUD_API_KEYS}" ]; then
-  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-else
-  exit_on_error 1 "CLOUD_API_KEYS is empty"
-fi
-
-if [ -n "${CLOUD_API_TOKENS}" ]; then
-  echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
-else
-  exit_on_error 1 "CLOUD_API_TOKENS is empty"
 fi
 
 if [[ ! -s "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt" ]]; then
@@ -83,13 +68,20 @@ done
 
 echo "Found ${count} modeling rules to test out of ${#MODELING_RULES_ARRAY[@]} modeling rules"
 
-if [[ "${test_shit}" == "true" ]]; then
-  echo "finished testing shit!"
-  exit 0
-fi
-
 if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
     exit_on_error 1 "There was a problem reading the list of modeling rules that require testing from '${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt'"
+fi
+
+if [ -n "${CLOUD_API_KEYS}" ]; then
+  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+else
+  exit_on_error 1 "CLOUD_API_KEYS is empty"
+fi
+
+if [ -n "${CLOUD_API_TOKENS}" ]; then
+  echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
+else
+  exit_on_error 1 "CLOUD_API_TOKENS is empty"
 fi
 
 if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
