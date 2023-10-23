@@ -19,33 +19,33 @@ INCIDENT_RESULT_NO_FAILED_COMMANDS = [{'CustomFields': {'dbotpredictionprobabili
                                                             'Forensics & Malware Analysis',
                                                             'Data Enrichment & Threat Intelligence',
                                                             'Endpoint'], 'integrationstestgrid': [
-        {'analystnote': '(2020-09-30) (2020-09-30) Need to get the new password', 'brand': 'Active Directory Query v2',
-         'category': 'Data Enrichment & Threat Intelligence',
-         'information': 'Failed to access LDAP server. Please validate the server '
-                        'host and port are configured correctly (85)',
-         'instance': 'Active Directory Query v2_instance_1'},
-        {'brand': 'BigFix', 'category': 'Vulnerability Management',
-         'information': "Invalid URL '\\xd7\\x91\\xd7\\x94\\xd7\\xa0/api/help': No schema "
-                        "supplied. Perhaps you meant http://בהנ/api/help? (85)",
-         'instance': 'BigFix_instance_1'}, {'brand': 'Tanium Threat Response', 'category': 'Endpoint',
-                                            'information': "Error in Tanium Threat Response Integration: "
-                                                           "Invalid URL 'sfgdfg/api/v2/session/login': No schema "
-                                                           "supplied. Perhaps you meant "
-                                                           "http://sfgdfg/api/v2/session/login? (85)",
-                                            'instance': 'Tanium Threat Response_instance_1'},
-        {'brand': 'Threat Grid', 'category': 'Forensics & Malware Analysis',
-         'information': 'Error in API call to Threat Grid service api/v3/session/whoami - '
-                        '{"api_version":3,"id":2907192,"error":{"message":"Unauthorized","code":401,"errors":'
-                        '[{"code":401,"message":"Unauthorized","help":"/doc/main/index.html","report":'
-                        '"support@threatgrid.com"}]}} (85)',
-         'instance': 'Threat Grid_instance_1'},
-        {'analystnote': '(2020-09-30) (2020-09-30) Creating a new API key', 'brand': 'VirusTotal',
-         'category': 'Data Enrichment & Threat Intelligence',
-         'information': '403 Forbidden - The API key is not valid (85)', 'instance': 'VirusTotal_instance_1'},
-        {'brand': 'remoteaccess', 'category': 'Endpoint',
-         'information': 'ssh: handshake failed: ssh: unable to authenticate, attempted methods [none], '
-                        'no supported methods remain',
-         'instance': 'remoteaccess_instance_1'}], 'numberofentriesiderrors': 8, 'numberoffailedincidents': 4,
+                                                            {'analystnote': '(2020-09-30) (2020-09-30) Need to get the new password', 'brand': 'Active Directory Query v2',
+                                                             'category': 'Data Enrichment & Threat Intelligence',
+                                                             'information': 'Failed to access LDAP server. Please validate the server '
+                                                             'host and port are configured correctly (85)',
+                                                             'instance': 'Active Directory Query v2_instance_1'},
+                                                            {'brand': 'BigFix', 'category': 'Vulnerability Management',
+                                                             'information': "Invalid URL '\\xd7\\x91\\xd7\\x94\\xd7\\xa0/api/help': No schema "
+                                                             "supplied. Perhaps you meant http://בהנ/api/help? (85)",
+                                                             'instance': 'BigFix_instance_1'}, {'brand': 'Tanium Threat Response', 'category': 'Endpoint',
+                                                                                                'information': "Error in Tanium Threat Response Integration: "
+                                                                                                "Invalid URL 'sfgdfg/api/v2/session/login': No schema "
+                                                                                                "supplied. Perhaps you meant "
+                                                                                                "http://sfgdfg/api/v2/session/login? (85)",
+                                                                                                'instance': 'Tanium Threat Response_instance_1'},
+                                                            {'brand': 'Threat Grid', 'category': 'Forensics & Malware Analysis',
+                                                             'information': 'Error in API call to Threat Grid service api/v3/session/whoami - '
+                                                             '{"api_version":3,"id":2907192,"error":{"message":"Unauthorized","code":401,"errors":'
+                                                             '[{"code":401,"message":"Unauthorized","help":"/doc/main/index.html","report":'
+                                                             '"support@threatgrid.com"}]}} (85)',
+                                                             'instance': 'Threat Grid_instance_1'},
+                                                            {'analystnote': '(2020-09-30) (2020-09-30) Creating a new API key', 'brand': 'VirusTotal',
+                                                             'category': 'Data Enrichment & Threat Intelligence',
+                                                             'information': '403 Forbidden - The API key is not valid (85)', 'instance': 'VirusTotal_instance_1'},
+                                                            {'brand': 'remoteaccess', 'category': 'Endpoint',
+                                                             'information': 'ssh: handshake failed: ssh: unable to authenticate, attempted methods [none], '
+                                                             'no supported methods remain',
+                                                             'instance': 'remoteaccess_instance_1'}], 'numberofentriesiderrors': 8, 'numberoffailedincidents': 4,
                                                         'playbooknameswithfailedtasks': [
                                                             'AutoFocusPolling',
                                                             'JOB - Integrations and Playbooks Health Check',

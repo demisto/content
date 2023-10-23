@@ -1408,6 +1408,8 @@ script:
     - description: List of tags to apply to the indicator.
       isArray: true
       name: tags
+    - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      name: file_name
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
@@ -1453,6 +1455,9 @@ script:
     - contextPath: CrowdStrike.IOC.Platforms
       description: The platforms of the IOC.
       type: Unknown
+    - contextPath: CrowdStrike.IOC.Filename
+      description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
   - arguments:
     - description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
@@ -1488,6 +1493,8 @@ script:
       name: source
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
+    - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      name: file_name
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc
     outputs:
@@ -1527,6 +1534,10 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.Filename
+      description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
+
   - arguments:
     - description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
@@ -4375,7 +4386,7 @@ script:
     - contextPath: CrowdStrike.IDPEntity.EmailAddresses
       description: The identity entity email address.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.73055
+  dockerimage: demisto/py3-tools:1.0.0.75615
   isfetch: true
   ismappable: true
   isremotesyncin: true

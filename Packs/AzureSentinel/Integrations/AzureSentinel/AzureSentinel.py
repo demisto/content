@@ -300,6 +300,7 @@ def alert_data_to_xsoar_format(alert_data):
         'ID': properties.get('systemAlertId'),
         'Kind': alert_data.get('kind'),
         'Tactic': properties.get('tactics'),
+        'Technique': properties.get('additionalData', {}).get('MitreTechniques'),
         'DisplayName': properties.get('alertDisplayName'),
         'Description': properties.get('description'),
         'ConfidenceLevel': properties.get('confidenceLevel'),

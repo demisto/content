@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
-from typing import Any, Callable, Iterable, Optional
+from typing import Any
+from collections.abc import Callable, Iterable
 
 import pytest
 from demisto_sdk.commands.common.constants import MarketplaceVersions
@@ -25,7 +26,7 @@ Test Collection Unit-Test cases
 - `A` has a single pack with an integration and two test playbooks.
 - `B` has a single pack, with only test playbooks. (they should be collected)
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
-- `D` has a single pack & test-playbook with from_version == to_version == 6.5, for testing the version range.
+- `D` has a single pack & test-playbook with from_version == to_version == 6.9, for testing the version range.
 - `E` has a single pack with a script tested using myTestPlaybook, and a Playbook used in myOtherTestPlaybook.
 - `F` has a single pack with a script set up as `no tests`, and a conf where myTestPlaybook is set as the script's test.
 - `G` has objects that trigger collection of the pack (without tests).
@@ -122,8 +123,8 @@ ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_packs_to_upload: Iterable[str],
-          expected_machines: Optional[Iterable[Machine]],
-          expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
+          expected_machines: Iterable[Machine] | None,
+          expected_modeling_rules_to_test: Iterable[str | Path] | None,
           collector_class_args: tuple[Any, ...] = ()):
     """
     Instantiates the given collector class, calls collect with run_nightly and asserts
@@ -157,12 +158,12 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
         if collected.modeling_rules_to_test:
             description += f'modeling rules: {collected.modeling_rules_to_test}'
 
-        assert False, description
+        raise AssertionError(description)
 
     if collected is None:
         err_msg = (f'should have collected something: {expected_tests=}, {expected_packs=},'
                    f' {expected_machines=}, {expected_modeling_rules_to_test=}')
-        assert False, err_msg
+        raise AssertionError(err_msg)
 
     if expected_tests is not None:
         assert collected.tests == set(expected_tests)
@@ -208,7 +209,7 @@ NIGHTLY_TESTS: tuple = (
      {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois', 'CoreAlertFields'}, None, None),
 
     (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-     (Machine.V6_8, Machine.MASTER), None),
+     (Machine.V6_9, Machine.MASTER), None),
 
     (MockerCases.E, XSOARNightlyTestCollector,
      {'myTestPlaybook', 'myOtherTestPlaybook', 'Sanity Test - Playbook with Unmockable Whois Integration'},
@@ -251,8 +252,8 @@ NIGHTLY_TESTS: tuple = (
 )
 def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
-                 expected_machines: Optional[tuple[Machine]],
-                 expected_modeling_rules_to_test: Optional[Iterable[str | Path]]):
+                 expected_machines: tuple[Machine] | None,
+                 expected_modeling_rules_to_test: Iterable[str | Path] | None):
     """
     given:  a content folder
     when:   collecting tests with a NightlyTestCollector
@@ -308,7 +309,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
          ('myXSOAROnlyPack',)),
 
         # (8) Case D: playbook changes, expect it and its pack to be collected
-        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_8, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
+        (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_9, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
          ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myPack',)),
 
         # (9) Case D: playbook changes, expect it and its pack to be collected
@@ -449,14 +450,14 @@ def test_branch(
         monkeypatch,
         mocker,
         case_mocker,
-        expected_tests: Optional[set[str]],
-        expected_packs: Optional[tuple[str, ...]],
-        expected_machines: Optional[tuple[Machine, ...]],
-        expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
+        expected_tests: set[str] | None,
+        expected_packs: tuple[str, ...] | None,
+        expected_machines: tuple[Machine, ...] | None,
+        expected_modeling_rules_to_test: Iterable[str | Path] | None,
         collector_class_args: tuple[str, ...],
         mocked_changed_files: tuple[str, ...],
         mocked_packs_files_were_moved_from: tuple[str, ...],
-        expected_packs_to_upload: Optional[tuple[str, ...]],
+        expected_packs_to_upload: tuple[str, ...] | None,
 ):
     mocker.patch.object(BranchTestCollector, '_get_git_diff',
                         return_value=FilesToCollect(mocked_changed_files, mocked_packs_files_were_moved_from))
@@ -632,7 +633,7 @@ def test_number_of_file_types():
 
         - Removed type:    Decrease the number here.
     """
-    assert len(FileType) == 76
+    assert len(FileType) == 77
 
 
 @pytest.mark.parametrize(
@@ -650,14 +651,14 @@ def test_number_of_file_types():
              'myXSIAMOnlyPack', 'CoreAlertFields', 'bothMarketplacesPack',
              'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois')),
     ), ids=('install_and_upload_all_xsoar', 'install_and_upload_all_xsiam'))
-def test_upload_all_packs(monkeypatch, case_mocker, expected_tests: Optional[set[str]],
-                          expected_packs: Optional[tuple[str, ...]],
-                          expected_machines: Optional[tuple[Machine, ...]],
-                          expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
+def test_upload_all_packs(monkeypatch, case_mocker, expected_tests: set[str] | None,
+                          expected_packs: tuple[str, ...] | None,
+                          expected_machines: tuple[Machine, ...] | None,
+                          expected_modeling_rules_to_test: Iterable[str | Path] | None,
                           collector_class_args: tuple[str, ...],
                           mocked_changed_files: tuple[str, ...],
                           mocked_packs_files_were_moved_from: tuple[str, ...],
-                          expected_packs_to_upload: Optional[tuple[str, ...]],
+                          expected_packs_to_upload: tuple[str, ...] | None,
                           ):
     """
     given:  The override_all_packs flag.

@@ -56,11 +56,25 @@ configuration:
   type: 13
   section: Connect
   required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
 description: Use the Prisma Cloud Compute integration to fetch incidents from your Prisma Cloud Compute environment.
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   runonce: false
   script: "-"
@@ -527,7 +541,7 @@ script:
       description: The list of hosts where this container is running.
       type: String
   - name: prisma-cloud-compute-profile-container-forensic-list
-    description: Get runtime forensics data for a specific container on a specific. host
+    description: Get runtime forensics data for a specific container on a specific. host.
     arguments:
     - name: id
       description: The container ID. Can be retrieved from the prisma-cloud-compute-profile-container-list command.
@@ -812,6 +826,9 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor reporting the score of the indicator.
       type: String
+    - contextPath: DBotScore.Reliability
+      type: String
+      description: Reliability of the source providing the intelligence data.
   - name: prisma-cloud-compute-defenders-list
     description: Retrieve a list of defenders and their information.
     arguments:
@@ -847,7 +864,7 @@ script:
       description: The cloud provider metadata of the host.
       type: Unknown
     - contextPath: PrismaCloudCompute.DefenderDetails.cluster
-      description: The provided cluster name. (Fallback is the internal IP address.)
+      description: The provided cluster name. (Fallback is the internal IP address).
       type: String
     - contextPath: PrismaCloudCompute.DefenderDetails.clusterID
       description: The unique ID generated for each daemon set and used to group defenders by clusters. Note - Kubernetes does not provide a cluster name as part of its API.
@@ -1039,7 +1056,7 @@ script:
       description: Binaries in the image.
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.cloudMetadata
-      description: The metadata for an instance running in a cloud provider (AWS/GCP/Azure)
+      description: The metadata for an instance running in a cloud provider (AWS/GCP/Azure).
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.clusters
       description: Cluster names.
@@ -1096,7 +1113,7 @@ script:
       description: Image ID.
       type: String
     - contextPath: PrismaCloudCompute.ReportsImagesScan.image
-      description: A container image
+      description: A container image.
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.installedProducts
       description: Data regarding products running in the environment.
@@ -1186,7 +1203,7 @@ script:
       description: Total number of vulnerabilities.
       type: Number
     - contextPath: PrismaCloudCompute.ReportsImagesScan.vulnerabilityDistribution
-      description: The number of vulnerabilities per type,
+      description: The number of vulnerabilities per type.
       type: Unknown
     - contextPath: PrismaCloudCompute.ReportsImagesScan.vulnerabilityRiskScore
       description: Image's CVE risk score.
@@ -1387,7 +1404,7 @@ script:
     description: Get the list of Prisma Cloud Compute vulnerabilities resources.
     arguments:
     - name: cve
-      description: A comma-separated list of CVE IDs that can be used as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535
+      description: A comma-separated list of CVE IDs that can be used as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535.
       isArray: true
       defaultValue: ""
     - name: limit
@@ -1414,7 +1431,7 @@ script:
       description: CodeRepos is a list of impacted code repositories.
       type: Array
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.codeReposCount
-      description: CodeReposCount is the total impacted code repositories count
+      description: CodeReposCount is the total impacted code repositories count.
       type: integer
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource.functions
       description: Functions is a map between function id to its details.
@@ -1442,7 +1459,7 @@ script:
       type: integer
   - name: prisma-cloud-compute-get-waas-policies
     arguments: []
-    description: "Get the Waas Container Policies from Defend >> WAAS >> Containers"
+    description: "Get the Waas Container Policies from Defend >> WAAS >> Containers."
     outputs:
     - contextPath: PrismaCloudCompute.Policies.Name
       description: The Policy Name.
@@ -1481,7 +1498,7 @@ script:
     arguments:
     - name: policy
       required: true
-      description: The complete policy object.  Can be obtained from prisma-cloud-compute-get-waas-policies raw-response=true extend-context=PCC=. command
+      description: The complete policy object.  Can be obtained from prisma-cloud-compute-get-waas-policies raw-response=true extend-context=PCC=. command.
     - name: attack_type
       required: true
       auto: PREDEFINED
@@ -1496,7 +1513,7 @@ script:
       - malformedReq
       - advancedProtectionEffect
       - intelGathering
-      description: The specific policy to update
+      description: The specific policy to update.
     - name: action
       required: true
       auto: PREDEFINED
@@ -1507,24 +1524,24 @@ script:
       - allow
       - disable
       - reCAPTCHA
-      description: The new policy action for the attack type
+      description: The new policy action for the attack type.
     - name: rule_name
       required: true
-      description: The rule name for the WaaS policy settings
-    description: Update the Waas Policy for containers
+      description: The rule name for the WaaS policy settings.
+    description: Update the Waas Policy for containers.
   - name: prisma-cloud-compute-get-audit-firewall-container-alerts
     arguments:
     - name: ImageName
       required: true
-      description: The image name to get the alerts for
+      description: The image name to get the alerts for.
     - name: FromDays
-      description: The Number of days back to look
+      description: The Number of days back to look.
     - name: audit_type
       required: true
-      description: The type of audit alert to retrieve
+      description: The type of audit alert to retrieve.
     - name: limit
-      description: The limit of the number of alerts to return
-    description: Get the audits for the firewall container policies
+      description: The limit of the number of alerts to return.
+    description: Get the audits for the firewall container policies.
     outputs: []
   - arguments:
     - description: The project to get the alert profiles for.
@@ -1943,6 +1960,73 @@ script:
     - contextPath: PrismaCloudCompute.Backups.Time
       description: The time of the backup.
       type: Date
+  - description: Get runtime file integrity audit events.
+    name: prisma-cloud-compute-get-file-integrity-events
+    arguments:
+    - name: hostname
+      description: Hostname for which to get runtime file integrity audit events. Either event_id or hostname is required.
+    - name: event_id
+      description: Event ID of runtime file integrity audit event for which to get details. Either event_id or hostname is required.
+    - name: limit
+      description: Limit on number of events to return. Only relevant if filtering by hostname.
+      defaultValue: "10"
+    - description: 'Minimum timestamp for event search. Format: YYYY-mm-ddTHH:MM:SSZ.'
+      name: from_date
+    - description: 'Maximum timestamp for event search. Format: YYYY-mm-ddTHH:MM:SSZ.'
+      name: to_date
+    - description: Search term to search events for.
+      name: search_term
+    - auto: PREDEFINED
+      defaultValue: desc
+      description: Whether to sort by ascending or descending time.
+      name: sort
+      predefined:
+      - asc
+      - desc
+    outputs:
+    - contextPath: PrismaCloudCompute.FileIntegrity.Path
+      description: The absolute path of the event.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.RuleName
+      description: The name of the applied rule for auditing file integrity rules.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.AccountID
+      description: The cloud account ID.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.User
+      description: The user that initiated the event.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.Time
+      description: The time of the event.
+      type: date
+    - contextPath: PrismaCloudCompute.FileIntegrity.Hostname
+      description: The hostname on which the event was found.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.EventType
+      description: 'Represents the type of the file integrity event. Possible values: [metadata,read,write].'
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.Collections
+      description: Collections to which this event applies.
+    - contextPath: PrismaCloudCompute.FileIntegrity.Fqdn
+      description: The current fully qualified domain name used in audit alerts.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.FileType
+      description: Represents the file type.
+      type: number
+    - contextPath: PrismaCloudCompute.FileIntegrity.ProcessName
+      description: The name of the process that initiated the event.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.Cluster
+      description: The cluster on which the event was found.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity._Id
+      description: The activity's unique identifier.
+      type: string
+    - contextPath: PrismaCloudCompute.FileIntegrity.Description
+      description: A human readable description of the action performed on the path.
+      type: string
+  - description: Use this command to unstuck the fetch stream in case it's getting duplicated incidents.
+    name: prisma-cloud-compute-unstuck-fetch-stream
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0

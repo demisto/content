@@ -1,0 +1,135 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Thinkst Canary - Incoming Mapper",
+    "mapping": {
+        "Thinkst Canary Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Destination Hostname": {
+                    "complex": {
+                        "accessor": "dst_host",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Destination Port": {
+                    "complex": {
+                        "accessor": "dst_port",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Device Name": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Source Hostname": {
+                    "complex": {
+                        "accessor": "src_host_reverse",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Source Port": {
+                    "complex": {
+                        "accessor": "src_port",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Src": {
+                    "complex": {
+                        "accessor": "src_host",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Thinkst Canary Flock Id": {
+                    "complex": {
+                        "accessor": "flock_id",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Thinkst Canary Flock Name": {
+                    "complex": {
+                        "accessor": "flock_name",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Thinkst Canary Node Id": {
+                    "complex": {
+                        "accessor": "node_id",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "created_std",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {
+                                        "isContext": false
+                                    },
+                                    "dayfirst": {
+                                        "isContext": false
+                                    },
+                                    "fuzzy": {
+                                        "isContext": false
+                                    },
+                                    "yearfirst": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Source Hostname": {
+                    "complex": {
+                        "accessor": "src_host_reverse",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "Source Port": {
+                    "complex": {
+                        "accessor": "src_port",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Thinkst Canary - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

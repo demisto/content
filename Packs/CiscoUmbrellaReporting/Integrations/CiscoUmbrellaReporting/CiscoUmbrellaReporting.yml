@@ -884,7 +884,7 @@ script:
       description: External IP for entry.
       type: String
     - contextPath: UmbrellaReporting.ActivityProxy.forwardingmethod
-      description: The request method (GET, POST, HEAD, etc.)
+      description: The request method (GET, POST, HEAD, etc.).
       type: String
     - contextPath: UmbrellaReporting.ActivityProxy.identities.deleted
       description: Indicates whether the identity was deleted or not.
@@ -1274,13 +1274,13 @@ script:
       description: ID of identity.
       type: Number
     - contextPath: UmbrellaReporting.ActivityIP.identities.label
-      description: Label for identity
+      description: Label for identity.
       type: String
     - contextPath: UmbrellaReporting.ActivityIP.identities.type.id
       description: Origin type for identity.
       type: Number
     - contextPath: UmbrellaReporting.ActivityIP.identities.type.label
-      description: Origin type label for identity
+      description: Origin type label for identity.
       type: String
     - contextPath: UmbrellaReporting.ActivityIP.identities.type.type
       description: Origin type name for identity.
@@ -1298,7 +1298,7 @@ script:
       description: The type of category.
       type: String
     - contextPath: UmbrellaReporting.ActivityIP.categories.integration
-      description: If the category is an integration
+      description: If the category is an integration.
       type: Boolean
     - contextPath: UmbrellaReporting.ActivityIP.categories.deprecated
       description: If the category is a legacy category.
@@ -1532,7 +1532,7 @@ script:
     - contextPath: UmbrellaReporting.SignatureListSummary.signatures.id
       description: Signature ID.
       type: Number
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3

@@ -46,18 +46,18 @@ name: BoxEventsCollector
 script:
   commands:
   - arguments:
-    - description: Maximum events to fetch
+    - description: Maximum events to fetch.
       name: page_size
       defaultValue: 10
-    - description: Should push events
+    - description: Should push events.
       name: should_push_events
       defaultValue: 'false'
-    - description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days)
+    - description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days).
       name: created_after
       defaultValue: 3 days
     description: Get events.
     name: box-get-events
-  dockerimage: demisto/pydantic-jwt3:1.0.0.64406
+  dockerimage: demisto/pydantic-jwt3:1.0.0.75129
   runonce: false
   script: '-'
   subtype: python3

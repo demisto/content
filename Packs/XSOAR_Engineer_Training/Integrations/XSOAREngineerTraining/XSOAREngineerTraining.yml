@@ -1,0 +1,110 @@
+category: Utilities
+commonfields:
+  id: XSOAR Engineer Training
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: "5"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: "The XSOAR Engineer Training (XET) integration provides sample data to fetch events into Cortex XSOAR, and commands to build playbooks around.\n\nUse for training purposes only."
+display: XSOAR Engineer Training
+name: XSOAR Engineer Training
+script:
+  commands:
+  - arguments: []
+    description: Fetches events from the XSOAR Engineer Training (XET) integration.
+    name: xet-get-events
+  - arguments:
+    - description: The Distinguished Name of the user in which to return information.
+      name: dn
+    - description: Queries users by the samAccountName attribute.
+      name: username
+    - default: true
+      description: Queries by the user's email address.
+      name: email
+    description: Retrieves detailed information about a user account. The user can be specified by username, email address, or as an Active Directory Distinguished Name (DN).
+    name: xet-ad-get-user
+    outputs:
+    - contextPath: ActiveDirectory.Users.dn
+      description: The Distinguished Name of the user.
+    - contextPath: ActiveDirectory.Users.displayName
+      description: The display name of the user.
+    - contextPath: ActiveDirectory.Users.name
+      description: The common name of the user.
+    - contextPath: ActiveDirectory.Users.sAMAccountName
+      description: The sAMAccountName of the user.
+    - contextPath: ActiveDirectory.Users.userAccountControl
+      description: The account control flag of the user.
+    - contextPath: ActiveDirectory.Users.mail
+      description: The email address of the user.
+    - contextPath: ActiveDirectory.Users.manager
+      description: The manager of the user.
+    - contextPath: ActiveDirectory.Users.memberOf
+      description: Groups for which the user is a member.
+    - contextPath: Account.DisplayName
+      description: The display name of the user.
+    - contextPath: Account.Groups
+      description: Groups for which the user is a member.
+    - contextPath: Account.Manager
+      description: The manager of the user.
+    - contextPath: Account.ID
+      description: The Distinguished Name of the user.
+    - contextPath: Account.Username
+      description: The samAccountName of the user.
+    - contextPath: Account.Email
+      description: The email address of the user.
+  - arguments:
+    - description: The username (samAccountName) of the user to modify.
+      name: username
+      required: true
+    description: Expires the password of an Active Directory user.
+    name: xet-ad-expire-password
+  - arguments:
+    - description: The username of the account to disable (sAMAccountName).
+      name: username
+      required: true
+    - description: The password to set for the user.
+      name: password
+      required: true
+    description: Sets a new password for an Active Directory user.
+    name: xet-ad-set-new-password
+  - arguments:
+    - description: The query to execute against the SIEM.
+      name: query
+      required: true
+    - auto: PREDEFINED
+      description: Type of result to return for this SIEM integration.
+      name: result_type
+      predefined:
+      - email
+      - hosts
+    description: Searches the simulated SIEM for events.
+    name: xet-siem-search
+    outputs:
+    - contextPath: SIEM.Result
+      description: The results of the SIEM search. The results are a JSON array, in which each item is a SIEM event.
+  - arguments:
+    - description: Who to send the fake email to.
+      name: to
+      required: true
+    description: Send an email. (Doesn't actually send an email.)
+    name: xet-send-mail
+  dockerimage: demisto/python3:3.10.13.74666
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

@@ -35,7 +35,7 @@ def delete_environment_variables(use_system_proxy: str):
     if use_system_proxy == 'false':
         env_variables = ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy']
         for env_var in env_variables:
-            if(env_var in os.environ):
+            if (env_var in os.environ):
                 del os.environ[env_var]
 
 

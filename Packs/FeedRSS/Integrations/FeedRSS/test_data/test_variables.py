@@ -6,7 +6,7 @@ EXPECTED_OUTPUT_EXCEEDED_MAX_SIZE = "This is a dumped content of the article. Us
 TEXT_MAX_SIZE = "<p>This is short text</p>"
 EXPECTED_OUTPUT_MAX_SIZE = "This is a dumped content of the article. Use the link under Publications field to read the full article. \n\n This is short text"
 
-TEST_DATA_MAX_SIZE = [(TEXT_EXCEEDED_MAX_SIZE, EXPECTED_OUTPUT_EXCEEDED_MAX_SIZE),(TEXT_MAX_SIZE, EXPECTED_OUTPUT_MAX_SIZE)]
+TEST_DATA_MAX_SIZE = [(TEXT_EXCEEDED_MAX_SIZE, EXPECTED_OUTPUT_EXCEEDED_MAX_SIZE), (TEXT_MAX_SIZE, EXPECTED_OUTPUT_MAX_SIZE)]
 HTML_CONTENT = """<div>
 <p>p in div</p>
 <div>
@@ -45,36 +45,36 @@ HTML_CONTENT = """<div>
 """
 FEED_DATA = [({'bozo': False,
              'entries': [feedparser.util.FeedParserDict({'title': 'Test Article, with comma',
-                          'link': 'https://test-article.com/',
-                          'authors': [{'name': 'Example'}],
-                          'published': 'Fri, 18 Jun 2021 15:35:41 +0000',
-                          'tags': [{'term': 'Malware', 'scheme': None, 'label': None}],
-                          'id': 'xxxx',
-                          'guidislink': False,
-                          'summary': "this is summary"})]
+                                                         'link': 'https://test-article.com/',
+                                                         'authors': [{'name': 'Example'}],
+                                                         'published': 'Fri, 18 Jun 2021 15:35:41 +0000',
+                                                         'tags': [{'term': 'Malware', 'scheme': None, 'label': None}],
+                                                         'id': 'xxxx',
+                                                         'guidislink': False,
+                                                         'summary': "this is summary"})]
                }, [{
-        "type": 'Report',
-        "value": "Test Article with comma",
-        "rawJSON": {'value': {'authors': [{'name': 'Example'}],
-                        'guidislink': False,
-                        'id': 'xxxx',
-                        'link': 'https://test-article.com/',
-                        'published': 'Fri, 18 Jun 2021 15:35:41 +0000',
-                        'summary': 'this is summary',
-                        'tags': [{'label': None,
-                                  'scheme': None,
-                                  'term': 'Malware'}],
-                        'title': 'Test Article, with comma'},
-                    'type': 'Report', "firstseenbysource": '2021-06-18T15:35:41'},
-        "reliability": "F - Reliability cannot be judged",
-        "fields": {
-            'publications': [{
-                'timestamp': 'Fri, 18 Jun 2021 15:35:41 +0000',
-                'link': 'https://test-article.com/',
-                'source': 'test.com',
-                'title': 'Test Article, with comma'
-            }],
-            'rssfeedrawcontent': 'test description',
-            'tags': [],
-            'description': 'this is summary'
-        }}])]
+                   "type": 'Report',
+                   "value": "Test Article with comma",
+                   "rawJSON": {'value': {'authors': [{'name': 'Example'}],
+                                         'guidislink': False,
+                                         'id': 'xxxx',
+                                         'link': 'https://test-article.com/',
+                                         'published': 'Fri, 18 Jun 2021 15:35:41 +0000',
+                                         'summary': 'this is summary',
+                                         'tags': [{'label': None,
+                                                   'scheme': None,
+                                                   'term': 'Malware'}],
+                                         'title': 'Test Article, with comma'},
+                               'type': 'Report', "firstseenbysource": '2021-06-18T15:35:41'},
+                   "reliability": "F - Reliability cannot be judged",
+                   "fields": {
+                       'publications': [{
+                           'timestamp': 'Fri, 18 Jun 2021 15:35:41 +0000',
+                           'link': 'https://test-article.com/',
+                           'source': 'test.com',
+                           'title': 'Test Article, with comma'
+                       }],
+                       'rssfeedrawcontent': 'test description',
+                       'tags': [],
+                       'description': 'this is summary'
+                   }}])]
