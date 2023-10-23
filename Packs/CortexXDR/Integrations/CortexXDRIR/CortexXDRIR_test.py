@@ -464,7 +464,6 @@ def test_sort_all_list_incident_fields():
 
 @pytest.mark.parametrize('dont_format_sublists', [False, True])
 def test_format_sublists_param(dont_format_sublists, mocker):
-
     """
     Given:
         -  A raw incident
