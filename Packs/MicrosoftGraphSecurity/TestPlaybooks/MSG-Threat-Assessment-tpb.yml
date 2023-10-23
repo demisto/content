@@ -1,6 +1,7 @@
 id: c9995a1e-3e4e-46d7-8844-8b0a9e0cf359
 version: -1
 name: MSG-Threat-Assessment-tpb
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
