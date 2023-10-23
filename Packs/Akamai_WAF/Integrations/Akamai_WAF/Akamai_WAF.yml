@@ -1330,7 +1330,7 @@ script:
     - description: Unique identifier for the contract.
       name: config_id
       required: true
-    description: '        Lists the activation history for a configuration.          The history is an array in descending order of submitDate.          The most recent submitted activation lists first. Products: All.'
+    description: 'Lists the activation history for a configuration. The history is an array in descending order of submitDate. The most recent submitted activation lists first. Products: All.'
     name: akamai-list-appsec-configuration-activation-history
   - arguments:
     - description: Filter the results by cnameFrom. Supports wildcard matches with *.
@@ -1477,7 +1477,7 @@ script:
     - contextPath: Akamai.Enrollments.Change.Status
       description: Akamai enrollments change status.
       type: Dictionary
-  dockerimage: demisto/auth-utils:1.0.0.78306
+  dockerimage: demisto/auth-utils:1.0.0.79304
   script: ''
   subtype: python3
   type: python

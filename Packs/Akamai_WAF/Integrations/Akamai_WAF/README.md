@@ -449,7 +449,7 @@ Update the certs and trust chains.
 | allowed_input_type_param | Allowed input type parameter. Default is third-party-cert-and-trust-chain. | Optional | 
 | certificate | The updated certificate. | Optional | 
 | trust_chain | The updated trust chain. | Optional | 
-| key_algorithm | RSA or ECDSA. Possible values are: RSA, ECDSA. | Optional | 
+| key_algorithm | Type of encryption. Possible values are: RSA, ECDSA. | Optional | 
 
 #### Context Output
 
@@ -495,7 +495,7 @@ Lists groups of Akamai.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.Group | unknown | Akmai Group | 
+| Akamai.Group | unknown | Akmai Group. | 
 
 ### akamai-get-group
 
@@ -553,7 +553,7 @@ Get a specific GTM domain.
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- | --- | 
+| --- | --- | --- |
 | Akamai.Domain | unknown | Domain. | 
 
 ### akamai-create-datacenter
@@ -966,7 +966,7 @@ AppSec get security policy ID by name.
 ### akamai-clone-appsec-config-version
 
 ***
-AppSec_clone appsec config version
+AppSec_clone appsec config version.
 
 #### Base Command
 
@@ -986,8 +986,8 @@ AppSec_clone appsec config version
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Akamai.AppSecConfig.Name | unknown | AppSec configuration name. | 
-| Akamai.AppSecConfig.Id | unknown | AppSec Configration ID | 
-| Akamai.AppSecConfig.NewVersion | unknown | AppSec Configration New Version | 
+| Akamai.AppSecConfig.Id | unknown | AppSec Configration ID. | 
+| Akamai.AppSecConfig.NewVersion | unknown | AppSec Configration New Version. | 
 
 ### akamai-patch-papi-property-rule-httpmethods
 
@@ -1103,7 +1103,7 @@ There is no context output for this command.
 ### akamai-get-production-deployment
 
 ***
-Get Production Deployment
+Get Production Deployment.
 
 #### Base Command
 
@@ -1121,7 +1121,7 @@ There is no context output for this command.
 ### akamai-get-change-history
 
 ***
-Get change history
+Get change history.
 
 #### Base Command
 
@@ -1139,7 +1139,7 @@ There is no context output for this command.
 ### akamai-patch-papi-property-rule-siteshield
 
 ***
-Patch papi property default rule siteshield
+Patch papi property default rule siteshield.
 
 #### Base Command
 
@@ -1164,7 +1164,7 @@ There is no context output for this command.
 ### akamai-update-appsec-config-version-notes
 
 ***
-Update application secuirty configuration version notes command
+Update application secuirty configuration version notes command.
 
 #### Base Command
 
@@ -1184,7 +1184,7 @@ There is no context output for this command.
 ### akamai-new-or-renew-match-target
 
 ***
-New match target if no existing found otherwise update the existing match target hostnames. If there are multiple match targets found, the first one in the list will be updated
+New match target if no existing found otherwise update the existing match target hostnames. If there are multiple match targets found, the first one in the list will be updated.
 
 #### Base Command
 
@@ -1209,7 +1209,7 @@ There is no context output for this command.
 ### akamai-patch-papi-property-rule-generic
 
 ***
-Generic JSON patch command for Papi Property Default Rule
+Generic JSON patch command for Papi Property Default Rule.
 
 #### Base Command
 
@@ -1235,7 +1235,7 @@ There is no context output for this command.
 ### akamai-get-papi-property-rule
 
 ***
-get papi property rule json and dump into string
+get papi property rule json and dump into string.
 
 #### Base Command
 
@@ -1255,12 +1255,12 @@ get papi property rule json and dump into string
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.PapiProperty.DefaultRule | unknown | Papi Property default rule | 
+| Akamai.PapiProperty.DefaultRule | unknown | Papi Property default rule. | 
 
 ### akamai-acknowledge-pre-verification-warning
 
 ***
-acknowledge pre verification warning
+acknowledge pre verification warning.
 
 #### Base Command
 
@@ -1379,7 +1379,7 @@ There is no context output for this command.
 ### akamai-list-appsec-configuration-activation-history
 
 ***
-        Lists the activation history for a configuration.          The history is an array in descending order of submitDate.          The most recent submitted activation lists first. Products: All.
+Lists the activation history for a configuration. The history is an array in descending order of submitDate. The most recent submitted activation lists first. Products: All.
 
 #### Base Command
 
@@ -1433,12 +1433,12 @@ Returns a list of all Site Shield maps that belong to your account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.SiteShieldMaps | List | Akamai SiteShield Maps | 
+| Akamai.SiteShieldMaps | List | Akamai SiteShield Maps. | 
 
 ### akamai-get-cps-enrollment-deployment
 
 ***
-Returns the certification/Enarollment deployment status for specific a environtment: production or staging.
+Returns the certification/enrollment deployment status for specific a environment: production or staging.
 
 #### Base Command
 
@@ -1448,14 +1448,56 @@ Returns the certification/Enarollment deployment status for specific a environtm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| enrollment_id | Unique Identifier of the Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Required | 
-| environment | Environment where the certificate is deployed: production or staging. Possible values are: production, staging. | Optional | 
+| enrollment_id | Unique identifier of the enrollment on which to perform the desired operation. And it can be retrieved via the akamai-list-enrollments command. | Required | 
+| environment | Environment where the certificate is deployed. Possible values are: production, staging. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.Cps.Enrollments.Deployment | Dictionary | Akamai Cps Enrollments Deployment | 
+| Akamai.Cps.Enrollments.Deployment | Dictionary | A collection of settings for the Akami CPS enrollments deployment. |
+
+#### Command example
+```!akamai-get-cps-enrollment-deployment enrollment_id=111111```
+#### Context Example
+```json
+{
+    "Akamai": {
+        "Cps": {
+            "Enrollments": {
+                "Deployment": {
+                    "ocspStapled": true,
+                    "ocspUris": ["http://ocsp.example.com"],
+                    "networkConfiguration": {
+                        "geography": "core",
+                        "mustHaveCiphers": "ak-akamai-2020q1",
+                        "ocspStapling": "not-set",
+                        "preferredCiphers": "ak-akamai-2020q1",
+                        "quicEnabled": false,
+                        "secureNetwork": "standard-tls",
+                        "sniOnly": true,
+                        "disallowedTlsVersions": [],
+                        "dnsNames": [
+                            "san2.example.com", "san1.example.com"
+                        ]},
+                    "primaryCertificate": {
+                        "certificate": "-----BEGIN CERTIFICATE-----\nMIID2 ... <sample - removed for readability> .... ZlSw==\n-----END CERTIFICATE-----",
+                        "expiry": "2021-06-10T12:00:00Z",
+                        "keyAlgorithm": "RSA",
+                        "signatureAlgorithm": "SHA-256",
+                        "trustChain": "-----BEGIN CERTIFICATE-----\nMIIDT ... <sample - removed for readability> .... JuAIQ=\n-----END CERTIFICATE-----"
+                    },
+                    "multiStackedCertificates": [
+                        {
+                            "certificate": "-----BEGIN CERTIFICATE-----\nMIID2 ... <sample - removed for readability> .... ZlSw==\n-----END CERTIFICATE-----",
+                            "expiry": "2021-06-10T12:00:00Z",
+                            "keyAlgorithm": "ECDSA",
+                            "signatureAlgorithm": "SHA-256",
+                            "trustChain": "-----BEGIN CERTIFICATE-----\nMIIDT ... <sample - removed for readability> .... JuAIQ=\n-----END CERTIFICATE-----"
+                        }]
+    }}}}
+}
+```
 
 ### akamai-list-cidr-blocks
 
@@ -1477,12 +1519,34 @@ List all CIDR blocks for all services you are subscribed to. To see additional C
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.CidrBlocks | List | A List of CIDR Blocks | 
+| Akamai.CidrBlocks | List | A list of CIDR blocks. |
+
+#### Command example
+```!akamai-list-cidr-blocks last_action=add effective_date_gt=2021-02-21```
+#### Context Example
+```json
+{
+    "Akamai":{ 
+        "CdirBlocks": [{
+            "cidrId": 11111,
+            "serviceId": 9,
+            "serviceName": "PERF_ANALYTICS",
+            "cidr": "11.111.111.111",
+            "cidrMask": "/11",
+            "port": "11,111",
+            "creationDate": "2021-02-21",
+            "effectiveDate": "2021-02-21",
+            "changeDate": "2021-02-21",
+            "minIp": "11.111.111.111",
+            "maxIp": "11.111.111.111",
+            "lastAction": "add"}]
+}}
+```
 
 ### akamai-update-cps-enrollment
 
 ***
-Updates an enrollment with changes. Response type will vary depending on the type and impact of change. For example, changing SANs list may return HTTP 202 Accepted since the operation require a new certificate and network deployment operations, and thus cannot be completed without a change. On the contrary, for example a Technical Contact name change may return HTTP 200 OK assuming there are no active change and when the operation does not require a new certificate. Reference: https://techdocs.akamai.com/cps/reference/put-enrollment  NOTES: Depending on the type of the modification, additional steps might be required to complete the update. These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowleging the warnings raised then waiting for the certificate to be deployed into PRODUCTION. However these additional steps are not included in this command. User needs to conduct those steps once the update command is completed.
+Updates an enrollment with changes. Response type will vary depending on the type and impact of change. For example, changing SANs list may return HTTP 202 Accepted since the operation requires new certificate and network deployment operations, and thus cannot be completed without a change. On the contrary, for example a Technical Contact name change may return HTTP 200 OK assuming there are no active changes and the operation does not require a new certificate. Reference: https://techdocs.akamai.com/cps/reference/put-enrollment  Note: Depending on the type of the modification, additional steps might be required to complete the update. These additional steps could be carrying out a "renew" change by resubmitting the CSR, acknowledging the warnings raised then waiting for the certificate to be deployed into Production. However, these additional steps are not included in this command. You need to perform those steps once the update command is completed.
 
 #### Base Command
 
@@ -1492,22 +1556,36 @@ Updates an enrollment with changes. Response type will vary depending on the typ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| enrollment_id | Enrollment on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Required | 
-| updates | the modification(s) to the enrollment in the dict format. The possible modifications are: ra, validationType, certificateType, networkConfiguration, changeManagement, csr, org, adminContact, techContact, thirdParty, enableMultiStackedCertificates. | Required | 
-| enrollment | Enrollment info in dict format. If provided, the script will not make another API call to get the enrollmont info.             if not, another API call will be issued to retrieve the Enrollment info. | Optional | 
-| allow_cancel_pending_changes | All pending changes to be cancelled when updating an enrollment. Possible values are: true, false. Default is true. | Optional | 
-| allow_staging_bypass | Bypass staging and push meta_data updates directly to production network. Current change will also be updated with the same changes. Possible values are: true, false. Default is true. | Optional | 
+| enrollment_id | Enrollment on which to perform the desired operation. It can be retrieved via the akamai-list-enrollments command. | Required | 
+| updates | The modification(s) to the enrollment in the dict format. The possible modifications are: ra, validationType, certificateType, networkConfiguration, changeManagement, csr, org, adminContact, techContact, thirdParty, enableMultiStackedCertificates. | Required | 
+| enrollment | Enrollment information in dict format. If provided, the script will not make another API call to get the enrollment information. If not provided, another API call will be issued to retrieve the enrollment information. | Optional | 
+| allow_cancel_pending_changes | Whether all pending changes are to be cancelled when updating an enrollment. Possible values are: true, false. Default is true. | Optional | 
+| allow_staging_bypass | Whether to bypass staging and push meta_data updates directly to the production network. Current change will also be updated with the same changes. Possible values are: true, false. Default is true. | Optional | 
 | deploy_not_after | Don't deploy after this date (UTC). Sample: 2021-01-31T00:00:00.000Z. | Optional | 
 | deploy_not_before | Don't deploy before this date (UTC). Sample: 2021-01-31T00:00:00.000Z. | Optional | 
-| force_renewal | Force certificate renewal for Enrollment. Possible values are: true, false. Default is false. | Optional | 
-| renewal_date_check_override | CPS will automatically start a Change to renew certificates in time before they expire. Possible values are: true, false. Default is true. | Optional | 
-| allow_missing_certificate_addition | Applicable for Third Party Dual Stack Enrollments, allows to update missing certificate. Option supported from v10. Possible values are: true, false. Default is false. | Optional | 
+| force_renewal | Whether to force certificate renewal for enrollment. Possible values are: true, false. Default is false. | Optional | 
+| renewal_date_check_override | Whether CPS will automatically start a change to renew certificates in time before they expire. Possible values are: true, false. Default is true. | Optional | 
+| allow_missing_certificate_addition | Applicable for Third Party Dual Stack Enrollment. Whether to update a missing certificate. Option supported from v10. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.Enrollment.Changes | Dictionary | Akamai Enrollment Changes | 
+| Akamai.Enrollment.Changes | Dictionary | Akamai enrollment changes. |
+
+#### Command example
+```!akamai-update-cps-enrollment enrollment_id=111111 updates="{\"thirdParty\": {\"excludeSans\": \"false\"}}" deploy_not_after=2023-11-30T00:00:00Z deploy_not_before=2023-11-23T00:00:00Z```
+#### Context Example
+```json
+{
+  "Akamai":{
+      "Enrollment":{
+          "Changes": [{
+              "enrollment": "/cps/v2/enrollments/111111",
+              "id": "111111"
+            }]
+}}}
+```
 
 ### akamai-update-cps-enrollment-schedule
 
@@ -1523,16 +1601,32 @@ Updates the current deployment schedule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | enrollment_path | Enrollment path found in the pending change location field. | Optional | 
-| enrollment_id | Enrollment ID on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Optional | 
-| change_id | Chnage ID on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Optional | 
-| deploy_not_after | The time after when the change will no longer be in effect.             This value is an ISO-8601 timestamp. (UTC)             Sample: 2021-01-31T00:00:00.000Z. | Optional | 
-| deploy_not_before | The time that you want change to take effect. If you do not set this, the change occurs immediately,             although most changes take some time to take effect even when they are immediately effective.             This value is an ISO-8601 timestamp. (UTC)             Sample: 2021-01-31T00:00:00.000Z. | Required | 
+| enrollment_id | Enrollment ID on which to perform the desired operation. The ID can be retrieved via the akamai-list-enrollments command. | Optional | 
+| change_id | Change ID on which to perform the desired operation. It can be retrieved via the akamai-list-enrollments command. | Optional | 
+| deploy_not_after | The time after when the change will no longer be in effect. This value is an ISO-8601 timestamp. (UTC) Sample: 2021-01-31T00:00:00.000Z. | Optional | 
+| deploy_not_before | The time that you want the change to take effect. If you do not set this, the change occurs immediately, although most changes take some time to take effect even when they are immediately effective. This value is an ISO-8601 timestamp. (UTC) Sample: 2021-01-31T00:00:00.000Z. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.Enrollment.Changes | Dictionary | Akamai Enrollment Changes | 
+| Akamai.Enrollment.Changes | Dictionary | Akamai enrollment changes. |
+
+#### Command example
+```!akamai-update-cps-enrollment-schedule deploy_not_before=2023-11-30T00:00:00Z enrollment_path=/cps/v2/enrollments/111111/changes/1111111```
+
+#### Context Example
+```json
+{
+  "Akamai":{
+      "Enrollment":{
+          "Changes": [{
+              "change": "/cps/v2/enrollments/111111/changes/1111111",
+              "changeId": "1111111",
+              "id": "111111"
+            }]
+}}}
+```
 
 ### akamai-get-cps-change-status
 
@@ -1547,12 +1641,43 @@ Gets the status of a pending change.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| enrollment_path |  Enrollment path found in the pending change location field. | Optional | 
-| enrollment_id | The enrollment ID on which to perform the desired operation. And it can be retrived via list_enrollments_command. | Optional | 
-| change_id | The change for this enrollment on which to perform the desired operation.  And it can be retrived via list_enrollments_command. | Optional | 
+| enrollment_path | Enrollment path found in the pending change location field. | Optional | 
+| enrollment_id | The enrollment ID on which to perform the desired operation. It can be retrieved via the akamai-list-enrollments command. | Optional | 
+| change_id | The change for this enrollment on which to perform the desired operation.  It can be retrieved via the akamai-list-enrollments command. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.Enrollments.Change.Status | Dictionary | Akamai Enrollments Change Status | 
+| Akamai.Enrollments.Change.Status | Dictionary | Akamai enrollments change status. | 
+
+#### Command example
+```akamai-get-cps-change-status enrollment_path=/cps/v2/enrollments/111111/changes/1111111```
+#### Context Example
+```json
+{
+  "Akamai":{
+      "Enrollments":{
+          "Change":{
+              "Status": {
+                "allowedInput": [
+                  {
+                    "info": "/cps/v2/enrollments/111111/changes/1111111/input/info/third-party-csr",
+                    "requiredToProceed": true,
+                    "type": "third-party-certificate",
+                    "update": "/cps/v2/enrollments/111111/changes/1111111/input/update/third-party-cert-and-trust-chain"
+                  }
+                ],
+                "statusInfo": {
+                  "deploymentSchedule": {
+                    "notAfter": null,
+                    "notBefore": "2023-11-30T00:00:00Z"
+                  },
+                  "description": "Waiting for you to upload and submit your third party certificate and trust chain.",
+                  "error": null,
+                  "state": "awaiting-input",
+                  "status": "wait-upload-third-party"
+                }
+              }
+}}}}
+```
