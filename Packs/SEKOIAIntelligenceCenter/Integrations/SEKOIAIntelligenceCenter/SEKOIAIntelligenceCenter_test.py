@@ -46,7 +46,7 @@ def client():
     ],
 )
 def test_extract_indicator_from_pattern(input, output):
-    SEKOIAIntelligenceCenter.extract_indicator_from_pattern(input) == output
+    assert SEKOIAIntelligenceCenter.extract_indicator_from_pattern(input) == output
 
 
 def test_extract_indicator_from_pattern_wrong_pattern(client):
@@ -62,13 +62,10 @@ def test_extract_indicator_from_pattern_wrong_pattern(client):
         ("email-addr", "does-not-exist@sekoia.io", "test_data/observable_unknown.json"),
     ],
 )
-def test_get_observables(
-    client, requests_mock, indicator_value, indicator_type, json_test_file
-):
+def test_get_observables(client, requests_mock, indicator_value, indicator_type, json_test_file):
     mock_response = util_load_json(json_test_file)
     requests_mock.get(
-        MOCK_URL
-        + f"/v2/inthreat/observables?match[value]={indicator_value}&match[type]={indicator_type}",
+        MOCK_URL + f"/v2/inthreat/observables?match[value]={indicator_value}&match[type]={indicator_type}",
         json=mock_response,
     )
 
@@ -107,9 +104,7 @@ def test_test_module_ok(client, requests_mock):
     ],
 )
 def test_test_module_nok(client, requests_mock, api_response, expected):
-    requests_mock.get(
-        MOCK_URL + "/v1/auth/validate", json=api_response, status_code=401
-    )
+    requests_mock.get(MOCK_URL + "/v1/auth/validate", json=api_response, status_code=401)
 
     assert expected in SEKOIAIntelligenceCenter.test_module(client)
 
@@ -139,16 +134,13 @@ def test_get_observables_with_credentials(client):
         ("email-addr", "does-not-exist@sekoia.io", "test_data/indicator_unknown.json"),
     ],
 )
-def test_get_indicator(
-    client, requests_mock, indicator_value, indicator_type, json_test_file
-):
+def test_get_indicator(client, requests_mock, indicator_value, indicator_type, json_test_file):
     mock_response = util_load_json(json_test_file)
     requests_mock.get(
-        MOCK_URL
-        + f"/v2/inthreat/indicators?value={indicator_value}&type={indicator_type}",
+        MOCK_URL + f"/v2/inthreat/indicators?value={indicator_value}&type={indicator_type}",
         json=mock_response,
     )
-    args = {"value": {indicator_value}, "type": {indicator_type}}
+    args = {"value": indicator_value, "type": indicator_type}
 
     result = SEKOIAIntelligenceCenter.get_indicator_command(client=client, args=args)
 
@@ -178,9 +170,7 @@ def test_get_indicator_with_credentials(client):
         (SEKOIAIntelligenceCenter.get_indicator_context_command, "", "ipv4-addr"),
     ],
 )
-def test_get_indicator_context_incomplete(
-    client, command, indicator_type, indicator_value
-):
+def test_get_indicator_context_incomplete(client, command, indicator_type, indicator_value):
     args = {"value": indicator_value, "type": indicator_type}
     with pytest.raises(ValueError):
         command(client=client, args=args)
@@ -209,20 +199,15 @@ def test_get_indicator_context_incomplete(
         ),
     ],
 )
-def test_get_indicator_context(
-    client, requests_mock, indicator_type, indicator_value, json_test_file
-):
+def test_get_indicator_context(client, requests_mock, indicator_type, indicator_value, json_test_file):
     mock_response = util_load_json(json_test_file)
     requests_mock.get(
-        MOCK_URL
-        + f"/v2/inthreat/indicators/context?value={indicator_value}&type={indicator_type}",
+        MOCK_URL + f"/v2/inthreat/indicators/context?value={indicator_value}&type={indicator_type}",
         json=mock_response,
     )
 
     args = {"value": indicator_value, "type": indicator_type}
-    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(
-        client=client, args=args
-    )
+    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
     for result in command_results:
         assert result.outputs != []
         assert result.to_context != []
@@ -234,20 +219,15 @@ def test_get_indicator_context(
         ("ipv4-addr", "1.1.1.1", "test_data/indicator_context_unknown.json"),
     ],
 )
-def test_get_indicator_context_unknown_indicator(
-    client, requests_mock, indicator_type, indicator_value, json_test_file
-):
+def test_get_indicator_context_unknown_indicator(client, requests_mock, indicator_type, indicator_value, json_test_file):
     mock_response = util_load_json(json_test_file)
     requests_mock.get(
-        MOCK_URL
-        + f"/v2/inthreat/indicators/context?value={indicator_value}&type={indicator_type}",
+        MOCK_URL + f"/v2/inthreat/indicators/context?value={indicator_value}&type={indicator_type}",
         json=mock_response,
     )
 
     args = {"value": indicator_value, "type": indicator_type}
-    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(
-        client=client, args=args
-    )
+    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
     for result in command_results:
         assert result.outputs != []
         assert result.to_context != []
@@ -267,13 +247,9 @@ def test_get_indicator_context_unknown_indicator(
         ("domain-name", "buike.duckdns.org"),
     ],
 )
-def test_get_indicator_context_with_credentials(
-    client, indicator_value, indicator_type
-):
+def test_get_indicator_context_with_credentials(client, indicator_value, indicator_type):
     args = {"value": indicator_value, "type": indicator_type}
-    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(
-        client=client, args=args
-    )
+    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
 
     for result in command_results:
         assert result.outputs != []
@@ -307,7 +283,7 @@ def test_get_reliability_score(input: int, output: str):
 )
 def test_get_tlp(input):
     marking_definition: str = "marking-definition--123"
-    stix_bundle: dict[list[dict]] = {
+    stix_bundle: dict[str, list[dict]] = {
         "objects": [
             {
                 "id": "abc",
@@ -325,7 +301,7 @@ def test_get_tlp(input):
 
 def test_get_tlp_not_found():
     marking_definition: str = "marking-definition--123"
-    stix_bundle: dict[list[dict]] = {
+    stix_bundle: dict[str, list[dict]] = {
         "objects": [
             {
                 "id": "abc",
@@ -347,7 +323,7 @@ def test_get_tlp_not_found():
         ("", Common.DBotScore.NONE),
     ],
 )
-def test_get_reputation_score(input: list, output: int):
+def test_get_reputation_score(input: str, output: int):
     assert SEKOIAIntelligenceCenter.get_reputation_score([input]) == output
 
 
@@ -368,18 +344,15 @@ def test_get_reputation_score(input: list, output: int):
         ),
     ],
 )
-def test_ip_command(
-    client, requests_mock, indicator_type, indicator_value, json_test_file
-):
+def test_ip_command(client, requests_mock, indicator_type, indicator_value, json_test_file):
     mock_response = util_load_json(json_test_file)
+    api_url = urljoin(MOCK_URL, "/v2/inthreat/indicators/context",)
     requests_mock.get(
-        MOCK_URL + "/v2/inthreat/indicators/context",
+        api_url,
         json=mock_response,
     )
 
-    command_results = SEKOIAIntelligenceCenter.ip_command(
-        client=client, args={"ip": indicator_value}
-    )
+    command_results = SEKOIAIntelligenceCenter.ip_command(client=client, args={"ip": indicator_value})
 
     for result in command_results:
         assert result.outputs != []
@@ -421,9 +394,7 @@ def test_reputation_command(client, input, command, requests_mock):
         json=mock_response,
     )
     args = {command: input}
-    command_results = SEKOIAIntelligenceCenter.reputation_command(
-        client=client, args=args, indicator_type=command
-    )
+    command_results = SEKOIAIntelligenceCenter.reputation_command(client=client, args=args, indicator_type=command)
 
     for result in command_results:
         assert result.outputs != []
@@ -434,6 +405,4 @@ def test_reputation_command_wrong_type(client):
     indicator_type = "wrong-type"
     args = {indicator_type: "1.1.1.1"}
     with pytest.raises(ValueError):
-        SEKOIAIntelligenceCenter.reputation_command(
-            client=client, args=args, indicator_type=indicator_type
-        )
+        SEKOIAIntelligenceCenter.reputation_command(client=client, args=args, indicator_type=indicator_type)

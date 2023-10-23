@@ -21,12 +21,12 @@ configuration:
   type: 4
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 - name: integrationReliability
   additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
@@ -1256,7 +1256,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.77497
+  dockerimage: demisto/py3-tools:1.0.0.79242
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
