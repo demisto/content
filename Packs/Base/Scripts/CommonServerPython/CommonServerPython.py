@@ -600,7 +600,7 @@ class FeedIndicatorType(object):
         :return:: Indicator type .
         :rtype: ``str``
         """
-        if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
+        if indicator_type.startswith(STIX_PREFIX):
             return indicator_type[len(STIX_PREFIX):]
         return indicator_type
 
@@ -2875,10 +2875,7 @@ class Common(object):
 
         @staticmethod
         def get_context_path():
-            if is_demisto_version_ge('5.5.0'):
-                return Common.DBotScore.CONTEXT_PATH
-            else:
-                return Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
+            return Common.DBotScore.CONTEXT_PATH
 
         def to_context(self):
             dbot_context = {
@@ -6140,16 +6137,15 @@ class ScheduledCommand:
 
     @staticmethod
     def raise_error_if_not_supported():
-        if not is_demisto_version_ge('6.2.0'):
-            raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
+        return True
 
     @staticmethod
     def supports_polling():
         """
-        Check if the integration supports polling.
+        Check if the integration supports polling (if server version is greater than 6.2.0).
         Returns: Boolean
         """
-        return True if is_demisto_version_ge('6.2.0') else False
+        return True
 
     def to_results(self):
         """
@@ -9047,11 +9043,9 @@ def set_integration_context(context, sync=True, version=-1):
     :return: The new integration context
     """
     demisto.debug('Setting integration context')
-    if is_versioned_context_available():
-        demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
-        return demisto.setIntegrationContextVersioned(context, version, sync)
-    else:
-        return demisto.setIntegrationContext(context)
+
+    demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
+    return demisto.setIntegrationContextVersioned(context, version, sync)
 
 
 def get_integration_context(sync=True, with_version=False):
@@ -9067,25 +9061,12 @@ def get_integration_context(sync=True, with_version=False):
     :rtype: ``dict``
     :return: The integration context.
     """
-    if is_versioned_context_available():
-        integration_context = demisto.getIntegrationContextVersioned(sync)
+    integration_context = demisto.getIntegrationContextVersioned(sync)
 
-        if with_version:
-            return integration_context
-        else:
-            return integration_context.get('context', {})
+    if with_version:
+        return integration_context
     else:
-        return demisto.getIntegrationContext()
-
-
-def is_versioned_context_available():
-    """
-    Determines whether versioned integration context is available according to the server version.
-
-    :rtype: ``bool``
-    :return: Whether versioned integration context is available
-    """
-    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
+        return integration_context.get('context', {})
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
@@ -9151,12 +9132,10 @@ def get_integration_context_with_version(sync=True):
     """
     latest_integration_context_versioned = get_integration_context(sync, with_version=True)
     version = -1
-    if is_versioned_context_available():
-        integration_context = latest_integration_context_versioned.get('context', {})
-        if sync:
-            version = latest_integration_context_versioned.get('version', 0)
-    else:
-        integration_context = latest_integration_context_versioned
+
+    integration_context = latest_integration_context_versioned.get('context', {})
+    if sync:
+        version = latest_integration_context_versioned.get('version', 0)
 
     return integration_context, version
 
@@ -9646,9 +9625,9 @@ class IndicatorsSearcher:
                  sort=None,
                  ):
         # searchAfter is available in searchIndicators from version 6.1.0
-        self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        self._can_use_search_after = True
         # populateFields merged in https://github.com/demisto/server/pull/18398
-        self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
+        self._can_use_filter_fields = True
         self._search_after_param = None
         self._page = page
         self._filter_fields = filter_fields
@@ -9782,8 +9761,6 @@ class AutoFocusKeyRetriever:
     def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
-            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
-                raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
             try:
                 api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
             except ValueError as err:
@@ -9793,37 +9770,29 @@ class AutoFocusKeyRetriever:
 
 def get_feed_last_run():
     """
-    This function gets the feed's last run: from XSOAR version 6.2.0: using `demisto.getLastRun()`.
-    Before XSOAR version 6.2.0: using `demisto.getIntegrationContext()`.
+    This function gets the feed's last run: using `demisto.getLastRun()`.
     :rtype: ``dict``
     :return: All indicators from the feed's last run
     """
-    if is_demisto_version_ge('6.2.0'):
-        feed_last_run = demisto.getLastRun() or {}
-        if not feed_last_run:
-            integration_ctx = demisto.getIntegrationContext()
-            if integration_ctx:
-                feed_last_run = integration_ctx
-                demisto.setLastRun(feed_last_run)
-                demisto.setIntegrationContext({})
-    else:
-        feed_last_run = demisto.getIntegrationContext() or {}
+    feed_last_run = demisto.getLastRun() or {}
+    if not feed_last_run:
+        integration_ctx = demisto.getIntegrationContext()
+        if integration_ctx:
+            feed_last_run = integration_ctx
+            demisto.setLastRun(feed_last_run)
+            demisto.setIntegrationContext({})
     return feed_last_run
 
 
 def set_feed_last_run(last_run_indicators):
     """
-    This function sets the feed's last run: from XSOAR version 6.2.0: using `demisto.setLastRun()`.
-    Before XSOAR version 6.2.0: using `demisto.setIntegrationContext()`.
+    This function sets the feed's last run: using `demisto.setLastRun()`.
     :type last_run_indicators: ``dict``
     :param last_run_indicators: Indicators to save in "lastRun" object.
     :rtype: ``None``
     :return: None
     """
-    if is_demisto_version_ge('6.2.0'):
-        demisto.setLastRun(last_run_indicators)
-    else:
-        demisto.setIntegrationContext(last_run_indicators)
+    demisto.setLastRun(last_run_indicators)
 
 
 def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None

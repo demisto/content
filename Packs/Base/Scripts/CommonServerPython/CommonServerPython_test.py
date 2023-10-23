@@ -4116,25 +4116,6 @@ def test_merge_lists():
         assert obj in expected
 
 
-@pytest.mark.parametrize('version, expected',
-                         [
-                             ({'version': '5.5.0'}, False),
-                             ({'version': '6.0.0'}, True),
-                         ]
-                         )
-def test_is_versioned_context_available(mocker, version, expected):
-    from CommonServerPython import is_versioned_context_available
-    # Set
-    mocker.patch.object(demisto, 'demistoVersion', return_value=version)
-
-    # Arrange
-    result = is_versioned_context_available()
-    get_demisto_version._version = None
-
-    # Assert
-    assert expected == result
-
-
 def test_update_context_merge(mocker):
     import CommonServerPython
 
