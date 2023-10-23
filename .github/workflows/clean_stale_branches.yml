@@ -1,12 +1,8 @@
 name: 'Close stale PRs'
-#on:
-#  schedule:
-#    # runs every day at midnight (UTC time).
-#    - cron:  '0 0 * * *'
 on:
-  push:
-    branches:
-      - 'Github_Action_Stale_Branches'
+  schedule:
+    # runs every day at midnight (UTC time).
+    - cron:  '0 0 * * *'
 env:
   DAY_BEFORE_STALE: 30
   DAY_BEFORE_CLOSE: 15
@@ -29,4 +25,3 @@ jobs:
           delete-branch: true
           remove-pr-stale-when-updated: true
           exempt-pr-labels: ${{env.EXEMPT_LABELS}}
-          debug-only: true
