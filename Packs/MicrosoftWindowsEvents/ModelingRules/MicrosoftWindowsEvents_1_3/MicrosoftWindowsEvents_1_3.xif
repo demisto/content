@@ -14,8 +14,8 @@ filter provider_name contains "Microsoft-Windows-Security-" or channel = "System
         message_action = arrayindex(regextract(message, "action \"([^\"]+)\""),0)
 | alter
         EventType = coalesce(event_action, task, message_task, ""),
-        get_message_instance_exe_path = if(message_instance ~= exe, message_instance, null),
-        get_message_instance_exe_process = if(message_instance ~= exe, arrayindex(regextract(message_instance, "action \"([^\"]+)\""),0), null)
+        get_message_instance_exe_path = if(message_instance ~= "exe", message_instance, null),
+        get_message_instance_exe_process = if(message_instance ~= "exe", arrayindex(regextract(message_instance, "action \"([^\"]+)\""),0), null)
 | alter
         xdm.source.ipv4 = coalesce(if(json_extract_scalar(event_data ,"$.IpAddress") contains "." and json_extract_scalar(event_data ,"$.IpAddress") not contains ":",json_extract_scalar(event_data ,"$.IpAddress"),json_extract_scalar(event_data ,"$.IpAddress") contains ":" and json_extract_scalar(event_data ,"$.IpAddress") contains ".", arrayindex(regextract(json_extract_scalar(event_data ,"$.IpAddress"),"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),null),if(channel="System",json_extract_scalar(event_data ,"$.Ipaddress"))),
         xdm.source.ipv6 = if(json_extract_scalar(event_data ,"$.IpAddress") contains ":" and json_extract_scalar(event_data ,"$.IpAddress") not contains ".",json_extract_scalar(event_data ,"$.IpAddress"),json_extract_scalar(event_data ,"$.IpAddress") contains ":" and json_extract_scalar(event_data ,"$.IpAddress") contains ".", arrayindex(regextract(json_extract_scalar(event_data ,"$.IpAddress"),"(.*?)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),0),null),
