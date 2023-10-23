@@ -200,7 +200,10 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
         "CustomFields": {
             "fingerprint": certificate["leaf_cert"]["fingerprint"],
             "levenshteindistance": result["similarity"],
-            "userasset": result["asset"]
+            "userasset": result["asset"],
+            "certificatesource": certificate["source"]["name"],
+            "certificateindex": certificate["cert_index"],
+            "externallink": certificate["cert_link"]
         }
     }
 
