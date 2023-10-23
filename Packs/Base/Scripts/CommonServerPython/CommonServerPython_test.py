@@ -8250,6 +8250,7 @@ class TestFetchWithLookBack:
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
 
+    @freeze_time("2022-04-07T10:13:00")
     def test_lookback_with_offset_time_range(self):
         """
         Given:
