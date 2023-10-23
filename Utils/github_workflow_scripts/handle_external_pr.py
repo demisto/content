@@ -192,7 +192,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_reviewer_needed(packs_in_pr: list[str]) -> bool:
+def is_tim_reviewer_needed(packs_in_pr: set[str]) -> bool:
     for pack in packs_in_pr:
         pack_metadata = get_pack_metadata(pack)
         for pr_file in pack:
@@ -203,6 +203,7 @@ def is_tim_reviewer_needed(packs_in_pr: list[str]) -> bool:
         categories = pack_metadata.get("categories")
         if "Threat Intelligence Management" in tags or "Data Enrichment & Threat Intelligence" in categories:
             return True
+    return False
 
 
 def main():
