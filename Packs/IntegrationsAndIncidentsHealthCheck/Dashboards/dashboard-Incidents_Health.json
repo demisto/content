@@ -367,7 +367,7 @@
     "modified": "2020-09-09T09:54:24.238334065Z",
     "name": "Top Failed Commands",
     "packID": "",
-    "params": null,
+    "params": {},
     "prevName": "Top Failing Commands",
     "propagationLabels": [
      "all"
