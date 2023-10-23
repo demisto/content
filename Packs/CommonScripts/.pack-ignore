@@ -256,6 +256,3 @@ ignore=BA124
 
 [file:ContextContains.yml]
 ignore=BA124
-
-[file:GetDataCollectionLink.yml]
-ignore=GR103

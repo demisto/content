@@ -58,13 +58,13 @@ def test_is_machine_saas(mocker, platform, version, expected):
 def test_generate_url(mocker, is_saas, expected):
     """
     Given:
-        - server url, encoded task and user 
+        - server url, encoded task and user
     When:
         - `generate_url` is called
     Then:
         - it returns the expected url
     """
-    mocker.patch('GetDataCollectionLink.is_machine_saas', return_value=is_saas) 
+    mocker.patch('GetDataCollectionLink.is_machine_saas', return_value=is_saas)
     mocker.patch('GetDataCollectionLink.execute_command', return_value="123")
 
     url = generate_url("https://server", "abc", "xyz")
