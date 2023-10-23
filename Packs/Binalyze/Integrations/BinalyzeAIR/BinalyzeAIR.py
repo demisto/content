@@ -31,7 +31,7 @@ class Client(BaseClient):
             return self._http_request(
                 method='GET',
                 url_suffix=f'/api/public/acquisitions/profiles?filter[name]='
-                           f'{profile}&filter[organizationIds]={organization_id}')['result']['entities'][0]['_id']
+                           f'{profile}&filter[organizationIds]={organization_id}').get('result', {}).get('entities', {})[0].get('_id', None)
 
     def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: Optional[int]) -> Dict[Any, str]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
