@@ -1,11 +1,10 @@
 {
-    "name": "MalwationAIMA (Deprecated)",
-    "description": "Deprecated. Use ThreatZone instead.",
+    "name": "ThreatZone",
+    "description": "ThreatZone malware analysis sandboxing",
     "support": "partner",
-    "hidden": true,
-    "currentVersion": "1.0.13",
-    "author": "MALWATION",
-    "url": "https://malwation.com",
+    "currentVersion": "1.0.0",
+    "author": "Malwation",
+    "url": "https://app.threat.zone",
     "email": "info@malwation.com",
     "categories": [
         "Forensics & Malware Analysis"
@@ -16,6 +15,5 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ],
-    "githubUser": []
+    ]
 }
