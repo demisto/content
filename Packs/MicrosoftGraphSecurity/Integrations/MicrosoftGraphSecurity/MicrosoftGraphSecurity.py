@@ -8,7 +8,7 @@ import urllib3
 import re
 from CommonServerUserPython import *
 
-from typing import Any, Optional
+from typing import Any, Optional, List
 from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
@@ -1274,22 +1274,22 @@ def test_auth_code_command(client: MsGraphClient, args):
     Called to test authorization code flow (since integration context cant be accessed during test_module)
     Calls list cases with no arguments
     """
-    # permissions = args.get('permission_type', 'all')
-    # if permissions == 'all':
-    #     permissions = "ediscovery, alerts, threat assessment"
-    # for permission in argToList(permissions):
-    #     try:
-    #         demisto.debug(f'checking permission {permission}')
-    #         match permission:
-    #             case 'ediscovery':
-    #                 list_ediscovery_case_command(client, {})
-    #             case 'alerts':
-    #                 test_function(client, args, True)
-    #             case 'threat assessment':
-    #                 list_threat_assessment_requests_command(client, {})
-    #     except Exception as e:
-    #         raise DemistoException(f'Authorization was not successful for permission {permission} '
-    #                                'Check that you have the required permissions') from e
+    permissions = args.get('permission_type', 'all')
+    if permissions == 'all':
+        permissions = "ediscovery, alerts, threat assessment"
+    for permission in argToList(permissions):
+        try:
+            demisto.debug(f'checking permission {permission}')
+            match permission:
+                case 'ediscovery':
+                    list_ediscovery_case_command(client, {})
+                case 'alerts':
+                    test_function(client, args, True)
+                case 'threat assessment':
+                    list_threat_assessment_requests_command(client, {})
+        except Exception as e:
+            raise DemistoException(f'Authorization was not successful for permission {permission} '
+                                   'Check that you have the required permissions') from e
     return CommandResults(readable_output='Authentication was successful.')
 
 
@@ -1412,11 +1412,13 @@ def get_result_outputs(result) -> Dict:
         'Request Source': result.get('requestSource'),
         'Recipient Email': result.get('recipientEmail'),
         'Destination Routing Reason': result.get('destinationRoutingReason'),
-        'Created User ID ': result.get('createdBy', {}).get('user', {}).get('id'),
-        'Created Username': result.get('createdBy', {}).get('user', {}).get('displayName'),
         'URL': result.get('url'),
         'File Name': result.get('fileName'),
     }
+    if created_by := result.get('createdBy'):
+        output['Created User ID'] = created_by.get('user', {}).get('id')
+        output['Created Username'] = created_by.get('user', {}).get('displayName')
+
     if results := result.get('results'):
         output['Result Type'] = results[0].get('resultType')
         output['Result message'] = results[0].get('message')
@@ -1428,10 +1430,10 @@ def get_threat_assessment_request(client: MsGraphClient, request_id):
     outputs = get_result_outputs(result)
     readable_output = tableToMarkdown('Threat assessment request:', outputs, removeNull=True)
 
-    return CommandResults(readable_output=readable_output,
+    return [CommandResults(readable_output=readable_output,
                           raw_response=result,
                           outputs=outputs,
-                          outputs_prefix='MSGraphMail.AssessmentRequest')
+                          outputs_prefix='MSGraphMail.AssessmentRequest')]
 
 
 @polling_function('msg-create-mail-assessment-request', requires_polling_arg=False)
@@ -1504,18 +1506,20 @@ def create_file_assessment_request_command(client: MsGraphClient, args) -> Comma
     request_id = args.get('request_id')
 
     if not request_id:
-        content_data = get_content_data(args.get('entry_id'), args.get('content_data'))
-        demisto.debug(f"got content data: {content_data}")
-        result = client.create_file_assessment_request(args.get('expected_assessment'),
-                                                       args.get('category'),
-                                                       args.get('file_name'),
-                                                       content_data)
-        request_id = result.get('id')
+        # content_data = get_content_data(args.get('entry_id'), args.get('content_data'))
+        # demisto.debug(f"got content data: {content_data}")
+        # result = client.create_file_assessment_request(args.get('expected_assessment'),
+        #                                                args.get('category'),
+        #                                                args.get('file_name'),
+        #                                                content_data)
+        # request_id = result.get('id')
         # status = result.get('status')
-        # request_id = "33e8c68f-9a57-4332-1739-08dbd2e880ba"
+        request_id = "33e8c68f-9a57-4332-1739-08dbd2e880ba"
     demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
+    demisto.debug(f"status is: {status}")
+    status = "pending"
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
@@ -1527,9 +1531,9 @@ def create_file_assessment_request_command(client: MsGraphClient, args) -> Comma
                                  outputs_prefix='MSGraphMail.FileAssessment')
         return PollResult(response=results)
     else:
-        args["hide_polling_output"] = True
+        # args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
-                          response=result)
+                          response=None)
 
 
 @polling_function('msg-create-url-assessment-request', requires_polling_arg=False)
@@ -1546,6 +1550,7 @@ def create_url_assessment_request_command(client: MsGraphClient, args) -> Comman
     demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
+    demisto.debug(f"status is : {status}")
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
@@ -1557,13 +1562,14 @@ def create_url_assessment_request_command(client: MsGraphClient, args) -> Comman
                                  outputs_prefix='MSGraphMail.UrlAssessment')
         return PollResult(response=results)
     else:
+        demisto.debug("in else")
         args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
                           response=result)
 
 
-def list_threat_assessment_requests_command(client: MsGraphClient, args):
-
+def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list[CommandResults]:
+    command_results = []
     limit = args.get('limit')
     request_id = args.get('request_id')
     if request_id:
@@ -1582,18 +1588,19 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args):
     for req in requests_list:
         outputs.append(get_result_outputs(req))
     readable_outputs = tableToMarkdown('Threat assessment request results:', outputs, removeNull=True)
+    command_results.append(CommandResults(readable_output=readable_outputs,
+                                          raw_response=result,
+                                          outputs=outputs,
+                                          outputs_prefix='MSGraphMail.AssessmentRequest'))
 
     skip_token_field = result.get('@odata.nextLink')
-    token_output = ''
     if skip_token_field:
-        next_token = skip_token_field.split('skipToken=')[1]
-        token_output = f'Next token is: {next_token}\n'
-        outputs.append(next_token)
+        next_token = skip_token_field.split('skiptoken=')[1]
+        command_results.append(CommandResults(readable_output=f'Next token is: {next_token}\n',
+                                              outputs={"next_token": next_token},
+                                              outputs_prefix='MsGraph.AssessmentRequestNextToken'))
 
-    return CommandResults(readable_output=token_output + readable_outputs,
-                          raw_response=result,
-                          outputs=outputs,
-                          outputs_prefix='MSGraphMail.AssessmentRequest')
+    return command_results
 
 
 def main():
@@ -1703,7 +1710,7 @@ def main():
             if command not in commands:
                 raise NotImplementedError(f'The provided command {command} was not implemented.')
             command_res = commands[command](client, demisto.args())  # type: ignore
-            if isinstance(command_res, CommandResults):
+            if isinstance(command_res, CommandResults) or isinstance(command_res, list):
                 return_results(command_res)
             else:
                 human_readable, entry_context, raw_response = command_res  # pylint: disable=E0633  # type: ignore
