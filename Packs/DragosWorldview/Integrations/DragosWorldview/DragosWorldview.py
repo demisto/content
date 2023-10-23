@@ -90,7 +90,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     query_list = []
     if page:
         query_list.append('page=' + page)
-    if exclude_suspect_domain not False:
+    if exclude_suspect_domain:
         query_list.append('exclude_suspect_domain=' + str(exclude_suspect_domain)).lower())
     if page_size:
         query_list.append('page_size=' + page_size)
