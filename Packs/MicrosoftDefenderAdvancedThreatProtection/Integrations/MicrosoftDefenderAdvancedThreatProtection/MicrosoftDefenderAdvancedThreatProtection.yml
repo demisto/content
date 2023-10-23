@@ -806,6 +806,13 @@ script:
       - Malware
       - SecurityTesting
       - UnwantedSoftware
+      - MultiStagedAttack
+      - MaliciousUserActivity
+      - CompromisedAccount
+      - Phishing
+      - LineOfBusinessApplication
+      - ConfirmedActivity
+      - NotMalicious
       - Other
     - description: Comment to be added to the alert.
       name: comment
@@ -5525,7 +5532,7 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.78196
+  dockerimage: demisto/crypto:1.0.0.79207
   isfetch: true
   runonce: false
   script: '-'
