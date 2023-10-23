@@ -38,7 +38,7 @@ HEADERS = {
 }
 # Note: True life time of token is actually 30 mins
 TOKEN_LIFE_TIME = 28
-INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
+INCIDENTS_PER_FETCH = arg_to_number(demisto.params().get('incidents_per_fetch', 15)) or 15
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 IDP_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
