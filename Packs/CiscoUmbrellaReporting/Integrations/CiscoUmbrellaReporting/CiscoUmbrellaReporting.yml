@@ -4,18 +4,14 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Cisco Umbrella Reporting API base URL.
-  defaultvalue: https://reports.api.umbrella.com
+  defaultvalue: https://api.umbrella.com
   display: API URL
   name: api_url
   required: true
   type: 0
-- additionalinfo: Organization ID
-  display: Organization ID
-  name: organization_id
-  required: true
-  type: 0
-- additionalinfo: Client ID and Client Secret.
-  display: Client ID
+- additionalinfo: API Key and API Secret.
+  display: API Key
+  displaypassword: API Secret
   name: credentials
   required: true
   type: 9
@@ -1532,7 +1528,7 @@ script:
     - contextPath: UmbrellaReporting.SignatureListSummary.signatures.id
       description: Signature ID.
       type: Number
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.75921
   runonce: false
   script: '-'
   subtype: python3
