@@ -418,6 +418,7 @@ def handle_delete_datasets_by_testdata(base_url, api_key, auth_id, test_data_fil
     Returns:
         Boolean - If the operation succeeded.
     """
+    logging.info("Starting to handle delete datasets from cloud instance.")
     dataset_names = get_dataset_and_packs_from_collected_modeling_rules_to_test(
         test_data_filenames=test_data_filenames
     )
@@ -468,13 +469,16 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
         else:
             success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
                 wait_for_uninstallation_to_complete(client, non_removable_packs)
+    logging.info(f'Got here 1.')
     success &= sync_marketplace(client=client)
+    logging.info(f'Got here 2.')
     success &= handle_delete_datasets_by_testdata(
         base_url=base_url,
         api_key=api_key,
         auth_id=xdr_auth_id,
         test_data_filenames=options.modeling_rules_to_test_files,
     )
+    logging.info(f'Got here 3.')
     return success
 
 
