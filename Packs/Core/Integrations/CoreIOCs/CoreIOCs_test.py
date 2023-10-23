@@ -138,13 +138,13 @@ class TestCreateFile:
     ]
 
     @classmethod
-    def setup_method(self):
+    def setup_method(cls):
         # creates the file
         with open(TestCreateFile.path, 'w') as _file:
             _file.write('')
 
     @classmethod
-    def teardown_method(self):
+    def teardown_method(cls):
         # removes the file when done
         os.remove(TestCreateFile.path)
 
