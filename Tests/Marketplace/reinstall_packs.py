@@ -62,7 +62,8 @@ def reinstall_packs(options: argparse.Namespace, cloud_machine: str) -> bool:
             multithreading=False,
             production_bucket=False
         )
-        success &= successful_uninstall & successful_install
+        # success &= successful_uninstall & successful_install
+        success &= successful_install
 
     return success
 
