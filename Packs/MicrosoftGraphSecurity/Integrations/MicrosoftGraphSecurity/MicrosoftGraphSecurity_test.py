@@ -690,5 +690,6 @@ def test_list_threat_assessment_requests_command(mocker):
     result = list_threat_assessment_requests_command(client_mocker, {})
     assert len(result) == 2
     assert result[0].outputs_prefix == 'MSGraphMail.AssessmentRequest'
+    assert len(result[0].outputs) == 4
     assert result[1].outputs_prefix == 'MsGraph.AssessmentRequestNextToken'
     assert result[1].outputs == {'next_token': 'test_token'}
