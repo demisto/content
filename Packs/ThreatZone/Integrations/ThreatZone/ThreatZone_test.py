@@ -359,7 +359,7 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
     def test_threatzone_static_upload_sample(self, _, __):
         args = {}
         args["entry_id"] = self.args["entry_id"]
-        args["scan_type"] = "static"
+        args["scan_type"] = "static-scan"
         results = threatzone_static_cdr_upload_sample(self.client, args)
 
         assert len(results) == 2
