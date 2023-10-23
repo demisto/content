@@ -18,9 +18,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Command-Line Analysis
-* Threat Hunting - Generic
 * Entity Enrichment - Generic v4
 * Cortex XDR - Endpoint Investigation
+* Threat Hunting - Generic
 * Block Indicators - Generic v3
 
 ### Integrations
@@ -59,4 +59,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Remote PsExec with LOLBIN command execution alert](../doc_files/Remote_PsExec_with_LOLBIN_command_execution_alert.png)
+![Cortex XDR Remote PsExec with LOLBIN command execution alert](../doc_files/Cortex_XDR_Remote_PsExec_with_LOLBIN_command_execution_alert.png)
