@@ -158,6 +158,10 @@
         "FeedLOLBAS": {
                 "mandatory": false,
                 "display_name": "LOLBAS Tools Feed"
+        },
+        "FeedFeedly": {
+            "mandatory": false,
+            "display_name": "Feedly Feed"
         }
     },
     "marketplaces": [
