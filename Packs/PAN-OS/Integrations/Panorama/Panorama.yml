@@ -152,6 +152,13 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Log type max number of job pulling attempts
+  name: fetch_job_polling_max_num_attempts
+  additionalinfo: "The maximum number of attempts to try and pull results for each log type from a job that was created by its query. Each attempt takes around 1 second. Increasing this value is useful in case there are many logs to pull from a given log type.\nNote: When increasing this number, in case fetching more than 4 logs types together, it is recommended to split different log types for different integration instances"
+  type: 0
+  defaultvalue: 10
+  advanced: true
+  section: Collect
 - display: Traffic Log Type Query
   name: traffic_query
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
@@ -9334,7 +9341,7 @@ script:
     - contextPath: Panorama.DeviceGroupNames
       description: The list of device groups.
       type: string
-  dockerimage: demisto/pan-os-python:1.0.0.73711
+  dockerimage: demisto/pan-os-python:1.0.0.79261
   isfetch: true
   runonce: false
   script: ''

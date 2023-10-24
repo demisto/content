@@ -6,8 +6,22 @@ Notes:
  - The logs will be stored in the dataset named *microsoft_windows_raw*.
  - The pack currently supports the following data source: **Security (Provider "Microsoft-Windows-Security-*)**, **System**, **Application** and **Powershell**.
 
-To view logs only from the Windows Event log, apply the following filter to the datamodel query: *| filter xdm.observer.type="Microsoft-Windows-Security-\*" or xdm.event.type="System" or xdm.event.type="Application"*
+To view logs only from the Windows Event log, apply any of the following filters to your datamodel query:
+* `| filter xdm.observer.type="Microsoft-Windows-Security-*"`
+* `| filter xdm.observer.type="Microsoft-Windows-TaskScheduler"`
+* `| filter xdm.event.type="System"`
+* `| filter xdm.event.type="Application"`
 
+**Pay Attention**: 
+This pack excludes several events for the DNS, ADFS and AMSI Windows services according to the *provider_name* field:
+* AD FS Auditing
+* Microsoft-Windows-DNSServer
+* Microsoft-Windows-DNS-Server-Service
+* Microsoft-Antimalware-Scan-Interface
+Should you wish to collect those logs as well, the installation of the following packs is required:
+* Microsoft DNS
+* Microsoft Windows AMSI
+* Microsoft AD FS Collection
 
 ## Collect Events from Vendor
 
@@ -22,6 +36,7 @@ To create or configure the Broker VM, use the information described [here](https
 
 
 To connect and use Windows Event Collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Activate-the-Windows-Event-Collector).
+
 
 ### XDRC (XDR Collector)
 

@@ -371,7 +371,9 @@ def test_module():
     Perform basic get request to get item samples
     """
     try:
-        bigquery_client = start_and_return_bigquery_client(demisto.params()['google_service_creds'])
+        google_service_creds = demisto.params().get('credentials_google_service', {}).get(
+            'password') or demisto.params()['google_service_creds']
+        bigquery_client = start_and_return_bigquery_client(google_service_creds)
         query_job = bigquery_client.query(TEST_QUERY)
         query_results = query_job.result()
         results_rows_iterator = iter(query_results)

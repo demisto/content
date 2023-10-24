@@ -160,9 +160,9 @@ def test_hash(mocker):
     assert result['Contents'][0]['name'] == incident1['name']
     assert result['Contents'][0]['status'] == '1'
     assert result['Contents'][0]['created'] == \
-           hashlib.md5(str(incident1['created']).encode('utf-8')).hexdigest()
+        hashlib.md5(str(incident1['created']).encode('utf-8')).hexdigest()
     assert result['Contents'][0]['labels'][0]['type'] == \
-           hashlib.md5(str(incident1['labels'][0]['type']).encode('utf-8')).hexdigest()
+        hashlib.md5(str(incident1['labels'][0]['type']).encode('utf-8')).hexdigest()
     assert list(result['Contents'][0]['labels'][0].keys()) == ['type', 'value']
 
 

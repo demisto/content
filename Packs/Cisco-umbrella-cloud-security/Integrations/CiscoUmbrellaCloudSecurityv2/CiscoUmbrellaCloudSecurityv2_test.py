@@ -1,5 +1,6 @@
 import json
 import os
+from unittest.mock import patch
 
 import CiscoUmbrellaCloudSecurityv2
 import CommonServerPython
@@ -48,6 +49,7 @@ def mock_client(requests_mock) -> CiscoUmbrellaCloudSecurityv2.Client:
     )
 
 
+@patch('CiscoUmbrellaCloudSecurityv2.MAX_LIMIT', 4)
 def test_list_destinations_command(requests_mock, mock_client):
     """
     Scenario:
@@ -67,25 +69,39 @@ def test_list_destinations_command(requests_mock, mock_client):
     """
     args = {
         'destination_list_id': '123',
+        'limit': 7,
     }
-    response = load_mock_response('destinations.json')
-    url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, f'{args["destination_list_id"]}/destinations')
 
-    requests_mock.get(url=url, json=response)
+    responses = []
+
+    for i in range(1, 3):
+        response = load_mock_response(f'destinations{i}.json')
+        responses.append(response)
+
+        url: str = CommonServerPython.urljoin(
+            DESTINATION_ENDPOINT,
+            f'{args["destination_list_id"]}/destinations?page={i}&limit={4}',
+        )
+        requests_mock.get(url=url, json=response)
 
     command_results: CommonServerPython.CommandResults = CiscoUmbrellaCloudSecurityv2.list_destinations_command(
         mock_client, args
     )
+
+    expected_outputs = responses[0]['data'] + responses[1]['data'][:3]
+    response['meta']['total'] = len(expected_outputs)
+    response['data'] = expected_outputs
 
     assert command_results.outputs_prefix == (
         f'{CiscoUmbrellaCloudSecurityv2.INTEGRATION_OUTPUT_PREFIX}.'
         f'{CiscoUmbrellaCloudSecurityv2.DESTINATION_OUTPUT_PREFIX}'
     )
     assert command_results.outputs_key_field == CiscoUmbrellaCloudSecurityv2.ID_OUTPUTS_KEY_FIELD
-    assert command_results.outputs == response['data']
+    assert command_results.outputs == expected_outputs
     assert command_results.raw_response == response
 
 
+@patch('CiscoUmbrellaCloudSecurityv2.MAX_LIMIT', 4)
 def test_list_destinations_command_fetch_destinations(requests_mock, mock_client):
     """
     Scenario:
@@ -106,19 +122,33 @@ def test_list_destinations_command_fetch_destinations(requests_mock, mock_client
     args = {
         'destination_list_id': '123',
         'destinations': ['www.LiorSB.com', '1.1.1.1'],
-        'destination_ids': ['111', '333'],
+        'destination_ids': ['111', '333', '555', '1010'],
     }
-    response = load_mock_response('destinations.json')
-    url = CommonServerPython.urljoin(DESTINATION_ENDPOINT, f'{args["destination_list_id"]}/destinations')
 
-    requests_mock.get(url=url, json=response)
+    responses = []
+
+    for i in range(1, 4):
+        response = load_mock_response(f'destinations{i}.json')
+        responses.append(response)
+
+        url: str = CommonServerPython.urljoin(
+            DESTINATION_ENDPOINT,
+            f'{args["destination_list_id"]}/destinations?page={i}&limit={4}',
+        )
+        requests_mock.get(url=url, json=response)
 
     command_results: CommonServerPython.CommandResults = CiscoUmbrellaCloudSecurityv2.list_destinations_command(
         mock_client, args
     )
 
-    data = response['data']
-    expected_outputs = [data[0], data[2], data[3]]
+    expected_outputs = [
+        responses[0]['data'][0],
+        responses[0]['data'][2],
+        responses[0]['data'][3],
+        responses[1]['data'][0],
+    ]
+    response['meta']['total'] = len(expected_outputs)
+    response['data'] = expected_outputs
 
     assert command_results.outputs_prefix == (
         f'{CiscoUmbrellaCloudSecurityv2.INTEGRATION_OUTPUT_PREFIX}.'
