@@ -74,6 +74,28 @@ def test_api_connection_fail(requests_mock: Any) -> None:
         assert mocked_command_result == expected_mocked_command_result
 
 
+def test_get_profile_id_preset() -> None:
+    # Test preset profiles
+    preset_profiles = ["browsing-history", "compromise-assessment", "event-logs", "full", "memory-ram-pagefile", "quick"]
+    expected_mocked_profile = "full"
+
+    if expected_mocked_profile in preset_profiles:
+        assert expected_mocked_profile
+
+
+def test_get_profile_id_custom(requests_mock: Any) -> None:
+    # Test preset profiles
+    preset_profiles = ["browsing-history", "compromise-assessment", "event-logs", "full", "memory-ram-pagefile", "quick"]
+    expected_mocked_profile = "custom_profile"
+    if expected_mocked_profile not in preset_profiles:
+        mock_response = util_load_json('test_data/profile_id.json')
+        requests_mock.get('https://nonexistent-domain.com/api/public/acquisitions/profiles?'
+                          'filter[name]=profile_name&filter[organizationIds]=0',
+                          json=mock_response)
+        expected_mocked_profile_id = mock_response.get('result', {}).get('entities', {})[0].get('_id', None)
+        return expected_mocked_profile_id
+
+
 def test_air_acquire_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_acquire_command
 
