@@ -1,7 +1,7 @@
 import pytest
 from CommonServerPython import *
-from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position,\
-    get_policy_optimizer_statistics_command, policy_optimizer_no_apps_command, policy_optimizer_get_unused_apps_command,\
+from PANOSPolicyOptimizer import Client, policy_optimizer_get_rules_command, policy_optimizer_get_dag_command, define_position, \
+    get_policy_optimizer_statistics_command, policy_optimizer_no_apps_command, policy_optimizer_get_unused_apps_command, \
     is_cms_selected
 
 BASE_URL = 'https://test.com'
