@@ -253,8 +253,12 @@ install-packs-in-server-master:
     - section_end "Lock Machine"
 
     - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-    - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
-
+    - |
+      if [[ $TEST_XDR_ENV ]]; then
+        cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+      else
+        echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+      fi
     - section_start "Clean Machine"
     - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh || EXIT_CODE=$?
     - section_end "Clean Machine"
