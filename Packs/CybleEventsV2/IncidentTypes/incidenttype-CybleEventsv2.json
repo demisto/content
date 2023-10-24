@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "CybleEventsv2-Layout",
+    "layout": "CybleEventsv2",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

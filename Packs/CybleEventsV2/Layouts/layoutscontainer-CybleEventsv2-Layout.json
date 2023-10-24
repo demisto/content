@@ -366,8 +366,8 @@
         ]
     },
     "group": "incident",
-    "id": "CybleEventsv2-Layout",
-    "name": "CybleEventsv2-Layout",
+    "id": "CybleEventsv2",
+    "name": "CybleEventsv2",
     "quickView": {
         "sections": [
             {
