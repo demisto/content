@@ -1,0 +1,33 @@
+[
+  {
+    "Value": "DRAFT_BL_114172022.pdf.vbs",
+    "Risk": "Informational",
+    "Type": "Filename",
+    "TLP": "white",
+    "Categories": [],
+    "Vulnerabilities": [],
+    "UsageMode": "informational"
+  },
+  {
+    "Value": "pttpostu.xyz",
+    "Risk": "Suspicious",
+    "Type": "Host",
+    "TLP": "green",
+    "Categories": [
+      "phishing"
+    ],
+    "Vulnerabilities": [],
+    "UsageMode": "detection"
+  },
+  {
+    "Value": "http://103.38.236.46/ntpvip.exe",
+    "Risk": "Suspicious",
+    "Type": "URL",
+    "TLP": "green",
+    "Categories": [
+      "malware"
+    ],
+    "Vulnerabilities": [],
+    "UsageMode": "detection"
+  }
+]
