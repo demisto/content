@@ -53,6 +53,7 @@ configuration:
   name: proxy
   type: 8
   required: false
+defaultclassifier: 'null'
 description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide scan and attack traffic. With this integration, users can contextualize existing alerts, filter false-positives, identify compromised devices, and track emerging threats.
 display: GreyNoise
 name: GreyNoise
@@ -156,7 +157,7 @@ script:
          Example:
          malicious,
          spoofable:false SSH Scanner,
-         spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103
+         spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103.
       name: advanced_query
     - description: Scroll token to paginate through results.
       name: next_token
@@ -300,7 +301,7 @@ script:
          Example:
          malicious,
          spoofable:false SSH Scanner,
-         spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103
+         spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103.
       name: advanced_query
     description: Get aggregate statistics for the top organizations, actors, tags, ASNs, countries, classifications, and operating systems of all the results of a given GNQL query.
     name: greynoise-stats
@@ -548,9 +549,9 @@ script:
     - contextPath: GreyNoise.Timeline.ip_address
       description: Timeline IP address.
       type: string
-  dockerimage: demisto/greynoise:1.0.0.78224
+  dockerimage: demisto/greynoise:1.0.0.79249
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 tests:
