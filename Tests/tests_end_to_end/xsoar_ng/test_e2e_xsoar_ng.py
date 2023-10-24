@@ -33,7 +33,7 @@ def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
     if response.get("total") > 0:
         return
 
-    raise ValueError(f'There are no indicators in {xsoar_ng_client.base_url} server')
+    raise ValueError(f'There are no indicators in {xsoar_ng_client.base_api_url} server')
 
 
 @pytest.fixture()
