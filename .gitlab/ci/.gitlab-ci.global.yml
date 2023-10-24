@@ -452,7 +452,7 @@
   #     when: always
   script:
     - section_start "Run pre-commit"
-    - demisto-sdk pre-commit --all-files --unit-test --mode=nightly --verbose --show-diff-on-failure --sdk-ref=81f8d332298f6b86fd1de0fc4e6f426aa5278d32
+    - demisto-sdk pre-commit --all-files --unit-test --mode=nightly --verbose --show-diff-on-failure --sdk-ref=MW/run_unit_tests/New_flag_mount_files
     - section_end "Run pre-commit"
     - job-done
   allow_failure: true
