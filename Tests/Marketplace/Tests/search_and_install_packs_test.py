@@ -13,6 +13,7 @@ from Tests.Marketplace.marketplace_constants import GCPConfig
 from google.cloud.storage import Blob
 
 CONTENT_PROJECT_ID = os.getenv('CI_PROJECT_ID', '2596')  # the default is the id of the content repo in code.pan.run
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 
 
 def load_json_file(directory: str, file_name: str):
@@ -384,7 +385,7 @@ class MockHttpRequest:
 
 GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY = '{"id":"errInstallContentPack","status":400,"title":"Could not install content ' \
                                       'pack","detail":"Could not install content pack","error":"Get' \
-                                      ' \"https://storage.googleapis.com/marketplace-ci-build/content/builds' \
+                                      f' \"https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/builds' \
                                       '/master%2F2788053%2Fxsoar/content/packs/pack2/1.0.2/pack2.zip\": http2: ' \
                                       'timeout awaiting response headers","encrypted":false,"multires":null}'
 

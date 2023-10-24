@@ -10,17 +10,17 @@ This integration was integrated and tested with version 1.0 of Group-IB Threat I
 ## Configure Group-IB Threat Intelligence & Attribution on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Group-IB Threat Intelligence & Attribution.
+2. Search for Group-IB Threat Intelligence.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | GIB TI&amp;A URL | The FQDN/IP the integration should connect to. | True |
-    | Username | The API Key and Username required to authenticate to the service. | True |
+    | **Parameter**                  | **Description** | **Required** |
+    |--------------------------------| --- | --- |
+    | GIB TI  URL                    | The FQDN/IP the integration should connect to. | True |
+    | Username                       | The API Key and Username required to authenticate to the service. | True |
     | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
-    | Use system proxy settings | Whether to use XSOAR system proxy settings to connect to the API. | False |
-    | Colletions to fetch | Type\(s\) of incidents to fetch from the third party API. | False |
-    | Incidents first fetch | Date to start fetching incidents from. | False |
+    | Use system proxy settings      | Whether to use XSOAR system proxy settings to connect to the API. | False |
+    | Colletions to fetch            | Type\(s\) of incidents to fetch from the third party API. | False |
+    | Incidents first fetch          | Date to start fetching incidents from. | False |
     | Number of requests per collection | A number of requests per collection that integration sends in one faetch iteration \(each request picks up to 200 incidents\). If you face some runtime errors, lower the value. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
