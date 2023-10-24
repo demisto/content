@@ -4,6 +4,8 @@ from typing import Dict, Any, Optional
 
 import urllib3
 
+urllib3.disable_warnings()
+
 
 class Client(BaseClient):
 
@@ -30,10 +32,10 @@ class Client(BaseClient):
         else:
             return self._http_request(
                 method='GET',
-                url_suffix=f'/api/public/acquisitions/profiles?filter[name]='
-                           f'{profile}&filter[organizationIds]={organization_id}').get('result', {}).get('entities', {})[0].get('_id', None)
+                url_suffix=f'/api/public/acquisitions/profiles?filter[name]={profile}&filter[organizationIds]='
+                           f'{organization_id}').get('result', {}).get('entities', {})[0].get('_id', None)
 
-    def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: Optional[int]) -> Dict[Any, str]:
+    def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: Optional[int]) -> Dict[str, Any]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
 
         :param hostname str: endpoint hostname to start acquisition.
@@ -68,7 +70,7 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def air_isolate(self, hostname: str, organization_id: Optional[int], isolation: str) -> Dict[Any, str]:
+    def air_isolate(self, hostname: str, organization_id: Optional[int], isolation: str) -> Dict[str, Any]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
         :param hostname str: endpoint hostname to start acquisition.
         :param isolation str: To isolate enable, to disable isolate use disable
@@ -172,7 +174,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate: bool = not demisto.params().get('insecure', False)
     proxy: bool = demisto.params().get('proxy', False)
     command: str = demisto.command()
-    args: Dict[Any, Any] = demisto.args()
+    args: Dict[str, Any] = demisto.args()
     headers: Dict[str, Any] = {
         'Authorization': f'Bearer {api_key}',
         'User-Agent': 'Binalyze AIR',
@@ -180,7 +182,6 @@ def main() -> None:  # pragma: no cover
         'Accept-Charset': 'UTF-8'
     }
     try:
-        urllib3.disable_warnings()
         demisto.debug(f'Command being called is {demisto.command()}')
         client: Client = Client(
             base_url=base_url,
