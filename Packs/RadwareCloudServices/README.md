@@ -52,8 +52,6 @@ For additional information, refer to the official Radware [documentation](https:
    - Vendor as `radware`
    - Product as `access_logs`
    - Compression as `gzip`
-5. Creating a new HTTP Log Collector will allow you to generate a unique token. Save it since it will be used later.
-6. Click the 3 dots next to the newly created instance and copy the API URL. It will also be used later.
 
 For additional information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
 
