@@ -391,12 +391,10 @@ def get_dataset_and_packs_from_collected_modeling_rules_to_test(test_data_filena
         Set - datasets to delete.
     """
     datasets_to_delete = set()
-    logging.info(f"{test_data_filenames=}")
     with open(test_data_filenames) as f:
         for modeling_rule_to_test in f.readlines():
-            modeling_rule_path = Path(f'Packs/{modeling_rule_to_test}')
+            modeling_rule_path = Path(f'Packs/{modeling_rule_to_test.strip()}')
             test_data_matches = list(modeling_rule_path.glob(TEST_DATA_PATTERN))
-            logging.info(f"{test_data_matches=}, {modeling_rule_path=}")
             if test_data_matches:
                 modeling_rule_testdata_path = test_data_matches[0]
                 test_data = json.loads(modeling_rule_testdata_path.read_text())
@@ -404,7 +402,6 @@ def get_dataset_and_packs_from_collected_modeling_rules_to_test(test_data_filena
                     dataset_name = data.get('dataset')
                     if dataset_name:
                         datasets_to_delete.add(dataset_name)
-                logging.info(f"{modeling_rule_testdata_path=}")
     return datasets_to_delete
 
 
@@ -467,12 +464,12 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
     success = sync_marketplace(client=client)
     non_removable_packs = options.non_removable_packs.split(',')
     success &= reset_core_pack_version(client, non_removable_packs)
-    if success:
-        if options.one_by_one:
-            success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
-        else:
-            success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
-                wait_for_uninstallation_to_complete(client, non_removable_packs)
+    # if success:
+    #     if options.one_by_one:
+    #         success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
+    #     else:
+    #         success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
+    #             wait_for_uninstallation_to_complete(client, non_removable_packs)
     logging.info(f'Got here 1.')
     success &= sync_marketplace(client=client)
     logging.info(f'Got here 2.')
