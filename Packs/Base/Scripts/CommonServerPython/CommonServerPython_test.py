@@ -8250,6 +8250,97 @@ class TestFetchWithLookBack:
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
 
+    @freeze_time("2022-04-07T10:13:00")
+    def test_lookback_with_offset_time_range(self):
+        """
+        Given:
+            A last run with an offset
+            
+        When:
+            Calling get_fetch_run_time_range
+            
+        Then:
+            The last run should be unchanged, even if there is a lookback.
+        """
+        from CommonServerPython import get_fetch_run_time_range
+        last_time = "2022-04-07T10:13:00"
+        last_run = {"time": last_time, "offset": 3}
+        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
+        # make sure that the start time is unchanged because of the offset
+        assert start_time == last_time
+        last_run = {"time": last_time, "offset": 0}
+        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
+        # now the offset is 0, so the look_back should act
+        assert start_time == "2022-04-07T10:12:00"
+    
+    def test_lookback_with_offset_update_last_run(self):
+        """
+        Given:
+            A last run
+        
+        When:
+            Calling create_updated_last_run_object with a new offset to change
+            
+        Then:
+            - The last run is updated with the new offset, and the start time remains as it was.
+            - When the offset needs to be reset, the last time is the latest incident time and the offset resets
+        """
+        from CommonServerPython import create_updated_last_run_object
+        last_time = "2022-04-07T10:13:00"
+        last_run = {"time": last_time, "offset": 3}
+        new_offset = 4
+        new_last_run, _ = create_updated_last_run_object(last_run,
+                                                         self.INCIDENTS,
+                                                         fetch_limit=3,
+                                                         look_back=1,
+                                                         start_fetch_time=last_time,
+                                                         end_fetch_time=datetime.now().isoformat(),
+                                                         created_time_field="created",
+                                                         new_offset=new_offset,
+                                                         )
+        # make sure that the start time is unchanged because of the offset, and the offset is updated
+        assert new_last_run["offset"] == 4
+        assert new_last_run["time"] == last_time
+        
+        last_run = {"time": last_time, "offset": new_offset}
+        new_offset = 0
+        new_last_run, _ = create_updated_last_run_object(last_run,
+                                                         self.INCIDENTS,
+                                                         fetch_limit=3,
+                                                         look_back=1,
+                                                         start_fetch_time=last_time,
+                                                         end_fetch_time=datetime.now().isoformat(),
+                                                         created_time_field="created",
+                                                         new_offset=new_offset,
+                                                         )
+        assert new_last_run["offset"] == 0
+        assert new_last_run["time"] == "2022-04-01T10:51:00"
+        
+    def test_calculate_new_offset(self):
+        """
+        Test that the new offset for the next run calculated correctly based on the old offset, number of incidents and total number of incidents.
+        The first argument is the old offset, the second is number of incidents and the third is the total number of incidents returned.
+        Given:
+            old offset, number of incidents, total number of incidents (could be None)
+        
+        When:
+            Calculating a new offset to the next run
+            
+        Then:
+            Make sure that the new offset is correct
+        """
+        from CommonServerPython import calculate_new_offset
+        assert calculate_new_offset(0, 2, 4) == 2
+        assert calculate_new_offset(0, 2, 2) == 0
+        assert calculate_new_offset(0, 2, 3) == 2
+        assert calculate_new_offset(1, 2, 4) == 3
+        assert calculate_new_offset(1, 2, 3) == 0
+        assert calculate_new_offset(1, 2, None) == 3
+
+
+
+
+
 
 class TestTracebackLineNumberAdgustment:
     @staticmethod
