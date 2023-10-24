@@ -1,14 +1,9 @@
 from google.cloud import storage
-import threading
-import time
-from typing import Any
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
-from time import sleep
-import random
-import requests
 from google.cloud import storage  # noqa
 import argparse
+import dimutex
 
 LOCKS_BUCKET = 'xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
@@ -51,21 +46,18 @@ if __name__ == "__main__":
     install_logging('lock_cloud_machines.log', logger=logging)
     logging.info('Starting to search for a CLOUD machine/s to lock')
     options = options_handler()
-    storage_client = storage.Client.from_service_account_json(options.service_account)
+    storage_client = storage.Client.from_service_account_json("/Users/yrosenberg/Desktop/key.json")
     storage_bucket = storage_client.bucket(LOCKS_BUCKET)
     blob = storage_bucket.blob(file_name)
 
-    import dimutex
-
-    lock = dimutex.GCS(bucket='bucket-name', name='lock-name')
-    with lock:
-        try:
-            lock.acquire()
-        except dimutex.AlreadyAcquiredError:
-            print('already acquired')
-
-    # with blob.open("w") as f:
-    #     f.write("abc")
+    lock = dimutex.GCS(bucket='(LOCKS_BUCKET', name='lock-name')
+    try:
+        lock.acquire()
+    except dimutex.AlreadyAcquiredError:
+        print('already acquired')
 
     print("starting to write to the bucket")
-    #write_to_gcs_with_mutex("Hello World!", "https://console.cloud.google.com/storage/browser/", "file.txt")
+    # with blob.open("w") as f:
+    #     f.write("abc")
+    print("done writing to the bucket, the lock is released")
+    lock.release()
