@@ -1,7 +1,5 @@
 from CommonServerPython import *
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 FE_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'

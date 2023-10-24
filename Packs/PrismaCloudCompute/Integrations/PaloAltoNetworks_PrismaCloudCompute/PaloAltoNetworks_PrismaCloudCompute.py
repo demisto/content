@@ -27,6 +27,7 @@ HEADERS_BY_NAME = {
     'compliance': ['type', 'id', 'description']
 }
 MAX_API_LIMIT = 50
+INTEGRATION_NAME = 'PaloAltoNetworks_PrismaCloudCompute'
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -253,28 +254,63 @@ class PrismaCloudComputeClient(BaseClient):
         """
         return self._http_request(method="GET", url_suffix="/radar/container/namespaces", params=params)
 
-    def get_images_scan_info(self, params: Optional[dict] = None) -> List[dict]:
+    def _get_all_results(self, url_suffix: str, params: Optional[dict] = None):
+        """
+        Gets all results by calling the API until the Total-Count of results is reached.
+        """
+        if not params:
+            params = {}
+        params.update({"limit": MAX_API_LIMIT, "offset": 0})
+        response = self._http_request(method="GET", url_suffix=url_suffix, params=params, resp_type='response')
+
+        total_count = int(response.headers.get("Total-Count", -1))
+        response = response.json()
+        current_count = len(response) if response else 0
+        while current_count < total_count:
+            try:
+                params["offset"] = current_count
+                response.extend(self._http_request(method="GET", url_suffix=url_suffix, params=params))
+                current_count = len(response)
+
+            except DemistoException as de:
+                if not (hasattr(de, "res") and hasattr(de.res, "status_code")):
+                    raise
+                if de.res.status_code == 429:
+                    # The API rate limit of 30 requests per minute was exceeded for this endpoint
+                    demisto.info(f"Rate limit exceeded, waiting 2 seconds before continuing.\n"
+                                 f"Current count: {current_count}, total count: {total_count}.")
+                    time.sleep(2)  # pylint: disable=E9003
+
+        return response
+
+    def get_images_scan_info(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get information about images scans.
 
         Args:
+            all_results (bool): whether to return all results or just the first page.
             params (dict): query parameters.
 
         Returns:
             list[dict]: images scan information.
         """
+        if all_results:
+            return self._get_all_results(url_suffix="/images", params=params)
         return self._http_request(method="GET", url_suffix="/images", params=params)
 
-    def get_hosts_scan_info(self, params: Optional[dict] = None) -> List[dict]:
+    def get_hosts_scan_info(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
         """
         Sends a request to get information about hosts scans.
 
         Args:
+            all_results (bool): whether to return all results or just the first page.
             params (dict): query parameters.
 
         Returns:
             list[dict]: hosts scan information.
         """
+        if all_results:
+            return self._get_all_results(url_suffix="/hosts", params=params)
         return self._http_request(method="GET", url_suffix="/hosts", params=params)
 
     def get_impacted_resources(self, cve: str, resource_type: str) -> dict:
@@ -418,6 +454,85 @@ class PrismaCloudComputeClient(BaseClient):
         headers = self._headers
         return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type="content")
 
+    def get_file_integrity_events(self, limit, sort, hostname=None, event_id=None, from_date=None,
+                                  to_date=None, search_term=None):
+        """
+        Get runtime file integrity audit events
+
+        Args:
+            hostname (str): The hostname for which to get runtime file integrity events
+
+        Returns:
+            HTTP response
+        """
+        endpoint = "audits/runtime/file-integrity"
+
+        headers = self._headers
+        params = {
+            "hostname": hostname,
+            "id": event_id,
+            "limit": limit,
+            "from": from_date,
+            "to": to_date,
+            "search": search_term,
+            "sort": "time",
+            "reverse": sort == "desc"
+        }
+        return self._http_request('get', endpoint, params=params, headers=headers)
+
+    def get_ci_scan_results(self, all_results: bool = False, params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get CI scan results information.
+
+        Returns:
+            list[dict]: CI scan results information.
+        """
+        if all_results:
+            return self._get_all_results(url_suffix="/scans", params=params)
+        return self._http_request(method="GET", url_suffix="scans", params=params)
+
+    def get_trusted_images(self) -> dict:
+        """
+        Sends a request to get trusted images information.
+
+        Returns:
+            list[dict]: trusted images information.
+        """
+        return self._http_request(method="GET", url_suffix="trust/data")
+
+    def update_trusted_images(self, data: dict):
+        """
+        Sends a request to update trusted images information.
+        """
+        return self._http_request(method="PUT", url_suffix="trust/data", json_data=data, resp_type="response", ok_codes=(200,))
+
+    def get_container_scan_results(self, params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get container scan results information.
+
+        Returns:
+            list[dict]: container scan results information.
+        """
+        return self._http_request(method="GET", url_suffix="containers", params=params)
+
+    def get_hosts_info(self, params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get hosts information.
+
+        Returns:
+            list[dict]: host information.
+        """
+        return self._http_request(method="GET", url_suffix="hosts/info", params=params)
+
+    def get_runtime_container_audit_events(self, params: Optional[dict] = None) -> List[dict]:
+        """
+        Sends a request to get runtime container audit events.
+
+        Returns:
+            list[dict]: runtime container audit events information.
+        """
+        return self._http_request(method="GET", url_suffix="audits/runtime/container", params=params)
+
 
 def format_context(context):
     """
@@ -523,10 +638,11 @@ def is_command_is_fetch():
     :return: True if this is a fetch_incidents command, otherwise return false.
     :rtype: ``bool``
     """
-    if demisto.getLastRun():
+    ctx = demisto.getIntegrationContext()
+    if demisto.getLastRun() or ctx.get("unstuck", False):
         return True
     else:
-        return not demisto.getIntegrationContext().get('fetched_incidents_list', [])
+        return not ctx.get('fetched_incidents_list', [])
 
 
 def fetch_incidents(client):
@@ -604,6 +720,7 @@ def fetch_incidents(client):
 
         incidents_to_update = incidents or ctx.get('fetched_incidents_list')
         ctx.update({'fetched_incidents_list': incidents_to_update})
+        ctx["unstuck"] = False
         demisto.setIntegrationContext(ctx)
         demisto.debug(f"Integration Context after update = {ctx}")
 
@@ -1207,13 +1324,14 @@ def add_custom_malware_feeds(client: PrismaCloudComputeClient, args: dict) -> Co
     return CommandResults(readable_output="Successfully updated the custom md5 malware feeds")
 
 
-def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResults]:
+def get_cves(client: PrismaCloudComputeClient, args: dict, reliability: str = "B - Usually reliable") -> List[CommandResults]:
     """
     Get cves information, implement the command 'cve'.
 
     Args:
         client (PrismaCloudComputeClient): prisma-cloud-compute client.
         args (dict): cve command arguments.
+        reliability (str): reliability of the source providing the intelligence data.
 
     Returns:
         CommandResults: command-results object.
@@ -1240,14 +1358,20 @@ def get_cves(client: PrismaCloudComputeClient, args: dict) -> List[CommandResult
                 cve_data = {
                     "ID": cve_id, "CVSS": cvss, "Modified": modified, "Description": description
                 }
-
+                dbot_score = Common.DBotScore(indicator=cve_id,
+                                              indicator_type=DBotScoreType.CVE,
+                                              integration_name=INTEGRATION_NAME,
+                                              score=Common.DBotScore.NONE,
+                                              malicious_description=description,
+                                              reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(reliability))
                 results.append(
                     CommandResults(
                         outputs_prefix="CVE",
                         outputs_key_field=["ID"],
                         outputs=cve_data,
                         indicator=Common.CVE(
-                            id=cve_id, cvss=cvss, published="", modified=modified, description=description
+                            id=cve_id, cvss=cvss, published="", modified=modified, description=description,
+                            dbot_score=dbot_score
                         ),
                         raw_response=filtered_cves_information,
                         readable_output=tableToMarkdown(name=cve_id, t=cve_data)
@@ -1427,24 +1551,26 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
         limit=args.pop("limit_record", "10"), offset=args.get("offset", "0")
     )
     stats_limit, _ = parse_limit_and_offset_values(limit=args.pop("limit_stats", "10"))
+    all_results = argToBoolean(args.get("all_results", "false"))
     compact = argToBoolean(value=args.get("compact", "true"))
-    clusters, fields, hostname, id, name = (
-        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get("id"), args.get("name")
+    clusters, fields, hostname, _id, name, compliance_ids = (
+        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get("id"), args.get("name"),
+        argToList(args.get("compliance_ids"))
     )
     registry, repository = args.get("registry"), args.get("repository")
 
     params = assign_params(
         limit=limit, offset=offset, compact=compact, clusters=clusters, fields=fields,
-        hostname=hostname, id=id, name=name, registry=registry, repository=repository
+        hostname=hostname, id=_id, name=name, registry=registry, repository=repository, complianceIDs=compliance_ids
     )
 
-    if images_scans := client.get_images_scan_info(params=params):
+    if images_scans := client.get_images_scan_info(all_results=all_results, params=params):
         for scan in images_scans:
             if "vulnerabilities" in scan:
                 # filter the vulnerabilities amount according to stats_limit
                 scan["vulnerabilities"] = filter_api_response(
                     api_response=scan.get("vulnerabilities"), limit=stats_limit
-                )
+                ) if not all_results else scan.get("vulnerabilities")
                 if vulnerabilities := scan.get("vulnerabilities"):
                     for vuln in vulnerabilities:
                         if "fixDate" in vuln:
@@ -1453,7 +1579,7 @@ def get_images_scan_list(client: PrismaCloudComputeClient, args: dict) -> Comman
                 # filter the complianceIssues amount according to stats_limit
                 scan["complianceIssues"] = filter_api_response(
                     api_response=scan.get("complianceIssues"), limit=stats_limit
-                )
+                ) if not all_results else scan.get("complianceIssues")
                 if compliances := scan.get("complianceIssues"):
                     for compliance in compliances:
                         if "fixDate" in compliance:
@@ -1564,22 +1690,24 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
         limit=args.pop("limit_record", "10"), offset=args.get("offset", "0")
     )
     stats_limit, _ = parse_limit_and_offset_values(limit=args.pop("limit_stats", "10"))
+    all_results = argToBoolean(args.get("all_results", "false"))
     compact = argToBoolean(value=args.get("compact", "true"))
-    clusters, fields, hostname, provider, distro = (
-        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get("provider"), args.get("distro")
+    clusters, fields, hostname, provider, distro, compliance_ids = (
+        args.get("clusters"), args.get("fields"), args.get("hostname"), args.get(
+            "provider"), args.get("distro"), argToList(args.get("compliance_ids"))
     )
 
     params = assign_params(
-        limit=limit, offset=offset, compact=compact, clusters=clusters,
+        limit=limit, offset=offset, compact=compact, clusters=clusters, complianceIDs=compliance_ids,
         fields=fields, hostname=hostname, provider=provider, distro=distro
     )
 
-    if hosts_scans := client.get_hosts_scan_info(params=params):
+    if hosts_scans := client.get_hosts_scan_info(all_results, params=params):
         for scan in hosts_scans:
             if "vulnerabilities" in scan:
                 scan["vulnerabilities"] = filter_api_response(
                     api_response=scan.get("vulnerabilities"), limit=stats_limit
-                )
+                ) if not all_results else scan.get("vulnerabilities")
                 if vulnerabilities := scan.get("vulnerabilities"):
                     for vuln in vulnerabilities:
                         if "fixDate" in vuln:
@@ -1587,7 +1715,7 @@ def get_hosts_scan_list(client: PrismaCloudComputeClient, args: dict) -> Command
             if "complianceIssues" in scan:
                 scan["complianceIssues"] = filter_api_response(
                     api_response=scan.get("complianceIssues"), limit=stats_limit
-                )
+                ) if not all_results else scan.get("complianceIssues")
                 if compliances := scan.get("complianceIssues"):
                     for compliance in compliances:
                         if "fixDate" in compliance:
@@ -1828,8 +1956,8 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
     """
     now = datetime.now()
     from_day = arg_to_number(args.get("FromDays", 2))
-    from_time = now - timedelta(days=from_day)      # type: ignore
-    image_name = urllib.parse.quote(args.get("ImageName"), safe='')     # type: ignore
+    from_time = now - timedelta(days=from_day)  # type: ignore
+    image_name = urllib.parse.quote(args.get("ImageName"), safe='')  # type: ignore
     audit_type = args.get("audit_type")
     limit = arg_to_number(args.get("limit", 25))
     data = client.get_firewall_audit_container_alerts(
@@ -1957,6 +2085,422 @@ def get_logs_defender_download_command(client: PrismaCloudComputeClient, args: d
     return fileResult(f"{hostname}-logs.tar.gz", response, entryTypes["entryInfoFile"])
 
 
+def get_file_integrity_events_command(client: PrismaCloudComputeClient, args: dict):
+    """
+    Get runtime file integrity audit events for the given hostname
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-file-integrity-events command arguments
+
+    Returns:
+        HTTP Response object
+    """
+    hostname = args.get('hostname')
+    event_id = args.get('event_id')
+    limit = args.get('limit')
+    from_date = args.get('from_date')
+    to_date = args.get('to_date')
+    search_term = args.get('search_term')
+    sort = args.get('sort')
+
+    response = client.get_file_integrity_events(
+        limit, sort, hostname=hostname, event_id=event_id,
+        from_date=from_date, to_date=to_date, search_term=search_term
+    )
+    if not response:
+        readable_output = "No results for the given search."
+    else:
+        readable_output = None
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.FileIntegrity',
+        outputs_key_field='_id',
+        outputs=format_context(response),
+        raw_response=response,
+        readable_output=readable_output
+    )
+
+
+def unstuck_fetch_stream_command():
+    """
+    Adds a field to ensure that is_command_is_fetch will recognize the next fetch incidents run as fetch.
+    This command is for unstacking the fetch stream in case the fetch incidents yields duplications.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    ctx = demisto.getIntegrationContext()
+    demisto.debug(f"unstuck field before update = {ctx.get('unstuck', False)}")
+    ctx["unstuck"] = True
+    demisto.setIntegrationContext(ctx)
+    demisto.debug(f"unstuck field after update = {ctx.get('unstuck', False)}")
+    return CommandResults(
+        readable_output="The fetch stream was released successfully."
+    )
+
+
+def reduce_ci_scan_results(ci_scan_results):
+    """
+    Reduces the CI scan results by removing unnecessary fields so the results will be shoerter to context data.
+    """
+    return [{'entityInfo': {'_id': scan['entityInfo'].get('_id'),
+                            'type': scan['entityInfo'].get('type'),
+                            'hostname': scan['entityInfo'].get('hostname'),
+                            'scanTime': scan['entityInfo'].get('scanTime'),
+                            'distro': scan['entityInfo'].get('distro'),
+                            'image': scan['entityInfo'].get('image'),
+                            'repoTag': scan['entityInfo'].get('repoTag'),
+                            'tags': scan['entityInfo'].get('tags'),
+                            'creationTime': scan['entityInfo'].get('creationTime'),
+                            'vulnerabilitiesCount': scan['entityInfo'].get('vulnerabilitiesCount'),
+                            'complianceIssuesCount': scan['entityInfo'].get('complianceIssuesCount'),
+                            'vulnerabilityDistribution': scan['entityInfo'].get('vulnerabilityDistribution'),
+                            'complianceDistribution': scan['entityInfo'].get('complianceDistribution'),
+                            'labels': scan['entityInfo'].get('labels'),
+                            'scanVersion': scan['entityInfo'].get('scanVersion'),
+                            'scanID': scan['entityInfo'].get('scanID'),
+                            'instances': [{'image': (scan["entityInfo"].get("instances") or [{}])[0].get("image")}]
+                            },
+             'pass': scan['pass']}
+            for scan in ci_scan_results]
+
+
+def get_ci_scan_results_list(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Retrieve a list of ci scan results and their information.
+    Implement the command 'prisma-cloud-compute-ci-scan-results-list'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-ci-scan-results-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, offset = parse_limit_and_offset_values(
+        limit=args.get("limit", "50"), offset=args.get("offset", "0")
+    )
+    all_results = argToBoolean(args.get("all_results", "false"))
+    verbose = argToBoolean(args.get("verbose", "false"))
+    account_ids = argToList(args.get("account_ids"))
+    resource_ids = argToList(args.get("resource_ids"))
+    region = argToList(args.get("region"))
+    job_name = argToList(args.get("job_name"))
+    search = args.get("search")
+    scan_id = args.get("scan_id")
+    image_id = args.get("image_id")
+    if to := args.get("scan_time_to"):
+        to = parse_date_string_format(to, "%Y-%m-%dT%H:%M:%SZ")
+
+    params = assign_params(
+        offset=offset, limit=limit, search=search, accountIDs=account_ids, resourceIDs=resource_ids, region=region, _id=scan_id,
+        jobName=job_name, imageID=image_id, to=to
+    )
+    # add saved words to params
+    params["pass"] = args.get("pass", "true")
+    if _from := args.get("scan_time_from"):
+        params["from"] = parse_date_string_format(_from, "%Y-%m-%dT%H:%M:%SZ")
+
+    if ci_scan_results := client.get_ci_scan_results(all_results=all_results, params=params):
+        if not verbose:
+            ci_scan_results = reduce_ci_scan_results(ci_scan_results)
+            if all_results:
+                table = f'### CI Scan Information\nRetrieved {len(ci_scan_results)} results to context data.'
+
+        if verbose or not all_results:
+            table = tableToMarkdown(
+                name="CI Scan Information",
+                t=[
+                    {
+                        "Image": (scan["entityInfo"].get("instances") or [{}])[0].get("image"),
+                        "ID": scan["entityInfo"]["_id"],
+                        "Distribution": scan["entityInfo"].get("distro"),
+                        "Scan Status": scan["pass"],
+                        "Scan Time": scan.get("time"),
+                    } for scan in ci_scan_results
+                ],
+                headers=["Image", "ID", "Distribution", "Scan Status", "Scan Time"],
+                removeNull=True,
+            )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.CIScan",
+        outputs_key_field="entityInfo._id",
+        outputs=ci_scan_results,
+        readable_output=table,
+        raw_response=ci_scan_results
+    )
+
+
+def get_trusted_images(client: PrismaCloudComputeClient) -> CommandResults:
+    """
+    Retrieve a list of trusted images rules and groups and their information.
+    Implement the command 'prisma-cloud-compute-trusted-images-list'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    if trusted_images_results := client.get_trusted_images():
+        table = "## Trusted Images Details\n" + \
+                tableToMarkdown(
+                    name="Policy Rules Information",
+                    t=[
+                        {
+                            "Rule Name": policy_role["name"],
+                            "Allowed Groups": policy_role.get("allowedGroups"),
+                            "Effect": policy_role.get("effect"),
+                            "Modified": policy_role["modified"],
+                            "Owner": policy_role["owner"]
+                        } for policy_role in trusted_images_results.get("policy", {}).get("rules", [])
+                    ],
+                    headers=["Rule Name", "Effect", "Owner", "Allowed Groups", "Modified"],
+                    removeNull=True,
+                ) + tableToMarkdown(
+                    name="Trust Groups Information",
+                    t=[
+                        {
+                            "Modified": group["modified"],
+                            "Owner": group["owner"],
+                            "Group Name": group.get("name"),
+                            "ID": group["_id"],
+                        } for group in trusted_images_results.get("groups", [])
+                    ],
+                    headers=["ID", "Group Name", "Owner", "Modified"],
+                    removeNull=True,
+                )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.TrustedImage",
+        outputs_key_field="policy._id",
+        outputs=trusted_images_results,
+        readable_output=table,
+        raw_response=trusted_images_results
+    )
+
+
+def update_trusted_images(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Updates the list of trusted images rules and groups and their information.
+    Implement the command 'prisma-cloud-compute-trusted-images-update'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-trusted-images-update command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    images_list_json = args.get("images_list_json")
+    if not isinstance(images_list_json, dict):
+        images_list_json = json.loads(str(images_list_json))
+
+    client.update_trusted_images(data=images_list_json)
+    return CommandResults(
+        readable_output="Updated successfully the trusted repository, image, and registry.",
+    )
+
+
+def get_container_scan_results(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Retrieve a list of container scan reports and their information.
+    Implement the command 'prisma-cloud-compute-container-scan-results-list'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-container-scan-results-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, offset = parse_limit_and_offset_values(
+        limit=args.get("limit", "50"), offset=args.get("offset", "0")
+    )
+    collections = argToList(args.get("collections"))
+    account_ids = argToList(args.get("account_ids"))
+    clusters = argToList(args.get("clusters"))
+    namespaces = argToList(args.get("namespaces"))
+    resource_ids = argToList(args.get("resource_ids"))
+    region = argToList(args.get("region"))
+    container_ids = argToList(args.get("container_ids"))
+    profile_id = argToList(args.get("profile_id"))
+    image_name = argToList(args.get("image_name"))
+    image_id = argToList(args.get("image_id"))
+    hostname = argToList(args.get("hostname"))
+    compliance_ids = argToList(args.get("compliance_ids"))
+    agentless = args.get("agentless")
+    search = args.get("search")
+
+    params = assign_params(
+        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
+        resourceIDs=resource_ids, region=region, id=container_ids, profileId=profile_id, image=image_name, imageId=image_id,
+        hostname=hostname, complianceIDs=compliance_ids, agentless=agentless, search=search
+    )
+
+    if container_scan_results := client.get_container_scan_results(params=params):
+        table = tableToMarkdown(
+            name="Container Scan Information",
+            t=[
+                {
+                    "ID": container["_id"],
+                    "Hostname": container["hostname"],
+                    "Scan Time": container["scanTime"],
+                    "Image ID": container["info"]["imageID"],
+                    "Image Name": container["info"]["imageName"],
+                    "Name": container["info"]["name"],
+                    "App": container["info"]["app"],
+                } for container in container_scan_results
+            ],
+            headers=["ID", "Hostname", "Scan Time", "Image ID", "Image Name", "Name", "App"],
+            removeNull=True,
+        )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.ContainersScanResults",
+        outputs_key_field="_id",
+        outputs=container_scan_results,
+        readable_output=table,
+        raw_response=container_scan_results
+    )
+
+
+def get_hosts_info(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Retrieve a list of hosts information.
+    Implement the command 'prisma-cloud-compute-hosts-list'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-hosts-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, offset = parse_limit_and_offset_values(
+        limit=args.get("limit", "50"), offset=args.get("offset", "0")
+    )
+    collections = argToList(args.get("collections"))
+    account_ids = argToList(args.get("account_ids"))
+    clusters = argToList(args.get("clusters"))
+    resource_ids = argToList(args.get("resource_ids"))
+    region = argToList(args.get("region"))
+    hostname = argToList(args.get("hostname"))
+    compliance_ids = argToList(args.get("compliance_ids"))
+    agentless = args.get("agentless")
+    search = args.get("search")
+
+    params = assign_params(
+        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, resourceIDs=resource_ids,
+        region=region, hostname=hostname, complianceIDs=compliance_ids, agentless=agentless, search=search
+    )
+
+    if hosts_info := client.get_hosts_info(params=params):
+        table = tableToMarkdown(
+            name="Hosts Information",
+            t=[
+                {
+                    "ID": host["_id"],
+                    "Hostname": host["hostname"],
+                    "Scan Time": host.get("scanTime"),
+                    "Distro": host["distro"],
+                    "Distro Release": host.get("osDistroRelease"),
+                    "Clusters": host.get("clusters"),
+                } for host in hosts_info
+            ],
+            headers=["ID", "Hostname", "Scan Time", "Distro", "Distro Release", "Clusters"],
+            removeNull=True,
+        )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.Hosts",
+        outputs_key_field="_id",
+        outputs=hosts_info,
+        readable_output=table,
+        raw_response=hosts_info
+    )
+
+
+def get_runtime_container_audit_events(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Retrieve a list of runtime container audit events information.
+    Implement the command 'prisma-cloud-compute-runtime-container-audit-events-list'.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict):prisma-cloud-compute-runtime-container-audit-events-list command arguments.
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    limit, offset = parse_limit_and_offset_values(
+        limit=args.get("limit", "50"), offset=args.get("offset", "0")
+    )
+    collections = argToList(args.get("collections"))
+    account_ids = argToList(args.get("account_ids"))
+    clusters = argToList(args.get("clusters"))
+    namespaces = argToList(args.get("namespaces"))
+    resource_ids = argToList(args.get("resource_ids"))
+    region = argToList(args.get("region"))
+    audit_id = argToList(args.get("audit_id"))
+    profile_id = argToList(args.get("profile_id"))
+    image_name = argToList(args.get("image_name"))
+    container = argToList(args.get("container"))
+    container_id = argToList(args.get("container_id"))
+    _type = argToList(args.get("type"))
+    effect = argToList(args.get("effect"))
+    user = argToList(args.get("user"))
+    _os = argToList(args.get("os"))
+    app = argToList(args.get("app"))
+    hostname = argToList(args.get("hostname"))
+    search = args.get("search")
+
+    params = assign_params(
+        offset=offset, limit=limit, collections=collections, accountIDs=account_ids, clusters=clusters, namespaces=namespaces,
+        resourceIDs=resource_ids, region=region, id=audit_id, profileID=profile_id, imageName=image_name,
+        container=container, containerID=container_id, type=_type, effect=effect, user=user, os=_os, app=app,
+        hostname=hostname, search=search,
+    )
+
+    if runtime_container_audit_events := client.get_runtime_container_audit_events(params=params):
+        table = tableToMarkdown(
+            name="Runtime Container Audit Events Information",
+            t=[
+                {
+                    "ID": audit_events["_id"],
+                    "Hostname": audit_events["hostname"],
+                    "Container Name": audit_events["containerName"],
+                    "Image Name": audit_events["imageName"],
+                    "Effect": audit_events["effect"],
+                    "Type": audit_events["type"],
+                    "Attack Type": audit_events["attackType"],
+                    "Severity": audit_events["severity"]
+                } for audit_events in runtime_container_audit_events
+            ],
+            headers=["ID", "Hostname", "Container Name", "Image Name", "Effect", "Type", "Attack Type", "Severity"],
+            removeNull=True,
+        )
+    else:
+        table = "No results found."
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.RuntimeContainerAuditEvents",
+        outputs_key_field="_id",
+        outputs=runtime_container_audit_events,
+        readable_output=table,
+        raw_response=runtime_container_audit_events
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1969,6 +2513,7 @@ def main():
     verify_certificate = not params.get('insecure', False)
     cert = params.get('certificate')
     proxy = params.get('proxy', False)
+    reliability = params.get('integration_reliability', '')
 
     # If checked to verify and given a certificate, save the certificate as a temp file
     # and set the path to the requests client
@@ -1983,7 +2528,7 @@ def main():
 
     try:
         requested_command = demisto.command()
-        LOG(f'Command being called is {requested_command}')
+        demisto.info(f'Command being called is {requested_command}')
 
         # Init the client
         client = PrismaCloudComputeClient(
@@ -1997,8 +2542,7 @@ def main():
         if requested_command == 'test-module':
             # This is the call made when pressing the integration test button
             result = test_module(client)
-            demisto.results(result)
-
+            return_results(result)
         elif requested_command == 'fetch-incidents':
             # Fetch incidents from Prisma Cloud Compute
             # this method is called periodically when 'fetch incidents' is checked
@@ -2041,7 +2585,7 @@ def main():
         elif requested_command == 'prisma-cloud-compute-custom-feeds-malware-add':
             return_results(results=add_custom_malware_feeds(client=client, args=demisto.args()))
         elif requested_command == 'cve':
-            return_results(results=get_cves(client=client, args=demisto.args()))
+            return_results(results=get_cves(client=client, args=demisto.args(), reliability=reliability))
         elif requested_command == 'prisma-cloud-compute-defenders-list':
             return_results(results=get_defenders(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-collections-list':
@@ -2070,6 +2614,22 @@ def main():
             return_results(results=get_backups_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-logs-defender-download":
             return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-unstuck-fetch-stream":
+            return_results(unstuck_fetch_stream_command())
+        elif requested_command == "prisma-cloud-compute-get-file-integrity-events":
+            return_results(results=get_file_integrity_events_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-ci-scan-results-list":
+            return_results(results=get_ci_scan_results_list(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-trusted-images-list":
+            return_results(results=get_trusted_images(client=client))
+        elif requested_command == "prisma-cloud-compute-trusted-images-update":
+            return_results(results=update_trusted_images(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-container-scan-results-list":
+            return_results(results=get_container_scan_results(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-hosts-list":
+            return_results(results=get_hosts_info(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-runtime-container-audit-events-list":
+            return_results(results=get_runtime_container_audit_events(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

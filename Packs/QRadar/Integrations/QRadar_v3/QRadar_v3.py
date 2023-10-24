@@ -88,6 +88,8 @@ NAME_AND_GROUP_REGEX = re.compile(r'^[\w-]+$')
 ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
+DEFAULT_EVENTS_COLUMNS = """QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime"""  # noqa: E501
+
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
     'credibility': 'Credibility',
@@ -1730,7 +1732,7 @@ def test_module_command(client: Client, params: dict) -> str:
                 offenses_per_fetch=1,
                 user_query=params.get('query', ''),
                 fetch_mode=params.get('fetch_mode', ''),
-                events_columns=params.get('events_columns', ''),
+                events_columns=params.get('events_columns') or DEFAULT_EVENTS_COLUMNS,
                 events_limit=0,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
@@ -2189,7 +2191,7 @@ def long_running_execution_command(client: Client, params: dict):
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
     offenses_per_fetch = int(params.get('offenses_per_fetch'))  # type: ignore
     user_query = params.get('query', '')
-    events_columns = params.get('events_columns', '')
+    events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     incident_type = params.get('incident_type')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
@@ -2677,7 +2679,7 @@ def qradar_search_create_command(client: Client, params: dict, args: dict) -> Co
         CommandResults.
     """
     offense_id = args.get('offense_id', '')
-    events_columns = args.get('events_columns', params.get('events_columns'))
+    events_columns = args.get('events_columns', params.get('events_columns')) or DEFAULT_EVENTS_COLUMNS
     events_limit = args.get('events_limit', params.get('events_limit'))
     fetch_mode = args.get('fetch_mode', params.get('fetch_mode'))
     start_time = args.get('start_time')
@@ -3482,7 +3484,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
     mirror_options = params.get('mirror_options')
     context_data, context_version = get_integration_context_with_version()
-    events_columns = params.get('events_columns', '')
+    events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     fetch_mode = params.get('fetch_mode', '')
     print_context_data_stats(context_data, f"Starting Get Remote Data For "
@@ -3726,7 +3728,7 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     new_modified_records_ids = {str(offense.get('id')) for offense in offenses_modified + offenses_closed if 'id' in offense}
     current_last_update = max(last_update_modified, last_update_closed)
     print_debug_msg(f'Last update: {last_update}, current last update: {current_last_update}')
-    events_columns = params.get('events_columns', '')
+    events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
 
     new_modified_records_ids = add_modified_remote_offenses(client=client, context_data=ctx, version=ctx_version,

@@ -473,3 +473,138 @@ There is no context output for this command.
 >|---|---|---|
 >| test10 | test.txt | uploaded |
 
+
+### minio-get-tags
+***
+Get tags configuration of an object.
+
+
+#### Base Command
+
+`minio-get-tags`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket_name | Bucket Name. | Required | 
+| name | Object name in the bucket. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MinIO.Objects.bucket | Unknown | Bucket Name. | 
+| MinIO.Objects.object | Unknown | Object Name. | 
+| MinIO.Objects.tags | Unknown | Object Tags. | 
+
+#### Command Example
+```!minio-get-tags bucket_name="test11" name="test.txt"```
+
+#### Context Example
+```json
+{
+    "MinIO": {
+        "Objects": {
+            "bucket": "test11",
+            "object": "test.txt",
+            "status": "completed",
+            "tags": {
+                "test": "test"
+            }
+        }
+    }
+}
+```
+
+### minio-set-tag
+***
+Set tags configuration to an object.
+
+
+#### Base Command
+
+`minio-set-tag`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket_name | Bucket Name. | Required | 
+| name | Object name in the bucket. | Required | 
+| tag_key | Key for the tag to add on the object. | Required | 
+| tag_value | Value for the tag to add on the object. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MinIO.Objects.bucket | Unknown | Bucket Name. | 
+| MinIO.Objects.object | Unknown | Object Name. | 
+| MinIO.Objects.tags | Unknown | Object Tags. | 
+
+#### Command Example
+```!minio-set-tag bucket_name="test11" name="test.txt" tag_key="status" tag_value="in_progress"```
+
+#### Context Example
+```json
+{
+    "MinIO": {
+        "Objects": {
+            "bucket": "test11",
+            "object": "test.txt",
+            "status": "completed",
+            "tags": {
+                "test": "test",
+                "status": "in_progress"
+            }
+        }
+    }
+}
+```
+
+### minio-copy-object
+***
+Create an object by server-side copying data from another object.
+
+
+#### Base Command
+
+`minio-copy-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| bucket_name_src | Bucket Name to copy object from. | Required | 
+| name_src | Object name to copy. | Required | 
+| bucket_name_dst | Bucket Name to copy object to. | Required | 
+| name_dst | Object name copied. | Required | 
+| metadata | Any user-defined metadata to be copied along with destination object. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MinIO.Objects.bucket | Unknown | Bucket Name. | 
+| MinIO.Objects.object | Unknown | Object Name | 
+| MinIO.Objects.status | Unknown | Object Status | 
+
+
+#### Command Example
+```!minio-copy-object bucket_name_src="test12" name_src="test_source.txt" bucket_name_dst="test12" name_dst="test_destination.txt"```
+
+```!minio-copy-object bucket_name_src="test12" name_src="test_source.txt" bucket_name_dst="test12" name_dst="myFolder/test_destination.txt"``` (It will create the folder *myFolder*)
+
+#### Context Example
+```json
+{
+    "MinIO": {
+        "Objects": {
+            "bucket": "test12",
+            "object": "test_destination.txt",
+            "status": "copied"
+        }
+    }
+}
+```

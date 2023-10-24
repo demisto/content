@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - name: base_url
-  display: Server URL (e.g. https://WORKDAY-HOST/ccx/api/v1/TENANT-NAME)
+  display: Server URL (e.g. https://WORKDAY-HOST/ccx/api/privacy/v1/TENANT-NAME)
   required: true
   defaultvalue:
   type: 0
@@ -107,7 +107,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
 fromversion: 8.2.0
 tests:
 - No tests (auto formatted)

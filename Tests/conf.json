@@ -21,12 +21,24 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test Playbook - NGFW Scan",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
+            "playbookID": "Test Playbook - WildFire Malware",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
             "playbookID": "T1036 - Masquerading - Test",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
             "timeout": 800
         },
-	    {
+        {
             "playbookID": "T1059 - Command and Scripting Interpreter - Test",
             "integrations": "LOLBAS Feed",
             "timeout": 600
@@ -35,23 +47,23 @@
             "playbookID": "Eradication plan - Test",
             "timeout": 600
         },
-		{
+        {
             "playbookID": "Containment Plan - Test",
             "timeout": 800,
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_80k"
         },
-		{
+        {
             "playbookID": "Enrichment for Verdict - Test",
             "timeout": 500,
-			"integrations": [
-				"Active Directory Query v2",
-				"VirusTotal (API v3)"
-			],
-			"instance_names": [
-				"active_directory_80k",
-				"virus_total_v3"
-			]
+            "integrations": [
+                "Active Directory Query v2",
+                "VirusTotal (API v3)"
+            ],
+            "instance_names": [
+                "active_directory_80k",
+                "virus_total_v3"
+            ]
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -145,7 +157,8 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test"
+            "playbookID": "Detonate File - WildFire - Test",
+            "timeout": 400
         },
         {
             "integrations": [
@@ -714,7 +727,6 @@
             "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
-
         {
             "integrations": "MicrosoftGraphMail",
             "timeout": 900,
@@ -749,7 +761,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 1500
+            "timeout": 1800
         },
         {
             "integrations": "HelloWorld",
@@ -994,7 +1006,8 @@
         },
         {
             "integrations": "Thinkst Canary",
-            "playbookID": "CanaryTools Test"
+            "playbookID": "CanaryTools Test",
+            "is_mockable": false
         },
         {
             "integrations": "ThreatMiner",
@@ -1525,7 +1538,7 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "WildFire-v2",
@@ -1831,7 +1844,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 500,
+            "timeout": 1000,
             "is_mockable": false
         },
         {
@@ -1844,12 +1857,6 @@
         {
             "integrations": "OpenPhish",
             "playbookID": "OpenPhish Test Playbook"
-        },
-        {
-            "integrations": "jira-v2",
-            "playbookID": "Jira-v2-Test",
-            "timeout": 500,
-            "is_mockable": false
         },
         {
             "integrations": "Jira V3",
@@ -1966,7 +1973,8 @@
         },
         {
             "integrations": "PhishTank V2",
-            "playbookID": "PhishTank Testing"
+            "playbookID": "PhishTank Testing",
+            "is_mockable": false
         },
         {
             "integrations": "McAfee Web Gateway",
@@ -2137,17 +2145,20 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft 365 Defender",
@@ -2876,8 +2887,8 @@
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
             "integrations": [
-            "Active Directory Query v2",
-            "Cortex XDR - IR"
+                "Active Directory Query v2",
+                "Cortex XDR - IR"
             ],
             "memory_threshold": 100,
             "instance_names": "active_directory_80k",
@@ -2965,7 +2976,9 @@
             "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
-            "memory_threshold": 90
+            "memory_threshold": 90,
+            "timeout": 700,
+            "is_mockable": false
         },
         {
             "integrations": "AWS - EC2",
@@ -3674,6 +3687,10 @@
         {
             "playbookID": "IfThenElse-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "If-Elif Test",
+            "fromversion": "6.9.0"
         },
         {
             "integrations": "Imperva WAF",
@@ -4927,7 +4944,8 @@
         },
         {
             "playbookID": "playbook-SearchIncidentsV2InsideGenericPollng-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 300
         },
         {
             "playbookID": "IsRFC1918-Test",
@@ -4956,14 +4974,6 @@
         {
             "playbookID": "IsIPInRanges - Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "TruSTAR v2-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "TruSTAR v2",
-                "TruSTAR"
-            ]
         },
         {
             "playbookID": "Relationships scripts - Test",
@@ -5563,7 +5573,6 @@
     ],
     "skipped_tests": {
         "generic-sql-mssql-encrypted-connection": "Instance issues",
-        "generic-sql-oracle": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
@@ -5679,7 +5688,6 @@
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
-        "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response Test": "Issue CRTX-58729",
         "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
@@ -5871,7 +5879,9 @@
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
         "CheckPhish": "Issue CRTX-86562",
-        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure."
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
+        "ThreatExchange v2": "No instance",
+        "PhishLabs IOC EIR": "No instance, CRTX-91214"
     },
     "nightly_packs": [
         "CommonScripts",
