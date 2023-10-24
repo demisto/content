@@ -8,12 +8,6 @@ CI_SERVER_URL=${CI_SERVER_URL:-https://code.pan.run} # disable-secrets-detection
 CI_PROJECT_ID=${CI_PROJECT_ID:-2596}
 CONTENT_PIPELINES_API_URL=${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_ID}/pipelines
 
-if [ $TEST_XDR_ENV ]; then
-    echo "TEST_XDR_ENV = $TEST_XDR_ENV"
-else
-    echo "Michal - $TEST_XDR_ENV"
-fi
-
 if [ -z "$1" ]; then
   echo "No commit branch. Aborting."
   exit 1
