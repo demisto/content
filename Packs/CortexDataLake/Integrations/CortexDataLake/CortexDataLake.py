@@ -50,16 +50,30 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key):
+    def __init__(self, registration_id_and_url, use_ssl, proxy, refresh_token, enc_key, client_id, client_secret, auth_code):
         headers = get_x_content_info_headers()
-        headers['Authorization'] = registration_id
         headers['Accept'] = 'application/json'
+        registration_id_and_url = registration_id_and_url.split('@')
+
+        if len(registration_id_and_url) != 2:
+            token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
+        else:
+            token_retrieval_url = registration_id_and_url[1]
+        registration_id = registration_id_and_url[0]
         super().__init__(base_url=token_retrieval_url, headers=headers, verify=use_ssl, proxy=proxy)
-        self.refresh_token = refresh_token
-        self.enc_key = enc_key
-        self.use_ssl = use_ssl
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
+        if client_id and client_secret and auth_code:
+            self.client_id = client_id
+            self.client_secret = client_secret
+            self.auth_code = auth_code
+            self.is_oproxy = True
+        else:
+            headers['Authorization'] = registration_id
+            self.refresh_token = refresh_token
+            self.enc_key = enc_key
+            self.use_ssl = use_ssl
+            self.is_oproxy = False
         self._set_access_token()
 
     def _set_access_token(self):
@@ -79,7 +93,7 @@ class Client(BaseClient):
                 self.instance_id = integration_context.get(INSTANCE_ID_CONST)
                 return
         demisto.debug(f'access token time: {valid_until} expired/none. Will call oproxy')
-        access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
+        access_token, api_url, instance_id, refresh_token, expires_in = self._authorize()
         updated_integration_context = {
             ACCESS_TOKEN_CONST: access_token,
             EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
@@ -93,18 +107,18 @@ class Client(BaseClient):
         self.api_url = api_url
         self.instance_id = instance_id
 
-    def _oproxy_authorize(self) -> Tuple[Any, Any, Any, Any, int]:
-        oproxy_response = self._get_access_token_with_backoff_strategy()
-        access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
-        api_url = oproxy_response.get('url')
-        refresh_token = oproxy_response.get('refresh_token')
-        instance_id = oproxy_response.get(INSTANCE_ID_CONST)
+    def _authorize(self) -> Tuple[Any, Any, Any, Any, int]:
+        response = self._get_access_token_with_backoff_strategy()
+        access_token = response.get(ACCESS_TOKEN_CONST)
+        api_url = response.get('url')
+        refresh_token = response.get('refresh_token')
+        instance_id = response.get(INSTANCE_ID_CONST)
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
-        expires_in = int(oproxy_response.get(EXPIRES_IN, MINUTES_60) or 0)
+        expires_in = int(response.get(EXPIRES_IN, MINUTES_60) or 0)
         if not access_token or not api_url or not instance_id:
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
-                                   f'Oproxy response: {oproxy_response}')
+                                   f'response: {response}')
         return access_token, api_url, instance_id, refresh_token, expires_in
 
     def _get_access_token_with_backoff_strategy(self) -> dict:
@@ -166,23 +180,47 @@ class Client(BaseClient):
         Returns: The oproxy response or raising a DemistoException
 
         """
-        demisto.debug('CDL - Fetching access token')
-        try:
-            oproxy_response = self._http_request('POST',
-                                                 '/cdl-token',
-                                                 json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
-                                                 timeout=(60 * 3, 60 * 3),
-                                                 retries=3,
-                                                 backoff_factor=10,
-                                                 status_list_to_retry=[400])
-        except DemistoException as e:
-            if re.match(BAD_REQUEST_REGEX, str(e)):
-                demisto.error('The request to retrieve the access token has failed with 400 status code.')
-                demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
-            raise e
+        if self.is_oproxy:
+            demisto.debug('CDL - Fetching access token from oproxy')
+            try:
+                response = self._http_request('POST',
+                                                     '/cdl-token',
+                                                     json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
+                                                     timeout=(60 * 3, 60 * 3),
+                                                     retries=3,
+                                                     backoff_factor=10,
+                                                     status_list_to_retry=[400])
+            except DemistoException as e:
+                if re.match(BAD_REQUEST_REGEX, str(e)):
+                    demisto.error('The request to retrieve the access token from oproxy has failed with 400 status code.')
+                    demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
+                raise e
 
-        self.reset_failure_times()
-        return oproxy_response
+        else:
+            demisto.debug('CDL - Fetching access token')
+            try:
+                body = {
+                    "client_id": self.client_id,
+                    "client_secret": self.client_secret,
+                    "code": self.auth_code,
+                    "redirect_uri": "https://localhost",
+                    "grant_type": "authorization_code",
+                }
+                response = self._http_request('POST',
+                                                     full_url='https://api.paloaltonetworks.com/api/oauth2/RequestToken',
+                                                     json_data=body,
+                                                     timeout=(60 * 3, 60 * 3),
+                                                     retries=3,
+                                                     backoff_factor=10,
+                                                     status_list_to_retry=[400])
+            except DemistoException as e:
+                if re.match(BAD_REQUEST_REGEX, str(e)):
+                    demisto.error('The request to retrieve the access token has failed with 400 status code.')
+                    demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
+                raise e
+
+            self.reset_failure_times()
+            return response
 
     @staticmethod
     def _cache_failure_times(integration_context: dict) -> dict:
@@ -1155,14 +1193,16 @@ def main():
     # If there's a stored token in integration context, it's newer than current
     refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
     enc_key = params.get('credentials_auth_key', {}).get('password') or params.get('auth_key')
-    if not enc_key or not refresh_token or not registration_id_and_url:
+
+
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
+    auth_code = params.get('auth_code')
+
+    if (not enc_key or not refresh_token or not registration_id_and_url) and \
+        (not client_id or not client_secret or not auth_code):
         raise DemistoException('Key, Token and ID must be provided.')
-    registration_id_and_url = registration_id_and_url.split('@')
-    if len(registration_id_and_url) != 2:
-        token_retrieval_url = "https://oproxy.demisto.ninja"  # guardrails-disable-line
-    else:
-        token_retrieval_url = registration_id_and_url[1]
-    registration_id = registration_id_and_url[0]
+
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     args = demisto.args()
@@ -1176,7 +1216,7 @@ def main():
         return_outputs(readable_output="Caching mechanism failure time counters have been successfully reset.")
         return
 
-    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
+    client = Client(registration_id_and_url, use_ssl, proxy, refresh_token, enc_key, client_id, client_secret, auth_code)
 
     try:
         if command == 'test-module':

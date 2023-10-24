@@ -35,6 +35,24 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+- displaypassword: Client ID
+  name: client_id
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
+- displaypassword: Client Secret
+  name: client_secret
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
+- displaypassword: Authorization Code
+  name: auth_code
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8
