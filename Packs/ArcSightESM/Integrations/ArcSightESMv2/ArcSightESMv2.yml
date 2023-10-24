@@ -39,6 +39,13 @@ configuration:
   type: 8
   additionalinfo: Use REST endpoints for the commands related to 'entries' instead of the default legacy SOAP endpoints.
   required: false
+- display: Product Version
+  name: productVersion
+  type: 15
+  required: false
+  options:
+  - 7.4 and above
+  additionalinfo: Different versions requires to use a different API.
 - display: Incident type
   name: incidentType
   type: 13
@@ -350,7 +357,7 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.78960
   type: python
 tests:
 - ArcSight ESM v2 Test
