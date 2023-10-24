@@ -1437,7 +1437,7 @@ def get_threat_assessment_request(client: MsGraphClient, request_id):
 
 
 @polling_function('msg-create-mail-assessment-request', requires_polling_arg=False)
-def create_mail_assessment_request_command(client: MsGraphClient, args) -> CommandResults | PollResult:
+def create_mail_assessment_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
 
     request_id = args.get('request_id')
 
@@ -1449,9 +1449,10 @@ def create_mail_assessment_request_command(client: MsGraphClient, args) -> Comma
                                                        message_user,
                                                        args.get('message_id'))
         request_id = result.get('id')
-        # status = result.get('status')
+
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
+    demisto.debug(f"status is: {status}")
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
@@ -1464,13 +1465,13 @@ def create_mail_assessment_request_command(client: MsGraphClient, args) -> Comma
                                  outputs_prefix='MSGraphMail.MailAssessment')
         return PollResult(response=results)
     else:
-        args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
-                          response=result)
+                          response=None,
+                          partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
 
 
 @polling_function('msg-create-email-file-assessment-request', requires_polling_arg=False)
-def create_email_file_request_command(client: MsGraphClient, args) -> CommandResults | PollResult:
+def create_email_file_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
 
     request_id = args.get('request_id')
 
@@ -1484,6 +1485,7 @@ def create_email_file_request_command(client: MsGraphClient, args) -> CommandRes
     demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
+    demisto.debug(f"status is: {status}")
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
@@ -1492,17 +1494,16 @@ def create_email_file_request_command(client: MsGraphClient, args) -> CommandRes
         results = CommandResults(readable_output=readable_output,
                                  raw_response=result,
                                  outputs=outputs,
-                                 outputs_prefix='MSGraphMail.EMailAssessment')
+                                 outputs_prefix='MSGraphMail.EmailAssessment')
         return PollResult(response=results)
     else:
-        args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
-                          response=result)
+                          response=None,
+                          partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
 
 
 @polling_function('msg-create-file-assessment-request', requires_polling_arg=False)
-def create_file_assessment_request_command(client: MsGraphClient, args) -> CommandResults | PollResult:
-
+def create_file_assessment_request_command(args, client) -> PollResult | CommandResults:
     request_id = args.get('request_id')
 
     if not request_id:
@@ -1518,8 +1519,8 @@ def create_file_assessment_request_command(client: MsGraphClient, args) -> Comma
     demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
+
     demisto.debug(f"status is: {status}")
-    # status = "pending"
     if status == 'completed':
         result = client.get_threat_assessment_request(request_id)
         outputs = get_result_outputs(result)
@@ -1531,13 +1532,13 @@ def create_file_assessment_request_command(client: MsGraphClient, args) -> Comma
                                  outputs_prefix='MSGraphMail.FileAssessment')
         return PollResult(response=results)
     else:
-        # args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
-                          response=None)
+                          response=None,
+                          partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
 
 
 @polling_function('msg-create-url-assessment-request', requires_polling_arg=False)
-def create_url_assessment_request_command(client: MsGraphClient, args) -> CommandResults | PollResult:
+def create_url_assessment_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
 
     request_id = args.get('request_id')
 
@@ -1547,7 +1548,6 @@ def create_url_assessment_request_command(client: MsGraphClient, args) -> Comman
                                                       args.get('url'))
         request_id = result.get('id')
         # request_id = "9203569d-313e-420e-fb3d-08dbd25dafbe"
-    demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
     demisto.debug(f"status is : {status}")
@@ -1563,9 +1563,9 @@ def create_url_assessment_request_command(client: MsGraphClient, args) -> Comman
         return PollResult(response=results)
     else:
         demisto.debug("in else")
-        args["hide_polling_output"] = True
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
-                          response=result)
+                          response=None,
+                          partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
 
 
 def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list[CommandResults]:
@@ -1605,6 +1605,7 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
 
 def main():
     params: dict = demisto.params()
+    args: dict = demisto.args()
     url = params.get('host', '').rstrip('/') + '/v1.0/'
     tenant = params.get('creds_tenant_id', {}).get('password') or params.get('tenant_id')
     auth_and_token_url = params.get('creds_auth_id', {}).get('password') or params.get('auth_id', '')
@@ -1660,14 +1661,6 @@ def main():
         'msg-list-ediscovery-searchs': list_ediscovery_search_command,
         'msg-delete-ediscovery-search': delete_ediscovery_search_command,
         'msg-purge-ediscovery-data': purge_ediscovery_data_command,
-
-        # Threat Assessment Commands
-        'msg-create-mail-assessment-request': create_mail_assessment_request_command,
-        'msg-create-email-file-assessment-request': create_email_file_request_command,
-        'msg-create-file-assessment-request': create_file_assessment_request_command,
-        'msg-create-url-assessment-request': create_url_assessment_request_command,
-        'msg-list-threat-assessment-requests': list_threat_assessment_requests_command,
-
     }
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -1702,6 +1695,16 @@ def main():
                                         filter=fetch_filter, providers=fetch_providers,
                                         service_sources=fetch_service_sources)
             demisto.incidents(incidents)
+        elif command == 'msg-create-mail-assessment-request':
+            return_results(create_mail_assessment_request_command(args, client))
+        elif command == 'msg-create-email-file-assessment-request':
+            return_results(create_email_file_request_command(args, client))
+        elif command == 'msg-create-file-assessment-request':
+            return_results(create_file_assessment_request_command(args, client))
+        elif command == 'msg-create-url-assessment-request':
+            return_results(create_url_assessment_request_command(args, client))
+        elif command == 'msg-list-threat-assessment-requests':
+            return_results(list_threat_assessment_requests_command(client, args))
         elif command == "ms-graph-security-auth-reset":
             return_results(reset_auth())
         elif demisto.command() == 'msg-generate-login-url':
@@ -1709,8 +1712,8 @@ def main():
         else:
             if command not in commands:
                 raise NotImplementedError(f'The provided command {command} was not implemented.')
-            command_res = commands[command](client, demisto.args())  # type: ignore
-            if isinstance(command_res, CommandResults | list):
+            command_res = commands[command](client, args)  # type: ignore
+            if isinstance(command_res, CommandResults):
                 return_results(command_res)
             else:
                 human_readable, entry_context, raw_response = command_res  # pylint: disable=E0633  # type: ignore

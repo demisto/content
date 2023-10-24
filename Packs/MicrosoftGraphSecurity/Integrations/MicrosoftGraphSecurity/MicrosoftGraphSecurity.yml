@@ -1652,6 +1652,7 @@ script:
       name: message_user
       required: true
     - description: "Message id, Message has to contain 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages."
+      additionalinfo: 'Use msgraph-mail-list-emails from Microsoft Graph Mail pack  with proper user_id in order to get all available messages.'
       isArray: false
       name: message_id
       required: true
@@ -1809,9 +1810,9 @@ script:
       isArray: false
       name: entry_id
       required: false
-    - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+    - description: whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
-      hidden: true
+      deprecated: true
     description: Create file assessment request.
     execution: false
     name: msg-create-file-assessment-request

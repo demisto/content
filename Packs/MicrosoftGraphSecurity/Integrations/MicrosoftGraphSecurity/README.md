@@ -1728,16 +1728,17 @@ There is no context output for this command.
 Create and retrieve a mail threat assessment.
 
 Note:
-Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to access the mail received by the user (recipient email and message user), which means that if the authenticated user is different from the user specified in the recipient_email and message_user, then *Read and manage permissions* on behalf of the given user need to be added for the authenticated user via [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
+- The message given in the command's argument *message_id* has to contain *X-MS-Exchange-Organization-Network-Message-Id* header in the message or in the *X-MS-Office365-Filtering-Correlation-Id* header in quarantined messages.
+- Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to access the mail received by the user (recipient email and message user), which means that if the authenticated user is different from the user specified in the recipient_email and message_user, then *Read and manage permissions* on behalf of the given user need to be added for the authenticated user via [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
 
-- Go to [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
-- Choose the user email which will be provided in the command's arguments.
-- Click on *Manage product licenses*.
-- Go to *Mail*.
-- Under *Mailbox permissions*, click on *Read and manage permissions*.
-- click on *Add permissions*.
-- Choose the authenticated user email from the list of given users.
-- Click on *add*.
+  - Go to [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
+  - Choose the user email which will be provided in the command's arguments.
+  - Click on *Manage product licenses*.
+  - Go to *Mail*.
+  - Under *Mailbox permissions*, click on *Read and manage permissions*.
+  - click on *Add permissions*.
+  - Choose the authenticated user email from the list of given users.
+  - Click on *add*.
 
 #### Base Command
 
@@ -2067,7 +2068,7 @@ Create and retrieve url threat assessment.
 ### msg-list-threat-assessment-requests
 
 ***
-Create and retrieve threat assessment requests.
+Retrieve all threat assessment requests.
 
 #### Base Command
 
