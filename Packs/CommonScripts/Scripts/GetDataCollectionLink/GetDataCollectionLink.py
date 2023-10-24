@@ -27,8 +27,15 @@ def generate_url(server_url: str, encoded_task: str, encoded_user: str) -> str:
 def warning_message_for_unsupported_versions(urls: list[dict[str, str]]) -> CommandResults:
     if is_machine_saas() and urls and "#" in urls[0]["url"]:
         return CommandResults(
-            readable_output="In the current version, the url output is not properly supported, full support will be provided from version 8.4.0 and above.",
+            readable_output=(
+                "In the current release, URL output isn't properly supported. "
+                "However, comprehensive support will be available in XSOAR starting "
+                "from version 8.4.0 and in XSIAM starting from version 2.0.1 and onwards."
+            )
         )
+    return []
+
+
 def encode_string(value: str) -> str:
     b64 = b64encode(value.encode('ascii'))
     return b64.hex()
@@ -52,7 +59,7 @@ def get_data_collection_url(task_id: str, users: List[str]) -> List[Dict[str, st
     return urls
 
 
-def get_data_collection_url_command(args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
+def get_data_collection_url_command(args: Dict[str, Any]) -> list[CommandResults]:  # pragma: no cover
     task_id = args.get('task_id', None)
     if not task_id:
         raise ValueError('task_id not specified')
@@ -64,6 +71,7 @@ def get_data_collection_url_command(args: Dict[str, Any]) -> CommandResults:  # 
     result = get_data_collection_url(task_id, users)
 
     return [CommandResults(
+        readable_output=tableToMarkdown("Result", result),
         outputs_prefix='DataCollectionURL',
         outputs_key_field='user',
         outputs=result,
