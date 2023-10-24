@@ -25,12 +25,13 @@
 .export_cloud_machine_constants: &export_cloud_machine_constants
   - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
   - |
-   for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
-    export XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_SERVERS_PATH")
-    export DEMISTO_BASE_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
-    export XSIAM_AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
-    export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_API_KEYS")
-    export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_TOKENS")
+    for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
+      export XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_SERVERS_PATH")
+      export DEMISTO_BASE_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
+      export XSIAM_AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
+      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_API_KEYS")
+      export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_TOKENS")
+    done
 
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
@@ -228,8 +229,6 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
-    # - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
     - section_start "Format Content Items" --collapsed
     - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
@@ -314,12 +313,12 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - !reference [.lock-machine]
 
     - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-    - echo "Server URL $DEMISTO_BASE_URL"
     - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
 
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
     - !reference [.export_cloud_machine_constants]
+    - echo "Server URL $DEMISTO_BASE_URL"
     - echo "Checking infra."
   
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
@@ -385,8 +384,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
-    # - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
     - section_start "Format Content Items" --collapsed
     - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
