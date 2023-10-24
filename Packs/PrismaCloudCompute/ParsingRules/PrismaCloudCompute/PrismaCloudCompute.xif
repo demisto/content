@@ -1,0 +1,6 @@
+[INGEST:vendor="prisma", product="cloud_compute", target_dataset="prisma_cloud_compute_raw", no_hit=keep]
+alter
+    tmp_extract_time = replex(arraystring(regextract(time, ".*\d{2}:\d{2}:\d{2}"), ""), ",", "")
+| alter
+    _time = parse_timestamp("%h %d %Y %H:%M:%S", tmp_extract_time)
+| fields -tmp_extract_time;
