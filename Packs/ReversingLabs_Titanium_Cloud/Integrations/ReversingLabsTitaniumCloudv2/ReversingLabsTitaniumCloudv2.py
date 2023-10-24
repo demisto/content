@@ -1698,7 +1698,7 @@ def domain_urls_output(response, domain):
         t=response
     )
 
-    markdown = f"## ReversingLabs URL-s found on domain {domain}\n {urls_table}"
+    markdown = f"## ReversingLabs URL-s associated with domain {domain}\n {urls_table}"
 
     dbot_score = Common.DBotScore(
         indicator=domain,
@@ -1723,9 +1723,61 @@ def domain_urls_output(response, domain):
     return results
 
 
+def domain_to_ip_command():
+    domain_ti = create_domain_ti_object()
 
-def domain_ips_command():
-    pass
+    domain = demisto.getArg("domain")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = domain_ti.domain_to_ip_resolutions_aggregated(
+            domain=domain,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = domain_to_ip_output(response=response, domain=domain)
+    return_results(results)
+
+
+def domain_to_ip_output(response, domain):
+    ip_table = tableToMarkdown(
+        name="IP address list",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs IP addresses resolved from domain {domain}\n {ip_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"domain_to_ip": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+
+
+
+
 
 
 def domain_related_domains_command():
@@ -1849,6 +1901,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-domain-urls":
         domain_urls_command()
+
+    elif command == "reversinglabs-titaniumcloud-domain-to-ip":
+        domain_to_ip_command()
 
     else:
         return_error(f"Command {command} does not exist")
