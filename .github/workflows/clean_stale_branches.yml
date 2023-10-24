@@ -1,12 +1,16 @@
 name: 'Close stale PRs'
+#on:
+#  schedule:
+#    # runs every day at midnight (UTC time).
+#    - cron:  '0 0 * * *'
 on:
-  schedule:
-    # runs every day at midnight (UTC time).
-    - cron:  '0 0 * * *'
+  push:
+    branches:
+      - 'Github_Action_Stale_Branches'
 env:
   DAY_BEFORE_STALE: 30
   DAY_BEFORE_CLOSE: 15
-  EXEMPT_LABELS: "ignore-stale"
+  EXEMPT_LABELS: "Ignore Stale"
 
 jobs:
   stale:
@@ -21,7 +25,8 @@ jobs:
           days-before-issue-close: -1
           days-before-pr-stale: ${{env.DAY_BEFORE_STALE}}
           days-before-pr-close: ${{env.DAY_BEFORE_CLOSE}}
-          stale-pr-message: 'This PR is marked as 'Stale' because it has been open for ${{env.DAY_BEFORE_STALE}} days with no activity, it will be automatically closed in ${{env.DAY_BEFORE_CLOSE}} days if no activity will be done. To reset the counter just remove the 'Stale' label or perform some action to change this PR, If you wish this PR will never be marked as 'Stale' add the 'ignore-stale'
+          stale-pr-message: "This PR is marked as 'Stale' because it has been open for ${{env.DAY_BEFORE_STALE}} days with no activity, it will be automatically closed in ${{env.DAY_BEFORE_CLOSE}} days if no activity will be done. To reset the counter just remove the 'Stale' label or perform some action to change this PR, If you wish this PR will never be marked as 'Stale' add the 'Ignore Stale'"
           delete-branch: true
           remove-pr-stale-when-updated: true
           exempt-pr-labels: ${{env.EXEMPT_LABELS}}
+          debug-only: true
