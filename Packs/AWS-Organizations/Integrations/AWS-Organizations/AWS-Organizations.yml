@@ -99,31 +99,41 @@ script:
         description: The type of the child entity.
         type: String
       - contextPath: AWS.Organizations.Children.ParentId
-        description: The unique identifier (ID) for the parent root or OU whose children are listed.
+        description: The unique identifier (ID) for the parent root or OU of the child entity.
         type: String
-      - contextPath: AWS.Organizations.NextToken
-        description: If present, indicates that more output is available than is included in the current response. Use this value in the NextToken request parameter in a subsequent call to the operation to get the next part of the output.
+      - contextPath: AWS.Organizations.ChildrenNextToken
+        description: If not null, indicates that more output is available than is included in the current response. Use this value in the next_token argument in a subsequent call of the command to get the next part of the output.
         type: String
-    - name: aws-org-parent-get
+    - name: aws-org-parent-list
       arguments:
       - description: |
-          The unique identifier (ID) of the OU or account whose parent containers
-          you want to list. Don't specify a root. Add description that the user can get this value by running the commands  “root-list” / “organization-unit-list
+          The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root.
+          This value by running the commands  “root-list” / “organization-unit-list 
+          # TODO
         name: child_id
         required: true
-      - description: 
+      - description:
         name: roleArn
-      - description: 
+      - description:
         name: roleSessionName
-      - description: 
+      - description:
         name: roleSessionDuration
       description: |
-        Lists all of the organizational units (OUs) or accounts that are contained in the specified parent OU or root.
-        This command returns only the immediate children in the hierarchy.
-      outputs: []
+        Lists all of the organizational units (OUs) or accounts that are a parent OU or root of the specified child.
+        This command returns only the immediate parents in the hierarchy.
+      outputs:
+      - contextPath: AWS.Organizations.Parent.Id
+        description: The unique identifier (ID) of the parent entity.
+        type: String
+      - contextPath: AWS.Organizations.Parent.Type
+        description: The type of the parent entity.
+        type: String
+      - contextPath: AWS.Organizations.Parent.ChildId
+        description: The unique identifier (ID) of the OU or account of the child of the parent entity.
+        type: String
     - name: aws-org-organization-unit-get
       arguments:
-      - description: 
+      - description: The unique identifier (ID) of the organizational unit that to retrieve details about.
         name: organization_unit_id
         required: true
       - description: 
@@ -132,11 +142,22 @@ script:
         name: roleSessionName
       - description: 
         name: roleSessionDuration
-      description: 
-      outputs: []
+      description: |
+        Retrieve information about an organizational unit (OU).
+        This command can be called only from the organization's management account or by a member account that is a delegated administrator for an Amazon Web Services service.
+      outputs:
+      - contextPath: AWS.Organizations.OrganizationalUnit.Id
+        description: The unique identifier (ID) associated with the organizational unit.
+        type: String
+      - contextPath: AWS.Organizations.OrganizationalUnit.Arn
+        description: The Amazon Resource Name (ARN) of the organizational unit.
+        type: String
+      - contextPath: AWS.Organizations.OrganizationalUnit.Name
+        description: The friendly name of the organizational unit.
+        type: String
     - name: aws-org-account-list
       arguments:
-      - description: "An optional argument to get a specific account. If the user provided this argument we will execute the describe account command"
+      - description: Get a specific account by Id.
         name: account_id
       - description: 
         name: limit
@@ -151,8 +172,29 @@ script:
         name: roleSessionName
       - description: 
         name: roleSessionDuration
-      description: 
-      outputs: []
+      description: Lists all the accounts in the organization or a specific account by Id.
+      outputs:
+      - contextPath: AWS.Organizations.Account.Id
+        description: The unique identifier (ID) of the account.
+        type: String
+      - contextPath: AWS.Organizations.Account.Arn
+        description: The Amazon Resource Name (ARN) of the account.
+        type: String
+      - contextPath: AWS.Organizations.Account.Email
+        description: The email address associated with the Amazon Web Services account.
+        type: String
+      - contextPath: AWS.Organizations.Account.Name
+        description: The friendly name of the account.
+        type: String
+      - contextPath: AWS.Organizations.Account.Status
+        description: The status of the account in the organization.
+        type: String
+      - contextPath: AWS.Organizations.Account.JoinedMethod
+        description: The method by which the account joined the organization.
+        type: String
+      - contextPath: AWS.Organizations.Account.JoinedTimestamp
+        description: The date the account became a part of the organization.
+        type: Date
     - name: aws-org-organization-get
       arguments:
       - description: 

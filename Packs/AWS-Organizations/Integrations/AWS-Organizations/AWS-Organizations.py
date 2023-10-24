@@ -64,21 +64,22 @@ def paginate(
     iterator = paginator.paginate(
         **kwargs,
         PaginationConfig={
-            'MaxItems': max_items,
-            'PageSize': max_items,
+            'MaxItems': min(max_items, 20),  # TODO verify and make into constant.
+            'PageSize': min(max_items, 20),
             'StartingToken': next_token if not limit else None
         }
     )
 
     pages: list = []
-    next_token = ''
+    next_token = None
 
-    while len(pages) < max_items or next_token is not None:
-        response = next(iterator)
+    for response in iterator:
         pages.extend(response.get(key_to_pages, []))
         next_token = response.get('NextToken')
+        if len(pages) >= max_items:
+            break
 
-    del pages[next_token:]
+    del pages[max_items:]
     return pages, next_token
 
 
@@ -86,11 +87,9 @@ def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_out
     """Creates a CommandResults object with the next token as the output.
     """
     return {
-        'outputs': {
-            f'AWS.Organizations(val.{outputs_prefix}NextToken || true)': {f'{outputs_prefix}NextToken': next_token},
-            (f'AWS.Organizations.{outputs_prefix}'
-             f'(val.{page_outputs_key} && val.{page_outputs_key} == obj.{page_outputs_key})'): page_outputs,
-        }
+        f'AWS.Organizations(val.{outputs_prefix}NextToken || true)': {f'{outputs_prefix}NextToken': next_token},
+        (f'AWS.Organizations.{outputs_prefix}(val.{page_outputs_key} && val.{page_outputs_key} == obj.{page_outputs_key})'):
+            page_outputs,
     }
 
 
@@ -102,7 +101,26 @@ def test_module(aws_client: 'OrganizationsClient') -> str:
 
 
 def root_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    ...
+    roots, next_token = paginate(
+        aws_client.get_paginator('list_roots'),
+        'Roots',
+        limit=args.get('limit'),
+        next_token=args.get('next_token'),
+        page_size=args.get('page_size'),
+    )
+
+    for root in roots:
+        del root['PolicyTypes']
+
+    return CommandResults(
+        outputs=next_token_output_dict(
+            'Root', next_token, roots, 'Id',
+        ),
+        readable_output=tableToMarkdown(
+            'AWS Organizations Roots',
+            roots, removeNull=True,
+        )
+    )
 
 
 def children_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
@@ -124,10 +142,10 @@ def children_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comm
         outputs=next_token_output_dict(
             'Children',
             next_token,
-            {
-                'Children': children,
-                'ParentId': args['parent_id']
-            },
+            [
+                child | {'ParentId': args['parent_id']}
+                for child in children
+            ],
             'Id',
         ),
         readable_output=tableToMarkdown(
@@ -137,16 +155,95 @@ def children_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comm
     )
 
 
-def parent_get_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    ...
+def parent_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    parents, _ = paginate(
+        aws_client.get_paginator('list_parents'),
+        'Parents',
+        limit=1,
+        ChildId=args['child_id']
+    )
+
+    return CommandResults(
+        outputs_key_field='Id',
+        outputs_prefix='AWS.Organizations.Parent',
+        outputs=[
+            parent | {'ChildId': args['child_id']}
+            for parent in parents
+        ],
+        readable_output=tableToMarkdown(
+            f'AWS Account *{args["child_id"]}* Parents',
+            parents, removeNull=True,
+        )
+    )
 
 
 def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    ...
+
+    ou = aws_client.describe_organizational_unit(
+        OrganizationalUnitId=args['organization_unit_id']
+    )
+
+    return CommandResults(
+        outputs_key_field='Id',
+        outputs_prefix='AWS.Organizations.OrganizationalUnit',
+        outputs=ou['OrganizationalUnit'],
+        readable_output=tableToMarkdown(
+            'AWS Organizations Unit',
+            ou['OrganizationalUnit'],
+            removeNull=True,
+        )
+    )
 
 
 def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    ...
+
+    def JoinedTimestamp_to_str(account):
+        account['JoinedTimestamp'] = str(account['JoinedTimestamp'])
+
+    def response_to_readable(account) -> str:
+        return tableToMarkdown(
+            'AWS Organization Accounts',
+            accounts,
+            [
+                'Id', 'Arn', 'Name', 'Email',
+                'JoinedMethod', 'JoinedTimestamp', 'Status',
+            ],
+            removeNull=True,
+        )
+
+    if (account_id := args.get('account_id')):
+        account = aws_client.describe_account(
+            AccountId=account_id
+        )['Account']
+
+        JoinedTimestamp_to_str(account)
+
+        return CommandResults(
+            outputs_key_field='Id',
+            outputs_prefix='AWS.Organizations.Account',
+            outputs=account,
+            readable_output=response_to_readable(account)
+        )
+
+    else:
+        accounts, next_token = paginate(
+            aws_client.get_paginator('list_accounts'),
+            'Accounts',
+            limit=args.get('limit'),
+            next_token=args.get('next_token'),
+            page_size=args.get('page_size'),
+        )
+
+        for account in accounts:
+            JoinedTimestamp_to_str(account)
+
+        return CommandResults(
+            outputs=next_token_output_dict(
+                'Account', next_token, accounts, 'Id',
+            ),
+            readable_output=response_to_readable(accounts)
+        )
 
 
 def organization_get_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
@@ -234,8 +331,8 @@ def main():
                 return_results(root_list_command(args, aws_client))
             case 'aws-org-children-list':
                 return_results(children_list_command(args, aws_client))
-            case 'aws-org-parent-get':
-                return_results(parent_get_command(args, aws_client))
+            case 'aws-org-parent-list':
+                return_results(parent_list_command(args, aws_client))
             case 'aws-org-organization-unit-get':
                 return_results(organization_unit_get_command(args, aws_client))
             case 'aws-org-account-list':
