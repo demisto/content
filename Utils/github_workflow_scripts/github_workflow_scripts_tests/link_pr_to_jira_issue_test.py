@@ -3,31 +3,31 @@ import pytest
 from Utils.github_workflow_scripts.jira_integration_scripts import link_pr_to_jira_issue
 
 PR_WITH_ONLY_FIXES_WITH_SPACE = """This pr is dummy
-fixes: https://jira-hq.paloaltonetworks.local/browse/CIAC-3473 somthing
+fixes: https://jira-dc.paloaltonetworks.com/browse/CIAC-3473 somthing
 something else to say"""
 PR_WITH_ONLY_FIXES_WITH_NEWLINE = """This pr is dummy
-fixes: https://jira-hq.paloaltonetworks.local/browse/CIAC-3473
+fixes: https://jira-dc.paloaltonetworks.com/browse/CIAC-3473
 something else to say"""
 PR_WITH_ONLY_FIXES_WITHOUT_END_OF_STR = """This pr is dummy
-fixes: https://jira-hq.paloaltonetworks.local/browse/CIAC-3473"""
+fixes: https://jira-dc.paloaltonetworks.com/browse/CIAC-3473"""
 
 PR_WITH_ONLY_RELATES_WITH_SPACE = """This pr is dummy
-relates: https://jira-hq.paloaltonetworks.local/browse/CIAC-3472 somthing
+relates: https://jira-dc.paloaltonetworks.com/browse/CIAC-3472 somthing
 something else to say"""
 PR_WITH_ONLY_RELATES_WITH_NEWLINE = """This pr is dummy
-relates: https://jira-hq.paloaltonetworks.local/browse/CIAC-3472
+relates: https://jira-dc.paloaltonetworks.com/browse/CIAC-3472
 something else to say"""
 PR_WITH_ONLY_RELATES_WITHOUT_END_OF_STR = """This pr is dummy
-relates:https://jira-hq.paloaltonetworks.local/browse/CIAC-3472"""
+relates:https://jira-dc.paloaltonetworks.com/browse/CIAC-3472"""
 
 PR_WITH_BOTH_BY_NEWLINE = """This pr is dummy
-fixes: https://jira-hq.paloaltonetworks.local/browse/CIAC-3473
-relates: https://jira-hq.paloaltonetworks.local/browse/CIAC-3475
+fixes: https://jira-dc.paloaltonetworks.com/browse/CIAC-3473
+relates: https://jira-dc.paloaltonetworks.com/browse/CIAC-3475
 
 something else to say"""
 PR_WITH_MULTIPLE_FIXES_BY_NEWLINE = """This pr is dummy
-fixes:https://jira-hq.paloaltonetworks.local/browse/CIAC-3473
-fixes: https://jira-hq.paloaltonetworks.local/browse/CIAC-3475
+fixes:https://jira-dc.paloaltonetworks.com/browse/CIAC-3473
+fixes: https://jira-dc.paloaltonetworks.com/browse/CIAC-3475
 
 something else to say"""
 
@@ -77,14 +77,14 @@ TRIGGER_TEST_CASE = [
     (
         True,
         [  # case one link with fixes:
-            {'action': 'fixes', 'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'}
+            {'action': 'fixes', 'link': 'https://jira-dc.paloaltonetworks.com/browse/CIAC-3473', 'id': 'CIAC-3473'}
         ]
     ),
     (
         False,
         [  # case multiple links only related:
-            {'action': 'fixes', 'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'},
-            {'action': 'relates', 'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3475', 'id': 'CIAC-3475'}
+            {'action': 'fixes', 'link': 'https://jira-dc.paloaltonetworks.com/browse/CIAC-3473', 'id': 'CIAC-3473'},
+            {'action': 'relates', 'link': 'https://jira-dc.paloaltonetworks.com/browse/CIAC-3475', 'id': 'CIAC-3475'}
         ]
     )
 ]
