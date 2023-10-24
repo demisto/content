@@ -1,1 +1,77 @@
 [MODEL: dataset ="claroty_ctd_raw"]
+alter // Explicit extractions 
+    full_username = arrayindex(regextract(msg, "(?:by|with) user ([\w\-\\]+)"), 0), 
+    network_peers = arrayindex(regextract(msg, "([\d\.]+\:\d{1,5}\s*\-\>\s*[\d\.]+\:\d{1,5})"), 0),
+    target_host_ip = arrayindex(regextract(msg, "request to ([a-f\d\.\:]+)"), 0), 
+    threat_name = if(cefDeviceEventClassId = "Alert", coalesce(
+                        arrayindex(regextract(msg, "Threat (.+?) was detected"), 0), // predefined known threats
+                        arrayindex(regextract(msg, "^([^:]+)\:"), 0)), // general threat prefix 
+                        cefName) // fallback 
+alter 
+    user_name = arrayindex(regextract(user, "(?:\S+\\)*(\S+)"), 0), 
+    user_domain = arrayindex(regextract(user, "(\S+)\\"), 0),
+    src_os = if(cs14Label = "PrimaryAssetOS" and cs14 != "N/A", lowercase(cs14)),
+    dst_os = if(cs20Label = "NonPrimaryAssetOS" and cs20 != "N/A", lowercase(cs20)),
+    src_port = arrayindex(regextract(network_peers, "\:(\d{1,5})"), 0), 
+    dst_port = arrayindex(regextract(network_peers, "\:(\d{1,5})"), 1), 
+    src_mac_address = if(cs13Label = "PrimaryAssetMAC2", cs13),
+    dst_mac_address = if(cs19Label = "NonPrimaryAssetMAC", cs19),
+    src_ip_addresses = arraydistinct(arrayconcat(arraycreate(src), regextract(cs10, "([^,]+)"))), 
+    dst_ip_addresses = arraydistinct(arrayconcat(arraycreate(target_host_ip, dst), regextract(cs16, "([^,]+)")))
+| alter 
+    src_ipv4_addresses = arrayfilter(src_ip_addresses, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
+    src_ipv6_addresses = arrayfilter(src_ip_addresses, "@element" ~= "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})"),
+    dst_ipv4_addresses = arrayfilter(dst_ip_addresses, "@element" ~= "(?:\d{1,3}\.){3}\d{1,3}"),
+    dst_ipv6_addresses = arrayfilter(dst_ip_addresses, "@element" ~= "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})")
+    
+| alter 
+    xdm.source.interface = if(cs3Label = "InterfaceName" and cs3 != "N/A", lowercase(cs3)),
+    xdm.alert.severity = cefSeverity,
+    xdm.alert.original_alert_id = externalid,
+    xdm.alert.subcategory = if(cs7Label = "Category", cs7), 
+    xdm.source.location.region = if(cs1Label ~= "Site", cs1),
+    xdm.event.type = cefDeviceEventClassId, 
+    xdm.alert.original_threat_name = threat_name
+    xdm.alert.name = cefName, 
+    xdm.source.port = to_integer(src_port), 
+    xdm.source.host.mac_addresses = arraydistinct(arraycreate(smac, src_mac_address)),
+    xdm.source.ipv4 = arrayindex(src_ipv4_addresses, 0),
+    xdm.source.ipv6 = arrayindex(src_ipv6_addresses, 0),
+    xdm.source.host.ipv4_addresses = src_ipv4_addresses,
+    xdm.source.host.ipv6_addresses = src_ipv6_addresses,
+    xdm.target.host.hostname = if(dhost != "N/A", dhost),
+    xdm.source.host.hostname = if(shost != "N/A", shost),
+    xdm.source.host.os = if(cs14Label = "PrimaryAssetOS" and cs14 != "N/A", cs14),
+    xdm.target.port = to_integer(dst_port), 
+    xdm.target.ipv4 = arrayindex(dst_ipv4_addresses, 0),
+    xdm.target.ipv6 = arrayindex(dst_ipv6_addresses, 0),
+    xdm.target.host.ipv4_addresses = dst_ipv4_addresses,
+    xdm.target.host.ipv6_addresses = dst_ipv6_addresses,
+    xdm.target.host.os = if(cs20Label = "NonPrimaryAssetOS" and cs20 != "N/A", cs20),
+    xdm.target.host.os_family = if(dst_os != null, if(dst_os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, dst_os contains "mac", XDM_CONST.OS_FAMILY_MACOS, dst_os contains "linux", XDM_CONST.OS_FAMILY_LINUX, dst_os contains "android", XDM_CONST.OS_FAMILY_ANDROID, dst_os contains "ios", XDM_CONST.OS_FAMILY_IOS, dst_os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, dst_os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, dst_os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, dst_os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, dst_os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, dst_os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, dst_os contains "scada", XDM_CONST.OS_FAMILY_SCADA, dst_os)),
+    xdm.source.host.os_family = if(src_os != null, if(src_os contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, src_os contains "mac", XDM_CONST.OS_FAMILY_MACOS, src_os contains "linux", XDM_CONST.OS_FAMILY_LINUX, src_os contains "android", XDM_CONST.OS_FAMILY_ANDROID, src_os contains "ios", XDM_CONST.OS_FAMILY_IOS, src_os contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, src_os contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, src_os contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, src_os contains "centos", XDM_CONST.OS_FAMILY_CENTOS, src_os contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, src_os contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, src_os contains "scada", XDM_CONST.OS_FAMILY_SCADA, src_os)),
+
+    xdm.observer.version = cefDeviceVersion,
+
+     
+
+
+    xdm.source.zone = if(cs5Label = "SrcZone", cs5), 
+    xdm.target.zone = if(cs6Label = "DstZone", cs6), 
+
+
+    xdm.event.is_completed = if(cs3 = "Resolved", to_boolean("TRUE"), if(cs3 = "Unresolved"), to_boolean("False")),
+    xdm.event.description = msg,
+    xdm.event.operation_sub_type = cat,
+
+
+
+    xdm.source.host.device_category = if(cs11Label = "PrimaryAssetType", cs11),
+    xdm.source.host.manufacturer = if(cs15Label = "PrimaryAssetVendor", cs15),
+
+    xdm.source.host.hostname = if(cs12Label = "PrimaryAssetHostname" and cs12 != "N/A", cs12),
+
+    xdm.target.host.device_category = if(cs17Label = "NonPrimaryAssetType", cs17),
+    xdm.target.host.manufacturer = if(cs15Label = "NonPrimaryAssetVendor", cs15),
+    xdm.target.host.hostname = if(cs18Label = "NonPrimaryAssetHostname" and cs18 != "N/A", cs18),
+    xdm.target.host.mac_addresses = arraydistinct(arraycreate(dmac, dst_mac_address))

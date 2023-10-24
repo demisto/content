@@ -1,14 +1,22 @@
 {
     "claroty_ctd_raw": {
+        "cat": {
+            "type": "string",
+            "is_array": false
+        },
         "cefDeviceEventClassId": {
             "type": "string",
             "is_array": false
         },
-        "cefdeviceversion": {
+        "cefDeviceVersion": {
             "type": "string",
             "is_array": false
         },
         "cefName": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefSeverity": {
             "type": "string",
             "is_array": false
         },
