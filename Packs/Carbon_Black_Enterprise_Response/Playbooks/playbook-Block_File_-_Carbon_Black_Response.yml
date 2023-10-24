@@ -1,11 +1,13 @@
-id: block_file_-_carbon_black_response
+id: Block File - Carbon Black Response
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Block File - Carbon Black Response
 fromversion: 5.0.0
 description: |-
-  This playbook receives an MD5 hash and adds it to the block list in Carbon Black Enterprise Response. Files with that MD5 hash are blocked from execution on the managed endpoints.
+  This playbook receives an MD5 hash and adds it to the block list in Carbon Black Enterprise Response. Files with that MD5 hash are blocked from execution on the managed endpoints. If the hash is already on the block list, no action is taken on the MD5.
 
-  If the integration is disabled at the time of running, or if the hash is already on the block list, no action is taken on the MD5.
+  The playbook uses the integration ''VMware Carbon Black EDR v2".
 starttaskid: "0"
 tasks:
   "0":
@@ -16,13 +18,14 @@ tasks:
       id: 5e4385e3-76c2-48e2-80a4-c3798cdae027
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,148 +34,57 @@ tasks:
         }
       }
     note: false
-  "1":
-    id: "1"
-    taskid: 0ee119bc-c1cf-435e-866c-69c8273f8e0d
-    type: regular
-    task:
-      id: 0ee119bc-c1cf-435e-866c-69c8273f8e0d
-      version: -1
-      name: Add the MD5 to the block list
-      description: Adds the MD5 hash to the block list in Carbon Black, which blocks the execution of files with that hash on the managed endpoints.
-      script: '|||cb-block-hash'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      banCount: {}
-      lastBanHost: {}
-      lastBanTime: {}
-      md5hash:
-        simple: ${inputs.MD5}
-      text:
-        simple: Malicious hash detected and will be blocked
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 230,
-          "y": 570
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f4665f30-1aca-401f-8011-8f6b76ee97ca
+    taskid: c86f4a68-540e-4816-8aca-460b5c897b6d
     type: regular
     task:
-      id: f4665f30-1aca-401f-8011-8f6b76ee97ca
+      id: c86f4a68-540e-4816-8aca-460b5c897b6d
       version: -1
       name: Get a list of blacklisted hashes
-      description: Returns a list of hashes on block list, with each list entry describing one hash on block list.
-      script: '|||cb-get-hash-blacklist'
+      description: Prevent execution of a specified md5 hash
+      script: '|||cb-edr-binary-ban'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "9"
     scriptarguments:
-      filter:
+      md5:
         complex:
           root: inputs.MD5
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: md5hash==
-              suffix: {}
+      text:
+        complex:
+          root: inputs.Text
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 200
+          "x": 920,
+          "y": 140
         }
       }
     note: false
-  "4":
-    id: "4"
-    taskid: 82a3b953-f23a-4292-8662-14f58fe4e337
-    type: condition
-    task:
-      id: 82a3b953-f23a-4292-8662-14f58fe4e337
-      version: -1
-      name: Is the MD5 currently blacklisted?
-      description: Checks whether the MD5 is already on the block list. This prevents block listing an MD5 hash that is already block listed.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "1"
-      "yes":
-      - "5"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CbResponse.BlockedHashes.MD5
-            iscontext: true
-          right:
-            value:
-              simple: inputs.MD5
-            iscontext: true
-      - - operator: isTrue
-          left:
-            value:
-              simple: CbResponse.BlockedHashes.Enabled
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 370
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 1447c8cb-2fa3-43ee-80d6-128a35bdcefa
-    type: title
-    task:
-      id: 1447c8cb-2fa3-43ee-80d6-128a35bdcefa
-      version: -1
-      name: Hash Is Already Blocked
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 700,
-          "y": 570
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 351582dc-a7a4-4ea0-843a-59c6770d0285
+    taskid: 83cd8bdb-894a-436d-87df-45889e52da88
     type: condition
     task:
-      id: 351582dc-a7a4-4ea0-843a-59c6770d0285
+      id: 83cd8bdb-894a-436d-87df-45889e52da88
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
       description: Checks if Carbon Black Enterprise Response integration is enabled.
@@ -181,7 +93,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+      - "9"
       "yes":
       - "2"
     separatecontext: false
@@ -201,7 +113,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: carbonblack-v2
+                        simple: VMware Carbon Black EDR v2
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -214,39 +126,24 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
           ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 0
+          "x": 710,
+          "y": -30
         }
       }
     note: false
-  "7":
-    id: "7"
-    taskid: bcd55436-7475-40ae-8cf1-e7e94ca27567
-    type: title
-    task:
-      id: bcd55436-7475-40ae-8cf1-e7e94ca27567
-      version: -1
-      name: No Integration / No MD5
-      description: ""
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1250,
-          "y": 360
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: ff0935b7-054b-4729-82a3-5588d553d9d0
@@ -261,7 +158,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+      - "9"
       "yes":
       - "6"
     separatecontext: false
@@ -273,6 +170,7 @@ tasks:
             value:
               simple: inputs.MD5
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -281,6 +179,12 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 2c14bf01-7fd9-45f8-8554-86d0c1332d81
@@ -289,27 +193,38 @@ tasks:
       id: 2c14bf01-7fd9-45f8-8554-86d0c1332d81
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 830
+          "x": 450,
+          "y": 310
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "6_9_#default#": 0.19,
+      "8_9_#default#": 0.16
+    },
     "paper": {
       "dimensions": {
-        "height": 1235,
-        "width": 1400,
-        "x": 230,
+        "height": 715,
+        "width": 850,
+        "x": 450,
         "y": -340
       }
     }
@@ -322,6 +237,13 @@ inputs:
       accessor: MD5
   required: false
   description: The MD5 hash of the file you want to block.
+  playbookInputQuery:
+- key: Text
+  value:
+    simple: Blocked by XSOAR
+  required: false
+  description: Text description of block list.
+  playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
   description: Last block time
@@ -330,4 +252,4 @@ outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
 tests:
-- block_indicators_-_generic_-_test
+- No tests (auto formatted)

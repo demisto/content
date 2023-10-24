@@ -52,6 +52,7 @@ configuration:
 description: KnowBe4_KMSAT allows you to push and pull your external data to and from the KnowBe4 console.
 display: 'KnowBe4 KMSAT Event Collector'
 name: KnowBe4 KMSAT Event Collector
+supportlevelheader: xsoar
 script:
   commands:
   - description: Manual command to fetch and display events.
@@ -120,7 +121,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.78960
   isfetchevents: true
 fromversion: 6.8.0
 tests:
