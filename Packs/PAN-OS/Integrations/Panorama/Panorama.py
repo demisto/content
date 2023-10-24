@@ -13974,7 +13974,8 @@ def main():  # pragma: no cover
             first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
             configured_max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             queries_dict = log_types_queries_to_dict(params)
-            fetch_job_polling_max_num_attempts = arg_to_number(params.get('fetch_job_polling_max_num_attempts')) or GET_LOG_JOB_ID_MAX_RETRIES
+            fetch_job_polling_max_num_attempts = arg_to_number(params.get(
+                'fetch_job_polling_max_num_attempts')) or GET_LOG_JOB_ID_MAX_RETRIES
             max_fetch_dict = last_run.get('max_fetch_dict') or create_max_fetch_dict(
                 queries_dict=queries_dict, configured_max_fetch=configured_max_fetch)
 
