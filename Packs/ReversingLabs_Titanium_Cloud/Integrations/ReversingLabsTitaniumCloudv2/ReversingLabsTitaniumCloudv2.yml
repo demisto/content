@@ -611,6 +611,23 @@ script:
     - contextPath: ReversingLabs.domain_to_ip
       description: The list of IP addresses resolved from the domain.
       type: Unknown
+  - name: reversinglabs-titaniumcloud-domain-related-domains
+    description: Returns a list of domains related to the submitted domain.
+    arguments:
+    - name: domain
+      description: Domain string.
+      required: true
+      default: true
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.domain_related_domains
+      description: The list of domains related to the submitted domain.
+      type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.79362
   runonce: false
   script: '-'

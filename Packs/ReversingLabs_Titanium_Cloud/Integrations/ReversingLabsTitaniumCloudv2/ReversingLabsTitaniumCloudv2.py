@@ -1774,14 +1774,55 @@ def domain_to_ip_output(response, domain):
     return results
 
 
-
-
-
-
-
-
 def domain_related_domains_command():
-    pass
+    domain_ti = create_domain_ti_object()
+
+    domain = demisto.getArg("domain")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = domain_ti.related_domains_aggregated(
+            domain=domain,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = domain_related_domains_output(response=response, domain=domain)
+    return_results(results)
+
+
+def domain_related_domains_output(response, domain):
+    domain_table = tableToMarkdown(
+        name="Domain list",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs domains related to domain {domain}\n {domain_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"domain_related_domains": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
 
 
 def ip_report_command():
@@ -1904,6 +1945,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-domain-to-ip":
         domain_to_ip_command()
+
+    elif command == "reversinglabs-titaniumcloud-domain-related-domains":
+        domain_related_domains_command()
 
     else:
         return_error(f"Command {command} does not exist")
