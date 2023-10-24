@@ -32,7 +32,7 @@ def test_string_similarity(first_string, second_string, similarity_threshold, ex
         """
     result = stringSimilarity(first_string, second_string, similarity_threshold)
     if result is not None:
-        assert result.outputs == argToList(expected_result)
+        assert result.outputs == expected_result
     else:
         assert result is None
 
