@@ -415,7 +415,6 @@ def generic_ansible(integration_name: str, command: str,
             raise DemistoException(
                 err + 'Raw data is:\n' + json.dumps(unhandled_errors, indent=4)
             )
-    demisto.debug("Pushing the ansible runner results to the war room")
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=integration_name + '.' + title_case(command),
