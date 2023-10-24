@@ -423,7 +423,6 @@ def handle_finished_status(assets_last_run, assets):
         assets = list(filter(lambda asset: asset.get('id') != last_asset_id, assets))
     assets_last_run.update({'export_uuid': None})  # if the polling is over and we can start a new fetch
     assets_last_run.pop('nextTrigger', None)
-    assets_last_run.pop('type', None)
     for asset in assets:
         created_at = round(get_timestamp(arg_to_datetime(asset.get('created_at'))))
         if created_at > last_fetch:
@@ -476,7 +475,7 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
         elif status in ['CANCELLED', 'ERROR'] and last_fetch:
             export_uuid = client.export_assets_request(chunk_size=2, fetch_from=last_fetch)
             assets_last_run.update({'export_uuid': export_uuid})
-            assets_last_run.update({'nextTrigger': '30', 'type': 1})
+            assets_last_run.update({'nextTrigger': '30'})
 
     demisto.info(f'merit, Done fetching {len(assets)} assets, {assets_last_run=}.')
     return assets, assets_last_run
