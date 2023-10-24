@@ -391,10 +391,12 @@ def get_dataset_and_packs_from_collected_modeling_rules_to_test(test_data_filena
         Set - datasets to delete.
     """
     datasets_to_delete = set()
+    logging.info(f"{test_data_filenames=}")
     with open(test_data_filenames) as f:
         for modeling_rule_to_test in f.readlines():
             modeling_rule_path = Path(f'Packs/{modeling_rule_to_test}')
             test_data_matches = list(modeling_rule_path.glob(TEST_DATA_PATTERN))
+            logging.info(f"{test_data_matches=}, {modeling_rule_path=}")
             if test_data_matches:
                 modeling_rule_testdata_path = test_data_matches[0]
                 test_data = json.loads(modeling_rule_testdata_path.read_text())
@@ -402,6 +404,7 @@ def get_dataset_and_packs_from_collected_modeling_rules_to_test(test_data_filena
                     dataset_name = data.get('dataset')
                     if dataset_name:
                         datasets_to_delete.add(dataset_name)
+                logging.info(f"{modeling_rule_testdata_path=}")
     return datasets_to_delete
 
 
@@ -422,6 +425,7 @@ def handle_delete_datasets_by_testdata(base_url, api_key, auth_id, test_data_fil
     dataset_names = get_dataset_and_packs_from_collected_modeling_rules_to_test(
         test_data_filenames=test_data_filenames
     )
+    logging.info(f'{dataset_names=}')
     success = delete_datasets(dataset_names=dataset_names, base_url=base_url, api_key=api_key, auth_id=auth_id)
     return success
 
