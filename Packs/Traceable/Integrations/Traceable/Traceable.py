@@ -249,6 +249,7 @@ class Helper:
 
 class Client(BaseClient):
     REQUESTS_TIMEOUT = 60
+    pack_version = "1.1.0"
 
     def __init__(
         self,
@@ -264,7 +265,7 @@ class Client(BaseClient):
             headers = {}
 
         headers["Content-Type"] = "application/json"
-        headers["x-traceable-xsoar"] = "traceable-xsoar-integration; version=1.1.0"
+        headers["x-traceable-xsoar"] = f"traceable-xsoar-integration; version={self.pack_version}"
         self.headers = headers
         self.url = base_url + "/graphql"
         self.securityScoreCategoryList = None
@@ -1080,7 +1081,7 @@ def main() -> None:
     :return:
     :rtype:
     """
-    demisto.info(f"Pack version - {get_pack_version()}")
+
     base_url = demisto.params()["url"]
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
@@ -1119,6 +1120,8 @@ def main() -> None:
         client = Client(
             base_url, verify=verify_certificate, headers=headers, proxy=proxy
         )
+
+        demisto.info(f"Pack version - {client.pack_version}")
 
         client.set_security_score_category_list(securityScoreCategoryList)
         client.set_threat_category_list(threatCategoryList)

@@ -1,37 +1,49 @@
-Traceable Platform Integration enables publishing Traceable Detected Security Events to be published to Cortex XSOAR for further action.
+# Traceable AI API Security Platform Integration
 
-## Configure Traceable on Cortex XSOAR
+## Overview
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Traceable.
-3. Click **Add instance** to create and configure a new integration instance.
+Traceable platform monitors application APIs and detects _Threat Events_. These _Threat Events_ consist of the details about the _Threat Activity_, the _Actor_ performing the threat activity and the request/response payloads.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Traceable Platform API Endpoint URL | True |
-    | API Token | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-    | Max number of records to fetch per API call to Traceable API Endpoint | False |
-    | Number of span queries to run in parallel | False |
-    | Max spans per thread (1 to 1000) | False |
-    | Comma-Separated Environment List To Process | False |
-    | Security Score Category | False |
-    | Threat Category | False |
-    | IP Reputation Level | False |
-    | IP Abuse Velocity | False |
-    | IP Location Type | False |
-    | Traceable Platform Endpoint URL | False |
-    | Incident type | False |
-    | Ignore Status Codes | False |
-    | Incident optional field list | False |
-    | Additional API Attributes | False |
-    | Fetch unique incidents | False |
-    | Time between raising similar incidents (in &lt;number&gt; &lt;time unit&gt;, e.g., in 12 hours, in 7 days) | False |
+With this integration, an _Incident_ can be raised in Cortex Xsoar when an event is detected by Traceable platform. This enables the security teams to orchestrate actions through Cortex Xsoar with meaningful information about the detected _Threat Activities_.
 
-4. Click **Test** to validate the URLs, token, and connection.
+## Setup
+
+To use the integration the following mandatory parameters need to be set:
+
+|Parameter Name|Default Value|Description|
+|------|------|------|
+|Traceable Platform API Endpoint URL|<https://api.traceable.ai>| Base URL of the Traceable platform API endpoint. |
+|API Token|-| API token used for authenticating against the Traceable platform. |
+|Trust any certificate (not secure)|false| Trust any SSL certificate while connecting to the Traceable platform API endpoint. |
+|Use system proxy settings|false| Use the system proxy using the environment variables `http_proxy`/`https_proxy`. |
+
+The API token can be generated as described in the [Traceable Documentation](https://docs.traceable.ai/docs/public-apis#step-1-%E2%80%93-copy-the-platform-api-token)
+
+## Customize Event/Activity Collection
+
+The following parameters can be used to select the events that should be imported from the Traceable platform into Cortex Xsoar as security incidents.
+
+|Parameter name|Type|Required (Yes/No)|Default Value|Description|
+|------|------|------|------|------|
+|First fetch timestamp|Short text|No|1 days| Duration in the past to query the events, when querying for the first time. |
+|Max number of records to fetch per API call to Traceable API Endpoint|Short text|No|100| Number of records to return from Traceable platform per query. |
+|Number of span queries to run in parallel|Short text|No|5| Number of threads to use for querying `spans` in parallel. |
+|Max spans per thread|Short text|No|50| Number of `spans` to query per span thread. Value can be an integer between 1 to 1000. |
+|Comma Separated Environment List To Process|Long text|No|-| Comma separated list of environments to query. |
+|Security Score Category|Multi select|No|CRITICAL, HIGH, MEDIUM| `Security Score Category` of the events to be queried. |
+|Threat Category|Multi select|No|Malicious Activities, API Abuse, Malicious Sources| `Threat Category` of the events to be queried. |
+|IP Reputation Level|Multi select|No|CRITICAL, HIGH, MEDIUM| `IP Reputation Level` of the events to be queried. |
+|IP Abuse Velocity|Multi select|No|CRITICAL, HIGH, MEDIUM| `IP Abuse Velocity` of the events to queried. |
+|IP Location Type|Multi select|No|-| `IP Location` type of the events to be queried. |
+|Traceable Platform Endpoint URL|Long text|No|<https://app.traceable.ai>| Base URL of the Traceable platform UI endpoint. |
+|Ignore Status Codes|Long text|No|400-499| Ignore incidents for which the HTTP status codes fall in the range of the given comma-separated list of HTTP status codes and/or status code ranges. eg. `301, 400-499`. |
+|Incident optional field list|Multi select|No|actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,actorScore,threatCategory,type| Optional fields to pull from the Traceable event. |
+|Additional API Attributes|Multi select|No|isExternal,isAuthenticated,riskScore,riskScoreCategory,isLearnt| Additional API attributes to query for the affected API in the incident. |
+|Fetch unique incidents|Boolean|No|true| Select if the integration should only fetch unique occurrences of a given incident from Traceable Platform. |
+
+## Incident Types
+
+The integration generates _Exploit_ type of incidents.
 
 ## Commands
 
@@ -80,3 +92,10 @@ Delete all entries in the incident cache.
 | Traceable.Instancecache.id | string | Cache entry ID. | 
 | Traceable.Instancecache.expiry | date | Cache entry expiration date. | 
 | Traceable.Instancecache.deletion_status | string | Cache entry deletion status. | 
+
+## Official Traceable Documentation
+<https://docs.traceable.ai/>
+
+## Issues?
+
+Reach out to support@traceable.ai

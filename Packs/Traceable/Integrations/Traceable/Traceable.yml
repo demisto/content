@@ -48,6 +48,7 @@ configuration:
   name: span_query_batch_size
   type: 0
   required: false
+  additionalinfo: Provide a value between 1 and 1000.
   defaultvalue: '50'
 - display: "Comma Separated Environment List To Process"
   name: environment
@@ -115,11 +116,12 @@ configuration:
   defaultvalue: Exploit
   type: 13
   required: false
-- display: Ignore Status Codes
+- display: Ignore Status Codes (eg. 301, 400-499)
   name: ignoreStatusCodes
   defaultvalue: 400-499
   type: 0
   required: false
+  additionalinfo: Provide comma-separated HTTP Status ranges or individual status codes to ignore. Eg. 301, 400-499.
 - display: Incident optional field list
   name: optionalDomainEventFieldList
   defaultvalue: actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,actorScore,threatCategory,type
@@ -154,12 +156,14 @@ configuration:
   type: 16
   required: false
 - display: Fetch unique incidents
+  additionalinfo: Ignores repeat occurrences of a given incidence for a specified time.
   defaultvalue: "true"
   name: isFetchUniqueIncidents
   type: 8
   required: false
 - name: timegap_between_repeat_incidents
   display: Time between raising similar incidents (in <number> <time unit>, e.g., in 12 hours, in 7 days)
+  additionalinfo: Specifies a timeframe in the future until which a repeat incidence will be ignored.
   required: false
   type: 0
   defaultvalue: 'in 7 days'
