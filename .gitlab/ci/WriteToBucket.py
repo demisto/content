@@ -46,7 +46,7 @@ if __name__ == "__main__":
     install_logging('lock_cloud_machines.log', logger=logging)
     logging.info('Starting to search for a CLOUD machine/s to lock')
     options = options_handler()
-    storage_client = storage.Client.from_service_account_json("/Users/yrosenberg/Desktop/key.json")
+    storage_client = storage.Client.from_service_account_json(options.service_account)
     storage_bucket = storage_client.bucket(LOCKS_BUCKET)
     blob = storage_bucket.blob(file_name)
 
