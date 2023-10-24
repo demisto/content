@@ -577,6 +577,23 @@ script:
     - contextPath: ReversingLabs.domain_downloaded_files
       description: The list of files downloaded from a domain.
       type: Unknown
+  - name: reversinglabs-titaniumcloud-domain-urls
+    description: Returns a list of URL-s found a domain.
+    arguments:
+    - name: domain
+      description: Domain string.
+      required: true
+      default: true
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.domain_urls
+      description: The list of URL-s found a domain.
+      type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.79362
   runonce: false
   script: '-'
