@@ -35,7 +35,7 @@ def get_integration_params(integration_secrets_path: str, instance_name: str):
         integrations_config = json.load(file)["integrations"]
 
     for config in integrations_config:
-        if config.get("instance_name") == instance_name:
+        if config.get("instance_name") == instance_name or config.get("name") == instance_name:
             return config.get("params")
 
     raise ValueError(f'Could not find integration parameters for {instance_name}')

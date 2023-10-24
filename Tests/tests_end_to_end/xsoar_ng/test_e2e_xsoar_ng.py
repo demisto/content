@@ -40,7 +40,7 @@ def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
 def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGApiClient):
 
     integration_id = request.cls.integration_id
-    instance_name = integration_params.pop("integrationInstanceName", f'test-{integration_params.get("name")}')
+    instance_name = integration_params.pop("integrationInstanceName", f'e2e-test-{integration_params.get("name")}')
     response = xsoar_ng_client.create_integration_instance(
         _id=integration_id,
         name=instance_name,
@@ -143,3 +143,14 @@ class TestEDL:
 #
 #         indicators = objects.get("objects")
 #         assert indicators, f'could not get indicators from url={indicators_url} with available indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, status code={response.status_code}, response={indicators}'
+
+
+# class TestQradar:
+#     """
+#     Tests Qradar mirroring
+#     """
+#     instance_name_gsm = "QRadar v3"
+#     integration_id = "QRadar v3"
+#
+#     def test_qradar_mirroring(self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, integration_params: dict):
+
