@@ -1,84 +1,145 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 from CommonServerUserPython import *  # noqa
-
-import urllib3
-from typing import Dict, Any
-
-# Disable insecure warnings
-urllib3.disable_warnings()
-
+from threading import Thread
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+# Constants used in last_run
+LAST_ALERT_TIME = 'last_time'
+LAST_ALERT_IDS = 'last_alert_ids'
+LAST_AUDIT_IDS = 'last_audit_logs_ids'
+
+# Constants used in fetch-events
+MAX_ALERTS = 100000
+MAX_AUDITS = 25000
+
+# Constants used by Response Objects
+ALERT_TIMESTAMP = 'backend_timestamp'
+AUDIT_TIMESTAMP = 'eventTime'
+ALERT_ID = 'id'
+AUDIT_ID = 'eventId'
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
     """
+    Carbon Black Endpoint Standard Event Collector client class for fetching alerts and audit logs
+    """
+    def __init__(self, url: str, proxy: bool, insecure: bool, credentials: dict, org_key: str, max_alerts: int,
+                 max_audit_logs: int):
+        api_id = credentials.get('username')
+        api_secret_key = credentials.get('password')
+        auth_headers = {'X-Auth-Token': f'{api_secret_key}/{api_id}', 'Content-Type': 'application/json'}
+        self.org_key = org_key
+        self.max_alerts = max_alerts
+        self.max_audit_logs = max_audit_logs
+        super().__init__(
+            base_url=url,
+            verify=not insecure,
+            proxy=proxy,
+            headers=auth_headers
+        )
+        # audit_client to use its own session for thread safe behavior
+        self.audit_client: BaseClient = BaseClient(
+            base_url=url,
+            verify=not insecure,
+            headers=auth_headers
+        )
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def get_alerts(self, start_time: str, start: int|str, max_rows: int|str):
+        body = {
+            "time_range": {
+                "start": start_time,
+                "end": datetime.now().strftime(DATE_FORMAT)
+            },
+            "start": start,
+            "rows": max_rows,
+            "sort": [
+                {
+                    "field": "backend_timestamp",
+                    "order": "ASC"
+                }
+            ]
+        }
+        return self._http_request(method='POST', url_suffix=f'api/alerts/v7/orgs/{self.org_key}/alerts/_search', data=body)
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
+    def get_audit_logs(self):
+        return self.audit_client._http_request(method='GET', url_suffix='integrationServices/v3/auditlogs')
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+def is_audit_interval(run, interval):
+    # TODO: finish implementation
+    return True
+
+def get_alerts_and_audit_logs(client: Client, start_time: str, add_audit_logs: bool, max_rows: int | str) -> (list, list):
+    """
+    Fetches alerts and audit logs from CarbonBlack server using multi-threading
+    """
+    audit_logs = []
+    t_alerts = Thread(target=client.get_alerts, args=(start_time, 1, max_rows))
+    t_alerts.start()
+    if add_audit_logs:
+        t_audit_logs = Thread(target=client.get_audit_logs)
+        t_audit_logs.start()
+        audit_logs = t_audit_logs.join()
+    alerts = t_alerts.join()
+    return alerts, audit_logs
+
+
+def update_last_run(last_run, alerts, audit_logs):
+    """
+    Update the last run object with the latest timestamp and IDs fetched
+    """
+    if alerts:
+        last_run[LAST_ALERT_TIME] = last_alert_time = alerts[-1][ALERT_TIMESTAMP]
+        last_run[LAST_ALERT_IDS] = [alert[ALERT_ID] for alert in alerts[::-1]
+                                    if not stop_for_different_time(alert[ALERT_TIMESTAMP], last_alert_time)]
+    if audit_logs:
+        last_audit_time = audit_logs[:-1]
+        last_run[LAST_AUDIT_IDS] = [audit[AUDIT_ID] for audit in audit_logs[::-1]
+                                    if not stop_for_different_time(audit[AUDIT_TIMESTAMP], last_audit_time)]
+    return last_run
+
+def stop_for_different_time(first_time: str, second_time: str):
+    if first_time != second_time:
+        raise StopIteration(f"Time {first_time} is different than {second_time}")
+
+def dedupe_events(alerts, audit_logs, max_audit_logs, last_run):
+    """
+    Dedupe alerts and audit logs based on IDs fetched in the last run
+    """
+    if alerts and last_run.get(LAST_ALERT_TIME) == alerts[0][ALERT_TIMESTAMP]:
+        last_run_ids = set(last_run[LAST_ALERT_IDS])
+        alerts = filter(lambda alert: alert[ALERT_ID] not in last_run_ids, alerts)
+    if audit_logs and last_run.get(LAST_AUDIT_IDS):
+        last_run_ids = set(last_run[LAST_AUDIT_IDS])
+        audit_logs = filter(lambda audit: audit[AUDIT_ID] not in last_run_ids, audit_logs)
+    return alerts, audit_logs[:max_audit_logs]
 
 ''' COMMAND FUNCTIONS '''
 
 
+def get_events(client: Client, last_run: dict, max_alerts: int, max_audit_logs: int, add_audit_logs: bool,
+               audit_fetch_interval: str):
+    add_audit_logs = add_audit_logs and is_audit_interval(last_run, audit_fetch_interval)
+    alerts, audit_logs = get_alerts_and_audit_logs(
+        client=client,
+        start_time=last_run.get('LAST_TIME'),
+        max_rows=max_alerts,
+        add_audit_logs=add_audit_logs,
+    )
+    alerts, audit_logs = dedupe_events(alerts, audit_logs, max_audit_logs, last_run)
+    last_run = update_last_run(last_run, alerts, audit_logs)
+    events = alerts + audit_logs
+    return events, last_run
+
+
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
     message: str = ''
     try:
         # TODO: ADD HERE some code to test connectivity and authentication to your service.
@@ -92,73 +153,46 @@ def test_module(client: Client) -> str:
             raise e
     return message
 
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
-
-
 ''' MAIN FUNCTION '''
 
-
-def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
-
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
+def main() -> None:  # pragma: no cover
+    params = demisto.params()
+    command = demisto.command()
+    vendor, product = params.get('vendor', 'vmware_carbon_black'), params.get('product', 'cloud')
+    support_multithreading()  # audit_logs will be fetched async
+    demisto.debug(f'Command being called is {command}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
+        last_run = demisto.getLastRun()
+        add_audit_logs = params.get('add_audit_logs')
+        max_alerts = min(arg_to_number(params.get('max_alerts') or MAX_ALERTS), MAX_ALERTS)
+        max_audit_logs = min(arg_to_number(params.get('max_alerts') or MAX_ALERTS), MAX_AUDITS)
+        audit_fetch_interval = params.get('audit_fetch_interval')
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            url=params.get('url'),
+            proxy=params.get('proxy'),
+            insecure=params.get('insecure'),
+            credentials=params.get('credentials', {}),
+            org_key=params.get('org_key'),
+            max_alerts=max_alerts,
+            max_audit_logs=max_audit_logs,
+        )
+        if command == 'test-module':
+            return_results(test_module(client))
 
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
-
+        elif command == 'fetch-events':
+            demisto.debug(f'Sending request with last run {last_run}')
+            events, new_last_run = get_events(
+                client=client,
+                last_run=last_run,
+                max_alerts=max_alerts,
+                max_audit_logs=max_audit_logs,
+                add_audit_logs=add_audit_logs,
+                audit_fetch_interval=audit_fetch_interval,
+            )
+            demisto.debug(f'sending {len(events)} to xsiam')
+            send_events_to_xsiam(events=events, vendor=vendor, product=product)
+            demisto.debug(f'Handled {len(events)} total events seconds')
+            demisto.setLastRun(new_last_run)
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
