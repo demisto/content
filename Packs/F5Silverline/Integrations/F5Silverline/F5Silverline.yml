@@ -98,7 +98,7 @@ script:
       - denylist
       required: true
     - auto: PREDEFINED
-      description: 'This argument can be supplied to target either the proxy or routed denylist. If list_target is not specifiedm it will assume both proxy and routed are requested (i.e., proxy-routed). Possible values are: "proxy", "routed", or "proxy-routed". This argument limits the denylist type but is ignored for allowlist.'
+      description: 'This argument can be supplied to target either the proxy or routed denylist. If list_target is not specified it will assume both proxy and routed are requested (i.e., proxy-routed). Possible values are: "proxy", "routed", or "proxy-routed". This argument limits the denylist type but is ignored for allowlist.'
       name: list_target
       predefined:
       - proxy
@@ -129,9 +129,16 @@ script:
       name: object_id
     - description: The IP address of an existing threatening IP address object that should be deleted.
       name: object_ip
+    - auto: PREDEFINED
+      description: 'This argument can be supplied to target either the proxy or routed denylist. If list_target is not specified it will assume proxy is requested. Possible values are: "proxy", "routed", or "proxy-routed" (both proxy and routed). This argument limits the denylist type but is ignored for allowlist.'
+      name: list_target
+      predefined:
+      - proxy
+      - routed
+      - proxy-routed
     description: Delete an existing particular threatening IP address object by its object ID or by its IP address. If both id and ip are given, delete operation will be done by the given object_id.
     name: f5-silverline-ip-object-delete
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.78623
   runonce: false
   script: '-'
   subtype: python3
