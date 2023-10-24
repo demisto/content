@@ -666,7 +666,7 @@ def malop_processes_command(client: Client, args: dict):
             raise DemistoException("dateTime could not be parsed. Please enter a valid time parameter.")
         date_time_parser = date_time_parser.timestamp()
         milliseconds = int(date_time_parser * 1000)
-        filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult":True}]
+        filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult": True}]
 
     if isinstance(malop_guids, str):
         malop_guids = malop_guids.split(',')
@@ -1620,8 +1620,8 @@ def fetch_malop_processes(client: Client, malop_id: str) -> list:
             {
                 "requestedType": "MalopProcess",
                 "filters": [],
-                "guidList":[malop_id],
-                "connectionFeature":{
+                "guidList": [malop_id],
+                "connectionFeature": {
                     "elementInstanceType": "MalopProcess",
                     "featureName": "suspects"
                 }
@@ -1629,7 +1629,7 @@ def fetch_malop_processes(client: Client, malop_id: str) -> list:
             {
                 "requestedType": "Process",
                 "filters": [],
-                "isResult":True
+                "isResult": True
             }
         ],
         "totalResultLimit": 1000,
