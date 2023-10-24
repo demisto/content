@@ -2633,7 +2633,7 @@ def fetch_incidents():
                                                               created_time_field='occurred', id_field='name',
                                                               date_format=DATE_FORMAT,
                                                               new_offset=incidents_offset)
-        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(incidents)}")
+        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch Incidents. Fetched {len(incidents)}")
 
     if "IDP Detection" in fetch_incidents_or_detections:
         idp_detections_offset: int = current_fetch_info_idp_detections.get('offset') or 0
