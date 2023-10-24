@@ -8,6 +8,23 @@ import json
 from typing import Dict, cast, List, Union, Any
 
 
+UNHANDLED_ERROR_EVENT_TYPES = [
+    # "runner_on_failed" and "runner_on_unreachable" are handled errors
+    "warning",
+    "system_warning",
+    "verbose",
+    "runner_on_error",
+    "runner_on_no_hosts",
+    "runner_on_async_failed",
+    "runner_item_on_failed",
+    "playbook_on_no_hosts_matched",
+    "playbook_on_no_hosts_remaining",
+    "playbook_on_not_import_for_host",
+    "debug",
+    "deprecated",
+    "error"
+]
+
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
 
 
@@ -229,6 +246,34 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
     return inventory, sshkey
 
 
+def is_permission_error(unhandled_errors: List[Dict[str, Any]]) -> bool:
+    """ Iterates the unhandled error events retrieved from ansible_runner.run() method.
+    If the stdout property of them contains the string "PermissionError: [Errno 13]",
+    it indicates that the docker container runs the command not as a root user.
+    Args:
+        unhandled_errors (List): The list of the unexpected events.
+    Returns:
+        bool: Whether a permission error message was detected.
+    """
+    def is_permission_error_event(e: Dict[str, Any]) -> bool:
+        return e['event'] == 'verbose' and 'PermissionError: [Errno 13]' in e['stdout']
+
+    return any(is_permission_error_event(e) for e in unhandled_errors)
+
+
+def clean_ansi_codes(input_str: str) -> str:
+    """
+    Remove ANSI escape codes from the provided string.
+
+    Parameters:
+    - input_str (str): The input string containing ANSI escape codes.
+
+    Returns:
+    - str: The cleaned string without ANSI escape codes.
+    """
+    return re.sub(r'\x1b\[.*?m', '', input_str)
+
+
 def generic_ansible(integration_name: str, command: str,
                     args: Dict[str, Any], int_params: Dict[str, Any], host_type: str,
                     creds_mapping: Dict[str, str] = None) -> CommandResults:
@@ -295,6 +340,7 @@ def generic_ansible(integration_name: str, command: str,
                            omit_event_data=True, ssh_key=sshkey, module_args=module_args, forks=fork_count)
 
     results = []
+    unhandled_errors = []
     outputs_key_field = ''
     for each_host_event in r.events:
         # Troubleshooting
@@ -302,7 +348,8 @@ def generic_ansible(integration_name: str, command: str,
         if each_host_event['event'] in ["runner_on_ok", "runner_on_unreachable", "runner_on_failed"]:
 
             # parse results
-            str_to_parse = '{' + each_host_event['stdout'].split('{', 1)[1]
+            raw_str_to_parse = '{' + each_host_event['stdout'].split('{', 1)[1]
+            str_to_parse = clean_ansi_codes(input_str=raw_str_to_parse)
             try:
                 result = json.loads(str_to_parse)
             except JSONDecodeError as e:  # pragma: no cover
@@ -339,7 +386,7 @@ def generic_ansible(integration_name: str, command: str,
                     result['host'] = host
                     outputs_key_field = 'host'  # updates previous outputs that share this key, neat!
 
-                if (type(result) == dict):
+                if type(result) == dict:
                     result['status'] = status.strip()
 
                 results.append(result)
@@ -352,6 +399,23 @@ def generic_ansible(integration_name: str, command: str,
             if each_host_event['event'] in ["runner_on_failed", "runner_on_unreachable"]:
                 return_error(msg)
 
+        elif each_host_event['event'] in UNHANDLED_ERROR_EVENT_TYPES:
+            unhandled_errors.append(each_host_event)
+
+    if unhandled_errors:
+        err = 'Got unexpected events from Ansible.\n'
+        if all(e['event'] in ['verbose', 'warning', 'system_warning'] for e in unhandled_errors):
+            # we address such errors only if no expected results were retrieved from ansible runner.
+            if not results:
+                if is_permission_error(unhandled_errors):
+                    err += 'Make sure the "demisto/ansible-runner" container runs as a root user.'
+                err += '\nTo see the full events details, run the command in debug mode.'
+                raise DemistoException(err)
+        else:
+            raise DemistoException(
+                err + 'Raw data is:\n' + json.dumps(unhandled_errors, indent=4)
+            )
+    demisto.debug("Pushing the ansible runner results to the war room")
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=integration_name + '.' + title_case(command),
