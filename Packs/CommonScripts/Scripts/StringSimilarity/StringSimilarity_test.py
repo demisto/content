@@ -1,27 +1,26 @@
 import pytest
 import demistomock as demisto
 from StringSimilarity import stringSimilarity, main
-from CommonServerPython import *
 from unittest.mock import patch
 
 
 @pytest.mark.parametrize("first_string, second_string, similarity_threshold, expected_result", [
-    (["hello"], ["hello"], 0.9, {
-        "StringA": ["hello"],
-        "StringB": ["hello"],
+    ("hello", "hello", 0.9, {
+        "StringA": "hello",
+        "StringB": "hello",
         "SimilarityScore": 1.0,
     }),
-    (["deeply"], ["deeply"], 0.6, {
-        "StringA": ["deeply"],
-        "StringB": ["deeply"],
+    ("deeply", "deeply", 0.6, {
+        "StringA": "deeply",
+        "StringB": "deeply",
         "SimilarityScore": 1.0,
     }),
-    (["testing"], ["test"], 0.7, {
-        "StringA": ["testing"],
-        "StringB": ["test"],
+    ("testing", "test", 0.7, {
+        "StringA": "testing",
+        "StringB": "test",
         "SimilarityScore": 0.7272727272727273,
     }),
-    (["a"], ["b"], 0.1, {
+    ("a", "b", 0.1, {
      None})
 ])
 def test_string_similarity(first_string, second_string, similarity_threshold, expected_result, mocker):
