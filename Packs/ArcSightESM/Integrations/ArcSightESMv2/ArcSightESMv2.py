@@ -853,8 +853,8 @@ def add_entries_command(args):
             entries_arg = json.loads(entries_arg)
 
         except ValueError as ex:
-            demisto.debug(str(ex))
-            return_error('Entries must be in JSON format. Must be array of objects.')
+            demisto.error(str(ex))
+            raise ValueError('entries must be in JSON format. Must be array of objects.')
 
     if len(entries_arg) > 0:
         if len(entries_arg) > 0:
@@ -884,11 +884,10 @@ def add_entries_command(args):
     res = send_request(query_path, body=body)
 
     if not res.ok:
-        demisto.debug(res.text)
-        return_error("Failed to add entries. Please make sure to enter Active List resource ID"
-                     "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(resource_id,
-                                                                                                 res.status_code, body,
-                                                                                                 res.text))
+        raise ValueError("Failed to add entries. Please make sure to enter Active List resource ID"
+                         "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(resource_id,
+                                                                                                     res.status_code, body,
+                                                                                                     res.text))
 
     demisto.results("Success")
 
@@ -933,11 +932,7 @@ def main():
     global BASE_URL
     BASE_URL = demisto.params().get('server').rstrip('/') + '/'
 
-    if not demisto.params().get("proxy", False):
-        del os.environ["HTTP_PROXY"]
-        del os.environ["HTTPS_PROXY"]
-        del os.environ["http_proxy"]
-        del os.environ["https_proxy"]
+    handle_proxy()
 
     global MAX_UNIQUE
     MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
@@ -1004,7 +999,7 @@ def main():
             get_all_query_viewers_command()
 
     except Exception as e:
-        return_error('Unexpected error:' + str(e), error=traceback.format_exc())
+        return_error('Error:' + str(e), error=traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins
