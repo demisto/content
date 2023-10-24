@@ -425,7 +425,7 @@ def handle_delete_datasets_by_testdata(base_url, api_key, auth_id, test_data_fil
     dataset_names = get_dataset_and_packs_from_collected_modeling_rules_to_test(
         test_data_filenames=test_data_filenames
     )
-    logging.info(f'{dataset_names=}')
+    logging.info(f'Collected datasets to delete {dataset_names=}.')
     success = delete_datasets(dataset_names=dataset_names, base_url=base_url, api_key=api_key, auth_id=auth_id)
     return success
 
@@ -466,13 +466,13 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
     # in earlier builds they will appear in the bucket as it is cached.
     success = sync_marketplace(client=client)
     non_removable_packs = options.non_removable_packs.split(',')
-    # success &= reset_core_pack_version(client, non_removable_packs)
-    # if success:
-    #     if options.one_by_one:
-    #         success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
-    #     else:
-    #         success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
-    #             wait_for_uninstallation_to_complete(client, non_removable_packs)
+    success &= reset_core_pack_version(client, non_removable_packs)
+    if success:
+        if options.one_by_one:
+            success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
+        else:
+            success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
+                wait_for_uninstallation_to_complete(client, non_removable_packs)
     logging.info(f'Got here 1.')
     success &= sync_marketplace(client=client)
     logging.info(f'Got here 2.')
