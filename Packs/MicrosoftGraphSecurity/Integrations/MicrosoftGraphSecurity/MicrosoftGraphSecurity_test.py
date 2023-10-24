@@ -675,7 +675,7 @@ def test_create_mail_assessment_request_command(mocker, mock_func, command_name,
     mocker.patch("MicrosoftGraphSecurity.get_content_data", return_value="content_data")
     mocker.patch("MicrosoftGraphSecurity.get_message_user", return_value="user_mail")
     mocker.patch("CommonServerPython.is_demisto_version_ge", return_value=True)
-    results = THREAT_ASSESSMENT_COMMANDS[command_name](client_mocker, {})
+    results = THREAT_ASSESSMENT_COMMANDS[command_name]({}, client_mocker)
 
     assert results.raw_response == raw_response
     assert results.outputs.get('ID') == raw_response.get('id')
