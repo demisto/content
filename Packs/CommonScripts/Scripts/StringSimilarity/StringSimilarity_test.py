@@ -16,9 +16,9 @@ from unittest.mock import patch
         "StringB": ["deeply"],
         "SimilarityScore": 1.0,
     }),
-    ("testing", "test", 0.7, {
-        "StringA": "testing",
-        "StringB": "test",
+    (["testing"], ["test"], 0.7, {
+        "StringA": ["testing"],
+        "StringB": ["test"],
         "SimilarityScore": 0.7272727272727273,
     }),
     (["a"], ["b"], 0.1, {
