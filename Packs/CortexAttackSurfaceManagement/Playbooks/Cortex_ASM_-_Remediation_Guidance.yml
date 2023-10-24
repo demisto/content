@@ -1,18 +1,7 @@
 id: Cortex ASM - Remediation Guidance
-version: 26
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Cortex Attack Surface Management
-    itemVersion: 1.7.2
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cortex ASM - Remediation Guidance
-description: This playbook pulls remediation guidance off of a list based on ASM RuleID
-  to be used in service owner notifications (email or ticketing system).
+description: This playbook pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
 starttaskid: "0"
 tasks:
   "0":
@@ -25,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -97,8 +87,7 @@ tasks:
       id: fcdbfcbe-3e7b-42bd-841c-d39cdb54c044
       version: -1
       name: Set default guidance
-      description: Set default value for remediation guidance to be passed back to
-        the parent playbook.
+      description: Set default value for remediation guidance to be passed back to the parent playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -135,8 +124,7 @@ tasks:
       id: 63b76036-a5f5-4c2f-80f1-3f2cf3b696e0
       version: -1
       name: Update guidance
-      description: Append information to remediation guidance to be passed back to
-        the parent playbook.
+      description: Append information to remediation guidance to be passed back to the parent playbook.
       scriptName: Set
       type: regular
       iscommand: false
@@ -150,7 +138,6 @@ tasks:
       value:
         complex:
           root: ASM.AttackSurfaceRule
-          accessor: remediation_guidance
           transformers:
           - operator: concat
             args:
@@ -163,6 +150,7 @@ tasks:
 
 
                     Get in touch with your Infosec team to define proper remediation access.
+          accessor: remediation_guidance
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -190,6 +178,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -262,10 +251,13 @@ inputs:
       accessor: asmattacksurfaceruleid
   required: true
   description: Attack surface management issue rule ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: RemediationGuidance
-  description: Remediation guidance to be sent to the service owner via notification
-    (email or ticketing system).
+  description: Remediation guidance to be sent to the service owner via notification (email or ticketing system).
   type: unknown
-sourceplaybookid: Cortex ASM - Remediation Guidance
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

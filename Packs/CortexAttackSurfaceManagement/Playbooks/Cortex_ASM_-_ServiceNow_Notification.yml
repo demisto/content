@@ -1,18 +1,9 @@
 id: Cortex ASM - ServiceNow Notification
-version: 8
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Cortex Attack Surface Management
-    itemVersion: 1.7.3
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Cortex ASM - ServiceNow Notification
-description: This playbook is used to create ServiceNow tickets directed toward service
-  owners to notify them of their internet exposures.
+description: This playbook is used to create ServiceNow tickets directed toward service owners to notify them of their internet exposures.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -55,6 +47,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -218,13 +211,14 @@ inputs:
 - key: OwnerNotificationBody
   value: {}
   required: true
-  description: Body of the notification (email or ticket) sent to the potential service
-    owner.
-  playbookInputQuery: null
+  description: Body of the notification (email or ticket) sent to the potential service owner.
+  playbookInputQuery:
 - key: RemediationGuidance
   value: {}
   required: true
   description: Remediation Guidance of the Attack Surface Rule.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Cortex ASM - ServiceNow Notification
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

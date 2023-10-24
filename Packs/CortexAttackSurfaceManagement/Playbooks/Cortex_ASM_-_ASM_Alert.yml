@@ -1,18 +1,7 @@
 id: Cortex ASM - ASM Alert
-version: 20
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Cortex Attack Surface Management
-    itemVersion: 1.7.3
-    fromServerVersion: 6.9.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cortex ASM - ASM Alert
-description: This playbook handles ASM alerts by enriching asset information and providing
-  a means of remediating the issue directly or through contacting service owners.
+description: This playbook handles ASM alerts by enriching asset information and providing a means of remediating the issue directly or through contacting service owners.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,11 +14,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -44,6 +33,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: d8b21011-93d6-4b5c-82fa-bfa5b7bad044
@@ -55,8 +45,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -71,6 +61,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 9c94a65b-ec31-4f84-8e53-238c0ba400e5
@@ -82,11 +73,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "171"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -101,6 +92,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 0d81d9c5-0219-481c-8528-92313b69ea7f
@@ -112,6 +104,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "97"
@@ -142,6 +135,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "120"
@@ -172,6 +166,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "179"
@@ -199,10 +194,10 @@ tasks:
       id: fb2870a4-dd48-414b-8ac2-78bba34fac94
       version: -1
       name: Validation Stage
-      description: Send an email
       type: title
       iscommand: false
       brand: ""
+      description: 'Send an email'
     nexttasks:
       '#none#':
       - "86"
@@ -233,6 +228,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "167"
@@ -263,6 +259,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "177"
@@ -290,8 +287,7 @@ tasks:
       id: 818dc0c5-4b28-42bd-81c5-09d85cf07d1f
       version: -1
       name: Service exposure still observable?
-      description: Determines if service was still observable and also if automated
-        remediation was done.
+      description: Determines if service was still observable and also if automated remediation was done.
       type: condition
       iscommand: false
       brand: ""
@@ -349,8 +345,7 @@ tasks:
       id: cb99f386-4096-4789-8579-7e53fcb9d0df
       version: -1
       name: What to do if Remediation Confirmation Scan is inconclusive?
-      description: Determines if alert should be closed or kept open for auto-closure
-        based on analyst input.
+      description: Determines if alert should be closed or kept open for auto-closure based on analyst input.
       type: collection
       iscommand: false
       brand: ""
@@ -370,14 +365,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: The post migration NMAP scan wasn't conclusive, decide next steps.
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -389,8 +384,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: If you know the issue has been remediated, choose to keep open and
-            have next Xpanse scan auto-close or manually close now.
+          simple: If you know the issue has been remediated, choose to keep open and have next Xpanse scan auto-close or manually close now.
         required: false
         gridcolumns: []
         defaultrows: []
@@ -404,8 +398,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Select a next step
-      description: The post migration Remediation Confirmation Scan wasn't conclusive.
-        Decide the next steps.
+      description: The post migration Remediation Confirmation Scan wasn't conclusive. Decide the next steps.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -421,8 +414,7 @@ tasks:
       id: b676cc13-4dac-48aa-8221-0b52451cf9d4
       version: -1
       name: What was data collection task response?
-      description: Determines the next action (remediation or ticket) based on the
-        previous data collection task.
+      description: Determines the next action (remediation or ticket) based on the previous data collection task.
       type: condition
       iscommand: false
       brand: ""
@@ -431,14 +423,14 @@ tasks:
       - "88"
       Automated remediation:
       - "12"
-      Jira ticket:
-      - "156"
       Manual remediation:
       - "63"
       Notification email:
       - "60"
       ServiceNow ticket:
       - "10"
+      Jira ticket:
+      - "156"
     separatecontext: false
     conditions:
     - label: Automated remediation
@@ -448,7 +440,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -470,7 +462,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -482,7 +474,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -494,7 +486,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -534,8 +526,7 @@ tasks:
       id: 7165c67a-9081-4cc6-8a6b-7719f190e23d
       version: -1
       name: Verify service exposure resolved by service owner
-      description: Determines if manual remediation (by service owner or otherwise)
-        was completed via analyst input.
+      description: Determines if manual remediation (by service owner or otherwise) was completed via analyst input.
       type: collection
       iscommand: false
       brand: ""
@@ -555,13 +546,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -573,8 +564,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Please verify service exposure was resolved by service owner and
-            mark "complete" when done:'
+          simple: 'Please verify service exposure was resolved by service owner and mark "complete" when done:'
         required: true
         gridcolumns: []
         defaultrows: []
@@ -606,6 +596,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "176"
@@ -636,6 +627,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "88"
@@ -712,8 +704,7 @@ tasks:
       id: e52a6e9a-0ca3-44ce-8b03-148f0f052d7c
       version: -1
       name: Manual remediation selected?
-      description: Determines if "manual remediation" was selected on main data collection
-        task.
+      description: Determines if "manual remediation" was selected on main data collection task.
       type: condition
       iscommand: false
       brand: ""
@@ -726,14 +717,14 @@ tasks:
       - "69"
     separatecontext: false
     conditions:
-    - label: manual from data collection
+    - label: "manual from data collection"
       condition:
       - - operator: isEqualString
           left:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -902,8 +893,7 @@ tasks:
       id: 61952b89-0ee9-4d72-8e9a-85320b67134c
       version: -1
       name: Cortex ASM - Detect Service
-      description: Playbook that looks at what ASM sub-type the alert is and directs
-        it to different pre/post mitigation scans (such as NMAP).
+      description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
       playbookName: Cortex ASM - Detect Service
       type: playbook
       iscommand: false
@@ -955,8 +945,7 @@ tasks:
       id: 37e5dd13-953f-442c-840f-c82be8227d2c
       version: -1
       name: Complete manual remediation
-      description: Determines if manual remediation (by service owner or otherwise)
-        was completed via analyst input.
+      description: Determines if manual remediation (by service owner or otherwise) was completed via analyst input.
       type: collection
       iscommand: false
       brand: ""
@@ -976,13 +965,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1246,8 +1235,7 @@ tasks:
       id: fa115b90-0879-44b2-89d9-563af80c467c
       version: -1
       name: Close alert (remediated automatically)
-      description: Close the current alert because Automated Remediation path was
-        selected.
+      description: Close the current alert because Automated Remediation path was selected.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1257,8 +1245,7 @@ tasks:
       - "4"
     scriptarguments:
       closeNotes:
-        simple: Alert status set to 'Resolved - Remediated Automatically' by Active
-          Response Module
+        simple: Alert status set to 'Resolved - Remediated Automatically' by Active Response Module
       closeReason:
         simple: Resolved - Remediated Automatically
     separatecontext: false
@@ -1303,8 +1290,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'Alert status set to ''Resolved'' by Active Response Module
-                    - Remediation Path Rule: '
+                  simple: 'Alert status set to ''Resolved'' by Active Response Module - Remediation Path Rule: '
               suffix: {}
       closeReason:
         simple: Resolved
@@ -1332,8 +1318,7 @@ tasks:
       id: d77e73aa-8d8b-4b74-8149-8a7a3074aaa2
       version: -1
       name: Close alert (remediated automatically) with rule match
-      description: Close the current alert because Automated Remediation path was
-        selected.
+      description: Close the current alert because Automated Remediation path was selected.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1351,8 +1336,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'Alert status set to ''Resolved - Remediated Automatically''
-                    by Active Response Module - Remediation Path Rule: '
+                  simple: 'Alert status set to ''Resolved - Remediated Automatically'' by Active Response Module - Remediation Path Rule: '
               suffix: {}
       closeReason:
         simple: Resolved - Remediated Automatically
@@ -1384,6 +1368,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "145"
@@ -1427,6 +1412,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "175"
@@ -1930,6 +1916,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "142"
@@ -1967,8 +1954,7 @@ tasks:
       - "4"
     scriptarguments:
       closeNotes:
-        simple: Alert status set to 'Resolved - Risk Accepted' by Active Response
-          Module
+        simple: Alert status set to 'Resolved - Risk Accepted' by Active Response Module
       closeReason:
         simple: Resolved - Risk Accepted
     separatecontext: false
@@ -1995,8 +1981,7 @@ tasks:
       id: 498b02e9-c216-483b-8fb0-f375ff9f45d0
       version: -1
       name: Are there any matches from accepted risk lists?
-      description: Checks if the system IDs, folders, and projects are present in
-        the accepted risk lists.
+      description: Checks if the system IDs, folders, and projects are present in the accepted risk lists.
       type: condition
       iscommand: false
       brand: ""
@@ -2137,8 +2122,7 @@ tasks:
       id: 93018e08-34f3-48a6-8e62-2fd6a2b9122a
       version: -1
       name: What is the remediation action?
-      description: Determines what the remediation action is (direct action or data
-        collection task).
+      description: Determines what the remediation action is (direct action or data collection task).
       type: condition
       iscommand: false
       brand: ""
@@ -2238,6 +2222,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "129"
@@ -2268,6 +2253,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "128"
@@ -2298,6 +2284,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "178"
@@ -2371,6 +2358,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "157"
@@ -2401,6 +2389,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "130"
@@ -2431,6 +2420,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "131"
@@ -2559,8 +2549,7 @@ tasks:
       id: 65ff4507-e0b4-45cf-8eb7-093c23437b3d
       version: -1
       name: Send remediation notification email to service owners
-      description: Send an email to service owners regarding the status of the automated
-        remediation action that was taken.
+      description: Send an email to service owners regarding the status of the automated remediation action that was taken.
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -2612,8 +2601,7 @@ tasks:
       id: 5ed915a6-10ec-457e-82e1-e43fce2fbd20
       version: -1
       name: Cortex ASM - Remediation
-      description: This playbook contains all the cloud provider sub-playbooks for
-        remediation.
+      description: This playbook contains all the cloud provider sub-playbooks for remediation.
       playbookName: Cortex ASM - Remediation
       type: playbook
       iscommand: false
@@ -2759,15 +2747,7 @@ tasks:
       asmremediation:
         simple: '[]'
       asmremediationobjectives:
-        simple: '[{"option": "File a ServiceNow Ticket", "statement": "In this case,
-          a ServiceNow ticket will be created with some information on the alert and
-          possible remediation guidance suggestions."},{"option": "File a Jira Ticket",
-          "statement": "In this case, a Jira ticket will be created with some information
-          on the alert and possible remediation guidance suggestions."},{"option":
-          "Send a notification email", "statement": "In this case, an email ticket
-          will be created with some information on the alert and possible remediation
-          guidance suggestions."},{"option": "Manual remediation", "statement": "In
-          this case, we will require you to manually remediate this exposure."}]'
+        simple: '[{"option": "File a ServiceNow Ticket", "statement": "In this case, a ServiceNow ticket will be created with some information on the alert and possible remediation guidance suggestions."},{"option": "File a Jira Ticket", "statement": "In this case, a Jira ticket will be created with some information on the alert and possible remediation guidance suggestions."},{"option": "Send a notification email", "statement": "In this case, an email ticket will be created with some information on the alert and possible remediation guidance suggestions."},{"option": "Manual remediation", "statement": "In this case, we will require you to manually remediate this exposure."}]'
       asmremediationpathrule:
         simple: '[]'
       asmservicedetection:
@@ -2914,6 +2894,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "172"
@@ -2941,8 +2922,7 @@ tasks:
       id: 98dc0f0e-8622-4526-872d-8479d141dee9
       version: -1
       name: Cortex ASM - Email Notification
-      description: This playbook is used to send email notifications to service owners
-        to notify them of their internet exposures.
+      description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
       playbookName: Cortex ASM - Email Notification
       type: playbook
       iscommand: false
@@ -3103,6 +3083,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "134"
@@ -3149,6 +3130,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "134"
@@ -3205,12 +3187,10 @@ view: |-
 inputs:
 - key: OwnerNotificationSubject
   value:
-    simple: A new security risk was identified on an external service owned by your
-      team
+    simple: "A new security risk was identified on an external service owned by your team"
   required: true
-  description: Subject of the notification (email or ticket) sent to potential service
-    owner.
-  playbookInputQuery: null
+  description: 'Subject of the notification (email or ticket) sent to potential service owner.'
+  playbookInputQuery:
 - key: OwnerNotificationBody
   value:
     simple: |+
@@ -3220,17 +3200,15 @@ inputs:
       <br><br>
 
   required: true
-  description: Body of the notification (email or ticket) sent to potential service
-    owner.
-  playbookInputQuery: null
+  description: Body of the notification (email or ticket) sent to potential service owner.
+  playbookInputQuery:
 - key: RemediationNotificationSubject
   value:
-    simple: A new security risk was addressed on an external service owned by your
-      team
+    simple: |-
+      A new security risk was addressed on an external service owned by your team
   required: true
-  description: Subject of the notification (email or ticket) sent to the service owner
-    after remediation.
-  playbookInputQuery: null
+  description: Subject of the notification (email or ticket) sent to the service owner after remediation.
+  playbookInputQuery:
 - key: RemediationNotificationHTMLBody
   value:
     simple: |-
@@ -3249,9 +3227,8 @@ inputs:
       </body>
       </html>
   required: true
-  description: Body of the notification (email or ticket) sent to the service owner
-    after remediation.
-  playbookInputQuery: null
+  description: 'Body of the notification (email or ticket) sent to the service owner after remediation.'
+  playbookInputQuery:
 - key: BypassDevCheck
   value:
     simple: "False"
@@ -3260,31 +3237,31 @@ inputs:
     Determine whether to bypass the Dev Check in automated remediation criteria: https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix
 
     Set to "True" if you want to bypass.  Default is "False".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AcceptedRiskDs
   value: {}
   required: false
-  description: Comma-separated list of instance/VM IDs that are considered an accepted
-    risk and that should be closed.
-  playbookInputQuery: null
+  description: Comma-separated list of instance/VM IDs that are considered an accepted risk and that should be closed.
+  playbookInputQuery:
 - key: AcceptedRiskProjects
   value: {}
   required: false
-  description: Comma-separated list of projects numbers that are considered an accepted
-    risk and that should be closed.  For example, a list of GCP projects and AWS accounts.
-  playbookInputQuery: null
+  description: Comma-separated list of projects numbers that are considered an accepted risk and that should be closed.  For example, a list of GCP projects and AWS accounts.
+  playbookInputQuery:
 - key: AcceptedRiskOther
   value: {}
   required: false
-  description: Comma-separated list of other items that are considered an accepted
-    risk and that should be closed. For example, a list of folders numbers in GCP
-    and subscription IDs in Azure.
-  playbookInputQuery: null
+  description: Comma-separated list of other items that are considered an accepted risk and that should be closed. For example, a list of folders numbers in GCP and subscription IDs in Azure.
+  playbookInputQuery:
 - key: JiraProjectKey
   value:
     simple: XPANSE
   required: true
   description: The Jira project key to associate with the issue.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Cortex ASM - ASM Alert
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

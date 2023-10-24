@@ -1,18 +1,9 @@
 id: Cortex ASM - Email Notification
-version: 5
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Cortex Attack Surface Management
-    itemVersion: 1.7.3
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Cortex ASM - Email Notification
-description: This playbook is used to send email notifications to service owners to
-  notify them of their internet exposures.
+description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -55,6 +47,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -79,8 +72,7 @@ tasks:
       id: 974858cf-71c1-4bbe-8154-e9fa94c427ed
       version: -1
       name: Select owners to notify
-      description: Determines who to send notification emails to based on analyst
-        input.
+      description: Determines who to send notification emails to based on analyst input.
       type: collection
       iscommand: false
       brand: ""
@@ -100,14 +92,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Select owners to notify
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -261,19 +253,19 @@ inputs:
 - key: OwnerNotificationSubject
   value: {}
   required: true
-  description: Subject of the notification (email or ticket) sent to the potential
-    service owner.
-  playbookInputQuery: null
+  description: Subject of the notification (email or ticket) sent to the potential service owner.
+  playbookInputQuery:
 - key: OwnerNotificationBody
   value: {}
   required: true
-  description: Body of the notification (email or ticket) sent to the potential service
-    owner.
-  playbookInputQuery: null
+  description: Body of the notification (email or ticket) sent to the potential service owner.
+  playbookInputQuery:
 - key: RemediationGuidance
   value: {}
   required: true
   description: Remediation Guidance of the Attack Surface Rule
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Cortex ASM - Email Notification
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

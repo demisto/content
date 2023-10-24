@@ -1,18 +1,9 @@
 id: Cortex ASM - Jira Notification
-version: 9
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Cortex Attack Surface Management
-    itemVersion: 1.7.3
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Cortex ASM - Jira Notification
-description: This playbook is used to create Jira tickets directed toward service
-  owners to notify them of their internet exposures.
+description: This playbook is used to create Jira tickets directed toward service owners to notify them of their internet exposures.
 starttaskid: "0"
 tasks:
   "0":
@@ -25,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -122,6 +114,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -236,19 +229,20 @@ inputs:
 - key: OwnerNotificationBody
   value: {}
   required: true
-  description: Body of the notification (email or ticket) sent to the potential service
-    owner.
-  playbookInputQuery: null
+  description: Body of the notification (email or ticket) sent to the potential service owner.
+  playbookInputQuery:
 - key: JiraProjectKey
   value:
     simple: XPANSE
   required: true
   description: The Jira project key to associate with the issue.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: RemediationGuidance
   value: {}
   required: true
   description: Remediation Guidance of the Attack Surface Rule
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Cortex ASM - Jira Notification
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
