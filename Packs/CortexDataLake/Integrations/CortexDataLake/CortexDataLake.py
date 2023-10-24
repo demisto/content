@@ -67,13 +67,13 @@ class Client(BaseClient):
             self.client_id = client_id
             self.client_secret = client_secret
             self.auth_code = auth_code
-            self.is_oproxy = True
+            self.is_oproxy = False
         else:
             headers['Authorization'] = registration_id
             self.refresh_token = refresh_token
             self.enc_key = enc_key
-            self.use_ssl = use_ssl
-            self.is_oproxy = False
+            self.is_oproxy = True
+        self.use_ssl = use_ssl
         self._set_access_token()
 
     def _set_access_token(self):
