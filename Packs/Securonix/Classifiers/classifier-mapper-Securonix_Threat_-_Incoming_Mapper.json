@@ -83,22 +83,6 @@
                         "transformers": [
                             {
                                 "args": {
-                                    "limit": {
-                                        "value": {
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "replaceWith": {},
-                                    "toReplace": {
-                                        "value": {
-                                            "simple": "index = violation and "
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
                                     "limit": {},
                                     "replaceWith": {},
                                     "toReplace": {
