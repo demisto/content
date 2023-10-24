@@ -27,8 +27,10 @@ API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 1000
 EVENT_TYPES = {
     'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts'),
-    'Threat activities': EVENT_TYPE('activityUUID', 'in:activity type:"Threat Detected"', 'threat_activities'),
+    'Activities': EVENT_TYPE('activityUUID', 'in:activity', 'activity'),
+    'Devices': EVENT_TYPE('id', 'in:devices', 'devices'),
 }
+DEVICE_LAST_FETCH = 'device_last_fetch'
 
 ''' CLIENT CLASS '''
 
@@ -301,8 +303,12 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, cl
         next_run.update(last_run)
 
 
-def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_time: datetime | None,
-                 event_types_to_fetch: list[str]):
+def fetch_events(client: Client,
+                 max_fetch: int,
+                 last_run: dict,
+                 fetch_start_time: datetime | None,
+                 event_types_to_fetch: list[str],
+                 device_fetch_interval: timedelta | None):
     """ Fetch events from Armis API.
 
     Args:
@@ -317,10 +323,15 @@ def fetch_events(client: Client, max_fetch: int, last_run: dict, fetch_start_tim
     """
     events: list[dict] = []
     next_run: dict[str, list | str] = {}
+    if 'Devices' in event_types_to_fetch\
+            and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()): # TODO should be device last run
+        event_types_to_fetch.remove('Devices')
 
     for event_type in event_types_to_fetch:
+        # TODO: add max_fetch for devices.
         try:
-            fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client, max_fetch, last_run, fetch_start_time)
+            fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client,
+                                max_fetch, last_run, fetch_start_time)
         except Exception as e:
             if "Invalid access token" in str(e):
                 client.update_access_token()
@@ -417,6 +428,29 @@ def set_last_run_with_current_time(last_run: dict, event_types_to_fetch) -> None
         last_run[last_fetch_time] = now_str
 
 
+def should_run_device_fetch(last_run,
+                            device_fetch_interval: timedelta | None,
+                            datetime_now: datetime):
+    """
+    Args:
+        last_run: last run object.
+        device_fetch_interval: device fetch interval.
+        datetime_now: time now
+
+    Returns: True if fetch device interval time has passed since last time that fetch run.
+
+    """
+    if not device_fetch_interval:
+        return False
+    if last_fetch_time := last_run.get(DEVICE_LAST_FETCH):
+        last_check_time = datetime.strptime(last_fetch_time, DATE_FORMAT)
+    else:
+        # first time device fetch
+        return True
+    demisto.debug(f'Should run device fetch? {last_check_time=}, {device_fetch_interval=}')
+    return datetime_now - last_check_time > device_fetch_interval
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -435,6 +469,8 @@ def main():  # pragma: no cover
     should_push_events = argToBoolean(args.get('should_push_events', False))
     from_date = args.get('from_date')
     fetch_start_time = handle_from_date_argument(from_date) if from_date else None
+    parsed_interval = dateparser.parse(params.get('deviceFetchInterval', '24 hours')) or dateparser.parse('24 hours')
+    device_fetch_interval: timedelta = (datetime.now() - parsed_interval)  # type: ignore[operator]
 
     demisto.debug(f'Command being called is {command}')
 
@@ -470,6 +506,7 @@ def main():  # pragma: no cover
                     last_run=last_run,
                     fetch_start_time=fetch_start_time,
                     event_types_to_fetch=event_types_to_fetch,
+                    device_fetch_interval=device_fetch_interval
                 )
 
                 demisto.debug(f'debug-log: {len(events)} events fetched from armis api')

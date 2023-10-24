@@ -326,11 +326,11 @@ class TestHelperFunction:
         from ArmisEventCollector import set_last_run_with_current_time
 
         last_run: dict[Any, Any] = {}
-        event_types: list[str] = ['Alerts', 'Threat activities']
+        event_types: list[str] = ['Alerts', 'Activities']
 
         set_last_run_with_current_time(last_run, event_types)
 
-        assert last_run['alerts_last_fetch_time'] == last_run['threat_activities_last_fetch_time'] == '2023-01-01T01:00:00'
+        assert last_run['alerts_last_fetch_time'] == last_run['activity_last_fetch_time'] == '2023-01-01T01:00:00'
 
 
 class TestFetchFlow:
@@ -491,7 +491,7 @@ class TestFetchFlow:
         mocker.patch.object(Client, 'fetch_by_aql_query', return_value=response)
         mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events')})
         assert fetch_events(dummy_client, max_fetch, last_run,
-                            fetch_start_time, event_types_to_fetch) == (events, next_run)
+                            fetch_start_time, event_types_to_fetch, None) == (events, next_run)
 
     case_access_token_expires_in_runtime = ()
 
@@ -529,4 +529,4 @@ class TestFetchFlow:
                         'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00',
                         'access_token': 'test_access_token'}
             assert fetch_events(dummy_client, 1000, {}, fetch_start_time, [
-                'Events']) == (events_with_different_time, last_run)
+                'Events'], None) == (events_with_different_time, last_run)

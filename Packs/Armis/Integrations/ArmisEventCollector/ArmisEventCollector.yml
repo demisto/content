@@ -16,11 +16,17 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
-- display: Number of events to fetch per type
+- display: Maximum number of events per fetch
   name: max_fetch
-  additionalinfo: The maximum number of events to fetch per event type.
+  additionalinfo: Alerts and activity events
   type: 0
-  defaultvalue: 1000
+  defaultvalue: 5000
+  section: Collect
+- display: Maximum number of device events per fetch
+  name: max_device_fetch
+  additionalinfo: Devices events
+  type: 0
+  defaultvalue: 10000
   section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -35,11 +41,28 @@ configuration:
   section: Collect
   required: true
   type: 16
-  defaultvalue: Alerts,Threat activities
+  defaultvalue: Alerts
   options:
   - Alerts
-  - Threat activities
-description: Collects alerts & threat activities from Armis resources.
+  - Devices
+  - Activities
+- section: Collect
+  advanced: true
+  display: Events Fetch Interval
+  additionalinfo: Alerts and activity events.
+  name: eventFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- section: Collect
+  advanced: true
+  display: Device Fetch Interval
+  additionalinfo: Device events.
+  name: deviceFetchInterval
+  defaultvalue: 24 hours
+  type: 19
+  required: false
+description: Collects alerts, devices and activities from Armis resources.
 display: Armis Event Collector
 name: ArmisEventCollector
 supportlevelheader: xsoar
