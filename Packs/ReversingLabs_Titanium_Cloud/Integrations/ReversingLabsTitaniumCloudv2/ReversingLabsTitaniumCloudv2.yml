@@ -628,6 +628,16 @@ script:
     - contextPath: ReversingLabs.domain_related_domains
       description: The list of domains related to the submitted domain.
       type: Unknown
+  - name: reversinglabs-titaniumcloud-ip-report
+    description: Returns an IP address analysis report.
+    arguments:
+    - name: ip
+      description: IP address.
+      required: true
+    outputs:
+    - contextPath: ReversingLabs.ip_report
+      description: The IP address analysis report.
+      type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.79362
   runonce: false
   script: '-'

@@ -1578,8 +1578,8 @@ def domain_report_output(response_json, domain):
 
         markdown = f"""{markdown}\n ### Third party statistics\n **CLEAN**: {third_party_statistics.get("clean")}
         **MALICIOUS**: {third_party_statistics.get("malicious")}
-        **TOTAL**: {third_party_statistics.get("total")}
         **UNDETECTED**: {third_party_statistics.get("undetected")}
+        **TOTAL**: {third_party_statistics.get("total")}
         """
 
         sources_table = tableToMarkdown(
@@ -1825,8 +1825,85 @@ def domain_related_domains_output(response, domain):
     return results
 
 
+def create_ip_ti_object():
+    """Creates an IPThreatIntelligence object."""
+    ip_ti = IPThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    return ip_ti
+
+
 def ip_report_command():
-    pass
+    ip_ti = create_ip_ti_object()
+
+    ip = demisto.getArg("ip")
+
+    try:
+        response = ip_ti.get_ip_report(ip_address=ip)
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        sys.exit()
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = ip_report_output(response_json=response_json, ip=ip)
+    return_results(results)
+
+
+def ip_report_output(response_json, ip):
+    files_statistics = response_json.get("rl").get("downloaded_files_statistics")
+
+    markdown = f"""## ReversingLabs IP address report for {ip}\n ### Downloaded files statistics\n **KNOWN**: {files_statistics.get("known")}
+    **MALICIOUS**: {files_statistics.get("malicious")}
+    **SUSPICIOUS**: {files_statistics.get("suspicious")}
+    **UNKNOWN**: {files_statistics.get("unknown")}
+    **TOTAL**: {files_statistics.get("total")}
+    """
+
+    third_party = response_json.get("rl").get("third_party_reputations")
+    if third_party:
+        third_party_statistics = third_party.get("statistics")
+
+        markdown = f"""{markdown}\n ### Third party statistics\n **CLEAN**: {third_party_statistics.get("clean")}
+        **MALICIOUS**: {third_party_statistics.get("malicious")}
+        **UNDETECTED**: {third_party_statistics.get("undetected")}
+         **TOTAL**: {third_party_statistics.get("total")}
+        """
+
+        sources_table = tableToMarkdown(
+            name="Third party sources",
+            t=third_party.get("sources")
+        )
+        markdown = f"{markdown}\n {sources_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"ip_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
 
 
 def ip_downloaded_files_command():
@@ -1948,6 +2025,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-domain-related-domains":
         domain_related_domains_command()
+
+    elif command == "reversinglabs-titaniumcloud-ip-report":
+        ip_report_command()
 
     else:
         return_error(f"Command {command} does not exist")
