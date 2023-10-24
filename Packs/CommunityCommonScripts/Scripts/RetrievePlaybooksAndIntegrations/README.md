@@ -1,4 +1,4 @@
-Retrieves all Playbook (and Sub-Playbook) names and Integrations for a provided Playbook name
+Deprecated. Use RetrievePlaybookDependencies instead. Retrieves all Playbook (and Sub-Playbook) names and Integrations for a provided Playbook name
 
 ## Script Data
 ---
