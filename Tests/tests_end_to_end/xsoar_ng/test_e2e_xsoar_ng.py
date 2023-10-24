@@ -1,3 +1,4 @@
+import json
 
 import pytest
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
@@ -57,7 +58,7 @@ def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGA
 
 class TestEDL:
     """
-    Tests EDL on xsoar-8
+    Tests EDL on xsoar-ng
     """
     indicators = [
         ("1.1.1.1", "IP", 0),
@@ -91,3 +92,54 @@ class TestEDL:
 
         response = run_edl_request()
         assert response.text, f'could not get indicators from {url=} with available indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, status code={response.status_code}, response={response.text}'
+
+
+# class TestTaxiiServer:
+#     """
+#     Tests taxii2-server on xsoar-ng
+#     """
+#     indicators = [
+#         ("1.1.1.1", "IP", 0),
+#         ("2.2.2.2", "IP", 0),
+#         ("3.3.3.3", "IP", 0)
+#     ]
+#     instance_name_gsm = "taxii2_server_e2e_test"
+#     integration_id = "TAXII2 Server"
+#
+#     def test_taxii2_server(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: dict):
+#         import requests
+#         from requests.auth import HTTPBasicAuth
+#
+#         instance_name = create_instance
+#
+#         basic_auth = HTTPBasicAuth(integration_params["credentials"]["identifier"], integration_params["credentials"]["password"])
+#
+#         @retry_http_request(times=20)
+#         def get_collection_id() -> dict:
+#             collection_api_url = f'{xsoar_ng_client.external_base_url}/instance/execute/{instance_name}/threatintel/collections/'
+#             _response = requests.get(collection_api_url, auth=basic_auth)
+#             try:
+#                 _json_response = _response.json()
+#             except json.JSONDecoder as e:
+#                 raise ValueError(f'Could not parse {_response.text}, error: {e}')
+#
+#             if _collections := _json_response.get("collections") or []:
+#                 return _collections[0]["id"]
+#             raise Exception(f'Could not retrieve collection ID from {collection_api_url}')
+#
+#         collection_id = get_collection_id()
+#         indicators_url = f'{xsoar_ng_client.external_base_url}/instance/execute/{instance_name}/threatintel/collections/{collection_id}/objects'
+#
+#         @retry_http_request(times=20)
+#         def get_collection_objects():
+#             return requests.get(indicators_url, auth=basic_auth)
+#
+#         response = get_collection_objects()
+#
+#         try:
+#             objects = response.json()
+#         except json.JSONDecoder as e:
+#             raise ValueError(f'Could not parse {response.text}, error: {e}')
+#
+#         indicators = objects.get("objects")
+#         assert indicators, f'could not get indicators from url={indicators_url} with available indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, status code={response.status_code}, response={indicators}'
