@@ -2,12 +2,15 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # type: ignore
-from urllib.parse import urlparse
 import urllib3
+import copy
+
+from urllib.parse import urlparse
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEvent, MISPAttribute, MISPUser
 from pymisp.tools import GenericObjectGenerator, EMailObject
-import copy
 from pymisp.tools import FileObject
+from base64 import b64decode
+
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
 
@@ -41,6 +44,8 @@ params = demisto.params()
 if not params.get('credentials') or not (MISP_API_KEY := params.get('credentials', {}).get('password')):
     raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
 MISP_URL = params.get('url')
+TO_IDS = params.get('check_to_ids')
+ALLOWED_ORGS = argToList(params.get('allowed_orgs'), ',')
 VERIFY = not params.get('insecure')
 PROXIES = handle_proxy()  # type: ignore
 try:
@@ -179,7 +184,8 @@ MISP_SEARCH_ARGUMENTS = [
     'page',
     'enforceWarninglist',
     'include_feed_correlations',
-    'eventinfo'
+    'eventinfo',
+    'with_attachments'
 ]
 
 EVENT_FIELDS = [
@@ -697,9 +703,18 @@ def get_indicator_results(value, dbot_type, malicious_tag_ids, suspicious_tag_id
         CommandResults includes all the indicator results.
     """
     reputation_value_validation(value, dbot_type)
-    misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
-                                  include_correlations=True, include_event_tags=True, enforce_warninglist=True,
-                                  include_decay_score=True, includeSightings=True)
+    # if ALLOWED_ORGS is empty, then it equals to any. When specified, then it filters out all other orgs that are not requested
+    if TO_IDS:
+        # to_ids flag represents whether the attribute is meant to be actionable
+        # Actionable defined attributes can be used in automated processes as a pattern for detection
+        misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
+                                      include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                      include_decay_score=True, includeSightings=True, to_ids=TO_IDS, org=ALLOWED_ORGS)
+    else:
+        misp_response = PYMISP.search(value=value, controller='attributes', include_context=True,
+                                      include_correlations=True, include_event_tags=True, enforce_warninglist=True,
+                                      include_decay_score=True, includeSightings=True, org=ALLOWED_ORGS)
+
     indicator_type = INDICATOR_TYPE_TO_DBOT_SCORE[dbot_type]
     is_indicator_found = misp_response and misp_response.get('Attribute')
     if is_indicator_found:
@@ -884,7 +899,11 @@ def prepare_args_to_search(controller):
         args_to_misp_format['limit'] = '50'
     if 'tags' in args_to_misp_format:
         args_to_misp_format['tags'] = build_misp_complex_filter(args_to_misp_format['tags'])
-    args_to_misp_format['controller'] = controller
+    if args_to_misp_format.get('with_attachments') == 'true':
+        args_to_misp_format['with_attachments'] = 1
+    else:
+        args_to_misp_format['with_attachments'] = 0
+        args_to_misp_format['controller'] = controller
     demisto.debug(f"[MISP V3]: args for {demisto.command()} command are {args_to_misp_format}")
     return args_to_misp_format
 
@@ -1016,9 +1035,24 @@ def search_attributes(demisto_args: dict) -> CommandResults:
     pagination_args_validation(page, limit)
 
     response = PYMISP.search(**args)
+
     if response:
         response_for_context_list = []
         response_for_context_dict = {}
+
+        if args.get('with_attachments', 0) == 1 and isinstance(response, list):
+            for attachment in response:
+                for objects in attachment.get('Event', {}).get('Object', []):
+                    for object in objects.get('Attribute', []):
+                        if args.get('value') == object.get('value'):
+                            for object in objects.get('Attribute'):
+                                if data := object.get('data'):
+                                    res = fileResult('{}.zip'.format(args.get('value')), b64decode(data))
+                                    demisto.results(res)
+
+            demisto.args()['with_attachments'] = 'false'
+            return search_attributes(demisto_args)
+
         if outputs_should_include_only_values:
             response_for_context_list = build_attributes_search_response_return_only_values(response)
             number_of_results = len(response_for_context_list)
@@ -1036,7 +1070,9 @@ def search_attributes(demisto_args: dict) -> CommandResults:
             md = tableToMarkdown(
                 f"MISP search-attributes returned {len(response_for_context_dict)} attributes\n {pagination_message}",
                 attribute_highlights, removeNull=True)
+
         response_for_context = response_for_context_list or response_for_context_dict
+
         return CommandResults(
             raw_response=response,
             readable_output=md,
@@ -1044,6 +1080,7 @@ def search_attributes(demisto_args: dict) -> CommandResults:
             outputs_prefix="MISP.Attribute",
             outputs_key_field="ID"
         )
+
     else:
         return CommandResults(readable_output=f"No attributes found in MISP for the given filters: {args}")
 

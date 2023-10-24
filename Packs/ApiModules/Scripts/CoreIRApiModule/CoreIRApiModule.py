@@ -3199,31 +3199,33 @@ def decode_dict_values(dict_to_decode: dict):
                 continue
 
 
-def filter_general_fields(alert: dict) -> dict:
+def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
     """filter only relevant general fields from a given alert.
 
     Args:
       alert (dict): The alert to filter
+      filter_fields (bool): Whether to return a subset of the fields.
 
     Returns:
       dict: The filtered alert
     """
 
-    updated_alert = {}
-    updated_event = {}
-    for field in ALERT_GENERAL_FIELDS:
-        if field in alert:
-            updated_alert[field] = alert.get(field)
-
-    event = alert.get('raw_abioc', {}).get('event', {})
-    if not event:
-        return_warning('No XDR cloud analytics event.')
+    if filter_fields:
+        result = {k: v for k, v in alert.items() if k in ALERT_GENERAL_FIELDS}
     else:
-        for field in ALERT_EVENT_GENERAL_FIELDS:
-            if field in event:
-                updated_event[field] = event.get(field)
-        updated_alert['event'] = updated_event
-    return updated_alert
+        result = alert
+
+    if not (event := alert.get('raw_abioc', {}).get('event', {})):
+        return_warning('No XDR cloud analytics event.')
+        return result
+
+    if filter_fields:
+        updated_event = {k: v for k, v in event.items() if k in ALERT_EVENT_GENERAL_FIELDS}
+    else:
+        updated_event = event
+
+    result['event'] = updated_event
+    return result
 
 
 def filter_vendor_fields(alert: dict):
@@ -3255,7 +3257,11 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
+    processed_alerts = []
     filtered_alerts = []
+
+    filter_fields_argument = argToBoolean(args.get('filter_alert_fields', True))  # default, for BC, is True.
+
     for alert in alerts:
         # decode raw_response
         try:
@@ -3267,18 +3273,24 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             demisto.debug("encountered the following while decoding dictionary values, skipping")
             demisto.debug(e)
             continue
-        # remove original_alert_json field and add its content to alert.
-        alert.update(
-            alert.pop('original_alert_json', None))
-        updated_alert = filter_general_fields(alert)
-        if 'event' in updated_alert:
-            filter_vendor_fields(updated_alert)
-        filtered_alerts.append(updated_alert)
+
+        # Remove original_alert_json field and add its content to the alert body.
+        alert.update(alert.pop('original_alert_json', {}))
+
+        # Process the alert (with without filetring fields)
+        processed_alerts.append(filter_general_fields(alert, filter_fields=False))
+
+        # Create a filtered version (used either for output when filter_fields is False, or for readable output)
+        filtered_alert = filter_general_fields(alert, filter_fields=True)
+        filter_vendor_fields(filtered_alert)  # changes in-place
+
+        filtered_alerts.append(filtered_alert)
 
     return CommandResults(
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.OriginalAlert',
         outputs_key_field='internal_id',
-        outputs=filtered_alerts,
+        outputs=filtered_alerts if filter_fields_argument else processed_alerts,
+        readable_output=tableToMarkdown("Alerts", t=filtered_alerts),  # Filtered are always used for readable output
         raw_response=raw_response,
     )
 
@@ -3421,7 +3433,7 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
             demisto.debug("encountered the following while decoding dictionary values, skipping")
             demisto.debug(e)
         # remove original_alert_json field and add its content to alert.
-        alert.update(alert.pop('original_alert_json', None))
+        alert.update(alert.pop('original_alert_json', {}))
         if demisto.get(alert, 'messageData.dynamicAnalysis'):
             filtered_alerts.append(demisto.get(alert, 'messageData.dynamicAnalysis'))
     if not filtered_alerts:
