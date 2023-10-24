@@ -1574,22 +1574,27 @@ def domain_report_output(response_json, domain):
 
     third_party = response_json.get("rl").get("third_party_reputations")
     if third_party:
-        statistics_table = tableToMarkdown(
-            name="Third party statistics",
-            t=third_party.get("statistics", [])
-        )
+        third_party_statistics = third_party.get("statistics")
+
+        markdown = f"""{markdown}\n ### Third party statistics\n **CLEAN**: {third_party_statistics.get("clean")}
+        **MALICIOUS**: {third_party_statistics.get("malicious")}
+        **TOTAL**: {third_party_statistics.get("total")}
+        **UNDETECTED**: {third_party_statistics.get("undetected")}
+        """
+
         sources_table = tableToMarkdown(
             name="Third party sources",
             t=third_party.get("sources"),
         )
-        markdown = f"{markdown}\n {statistics_table}\n {sources_table}"
+        markdown = f"{markdown}\n {sources_table}"
 
     files_statistics = response_json.get("rl").get("downloaded_files_statistics")
-    files_statistics_table = tableToMarkdown(
-        name="Downloaded files statistics",
-        t=files_statistics
-    )
-    markdown = f"{markdown}\n {files_statistics_table}"
+    markdown = f"""{markdown}\n ### Downloaded files statistics\n **KNOWN**: {files_statistics.get("known")}
+    **MALICIOUS**: {files_statistics.get("malicious")}
+    **SUSPICIOUS**: {files_statistics.get("suspicious")}
+    **UNKNOWN**: {files_statistics.get("unknown")}
+    **TOTAL**: {files_statistics.get("total")}
+    """
 
     dbot_score = Common.DBotScore(
         indicator=domain,
