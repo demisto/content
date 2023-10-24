@@ -452,10 +452,10 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
     if export_uuid:
         demisto.info(f'Got export uuid from API {export_uuid}')
         assets, status = try_get_assets_chunks(client=client, export_uuid=export_uuid)
-        # status = 'inProgress'
-        # if status == 'inProgress':
-        #     demisto.debug("status is in progress, merit test")
-        #     assets_last_run.update({'nextTrigger': '30', 'type': 1})
+        status = 'inProgress'
+        if status == 'inProgress':
+            demisto.debug("status is in progress, merit test")
+            assets_last_run.update({'nextTrigger': '30'})
         # set params for next run
         if status == 'FINISHED':
             assets, assets_last_run = handle_finished_status(assets_last_run, assets)
