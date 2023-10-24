@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 
 CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
+if [ $TEST_XDR_ENV ]; then
+    cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+else
+    echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+fi
 
 if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
 
