@@ -131,6 +131,51 @@ class Client(BaseClient):
 
         return response
 
+    def get_attack_surface_rule_request(
+        self, attack_surface_rule_id: str, enabled_status: str, priority: str, category: str
+    ) -> Dict[str, Any]:
+        """Get Attack Surface Rule details for an attack surface rule id using the '/get_attack_surface_rules/' endpoint.
+
+        Args:
+            attack_surface_rule_id (str): Coma separated attack surface rule ids.
+
+        Returns:
+            dict: dict containing information about Attack surface rule.
+        """
+        filters = []
+        if attack_surface_rule_id != 'None':
+            filters.append({
+                "field": "attack_surface_rule_id",
+                "operator": "in",
+                "value": attack_surface_rule_id.split(",")
+            })
+        if enabled_status != 'None':
+            filters.append({
+                "field": "enabled_status",
+                "operator": "in",
+                "value": enabled_status.split(",")
+            })
+        if priority != 'None':
+            filters.append({
+                "field": "priority",
+                "operator": "in",
+                "value": priority.split(",")
+            })
+        if category != 'None':
+            filters.append({
+                "field": "category",
+                "operator": "in",
+                "value": category.split(",")
+            })
+        data = {"request_data": {"filters": filters}}
+        response = self._http_request(
+            "POST",
+            "/get_attack_surface_rules/",
+            json_data=data,
+            error_handler=get_api_error
+        )
+        return response
+
     def list_asset_internet_exposure_request(
         self, search_params: List[dict]
     ) -> Dict[str, Any]:
@@ -530,6 +575,40 @@ def get_external_ip_address_range_command(
     return command_results
 
 
+def get_attack_surface_rule_command(
+    args: Dict[str, Any], client: Client
+) -> CommandResults:
+    """
+    asm-get-attack-surface-rule command: Returns attack surface rule details.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains Remediation guidance information.
+    """
+    attack_surface_rule_id = str(args.get("attack_surface_rule_id"))
+    enabled_status = str(args.get("enabled_status"))
+    priority = str(args.get("priority"))
+    category = str(args.get("category"))
+
+    response = client.get_attack_surface_rule_request(attack_surface_rule_id, enabled_status, priority, category)
+    if response is not None:
+        parsed = response.get('reply', {}).get('attack_surface_rules')
+    else:
+        parsed = None
+    command_results = CommandResults(
+        outputs_prefix="ASM.AttackSurfaceRule",
+        outputs_key_field="attack_surface_rule",
+        outputs=parsed,
+        raw_response=response,
+    )
+
+    return command_results
+
+
 def list_asset_internet_exposure_command(
     args: Dict[str, Any], client: Client
 ) -> CommandResults:
@@ -819,6 +898,7 @@ def main() -> None:
             "asm-get-external-service": get_external_service_command,
             "asm-list-external-ip-address-range": list_external_ip_address_range_command,
             "asm-get-external-ip-address-range": get_external_ip_address_range_command,
+            "asm-get-attack-surface-rule": get_attack_surface_rule_command,
             "asm-list-asset-internet-exposure": list_asset_internet_exposure_command,
             "asm-get-asset-internet-exposure": get_asset_internet_exposure_command,
             "asm-list-remediation-rule": list_remediation_rule_command,

@@ -1,7 +1,18 @@
 id: Cortex ASM - Email Notification
-version: -1
+version: 5
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: Cortex Attack Surface Management
+    itemVersion: 1.7.3
+    fromServerVersion: 6.8.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+vcShouldKeepItemLegacyProdMachine: false
 name: Cortex ASM - Email Notification
-description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
+description: This playbook is used to send email notifications to service owners to
+  notify them of their internet exposures.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,7 +25,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -45,14 +55,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 845
+          "y": 685
         }
       }
     note: false
@@ -70,13 +79,14 @@ tasks:
       id: 974858cf-71c1-4bbe-8154-e9fa94c427ed
       version: -1
       name: Select owners to notify
-      description: Determines who to send notification emails to based on analyst input.
+      description: Determines who to send notification emails to based on analyst
+        input.
       type: collection
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "7"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -90,14 +100,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body:
         simple: Select owners to notify
       methods: []
       format: ""
-      bcc:
-      cc:
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -131,10 +141,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a0ec4aaa-ca30-461d-8feb-741e708290b3
+    taskid: 30a04312-dc36-4246-865b-64e293e5b0b5
     type: regular
     task:
-      id: a0ec4aaa-ca30-461d-8feb-741e708290b3
+      id: 30a04312-dc36-4246-865b-64e293e5b0b5
       version: -1
       name: Send email
       description: Send an email to the service owner with alert information.
@@ -155,7 +165,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: RemediationGuidance
+                  simple: inputs.RemediationGuidance
                 iscontext: true
       subject:
         complex:
@@ -176,7 +186,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 510
+          "y": 350
         }
       }
     note: false
@@ -225,55 +235,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 680
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 94765791-4991-43fc-8124-034969a8e874
-    type: playbook
-    task:
-      id: 94765791-4991-43fc-8124-034969a8e874
-      version: -1
-      name: Cortex ASM - Remediation Guidance
-      description: This playbook pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
-      playbookName: Cortex ASM - Remediation Guidance
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      IssueTypeID:
-        complex:
-          root: alert
-          accessor: asmattacksurfaceruleid
-          transformers:
-          - operator: StripChars
-            args:
-              chars:
-                value:
-                  simple: '[\"]]'
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 340
+          "y": 520
         }
       }
     note: false
@@ -288,7 +250,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 860,
+        "height": 700,
         "width": 380,
         "x": 450,
         "y": 50
@@ -299,14 +261,19 @@ inputs:
 - key: OwnerNotificationSubject
   value: {}
   required: true
-  description: Subject of the notification (email or ticket) sent to the potential service owner.
-  playbookInputQuery:
+  description: Subject of the notification (email or ticket) sent to the potential
+    service owner.
+  playbookInputQuery: null
 - key: OwnerNotificationBody
   value: {}
   required: true
-  description: Body of the notification (email or ticket) sent to the potential service owner.
-  playbookInputQuery:
+  description: Body of the notification (email or ticket) sent to the potential service
+    owner.
+  playbookInputQuery: null
+- key: RemediationGuidance
+  value: {}
+  required: true
+  description: Remediation Guidance of the Attack Surface Rule
+  playbookInputQuery: null
 outputs: []
-tests:
-- No tests (auto formatted)
-fromversion: 6.8.0
+sourceplaybookid: Cortex ASM - Email Notification

@@ -13,6 +13,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex ASM - ServiceNow Notification
 * Cortex ASM - Remediation
 * Cortex ASM - Enrichment
+* Cortex ASM - Remediation Guidance
 
 ### Integrations
 

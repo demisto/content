@@ -51,6 +51,9 @@ args:
   - summary
   description: Type of report to generate (Analysis report after enrichment or Summary).
   defaultValue: summary
+- description: Remediation Guidance of Attack Surface Rule.
+  name: asm_remediation_guidance
+
 comment: Generate an ASM Alert Summary report.
 commonfields:
   id: GenerateASMReport
@@ -59,6 +62,7 @@ dockerimage: demisto/python3:3.10.12.68714
 enabled: true
 name: GenerateASMReport
 runas: DBotWeakRole
+runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
@@ -67,3 +71,4 @@ type: python
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+engineinfo: {}
