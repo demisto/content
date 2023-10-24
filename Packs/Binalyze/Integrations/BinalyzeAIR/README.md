@@ -18,10 +18,14 @@ This integration was integrated and tested with version 2.6.2 of Binalyze AIR
     | API Key | e.g.: api_1234567890abcdef1234567890abcdef | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### binalyze-air-isolate
+
 ***
 Isolate an endpoint
 
@@ -34,7 +38,7 @@ Isolate an endpoint
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostname | Hostname of endpoint. | Required |
-| organization_id | Organization ID of the endpoint. Possible values are: 0, 1, 2. | Required |
+| organization_id | Organization ID of the endpoint. Possible values are: 0, 1, 2, 3, 4, 5. | Required |
 | isolation | To isolate use enable. Possible values are: enable, disable. | Required |
 
 
