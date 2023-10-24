@@ -26,7 +26,7 @@ WORKFLOW_TYPES = {
     SECURITY_SCANS,
     BUILD_MACHINES_CLEANUP
 }
-
+BUCKET_UPLOAD_BRANCH_SUFFIX = '-upload_test_branch'
 TOTAL_HEADER = "Total"
 NOT_AVAILABLE = "N/A"
 TEST_SUITE_JIRA_HEADERS = ["Jira Ticket", "Jira Ticket Resolution"]

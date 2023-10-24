@@ -10,7 +10,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID')
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL')
 JIRA_SERVER_URL = os.environ["JIRA_SERVER_URL"]
-JIRA_VERIFY_SSL = strtobool(os.environ.get("JIRA_VERIFY_SSL", "true"))
+JIRA_VERIFY_SSL = bool(strtobool(os.environ.get("JIRA_VERIFY_SSL", "true")))
 JIRA_API_KEY = os.environ["JIRA_API_KEY"]
 JIRA_PROJECT_ID = os.environ["JIRA_PROJECT_ID"]
 JIRA_ISSUE_TYPE = os.environ.get("JIRA_ISSUE_TYPE", "")  # Default to empty string if not set

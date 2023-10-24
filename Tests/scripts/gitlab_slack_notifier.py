@@ -15,7 +15,7 @@ from slack_sdk import WebClient
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, TEST_NATIVE_CANDIDATE, WORKFLOW_TYPES, get_instance_directories, \
-    get_properties_for_test_suite
+    get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.test_modeling_rule_report import get_test_modeling_rules_results_files, calculate_test_modeling_rule_results
 from Tests.scripts.utils.log_util import install_logging
@@ -72,8 +72,7 @@ def get_artifact_data(artifact_folder: Path, artifact_relative_path: str) -> str
         file_name = artifact_folder / artifact_relative_path
         if os.path.isfile(file_name):
             logging.info(f'Extracting {artifact_relative_path}')
-            with open(file_name) as file_data:
-                artifact_data = file_data.read()
+            artifact_data = Path(file_name).read_text()
         else:
             logging.info(f'Did not find {artifact_relative_path} file')
     except Exception:
@@ -150,14 +149,15 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
 
 
 def test_playbooks_results_to_slack_msg(instance_role: str,
+                                        succeeded_tests: list[str],
                                         failed_tests: list[str],
                                         skipped_integrations: list[str],
                                         skipped_tests: list[str],
                                         title: str,
                                         pipeline_url: str) -> list[dict[str, Any]]:
     if failed_tests:
-        title = f"{title} ({instance_role}) - Test Playbooks - Failed:{len(failed_tests)}, Skipped - {len(skipped_tests)}, "\
-                f"Skipped Integrations - {len(skipped_integrations)}"
+        title = (f"{title} ({instance_role}) - Test Playbooks - Passed:{len(succeeded_tests)}, Failed:{len(failed_tests)}, "
+                 f"Skipped - {len(skipped_tests)}, Skipped Integrations - {len(skipped_integrations)}")
         return [{
             'fallback': title,
             'color': 'danger',
@@ -169,8 +169,8 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
                 "short": False
             }]
         }]
-    title = f"{title} ({instance_role}) - All Tests Playbooks Passed (Skipped - {len(skipped_tests)}, "\
-            f"Skipped Integrations - {len(skipped_integrations)})"
+    title = (f"{title} ({instance_role}) - All Tests Playbooks Passed - Passed:{len(succeeded_tests)}, "
+             f"Skipped - {len(skipped_tests)}, Skipped Integrations - {len(skipped_integrations)})")
     return [{
         'fallback': title,
         'color': 'good',
@@ -179,21 +179,21 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
     }]
 
 
+def split_results_file(tests_data: str | None) -> list[str]:
+    return tests_data.split('\n') if tests_data else []
+
+
 def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
 
     content_team_fields = []
     for instance_role, instance_directory in get_instance_directories(artifact_folder).items():
-        failed_tests_data = get_artifact_data(instance_directory, 'failed_tests.txt')
-        failed_tests = failed_tests_data.split('\n') if failed_tests_data else []
+        succeeded_tests = split_results_file(get_artifact_data(instance_directory, 'succeeded_tests.txt'))
+        failed_tests = split_results_file(get_artifact_data(instance_directory, 'failed_tests.txt'))
+        skipped_tests = split_results_file(get_artifact_data(instance_directory, 'skipped_tests.txt'))
+        skipped_integrations = split_results_file(get_artifact_data(instance_directory, 'skipped_integrations.txt'))
 
-        skipped_tests_data = get_artifact_data(instance_directory, 'skipped_tests.txt')
-        skipped_tests = skipped_tests_data.split('\n') if skipped_tests_data else []
-
-        skipped_integrations_data = get_artifact_data(instance_directory, 'skipped_integrations.txt')
-        skipped_integrations = skipped_integrations_data.split('\n') if skipped_integrations_data else []
-
-        content_team_fields += test_playbooks_results_to_slack_msg(instance_role, failed_tests, skipped_integrations,
-                                                                   skipped_tests, title, pipeline_url)
+        content_team_fields += test_playbooks_results_to_slack_msg(instance_role, succeeded_tests, failed_tests,
+                                                                   skipped_integrations, skipped_tests, title, pipeline_url)
 
     return content_team_fields
 
@@ -378,20 +378,26 @@ def main():
     logging.info(f'Sending Slack message for pipeline {pipeline_id} in project {project_id} on server {server_url} '
                  f'triggering workflow:{triggering_workflow} allowing failure:{options.allow_failure} '
                  f'slack channel:{computed_slack_channel}')
+    pull_request = None
     if options.current_branch != DEFAULT_BRANCH:
-        pull_request = GithubPullRequest(
-            options.github_token,
-            sha1=options.current_sha,
-            branch=options.current_branch,
-            fail_on_error=True,
-            verify=False,
-        )
-        author = pull_request.data.get('user', {}).get('login')
-        computed_slack_channel = f"{computed_slack_channel}{author}"
-        logging.info(f"Sending slack message to channel {computed_slack_channel} for "
-                     f"Author:{author} of PR#{pull_request.data.get('number')}")
+        try:
+            branch = options.current_branch
+            if triggering_workflow == BUCKET_UPLOAD and BUCKET_UPLOAD_BRANCH_SUFFIX in branch:
+                branch = branch[:branch.find(BUCKET_UPLOAD_BRANCH_SUFFIX)]
+            pull_request = GithubPullRequest(
+                options.github_token,
+                sha1=options.current_sha,
+                branch=branch,
+                fail_on_error=True,
+                verify=False,
+            )
+            author = pull_request.data.get('user', {}).get('login')
+            computed_slack_channel = f"{computed_slack_channel}{author}"
+            logging.info(f"Sending slack message to channel {computed_slack_channel} for "
+                         f"Author:{author} of PR#{pull_request.data.get('number')}")
+        except Exception:
+            logging.exception(f'Failed to get pull request data for branch {options.current_branch}')
     else:
-        pull_request = None
         logging.info("Not a pull request build, skipping PR comment")
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)

@@ -50,7 +50,7 @@ def print_test_playbooks_summary_without_junit_report(artifacts_path: Path) -> b
 
     # if one of the files isn't existing, we want to fail.
     if succeeded_playbooks is None or failed_playbooks is None:
-        return False
+        return True
 
     succeeded_count = len(succeeded_playbooks)
     failed_count = len(failed_playbooks)
@@ -69,8 +69,8 @@ def print_test_playbooks_summary_without_junit_report(artifacts_path: Path) -> b
         logging.error("Failed Tests:")
         for playbook_id in failed_playbooks:
             logging.error(f"\t- {playbook_id}")
-        return False
-    return True
+        return True
+    return False
 
 
 def filter_skipped_playbooks(playbooks_results: dict[str, dict[str, TestSuite]]) -> list[str]:
