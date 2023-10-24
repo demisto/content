@@ -1,8 +1,7 @@
 [RULE: Cisco_Umbrella_Cloud_Security_Log_Type]
 alter Log_Fields = split(_raw_log, "\",")
 | alter Log_Fields = arraymap(Log_Fields, trim("@element", "\""))
-| alter FieldsNumber = array_length(Log_Fields)
-| alter logType = if(FieldsNumber = 13, "DNS", FieldsNumber = 35, "Proxy", FieldsNumber = 9, "Admin Audit")
+| alter logType = if(_log_source_file_path contains "dnslogs", "DNS", _log_source_file_path contains "proxylogs", "Proxy", _log_source_file_path contains "auditlogs", "Admin Audit")
 
 [MODEL: dataset = cisco_umbrella_raw]
 // Mapping DNS Logs
