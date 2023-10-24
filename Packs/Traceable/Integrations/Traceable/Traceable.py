@@ -1010,11 +1010,12 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     items = client.get_threat_events(_last_fetch, datetime.utcnow())
     demisto.info(f"Retrieved {len(items)} records.")
 
-    for key, _context_entry_date in client.integration_context.items():
-        if _context_entry_date is not None:
-            context_entry_date = Helper.string_to_datetime(_context_entry_date)
-            if context_entry_date < datetime.utcnow():
-                client.delete_integration_context_key_value(key)
+    if client.fetch_unique_incidents:
+        for key, _context_entry_date in client.integration_context.items():
+            if _context_entry_date is not None:
+                context_entry_date = Helper.string_to_datetime(_context_entry_date)
+                if context_entry_date < datetime.utcnow():
+                    client.delete_integration_context_key_value(key)
 
     if len(items) > 0:
         demisto.debug(f"First Incident: {json.dumps(items[0], indent=3)}")
