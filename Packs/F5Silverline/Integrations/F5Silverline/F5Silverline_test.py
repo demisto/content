@@ -1,5 +1,5 @@
 import json
-import io
+from typing import Any
 import pytest
 from F5Silverline import get_ip_objects_list_command, add_ip_objects_command, delete_ip_objects_command, Client
 
@@ -9,17 +9,17 @@ def create_client(base_url: str, verify: bool, headers: dict, proxy: bool):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 IP_ADDRESSES_TO_ADD = [
     ({'list_type': 'denylist', 'cidr_range': '1.2.3.4'},
-     'IP objects wehre added successfully into the denylist\n| IP |\n| - |\n| 1.2.3.4/32 |'),
+     'IP objects were added successfully into the denylist\n| IP |\n| - |\n| 1.2.3.4/32 |'),
     ({'list_type': 'allowlist', 'cidr_range': '1.2.3.4', 'note': "test"},
-     "IP objects wehre added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |"),
+     "IP objects were added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |"),
     ({'list_type': 'allowlist', 'cidr_range': '1.2.3.4,1.2.3.4/23', 'note': "test"},
-     "IP objects wehre added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |\n| 1.2.3.4/23 |"),
+     "IP objects were added successfully into the allowlist\n| IP |\n| - |\n| 1.2.3.4/32 |\n| 1.2.3.4/23 |"),
 ]
 
 IP_ADDRESSES_TO_DELETE = [
@@ -29,6 +29,8 @@ IP_ADDRESSES_TO_DELETE = [
      "IP object with ID: 850f7418-2ac9 deleted successfully from the allowlist list. \n", True),
     ({'list_type': 'allowlist', 'object_id': '850f7418-2ac9', 'note': "test"},
      "", False),
+    ({'list_type': 'denylist', 'object_id': '850f7418-2ac9', 'list_target': 'proxy-routed'},
+     "IP object with ID: 850f7418-2ac9 deleted successfully from the denylist list. \n", True),
 ]
 
 IP_OBJECT_GET_LIST = [({'list_type': 'denylist', 'object_id': ['id1']}, 'ip_object_list_by_id.json'),
@@ -73,15 +75,24 @@ def test_delete_ip_objects_command(mocker, args, expected_output, is_object_exis
         - Validating the returned human readable.
     """
     import F5Silverline
-    mocker.patch.object(Client, "request_ip_objects")
+    mocked_request_ip_objects = mocker.patch.object(Client, "request_ip_objects")
     mocker.patch.object(F5Silverline, "is_object_id_exist", return_value=is_object_exist)
     client = create_client(base_url='https://portal.f5silverline.com/api/v1/ip_lists', verify=False, headers={},
                            proxy=False)
     result = delete_ip_objects_command(client, args)
-    if not is_object_exist:
+    if not is_object_exist or not result:
         assert not expected_output
     else:
         assert result.readable_output == expected_output
+
+        # test default vs non-default list_target argument values while request_ip_objects is called
+        list_type: str = args.get('list_type', '')
+        assert_called_with_expected_values: dict[str, Any] = {'body': {
+        }, 'method': 'DELETE', 'url_suffix': f'{list_type}/ip_objects/850f7418-2ac9',
+            'params': {'list_target': 'proxy'}, 'resp_type': 'content'}
+        if 'list_target' in args:
+            assert_called_with_expected_values['params']['list_target'] = args.get('list_target')
+        mocked_request_ip_objects.assert_called_with(**assert_called_with_expected_values)
 
 
 @pytest.mark.parametrize('args, response_json', IP_OBJECT_GET_LIST)
