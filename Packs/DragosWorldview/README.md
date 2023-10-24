@@ -57,7 +57,7 @@ Get Indicators from the Dragos WorldView API
 | Dragos.Indicators.confidence | The Dragos Indicator's confidence. | String | 
 | Dragos.Indicators.first_seen | The first time the Indicator was seen in Dragos (yyyy-mm-ddThh:mm:ss.sssZ). | String |
 | Dragos.Indicators.ics_attack_techniques | A list of ics attack techniques. | Unknown |
-| Dragos.Indicators.id | The Dragos Indicator's id. | Number |
+| Dragos.Indicators.indicator_id | The Dragos Indicator's id. | Number |
 | Dragos.Indicators.indicator_type | The Dragos Indicator's type. | String |
 | Dragos.Indicators.kill_chain | The Dragos Indicator's kill chain. | String |
 | Dragos.Indicators.kill_chains | A list of kill chains. | Unknown |
