@@ -466,13 +466,13 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
     # in earlier builds they will appear in the bucket as it is cached.
     success = sync_marketplace(client=client)
     non_removable_packs = options.non_removable_packs.split(',')
-    success &= reset_core_pack_version(client, non_removable_packs)
-    if success:
-        if options.one_by_one:
-            success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
-        else:
-            success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
-                wait_for_uninstallation_to_complete(client, non_removable_packs)
+    # success &= reset_core_pack_version(client, non_removable_packs)
+    # if success:
+    #     if options.one_by_one:
+    #         success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
+    #     else:
+    #         success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
+    #             wait_for_uninstallation_to_complete(client, non_removable_packs)
     logging.info(f'Got here 1.')
     success &= sync_marketplace(client=client)
     logging.info(f'Got here 2.')
