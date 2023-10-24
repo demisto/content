@@ -1620,7 +1620,58 @@ def domain_report_output(response_json, domain):
 
 
 def domain_downloaded_files_command():
-    pass
+    domain_ti = create_domain_ti_object()
+
+    domain = demisto.getArg("domain")
+    classification = demisto.getArg("classification")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = domain_ti.get_downloaded_files_aggregated(
+            domain=domain,
+            classification=classification,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = domain_downloaded_files_output(response=response, domain=domain)
+    return_results(results)
+
+
+def domain_downloaded_files_output(response, domain):
+    files_table = tableToMarkdown(
+        name="Downloaded files",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs Files downloaded from domain {domain}\n {files_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"domain_downloaded_files": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
 
 
 def domain_urls_command():
@@ -1746,6 +1797,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-domain-report":
         domain_report_command()
+
+    elif command == "reversinglabs-titaniumcloud-domain-downloaded-files":
+        domain_downloaded_files_command()
 
     else:
         return_error(f"Command {command} does not exist")

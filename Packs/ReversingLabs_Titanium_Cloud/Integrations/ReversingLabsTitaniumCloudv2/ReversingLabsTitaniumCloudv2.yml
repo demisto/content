@@ -546,13 +546,37 @@ script:
   - name: reversinglabs-titaniumcloud-domain-report
     description: Returns a domain analysis report.
     arguments:
-      - name: domain
-        description: Domain string.
-        required: true
+    - name: domain
+      description: Domain string.
+      required: true
     outputs:
-      - contextPath: ReversingLabs.domain_report
-        description: The domain analysis report.
-        type: Unknown
+    - contextPath: ReversingLabs.domain_report
+      description: The domain analysis report.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-domain-downloaded-files
+    description: Returns a list of files downloaded from a domain.
+    arguments:
+    - name: domain
+      description: Domain string.
+      required: true
+      default: true
+    - name: classification
+      description: Return only files of this classification. Possible values are MALICIOUS, SUSPICIOUS and KNOWN.
+      auto: PREDEFINED
+      predefined:
+        - 'MALICIOUS'
+        - 'SUSPICIOUS'
+        - 'KNOWN'
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.domain_downloaded_files
+      description: The list of files downloaded from a domain.
+      type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.79362
   runonce: false
   script: '-'
