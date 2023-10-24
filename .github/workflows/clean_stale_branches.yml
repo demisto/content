@@ -29,4 +29,3 @@ jobs:
           delete-branch: true
           remove-pr-stale-when-updated: true
           exempt-pr-labels: ${{env.EXEMPT_LABELS}}
-          debug-only: true
