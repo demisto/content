@@ -1965,7 +1965,7 @@ script:
       - 'asc'
       - 'desc'
       required: false
-    - description: limit.
+    - description: The maximum number of results to retrieve.
       isArray: false
       name: limt
       required: false
