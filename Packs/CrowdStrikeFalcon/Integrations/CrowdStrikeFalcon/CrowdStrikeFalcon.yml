@@ -97,7 +97,6 @@ configuration:
   defaultvalue: 'true'
   section: Collect
   required: false
-  defaultvalue: 'true'
 - display: Incident type
   name: incidentType
   type: 13
@@ -109,6 +108,7 @@ configuration:
   section: Collect
   required: false
   additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex XSOAR), Outgoing (from Cortex XSOAR to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex XSOAR).'
+  defaultvalue: None
   options:
   - None
   - Incoming
@@ -118,12 +118,13 @@ configuration:
   name: insecure
   type: 8
   section: Connect
-  required: false
   advanced: true
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
+  advanced: true
   required: false
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
