@@ -1676,7 +1676,7 @@ script:
       description: The expected assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.Category
-      description: 'Category.'
+      description: The category of the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.Status
       description: 'Status.'
