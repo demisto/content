@@ -1,4 +1,5 @@
 import json
+import time
 
 import pytest
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
@@ -90,6 +91,7 @@ class TestEDL:
         def run_edl_request():
             return requests.get(url, auth=basic_auth)
 
+        time.sleep(7200)
         response = run_edl_request()
         assert response.text, f'could not get indicators from {url=} with available indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, status code={response.status_code}, response={response.text}'
 
