@@ -9,6 +9,7 @@ from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClientConfig, XsoarNGApiClient
 
 from Tests.configure_and_test_integration_instances import CloudBuild
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 def pytest_addoption(parser):
@@ -35,7 +36,9 @@ def get_integration_params(integration_secrets_path: str, instance_name: str):
         integrations_config = json.load(file)["integrations"]
 
     for config in integrations_config:
-        if config.get("instance_name") == instance_name or config.get("name") == instance_name:
+        existing_instance_name = config.get("instance_name")
+        logging.info(f'{existing_instance_name=}')
+        if existing_instance_name == instance_name or config.get("name") == instance_name:
             return config.get("params")
 
     raise ValueError(f'Could not find integration parameters for {instance_name}')
