@@ -19,7 +19,7 @@ def arg_to_strtime(value: Any) -> Optional[str]:
     return None
 
 
-def prepare_query_params(params: dict, last_run: dict = {}) -> dict:
+def prepare_query_params(params: dict, last_run: dict = {}) -> str:
     """
     Parses the given inputs into GitLab Events API expected query params URL.
     """
@@ -46,7 +46,7 @@ class Client(BaseClient):
         demisto.debug(f'Succesfully got {len(events)} events.')
         return events, next_url
 
-    def handle_pagination_first_batch(self, params_url_suffix: dict, last_run: dict) -> tuple:
+    def handle_pagination_first_batch(self, params_url_suffix: str, last_run: dict) -> tuple:
         """
         Makes the first events API call in the current fetch run.
         If `first_id` exists in the lastRun obj, finds it in the response and
@@ -65,7 +65,7 @@ class Client(BaseClient):
 
         return events, next_url
 
-    def fetch_events(self, params_url_suffix: dict, last_run: dict, user_defined_params: dict) -> List[dict]:
+    def fetch_events(self, params_url_suffix: str, last_run: dict, user_defined_params: dict) -> List[dict]:
         """
         Aggregates events using cursor-based pagination, until one of the following occurs:
         1. Encounters an event that was already fetched in a previous run / reaches the end of the pagination.
