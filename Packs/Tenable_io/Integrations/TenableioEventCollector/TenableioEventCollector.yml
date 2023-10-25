@@ -2,6 +2,8 @@ category: Analytics & SIEM
 sectionOrder:
 - Connect
 - Collect
+- Collect - events
+- Collect - assests
 commonfields:
   id: Tenable.io Event Collector Test
   version: -1
@@ -23,7 +25,7 @@ configuration:
 - display: Events
   name: events
   type: 20
-  section: Collect
+  section: Collect - events
 - display: Severity
   additionalinfo: The severity of the vulnerabilities to include in the export.
   name: severity
@@ -35,20 +37,20 @@ configuration:
   - critical
   type: 16
   required: false
-  section: Collect
+  section: Collect - events
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
-  section: Collect
+  section: Collect - events
 - additionalinfo: The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section.
   defaultvalue: '1000'
   display: Max Fetch
   name: max_fetch
   type: 0
   required: false
-  section: Collect
+  section: Collect - events
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -64,24 +66,24 @@ configuration:
   name: vuln_fetch_interval
   required: true
   type: 0
-  section: Collect
+  section: Collect - events
 - display: Assets
   name: assets
   type: 20
-  section: Collect
+  section: Collect - assets
 - defaultvalue: 7 days
   display: Assets first fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch_time_assets
   required: false
   type: 0
-  section: Collect
+  section: Collect - assets
 - additionalinfo: The maximum number of assets to retrieve. # todo: means per fetch?
   defaultvalue: '5000'  # todo: what is default?
   display: Max Assets Fetch
   name: max_assets_fetch
   required: false
   type: 0
-  section: Collect
+  section: Collect - assets
 description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs, assets and their vulnerabilities from Tenable.
 display: Tenable.io Event Collector Test
 name: Tenable.io Event Collector Test
