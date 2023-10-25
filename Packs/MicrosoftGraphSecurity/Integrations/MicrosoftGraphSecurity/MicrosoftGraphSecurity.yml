@@ -1944,7 +1944,7 @@ script:
       isArray: false
       name: filter
       required: false
-    - description: order by.
+    - description: The order by which to retrieve the results.
       isArray: false
       name: order_by
       auto: PREDEFINED
