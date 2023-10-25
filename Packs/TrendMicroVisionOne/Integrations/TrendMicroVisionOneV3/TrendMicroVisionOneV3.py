@@ -299,7 +299,7 @@ class Client(BaseClient):
         """
         task_id = data.get(TASKID, EMPTY_STRING)
         poll = data.get(POLL, TRUE)
-        poll_time_sec = data.get(POLL_TIME_SEC, 0)
+        poll_time_sec = arg_to_number(data.get(POLL_TIME_SEC, 0))
         message: Dict[str, Any] = {}
 
         # Initialize pytmv1 client
@@ -859,9 +859,7 @@ def get_endpoint_info(
     :rtype: ``dict`
     """
     # Required Params
-    endpoint = args.get(ENDPOINT, EMPTY_STRING)
-    listify_endpoints = endpoint.split(",")
-    endpoint_list = [value.strip() for value in listify_endpoints]
+    endpoint_list = argToList(args.get(ENDPOINT, EMPTY_STRING))
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     new_endpoint_data: List[Any] = []
     message: List[Dict[str, Any]] = []
@@ -888,7 +886,7 @@ def get_endpoint_info(
         endpoint_data_resp.append(endpoint.dict())
     # Check if endpoint(s) returned
     if len(endpoint_data_resp) == 0:
-        err_msg = f"No endpoint found. Please check endpoint {endpoint}."
+        err_msg = f"No endpoint found. Please check endpoint {endpoint_list}."
         return_error(message=err_msg)
     else:
         message = endpoint_data_resp
@@ -1808,8 +1806,8 @@ def get_file_analysis_result(
     # Required Params
     report_id = args.get(REPORT_ID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, TRUE)
-    poll_time_sec = args.get(POLL_TIME_SEC, 0)
+    poll = argToBoolean(args.get(POLL, TRUE))
+    poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
 
     message: Dict[str, Any] = {}
     # Initialize pytmv1 client
@@ -1946,8 +1944,8 @@ def download_information_collected_file(
     # Required Params
     task_id = args.get(TASKID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, TRUE)
-    poll_time_sec = args.get(POLL_TIME_SEC, 0)
+    poll = argToBoolean(args.get(POLL, TRUE))
+    poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
@@ -1969,7 +1967,7 @@ def download_information_collected_file(
             headerTransform=string_to_table_header,
             removeNull=True,
         ),
-        outputs_prefix=("VisionOne.Download_Information_For_Collected_Forensic_File"),
+        outputs_prefix="VisionOne.Download_Information_For_Collected_Forensic_File",
         outputs_key_field="resource_location",
         outputs=message,
     )
@@ -1991,9 +1989,8 @@ def download_analysis_report(
     # Required Params
     submit_id = args.get(SUBMISSION_ID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, TRUE)
-    poll_time_sec = args.get(POLL_TIME_SEC, 0)
-    file_name = args.get(FILE_NAME, EMPTY_STRING)
+    poll = argToBoolean(args.get(POLL, TRUE))
+    poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
@@ -2053,9 +2050,8 @@ def download_investigation_package(
     # Required Params
     submit_id = args.get(SUBMISSION_ID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, TRUE)
-    poll_time_sec = args.get(POLL_TIME_SEC, 0)
-    file_name = args.get(FILE_NAME, EMPTY_STRING)
+    poll = argToBoolean(args.get(POLL, TRUE))
+    poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
@@ -2116,8 +2112,8 @@ def download_suspicious_object_list(
     # Required Params
     submit_id = args.get(SUBMISSION_ID, EMPTY_STRING)
     # Optional Params
-    poll = args.get(POLL, TRUE)
-    poll_time_sec = args.get(POLL_TIME_SEC, 0)
+    poll = argToBoolean(args.get(POLL, TRUE))
+    poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
     suspicious_objects: List[Dict[str, str]] = []
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
@@ -2166,9 +2162,11 @@ def submit_file_to_sandbox(
     arguments = args.get(ARGUMENTS, EMPTY_STRING)
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+    # Get file contents
+    _file = requests.get(file_path)
     # Make rest call
     resp = v1_client.submit_file_to_sandbox(
-        file=file_path,
+        file=_file.content,
         file_name=file_name,
         document_password=document_pass,
         archive_password=archive_pass,
@@ -2510,6 +2508,9 @@ def main():  # pragma: no cover
         elif command == FILE_ENTRY_TO_SANDBOX_COMMAND:
             return_results(submit_file_entry_to_sandbox(client, args))
 
+        elif command == URLS_TO_SANDBOX_COMMAND:
+            return_results(submit_urls_to_sandbox(client, args))
+
         elif command == SANDBOX_SUBMISSION_POLLING_COMMAND:
             if args.get(POLLING) == TRUE:
                 cmd_res = get_sandbox_submission_status(args, client)
@@ -2529,6 +2530,9 @@ def main():  # pragma: no cover
 
         elif command == UPDATE_STATUS_COMMAND:
             return_results(update_status(client, args))
+
+        elif command == GET_ALERT_DETAILS_COMMAND:
+            return_results(get_alert_details(client, args))
 
         elif command == ADD_NOTE_COMMAND:
             return_results(add_note(client, args))

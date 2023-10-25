@@ -89,10 +89,10 @@ Signs the user out of all active application and browser sessions. Supported IAM
 
 #### Context Output
 
-| **Path**                       | **Type** | **Description**                           |
-| ------------------------------ | -------- | ----------------------------------------- |
-| VisionOne.User_Account.status  | number   | Status of request to sign out user.       |
-| VisionOne.User_Account.task_id | string   | Task ID generated after signing out user. |
+| **Path**                         | **Type** | **Description**                           |
+| -------------------------------- | -------- | ----------------------------------------- |
+| VisionOne.Force_Sign_Out.status  | number   | Status of request to sign out user.       |
+| VisionOne.Force_Sign_Out.task_id | string   | Task ID generated after signing out user. |
 
 ### trendmicro-visionone-force-password-reset
 
@@ -111,10 +111,10 @@ Signs the user out of all active application and browser sessions, and forces th
 
 #### Context Output
 
-| **Path**                       | **Type** | **Description**                                  |
-| ------------------------------ | -------- | ------------------------------------------------ |
-| VisionOne.User_Account.status  | number   | Status of request to reset user password.        |
-| VisionOne.User_Account.task_id | string   | Task ID generated after resetting user password. |
+| **Path**                               | **Type** | **Description**                                  |
+| -------------------------------------- | -------- | ------------------------------------------------ |
+| VisionOne.Force_Password_Reset.status  | number   | Status of request to reset user password.        |
+| VisionOne.Force_Password_Reset.task_id | string   | Task ID generated after resetting user password. |
 
 ### trendmicro-visionone-add-to-block-list
 
@@ -221,10 +221,10 @@ Disconnects an endpoint from the network (but allows communication with the mana
 
 #### Context Output
 
-| **Path**                             | **Type** | **Description**                                  |
-| ------------------------------------ | -------- | ------------------------------------------------ |
-| VisionOne.Endpoint_Connection.status | number   | Status of isolating endpoint\(s\).               |
-| VisionOne.Endpoint_Connection.taskId | string   | Task ID generated after isolating endpoint\(s\). |
+| **Path**                              | **Type** | **Description**                                  |
+| ------------------------------------- | -------- | ------------------------------------------------ |
+| VisionOne.Endpoint_Connection.status  | number   | Status of isolating endpoint\(s\).               |
+| VisionOne.Endpoint_Connection.task_id | string   | Task ID generated after isolating endpoint\(s\). |
 
 ### trendmicro-visionone-restore-endpoint-connection
 
@@ -726,7 +726,7 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 | **Argument Name** | **Description**                                                                                       | **Required** |
 | ----------------- | ----------------------------------------------------------------------------------------------------- | ------------ |
 | file_path         | URL pointing to the location of the file to be submitted.                                             | Required     |
-| filename          | Name of the file to be analyzed.                                                                      | Required     |
+| file_name         | Name of the file to be analyzed.                                                                      | Required     |
 | document_password | The Base64 encoded password for decrypting the submitted document. sample.                            | Optional     |
 | archive_password  | The Base64 encoded password for decrypting the submitted archive.                                     | Optional     |
 | arguments         | Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file. | Optional     |
@@ -772,6 +772,66 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 | VisionOne.Submit_File_Entry_to_Sandbox.entry_id  | string   | The Entry ID for the file.                                            |
 | VisionOne.Submit_File_Entry_to_Sandbox.arguments | string   | Command line arguments to run the submitted file.                     |
 
+### trendmicro-visionone-submit-urls-to-sandbox
+
+***
+Sends URL(s) to sandbox for analysis.
+
+#### Base Command
+
+`trendmicro-visionone-submit-urls-to-sandbox`
+
+#### Input
+
+| **Argument Name** | **Description**                       | **Required** |
+| ----------------- | ------------------------------------- | ------------ |
+| urls              | List of URLs to be sent for analysis. | Required     |
+
+#### Context Output
+
+| **Path**                                | **Type** | **Description**                                                 |
+| --------------------------------------- | -------- | --------------------------------------------------------------- |
+| VisionOne.Submit_Urls_to_Sandbox.id     | string   | ID generated for the URL sent to sandbox for analysis           |
+| VisionOne.Submit_Urls_to_Sandbox.url    | string   | URL sent to sandbox for analysis                                |
+| VisionOne.Submit_Urls_to_Sandbox.digest | string   | Digest value generated for the URL sent to sandbox for analysis |
+| VisionOne.Submit_Urls_to_Sandbox.status | string   | HTTPS status code of making the request                         |
+| VisionOne.Submit_Urls_to_Sandbox.id     | string   | Task ID generated for the URL sent to sandbox for analysis      |
+
+### trendmicro-visionone-get-alert-details
+
+***
+Fetches details for a specific alert.
+
+#### Base Command
+
+`trendmicro-visionone-get-alert-details`
+
+#### Input
+
+| **Argument Name** | **Description**                      | **Required** |
+| ----------------- | ------------------------------------ | ------------ |
+| workbench_id      | Workbench ID for the alert to query. | Required     |
+
+#### Context Output
+
+| **Path**                                           | **Type** | **Description**                                                                                                    |
+| -------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| VisionOne.Alert_Details.etag                       | string   | The ETag of the resource you want to update.                                                                       |
+| VisionOne.Alert_Details.alert.id                   | string   | ID of the workbench alert                                                                                          |
+| VisionOne.Alert_Details.alert.model                | string   | Name of the detection model that triggered the alert                                                               |
+| VisionOne.Alert_Details.alert.score                | number   | Overall severity assigned to the alert based on the severity of the matched detection model and the impact scope   |
+| VisionOne.Alert_Details.alert.severity             | string   | Workbench alert severity                                                                                           |
+| VisionOne.Alert_Details.alert.indicators           | string   | The indicators refer to those objects which are found by RCA or sweeping                                           |
+| VisionOne.Alert_Details.alert.description          | string   | Description of the detection model that triggered the alert                                                        |
+| VisionOne.Alert_Details.alert.impact_scope         | string   | Affected entities information                                                                                      |
+| VisionOne.Alert_Details.alert.matched_rules        | string   | The rules are triggered                                                                                            |
+| VisionOne.Alert_Details.alert.alert_provider       | string   | Alert provider                                                                                                     |
+| VisionOne.Alert_Details.alert.schema_version       | string   | The version of the JSON schema, not the version of alert trigger content                                           |
+| VisionOne.Alert_Details.alert.workbench_link       | string   | Workbench URL                                                                                                      |
+| VisionOne.Alert_Details.alert.created_date_time    | string   | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the created date time of the alert      |
+| VisionOne.Alert_Details.alert.updated_date_time    | string   | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the last updated date time of the alert |
+| VisionOne.Alert_Details.alert.investigation_status | string   | Workbench alert status                                                                                             |
+
 ### trendmicro-visionone-run-sandbox-submission-polling
 
 ***
@@ -794,12 +854,10 @@ Runs a polling command to retrieve the status of a sandbox analysis submission.
 | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
 | VisionOne.Sandbox_Submission_Polling.message                  | string   | Status of the sandbox analysis.                                         |
 | VisionOne.Sandbox_Submission_Polling.status                   | string   | Status of action to analyze file in sandbox.                            |
-| VisionOne.Sandbox_Submission_Polling.task_id                  | string   | Task ID of the submission queried.                                      |
-| VisionOne.Sandbox_Submission_Polling.taskStatus               | string   | Sandbox analysis status.                                                |
+| VisionOne.Sandbox_Submission_Polling.report_id                | string   | Report ID of the submission queried.                                    |
 | VisionOne.Sandbox_Submission_Polling.digest                   | string   | The hash values of file analyzed.                                       |
 | VisionOne.Sandbox_Submission_Polling.analysis_completion_time | string   | Sample analysis completed time.                                         |
 | VisionOne.Sandbox_Submission_Polling.risk_level               | string   | Risk Level of the analyzed file.                                        |
-| VisionOne.Sandbox_Submission_Polling.description              | string   | Scan result description for NotAnalyzed.                                |
 | VisionOne.Sandbox_Submission_Polling.detection_name_list      | string   | Detection name of this sample, if applicable.                           |
 | VisionOne.Sandbox_Submission_Polling.threat_type_list         | string   | Threat type of this sample.                                             |
 | VisionOne.Sandbox_Submission_Polling.file_type                | string   | File type of this sample.                                               |

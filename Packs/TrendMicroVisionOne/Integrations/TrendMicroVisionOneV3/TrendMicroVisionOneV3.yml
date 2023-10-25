@@ -114,10 +114,10 @@ script:
     description: Signs the user out of all active application and browser sessions. Supported IAM systems -> Azure AD.
     name: trendmicro-visionone-force-signout
     outputs:
-    - contextPath: VisionOne.User_Account.status
+    - contextPath: VisionOne.Force_Sign_Out.status
       description: Status of request to sign out user.
       type: number
-    - contextPath: VisionOne.User_Account.task_id
+    - contextPath: VisionOne.Force_Sign_Out.task_id
       description: Task ID generated after signing out user.
       type: string
   - arguments:
@@ -127,10 +127,10 @@ script:
     description: Signs the user out of all active application and browser sessions, and forces the user to create a new password during the next sign-in attempt. Supported IAM systems -> Azure AD and Active Directory (on-premises).
     name: trendmicro-visionone-force-password-reset
     outputs:
-    - contextPath: VisionOne.User_Account.status
+    - contextPath: VisionOne.Force_Password_Reset.status
       description: Status of request to reset user password.
       type: number
-    - contextPath: VisionOne.User_Account.task_id
+    - contextPath: VisionOne.Force_Password_Reset.task_id
       description: Task ID generated after resetting user password.
       type: string
   - arguments:
@@ -195,7 +195,7 @@ script:
     - contextPath: VisionOne.Endpoint_Connection.status
       description: Status of isolating endpoint(s).
       type: number
-    - contextPath: VisionOne.Endpoint_Connection.taskId
+    - contextPath: VisionOne.Endpoint_Connection.task_id
       description: 'Task ID generated after isolating endpoint(s).'
       type: string
   - arguments:
@@ -828,7 +828,7 @@ script:
       name: file_path
       required: true
     - description: Name of the file to be analyzed.
-      name: filename
+      name: file_name
       required: true
     - description: The Base64 encoded password for decrypting the submitted document. sample.
       name: document_password
@@ -892,6 +892,80 @@ script:
     name: trendmicro-visionone-submit-file-entry-to-sandbox
     description: Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
   - arguments:
+    - description: List of URLs to be sent for analysis.
+      name: urls
+      required: true
+    outputs:
+    - contextPath: VisionOne.Submit_Urls_to_Sandbox.id
+      description: ID generated for the URL sent to sandbox for analysis.
+      type: string
+    - contextPath: VisionOne.Submit_Urls_to_Sandbox.url
+      description: URL sent to sandbox for analysis.
+      type: string
+    - contextPath: VisionOne.Submit_Urls_to_Sandbox.digest
+      description: Digest value generated for the URL sent to sandbox for analysis.
+      type: string
+    - contextPath: VisionOne.Submit_Urls_to_Sandbox.status
+      description: HTTPS status code of making the request.
+      type: string
+    - contextPath: VisionOne.Submit_Urls_to_Sandbox.id
+      description: Task ID generated for the URL sent to sandbox for analysis.
+      type: string
+    description: Sends URL(s) to sandbox for analysis.
+    name: trendmicro-visionone-submit-urls-to-sandbox
+  - arguments:
+    - description: Workbench ID for the alert to query.
+      name: workbench_id
+      required: true
+    outputs:
+    - contextPath: VisionOne.Alert_Details.etag
+      description: The ETag of the resource you want to update.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.id
+      description: ID of the workbench alert.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.model
+      description: Name of the detection model that triggered the alert.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.score
+      description: Overall severity assigned to the alert based on the severity of the matched detection model and the impact scope.
+      type: number
+    - contextPath: VisionOne.Alert_Details.alert.severity
+      description: Workbench alert severity.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.indicators
+      description: The indicators refer to those objects which are found by RCA or sweeping.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.description
+      description: Description of the detection model that triggered the alert.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.impact_scope
+      description: Affected entities information.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.matched_rules
+      description: The rules are triggered.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.alert_provider
+      description: Alert provider.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.schema_version
+      description: The version of the JSON schema, not the version of alert trigger content.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.workbench_link
+      description: Workbench URL.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.created_date_time
+      description: Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the created date time of the alert.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.updated_date_time
+      description: Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the last updated date time of the alert.
+      type: string
+    - contextPath: VisionOne.Alert_Details.alert.investigation_status
+      description: Workbench alert status.
+      type: string
+    description: Fetches details for a specific alert.
+    name: trendmicro-visionone-get-alert-details
+  - arguments:
     - description: polling the task for 30 seconds interval.
       name: polling
       default: true
@@ -906,11 +980,8 @@ script:
     - contextPath: VisionOne.Sandbox_Submission_Polling.status
       description: Status of action to analyze file in sandbox.
       type: string
-    - contextPath: VisionOne.Sandbox_Submission_Polling.task_id
-      description: Task ID of the submission queried.
-      type: string
-    - contextPath: VisionOne.Sandbox_Submission_Polling.taskStatus
-      description: Sandbox analysis status.
+    - contextPath: VisionOne.Sandbox_Submission_Polling.report_id
+      description: Report ID of the submission queried.
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.digest
       description: The hash values of file analyzed.
@@ -920,9 +991,6 @@ script:
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.risk_level
       description: Risk Level of the analyzed file.
-      type: string
-    - contextPath: VisionOne.Sandbox_Submission_Polling.description
-      description: Scan result description for NotAnalyzed.
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.detection_name_list
       description: Detection name of this sample, if applicable.
