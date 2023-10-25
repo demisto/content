@@ -1737,7 +1737,7 @@ script:
       isArray: false
       name: entry_id
       required: false
-    - description: request_id (generated in polling command).
+    - description: The ID of the request (generated in the polling command).
       name: request_id
       deprecated: true
     description: Create email file assessment request.
