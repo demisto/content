@@ -1969,7 +1969,7 @@ script:
       isArray: false
       name: limt
       required: false
-    - description: next token.
+    - description: The next token.
       isArray: false
       name: next_token
       required: false
