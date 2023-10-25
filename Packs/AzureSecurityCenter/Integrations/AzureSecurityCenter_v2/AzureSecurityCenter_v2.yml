@@ -234,7 +234,6 @@ script:
       - dismiss
       - in_progress
       - resolve
-#        - reactivate
     description: Update an alert's state.
     name: azure-sc-update-alert
     outputs:
@@ -462,7 +461,7 @@ script:
       type: Unknown
     - contextPath: Azure.ResourceGroupName.properties.provisioningState
       description: Resource group provisioning state.
-  dockerimage: demisto/crypto:1.0.0.78196
+  dockerimage: demisto/crypto:1.0.0.79207
   runonce: false
   script: '-'
   type: python
