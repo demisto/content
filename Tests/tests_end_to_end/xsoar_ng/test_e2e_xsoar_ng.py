@@ -43,6 +43,7 @@ def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGA
 
     integration_id = request.cls.integration_id
     instance_name = integration_params.pop("integrationInstanceName", f'e2e-test-{integration_params.get("name")}')
+    integration_params["edl_size"] = "10"
     response = xsoar_ng_client.create_integration_instance(
         _id=integration_id,
         name=instance_name,
@@ -87,7 +88,6 @@ class TestEDL:
         url = f'{xsoar_ng_client.external_base_url}/instance/execute/{instance_name}'
 
         basic_auth = HTTPBasicAuth(integration_params["credentials"]["identifier"], integration_params["credentials"]["password"])
-        integration_params["edl_size"] = "10"
 
         @retry_http_request(times=20)
         def run_edl_request():
