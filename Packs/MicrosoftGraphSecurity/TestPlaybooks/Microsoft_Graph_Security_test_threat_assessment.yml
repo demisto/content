@@ -1,6 +1,6 @@
-id: c9995a1e-3e4e-46d7-8844-8b0a9e0cf359
+id: MSG-Threat-Assessment-test
 version: -1
-name: MSG-Threat-Assessment-tpb
+name: MSG-Threat-Assessment-test
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
