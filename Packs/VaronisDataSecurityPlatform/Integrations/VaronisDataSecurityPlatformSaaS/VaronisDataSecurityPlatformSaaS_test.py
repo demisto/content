@@ -4,7 +4,7 @@ import demistomock as demisto
 from pytest_mock import MockerFixture
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from VaronisDataSecurityPlatformSaaS import Client
+from VaronisDataSecurityPlatformSaaS import Client, SearchAlertObjectMapper
 
 
 def util_load_json(path):
@@ -129,25 +129,135 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     threat_models = util_load_json('test_data/varonis_get_enum_response.json')
     threat_model = threat_models[0]["ruleName"]
     ingest_time = datetime.now() - timedelta(hours=1)
-    alerts = [
-        {
-            "ID": "e74df045-e525-4ec3-b54f-ad46434c5281",
-            "Name": threat_model,
-            "Severity": "High",
-            "EventUTC": "2023-10-07T20:46:00",
-            "IngestTime": ingest_time.isoformat()
+    alerts = {
+        "columns": [
+            "Alert.ID",
+            "Alert.Rule.Name",
+            "Alert.Rule.ID",
+            "Alert.TimeUTC",
+            "Alert.Rule.Severity.Name",
+            "Alert.Rule.Severity.ID",
+            "Alert.Rule.Category.Name",
+            "Alert.Location.CountryName",
+            "Alert.Location.SubdivisionName",
+            "Alert.Status.Name",
+            "Alert.Status.ID",
+            "Alert.EventsCount",
+            "Alert.Initial.Event.TimeUTC",
+            "Alert.User.Name",
+            "Alert.User.SamAccountName",
+            "Alert.User.AccountType.Name",
+            "Alert.Device.HostName",
+            "Alert.Device.IsMaliciousExternalIP",
+            "Alert.Device.ExternalIPThreatTypesName",
+            "Alert.Data.IsFlagged",
+            "Alert.Data.IsSensitive",
+            "Alert.Filer.Platform.Name",
+            "Alert.Asset.Path",
+            "Alert.Filer.Name",
+            "Alert.CloseReason.Name",
+            "Alert.Location.BlacklistedLocation",
+            "Alert.Location.AbnormalLocation",
+            "Alert.User.SidID",
+            "Alert.IngestTime",
+            "Alert.Time"
+        ],
+        "rows": [
+            [
+                "A5277B32-037E-4700-A55D-42065FB6ADD5",
+                "Deletion: Multiple directory service objects",
+                "140",
+                "2023-10-25T04:56:00",
+                "High",
+                "0",
+                "Denial of Service",
+                "",
+                "",
+                "New",
+                "1",
+                "14",
+                "2023-10-25T04:51:00",
+                "varadm (int0bf5b.com)",
+                "varadm",
+                "Admin",
+                "int0bf5bdh",
+                "",
+                "",
+                "0",
+                "0",
+                "Active Directory",
+                "int0bf5b.com(AD-int0bf5b.com)",
+                "AD-int0bf5b.com",
+                "",
+                "",
+                "",
+                "602",
+                ingest_time.isoformat(),
+                "2023-10-25T04:56:00"
+            ],
+            [
+                "44DC5CBE-9F3D-4B12-AA81-BF1FFF00EBE1",
+                "Deletion: Active Directory containers, Foreign Security Principal, or GPO",
+                "154",
+                "2023-10-25T04:56:00",
+                "High",
+                "0",
+                "Denial of Service",
+                "",
+                "",
+                "New",
+                "1",
+                "1",
+                "2023-10-25T04:51:00",
+                "varadm (int0bf5b.com)",
+                "varadm",
+                "Admin",
+                "int0bf5bdh",
+                "",
+                "",
+                "0",
+                "0",
+                "Active Directory",
+                "int0bf5b.com(AD-int0bf5b.com)",
+                "AD-int0bf5b.com",
+                "",
+                "",
+                "",
+                "602",
+                ingest_time.isoformat(),
+                "2023-10-25T04:56:00"
+            ]
+        ],
+        "hasResults": "true",
+        "rowsCount": 3,
+        "cappedNumber": 50000,
+        "progress": 100,
+        "finished": "true",
+        "entityTagHeaderValue": {
+            "tag": "\"3\"",
+            "isWeak": "false"
         },
-        {
-            "ID": "29ef57c6-817a-49f5-be34-bdd6c5358379",
-            "Name": threat_model,
-            "Severity": "High",
-            "EventUTC": "2023-10-07T17:43:00",
-            "IngestTime": ingest_time.isoformat()
-        }
-    ]
+        "versionId": 3
+    }
 
     requests_mock.post(
-        'https://test.com/api/alert/search/alerts',
+        'https://test.com/app/dataquery/api/search/v2/search',
+        json=[
+            {
+                "location": "v2/rows/af6a26a1d70e4be182adc148b831f476/",
+                "dataType": "rows"
+            },
+            {
+                "location": "v2/search/af6a26a1d70e4be182adc148b831f476/terminate/",
+                "dataType": "terminate"
+            },
+            {
+                "location": "af6a26a1-d70e-4be1-82ad-c148b831f476",
+                "dataType": "searchId"
+            }
+        ])
+    requests_mock.get(
+        'https://test.com/app/dataquery/api/search/v2/rows/af6a26a1d70e4be182adc148b831f476/',
         json=alerts)
 
     client = Client(
@@ -175,25 +285,45 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
         last_run=last_run,
         first_fetch_time=first_fetch_time
     )
-    
+
     assert next_run == {'last_fetched_ingest_time': (ingest_time + timedelta(minutes=1)).isoformat()}
 
-    for output in alerts:
+    mapper = SearchAlertObjectMapper()
+    mapped_alerts = mapper.map(alerts)
+
+    for output in mapped_alerts:
         id = output["ID"]
         output.update({"Url": f"https://test.com/#/app/analytics/entity/Alert/{id}"})
         output.update({"Locations": []})
-        output.update({"Sources": []})
-        output.update({"Devices": []})
-        output.update({"Users": []})
-    
-    expected_incidents = list(map(lambda alert: 
+        output.update({"Sources": [
+            {
+                "Platform": "Active Directory",
+                "FileServerOrDomain": "AD-int0bf5b.com"
+            }
+        ]})
+        output.update({"Devices": [
+            {
+                "Name": "int0bf5bdh",
+                "Asset": "int0bf5b.com(AD-int0bf5b.com)"
+            }
+        ]})
+        output.update({"Users": [
+            {
+                "Name": "varadm (int0bf5b.com)",
+                "SamAccountName": "varadm",
+                "PrivilegedAccountType": "Admin",
+                "Department": ""
+            }
+        ]})
+
+    expected_incidents = list(map(lambda alert:
                                   {
-                                    'name': f'Varonis alert {alert["Name"]}',
-                                    'occurred': f'{alert["EventUTC"]}Z',
-                                    'rawJSON': json.dumps(alert),
-                                    'type': 'Varonis DSP Incident',
-                                    'severity': IncidentSeverity.HIGH,
-                                }, alerts))
+                                      'name': f'Varonis alert {alert["Name"]}',
+                                      'occurred': f'{alert["Time"]}Z',
+                                      'rawJSON': json.dumps(alert),
+                                      'type': 'Varonis DSP Incident',
+                                      'severity': IncidentSeverity.HIGH,
+                                  }, mapped_alerts))
 
     assert incidents == expected_incidents
 
@@ -246,7 +376,7 @@ def test_get_excluded_severitires():
 
 
 def test_varonis_authenticate(requests_mock: MockerFixture):
-    
+
     client = Client(
         base_url='https://test.com',
         verify=False,

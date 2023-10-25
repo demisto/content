@@ -115,6 +115,12 @@ script:
       required: false
       secret: false
     - default: false
+      description: User domain name (cannot be provided without user_name)
+      isArray: false
+      name: user_domain_name
+      required: false
+      secret: false
+    - default: false
       description: Number of days you want the search to go back to
       isArray: false
       name: last_days

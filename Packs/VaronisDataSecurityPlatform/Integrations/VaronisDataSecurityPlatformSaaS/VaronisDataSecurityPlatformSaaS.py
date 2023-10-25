@@ -575,7 +575,9 @@ class Client(BaseClient):
 
     def varonis_get_alerts(self, ruleIds: Optional[List[str]], alertIds: Optional[List[str]], start_time: Optional[datetime],
                            end_time: Optional[datetime], ingest_time_from: Optional[datetime],
-                           ingest_time_to: Optional[datetime], device_names: Optional[List[str]], last_days: Optional[int],
+                           ingest_time_to: Optional[datetime], device_names: Optional[List[str]], 
+                           user_names: Optional[List[str]],
+                           last_days: Optional[int],
                            alert_statuses: Optional[List[str]],
                            alert_severities: Optional[List[str]],
                            descending_order: bool) -> List[Dict[str, Any]]:
@@ -601,6 +603,9 @@ class Client(BaseClient):
 
         :type device_names: ``Optional[List[str]]``
         :param device_names: List of device names to filter by
+
+        :type user_names: ``Optional[List[str]]``
+        :param user_names: List of user names to filter by
 
         :type last_days: ``Optional[List[int]]``
         :param last_days: Number of days you want the search to go back to
@@ -691,6 +696,14 @@ class Client(BaseClient):
             for device_name in device_names:
                 rules_condition.add_value({"Alert.Device.HostName": device_name, "displayValue": device_name})
             search_request.query.filter.add_filter(device_condition)
+
+        if user_names and len(user_names) > 0:
+            user_condition = FilterCondition()\
+                .set_path("Alert.User.Identity.Name")\
+                .set_operator("In")
+            for user_name in user_names:
+                user_condition.add_value({"Alert.User.Identity.Name": user_name, "displayValue": user_name})
+            search_request.query.filter.add_filter(user_condition)
 
         if alert_statuses and len(alert_statuses) > 0:
             status_condition = FilterCondition()\
@@ -1185,7 +1198,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
     ruleIds = get_rule_ids(client, threat_model_names)
 
     alerts = client.varonis_get_alerts(ruleIds=ruleIds, alertIds=None, start_time=None, end_time=None,
-                                       device_names=None, last_days=None,
+                                       device_names=None, user_names=None, last_days=None,
                                        ingest_time_from=last_fetched_ingest_time,
                                        ingest_time_to=ingest_time_to,
                                        alert_statuses=statuses, alert_severities=severities,
@@ -1260,6 +1273,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     alert_statuses = args.get('alert_status', None)
     alert_severities = args.get('alert_severity', None)
     device_names = args.get('device_name', None)
+    user_names = args.get('user_name', None)
     last_days = args.get('last_days', None)
     descending_order = args.get('descending_order', True)
 
@@ -1276,6 +1290,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     alert_severities = try_convert(alert_severities, lambda x: argToList(x))
     device_names = try_convert(device_names, lambda x: argToList(x))
     threat_model_names = try_convert(threat_model_names, lambda x: argToList(x))
+    user_names = try_convert(user_names, lambda x: argToList(x))
 
     start_time = try_convert(
         start_time,
@@ -1314,6 +1329,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
     ruleIds = get_rule_ids(client, threat_model_names)
 
     alerts = client.varonis_get_alerts(ruleIds, alert_ids, start_time, end_time, ingest_time_from, ingest_time_to, device_names,
+                                       user_names,
                                        last_days, alert_statuses, alert_severities,
                                        descending_order)
     outputs = dict()
@@ -1460,7 +1476,7 @@ def main() -> None:
     if not is_xsoar_env():
         url = 'https://int0bf5b.varonis-preprod.com'
         apiKey = 'vkey1_9e9575aa2665457c88a08bd496f5b87f_+vFM0cQ/XVzMF8+uYMWJPVNc3OF69cXtX77LOg+EeUY='
-        command = 'fetch-incidents'  # 'test-module'|
+        command = 'varonis-get-alerts'  # 'test-module'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
         # 'varonis-update-alert-status'|
@@ -1485,10 +1501,11 @@ def main() -> None:
             args['ingest_time_from'] = None  # Start ingest time of the range of alerts
             args['ingest_time_to'] = None  # End ingest time of the range of alerts
             args['start_time'] = "2023-10-17T03:47:00"  # Start time of the range of alerts
-            args['end_time'] = "2023-10-24T16:47:00"  # End time of the range of alerts
+            args['end_time'] = "2023-10-26T16:47:00"  # End time of the range of alerts
             args['alert_status'] = None  # List of required alerts status
             args['alert_severity'] = None  # List of alerts severity
             args['device_name'] = None  # List of device names
+            args['user_name'] = "varadm"  # List of device names
             args['last_days'] = None  # Number of days you want the search to go back to
             args['descending_order'] = None  # Indicates whether alerts should be ordered in newest to oldest order
 
@@ -1501,11 +1518,11 @@ def main() -> None:
 
         elif command == 'varonis-update-alert-status':
             args['status'] = 'under investigation'  # Alert's new status
-            args['alert_id'] = "2ca92ab1-b225-4eee-85ec-393875ed5389"  # Array of alert ids to be updated
+            args['alert_id'] = "215FF1FE-E25C-4C12-AB16-937BF186ABD9"  # Array of alert ids to be updated
 
         elif command == 'varonis-close-alert':
             args['close_reason'] = 'resolved'  # Alert's close reason
-            args['alert_id'] = "2ca92ab1-b225-4eee-85ec-393875ed5389"  # Array of alert ids to be closed
+            args['alert_id'] = "215FF1FE-E25C-4C12-AB16-937BF186ABD9"  # Array of alert ids to be closed
 
         elif command == 'fetch-incidents':
             pass
