@@ -1691,7 +1691,7 @@ script:
       description: The destination routing reason for the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.MessageID
-      description: 'Message ID.'
+      description: The message ID of the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.CreatedUserID
       description: 'Created user id.'
