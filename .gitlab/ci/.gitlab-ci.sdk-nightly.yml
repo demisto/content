@@ -53,7 +53,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - section_end "Update Conf"
     - !reference [.create-id-set]
     - section_start "Activate GCloud Service Account" --collapsed
-    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - echo "successfully activated google cloud service account"
     - section_end "Activate GCloud Service Account"
     - section_start "Download private ID set" --collapsed
@@ -168,6 +168,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XSOAR"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -209,6 +210,11 @@ demisto-sdk-nightly:run-commands-against-instance:
     - *upload-entities-to-cortex-xsoar
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - destroy_instances_exit_code=$?
+    - |
+      if [ "${destroy_instances_exit_code}" -ne 0 ]; then
+        echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
+      fi
     - section_end "Destroy instances"
     - job-done
 
@@ -226,6 +232,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XSOAR"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -254,11 +261,17 @@ demisto-sdk-nightly:trigger-slack-notify:
   extends:
     - .trigger-slack-notification
     - .sdk-nightly-schedule-rule-always
-  variables:
+  variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: "Demisto SDK Nightly"
     JOB_NAME: "demisto-sdk-nightly:fan-in"
-    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
-    # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
     SLACK_JOB: "true"
+    SLACK_ALLOW_FAILURE: 'false'
+    CI_PROJECT_ID: $CI_PROJECT_ID
+    CI_SERVER_URL: $CI_SERVER_URL
+    JIRA_SERVER_URL: $JIRA_SERVER_URL
+    JIRA_VERIFY_SSL: $JIRA_VERIFY_SSL
+    JIRA_API_KEY: $JIRA_API_KEY
+    JIRA_PROJECT_ID: $JIRA_PROJECT_ID
+    JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
