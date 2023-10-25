@@ -120,7 +120,7 @@ class Client(BaseClient):
         expires_in = int(response.get(EXPIRES_IN, MINUTES_60) or 0)
         if not self.is_oproxy:
             # Only in this case we do not get those params in the response
-            api_url = DEFAULT_API_URL
+            api_url = "https://api.nl.cdl.paloaltonetworks.com"
             instance_id = self.instance_id
         if not access_token or not api_url or not instance_id:
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
