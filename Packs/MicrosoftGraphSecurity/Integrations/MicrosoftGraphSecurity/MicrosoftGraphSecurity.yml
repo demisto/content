@@ -1973,7 +1973,7 @@ script:
       isArray: false
       name: next_token
       required: false
-    description: Create url assessment request.
+    description: Create URL assessment request.
     execution: false
     name: msg-list-threat-assessment-requests
     polling: true
