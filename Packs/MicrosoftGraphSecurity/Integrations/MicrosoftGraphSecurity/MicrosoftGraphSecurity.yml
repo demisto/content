@@ -1664,7 +1664,7 @@ script:
     polling: true
     outputs:
     - contextPath: MSGraphMail.MailAssessment.ID
-      description: 'mail assessment id.'
+      description: Mail assessment ID.
       type: String
     - contextPath: MSGraphMail.MailAssessment.CreatedDateTime
       description: 'mail assessment Created DateTime.'
