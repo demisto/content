@@ -24,7 +24,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* SearchAlertsV2
+SearchAlertsV2
 
 ### Commands
 
@@ -39,7 +39,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Auto containmnet | Whether to execute containment automatically.<br/>This action allows you to respond rapidly but have higher probability for False Positive. | False | Optional |
+| Auto containmnet | Whether to execute containment automatically.<br/>This action allows you to respond rapidly but has a higher probability for a False Positive. | False | Optional |
 
 
 ## Playbook Image

@@ -105,11 +105,11 @@ tasks:
       version: -1
       name: Search alerts for cloud enumeration activity
       description: |-
-        Searches Demisto alerts. A summarized version of this scrips is avilable with the summarizedversion argument.
+        Searches Cortex XSOAR alerts. A summarized version of this scrips is available with the summarizedversion argument.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SearchAlertsV2
       type: regular
       iscommand: false
@@ -288,7 +288,7 @@ tasks:
       id: 9c4eb7f8-d21f-4ac7-83bc-167244ce5cb7
       version: -1
       name: Found malicious evidence based on enrichment data
-      description: "This step will ensure check the following and if one of them those conditions match, this alert as malicious/suspicious:\n\n- Is there access to a backup bucket? \n- Check IP prevalence - if the IP is a known IP in the company\n- Is the IP malicious?\n- Is there an enumeration alert associated with the same user?\n- Is the IP considered as a proxy?\n- Are there minimum access to this bucket? Will be determined by a threshold"
+      description: "This step will check the following and if one of those conditions match, this alert is malicious/suspicious:\n\n- Is there access to a backup bucket? \n- Check IP prevalence - if the IP is a known IP in the company\n- Is the IP malicious?\n- Is there an enumeration alert associated with the same user?\n- Is the IP considered as a proxy?\n- Is there minimum access to this bucket? Will be determined by a threshold."
       type: condition
       iscommand: false
       brand: ""
@@ -373,8 +373,8 @@ tasks:
       id: ac9deb73-40f6-44d5-8ee9-2694af6a5657
       version: -1
       name: Review the alert findings
-      description: "The enrichment process didn't identify any further suspicious activity.\nPlease review this alert findings and choose how to handle it.\n\nSuggested checklist for the analyst:\n- Check the environment of the bucket - Is it in QA / Dev / Alpha / Production? Is it should be publically available?
-- Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands ( such as API keys).\nDid you find this alert malicious/suspicious?"
+      description: "The enrichment process didn't identify any further suspicious activity.\nPlease review these alert findings and choose how to handle it.\n\nSuggested checklist for the analyst:\n- Check the environment of the bucket - Is it in QA / Dev / Alpha / Production? Is it should be publicly available?
+- Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands (such as API keys).\nDid you find this alert to be malicious/suspicious?"
       type: condition
       iscommand: false
       brand: ""
@@ -437,7 +437,7 @@ tasks:
       id: 521b51bd-c579-4cf4-8d2e-aa8ad689b227
       version: -1
       name: IP prevalence check
-      description: Get the prevalence of an ip, identified by ip_address.
+      description: Get the prevalence of an IP, identified by ip_address.
       script: '|||core-get-IP-analytics-prevalence'
       type: regular
       iscommand: true
@@ -667,7 +667,7 @@ tasks:
       id: b2e0de5a-b3dc-4c56-8dd3-1d07e3166289
       version: -1
       name: Found any persistence evidences or user abnormal activity?
-      description: Checks if results returned from the Cloud Threat Hunting - Persistence and Cloud User Investigation - Generic sub-playbooks.
+      description: Checks if results are returned from the Cloud Threat Hunting - Persistence and Cloud User Investigation - Generic sub-playbooks.
       type: condition
       iscommand: false
       brand: ""

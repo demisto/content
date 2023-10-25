@@ -327,7 +327,7 @@ tasks:
 
         Suggested checklist for the analyst:
         - Check the environment of the bucket - Is it in QA / Dev / Alpha / Production? Is it should be publically available?
-        - Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands ( such as API keys).
+        - Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands (such as API keys).
 
 
         Did you find this alert malicious/suspicious?
@@ -934,7 +934,7 @@ tasks:
       id: b5b6055c-2808-4e80-8828-b4d424533d53
       version: -1
       name: Found any persistence evidences or user abnormal activity?
-      description: Checks if results returned from the Cloud Threat Hunting - Persistence and Cloud User Investigation - Generic sub-playbooks.
+      description: Checks if results are returned from the Cloud Threat Hunting - Persistence and Cloud User Investigation - Generic sub-playbooks.
       type: condition
       iscommand: false
       brand: ""
@@ -1035,7 +1035,7 @@ inputs:
 - key: alertID
   value: {}
   required: false
-  description: The XDR alert ID
+  description: The XDR alert ID.
   playbookInputQuery:
 - key: autoResourceRemediation
   value:
