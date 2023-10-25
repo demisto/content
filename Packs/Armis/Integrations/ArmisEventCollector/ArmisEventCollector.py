@@ -15,6 +15,7 @@ class EVENT_TYPE(NamedTuple):
     unique_id_key: str
     aql_query: str
     type: str
+    order_by: str
 
 
 ''' CONSTANTS '''
@@ -24,13 +25,14 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 VENDOR = 'armis'
 PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
-DEFAULT_MAX_FETCH = 1000
+DEFAULT_MAX_FETCH = 5
+DEVICES_DEFAULT_MAX_FETCH = 10
 EVENT_TYPES = {
-    'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts'),
-    'Activities': EVENT_TYPE('activityUUID', 'in:activity', 'activity'),
-    'Devices': EVENT_TYPE('id', 'in:devices', 'devices'),
+    'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts', 'time'),
+    'Activities': EVENT_TYPE('activityUUID', 'in:activity', 'activity', 'time'),
+    'Devices': EVENT_TYPE('id', 'in:devices', 'devices', 'firstSeen'),
 }
-DEVICE_LAST_FETCH = 'device_last_fetch'
+DEVICES_LAST_FETCH = 'devices_last_fetch_time'
 
 ''' CLIENT CLASS '''
 
@@ -55,7 +57,8 @@ class Client(BaseClient):
         self._headers = headers
         self._access_token = access_token
 
-    def fetch_by_aql_query(self, aql_query: str, max_fetch: int, after: None | datetime = None):
+    def fetch_by_aql_query(self, aql_query: str, max_fetch: int, after: None | datetime = None,
+                           order_by: str = 'time'):
         """ Fetches events using AQL query.
 
         Args:
@@ -66,7 +69,7 @@ class Client(BaseClient):
         Returns:
             list[dict]: List of events objects represented as dictionaries.
         """
-        params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': 'time'}
+        params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
         if not after:  # this should only happen when get-events command is used without from_date argument
             after = datetime.now()
         params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
@@ -288,7 +291,8 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, cl
     response = client.fetch_by_aql_query(
         aql_query=event_type.aql_query,
         max_fetch=max_fetch,
-        after=event_type_fetch_start_time
+        after=event_type_fetch_start_time,
+        order_by=event_type.order_by
     )
     demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
     if response:
@@ -305,6 +309,7 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, cl
 
 def fetch_events(client: Client,
                  max_fetch: int,
+                 devices_max_fetch: int,
                  last_run: dict,
                  fetch_start_time: datetime | None,
                  event_types_to_fetch: list[str],
@@ -324,19 +329,19 @@ def fetch_events(client: Client,
     events: list[dict] = []
     next_run: dict[str, list | str] = {}
     if 'Devices' in event_types_to_fetch\
-            and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()): # TODO should be device last run
+            and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
         event_types_to_fetch.remove('Devices')
 
     for event_type in event_types_to_fetch:
-        # TODO: add max_fetch for devices.
+        event_max_fetch = max_fetch if event_type != "Devices" else devices_max_fetch
         try:
             fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client,
-                                max_fetch, last_run, fetch_start_time)
+                                event_max_fetch, last_run, fetch_start_time)
         except Exception as e:
             if "Invalid access token" in str(e):
                 client.update_access_token()
                 fetch_by_event_type(EVENT_TYPES[event_type], events, next_run, client,
-                                    max_fetch, last_run, fetch_start_time)
+                                    event_max_fetch, last_run, fetch_start_time)
 
     next_run['access_token'] = client._access_token
 
@@ -442,7 +447,7 @@ def should_run_device_fetch(last_run,
     """
     if not device_fetch_interval:
         return False
-    if last_fetch_time := last_run.get(DEVICE_LAST_FETCH):
+    if last_fetch_time := last_run.get(DEVICES_LAST_FETCH):
         last_check_time = datetime.strptime(last_fetch_time, DATE_FORMAT)
     else:
         # first time device fetch
@@ -464,6 +469,7 @@ def main():  # pragma: no cover
     base_url = urljoin(params.get('server_url'), API_V1_ENDPOINT)
     verify_certificate = not params.get('insecure', True)
     max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
+    devices_max_fetch = arg_to_number(params.get('devices_max_fetch')) or DEVICES_DEFAULT_MAX_FETCH
     proxy = params.get('proxy', False)
     event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
     should_push_events = argToBoolean(args.get('should_push_events', False))
@@ -503,6 +509,7 @@ def main():  # pragma: no cover
                 events, next_run = fetch_events(
                     client=client,
                     max_fetch=max_fetch,
+                    devices_max_fetch=devices_max_fetch,
                     last_run=last_run,
                     fetch_start_time=fetch_start_time,
                     event_types_to_fetch=event_types_to_fetch,

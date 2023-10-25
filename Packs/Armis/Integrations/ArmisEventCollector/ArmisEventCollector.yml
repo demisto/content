@@ -23,7 +23,7 @@ configuration:
   defaultvalue: 5000
   section: Collect
 - display: Maximum number of device events per fetch
-  name: max_device_fetch
+  name: devices_max_fetch
   additionalinfo: Devices events
   type: 0
   defaultvalue: 10000
