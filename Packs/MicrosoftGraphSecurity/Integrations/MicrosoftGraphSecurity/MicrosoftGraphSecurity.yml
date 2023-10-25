@@ -1682,7 +1682,7 @@ script:
       description: The status of the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.RequestSource
-      description: 'Request Source.'
+      description: The request source of the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.RecipientEmail
       description: 'Recipient Email.'
