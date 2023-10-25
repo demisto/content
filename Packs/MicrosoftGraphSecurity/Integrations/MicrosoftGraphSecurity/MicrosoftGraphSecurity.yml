@@ -1979,52 +1979,52 @@ script:
     polling: true
     outputs:
     - contextPath: MsGraph.AssessmentRequestNextToken.next_token
-      description: 'next token.'
+      description: The next token for the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ID
-      description: 'assessment request id.'
+      description: The assessment request ID.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.CreatedDateTime
-      description: 'assessment request DateTime.'
+      description: The datetime the assessment request was created.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ContentType
-      description: 'Content Type.'
+      description: The content type of the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ExpectedAssessment
-      description: 'Expected Assessment.'
+      description: The expected assessment of the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.Category
-      description: 'Category.'
+      description: The category of the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.Status
-      description: 'Status.'
+      description: The status of the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.URL
-      description: 'url.'
+      description: The URL of the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.RequestSource
-      description: 'Request Source.'
+      description: The request source for the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.RecipientEmail
-      description: 'Recipient Email.'
+      description: The email recipient for the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.FileName
-      description: 'file name.'
+      description: The file name of the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.DestinationRoutingReason
-      description: 'Destination Routing Reason.'
+      description: The destination routing reason for the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.CreatedUserID
-      description: 'Created user id.'
+      description: The user ID create for the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.CreatedUsername
-      description: 'Created user name.'
+      description: The user name created for the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ResultType
-      description: 'Result Type.'
+      description: The result type of the assessment request.
       type: String
     - contextPath: MSGraphMail.AssessmentRequest.ResultMessage
-      description: 'Result message.'
+      description: The result message of the assessment request.
       type: String
   dockerimage: demisto/crypto:1.0.0.79207
   isfetch: true
