@@ -772,10 +772,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 4cea4725-e421-4ae9-85a6-8aa038440443
+    taskid: 44ead2a9-768d-4a8b-89f4-511ccce41b3d
     type: playbook
     task:
-      id: 4cea4725-e421-4ae9-85a6-8aa038440443
+      id: 44ead2a9-768d-4a8b-89f4-511ccce41b3d
       version: -1
       name: Cloud Response - Generic
       description: |-
@@ -812,14 +812,12 @@ tasks:
       GCP-userRemediationType:
         simple: Disable
       autoAccessKeyRemediation:
-        complex:
-          root: inputs.autoAccessKeyRemediation
+        simple: "False"
       autoBlockIndicators:
         complex:
           root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        complex:
-          root: inputs.autoResourceRemediation
+        simple: "False"
       autoUserRemediation:
         complex:
           root: inputs.autoUserRemediation
@@ -1036,18 +1034,6 @@ inputs:
   value: {}
   required: false
   description: The XDR alert ID.
-  playbookInputQuery:
-- key: autoResourceRemediation
-  value:
-    simple: "False"
-  required: false
-  description: 'Whether to execute the resource remediation automatically. (Default: False)'
-  playbookInputQuery:
-- key: autoAccessKeyRemediation
-  value:
-    simple: "False"
-  required: false
-  description: 'Whether to execute the access key remediation automatically. (Default: False)'
   playbookInputQuery:
 - key: autoUserRemediation
   value:

@@ -367,10 +367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: ac9deb73-40f6-44d5-8ee9-2694af6a5657
+    taskid: f5f819b3-f6eb-4f10-837e-c6a859a1cf42
     type: condition
     task:
-      id: ac9deb73-40f6-44d5-8ee9-2694af6a5657
+      id: f5f819b3-f6eb-4f10-837e-c6a859a1cf42
       version: -1
       name: Review the alert findings
       description: "The enrichment process didn't identify any further suspicious activity.\nPlease review these alert findings and choose how to handle it.\n\nSuggested checklist for the analyst:\n- Check the environment of the bucket - Is it in QA / Dev / Alpha / Production? Is it should be publicly available?
@@ -883,10 +883,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 4ad7deec-95f6-4e09-8d9e-5ed7e155433d
+    taskid: a5f34eb1-6d18-4061-8f2e-e71458a6e109
     type: playbook
     task:
-      id: 4ad7deec-95f6-4e09-8d9e-5ed7e155433d
+      id: a5f34eb1-6d18-4061-8f2e-e71458a6e109
       version: -1
       name: Cloud Response - Generic
       description: |-
@@ -919,11 +919,13 @@ tasks:
       autoAccessKeyRemediation:
         simple: "False"
       autoBlockIndicators:
-        simple: "False"
+        complex:
+          root: inputs.autoBlockIndicators
       autoResourceRemediation:
         simple: "False"
       autoUserRemediation:
-        simple: "False"
+        complex:
+          root: inputs.autoUserRemediationautoUserRemediation
       cloudProvider:
         complex:
           root: alert
@@ -1155,18 +1157,6 @@ view: |-
     }
   }
 inputs:
-- key: autoResourceRemediation
-  value:
-    simple: "False"
-  required: false
-  description: 'Whether to execute the resource remediation automatically. (Default: False)'
-  playbookInputQuery:
-- key: autoAccessKeyRemediation
-  value:
-    simple: "False"
-  required: false
-  description: 'Whether to execute the access key remediation automatically. (Default: False)'
-  playbookInputQuery:
 - key: autoUserRemediation
   value:
     simple: "False"
