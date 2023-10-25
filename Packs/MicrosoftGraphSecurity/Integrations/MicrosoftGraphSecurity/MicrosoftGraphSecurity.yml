@@ -1625,7 +1625,7 @@ script:
     execution: false
     name: msg-purge-ediscovery-data
   - arguments:
-    - description: The email of the user who recieved the mail.
+    - description: The email address of the user who received the email.
       isArray: false
       name: recipient_email
       required: true
