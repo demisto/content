@@ -8999,16 +8999,12 @@ Exports a tech support file (TSF).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| interval_in_seconds | The polling interval (in seconds). Default is 60. | Optional | 
+| interval_in_seconds | The polling interval (in seconds). Default is 30. | Optional | 
 | timeout | The polling timeout (in seconds). Default is 1200. | Optional | 
-| job_id | The job ID to use when polling. | Optional | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Panorama.TSF.JobID | unknown | Job ID of export tech support file job. | 
-| Panorama.TSF.Status | unknown | Status of export tech support file job. | 
+There is no context output for this command.
 
 #### Command example
 ```!pan-os-export-tech-support-file```
