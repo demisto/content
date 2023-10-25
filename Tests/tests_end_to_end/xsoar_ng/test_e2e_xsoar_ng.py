@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 
 import pytest
@@ -86,13 +87,18 @@ class TestEDL:
         url = f'{xsoar_ng_client.external_base_url}/instance/execute/{instance_name}'
 
         basic_auth = HTTPBasicAuth(integration_params["credentials"]["identifier"], integration_params["credentials"]["password"])
+        integration_params["edl_size"] = "10"
 
         @retry_http_request(times=20)
         def run_edl_request():
             return requests.get(url, auth=basic_auth)
 
-        time.sleep(7200)
-        response = run_edl_request()
+        try:
+            response = run_edl_request()
+        except ApiException:
+            time.sleep(7200)
+            raise
+
         assert response.text, f'could not get indicators from {url=} with available indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, status code={response.status_code}, response={response.text}'
 
 
