@@ -1872,7 +1872,7 @@ script:
       - 'block'
       - 'unblock'
       required: true
-    - description: category.
+    - description: The category of the threat.
       isArray: false
       name: category
       defaultValue: all
