@@ -86,6 +86,7 @@ class Client(BaseClient):
             'limit': limit,
             'offset': offset
         })
+        demisto.debug(f'Params sent to API are: {str(params)}')
         return self._http_request('GET',
                                   url_suffix=suffix,
                                   params=assign_params(**params))
@@ -358,8 +359,8 @@ def fetch_incidents_command(
                                             sort='created_at',
                                             direction='asc')
     # Gather incidents by demisto format
-    new_last_run: Optional[str] = None
     incidents_report = []
+    demisto.debug(f'Got {len(incidents_raw)} incidents from the API.')
     if incidents_raw:
         for incident_raw in incidents_raw:
             # Creates incident entry
@@ -371,6 +372,8 @@ def fetch_incidents_command(
             })
 
         new_last_run = incidents_report[-1].get('occurred')
+    else:
+        new_last_run = datetime_new_last_run
     # Return results
     return incidents_report, {'lastRun': new_last_run}
 

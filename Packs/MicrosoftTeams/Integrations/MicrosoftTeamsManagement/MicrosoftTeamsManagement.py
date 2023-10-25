@@ -3,7 +3,6 @@ from MicrosoftApiModule import *  # noqa: E402
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Dict, Optional
 
 import urllib3
 
@@ -17,7 +16,7 @@ class Client:
     def __init__(self, app_id: str, verify: bool, proxy: bool,
                  connection_type: str, tenant_id: str, enc_key: str,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com',
-                 managed_identities_client_id: Optional[str] = None):
+                 managed_identities_client_id: str | None = None):
         if app_id and '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -41,7 +40,8 @@ class Client:
             tenant_id=tenant_id,
             enc_key=enc_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.graph
+            managed_identities_resource_uri=Resources.graph,
+            command_prefix="microsoft-teams",
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type
@@ -51,7 +51,7 @@ class Client:
             self,
             display_name: str,
             owner: str,
-            description: Optional[str] = None,
+            description: str | None = None,
             visibility: str = 'public',
             allow_guests_create_channels: bool = False,
             allow_guests_delete_channels: bool = False,
@@ -108,7 +108,7 @@ class Client:
             self,
             group_id: str,
             display_name: str,
-            description: Optional[str] = None,
+            description: str | None = None,
             visibility: str = 'public',
             allow_guests_create_channels: bool = False,
             allow_guests_delete_channels: bool = False,
@@ -155,14 +155,14 @@ class Client:
         )
 
     @logger
-    def list_teams_request(self) -> Dict:
+    def list_teams_request(self) -> dict:
         return self.ms_client.http_request(
             method='GET',
             url_suffix="/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')"
         )
 
     @logger
-    def get_team_request(self, team_id: str) -> Dict:
+    def get_team_request(self, team_id: str) -> dict:
         return self.ms_client.http_request(
             method='GET',
             url_suffix=f'/v1.0/teams/{team_id}'
@@ -172,22 +172,22 @@ class Client:
     def update_team_request(
             self,
             team_id: str,
-            display_name: Optional[str] = None,
-            description: Optional[str] = None,
-            visibility: Optional[str] = None,
-            allow_guests_create_channels: Optional[bool] = None,
-            allow_guests_delete_channels: Optional[bool] = None,
-            allow_members_create_private_channels: Optional[bool] = None,
-            allow_members_create_channels: Optional[bool] = None,
-            allow_members_delete_channels: Optional[bool] = None,
-            allow_members_add_remove_apps: Optional[bool] = None,
-            allow_members_add_remove_tabs: Optional[bool] = None,
-            allow_members_add_remove_connectors: Optional[bool] = None,
-            allow_user_edit_messages: Optional[bool] = None,
-            allow_user_delete_messages: Optional[bool] = None,
-            allow_owner_delete_messages: Optional[bool] = None,
-            allow_team_mentions: Optional[bool] = None,
-            allow_channel_mentions: Optional[bool] = None,
+            display_name: str | None = None,
+            description: str | None = None,
+            visibility: str | None = None,
+            allow_guests_create_channels: bool | None = None,
+            allow_guests_delete_channels: bool | None = None,
+            allow_members_create_private_channels: bool | None = None,
+            allow_members_create_channels: bool | None = None,
+            allow_members_delete_channels: bool | None = None,
+            allow_members_add_remove_apps: bool | None = None,
+            allow_members_add_remove_tabs: bool | None = None,
+            allow_members_add_remove_connectors: bool | None = None,
+            allow_user_edit_messages: bool | None = None,
+            allow_user_delete_messages: bool | None = None,
+            allow_owner_delete_messages: bool | None = None,
+            allow_team_mentions: bool | None = None,
+            allow_channel_mentions: bool | None = None,
     ) -> None:
         self.ms_client.http_request(
             method='PATCH',
@@ -228,21 +228,21 @@ class Client:
         )
 
     @logger
-    def list_members_request(self, team_id: str) -> Dict:
+    def list_members_request(self, team_id: str) -> dict:
         return self.ms_client.http_request(
             method='GET',
             url_suffix=f'/v1.0/teams/{team_id}/members',
         )
 
     @logger
-    def get_member_request(self, team_id: str, membership_id: str) -> Dict:
+    def get_member_request(self, team_id: str, membership_id: str) -> dict:
         return self.ms_client.http_request(
             method='GET',
             url_suffix=f'/v1.0/teams/{team_id}/members/{membership_id}',
         )
 
     @logger
-    def add_member_request(self, team_id: str, user_id: str, roles: Optional[list] = None) -> Dict:
+    def add_member_request(self, team_id: str, user_id: str, roles: list | None = None) -> dict:
         return self.ms_client.http_request(
             method='POST',
             url_suffix=f'/v1.0/teams/{team_id}/members',
@@ -262,7 +262,7 @@ class Client:
         )
 
     @logger
-    def update_member_request(self, team_id: str, membership_id: str, roles: Optional[list] = None) -> Dict:
+    def update_member_request(self, team_id: str, membership_id: str, roles: list | None = None) -> dict:
         return self.ms_client.http_request(
             method='PATCH',
             url_suffix=f'/v1.0/teams/{team_id}/members/{membership_id}',
@@ -293,9 +293,9 @@ class Client:
             self,
             team_id: str,
             display_name: str,
-            description: Optional[str] = None,
-            visibility: Optional[str] = None,
-            parts_to_clone: Optional[str] = None,
+            description: str | None = None,
+            visibility: str | None = None,
+            parts_to_clone: str | None = None,
     ) -> None:
         self.ms_client.http_request(
             method='POST',
@@ -314,14 +314,14 @@ class Client:
         )
 
     @logger
-    def list_joined_teams_request(self, user_id: str) -> Dict:
+    def list_joined_teams_request(self, user_id: str) -> dict:
         return self.ms_client.http_request(
             method='GET',
             url_suffix=f'/v1.0/users/{user_id}/joinedTeams',
         )
 
 
-def create_team(client: Client, args: Dict) -> str:
+def create_team(client: Client, args: dict) -> str:
     display_name = args.get('display_name', '')
     client.create_team_request(
         display_name=display_name,
@@ -347,7 +347,7 @@ def create_team(client: Client, args: Dict) -> str:
     return f'Team {display_name} was created successfully.'
 
 
-def create_team_from_group(client: Client, args: Dict) -> str:
+def create_team_from_group(client: Client, args: dict) -> str:
     group_id = args.get('group_id', '')
     client.create_team_from_group_request(
         group_id=group_id,
@@ -389,7 +389,7 @@ def list_teams(client: Client) -> CommandResults:
     )
 
 
-def get_team(client: Client, args: Dict) -> CommandResults:
+def get_team(client: Client, args: dict) -> CommandResults:
     team_id = args.get('team_id')
     team = client.get_team_request(team_id)
     team.pop('@odata.context', None)
@@ -401,7 +401,7 @@ def get_team(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def update_team(client: Client, args: Dict) -> str:
+def update_team(client: Client, args: dict) -> str:
     team_id = args.get('team_id', '')
     update_team_args = {
         'team_id': team_id,
@@ -421,16 +421,16 @@ def update_team(client: Client, args: Dict) -> str:
     return f'Team {team_id} was updated successfully.'
 
 
-def delete_team(client: Client, args: Dict) -> str:
+def delete_team(client: Client, args: dict) -> str:
     team_id = args.get('team_id')
     client.delete_team_request(team_id)
     return f'Team {team_id} was deleted successfully.'
 
 
-def list_members(client: Client, args: Dict) -> CommandResults:
+def list_members(client: Client, args: dict) -> CommandResults:
     team_id = args.get('team_id')
     response = client.list_members_request(team_id)
-    members = [dict(member, **{'teamId': team_id}) for member in response.get('value', [])]
+    members = [{**member, 'teamId': team_id} for member in response.get('value', [])]
     return CommandResults(
         outputs_prefix='MicrosoftTeams.TeamMember',
         outputs_key_field='id',
@@ -444,7 +444,7 @@ def list_members(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_member(client: Client, args: Dict) -> CommandResults:
+def get_member(client: Client, args: dict) -> CommandResults:
     team_id = args.get('team_id')
     membership_id = args.get('membership_id')
     team_member = client.get_member_request(team_id, membership_id)
@@ -462,7 +462,7 @@ def get_member(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def add_member(client: Client, args: Dict) -> CommandResults:
+def add_member(client: Client, args: dict) -> CommandResults:
     team_id = args.get('team_id', '')
     user_id = args.get('user_id', '')
     team_member = client.add_member_request(
@@ -483,14 +483,14 @@ def add_member(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def remove_member(client: Client, args: Dict) -> str:
+def remove_member(client: Client, args: dict) -> str:
     team_id = args.get('team_id')
     membership_id = args.get('membership_id')
     client.remove_member_request(team_id, membership_id)
     return f'Team member {membership_id} was removed from the team {team_id} successfully.'
 
 
-def update_member(client: Client, args: Dict) -> CommandResults:
+def update_member(client: Client, args: dict) -> CommandResults:
     team_id = args.get('team_id', '')
     membership_id = args.get('membership_id', '')
     team_member = client.update_member_request(
@@ -511,19 +511,19 @@ def update_member(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def archive_team(client: Client, args: Dict) -> str:
+def archive_team(client: Client, args: dict) -> str:
     team_id = args.get('team_id')
     client.archive_team_request(team_id)
     return f'Team {team_id} was archived successfully.'
 
 
-def unarchive_team(client: Client, args: Dict) -> str:
+def unarchive_team(client: Client, args: dict) -> str:
     team_id = args.get('team_id')
     client.unarchive_team_request(team_id)
     return f'Team {team_id} was unarchived successfully.'
 
 
-def clone_team(client: Client, args: Dict) -> str:
+def clone_team(client: Client, args: dict) -> str:
     team_id = args.get('team_id')
     parts_to_clone = []
     if argToBoolean(args.get('clone_apps', 'true')):
@@ -546,7 +546,7 @@ def clone_team(client: Client, args: Dict) -> str:
     return f'Team {team_id} was cloned successfully.'
 
 
-def list_joined_teams(client: Client, args: Dict) -> CommandResults:
+def list_joined_teams(client: Client, args: dict) -> CommandResults:
     user_id = args.get('user_id')
     response = client.list_joined_teams_request(user_id)
     teams = response.get('value', [])
@@ -578,14 +578,6 @@ def test_connection(client: Client) -> str:
     return '✅ Success!'
 
 
-def reset_auth() -> CommandResults:
-    set_integration_context({})
-    return CommandResults(
-        readable_output='Authorization was reset successfully. Run **!microsoft-teams-auth-start** to start the '
-                        'authentication process.'
-    )
-
-
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication for client credentials only.
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -600,8 +592,8 @@ def test_module(client: Client) -> str:
     # either manually or by using an API that uses them.
     if client.connection_type not in {'Client Credentials', 'Azure Managed Identities'}:
         raise DemistoException(
-            "Test module is avilable for Client Credentials or Azure Managed Identities only."
-            " For other authentication types use the msgraph-apps-auth-start command")
+            "Test module is available for Client Credentials or Azure Managed Identities only."
+            " For the `Device Code Flow` use the `msgraph-apps-auth-start` command")
 
     test_connection(client)
     return "ok"

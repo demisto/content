@@ -1645,6 +1645,8 @@ Gets or creates threat data
 ***
 Lookup domain threat data
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 #### Base Command
 
 `domain`
@@ -2012,6 +2014,8 @@ Lookup file threat data
 
 ***
 Lookup url threat data
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 

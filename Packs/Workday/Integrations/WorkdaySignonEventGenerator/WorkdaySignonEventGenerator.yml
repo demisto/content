@@ -1,0 +1,31 @@
+category: Analytics & SIEM
+beta: true
+commonfields:
+  id: WorkdaySignonEventGenerator
+  version: -1
+configuration:
+- display: Long running instance
+  name: longRunning
+  type: 8
+  required: false
+- defaultvalue: '5000'
+  display: Port mapping (<port> or <host port>:<docker port>)
+  name: longRunningPort
+  required: true
+  type: 0
+description: Generates mock sign on events for Workday Signon Event Collector. Use these for testing and development.
+display: Workday Signon Event Generator (Beta)
+name: WorkdaySignonEventGenerator
+system: true
+script:
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/teams:1.0.0.72377
+  longRunning: true
+  longRunningPort: true
+fromversion: 6.8.0
+toversion: 7.9.9
+tests:
+- No tests (auto formatted)

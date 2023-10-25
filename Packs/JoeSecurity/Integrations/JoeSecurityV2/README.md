@@ -490,6 +490,8 @@ Retrieves files information from Joe Security.
 ***
 Retrieves URL information from Joe Security.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
@@ -868,6 +870,7 @@ Retrieve the submission info.
 
 ### joe-submit-sample
 ***
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
  
 
 
@@ -1052,7 +1055,7 @@ Retrieve the submission info.
 
 ### joe-submit-url
 ***
- 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

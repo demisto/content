@@ -248,7 +248,7 @@ class Client(BaseClient):
     def get_threats_request(self, content_hash=None, mitigation_status=None, created_before=None, created_after=None,
                             created_until=None, created_from=None, updated_from=None, resolved='false', display_name=None,
                             query=None, threat_ids=None, limit=20, classifications=None, site_ids=None, rank=None,
-                            include_resolved_param=True):
+                            include_resolved_param=True, incident_statuses=None):
         keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
 
         created_before_parsed = None
@@ -286,6 +286,7 @@ class Client(BaseClient):
             siteIds=site_ids,
             rank=int(rank) if rank else None,
             keys_to_ignore=keys_to_ignore,
+            incidentStatuses=argToList(incident_statuses.lower() if incident_statuses is not None else None)
         )
         response = self._http_request(method='GET', url_suffix='threats', params=params, ok_codes=[200])
         return response.get('data', {})
@@ -629,9 +630,22 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
+    def _create_filter_dict(self, filter_dict):
+        return {
+            filter_key: filter_value
+            for filter_key, filter_value in filter_dict.items()
+            if filter_value
+        }
+
     def create_star_rule_request(self, name, description, query, query_type, rule_severity, account_ids, group_ids,
                                  site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
         endpoint_url = 'cloud-detection/rules'
+        filter_dict = {
+            "siteIds": site_ids,
+            "groupIds": group_ids,
+            "accountIds": account_ids
+        }
+        filter_dict = self._create_filter_dict(filter_dict)
         payload = {
             "data": {
                 "expiration": expiration_date,
@@ -646,10 +660,8 @@ class Client(BaseClient):
                 "description": description
             },
             "filter": {
-                "siteIds": site_ids,
                 "tenant": "true",
-                "groupIds": group_ids,
-                "accountIds": account_ids
+                **filter_dict
             }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
@@ -663,6 +675,12 @@ class Client(BaseClient):
     def update_star_rule_request(self, rule_id, name, description, query, query_type, rule_severity, account_ids, group_ids,
                                  site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
         endpoint_url = f'cloud-detection/rules/{rule_id}'
+        filter_dict = {
+            "siteIds": site_ids,
+            "groupIds": group_ids,
+            "accountIds": account_ids
+        }
+        filter_dict = self._create_filter_dict(filter_dict)
         payload = {
             "data": {
                 "expiration": expiration_date,
@@ -677,10 +695,8 @@ class Client(BaseClient):
                 "description": description
             },
             "filter": {
-                "siteIds": site_ids,
                 "tenant": "true",
-                "groupIds": group_ids,
-                "accountIds": account_ids
+                **filter_dict
             }
         }
         response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
@@ -3190,7 +3206,7 @@ def get_remote_incident_data(client: Client, remote_incident_id: str):
     )  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
 
-    mirrored_data["incident_type"] = "incident"
+    mirrored_data["incident_type"] = "SentinelOne Incident"
     return mirrored_data
 
 
@@ -3285,10 +3301,14 @@ def fetch_threats(client: Client, args):
 
     incidents_threats = []
     current_fetch = args.get('current_fetch')
+    incident_statuses = args.get('fetch_threat_incident_statuses')
+    resolved = 'true' if incident_statuses and 'RESOLVED' in incident_statuses else 'false'
 
     threats = client.get_threats_request(limit=args.get('fetch_limit'),
                                          created_after=args.get('last_fetch_date_string'),
-                                         site_ids=args.get('fetch_site_ids'))
+                                         site_ids=args.get('fetch_site_ids'),
+                                         incident_statuses=','.join(incident_statuses).lower() if incident_statuses else None,
+                                         resolved=resolved)
     for threat in threats:
         rank = threat.get('rank')
         threat.update(get_mirroring_fields(args))
@@ -3415,6 +3435,7 @@ def main():
     first_fetch_time = params.get('fetch_time', '3 days')
     fetch_severity = params.get('fetch_severity', [])
     fetch_incidentStatus = params.get('fetch_incidentStatus', [])
+    fetch_threat_incident_statuses = params.get('fetch_threat_incident_statuses', [])
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
     fetch_site_ids = params.get('fetch_site_ids', None)
@@ -3522,6 +3543,7 @@ def main():
                     'fetch_threat_rank': fetch_threat_rank,
                     'fetch_site_ids': fetch_site_ids,
                     'fetch_incidentStatus': fetch_incidentStatus,
+                    'fetch_threat_incident_statuses': fetch_threat_incident_statuses,
                     'fetch_severity': fetch_severity,
                     'mirror_direction': mirror_direction
                 }

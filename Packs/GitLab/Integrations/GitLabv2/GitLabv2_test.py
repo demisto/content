@@ -1027,3 +1027,34 @@ def test_trigger_pipeline(mocker, trigger_token, args, expected_result):
         assert command_result.outputs == expected_outputs
         assert command_result.outputs.get('ref') == args.get('ref_branch')
         assert command_result.outputs.get('project_id') == args.get('project_id')
+
+
+def test_cancel_pipeline(mocker):
+    """
+    Given:
+        - GitLab client and demisto args
+    When:
+        - gitlab_cancel_pipeline_command
+    Then:
+        - The response is as expected
+    """
+    from GitLabv2 import Client, gitlab_cancel_pipeline_command
+    args = {'project_id': 2222, 'pipeline_id': 1}
+    expected_result = util_load_json('test_data/commands_test_data.json').get('cancel_pipeline')
+    client = Client(project_id=1234,
+                    base_url="server_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    expected_outputs: list[dict] = expected_result['expected_outputs']
+    expected_prefix: str = expected_result['expected_prefix']
+    expected_key_field: str = expected_result['expected_key_field']
+    mocker.patch.object(Client, '_http_request', return_value=expected_result['mock_response'])
+
+    command_result = gitlab_cancel_pipeline_command(client, args)
+
+    assert command_result.outputs_prefix == expected_prefix
+    assert command_result.outputs_key_field == expected_key_field
+    assert command_result.outputs == expected_outputs
+    assert command_result.outputs.get('project_id') == int(args.get('project_id'))
+    assert command_result.outputs.get('status') == 'canceled'

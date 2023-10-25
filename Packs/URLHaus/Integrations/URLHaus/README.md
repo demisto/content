@@ -27,6 +27,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Retrieves URL information from URLhaus.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
@@ -150,6 +152,8 @@ Retrieves URL information from URLhaus.
 ### domain
 ***
 Retrieves domain information from URLhaus.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

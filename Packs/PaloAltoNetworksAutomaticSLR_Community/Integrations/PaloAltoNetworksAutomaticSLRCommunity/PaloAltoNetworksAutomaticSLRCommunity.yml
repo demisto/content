@@ -4,7 +4,7 @@ commonfields:
 name: Palo Alto Networks Automatic SLR (Community)
 display: Palo Alto Networks Automatic SLR
 category: Utilities
-description: Allow XSOAR to automatically generate Security Lifecycle Review's (SLR's)
+description: Allow XSOAR to automatically generate Security Lifecycle Review's (SLR's).
 configuration:
 - display: Firewall Management FQDN or IP Address
   name: ngfw_fqdn_ip
@@ -176,129 +176,129 @@ script:
     arguments: []
     outputs:
     - contextPath: AutoSLR.generate.job_id
-      description: Job ID of stats_dump.tar.gz generation job
+      description: Job ID of stats_dump.tar.gz generation job.
       type: string
-    description: Initiates the stats_dump.tar.gz generation job on the target firewall
+    description: Initiates the stats_dump.tar.gz generation job on the target firewall.
   - name: autoslr-ngfw-check
     arguments:
     - name: job_id
       required: true
-      description: Job ID to check
+      description: Job ID to check.
     outputs:
     - contextPath: AutoSLR.generate.job_status
-      description: Returns true when completed, false is an error occured
+      description: Returns true when completed, false is an error occured.
       type: boolean
-    description: Checks the status of the stats_dump.tar.gz generation job, returns true when completed
+    description: Checks the status of the stats_dump.tar.gz generation job, returns true when completed.
   - name: autoslr-ngfw-download
     arguments:
     - name: job_id
       required: true
-      description: Job ID of stats_dump.tar.gz generation task
+      description: Job ID of stats_dump.tar.gz generation task.
     outputs:
     - contextPath: AutoSLR.generate.file_name
-      description: Filename of downloaded file
+      description: Filename of downloaded file.
       type: string
     - contextPath: InfoFile.EntryID
-      description: EntryID of Downloaded File
+      description: EntryID of Downloaded File.
       type: string
-    description: Downloads the stats_dump.tar.gz from the target firewall
+    description: Downloads the stats_dump.tar.gz from the target firewall.
   - name: autoslr-csp-upload
     arguments:
     - name: input_file
-      description: EntryID of the file to upload
+      description: EntryID of the file to upload.
     outputs:
     - contextPath: AutoSLR.upload.id
-      description: SLR Reference ID
+      description: SLR Reference ID.
       type: string
     - contextPath: AutoSLR.upload.send_to
-      description: Email address where the report is being sent to
+      description: Email address where the report is being sent to.
       type: string
-    description: Uploads the stats_dump.tar.gz to Palo Alto Networks
+    description: Uploads the stats_dump.tar.gz to Palo Alto Networks.
   - name: autoslr-ngfw-system-info
     arguments: []
     outputs:
     - contextPath: AutoSLR.ngfw_system_info.hostname
-      description: Firewall Hostname
+      description: Firewall Hostname.
       type: string
     - contextPath: AutoSLR.ngfw_system_info.serial
-      description: Firewall Serial Number
+      description: Firewall Serial Number.
       type: string
     - contextPath: AutoSLR.ngfw_system_info.software
-      description: Firewall PANOS Version
+      description: Firewall PANOS Version.
       type: string
-    description: Retrieve information about the target firewall
+    description: Retrieve information about the target firewall.
   - name: autoslr-dump-params
     arguments: []
     outputs:
     - contextPath: AutoSLR.params.csp_host
-      description: CSP URL
+      description: CSP URL.
       type: string
     - contextPath: AutoSLR.params.csp_proxy
-      description: Use XSOAR Proxy
+      description: Use XSOAR Proxy.
       type: boolean
     - contextPath: AutoSLR.params.csp_timeout
-      description: Timeout for API Operation
+      description: Timeout for API Operation.
       type: number
     - contextPath: AutoSLR.params.csp_tls_verify
-      description: Enable/Disable TLS Certificate Verification
+      description: Enable/Disable TLS Certificate Verification.
       type: boolean
     - contextPath: AutoSLR.params.csp_verbose
-      description: Enable/Disable Verbose Log Output
+      description: Enable/Disable Verbose Log Output.
       type: boolean
     - contextPath: AutoSLR.params.ngfw_host
-      description: Firewall Management FQDN/IP Address
+      description: Firewall Management FQDN/IP Address.
       type: string
     - contextPath: AutoSLR.params.ngfw_port
-      description: Firewall Management TCP Port
+      description: Firewall Management TCP Port.
       type: number
     - contextPath: AutoSLR.params.ngfw_proxy
-      description: Use XSOAR Proxy
+      description: Use XSOAR Proxy.
       type: boolean
     - contextPath: AutoSLR.params.ngfw_timeout
-      description: Timeout for API Operation
+      description: Timeout for API Operation.
       type: number
     - contextPath: AutoSLR.params.ngfw_tls_verify
-      description: Enable/Disable TLS Certificate Verification
+      description: Enable/Disable TLS Certificate Verification.
       type: boolean
     - contextPath: AutoSLR.params.ngfw_verbose
-      description: Enable/Disable Verbose Log Output
+      description: Enable/Disable Verbose Log Output.
       type: boolean
     - contextPath: AutoSLR.params.slr_account_name
-      description: Customer Name
+      description: Customer Name.
       type: string
     - contextPath: AutoSLR.params.slr_country
-      description: Customer Deployment Country
+      description: Customer Deployment Country.
       type: string
     - contextPath: AutoSLR.params.slr_deployment_location
-      description: Customer Deployment Logical Location
+      description: Customer Deployment Logical Location.
       type: string
     - contextPath: AutoSLR.params.slr_geographic_region
-      description: Customer Deployment Geographic Region
+      description: Customer Deployment Geographic Region.
       type: string
     - contextPath: AutoSLR.params.slr_industry
-      description: Customer Industry
+      description: Customer Industry.
       type: string
     - contextPath: AutoSLR.params.slr_language
-      description: 'Customer Langugage '
+      description: 'Customer Langugage.'
       type: string
     - contextPath: AutoSLR.params.slr_prepared_by
-      description: Person who generated the report (name)
+      description: Person who generated the report (name).
       type: string
     - contextPath: AutoSLR.params.slr_requested_by
-      description: Person who generated the report (email)
+      description: Person who generated the report (email).
       type: string
     - contextPath: AutoSLR.params.slr_send_to
-      description: Email address to send the completed report to
+      description: Email address to send the completed report to.
       type: string
     - contextPath: AutoSLR.params.system_proxy
-      description: Use XSOAR Proxy
+      description: Use XSOAR Proxy.
       type: boolean
     - contextPath: AutoSLR.params.system_verbose
-      description: Enable/Disable Verbose Log Output
+      description: Enable/Disable Verbose Log Output.
       type: boolean
-    description: This command will dump all the non-sensitive parameters to the context, useful for debugging purposes
+    description: This command will dump all the non-sensitive parameters to the context, useful for debugging purposes.
     execution: true
-  dockerimage: demisto/xml-feed:1.0.0.29458
+  dockerimage: demisto/xml-feed:1.0.0.75078
   subtype: python3
 fromversion: 5.0.0
 tests:

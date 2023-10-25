@@ -2,7 +2,6 @@ import re
 
 import pytest
 import json
-import io
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 import ServiceNowv2
@@ -50,16 +49,16 @@ from urllib.parse import urlencode
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_get_server_url():
-    assert "http://www.demisto.com/" == get_server_url("http://www.demisto.com//")
+    assert get_server_url("http://www.demisto.com//") == "http://www.demisto.com/"
 
 
 def test_get_ticket_context():
-    assert EXPECTED_TICKET_CONTEXT == get_ticket_context(RESPONSE_TICKET)
+    assert get_ticket_context(RESPONSE_TICKET) == EXPECTED_TICKET_CONTEXT
 
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[0] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[1] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
@@ -75,8 +74,9 @@ def test_get_ticket_context_additional_fields():
         - validate that all the details of the ticket were updated, and all the updated keys are shown in
         the context with do duplicates.
     """
-    assert EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
-                                                                                ['Summary', 'sys_created_by'])
+    assert get_ticket_context(RESPONSE_TICKET,
+                              ['Summary', 'sys_created_by']) == \
+        EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS
 
 
 def test_get_ticket_context_nested_additional_fields():
@@ -89,12 +89,13 @@ def test_get_ticket_context_nested_additional_fields():
         - validate that all the details of the ticket were updated, and all the updated keys are shown in
         the context with do duplicates.
     """
-    assert EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
-                                                                                       ['Summary', 'opened_by.link'])
+    assert get_ticket_context(RESPONSE_TICKET,
+                              ['Summary', 'opened_by.link']) == \
+        EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS
 
 
 def test_get_ticket_human_readable():
-    assert EXPECTED_TICKET_HR == get_ticket_human_readable(RESPONSE_TICKET, 'incident')
+    assert get_ticket_human_readable(RESPONSE_TICKET, 'incident') == EXPECTED_TICKET_HR
 
     assert EXPECTED_MULTIPLE_TICKET_HR[0] in get_ticket_human_readable(RESPONSE_MULTIPLE_TICKET, 'incident')
     assert EXPECTED_MULTIPLE_TICKET_HR[1] in get_ticket_human_readable(RESPONSE_MULTIPLE_TICKET, 'incident')
@@ -1229,7 +1230,7 @@ def test_get_mapping_fields():
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     res = get_mapping_fields_command(client)
-    assert EXPECTED_MAPPING == res.extract_mapping()
+    assert res.extract_mapping() == EXPECTED_MAPPING
 
 
 def test_get_remote_data(mocker):
@@ -1446,12 +1447,12 @@ def test_get_remote_data_no_entries(mocker):
 
 
 def upload_file_request(*args):
-    assert 'test_mirrored_from_xsoar.txt' == args[2]
+    assert args[2] == 'test_mirrored_from_xsoar.txt'
     return {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test.txt'}
 
 
 def add_comment_request(*args):
-    assert '(dbot): This is a comment\n\n Mirrored from Cortex XSOAR' == args[3]
+    assert args[3] == '(dbot): This is a comment\n\n Mirrored from Cortex XSOAR'
     return {'id': "1234", 'comment': "This is a comment"}
 
 
@@ -1627,7 +1628,7 @@ def test_get_ticket_attachments(mocker, sys_created_on, expected):
     mocker.patch.object(client, 'send_request', return_value=[])
 
     client.get_ticket_attachments('id', sys_created_on)
-    client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'})
+    client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'}, get_attachments=True)
 
 
 @pytest.mark.parametrize('args,expected_ticket_fields', [
@@ -1810,6 +1811,14 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
           "path": "table/sn_si_incident?sysparam_limit=1&sysparam_query=active=true^ORDERBYDESCnumber",
           "body": {},
           "headers": {},
+          },
+         RESPONSE_GENERIC_TICKET),
+        (generic_api_call_command,
+         {"method": "GET",
+          "path": "/table/sn_si_incident?sysparam_limit=1&sysparam_query=active=true^ORDERBYDESCnumber",
+          "body": {},
+          "headers": {},
+          "custom_api": "/api/custom"
           },
          RESPONSE_GENERIC_TICKET)
     ])

@@ -2,6 +2,7 @@ from pathlib import Path
 from argparse import ArgumentParser
 from os import getenv
 from Tests.scripts.utils import logging_wrapper as logging
+import sys
 
 
 NIGHTLY_JOBS = [
@@ -13,8 +14,13 @@ NIGHTLY_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
-    'xsoar_server_master',
+    'tests_xsoar_server: [Server 6.9]',
+    'tests_xsoar_server: [Server 6.10]',
+    'tests_xsoar_server: [Server 6.11]',
+    'tests_xsoar_server: [Server 6.12]',
+    'tests_xsoar_server: [Server Master]',
 ]
+
 SDK_NIGHTLY_JOBS = [
     'demisto-sdk-nightly:run-unittests-and-lint',
     'demisto-sdk-nightly:run-validations',
@@ -34,10 +40,10 @@ UPLOAD_JOBS = [
     'upload-id-set-bucket',
     'xpanse-prepare-testing-bucket-upload-flow',
     'xsoar-prepare-testing-bucket-upload-flow',
-    'install-packs-in-server6_8',
     'install-packs-in-server6_9',
     'install-packs-in-server6_10',
     'install-packs-in-server6_11',
+    'install-packs-in-server6_12',
     'install-packs-in-server-master',
     'install-packs-in-xsiam-ga',
     'upload-packs-to-marketplace',
@@ -53,11 +59,12 @@ PUSH_JOBS = [
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
     'xsiam_server_ga',
-    'xsoar_server_6_8',
-    'xsoar_server_6_9',
-    'xsoar_server_6_10',
-    'xsoar_server_6_11',
-    'xsoar_server_master',
+    'tests_xsoar_server: [Server 6.9]',
+    'tests_xsoar_server: [Server 6.10]',
+    'tests_xsoar_server: [Server 6.11]',
+    'tests_xsoar_server: [Server 6.12]',
+    'tests_xsoar_server: [Server Master]',
+    'xsoar_ng_server_ga',
 ]
 JOBS_PER_BUILD_TYPE = {
     'NIGHTLY': NIGHTLY_JOBS,
@@ -96,7 +103,7 @@ def main():
             should_fail = True
 
     if should_fail:
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == '__main__':

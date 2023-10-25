@@ -1,6 +1,6 @@
 fromversion: 6.10.0
-id: Cisco_Meraki
-name: Cisco Meraki
+id: Cisco_Meraki_ModelingRule
+name: Cisco Meraki Modeling Rule
 rules: ''
 schema: ''
 tags: Cisco Meraki

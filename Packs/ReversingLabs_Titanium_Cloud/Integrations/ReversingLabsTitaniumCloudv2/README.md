@@ -13,6 +13,14 @@ ReversingLabs TitaniumCloud provides threat analysis data from various Reversing
     | Credentials | True |
     | Password | True |
     | Reliability | False |
+    | Verify certificates | False |
+    | HTTP proxy address with the protocol and port number. | False |
+    | HTTP proxy username | False |
+    | HTTP proxy password | False |
+    | HTTPS proxy address with the protocol and port number. | False |
+    | HTTPS proxy username | False |
+    | HTTPS proxy password | False |
+4. 
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -9373,6 +9381,8 @@ Retrieve the number of hashes functionally similar to the provided one grouped b
 ***
 Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated with a specific URI.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 #### Base Command
 
 `reversinglabs-titaniumcloud-uri-statistics`
@@ -9441,6 +9451,8 @@ Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated with a s
 
 ***
 Retrieve a list of all available file hashes associated with a given URI.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
@@ -9983,6 +9995,8 @@ Return a URL analysis report.
 ***
 Analyze a given URL.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 #### Base Command
 
 `reversinglabs-titaniumcloud-analyze-url`
@@ -10088,8 +10102,14 @@ Retrieve dynamic analysis results.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.SHA1 | Unknown | The SHA1 hash of the file. | 
-| ReversingLabs.dynamic_analysis_results | Unknown |  | 
+| File.MD5 | String | MD5 hash. | 
+| File.SHA1 | String | SHA1 hash. | 
+| File.SHA256 | String | SHA256 hash. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |  
+| ReversingLabs.dynamic_analysis_results | Unknown | The dynamic analysis results. | 
 
 #### Command example
 ```!reversinglabs-titaniumcloud-get-dynamic-analysis-results sha1=21841b32c6165b27dddbd4d6eb3a672defe54271```

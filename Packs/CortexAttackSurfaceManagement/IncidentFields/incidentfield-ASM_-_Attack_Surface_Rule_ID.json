@@ -4,7 +4,7 @@
     "cliName": "asmattacksurfaceruleid",
     "closeForm": false,
     "content": true,
-    "description": "UUID for ASM rule",
+    "description": "UUID for ASM rule.",
     "editForm": true,
     "group": 0,
     "hidden": true,

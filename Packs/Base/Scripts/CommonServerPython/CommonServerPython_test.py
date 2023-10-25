@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sys
+import urllib
 import warnings
 
 import dateparser
@@ -1799,6 +1800,16 @@ class TestCommandResults:
         assert command_results.tags == ['tag1', 'tag2']
         assert command_results.to_context()['Tags'] == ['tag1', 'tag2']
 
+    @pytest.mark.parametrize('output', [True, False])
+    def test_with_boolean_output(self, output):
+        from CommonServerPython import CommandResults
+        command_results = CommandResults(
+            outputs=output,
+            outputs_prefix="BooleanOutput",
+            readable_output="Boolean Output: {}".format(output),
+        )
+        assert command_results.to_context()['Contents'] == output
+
     def test_dbot_score_is_in_to_context_ip(self):
         """
         Given
@@ -2599,6 +2610,28 @@ class TestCommandResults:
 
         assert results.to_context().get('Note') is True
 
+    def test_empty_readable_outputs(self):
+        """
+        Given:
+        - Outputs as str
+        - outputs_prefix is str
+        - No readable_output
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate generated readable_output
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="outputs_test",
+            outputs_prefix="outputs_prefix_test"
+        )
+        context = res.to_context()
+        assert "outputs_test" == context.get('HumanReadable')
+
 
 def test_http_request_ssl_ciphers_insecure():
     if IS_PY3 and PY_VER_MINOR >= 10:
@@ -3012,6 +3045,45 @@ class TestBaseClient:
         response = Response()
         response.status_code = 400
         assert not self.client._is_status_code_valid(response)
+
+    def test_http_request_params_parser_none(self, requests_mock):
+        """
+            Given
+                - query params with spaces without specific quote function.
+
+            When
+                - Calling _https_request function.
+
+            Then
+                - Verify the spaces in the result is as expected.
+        """
+        mock_request = requests_mock.get('http://example.com/api/v2/', json={})
+        from CommonServerPython import BaseClient
+        mock_client = BaseClient('http://example.com/api/v2/')
+
+        mock_client._http_request('get', params={'key': 'value with spaces'})
+
+        assert mock_request.last_request.query == 'key=value+with+spaces'
+
+    @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
+    def test_http_request_params_parser_quote(self, requests_mock):
+        """
+            Given
+                - query params with spaces with specific quote function.
+
+            When
+                - Calling _https_request function.
+
+            Then
+                - Verify the spaces in the result is as expected.
+        """
+        mock_request = requests_mock.get('http://example.com/api/v2/', json={})
+        from CommonServerPython import BaseClient
+        mock_client = BaseClient('http://example.com/api/v2/')
+
+        mock_client._http_request('get', params={'key': 'value with spaces'}, params_parser=urllib.parse.quote)
+
+        assert mock_request.last_request.query == 'key=value%20with%20spaces'
 
 
 def test_parse_date_string():
@@ -8178,6 +8250,97 @@ class TestFetchWithLookBack:
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
 
+    @freeze_time("2022-04-07T10:13:00")
+    def test_lookback_with_offset_time_range(self):
+        """
+        Given:
+            A last run with an offset
+            
+        When:
+            Calling get_fetch_run_time_range
+            
+        Then:
+            The last run should be unchanged, even if there is a lookback.
+        """
+        from CommonServerPython import get_fetch_run_time_range
+        last_time = "2022-04-07T10:13:00"
+        last_run = {"time": last_time, "offset": 3}
+        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
+        # make sure that the start time is unchanged because of the offset
+        assert start_time == last_time
+        last_run = {"time": last_time, "offset": 0}
+        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
+        # now the offset is 0, so the look_back should act
+        assert start_time == "2022-04-07T10:12:00"
+    
+    def test_lookback_with_offset_update_last_run(self):
+        """
+        Given:
+            A last run
+        
+        When:
+            Calling create_updated_last_run_object with a new offset to change
+            
+        Then:
+            - The last run is updated with the new offset, and the start time remains as it was.
+            - When the offset needs to be reset, the last time is the latest incident time and the offset resets
+        """
+        from CommonServerPython import create_updated_last_run_object
+        last_time = "2022-04-07T10:13:00"
+        last_run = {"time": last_time, "offset": 3}
+        new_offset = 4
+        new_last_run, _ = create_updated_last_run_object(last_run,
+                                                         self.INCIDENTS,
+                                                         fetch_limit=3,
+                                                         look_back=1,
+                                                         start_fetch_time=last_time,
+                                                         end_fetch_time=datetime.now().isoformat(),
+                                                         created_time_field="created",
+                                                         new_offset=new_offset,
+                                                         )
+        # make sure that the start time is unchanged because of the offset, and the offset is updated
+        assert new_last_run["offset"] == 4
+        assert new_last_run["time"] == last_time
+        
+        last_run = {"time": last_time, "offset": new_offset}
+        new_offset = 0
+        new_last_run, _ = create_updated_last_run_object(last_run,
+                                                         self.INCIDENTS,
+                                                         fetch_limit=3,
+                                                         look_back=1,
+                                                         start_fetch_time=last_time,
+                                                         end_fetch_time=datetime.now().isoformat(),
+                                                         created_time_field="created",
+                                                         new_offset=new_offset,
+                                                         )
+        assert new_last_run["offset"] == 0
+        assert new_last_run["time"] == "2022-04-01T10:51:00"
+        
+    def test_calculate_new_offset(self):
+        """
+        Test that the new offset for the next run calculated correctly based on the old offset, number of incidents and total number of incidents.
+        The first argument is the old offset, the second is number of incidents and the third is the total number of incidents returned.
+        Given:
+            old offset, number of incidents, total number of incidents (could be None)
+        
+        When:
+            Calculating a new offset to the next run
+            
+        Then:
+            Make sure that the new offset is correct
+        """
+        from CommonServerPython import calculate_new_offset
+        assert calculate_new_offset(0, 2, 4) == 2
+        assert calculate_new_offset(0, 2, 2) == 0
+        assert calculate_new_offset(0, 2, 3) == 2
+        assert calculate_new_offset(1, 2, 4) == 3
+        assert calculate_new_offset(1, 2, 3) == 0
+        assert calculate_new_offset(1, 2, None) == 3
+
+
+
+
+
 
 class TestTracebackLineNumberAdgustment:
     @staticmethod
@@ -8481,15 +8644,11 @@ class TestSendEventsToXSIAMTest:
         elif 'url' in arg:
             return "url"
 
-    @pytest.fixture
-    def teardown_for_send_events_to_xsiam_positive(self):
-        yield
-        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.orig_xsiam_file_size
 
     @pytest.mark.parametrize('events_use_case', [
         'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events', 'big_event'
     ])
-    def test_send_events_to_xsiam_positive(self, mocker, events_use_case, teardown_for_send_events_to_xsiam_positive):
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
         """
         Test for the fetch events function
         Given:
@@ -8550,10 +8709,10 @@ class TestSendEventsToXSIAMTest:
 
         events = self.test_data[events_use_case]['events']
         number_of_events = self.test_data[events_use_case]['number_of_events']  # pushed in each chunk.
-        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.test_data[events_use_case].get('XSIAM_FILE_SIZE',
-                                                                                        self.orig_xsiam_file_size)
+        chunk_size = self.test_data[events_use_case].get('XSIAM_FILE_SIZE', self.orig_xsiam_file_size)
         data_format = self.test_data[events_use_case].get('format')
-        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
+        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format,
+                             chunk_size=chunk_size)
 
         if number_of_events:
             expected_format = self.test_data[events_use_case]['expected_format']

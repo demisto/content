@@ -1,4 +1,4 @@
-from __future__ import print_function
+from typing import Any
 import pytest
 from PositiveDetectionsVSDetectionEngines import extract_engines_data_from_indicator
 
@@ -134,8 +134,8 @@ detectengines_missing_2 = {
     }
 }
 
-no_engines_data = {
-    'CustomFields': {},  # type: dict[any: any]
+no_engines_data: dict[str, Any] = {
+    'CustomFields': {},
     'ManuallyEditedFields': None,
     'account': '',
     'calculatedTime': '2019-11-11T14:25:28.922329+02:00',

@@ -325,12 +325,12 @@ tasks:
     task:
       id: 2d94c86e-a9c4-464c-8ba5-71af56b67bcd
       version: -1
-      name: 8a7b6ff4-42c5-46ee-8172-a2f964728cc6
+      name: Entity Enrichment - Generic v4
       description: Enrich entities using one or more integrations.
-      playbookId: 8a7b6ff4-42c5-46ee-8172-a2f964728cc6
       type: playbook
       iscommand: false
       brand: ""
+      playbookName: Entity Enrichment - Generic v4
     nexttasks:
       '#none#':
       - "6"
@@ -1111,9 +1111,81 @@ inputs:
   required: false
   description: Set to true to add exclusion list tuning step to the workflow
   playbookInputQuery:
+- key: SetIncidentSLAs
+  value:
+    simple: "True"
+  required: false
+  description: Set to "True" to set the SLA on the Incident.
+  playbookInputQuery:
+- key: SetSLAs
+  value:
+    simple: "True"
+  required: false
+  description: "Set to \"True\" to enable setting SLAs for the Incident, Time to Assignment, and Remediation SLA Timers.  \n\nComplete the other inputs to set the SLA, and Timer SLAs based on Severity."
+  playbookInputQuery:
+- key: SetTimeToAssignmentSLAs
+  value:
+    simple: "True"
+  required: false
+  description: Set to "True" to set the SLAs on the Time to Assignment Timer.
+  playbookInputQuery:
+- key: SetRemediationTimerSLA
+  value:
+    simple: "True"
+  required: false
+  description: Set to "True" to set the SLAs on the Remediation SLA Timer.
+  playbookInputQuery:
+- key: CriticalRemediationSLA
+  value:
+    simple: "180"
+  required: false
+  description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Critical.
+  playbookInputQuery:
+- key: HighRemediationSLA
+  value:
+    simple: "300"
+  required: false
+  description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is High.
+  playbookInputQuery:
+- key: MediumRemediationSLA
+  value:
+    simple: "1440"
+  required: false
+  description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Medium.
+  playbookInputQuery:
+- key: LowRemediationSLA
+  value:
+    simple: "7200"
+  required: false
+  description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Low or Informational.
+  playbookInputQuery:
+- key: CriticalTimeToAssignSLA
+  value:
+    simple: "15"
+  required: false
+  description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Critical. '
+  playbookInputQuery:
+- key: HighTimeToAssignSLA
+  value:
+    simple: "60"
+  required: false
+  description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is High. '
+  playbookInputQuery:
+- key: MediumTimeToAssignSLA
+  value:
+    simple: "180"
+  required: false
+  description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Medium. '
+  playbookInputQuery:
+- key: LowTimeToAssignSLA
+  value:
+    simple: "1440"
+  required: false
+  description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Low or Informational. '
+  playbookInputQuery:
 outputs: []
 quiet: true
 fromversion: 6.10.0
 tests:
 - Run all tests
-description: ''
+description: 'This playbook contains the investigation steps in the Quick Start Playbook'

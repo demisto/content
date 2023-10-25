@@ -40,7 +40,8 @@ class ASClient:
             auth_code=auth_code,
             redirect_uri=redirect_uri,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure
+            managed_identities_resource_uri=Resources.management_azure,
+            command_prefix="azure-storage",
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
@@ -874,12 +875,6 @@ def complete_auth(client: ASClient) -> str:
 def test_connection(client: ASClient) -> str:
     client.ms_client.get_access_token()
     return '✅ Success!'
-
-
-def reset_auth() -> str:
-    set_integration_context({})
-    return 'Authorization was reset successfully. Run **!azure-storage-auth-start** to start the authentication \
-    process.'
 
 
 def test_module(client: ASClient) -> str:

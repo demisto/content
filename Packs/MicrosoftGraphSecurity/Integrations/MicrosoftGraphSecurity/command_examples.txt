@@ -1,0 +1,24 @@
+!msg-create-ediscovery-case display_name=`my case name11234` external_id=123 description=`description of the case`
+!msg-update-ediscovery-case case_id=6dfd17fe-43c5-411f-a194-abdc9492bfa0 display_name=`new display name` external_id=123 description=`new description of the case`
+!msg-close-ediscovery-case case_id=6dfd17fe-43c5-411f-a194-abdc9492bfa0
+!msg-reopen-ediscovery-case case_id=6dfd17fe-43c5-411f-a194-abdc9492bfa0
+!msg-delete-ediscovery-case case_id=6dfd17fe-43c5-411f-a194-abdc9492bfa0
+!msg-list-ediscovery-cases limit=5
+!msg-create-ediscovery-custodian case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5 email=yourmail@yoursite.onmicrosoft.com
+!msg-list-ediscovery-custodians all_results=true case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5
+!msg-activate-ediscovery-custodian custodian_id=0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5
+!msg-release-ediscovery-custodian custodian_id=0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5
+!msg-apply-hold-ediscovery-custodian custodian_id=09f05c43ffc54ff88cf5c5e89699375d,0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5
+!msg-remove-hold-ediscovery-custodian custodian_id=09f05c43ffc54ff88cf5c5e89699375d,0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5
+!msg-create-ediscovery-custodian-site-source custodian_id=0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5  site=https://demistodev.sharepoint.com/sites/site_test_1
+!msg-create-ediscovery-custodian-user-source custodian_id=0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5  email=testbox2@demistodev.onmicrosoft.com included_sources="mailbox, site"
+!msg-list-ediscovery-custodian-site-sources custodian_id=0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5  site_source_id=862f0a64-e7db-46e0-a97f-9156b4f693ee
+!msg-list-ediscovery-custodian-user-sources custodian_id=0af7ca2b84bc4cff930d5d301cc4caf3 case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5
+!msg-create-ediscovery-non-custodial-data-source case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5 site=https://demistodev.sharepoint.com/sites/site_test_1
+!msg-list-ediscovery-non-custodial-data-sources case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5
+!msg-create-ediscovery-search case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5 display_name=`my search` data_source_scopes=allCaseNoncustodialDataSources
+!msg-update-ediscovery-search case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5 display_name=newname search_id=e7282eff-ba81-43cb-9027-522a343f6692
+!msg-delete-ediscovery-search case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5 search_id=e7282eff-ba81-43cb-9027-522a343f6692
+!msg-list-ediscovery-searchs case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5
+!msg-purge-ediscovery-data case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5 search_id=e7282eff-ba81-43cb-9027-522a343f6692
+!msg-auth-test permission_type=ediscovery

@@ -28,9 +28,9 @@ script:
     - default: true
       isArray: true
       name: cve_id
-      description: 'cves id list'
+      description: 'cves id list.'
       required: true
-    description: Returns information for each CVE in the input list
+    description: Returns information for each CVE in the input list.
     name: cybersixgill-cve-enrich
     outputs:
     - contextPath: Sixgill.CVE.value
@@ -91,7 +91,7 @@ script:
       type: String
       description: The raw JSON of the CVE entich information.
 
-  dockerimage: demisto/sixgill:1.0.0.20925
+  dockerimage: demisto/sixgill:1.0.0.73690
   runonce: false
   script: '-'
   subtype: python3

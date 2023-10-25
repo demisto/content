@@ -1,0 +1,93 @@
+category: Email
+sectionOrder:
+  - Connect
+  - Collect
+commonfields:
+  id: FireEye ETP Event Collector
+  version: -1
+configuration:
+  - defaultvalue: https://etp.us.fireeye.com
+    display: Server URL (e.g., https://etp.us.fireeye.com)
+    name: url
+    required: true
+    type: 0
+    section: Connect
+  - displaypassword: API Key
+    additionalinfo: The API Key allows you to integrate with the FireEye ETP.
+    name: credentials
+    required: true
+    hiddenusername: true
+    type: 9
+  - defaultvalue: "1000"
+    display: Maximum number of Alerts to fetch. 
+    name: alerts_max_fetch
+    type: 0
+    additionalinfo: The maximum number of Alert events to fetch from FireEye ETP.
+    section: Collect
+  - defaultvalue: "1000"
+    display: Maximum number of Email Trace to fetch.
+    name: email_trace_max_fetch
+    type: 0
+    additionalinfo: The maximum number of Email Trace events to fetch from FireEye ETP.
+    section: Collect
+  - defaultvalue: "1000"
+    display: Maximum number of Activity Log fetch.
+    name: activity_log_max_fetch
+    type: 0
+    additionalinfo: The maximum number of Activity Log events to fetch from FireEye ETP.
+    section: Collect
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    section: Connect
+    advanced: true
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    section: Connect
+    advanced: true
+  - display: Fetch outbound traffic
+    name: outbound_traffic
+    type: 8
+    section: Collect
+    advanced: true
+    additionalinfo: Outbound traffic will be fetched in addition to inbound traffic of the event type. When enabled, the maximum number of events to fetch corresponds to outbound and inbound separately.
+  - display: Hide sensitive details from email
+    name: hide_sensitive
+    type: 8
+    section: Collect
+    advanced: true
+    defaultvalue: 'true'
+    additionalinfo: Hide subject and attachments details from emails.
+description: Use this integration to fetch email security incidents from FireEye ETP as XSIAM events.
+display: FireEye ETP Event Collector
+name: FireEye ETP Event Collector
+script:
+  commands:
+    - arguments:
+        - description: The number of events to return.
+          name: limit
+          defaultValue: 10
+        - defaultValue: 3 days
+          description: The start time by which to filter events. Date format will be the same as in the first_fetch parameter.
+          name: since_time
+        - auto: PREDEFINED
+          defaultValue: "false"
+          description: Set this argument to True in order to create events, otherwise the command will only display them.
+          name: should_push_events
+          predefined:
+            - "true"
+            - "false"
+          required: true
+      description: Gets events from FireEye ETP. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+      name: fireeye-etp-get-events
+  dockerimage: demisto/python3:3.10.12.68714
+  isfetchevents: true
+  script: ""
+  subtype: python3
+  type: python
+fromversion: 8.2.0
+marketplaces:
+  - marketplacev2
+tests:
+  - No tests (auto formatted)

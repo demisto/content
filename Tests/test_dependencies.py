@@ -31,6 +31,7 @@ class GraphTester:
         clusters (list): A list of test clusters, where the tests of each cluster need to be run sequentially.
 
     """
+
     def __init__(self):
         self.test_vertices = {}
         self.clusters = []

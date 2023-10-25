@@ -1,11 +1,11 @@
 
 default:
-  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.49555
+  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.64455
   artifacts:
     expire_in: 30 days
     paths:
-      - /builds/xsoar/content/artifacts/*
-      - /builds/xsoar/content/pipeline_jobs_folder/*
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
 
 stages:
@@ -13,6 +13,7 @@ stages:
 
 
 include:
+  - local: .gitlab/ci/.gitlab-ci.variables.yml
   - local: .gitlab/ci/.gitlab-ci.global.yml
 
 

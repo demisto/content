@@ -1,0 +1,52 @@
+{
+  "proofpoint_email_security_raw": {
+      "guid": {
+          "type": "string",
+          "is_array": false
+      },
+      "msg": {
+          "type": "string",
+          "is_array": false
+      },
+      "msgParts": {
+          "type": "string",
+          "is_array": false
+      },
+      "filter": {
+          "type": "string",
+          "is_array": false
+      },
+      "connection": {
+          "type": "string",
+          "is_array": false
+      },
+      "data": {
+          "type": "string",
+          "is_array": false
+      },
+      "id": {
+          "type": "string",
+          "is_array": false
+      },
+      "pps": {
+          "type": "string",
+          "is_array": false
+      },
+      "sm": {
+          "type": "string",
+          "is_array": false
+      },
+      "tls": {
+          "type": "string",
+          "is_array": false
+      },
+      "event_type": {
+          "type": "string",
+          "is_array": false
+      },
+      "envelope": {
+          "type": "string",
+          "is_array": false
+      }
+  }
+}

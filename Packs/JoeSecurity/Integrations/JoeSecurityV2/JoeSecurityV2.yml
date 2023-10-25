@@ -319,7 +319,7 @@ script:
       description: The filename.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The entry ID of the report
+      description: The entry ID of the report.
       type: string
     - contextPath: InfoFile.Size
       description: File size.
@@ -496,6 +496,7 @@ script:
       isArray: true
       description: 'A comma-separated list of file names, SHA1, SHA256, or MD5 hashes.'
       required: true
+      default: true
     description: Retrieves files information from Joe Security.
     outputs:
     - contextPath: File.Name
@@ -777,7 +778,7 @@ script:
       - iocjson
       defaultValue: 'html'
     - name: cookbook
-      description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the shape (filename, file-like object)
+      description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the shape (filename, file-like object).
     - name: comments
       description: A comment to be added to the analysis.
     - name: tags
@@ -1134,7 +1135,7 @@ script:
       description: Whether to start the analysis as a normal user.
       defaultValue: 'false'
     - name: language_and_locale
-      description: Changes the language and locale of the analysis machine
+      description: Changes the language and locale of the analysis machine.
     - name: delete_after_days
       description: The number of days after which the analysis will be deleted.
       defaultValue: '30'
@@ -1251,7 +1252,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/joe-security:1.0.0.46413
+  dockerimage: demisto/vendors-sdk:1.0.0.76365
 fromversion: 6.8.0
 tests:
 - testplaybook- JoeSecuirtyV2

@@ -22,6 +22,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Returns child and sibling subdomains for a given hostname.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
@@ -56,6 +57,7 @@ Returns child and sibling subdomains for a given hostname.
 ***
 Returns the current data about the given hostname. In addition to the current data, you also get the current statistics associated with a particular record. For example, for a records you'll get how many other hostnames have the same IP.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
@@ -256,6 +258,7 @@ Returns the current WHOIS data about a given hostname with the stats merged toge
 ***
 Lists out specific historical information about the given hostname parameter. In addition of fetching the historical data for a particular type, the count statistic is returned as well, which represents the number of that particular resource against current data.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 
@@ -306,6 +309,8 @@ Lists out specific historical information about the given hostname parameter. In
 ### securitytrails-get-whois-history
 ***
 Returns historical WHOIS information about the given domain.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command
@@ -673,6 +678,8 @@ Fetch user agents seen during the last 30 days for a specific IPv4 address. It s
 ### domain
 ***
 Provides data enrichment for domains.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

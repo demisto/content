@@ -10,6 +10,7 @@ from EWSv2 import fetch_last_emails
 from exchangelib.errors import UnauthorizedError
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
+import demistomock as demisto
 
 
 class TestNormalCommands:
@@ -360,11 +361,34 @@ def test_send_mail(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    results = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
+    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
-    assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
+    }
+
+
+def test_send_mail_with_from_arg(mocker):
+    """
+    Given -
+        to, subject and replyTo arguments to send an email.
+
+    When -
+        trying to send an email
+
+    Then -
+        verify the context output is returned correctly and that the 'to' and 'replyTo' arguments were sent
+        as a list of strings.
+    """
+    from EWSv2 import send_email
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
+    assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
+    assert results[0].get('Contents') == {
+        'from': 'somemail@what.ever', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
 
 
@@ -382,7 +406,7 @@ def test_send_mail_with_trailing_comma(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    results = send_email(to="test@gmail.com,", subject="test")
+    results = send_email({'to': "test@gmail.com,", 'subject': "test"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
@@ -534,3 +558,17 @@ def test_get_entry_for_object():
     from EWSv2 import get_entry_for_object
     obj = {"a": 1, "b": 2}
     assert get_entry_for_object("test", "keyTest", obj)['HumanReadable'] == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'
+
+
+def test_get_time_zone(mocker):
+    """
+    When -
+        trying to send/reply an email we check the XOSAR user time zone
+
+    Then -
+        verify that info returns
+    """
+    from EWSv2 import get_time_zone
+    mocker.patch.object(demisto, 'callingContext', new={'context': {'User': {'timeZone': 'Asia/Jerusalem'}}})
+    results = get_time_zone()
+    assert results.key == 'Asia/Jerusalem'

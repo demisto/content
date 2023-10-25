@@ -1,8 +1,8 @@
 {
-    "name": "PICUS",
-    "description": "Picus is Breach and Attack Simulation tools.",
+    "name": "PICUS (Deprecated)",
+    "description": "Deprecated. Use PicusAutomation instead.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Murat Ozfidan",
     "url": "",
     "email": "",
@@ -10,7 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Breach Simulation"],
+    "tags": [
+        "Breach Simulation"
+    ],
     "useCases": [],
     "keywords": [],
     "githubUser": [

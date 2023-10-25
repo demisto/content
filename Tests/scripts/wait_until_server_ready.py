@@ -6,9 +6,11 @@ import sys
 import time
 from subprocess import CalledProcessError, check_output
 from time import sleep
+from argparse import ArgumentParser
 
 import requests
 import urllib3.util
+from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.test_content.constants import SSH_USER
@@ -21,6 +23,7 @@ MAX_TRIES = 30
 PRINT_INTERVAL_IN_SECONDS = 30
 SETUP_TIMEOUT = 60 * 60
 SLEEP_TIME = 45
+NIGHTLY_BUILD_TTL = 12 * 60  # 12 hours
 
 
 def exit_if_timed_out(loop_start_time, current_time):
@@ -49,21 +52,33 @@ def docker_login(ip: str) -> None:
                           f'{e.returncode=}\n{e.cmd=}.')
 
 
+def set_server_ttl(ip: str, ttl: int):
+    try:
+        shutdown_command = f'sudo shutdown +{ttl}' if ttl else 'sudo shutdown'
+        logging.info(f"Setting TTL for server:{ip} with command:'{shutdown_command}'")
+        check_output(f"ssh {SSH_USER}@{ip} {shutdown_command}".split())
+    except CalledProcessError as e:
+        logging.exception(f"Failed while calling shutdown on server {ip}:\n{e.stderr=}\n{e.output=}\n{e.returncode=}\n{e.cmd=}.")
+
+
 def main():
     install_logging('Wait_Until_Server_Ready.log')
     global SETUP_TIMEOUT
-    instance_name_to_wait_on = sys.argv[1]
+    parser = ArgumentParser()
+    parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
+    parser.add_argument('--instance-role', help='The instance role', required=True)
+    args = parser.parse_args()
 
     ready_ami_list: list = []
     env_results_path = os.path.join(ARTIFACTS_FOLDER, 'env_results.json')
-    with open(env_results_path, 'r') as json_file:
+    with open(env_results_path) as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_results]
 
     loop_start_time = time.time()
     last_update_time = loop_start_time
     instance_ips_to_poll = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips if
-                            ami_instance_name == instance_name_to_wait_on]
+                            ami_instance_name == args.instance_role]
 
     logging.info('Starting wait loop')
     try:
@@ -74,12 +89,11 @@ def main():
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_ip in instance_ips_to_poll:
                     url = f"https://{ami_instance_ip}/health"
-                    method = 'GET'
                     try:
-                        res = requests.request(method=method, url=url, verify=False)
+                        res = requests.request(method="GET", url=url, verify=False)
                     except (requests.exceptions.RequestException, requests.exceptions.HTTPError) as exp:
                         logging.error(f'{ami_instance_name} encountered an error: {str(exp)}\n')
-                        if SETUP_TIMEOUT != 60 * 10:
+                        if 60 * 10 != SETUP_TIMEOUT:
                             logging.warning('Setting SETUP_TIMEOUT to 10 minutes.')
                             SETUP_TIMEOUT = 60 * 10
                         continue
@@ -87,10 +101,10 @@ def main():
                         logging.exception(f'{ami_instance_name} encountered an error, Will retry this step later')
                         continue
                     if res.status_code == 200:
-                        if SETUP_TIMEOUT != 60 * 60:
+                        if 60 * 60 != SETUP_TIMEOUT:
                             logging.info('Resetting SETUP_TIMEOUT to an hour.')
                             SETUP_TIMEOUT = 60 * 60
-                        logging.info(f'{ami_instance_name} is ready to use')
+                        logging.info(f'Role:{ami_instance_name} server ip:{ami_instance_ip} is ready to use')
                         instance_ips_to_poll.remove(ami_instance_ip)
                     # printing the message every 30 seconds
                     elif current_time - last_update_time > PRINT_INTERVAL_IN_SECONDS:
@@ -104,9 +118,11 @@ def main():
                 sleep(1)
     finally:
         instance_ips_to_download_log_files = [ami_instance_ip for ami_instance_name, ami_instance_ip in instance_ips if
-                                              ami_instance_name == instance_name_to_wait_on]
+                                              ami_instance_name == args.instance_role]
         for ip in instance_ips_to_download_log_files:
             docker_login(ip)
+            if args.nightly:
+                set_server_ttl(ip, ttl=NIGHTLY_BUILD_TTL)
 
 
 if __name__ == "__main__":

@@ -21,6 +21,51 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test Playbook - NGFW Scan",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
+            "playbookID": "Test Playbook - WildFire Malware",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 1600
+        },
+        {
+            "playbookID": "T1036 - Masquerading - Test",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3",
+            "timeout": 800
+        },
+        {
+            "playbookID": "T1059 - Command and Scripting Interpreter - Test",
+            "integrations": "LOLBAS Feed",
+            "timeout": 600
+        },
+        {
+            "playbookID": "Eradication plan - Test",
+            "timeout": 600
+        },
+        {
+            "playbookID": "Containment Plan - Test",
+            "timeout": 800,
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_80k"
+        },
+        {
+            "playbookID": "Enrichment for Verdict - Test",
+            "timeout": 500,
+            "integrations": [
+                "Active Directory Query v2",
+                "VirusTotal (API v3)"
+            ],
+            "instance_names": [
+                "active_directory_80k",
+                "virus_total_v3"
+            ]
+        },
+        {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
             "instance_names": "microsoft_defender_atp_dev"
@@ -79,7 +124,6 @@
         {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
-
         },
         {
             "integrations": [
@@ -113,7 +157,8 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test"
+            "playbookID": "Detonate File - WildFire - Test",
+            "timeout": 400
         },
         {
             "integrations": [
@@ -126,14 +171,16 @@
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_device_code",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 900
         },
         {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
             "instance_names": "ms_teams_management_client_credentials",
             "is_mockable": false,
-            "timeout": 700
+            "timeout": 700,
+            "memory_threshold": 500
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
@@ -200,7 +247,8 @@
             "integrations": "AzureWAF",
             "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 300
         },
         {
             "integrations": [
@@ -676,11 +724,12 @@
         {
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_dev",
-            "timeout": 600,
+            "timeout": 1300,
             "instance_names": "ms_graph_mail_dev"
         },
         {
             "integrations": "MicrosoftGraphMail",
+            "timeout": 900,
             "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
             "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
@@ -688,7 +737,8 @@
             "integrations": "MicrosoftGraphMail",
             "playbookID": "MicrosoftGraphMail-Test_prod",
             "instance_names": "ms_graph_mail_prod",
-            "is_mockable": false
+            "is_mockable": false,
+            "memory_threshold": 300
         },
         {
             "integrations": "CloudShark",
@@ -711,7 +761,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 1500
+            "timeout": 1800
         },
         {
             "integrations": "HelloWorld",
@@ -956,7 +1006,8 @@
         },
         {
             "integrations": "Thinkst Canary",
-            "playbookID": "CanaryTools Test"
+            "playbookID": "CanaryTools Test",
+            "is_mockable": false
         },
         {
             "integrations": "ThreatMiner",
@@ -1149,7 +1200,7 @@
         {
             "integrations": "Generic SQL",
             "playbookID": "generic-sql-mssql-encrypted-connection",
-            "instance_names": "Microsoft SQL instance using encrypted connection",
+            "instance_names": "Microsoft SQL instance",
             "fromversion": "5.0.0",
             "has_api": false
         },
@@ -1203,7 +1254,8 @@
         },
         {
             "integrations": "Tenable.io",
-            "playbookID": "Tenable.io test"
+            "playbookID": "Tenable.io test",
+            "timeout": 3600
         },
         {
             "playbookID": "URLDecode-Test"
@@ -1402,7 +1454,8 @@
                 "Rasterize"
             ],
             "timeout": 500,
-            "pid_threshold": 12
+            "pid_threshold": 12,
+            "memory_threshold": 150
         },
         {
             "playbookID": "CutTransformerTest"
@@ -1485,8 +1538,7 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test",
-            "timeout": 200
-
+            "timeout": 500
         },
         {
             "integrations": "WildFire-v2",
@@ -1782,7 +1834,8 @@
             "playbookID": "Process Email - Generic - Test - Incident Starter",
             "fromversion": "6.0.0",
             "integrations": "Rasterize",
-            "timeout": 240
+            "timeout": 240,
+            "memory_threshold": 150
         },
         {
             "playbookID": "Process Email - Generic - Test - Actual Incident"
@@ -1791,7 +1844,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 500,
+            "timeout": 1000,
             "is_mockable": false
         },
         {
@@ -1806,9 +1859,9 @@
             "playbookID": "OpenPhish Test Playbook"
         },
         {
-            "integrations": "jira-v2",
-            "playbookID": "Jira-v2-Test",
-            "timeout": 500,
+            "integrations": "Jira V3",
+            "playbookID": "JiraV3 Test",
+            "instance_names": "jira_basic_auth",
             "is_mockable": false
         },
         {
@@ -1920,7 +1973,8 @@
         },
         {
             "integrations": "PhishTank V2",
-            "playbookID": "PhishTank Testing"
+            "playbookID": "PhishTank Testing",
+            "is_mockable": false
         },
         {
             "integrations": "McAfee Web Gateway",
@@ -2086,22 +2140,25 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 500
+            "timeout": 700
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft 365 Defender",
@@ -2130,6 +2187,11 @@
         },
         {
             "integrations": "Microsoft Graph",
+            "playbookID": "MSG-ediscovery-tpb",
+            "instance_names": "ms_graph_security_ediscovery"
+        },
+        {
+            "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod",
             "instance_names": "ms_graph_security_prod",
             "is_mockable": false
@@ -2149,7 +2211,8 @@
             "integrations": "Microsoft Graph",
             "playbookID": "Microsoft Graph Security Test prod v2",
             "instance_names": "ms_graph_security_prod_v2",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Graph",
@@ -2366,7 +2429,8 @@
         {
             "integrations": "Whois",
             "playbookID": "whois_test",
-            "fromversion": "4.1.0"
+            "fromversion": "5.0.0",
+            "timeout": 2000
         },
         {
             "integrations": "TeamCymru",
@@ -2536,22 +2600,26 @@
             "playbookID": "Active Directory Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
+            "memory_threshold": 100,
             "has_api": false
         },
         {
             "playbookID": "Active Directory - manual pagination check",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja"
+            "instance_names": "active_directory_ninja",
+            "memory_threshold": 100
         },
         {
             "playbookID": "Active Directory - automatic pagination check",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja"
+            "instance_names": "active_directory_ninja",
+            "memory_threshold": 100
         },
         {
             "playbookID": "AD v2 - debug-mode - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
+            "memory_threshold": 100,
             "fromversion": "5.0.0",
             "has_api": false
         },
@@ -2559,6 +2627,7 @@
             "playbookID": "AD v2 - debug-mode - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja_with_ntlm",
+            "memory_threshold": 100,
             "fromversion": "5.0.0",
             "has_api": false
         },
@@ -2571,23 +2640,27 @@
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory Query V2 configuration with port",
+            "memory_threshold": 100,
             "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory - ad-get-user limit check",
+            "memory_threshold": 100,
             "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "active directory search user with parentheses test",
+            "memory_threshold": 100,
             "has_api": false
         },
         {
             "playbookID": "Email Address Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
+            "memory_threshold": 100,
             "instance_names": "active_directory_ninja",
             "has_api": false
         },
@@ -2659,6 +2732,7 @@
         {
             "playbookID": "Active Directory - Get User Manager Details - Test",
             "integrations": "Active Directory Query v2",
+            "memory_threshold": 100,
             "instance_names": "active_directory_80k",
             "fromversion": "5.0.0",
             "has_api": false
@@ -2773,6 +2847,7 @@
                 "Active Directory Query v2",
                 "VMware Carbon Black EDR v2"
             ],
+            "memory_threshold": 100,
             "instance_names": "active_directory_ninja"
         },
         {
@@ -2811,7 +2886,11 @@
         },
         {
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
-            "integrations": "Active Directory Query v2",
+            "integrations": [
+                "Active Directory Query v2",
+                "Cortex XDR - IR"
+            ],
+            "memory_threshold": 100,
             "instance_names": "active_directory_80k",
             "has_api": false
         },
@@ -2852,6 +2931,7 @@
         },
         {
             "integrations": "Active Directory Query v2",
+            "memory_threshold": 100,
             "instance_names": "active_directory_ninja",
             "playbookID": "Test ADGetUser Fails with no instances 'Active Directory Query' (old version)",
             "has_api": false
@@ -2896,7 +2976,9 @@
             "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
-            "memory_threshold": 90
+            "memory_threshold": 90,
+            "timeout": 700,
+            "is_mockable": false
         },
         {
             "integrations": "AWS - EC2",
@@ -2965,12 +3047,13 @@
             ],
             "playbookID": "Rasterize Test",
             "fromversion": "5.0.0",
-            "memory_threshold": 100
+            "memory_threshold": 150
         },
         {
             "integrations": "Rasterize",
             "playbookID": "RasterizeImageTest",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "memory_threshold": 150
         },
         {
             "integrations": "Ipstack",
@@ -3071,6 +3154,9 @@
         },
         {
             "playbookID": "sumList - Test"
+        },
+        {
+            "playbookID": "AnyMatch_Test"
         },
         {
             "integrations": "VulnDB",
@@ -3498,7 +3584,6 @@
             "fromversion": "6.5.0",
             "timeout": 3000
         },
-
         {
             "integrations": "Prisma Access",
             "playbookID": "Prisma_Access-Test",
@@ -3604,6 +3689,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "If-Elif Test",
+            "fromversion": "6.9.0"
+        },
+        {
             "integrations": "Imperva WAF",
             "playbookID": "Imperva WAF - Test"
         },
@@ -3659,12 +3748,6 @@
             "integrations": "Public DNS Feed",
             "playbookID": "Public_DNS_Feed_Test",
             "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "BitcoinAbuse",
-            "playbookID": "BitcoinAbuse-test",
-            "fromversion": "5.5.0",
-            "memory_threshold": 200
         },
         {
             "integrations": "ExpanseV2",
@@ -3776,7 +3859,8 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "timeout": 600
+            "timeout": 600,
+            "is_mockable": false
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
@@ -3929,9 +4013,9 @@
                 "ServiceNow v2",
                 "Core REST API"
             ],
-            "playbookID": "Fetch Incidents Test",
+            "playbookID": "ServiceNow Fetch Incidents Test",
             "instance_names": "snow_basic_auth",
-            "fromversion": "6.0.0",
+            "fromversion": "6.8.0",
             "is_mockable": false,
             "timeout": 2400
         },
@@ -4571,7 +4655,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout": 2500
+            "timeout": 4600
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
@@ -4860,7 +4944,8 @@
         },
         {
             "playbookID": "playbook-SearchIncidentsV2InsideGenericPollng-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 300
         },
         {
             "playbookID": "IsRFC1918-Test",
@@ -4889,14 +4974,6 @@
         {
             "playbookID": "IsIPInRanges - Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "TruSTAR v2-Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "TruSTAR v2",
-                "TruSTAR"
-            ]
         },
         {
             "playbookID": "Relationships scripts - Test",
@@ -4967,6 +5044,7 @@
         {
             "playbookID": "Microsoft Teams - Test",
             "fromversion": "5.0.0",
+            "memory_threshold": 300,
             "instance_names": "ms_teams_management_device_code",
             "integrations": [
                 "Microsoft Teams Management",
@@ -5188,7 +5266,8 @@
                 "ewso365_dev_team"
             ],
             "fromversion": "6.5.0",
-            "timeout": 600
+            "timeout": 600,
+            "memory_threshold": 300
         },
         {
             "integrations": "OpsGenieV3",
@@ -5266,7 +5345,7 @@
                 "Whois",
                 "Rasterize"
             ],
-            "memory_threshold": 150
+            "memory_threshold": 300
         },
         {
             "playbookID": "DBotUpdateLogoURLPhishing_test"
@@ -5368,6 +5447,12 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "PAN-OS - Add Anti-Spyware Security Profile To Rule - Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_firewall_9.1",
+            "fromversion": "6.9.0"
+        },
+        {
             "integrations": "Secneurx Analysis",
             "playbookID": "Detonate File - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
@@ -5461,8 +5546,8 @@
             "playbookID": "playbook-create_delete_record_Test"
         },
         {
-          "integrations":  "Cylance Protect v2",
-          "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
+            "integrations": "Cylance Protect v2",
+            "playbookID": "Retrieve File from Endpoint - Generic V3 Test"
         },
         {
             "integrations": [
@@ -5487,6 +5572,7 @@
         }
     ],
     "skipped_tests": {
+        "generic-sql-mssql-encrypted-connection": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
         "CiscoWSAv2": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
@@ -5602,7 +5688,6 @@
         "SplunkPy_KV_commands_default_handler": "Issue 41419",
         "LogRhythm REST test": "Issue 40654",
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
-        "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response Test": "Issue CRTX-58729",
         "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
@@ -5660,7 +5745,11 @@
         "awake_security_test_pb": "No instance, CRTX-77572",
         "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
-        "EWS_O365_test": "Issue CIAC-6753"
+        "EWS_O365_test": "Issue CIAC-6753",
+        "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
+        "Microsoft Defender Advanced Threat Protection - Test self deployed": "Issue CIAC-7527",
+        "Microsoft Defender Advanced Threat Protection - Test": "Issue CIAC-7527",
+        "OpsGenieV3TestPlaybook": "Issue CIAC-7649"
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -5789,7 +5878,10 @@
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
         "ThreatGridv2": "No instance - developed by Qmasters",
         "SentinelOne V2": "No instance - developed by partner",
-        "CheckPhish": "Issue CRTX-86562"
+        "CheckPhish": "Issue CRTX-86562",
+        "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
+        "ThreatExchange v2": "No instance",
+        "PhishLabs IOC EIR": "No instance, CRTX-91214"
     },
     "nightly_packs": [
         "CommonScripts",
@@ -6075,7 +6167,7 @@
     "test_marketplacev2": [
         "Sanity Test - Playbook with Unmockable Whois Integration"
     ],
-    "reputation_tests":[
+    "reputation_tests": [
         "FormattingPerformance - Test",
         "reputations.json Test",
         "Indicators reputation-.json Test",

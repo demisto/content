@@ -6,6 +6,7 @@ Neosec is reinventing application security. Its pioneering SaaS platform gives s
   - Neosec Runtime Alerts are on suspicious or malicious user behavior. Handled by SOC analysts.
 - Close/Reopens Neosec Alerts
 
-_For more information, visit [Neosec Inc.](https://neosec.com/)_
 
-[![Neosec Overview](https://raw.githubusercontent.com/demisto/content/master/Packs/Neosec/Author_image.png)](https://neosec.com)
+_For more information, visit [Neosec Inc.](https://www.neosec.com/)_
+
+[![Neosec Overview](https://raw.githubusercontent.com/demisto/content/master/Packs/Neosec/Author_image.png)](https://www.neosec.com)

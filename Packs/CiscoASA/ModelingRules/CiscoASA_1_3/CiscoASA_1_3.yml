@@ -1,7 +1,0 @@
-fromversion: 6.10.0
-id: cisco_asa_modeling_rule
-name: Cisco ASA Modeling Rule
-rules: ''
-schema: ''
-tags: Cisco ASA
-toversion: 8.1.9

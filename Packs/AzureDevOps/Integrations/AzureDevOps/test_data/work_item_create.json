@@ -1,0 +1,68 @@
+{
+    "id": 20,
+    "rev": 1,
+    "fields": {
+        "System.AreaPath": "DevOpsDemo",
+        "System.TeamProject": "DevOpsDemo",
+        "System.IterationPath": "DevOpsDemo",
+        "System.WorkItemType": "Epic",
+        "System.State": "To Do",
+        "System.Reason": "Added to backlog",
+        "System.CreatedDate": "2023-07-17T11:56:15.927Z",
+        "System.CreatedBy": {
+            "displayName": "",
+            "url": "",
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "id": "",
+            "uniqueName": "",
+            "imageUrl": "",
+            "descriptor": ""
+        },
+        "System.ChangedDate": "2023-07-17T11:56:15.927Z",
+        "System.ChangedBy": {
+            "displayName": "",
+            "url": "",
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "id": "",
+            "uniqueName": "",
+            "imageUrl": "",
+            "descriptor": ""
+        },
+        "System.CommentCount": 0,
+        "System.Title": "Test Epic",
+        "Microsoft.VSTS.Common.StateChangeDate": "2023-07-17T11:56:15.927Z",
+        "Microsoft.VSTS.Common.Priority": 2
+    },
+    "_links": {
+        "self": {
+            "href": ""
+        },
+        "workItemUpdates": {
+            "href": ""
+        },
+        "workItemRevisions": {
+            "href": ""
+        },
+        "workItemComments": {
+            "href": ""
+        },
+        "html": {
+            "href": ""
+        },
+        "workItemType": {
+            "href": ""
+        },
+        "fields": {
+            "href": ""
+        }
+    },
+    "url": ""
+}

@@ -47,6 +47,7 @@ rrn
 fqdn
 vpc
 cloudtrail
+Prioritization
 
 [file:classifier-Prisma_Cloud.json]
 ignore=BA101

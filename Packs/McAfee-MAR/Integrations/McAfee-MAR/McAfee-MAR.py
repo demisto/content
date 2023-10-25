@@ -136,7 +136,7 @@ def extract_item_output(item, capitalize):
     # map <CollectorName>|<OutputName> to <OutputName>
     for key, value in output.items():
         splited_key = key.split('|')
-        if(len(splited_key) > 1):
+        if (len(splited_key) > 1):
             new_key = splited_key[1]
         else:
             new_key = splited_key[0]

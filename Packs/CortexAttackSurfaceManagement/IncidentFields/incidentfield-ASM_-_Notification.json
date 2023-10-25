@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment":"Mandatory: Type of notification could be a ServiceNow incident, email, etc."
         },
         {
             "displayName": "Value",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment":"Mandatory: Dependent on type. Ex: ServiceNOW UUID, email recipients, etc."
         },
         {
             "displayName": "URL",
@@ -41,7 +43,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment":"Optional: Related URL of the notification created if applicable."
         },
         {
             "displayName": "Timestamp",
@@ -54,7 +57,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment":"Mandatory: Timestamp of notification sent."
         }
     ],
     "content": true,

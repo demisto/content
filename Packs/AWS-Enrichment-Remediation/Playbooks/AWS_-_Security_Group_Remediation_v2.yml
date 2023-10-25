@@ -1,7 +1,5 @@
 id: AWS - Security Group Remediation v2
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: AWS - Security Group Remediation v2
 description: |-
   This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
@@ -9,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 887ec5b3-a4d7-47fc-82b0-701e072c0deb
+    taskid: 7aeccd71-8a2e-47a8-8ba0-b91bac919bf4
     type: start
     task:
-      id: 887ec5b3-a4d7-47fc-82b0-701e072c0deb
+      id: 7aeccd71-8a2e-47a8-8ba0-b91bac919bf4
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 978b630a-7e00-443b-83f3-5e683144863a
+    taskid: 57209409-3b96-48f9-865d-61de73bd6309
     type: title
     task:
-      id: 978b630a-7e00-443b-83f3-5e683144863a
+      id: 57209409-3b96-48f9-865d-61de73bd6309
       version: -1
       name: Done
       type: title
@@ -67,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: e71350f2-0f75-41e1-841d-ee3c938fc23f
+    taskid: fe8c7803-f99e-4ee6-8481-fa710b622cd7
     type: condition
     task:
-      id: e71350f2-0f75-41e1-841d-ee3c938fc23f
+      id: fe8c7803-f99e-4ee6-8481-fa710b622cd7
       version: -1
       name: Is AWS - EC2 enabled and are input values defined?
       description: Determines if the AWS - EC2 integration instance is configured and input values are defined in order to continue with remediating security groups.
@@ -152,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 66b0bfa5-11ed-42c6-87a9-a61a26444ec4
+    taskid: d2488b84-78ba-4f31-8b35-c47e61425dd9
     type: regular
     task:
-      id: 66b0bfa5-11ed-42c6-87a9-a61a26444ec4
+      id: d2488b84-78ba-4f31-8b35-c47e61425dd9
       version: -1
       name: Create Security Group automation
       description: Automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
@@ -167,6 +165,9 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      assume_role:
+        complex:
+          root: inputs.AWSAssumeArn
       instance_id:
         complex:
           root: inputs.InstanceID
@@ -179,6 +180,9 @@ tasks:
       public_ip:
         complex:
           root: inputs.PublicIP
+      region:
+        complex:
+          root: inputs.Region
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -231,8 +235,18 @@ inputs:
     complex:
       root: alert
       accessor: remoteip
-  required: false
+  required: true
   description: Public IP address of the EC2 instance.
+  playbookInputQuery:
+- key: AWSAssumeArn
+  value: {}
+  required: false
+  description: Name of an AWS role to assume (should be the same for all organizations).
+  playbookInputQuery:
+- key: Region
+  value: {}
+  required: false
+  description: Region where EC2 instance is present.
   playbookInputQuery:
 outputs: []
 tests:

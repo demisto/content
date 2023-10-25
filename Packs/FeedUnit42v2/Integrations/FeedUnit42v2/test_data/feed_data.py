@@ -78,14 +78,14 @@ ATTACK_PATTERN_DATA = [
      "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"], "type": "attack-pattern",
      "x_mitre_data_sources": ["Authentication logs", "Netflow/Enclave netflow", "Process command-line parameters",
                               "Process monitoring"], "x_mitre_detection": [
-        "Monitor network traffic"],
+         "Monitor network traffic"],
      "x_mitre_permissions_required": ["Administrator", "User"], "x_mitre_platforms": ["Windows"],
      "x_mitre_remote_support": "true", "x_mitre_system_requirements": ["WMI service"],
      "x_mitre_version": "1.0"}
 ]
 
 INVALID_ATTACK_PATTERN_STRUCTURE = [
-{"created": "2018-08-03T19:54:02.821Z", "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
+    {"created": "2018-08-03T19:54:02.821Z", "created_by_ref": "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5",
      "description": "Windows Management",
      "external_references": [
          {
@@ -120,7 +120,7 @@ INVALID_ATTACK_PATTERN_STRUCTURE = [
      "object_marking_refs": ["marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168"], "type": "attack-pattern",
      "x_mitre_data_sources": ["Authentication logs", "Netflow/Enclave netflow", "Process command-line parameters",
                               "Process monitoring"], "x_mitre_detection": [
-        "Monitor network traffic"],
+         "Monitor network traffic"],
      "x_mitre_permissions_required": ["Administrator", "User"], "x_mitre_platforms": ["Windows"],
      "x_mitre_remote_support": "true", "x_mitre_system_requirements": ["WMI service"],
      "x_mitre_version": "1.0"}
@@ -531,7 +531,7 @@ COURSE_OF_ACTION_DATA = [{
         "x_panw_coa_bp_references": [
             "network-network-profiles-zone-protection/reconnaissance-protection."
         ]
-    }]
+}]
 
 COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                            'firstseenbysource': '2020-06-23T19:50:31.722Z',

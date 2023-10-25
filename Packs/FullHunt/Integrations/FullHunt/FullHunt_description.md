@@ -4,6 +4,12 @@ This section explains how to configure the instance of FullHuntIO in Cortex XSOA
 2. Copy and paste the key in the integration credentials field.
 3. Click the test button to test integration's configuration.
 
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***domain***
+- ***fullhunt-get-host***
+- ***fullhunt-get-subdomain***
+See the vendor’s documentation for more details.
+
 [View API Documentation](https://api-docs.fullhunt.io/#introduction)
 
 ---

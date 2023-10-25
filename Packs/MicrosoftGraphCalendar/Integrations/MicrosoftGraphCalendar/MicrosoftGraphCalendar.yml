@@ -78,7 +78,8 @@ configuration:
   name: proxy
   type: 8
   required: false
-- display: Use a self-deployed Azure Application
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure Application
   name: self_deployed
   type: 8
   required: false
@@ -596,7 +597,11 @@ script:
     - contextPath: MSGraphCalendar.Event.OnlineMeetingUrl
       description: "A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.63672
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: msgraph-calendar-auth-reset
+    arguments: []
+  dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'
   type: python

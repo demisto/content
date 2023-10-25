@@ -44,6 +44,7 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -6885,7 +6886,7 @@ class CommandResults:
             human_readable = self.readable_output
         else:
             human_readable = None  # type: ignore[assignment]
-        raw_response = None  # type: ignore[assignment]
+        raw_response = self.raw_response  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
         mark_as_note = False  # type: bool
@@ -6903,9 +6904,6 @@ class CommandResults:
 
                     outputs[key].append(value)
 
-        if self.raw_response:
-            raw_response = self.raw_response
-
         if self.tags:
             tags = self.tags  # type: ignore[assignment]
 
@@ -6921,7 +6919,10 @@ class CommandResults:
         if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
-                human_readable = tableToMarkdown('Results', self.outputs)
+                if isinstance(self.outputs, dict) or isinstance(self.outputs, list):
+                    human_readable = tableToMarkdown('Results', self.outputs)
+                else:
+                    human_readable = self.outputs   # type: ignore[assignment]
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
@@ -7964,11 +7965,13 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
     if utc:
-        end_time = datetime.utcnow() + timedelta(hours=timezone)
-        start_time = datetime.utcnow() + timedelta(hours=timezone)
+        utc_now = datetime.utcnow()
+        end_time = utc_now + timedelta(hours=timezone)
+        start_time = utc_now + timedelta(hours=timezone)
     else:
-        end_time = datetime.now() + timedelta(hours=timezone)
-        start_time = datetime.now() + timedelta(hours=timezone)
+        now = datetime.now()
+        end_time = now + timedelta(hours=timezone)
+        start_time = now + timedelta(hours=timezone)
 
     if 'minute' in unit:
         start_time = end_time - timedelta(minutes=number)
@@ -8694,7 +8697,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, params_parser=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -8787,6 +8790,11 @@ if 'requests' in sys.modules:
             :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
                 can vary)
 
+            :type params_parser: ``callable``
+            :param params_parser: How to quote the params. By default, spaces are replaced with `+` and `/` to `%2F`.
+            see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
+            Note! supported only in python3.
+
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
@@ -8799,6 +8807,8 @@ if 'requests' in sys.modules:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 if not timeout:
                     timeout = self.timeout
+                if IS_PY3 and params_parser:  # The `quote_via` parameter is supported only in python3.
+                    params = urllib.parse.urlencode(params, quote_via=params_parser)
 
                 # Execute
                 res = self._session.request(
@@ -10577,6 +10587,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
+    offset = last_run.get('offset')
     now = get_current_time(timezone)
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
@@ -10585,7 +10596,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    if look_back and look_back > 0:
+    if not offset and look_back and look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
@@ -10611,6 +10622,26 @@ def get_current_time(time_zone=0):
         demisto.debug('pytz is missing, will not return timeaware object.')
         return now
 
+def calculate_new_offset(old_offset, num_incidents, total_incidents):
+    """ This calculates the new offset based on the response
+    
+    :type old_offset: ``int``
+    :param old_offset: The offset from the previous run
+
+    :type num_incidents: ``int``
+    :param num_incidents: The number of incidents returned by the API.
+    
+    :type total_incidents: ``int``
+    :param total_incidents: The total number of incidents returned by the API.
+    
+    :return: The new offset for the next run.
+    :rtype: ``int``
+    """
+    if not num_incidents:
+        return 0
+    if total_incidents and num_incidents + old_offset >= total_incidents:
+        return 0
+    return old_offset + num_incidents
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
@@ -10645,7 +10676,7 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
         if incident[id_field] not in found_incidents:
             incidents.append(incident)
 
-    demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents_res),
+    demisto.debug('lb: Number of incidents after filtering: {}, their ids: {}'.format(len(incidents),
                                                                                       [incident[id_field] for incident in incidents]))
     return incidents[:fetch_limit]
 
@@ -10750,7 +10781,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
 
 
 def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
-                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
     """
     Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
     with the new time and limit.
@@ -10781,18 +10812,26 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
+    
+    :type new_offset: ``int | None``
+    :param new_offset: The new offset to set in the last run
 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
     demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
-                  "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
+                  "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit, new_offset))
     remove_incident_ids = True
     new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
-    if len(incidents) == 0:
+    if new_offset:
+        # if we need to update the offset, we need to keep the old time and just update the offset
+        new_last_run = {
+            'time': last_run.get("time"),
+        } 
+    elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
-            'limit': fetch_limit
+            'limit': fetch_limit,
         }
     else:        
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
@@ -10804,8 +10843,10 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         if latest_incident_fetched_time == start_fetch_time:
             # we are still on the same time, no need to remove old incident ids
             remove_incident_ids = False
-            
-
+    
+    if new_offset is not None:
+        new_last_run['offset'] = new_offset
+        new_last_run['limit'] = fetch_limit
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
                                                                                        remove_incident_ids))
 
@@ -10813,7 +10854,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
     """
     Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
 
@@ -10846,6 +10887,10 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
+    
+    :type new_offset: ``int | None``
+    :param new_offset: The new offset to set in the last run
+
 
     :return: The updated LastRun object
     :rtype: ``Dict``
@@ -10862,6 +10907,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
                                                                            created_time_field,
                                                                            date_format,
                                                                            increase_last_run_time,
+                                                                           new_offset
                                                                            )
 
     found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)
@@ -11079,11 +11125,12 @@ def split_data_to_chunks(data, target_chunk_size):
     :type data: ``list`` or a ``string``
     :param data: A list of data or a string delimited with \n  to split to chunks.
     :type target_chunk_size: ``int``
-    :param target_chunk_size: The maximum size of each chunk.
+    :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
 
-    :return: : An iterable of lists where each list contains events with approx size of chunk size.
+    :return: An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
+    target_chunk_size = min(target_chunk_size,  XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
@@ -11099,7 +11146,8 @@ def split_data_to_chunks(data, target_chunk_size):
         yield chunk
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11123,6 +11171,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     :type num_of_attempts: ``int``
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes)
+
+    :type chunk_size: ``int``
+    :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
     :return: None
     :rtype: ``None``
@@ -11200,7 +11251,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url)
-    data_chunks = split_data_to_chunks(data, XSIAM_EVENT_CHUNK_SIZE)
+    data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         amount_of_events += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)

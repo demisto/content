@@ -1,0 +1,643 @@
+id: Cloud User Investigation - Generic
+version: -1
+name: Cloud User Investigation - Generic
+description: |
+  This playbook performs an investigation on a specific user in cloud environments, using queries and logs from Azure Log Analytics, AWS CloudTrail, G Suite Auditor, and GCP Logging.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db23b5f7-f28b-42e3-8f4f-4234f2a278c7
+    type: start
+    task:
+      id: db23b5f7-f28b-42e3-8f4f-4234f2a278c7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 656084fe-70c1-46ba-8bdd-7c314aa79c2c
+    type: title
+    task:
+      id: 656084fe-70c1-46ba-8bdd-7c314aa79c2c
+      version: -1
+      name: AWS Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 76699a1b-adf1-4889-8426-d75e94cc7090
+    type: title
+    task:
+      id: 76699a1b-adf1-4889-8426-d75e94cc7090
+      version: -1
+      name: Azure Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1a6bad15-9ad9-42a3-8023-e7c2d30a3277
+    type: title
+    task:
+      id: 1a6bad15-9ad9-42a3-8023-e7c2d30a3277
+      version: -1
+      name: GCP Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 6e5e5dbb-0643-4235-851a-e670a45e5e15
+    type: title
+    task:
+      id: 6e5e5dbb-0643-4235-851a-e670a45e5e15
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 0171fbe2-82e1-4357-8254-60419c406ac5
+    type: condition
+    task:
+      id: 0171fbe2-82e1-4357-8254-60419c406ac5
+      version: -1
+      name: Select cloud provider
+      description: Checks the cloud provider.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      AWS:
+      - "2"
+      Azure:
+      - "3"
+      GCP:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudProvider
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+          ignorecase: true
+    - label: Azure
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudProvider
+            iscontext: true
+          right:
+            value:
+              simple: Azure
+          ignorecase: true
+    - label: GCP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.cloudProvider
+            iscontext: true
+          right:
+            value:
+              simple: GCP
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 6455ca38-87d5-49ba-8bf9-3aa0c9e8fc17
+    type: title
+    task:
+      id: 6455ca38-87d5-49ba-8bf9-3aa0c9e8fc17
+      version: -1
+      name: Azure Investigation Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 4eae44c2-2d06-47fd-868e-b9b186e653b6
+    type: title
+    task:
+      id: 4eae44c2-2d06-47fd-868e-b9b186e653b6
+      version: -1
+      name: AWS Investigation Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: c72ac51f-28a1-4721-8504-9708e120897f
+    type: title
+    task:
+      id: c72ac51f-28a1-4721-8504-9708e120897f
+      version: -1
+      name: GCP Investigation Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: c9691f70-47a1-450c-8dcc-11b0aec1c07e
+    type: playbook
+    task:
+      id: c9691f70-47a1-450c-8dcc-11b0aec1c07e
+      version: -1
+      name: AWS - User Investigation
+      description: |
+        This playbook performs an investigation on a specific user in AWS environments, using queries and logs from AWS CloudTrail.
+      playbookName: AWS - User Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      AwsTimeSearchFrom:
+        complex:
+          root: inputs.AwsTimeSearchFrom
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 539ff9cb-ec93-4373-83b2-1e60c7e75240
+    type: playbook
+    task:
+      id: 539ff9cb-ec93-4373-83b2-1e60c7e75240
+      version: -1
+      name: GCP - User Investigation
+      description: |
+        This playbook performs an investigation on a specific user in GCP environments, using queries and logs from G Suite Auditor, and GCP Logging.
+      playbookName: GCP - User Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      GcpProjectName:
+        complex:
+          root: inputs.GcpProjectName
+      GcpTimeSearchFrom:
+        complex:
+          root: inputs.GcpTimeSearchFrom
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 42fecd76-1d2a-4ed2-84b6-5a0701d7d569
+    type: playbook
+    task:
+      id: 42fecd76-1d2a-4ed2-84b6-5a0701d7d569
+      version: -1
+      name: Azure - User Investigation
+      description: |
+        This playbook performs an investigation on a specific user in Azure environments, using queries and logs from Azure Log Analytics.
+      playbookName: Azure - User Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      AzureSearchTime:
+        complex:
+          root: inputs.AzureSearchTime
+      MfaAttemptThreshold:
+        complex:
+          root: inputs.MfaAttemptThreshold
+      Username:
+        complex:
+          root: inputs.Username
+      failedLogonThreshold:
+        complex:
+          root: inputs.failedLogonThreshold
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_12_#default#": 0.16,
+      "23_2_AWS": 0.68,
+      "23_3_Azure": 0.79
+    },
+    "paper": {
+      "dimensions": {
+        "height": 930,
+        "width": 1290,
+        "x": -230,
+        "y": -330
+      }
+    }
+  }
+inputs:
+- key: Username
+  value: {}
+  required: false
+  description: The username to investigate.
+  playbookInputQuery:
+- key: AzureSearchTime
+  value:
+    simple: ago(1d)
+  required: false
+  description: 'The Search Time for the Azure Log Analytics search query. Default value: ago(1d)'
+  playbookInputQuery:
+- key: failedLogonThreshold
+  value:
+    simple: "20"
+  required: false
+  description: The threshold number of failed logons by the user. Required to determine how many failed logon events count as suspicious events.
+  playbookInputQuery:
+- key: MfaAttemptThreshold
+  value:
+    simple: "10"
+  required: false
+  description: The threshold number of MFA failed logon by the user. Required to determine how many MFA failed logon events count as suspicious events.
+  playbookInputQuery:
+- key: AwsTimeSearchFrom
+  value:
+    simple: "1"
+  required: false
+  description: "The Search Time for the `GetTime` task used by the Aws Cloud Trail search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
+  playbookInputQuery:
+- key: GcpProjectName
+  value: {}
+  required: false
+  description: The GCP project name. This is a mandatory field for GCP queries.
+  playbookInputQuery:
+- key: GcpTimeSearchFrom
+  value:
+    simple: "1"
+  required: false
+  description: "The Search Time for the `GetTime` task used by the GCP Logging search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
+  playbookInputQuery:
+- key: cloudProvider
+  value: {}
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
+outputs:
+- contextPath: AwsMFAConfigCount
+  description: The number of MFA configurations performed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsUserRoleChangesCount
+  description: The number of user roles that were changed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsSuspiciousActivitiesCount
+  description: The number of suspicious activities performed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsScriptBasedUserAgentCount
+  description: The number of script-based user agent usages by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsAccessKeyActivitiesCount
+  description: The number of access key activities performed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsSecurityChangesCount
+  description: The number of security rules that were changed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsAdminActivitiesCount
+  description: The number of administrative activities performed by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsApiAccessDeniedCount
+  description: The number of API accesses denied by the user in the AWS environment.
+  type: unknown
+- contextPath: AwsFailedLogonCount
+  description: The number of failed logins by the user in the AWS environment.
+  type: unknown
+- contextPath: GcpAnomalousNetworkTraffic
+  description: Determines whether there are events of anomalous network traffic performed by the user in the GCP environment.
+  type: unknown
+- contextPath: GcpSuspiciousApiUsage
+  description: Determines whether there are events of suspicious API usage by the user in the GCP environment.
+  type: unknown
+- contextPath: GcpFailLogonCount
+  description: The number of failed logins by the user in the GCP environment.
+  type: unknown
+- contextPath: GsuiteFailLogonCount
+  description: The number of failed logins by the user in the G Suite environment.
+  type: unknown
+- contextPath: GsuiteUnusualLoginAllowedCount
+  description: The number of unusual logins performed by the user and allowed in the G Suite environment.
+  type: unknown
+- contextPath: GsuiteUnusualLoginBlockedCount
+  description: The number of unusual logins performed by the user and blocked in the G Suite environment.
+  type: unknown
+- contextPath: GsuiteSuspiciousLoginCount
+  description: The number of suspicious logins performed by the user in the G Suite environment.
+  type: unknown
+- contextPath: GsuiteUserPasswordLeaked
+  description: Determines whether user's password was leaked in the G Suite environment.
+  type: unknown
+- contextPath: AzureScriptBasedUserAgentEvents
+  description: Script-based user agent events used by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureAdminActivitiesEvents
+  description: Administrative activities performed by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureSecurityRulesChangeEvents
+  description: Security rules that were changed by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureUnsuccessSecurityRulesChangeEvents
+  description: Unsuccessful attempts to change security rules by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureFailLoginCount
+  description: The number of failed logins by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureFailLoginMFACount
+  description: The number of failed logins by the user using MFA in the Azure environment.
+  type: unknown
+- contextPath: AzureAnomaliesEvents
+  description: Anomaly events on the user in the Azure environment.
+  type: unknown
+- contextPath: AzureRiskyUserCount
+  description: The number of events where the user was defined as a risky user in the Azure environment.
+  type: unknown
+- contextPath: AzureUncommonCountryLogonEvents
+  description: Uncommon country logon events by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureUncommonVolumeEvents
+  description: Uncommon volume events by the user in the Azure environment.
+  type: unknown
+- contextPath: AzureUncommonActivitiesEvents
+  description: Uncommon activity events by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureScriptBasedUserAgentCount
+  description: The number of script-based user agent usages by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureAdminActivitiesCount
+  description: The number of administrative activities performed by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureSecurityRulesChangeCount
+  description: The number of security rules that were changed by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureUnsuccessSecurityRulesChangeCount
+  description: The number of unsuccessful attempts to change security rules by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureAnomaliesCount
+  description: The number of anomaly events on the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureUncommonCountryLogonCount
+  description: The number of uncommon country logon events by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureUncommonVolumeCount
+  description: The number of uncommon volume events by the user in the Azure environment.
+  type: unknown
+- contextPath: CountAzureEvents.AzureUncommonActivitiesCount
+  description: The number of uncommon activity events by the user in the Azure environment.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

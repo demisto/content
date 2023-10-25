@@ -22,9 +22,9 @@ RDP Bitmap Cache - Detect and Hunt
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| string_A | First input string.  |
+| string_A | First input string. |
 | string_B | Second input string. |
-| similiarity_threshold | The similiarity threshold to show results for, a value between 0 &lt; x &gt;1. |
+| similarity_threshold | The similarity threshold to show results for, a value between 0 &lt; x &gt;1. |
 
 ## Outputs
 
@@ -32,4 +32,4 @@ RDP Bitmap Cache - Detect and Hunt
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| SimilarityScore | Similarity score - a value between 1.0 if the sequences are identical, and 0.0 if they have nothing in common. | Unknown |
+| StringSimilarity.SimilarityScore | Similarity score - a value between 1.0 if the sequences are identical, and 0.0 if they have nothing in common. | Unknown |

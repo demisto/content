@@ -1,19 +1,19 @@
 full_report = {
-   "Report_Entry": []
+    "Report_Entry": []
 }
 
 email_to_user_profile = {
-   "rrahardjo@paloaltonetworks.com": {
-      "employmentstatus": "Active",
-      "lastdayofwork": "10/05/2035",
-      "hiredate": "10/05/2020",
-      "employeeid": "100122",
-      "username": "rrahardjo@paloaltonetworks.com",
-      "email": "rrahardjo@paloaltonetworks.com",
-      "sourcepriority": 1,
-      "sourceoftruth": "Workday IAM",
-      "isprocessed": False
-   }
+    "rrahardjo@paloaltonetworks.com": {
+        "employmentstatus": "Active",
+        "lastdayofwork": "10/05/2035",
+        "hiredate": "10/05/2020",
+        "employeeid": "100122",
+        "username": "rrahardjo@paloaltonetworks.com",
+        "email": "rrahardjo@paloaltonetworks.com",
+        "sourcepriority": 1,
+        "sourceoftruth": "Workday IAM",
+        "isprocessed": False
+    }
 }
 
 

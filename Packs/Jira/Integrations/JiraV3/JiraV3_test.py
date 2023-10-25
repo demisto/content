@@ -18,26 +18,26 @@ def util_load_bytes_file(path: str):
 
 
 @patch.object(JiraBaseClient, '__abstractmethods__', set())
-def jira_base_client_mock() -> JiraBaseClient:
+def jira_base_client_mock(username: str = "", api_key: str = "") -> JiraBaseClient:
     """The way to mock an abstract class is using the trick @patch.object(Abstract_Class, __abstractmethods__, set()),
     since Python, behind the scenes, checks the __abstractmethods__ property, which contains a set of the names of all
     the abstract methods defined on the abstract class, if it is not empty, we won't be able to instantiate the abstract class,
     however, if this set is empty, the Python interpreter will happily instantiate our class without any problems.
     """
     return JiraBaseClient(base_url='dummy_url', proxy=False, verify=False, callback_url='dummy_callback',
-                          api_version='999')
+                          api_version='999', username=username, api_key=api_key)
 
 
 def jira_cloud_client_mock() -> JiraCloudClient:
     return JiraCloudClient(proxy=False, verify=False, client_id='dummy_client_id',
                            client_secret='dummy_secret', callback_url='dummy_url', cloud_id='dummy_cloud_id',
-                           server_url='dummy_server_url')
+                           server_url='dummy_server_url', username="", api_key="")
 
 
 def jira_onprem_client_mock() -> JiraOnPremClient:
     return JiraOnPremClient(proxy=False, verify=False, client_id='dummy_client_id',
                             client_secret='dummy_secret', callback_url='dummy_url',
-                            server_url='dummy_server_url')
+                            server_url='dummy_server_url', username="", api_key="")
 
 
 def test_v2_args_to_v3():
@@ -226,6 +226,179 @@ def test_get_issue_id_or_key(issue_id, issue_key, expected_issue_id_or_key):
     from JiraV3 import get_issue_id_or_key
     issue_id_or_key = get_issue_id_or_key(issue_id, issue_key)
     assert issue_id_or_key == expected_issue_id_or_key
+
+
+@pytest.mark.parametrize(
+    "username, api_key",
+    [
+        (
+            "dummy_username",
+            "dummy_api_key",
+        ),
+        ("", ""),
+    ],
+)
+def test_http_request(mocker, username: str, api_key: str):
+    """
+    Given:
+        - username and api_key
+    When:
+        - run http_request method
+    Then:
+        - Ensure when the username and api_key are provided then only the 'get_headers_with_basic_auth' method is called
+        - Ensure when the username and api_key are not provided then only the 'get_headers_with_access_token' method is called
+    """
+    client = jira_base_client_mock(username=username, api_key=api_key)
+
+    basic_auth_mock = mocker.patch.object(
+        client, "get_headers_with_basic_auth", return_value={}
+    )
+    oauth2_mock = mocker.patch.object(
+        client, "get_headers_with_access_token", return_value={}
+    )
+    mocker.patch.object(client, "_http_request")
+    client.http_request("GET")
+
+    assert basic_auth_mock.call_count == int(bool(client.username))
+    assert oauth2_mock.call_count == int(not bool(client.username))
+
+
+def test_test_module_basic_auth(mocker):
+    """
+    Given:
+        - mock client with username and api_key (basic auth)
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure no error is raised, and return `ok`
+    """
+    from JiraV3 import test_module
+    client = jira_base_client_mock("dummy_username", "dummy_api_key")
+    mocker.patch.object(client, "test_instance_connection")
+    assert test_module(client) == "ok"
+
+
+def test_module_oauth2(mocker):
+    """
+    Given:
+        - mock client without username and api_key (oauth2)
+    When:
+        - run `test_module` function
+    Then:
+        - Ensure that error msg is raised, with a guide how to connect through oauth2
+    """
+    from JiraV3 import test_module
+    client = jira_base_client_mock()
+    mocker.patch.object(client, "test_instance_connection")
+    with pytest.raises(
+        DemistoException,
+        match="In order to authorize the instance, first run the command `!jira-oauth-start`."
+    ):
+        test_module(client)
+
+
+@pytest.mark.parametrize(
+    "params, expected_exception",
+    [
+        pytest.param(
+            {"username": "", "api_key": "", "client_id": "", "client_secret": ""},
+            "The required parameters were not provided. See the help window for more information.",
+            id="no auth params provided"
+        ),
+        pytest.param(
+            {
+                "username": "dummy_username",
+                "api_key": "dummy_api_key",
+                "client_id": "dummy_client_id",
+                "client_secret": "dummy_client_secret"
+            },
+            "The `User name` or `API key` parameters cannot be provided together"
+            " with the `Client ID` or `Client Secret` parameters. See the help window"
+            " for more information.",
+            id="both types of auth params are provided"
+        ),
+        pytest.param(
+            {"username": "dummy_username", "api_key": "", "client_id": "", "client_secret": ""},
+            "To use basic authentication, the 'User name' and 'API key' parameters are mandatory",
+            id="only `username` parameter was provided"
+        ),
+        pytest.param(
+            {"username": "", "api_key": "", "client_id": "dummy_client_id", "client_secret": ""},
+            "To use OAuth 2.0, the 'Client ID' and 'Client Secret' parameters are mandatory",
+            id="only `client_id` parameter was provided"
+        )
+    ]
+)
+def test_validate_params_failure(params: dict[str, str], expected_exception: str):
+    """
+    Given:
+        - auth params
+    When:
+        - run `validate_auth_params` function
+    Then:
+        - Ensure that as long as no valid auth params are sent an error is raised with a special message
+    """
+    from JiraV3 import validate_auth_params
+    with pytest.raises(DemistoException, match=expected_exception):
+        validate_auth_params(**params)
+
+
+@pytest.mark.parametrize(
+    "params",
+    [
+        pytest.param(
+            {
+                "username": "dummy_username",
+                "api_key": "dummy_api_key",
+                "client_id": "",
+                "client_secret": ""
+            },
+            id="Only basic auth params were provided"
+        ),
+        pytest.param(
+            {
+                "username": "",
+                "api_key": "",
+                "client_id": "dummy_client_id",
+                "client_secret": "dummy_client_secret"
+            },
+            id="Only oauth2 params were provided oauth2"
+        )
+    ]
+)
+def test_validate_auth_params(params: dict[str, str]):
+    """
+    Given:
+        - auth params
+    When:
+        - run `validate_auth_params` function
+    Then:
+        - Ensure that when provided valid auth params
+          the function does not raise
+    """
+    from JiraV3 import validate_auth_params
+    validate_auth_params(**params)
+
+
+@pytest.mark.parametrize(
+    "username, api_key",
+    [
+        ("dummy_username", "dummy_api_key"),
+        ("", "")
+    ]
+)
+def test_client_is_basic_auth_or_oauth(username: str, api_key: str):
+    """
+    Given:
+        - username and api_key
+    When:
+        - run `__init__` method for `JiraBaseClient` class
+    Then:
+        - Ensure that when the client class receives both username and api_key,
+          the `is_basic_auth` flag is True otherwise False
+    """
+    client = jira_base_client_mock(username, api_key)
+    assert client.is_basic_auth == bool(username)
 
 
 class TestJiraGetIssueCommand:

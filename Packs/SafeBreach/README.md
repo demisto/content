@@ -2,6 +2,7 @@ SafeBreach has an extensive Hacker’s Playbook of breach and attack simulations
 
 The integration with Cortex XSOAR enables a fully automated, closed-loop process to ensure your security defenses will prevent the latest indicators from breaching your defenses.
 Enable the "SafeBreach - Breach and Attack Simulation platform" integration with Cortex XSOAR and benefit from **closed-loop automated security control remediation of IOCs:**
+
 - Discover security gaps through continuous breach & attack simulation
 - Automatically remediate and validate missed IOCs
 - Maximize the effectiveness and value of your existing security controls
@@ -13,6 +14,7 @@ Enable the "SafeBreach - Breach and Attack Simulation platform" integration with
 - Extends the existing XSOAR indicator types with additional custom SafeBreach indicator types
 
 **How to enable it?**
+
 1. Enable and configure SafeBreach v2 integration
 2. Create a Feed triggered job that will be triggered for SafeBreach indicators
 3. Assign the playbook for the job - "SafeBreach - Process Non-Behavioral Insights Feed"

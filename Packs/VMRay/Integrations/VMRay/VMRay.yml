@@ -27,6 +27,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  display: ''
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -78,11 +79,30 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      description: Setting the network scheme.
+      name: net_scheme_name
+      predefined:
+      - Isolated
+      - Random VPN
+      - Austria (VPN)
+      - Brazil (VPN)
+      - Canada (VPN)
+      - France (VPN)
+      - Germany (VPN)
+      - Japan (VPN)
+      - Luxembourg (VPN)
+      - Spain (VPN)
+      - Sweden (VPN)
+      - Switzerland (VPN)
+      - United Arab Emirates (VPN)
+      - United Kingdom (VPN)
+      - United States (VPN)
     description: Submits a sample to VMRay for analysis.
     name: vmray-upload-sample
     outputs:
     - contextPath: VMRay.Job.JobID
-      description: ID of a new job
+      description: ID of a new job.
       type: Number
     - contextPath: VMRay.Job.Created
       description: Timestamp of job creation.
@@ -131,7 +151,7 @@ script:
     name: vmray-upload-url
     outputs:
     - contextPath: VMRay.Job.JobID
-      description: ID of a new job
+      description: ID of a new job.
       type: Number
     - contextPath: VMRay.Job.Created
       description: Timestamp of job creation.
@@ -486,16 +506,16 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: Domain.Name
-      description: The domain name
+      description: The domain name.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: Email.Address
-      description: The Email address
+      description: The Email address.
       type: String
     - contextPath: File.Path
       description: The full file path.
@@ -525,7 +545,7 @@ script:
       description: Domain.
       type: String
     - contextPath: VMRay.Sample.IOC.Domain.ID
-      description: ID of the domain. (deprecated; is always 0)
+      description: ID of the domain. (deprecated; is always 0).
       type: Number
     - contextPath: VMRay.Sample.IOC.Domain.IsIOC
       description: Whether this artifact is an Indicator of Compromise (IOC).
@@ -714,7 +734,7 @@ script:
       description: SHA1 hash of the file.
       type: String
     - contextPath: VMRay.Sample.IOC.File.ID
-      description: ID of the file. (deprecated; is always 0)
+      description: ID of the file. (deprecated; is always 0).
       type: Number
     - contextPath: VMRay.Sample.IOC.File.IsIOC
       description: Whether this artifact is an Indicator of Compromise (IOC).
@@ -777,7 +797,7 @@ script:
       description: The IP address.
       type: String
     - contextPath: VMRay.Sample.IOC.IP.ID
-      description: ID of the IP address. (deprecated; is always 0)
+      description: ID of the IP address. (deprecated; is always 0).
       type: Number
     - contextPath: VMRay.Sample.IOC.IP.IsIOC
       description: Whether this artifact is an Indicator of Compromise (IOC).
@@ -816,7 +836,7 @@ script:
       description: The mutex classifications.
       type: String
     - contextPath: VMRay.Sample.IOC.Mutex.ID
-      description: ID of the mutex. (deprecated; is always 0)
+      description: ID of the mutex. (deprecated; is always 0).
       type: Number
     - contextPath: VMRay.Sample.IOC.Mutex.IsIOC
       description: Whether this artifact is an Indicator of Compromise (IOC).
@@ -897,7 +917,7 @@ script:
       description: The registry key classifications.
       type: String
     - contextPath: VMRay.Sample.IOC.Registry.ID
-      description: ID of the registry key. (deprecated; is always 0)
+      description: ID of the registry key. (deprecated; is always 0).
       type: Number
     - contextPath: VMRay.Sample.IOC.Registry.IsIOC
       description: Whether this artifact is an Indicator of Compromise (IOC).
@@ -951,7 +971,7 @@ script:
       description: ISO 3166-1 two-letter country codes associated with the URL.
       type: String
     - contextPath: VMRay.Sample.IOC.URL.ID
-      description: ID of the URL. (deprecated; is always 0)
+      description: ID of the URL. (deprecated; is always 0).
       type: Number
     - contextPath: VMRay.Sample.IOC.URL.IPAddresses
       description: IP addresses associated with the URL.
@@ -1040,37 +1060,94 @@ script:
     name: vmray-get-summary
     outputs:
     - contextPath: InfoFile.Name
-      description: Filename
+      description: Filename.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the Summary JSON v2
+      description: The EntryID of the Summary JSON v2.
       type: string
     - contextPath: InfoFile.Size
-      description: The file size of the Summary JSON v2
+      description: The file size of the Summary JSON v2.
       type: number
     - contextPath: InfoFile.Info
-      description: MIME type of the Summary JSON v2
+      description: MIME type of the Summary JSON v2.
+      type: string
+  - arguments:
+    - description: ID of the analysis from which to retrieve the screenshots from (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
+      name: analysis_id
+      required: true
+      default: false
+      isArray: false
+      secret: false
+    deprecated: false
+    description: >
+      Retrieves screenshots taken during a specific dynamic analysis. The screenshots are stored with file names like
+      'analysis_5_screenshot_2.png'. In this example, '5' represents the analysis ID from which the screenshot came,
+      and '2' indicates that it's the third screenshot taken during the analysis, in chronological order.
+    name: vmray-get-screenshots
+    execution: false
+    outputs:
+    - contextPath: InfoFile.Name
+      description: Filename.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The file size of the file.
+      type: number
+    - contextPath: InfoFile.Info
+      description: MIME type of the file.
       type: string
   - arguments:
     - description: Sample ID.
       name: sample_id
       required: true
     deprecated: true
-    description: This command performs a function similiar to the 'vmray-get-job-by-sample' command.
+    description: This command performs a function similar to the 'vmray-get-job-by-sample' command.
     name: get_job_sample
-  - arguments:
+  - deprecated: true
+    description: similar to vmray-get-sample.
+    name: get_results
+    arguments:
     - description: ID of the sample.
       name: sample_id
       required: true
-    deprecated: true
-    description: similiar to vmray-get-sample
-    name: get_results
   - deprecated: true
-    description: Retrieves a sample using the sample ID. (Deprecated)
+    description: Retrieves a sample using the sample ID. (Deprecated).
     name: upload_sample
-  dockerimage: demisto/python3:3.10.12.63474
+  - name: vmray-get-license-usage-verdicts
+    description: Get the used quota of verdicts.
+    outputs:
+    - contextPath: VMRay.VerdictQuota.PeriodEndDate
+      description: License end date.
+      type: String
+    - contextPath: VMRay.VerdictQuota.VerdictQuota
+      description: Total number of available verdicts (per month).
+      type: Number
+    - contextPath: VMRay.VerdictQuota.VerdictRemaining
+      description: Remaining number of verdicts (per month).
+      type: Number
+    - contextPath: VMRay.VerdictQuota.VerdictUsage
+      description: Percentages used.
+      type: Number
+  - name: vmray-get-license-usage-reports
+    description: Get the used quota of reports.
+    outputs:
+    - contextPath: VMRay.ReportQuota.PeriodEndDate
+      description: License end date.
+      type: String
+    - contextPath: VMRay.ReportQuota.VerdictQuota
+      description: Total number of available reports (per month).
+      type: Number
+    - contextPath: VMRay.ReportQuota.VerdictRemaining
+      description: Remaining number of reports (per month).
+      type: Number
+    - contextPath: VMRay.ReportQuota.VerdictUsage
+      description: Percentages used.
+      type: Number
+  dockerimage: demisto/python3:3.10.13.77674
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

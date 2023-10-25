@@ -1,0 +1,6 @@
+id: CyberArk_EPV_ParsingRule
+name: CyberArk EPV Parsing Rule
+fromversion: 8.3.0  
+tags: [EPV, Vault, CyberArk, EnterprisePassWordVault]
+rules: ''
+samples: ''

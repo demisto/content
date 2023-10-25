@@ -9,8 +9,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 JIRA_HOST_FOR_REGEX = "https:\/\/jira-hq.paloaltonetworks.local\/browse\/"
 JIRA_KEY_REGEX = "([A-Z][A-Z0-9]+-[0-9]+))\s?"
-JIRA_FIXED_ISSUE_REGEX = f"[fF]ixes:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
-JIRA_RELATED_ISSUE_REGEX = f"[rR]elates:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
+JIRA_FIXED_ISSUE_REGEX = f"fixe[sd]:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
+JIRA_RELATED_ISSUE_REGEX = f"relate[sd]:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
 GENERIC_WEBHOOK_NAME = "GenericWebhook_link_pr_to_jira"
 
 
@@ -40,9 +40,9 @@ def find_fixed_issue_in_body(body_text, is_merged):
     Getting the issues url in the PR's body as part of `fixing: <issue>` format.
     Return list of issues found: [{"link": link, "id": issue_id}]
     """
-    fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text)
-    related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text)
-    print(f'Detected {related_jira_issue=}')
+    fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text, re.IGNORECASE)
+    related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text, re.IGNORECASE)
+    print(f'Detected {related_jira_issue=}, {fixed_jira_issues=}')  # noqa: T201
 
     # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
     # If the PR is merged, we only send issues that should be closed by it.
@@ -51,7 +51,7 @@ def find_fixed_issue_in_body(body_text, is_merged):
     related_issue = []
 
     if not is_merged:
-        print("Not merging, getting related issues.")
+        print("Not merging, getting related issues.")  # noqa: T201
         related_issue = [{"link": link, "id": issue_id, "action": 'relates'} for link, issue_id in related_jira_issue]
 
     return fixed_issue + related_issue
@@ -68,24 +68,28 @@ def trigger_generic_webhook(options):
     gold_server_url = options.url
     instance_url = f"{gold_server_url}/instance/execute/{GENERIC_WEBHOOK_NAME}"
 
-    print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")
+    print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")  # noqa: T201
 
     # Handle cases where the PR did not intend to add links:
     if ("fixes:" not in pr_body.lower()
             and "relates:" not in pr_body.lower()
             and "fixed:" not in pr_body.lower()
             and "related:" not in pr_body.lower()):
-        print("Did not detect Jira linking pattern.")
+        print("Did not detect Jira linking pattern.")  # noqa: T201
+        # This case is not an error, just a case where the PR did not intend to add links to the Jira ticket,
+        # This is useful in the following cases:
+        # It's a small fix without an associated Jira ticket.
+        # PR's for Contribution management which don't have a Jira ticket.
         return
 
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
     if not issues_in_pr:
-        print("ERROR: No linked issues were found in PR. Make sure you correctly linked issues.")
+        print("ERROR: No linked issues were found in PR. Make sure you correctly linked issues.")  # noqa: T201
 
         sys.exit(1)
 
-    print(f"found issues in PR: {issues_in_pr}")
+    print(f"found issues in PR: {issues_in_pr}")  # noqa: T201
 
     body = {
         "name": f'{GENERIC_WEBHOOK_NAME} - #{pr_num}',
@@ -97,12 +101,12 @@ def trigger_generic_webhook(options):
             "JiraIssues": issues_in_pr
         },
     }
-    print(body)
+    print(body)  # noqa: T201
     # post to Content Gold
     res = requests.post(instance_url, json=body, auth=(username, password))
 
     if res.status_code != 200:
-        print(
+        print(  # noqa: T201
             f"Trigger playbook for Linking GitHub PR to Jira Issue failed. Post request to Content"
             f" Gold has status code of {res.status_code}")
         sys.exit(1)
@@ -112,7 +116,7 @@ def trigger_generic_webhook(options):
         res_json_response_data = res.json()[0]
         if res_json_response_data:
             investigation_id = res_json_response_data.get("id")
-            print(f'{investigation_id=}')
+            print(f'{investigation_id=}')  # noqa: T201
 
 
 def main():

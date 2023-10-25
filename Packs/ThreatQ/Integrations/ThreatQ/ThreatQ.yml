@@ -1,0 +1,109 @@
+commonfields:
+  id: ThreatQ_Beta
+  version: -1
+name: ThreatQ_Beta
+display: ThreatQ (Deprecated)
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use ThreatQ v2 instead. ThreatQ Integration
+configuration:
+- display: TQ API URL E.g. https://192.168.1.136/api
+  name: apiUrl
+  defaultvalue: ''
+  type: 0
+  required: true
+- display: TQ Client ID
+  name: client_id
+  defaultvalue: ''
+  type: 0
+  required: true
+- display: Email
+  name: credentials
+  defaultvalue: ''
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: tq-search-by-name
+    arguments:
+    - name: keyword
+      required: true
+      default: true
+      description: keyword
+      defaultValue: Naid
+    outputs:
+    - contextPath: ThreatQ.description
+      description: Description
+    description: Search ThreatQ repository by keywords
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address
+      defaultValue: 8.8.8.8
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: ThreatQ.score
+      description: ThreatQ score
+    - contextPath: ThreatQ.name
+      description: ThreatQ name
+    - contextPath: DBotScore.Vendor
+      description: DBotScore Vendor
+    - contextPath: DBotScore.Malicious
+      description: DBotScore Malicious status
+    description: 'Run ip check against ThreatQ '
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: URL or FQDN
+      defaultValue: www.google.com
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: ThreatQ.score
+      description: ThreatQ score
+    - contextPath: ThreatQ.name
+      description: ThreatQ name
+    - contextPath: DBotScore.Vendor
+      description: DBotScore Vendor
+    - contextPath: DBotScore.Malicious
+      description: DBotScore Malicious status
+    description: Run url check against ThreatQ
+  - name: file
+    arguments:
+    - name: file
+      description: File name, MD5 or SHA
+      defaultValue: google.exe
+      default: true
+      isArray: true
+      required: true
+    outputs:
+    - contextPath: ThreatQ.score
+      description: ThreatQ score
+    - contextPath: ThreatQ.name
+      description: ThreatQ name
+    - contextPath: DBotScore.Vendor
+      description: DBotScore Vendor
+    - contextPath: DBotScore.Malicious
+      description: DBotScore Malicious status
+    description: Run file check against ThreatQ
+  dockerimage: demisto/python:2.7.18.24398
+beta: true
+deprecated: true
+tests:
+- No test
+fromversion: 5.0.0

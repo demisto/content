@@ -3,8 +3,22 @@ A valid API Token for XSOAR from Recorded Future needed to fetch information.
 
 [Get help with Recorded Future for Cortex XSOAR](https://www.recordedfuture.com/integrations/palo-alto).  
 
-**Version:** 2.4.1
+**Version:** 2.4.2
+
 ---
+
+### Collective Insights
+The Recorded Future Platform tracks trends and facilitates new insights on detections to better identify threats. See trends and track metrics over time using the Recorded Future Platform. This feature will store XSOAR enrichments based on playbooks. This feature permits additional analytics to track trends and identify new insights with the Recorded Future Intelligence Cloud.
+
+The following data points are collected as part of Collective Insights:
+
+1. Incident - ID, Type, Name
+2. Playbook - Name
+3. Instance ID
+4. Command executed
+5. Indicator - Type, Name
+6. Recurrence
+7. Schedule
 
 ## Configuration
 | Parameter                                      | Description                                                                                                                                                                                                                                 |

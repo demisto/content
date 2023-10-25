@@ -33,7 +33,8 @@
 		"resolved_known_issue",
 		"resolved_duplicate",
 		"resolved_false_positive",
-		"resolved_other"
+		"resolved_other",
+        "resolved_auto"
     ],
 	"sla": 0,
 	"system": false,

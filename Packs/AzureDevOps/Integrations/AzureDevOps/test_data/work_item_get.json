@@ -1,0 +1,93 @@
+{
+    "id": 12,
+    "rev": 7,
+    "fields": {
+        "System.AreaPath": "DevOpsDemo",
+        "System.TeamProject": "DevOpsDemo",
+        "System.IterationPath": "DevOpsDemo",
+        "System.WorkItemType": "Issue",
+        "System.State": "To Do",
+        "System.Reason": "Added to backlog",
+        "System.AssignedTo": {
+            "displayName": "",
+            "url": "",
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "id": "",
+            "uniqueName": "",
+            "imageUrl": "",
+            "descriptor": ""
+        },
+        "System.CreatedDate": "2023-06-27T12:16:04.84Z",
+        "System.CreatedBy": {
+            "displayName": "",
+            "url": "",
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "id": "",
+            "uniqueName": "",
+            "imageUrl": "",
+            "descriptor": ""
+        },
+        "System.ChangedDate": "2023-06-27T20:08:38.163Z",
+        "System.ChangedBy": {
+            "displayName": "",
+            "url": "",
+            "_links": {
+                "avatar": {
+                    "href": ""
+                }
+            },
+            "id": "",
+            "uniqueName": "",
+            "imageUrl": "",
+            "descriptor": ""
+        },
+        "System.CommentCount": 3,
+        "System.Title": "DevOpsDemo",
+        "System.BoardColumn": "To Do",
+        "System.BoardColumnDone": "False",
+        "Microsoft.VSTS.Common.StateChangeDate": "2023-06-27T12:16:04.84Z",
+        "Microsoft.VSTS.Common.Priority": 3,
+        "WEF_0938B27D5E14432786F0BDB8D1CE0AE4_Kanban.Column": "To Do",
+        "WEF_0938B27D5E14432786F0BDB8D1CE0AE4_Kanban.Column.Done": "False",
+        "System.Description": "test test test",
+        "System.History": "Comment for example",
+        "System.Tags": "test2"
+    },
+    "commentVersionRef": {
+        "commentId": "",
+        "version": 1,
+        "url": ""
+    },
+    "_links": {
+        "self": {
+            "href": ""
+        },
+        "workItemUpdates": {
+            "href": ""
+        },
+        "workItemRevisions": {
+            "href": ""
+        },
+        "workItemComments": {
+            "href": ""
+        },
+        "html": {
+            "href": ""
+        },
+        "workItemType": {
+            "href": ""
+        },
+        "fields": {
+            "href": ""
+        }
+    },
+    "url": ""
+}

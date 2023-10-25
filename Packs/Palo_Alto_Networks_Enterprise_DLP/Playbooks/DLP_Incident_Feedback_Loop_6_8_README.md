@@ -2,7 +2,7 @@ Collects feedback from user  about blocked files.
 
 ## Dependencies
 
-This playbook uses the following sub-playbooks, integrations, and scripts.
+This playbook handles Palo Alto Networks Enterprise DLP incidents. It Collects feedback from the user about blocked activities and automates the approval process, if required. Supported communication methods are Slack, Microsoft Teams and Email.
 
 ### Sub-playbooks
 

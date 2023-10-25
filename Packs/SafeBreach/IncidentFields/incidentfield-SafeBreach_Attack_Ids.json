@@ -3,16 +3,12 @@
     "associatedTypes": [
         "SafeBreach Insight"
     ],
-    "breachScript": "",
     "caseInsensitive": true,
     "cliName": "safebreachattackids",
     "closeForm": false,
-    "columns": null,
     "content": true,
-    "defaultRows": null,
     "description": "List of SafeBreach attack ids that were simulated",
     "editForm": true,
-    "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
     "id": "incident_safebreachattackids",
@@ -21,9 +17,7 @@
     "name": "SafeBreach Attack Ids",
     "neverSetAsRequired": false,
     "ownerOnly": false,
-    "placeholder": "",
     "required": false,
-    "script": "",
     "selectValues": [
         "1233",
         "33345",
@@ -325,13 +319,11 @@
     ],
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
     "threshold": 72,
     "type": "tagsSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": false,
-    "validationRegex": "",
     "version": -1,
     "fromVersion": "5.5.0"
 }
