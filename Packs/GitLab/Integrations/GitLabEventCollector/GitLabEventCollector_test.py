@@ -1,83 +1,131 @@
-from GitLabEventCollector import GetEvents, Client, reformat_details
-from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
+import pytest
 
-events = [{'created_at': '2022-04-17T12:31:36.667Z', 'details': {'add': 'aaa'}, 'entity_type': 'Group', 'id': '1'},
-          {'created_at': '2022-05-17T12:31:36.667Z', 'details': {'add': 'bbb'}, 'entity_type': 'Group', 'id': '2'},
-          {'created_at': '2022-06-17T12:31:36.667Z', 'details': {'change': 'ccc'}, 'entity_type': 'Group', 'id': '3'},
-          {'created_at': '2022-04-17T12:31:36.667Z', 'entity_type': 'Project', 'id': '1'},
-          {'created_at': '2022-05-17T12:31:36.667Z', 'entity_type': 'Project', 'id': '2'},
-          {'created_at': '2022-06-17T12:31:36.667Z', 'details': {'remove': 'ddd'}, 'entity_type': 'Project', 'id': '3'},
-          {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}
-          ]
-events_final = [{'created_at': '2022-04-17T12:31:36.667Z',
-                 'details': {'add': 'aaa', 'action': 'add_aaa', 'action_type': 'add', 'action_category':
-                     'aaa'}, 'entity_type': 'Group', 'id': '1'},  # noqa: E128
-                {'created_at': '2022-06-17T12:31:36.667Z',
-                 'details': {'add': 'ddd', 'action': 'add_ddd', 'action_type': 'add', 'action_category':
-                     'ddd'}, 'entity_type': 'Project', 'id': '3'},  # noqa: E128
-                {'created_at': '2022-06-17T12:31:36.667Z', 'id': '99'}
-                ]
-options = IntegrationOptions.parse_obj({
-    'api_key': {'credentials': {'password': 'XXXXXX'}},
-    'after': '3 Days',
-    'url': 'https:/XXX.XXX.run',
-    'project_ids': 'XXX',
-    'group_ids': 'XXX',
-    'audit_events_type': 'groups, projects',
-    'push_events': 'true',
-    'product': 'gitlab',
-    'vendor': 'gitlab',
-})
-request_object = {
-    'method': Method.GET,
-    'url': 'https://test.test',
-    'headers': {},
-}
-request = IntegrationHTTPRequest(**request_object)
-client = Client(request, options, '2022-05-22T16:25:59.776885')
-get_events = GetEvents(client, options)
+from GitLabEventCollector import Client, prepare_query_params
+from requests import Session
 
 
-def test_get_last_run():
-    assert GetEvents.get_last_run(events, [events[0]], {}) == {'events': '2022-04-17T12:31:36.668000',
-                                                               'groups': '2022-06-17T12:31:36.668000',
-                                                               'projects': '2022-06-17T12:31:36.668000'}
+class MockResponse:
+    def __init__(self, data: list):
+        self.ok = True
+        self.status_code = 200
+        self.data = data
+        self.links = None
 
-    assert GetEvents.get_last_run([], [], {'groups': '2022-06-17T12:31:36.668000',
-                                           'projects': '2022-06-17T12:31:36.668000',
-                                           'events': '2022-06-17T12:31:36.668000'}) == {
-               'groups': '2022-06-17T12:31:36.668000',  # noqa: E126
-               'projects': '2022-06-17T12:31:36.668000',
-               'events': '2022-06-17T12:31:36.668000'}
-    assert GetEvents.get_last_run(events[3:], [], {'groups': '2022-06-17T12:31:36.666000',
-                                                   'projects': '2022-06-17T12:31:36.668000',
-                                                   'events': '2022-06-17T12:31:36.668000'}) == {
-               'groups': '2022-06-17T12:31:36.666000',  # noqa: E126
-               'projects': '2022-06-17T12:31:36.668000',
-               'events': '2022-06-17T12:31:36.668000'}
+    def json(self):
+        return self.data
+
+    def raise_for_status(self):
+        pass
 
 
-def test_reformat_details():
-    res = reformat_details(events)
-    assert res[0]['details'] == {'add': 'aaa', 'action': 'add_aaa', 'action_type': 'add', 'action_category': 'aaa'}
-    assert res[1]['details'] == {'add': 'bbb', 'action': 'add_bbb', 'action_type': 'add', 'action_category': 'bbb'}
-    assert res[2]['details'] == {'change': 'ccc', 'action': 'change_ccc', 'action_type': 'change',
-                                 'action_category': 'ccc'}
-    assert res[5]['details'] == {'remove': 'ddd', 'action': 'remove_ddd', 'action_type': 'remove',
-                                 'action_category': 'ddd'}
+""" Test methods """
 
 
-def test_prepare_time_for_next():
-    assert get_events.prepare_time_for_next('2022-06-17T12:31:36.667Z') == '2022-06-17T12:31:36.668000'
-    assert get_events.prepare_time_for_next('2022-06-17T12:31:36.669Z') == '2022-06-17T12:31:36.670000'
+@pytest.mark.parametrize('params, last_run, expected_params_url', [
+    ({'after': '02/02/2022T15:00:00Z'}, {}, 'pagination=keyset&created_after=2022-02-02T15:00:00Z&per_page=100'),
+    ({'after': '02/02/2022T15:01:00Z'},
+     {'next_url': 'pagination=keyset&created_after=2022-02-02T15:00:00Z&per_page=100&cursor=examplecursor'},
+     'pagination=keyset&created_after=2022-02-02T15:00:00Z&per_page=100&cursor=examplecursor')
+])
+def test_gitlab_events_params_good(params, last_run, expected_params_url):
+    """
+    Given:
+        - Various params and LastRun dictionary values.
+    When:
+        - preparing the parameters.
+    Then:
+        - Make sure they are parsed correctly into the URL suffix.
+    """
+    assert expected_params_url == prepare_query_params(params, last_run)
 
 
-def test_get_sorted_events_by_type():
-    assert get_events.get_sorted_events_by_type(events_final, entity_type='Group') == [
-        {'created_at': '2022-04-17T12:31:36.667Z',
-         'details': {'action': 'add_aaa',
-                     'action_category': 'aaa',
-                     'action_type': 'add',
-                     'add': 'aaa'},
-         'entity_type': 'Group',
-         'id': '1'}]
+def test_fetch_events(mocker):
+    """
+    Given:
+        - fetch-events call, where last_id = 1
+    When:
+        - Three following results are retrieved from the API:
+            1. id = 1, date_create = 1521214343
+            2. id = 2, date_create = 1521214343
+            3. id = 3, date_create = 1521214345
+    Then:
+        - Make sure only events 2 and 3 are returned (1 should not).
+        - Verify the new lastRun is calculated correctly.
+    """
+    from GitLabEventCollector import fetch_events_command
+
+    last_run = {'last_id': '1'}
+
+    mock_response = MockResponse([
+        {'id': '3', 'date_create': 1521214345},
+        {'id': '2', 'date_create': 1521214343},
+        {'id': '1', 'date_create': 1521214343},
+    ])
+    mocker.patch.object(Session, 'request', return_value=mock_response)
+    events, new_last_run = fetch_events_command(Client(base_url=''), params={}, last_run=last_run)
+
+    assert len(events) == 2
+    assert events[0].get('id') != '1'
+    assert new_last_run['last_id'] == '3'
+
+
+def test_fetch_events_with_two_iterations(mocker):
+    """
+    Given:
+        - fetch-events command execution.
+    When:
+        - Limit parameter value is 300.
+        - A single logs API call retrieves 200 events.
+    Then:
+        - Make sure the logs API is called twice.
+    """
+    from GitLabEventCollector import fetch_events_command
+
+    last_run = {}
+
+    mock_response = MockResponse([{'id': '1', 'date_create': 1521214343}] * 200)
+    mock_response.links = {'next': {'url': 'https://example.com?param=value'}}
+    mock_request = mocker.patch.object(Session, 'request', return_value=mock_response)
+    fetch_events_command(Client(base_url=''), params={'limit': 300}, last_run=last_run)
+    assert mock_request.call_count == 2
+
+
+def test_get_events(mocker):
+    """
+    Given:
+        - gitlab-get-events call
+    When:
+        - Three following results are retrieved from the API:
+            1. id = 1, date_create = 1521214343
+            2. id = 2, date_create = 1521214343
+            3. id = 3, date_create = 1521214345
+    Then:
+        - Make sure all of the events are returned as part of the CommandResult.
+    """
+    from GitLabEventCollector import get_events_command
+
+    mock_response = MockResponse([
+        {'id': '3', 'date_create': 1521214345},
+        {'id': '2', 'date_create': 1521214343},
+        {'id': '1', 'date_create': 1521214343},
+    ])
+    mocker.patch.object(Session, 'request', return_value=mock_response)
+    _, results = get_events_command(Client(base_url=''), args={})
+
+    assert len(results.raw_response) == 3
+    assert results.raw_response == mock_response.json()
+
+
+def test_test_module(mocker):
+    """
+    Given:
+        - test-module call.
+    When:
+        - A response with an OK status_code is retrieved from the API call.
+    Then:
+        - Make sure 'ok' is returned.
+    """
+    from GitLabEventCollector import test_module_command
+
+    mocker.patch.object(Session, 'request', return_value=MockResponse([]))
+    assert test_module_command(Client(base_url=''), {}) == 'ok'
