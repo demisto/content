@@ -1885,7 +1885,7 @@ script:
       isArray: false
       name: url
       required: true
-    - description: request_id (generated in polling command).
+    - description: The request_id (generated in the polling command).
       name: request_id
       deprecated: true
     description: Create url assessment request.
