@@ -34,6 +34,8 @@ TEST_SUITE_DATA_CELL_HEADER = "S/F/E/T"
 NO_COLOR_ESCAPE_CHAR = "\033[0m"
 RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
+TEST_PLAYBOOKS_REPORT_FILE_NAME = "test_playbooks_report.xml"
+TEST_MODELING_RULES_REPORT_FILE_NAME = "test_modeling_rules_report.xml"
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
@@ -44,6 +46,15 @@ def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:
             instance_role: str = instance_role_txt.read_text().replace("\n", "")
             instance_directories[instance_role] = directory
     return instance_directories
+
+
+def get_test_results_files(artifacts_path: Path, file_name: str) -> dict[str, Path]:
+    results_files: dict[str, Path] = {}
+    for instance_role, directory in get_instance_directories(artifacts_path).items():
+        if (file_path := Path(artifacts_path) / directory / file_name).exists():
+            logging.info(f"Found result file: {file_path} for instance role: {instance_role}")
+            results_files[instance_role] = file_path
+    return results_files
 
 
 def get_properties_for_test_suite(test_suite: TestSuite) -> dict[str, str]:

@@ -9,12 +9,13 @@ from jira import JIRA
 from junitparser import TestSuite, JUnitXml
 from tabulate import tabulate
 
-from Tests.scripts.common import get_all_failed_results, calculate_results_table
+from Tests.scripts.common import get_all_failed_results, calculate_results_table, TEST_MODELING_RULES_REPORT_FILE_NAME, \
+    get_test_results_files
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     jira_server_information
-from Tests.scripts.test_modeling_rule_report import create_jira_issue_for_test_modeling_rule, \
-    get_test_modeling_rules_results_files, TEST_MODELING_RULES_BASE_HEADERS, calculate_test_modeling_rule_results
+from Tests.scripts.test_modeling_rule_report import (create_jira_issue_for_test_modeling_rule,
+                                                     TEST_MODELING_RULES_BASE_HEADERS, calculate_test_modeling_rule_results)
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -57,7 +58,8 @@ def main():
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
-        if not (test_modeling_rules_results_files := get_test_modeling_rules_results_files(options.artifacts_path)):
+        if not (test_modeling_rules_results_files := get_test_results_files(options.artifacts_path,
+                                                                            TEST_MODELING_RULES_REPORT_FILE_NAME)):
             logging.critical(f"Could not find any test modeling rules result files in {options.artifacts_path}")
             sys.exit(1)
 

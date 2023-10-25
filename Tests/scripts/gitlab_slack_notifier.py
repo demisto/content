@@ -15,9 +15,10 @@ from slack_sdk import WebClient
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, TEST_NATIVE_CANDIDATE, WORKFLOW_TYPES, get_instance_directories, \
-    get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX
+    get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX, TEST_MODELING_RULES_REPORT_FILE_NAME, \
+    get_test_results_files
 from Tests.scripts.github_client import GithubPullRequest
-from Tests.scripts.test_modeling_rule_report import get_test_modeling_rules_results_files, calculate_test_modeling_rule_results
+from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results
 from Tests.scripts.utils.log_util import install_logging
 
 ROOT_ARTIFACTS_FOLDER = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
@@ -93,7 +94,7 @@ def get_test_report_pipeline_url(pipeline_url: str) -> str:
 
 def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
 
-    if not (test_modeling_rules_results_files := get_test_modeling_rules_results_files(artifact_folder)):
+    if not (test_modeling_rules_results_files := get_test_results_files(artifact_folder, TEST_MODELING_RULES_REPORT_FILE_NAME)):
         logging.error(f"Could not find any test modeling rule result files in {artifact_folder}")
         title = f"{title} - Failed to get Test Modeling rules results"
         return [{
@@ -180,7 +181,7 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
 
 
 def split_results_file(tests_data: str | None) -> list[str]:
-    return tests_data.split('\n') if tests_data else []
+    return list(filter(None, tests_data.split('\n'))) if tests_data else []
 
 
 def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
@@ -199,18 +200,15 @@ def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str)
 
 
 def unit_tests_results() -> list[dict[str, Any]]:
-    failing_tests = get_artifact_data(ROOT_ARTIFACTS_FOLDER, 'failed_lint_report.txt')
-    slack_results = []
-    if failing_tests:
-        failing_test_list = failing_tests.split('\n')
-        slack_results.append(
+    if failing_tests_list := split_results_file(get_artifact_data(ROOT_ARTIFACTS_FOLDER, 'failed_lint_report.txt')):
+        return [
             {
-                "title": f'Failed Unit Tests - ({len(failing_test_list)})',
-                "value": ', '.join(failing_test_list),
+                "title": f'Failed Unit Tests - ({len(failing_tests_list)})',
+                "value": ', '.join(failing_tests_list),
                 "short": False,
             }
-        )
-    return slack_results
+        ]
+    return []
 
 
 def bucket_upload_results(bucket_artifact_folder: Path, should_include_private_packs: bool) -> list[dict[str, Any]]:
@@ -312,8 +310,8 @@ def construct_slack_msg(triggering_workflow: str,
 
 
 def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any]]:
-    if missing_packs := get_artifact_data(artifact_folder, 'missing_content_packs_test_conf.txt'):
-        missing_packs_list = list(filter(None, missing_packs.split('\n')))
+    if missing_packs_list := split_results_file(get_artifact_data(artifact_folder,
+                                                                  'missing_content_packs_test_conf.txt')):
         title = f"Notice - Missing packs - ({len(missing_packs_list)})"
         return [{
             'fallback': title,

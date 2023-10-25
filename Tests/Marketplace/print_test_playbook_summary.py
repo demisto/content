@@ -8,11 +8,11 @@ from jira import JIRA
 from junitparser import JUnitXml, TestSuite
 from tabulate import tabulate
 
+from Tests.scripts.common import calculate_results_table, TEST_PLAYBOOKS_REPORT_FILE_NAME, get_test_results_files
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
     JIRA_API_KEY, jira_server_information
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, get_jira_tickets_for_playbooks, \
-    get_test_playbook_results_files, TEST_PLAYBOOKS_BASE_HEADERS
-from Tests.scripts.common import calculate_results_table
+    TEST_PLAYBOOKS_BASE_HEADERS
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -93,7 +93,7 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
     test_playbooks_report = artifacts_path / "test_playbooks_report.xml"
 
     # iterate over the artifacts path and find all the test playbook result files
-    if not (test_playbooks_result_files_list := get_test_playbook_results_files(artifacts_path)):
+    if not (test_playbooks_result_files_list := get_test_results_files(artifacts_path, TEST_PLAYBOOKS_REPORT_FILE_NAME)):
         # Write an empty report file to avoid failing the build artifacts collection.
         JUnitXml().write(test_playbooks_report.as_posix(), pretty=True)
         logging.error(f"Could not find any test playbook result files in {artifacts_path}")

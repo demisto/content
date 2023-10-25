@@ -7,7 +7,7 @@ function exit_on_error {
     fi
 }
 
-MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_results.xml"
+MODELING_RULES_RESULTS_FILE_NAME="${ARTIFACTS_FOLDER_INSTANCE}/test_modeling_rules_report.xml"
 
 function write_empty_test_results_file() {
   cat <<EOF > "${MODELING_RULES_RESULTS_FILE_NAME}"
@@ -51,6 +51,8 @@ count=0
 for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
   MODELING_RULE_TEST_FILE_PATTERN="${CURRENT_DIR}/Packs/${modeling_rule}/*_testdata.json"
   # If it is nightly, run `test modeling rules` only on modeling rules that have `_testdata.json` file.
+  # globbing is needed here, don't quote the variable.
+  # shellcheck disable=SC2086
   if [ -z "${NIGHTLY}" ] || [ -e ${MODELING_RULE_TEST_FILE_PATTERN} ]; then
     count=$((count+1))
     if [[ -n "${MODELING_RULES_TO_TEST}" ]]; then
@@ -95,6 +97,7 @@ if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
     API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
     XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_tokens.json")
 
+    # shellcheck disable=SC2086
     demisto-sdk modeling-rules test --xsiam-url="${XSIAM_URL}" --auth-id="${AUTH_ID}" --api-key="${API_KEY}" \
       --xsiam-token="${XSIAM_TOKEN}" --non-interactive --junit-path="${MODELING_RULES_RESULTS_FILE_NAME}" \
       ${MODELING_RULES_TO_TEST}

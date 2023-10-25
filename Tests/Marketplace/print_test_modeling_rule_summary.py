@@ -7,11 +7,10 @@ import urllib3
 from jira import JIRA
 from tabulate import tabulate
 
-from Tests.scripts.common import calculate_results_table
+from Tests.scripts.common import calculate_results_table, TEST_MODELING_RULES_REPORT_FILE_NAME, get_test_results_files
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
     JIRA_API_KEY, jira_server_information
-from Tests.scripts.test_modeling_rule_report import get_test_modeling_rules_results_files, TEST_MODELING_RULES_BASE_HEADERS, \
-    calculate_test_modeling_rule_results
+from Tests.scripts.test_modeling_rule_report import TEST_MODELING_RULES_BASE_HEADERS, calculate_test_modeling_rule_results
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -28,7 +27,7 @@ def options_handler() -> argparse.Namespace:
 def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -> bool:
     logging.info(f"Printing test modeling rule summary - artifacts path: {artifacts_path}")
     # iterate over the artifacts path and find all the test modeling rule result files
-    if not (test_modeling_rules_results_files := get_test_modeling_rules_results_files(artifacts_path)):
+    if not (test_modeling_rules_results_files := get_test_results_files(artifacts_path, TEST_MODELING_RULES_REPORT_FILE_NAME)):
         logging.error(f"Could not find any test modeling rule result files in {artifacts_path}")
         return True
 

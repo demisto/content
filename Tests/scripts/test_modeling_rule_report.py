@@ -8,11 +8,12 @@ from jira.client import ResultList
 from junitparser import TestSuite, JUnitXml
 from tabulate import tabulate
 
-from Tests.scripts.common import get_instance_directories, get_properties_for_test_suite
+from Tests.scripts.common import get_properties_for_test_suite
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
     generate_build_markdown_link
 from Tests.scripts.utils import logging_wrapper as logging
+
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
 
 
@@ -117,14 +118,3 @@ def calculate_test_modeling_rule_results(test_modeling_rules_results_files: dict
                     if search_issues:
                         jira_tickets_for_modeling_rule[summary] = search_issues[0]  # type: ignore[assignment]
     return modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions
-
-
-def get_test_modeling_rules_results_files(artifacts_path: Path) -> dict[str, Path]:
-    instance_role_to_results_file: dict[str, Path] = {}
-    for instance_role, directory in get_instance_directories(artifacts_path).items():
-        logging.info(f"Found instance directory: {directory} for instance role: {instance_role}")
-        test_playbooks_report_file = Path(artifacts_path) / directory / "test_playbooks_report.xml"
-        if test_playbooks_report_file.exists():
-            logging.info(f"Found test playbook result files list file: {test_playbooks_report_file}")
-            instance_role_to_results_file[instance_role] = test_playbooks_report_file
-    return instance_role_to_results_file

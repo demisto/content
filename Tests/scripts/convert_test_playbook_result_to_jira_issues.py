@@ -15,13 +15,14 @@ from jira.client import JIRA
 from junitparser import JUnitXml
 from tabulate import tabulate
 
+from Tests.scripts.common import TEST_SUITE_DATA_CELL_HEADER, calculate_results_table, get_all_failed_results, \
+    get_test_results_files, TEST_PLAYBOOKS_REPORT_FILE_NAME
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
     jira_server_information
-from Tests.scripts.test_playbooks_report import get_test_playbook_results_files, calculate_test_playbooks_results, \
+from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
     get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_BASE_HEADERS
-from Tests.scripts.common import TEST_SUITE_DATA_CELL_HEADER, calculate_results_table, get_all_failed_results
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -130,7 +131,8 @@ def main():
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
-        if not (test_playbooks_result_files_list := get_test_playbook_results_files(Path(options.artifacts_path))):
+        if not (test_playbooks_result_files_list := get_test_results_files(Path(options.artifacts_path),
+                                                                           TEST_PLAYBOOKS_REPORT_FILE_NAME)):
             logging.critical(f"Could not find any test playbook result files in {options.artifacts_path}")
             sys.exit(1)
 

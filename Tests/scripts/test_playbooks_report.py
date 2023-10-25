@@ -5,21 +5,22 @@ from typing import Any
 import tenacity
 from jira import JIRAError, JIRA, Issue
 from jira.client import ResultList
-
 from junitparser import JUnitXml, TestSuite
 from tqdm import tqdm
 
-from Tests.scripts.common import get_instance_directories, get_properties_for_test_suite
+from Tests.scripts.common import get_properties_for_test_suite
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_PLAYBOOKS_BASE_HEADERS = ["Playbook ID"]
 
 
-def calculate_test_playbooks_results(test_playbooks_result_files_list: list[Path]) -> tuple[dict[str, dict[str, Any]], set[str]]:
+def calculate_test_playbooks_results(test_playbooks_result_files_list: dict[str, Path]
+                                     ) -> tuple[dict[str, dict[str, Any]], set[str]]:
     playbooks_results: dict[str, dict[str, Any]] = {}
     server_versions = set()
-    for test_playbook_result_file in test_playbooks_result_files_list:
+    for instance_role, test_playbook_result_file in test_playbooks_result_files_list.items():
+        logging.debug(f"Processing test playbook result file: {test_playbook_result_file} for instance role: {instance_role}")
         xml = JUnitXml.fromfile(test_playbook_result_file.as_posix())
         for test_suite_item in xml.iterchildren(TestSuite):
             properties = get_properties_for_test_suite(test_suite_item)
@@ -70,13 +71,3 @@ def get_jira_tickets_for_playbooks(jira_server: JIRA,
                 logging.error(f'Failed to search for a jira ticket for playbook id:"{futures[future]}"')
 
     return playbook_ids_to_jira_tickets
-
-
-def get_test_playbook_results_files(artifacts_path: Path) -> list[Path]:
-    test_playbooks_result_files_list: list[Path] = []
-    for _instance_role, directory in get_instance_directories(artifacts_path).items():
-        test_playbooks_report = Path(artifacts_path) / directory / "test_playbooks_report.xml"
-        if test_playbooks_report.exists():
-            logging.info(f"Found test playbook result files list file: {test_playbooks_report}")
-            test_playbooks_result_files_list.append(test_playbooks_report)
-    return test_playbooks_result_files_list
