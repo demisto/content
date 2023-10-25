@@ -10,6 +10,7 @@
 
 .change-file-ids: &change-file-ids
   - python3 ./Tests/scripts/sdk_nightly_change_json_file_fields.py Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json name
+  - python3 ./Tests/scripts/sdk_nightly_change_json_file_fields.py Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json name
 
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
   - section_start "Upload Entities to Cortex XSOAR" --collapsed
@@ -22,15 +23,24 @@
   - section_end "Upload Entities to Cortex XSOAR"
 
 
-.export_cloud_machine_constants: &export_cloud_machine_constants
+.export_xsiam_machine_constants: &export_xsiam_machine_constants
   - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
   - |
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
-      export XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_SERVERS_PATH")
+      export XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_SERVERS_PATH")
       export DEMISTO_BASE_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
       export XSIAM_AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
-      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_API_KEYS")
+      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_API_KEYS")
       export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_TOKENS")
+    done
+
+.export_xsoar_ng_machine_constants: &export_xsoar_ng_machine_constants
+  - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
+  - |
+    for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
+      export XSOAR_NG_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_SERVERS_PATH")
+      export DEMISTO_BASE_URL=$(echo "$XSOAR_NG_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
+      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_API_KEYS")
     done
 
 demisto-sdk-nightly:run-unittests-and-lint:
@@ -295,6 +305,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       GCS_QUEUE_FILE: "queue-ga"
       GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
       CLOUD_SERVERS_FILE: "xsiam_servers_path"
+      XSIAM_SERVERS_PATH: "./xsiam_servers.json"
       CLOUD_API_KEYS: $XSIAM_API_KEYS
       ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
       GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
@@ -315,9 +326,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
     - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
 
-    - !reference [.uninstall-packs-and-reset-bucket-cloud]
-
-    - !reference [.export_cloud_machine_constants]
+    - !reference [.export_xsiam_machine_constants]
     - echo "Server URL $DEMISTO_BASE_URL"
     - echo "Checking infra."
   
@@ -370,7 +379,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
 
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
-    - !reference [.export_cloud_machine_constants]
+    - !reference [.export_xsoar_ng_machine_constants]
 
     - echo "Checking infra."
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
