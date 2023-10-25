@@ -1655,7 +1655,7 @@ script:
       isArray: false
       name: message_id
       required: true
-    - description: request_id (generated in polling command).
+    - description: The ID of the request (generated in the polling command).
       name: request_id
       deprecated: true
     description: Create and retrieve a mail threat assessment.
