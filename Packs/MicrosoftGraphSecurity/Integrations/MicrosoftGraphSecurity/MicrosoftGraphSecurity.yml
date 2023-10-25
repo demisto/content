@@ -1894,46 +1894,46 @@ script:
     polling: true
     outputs:
     - contextPath: MSGraphMail.UrlAssessment.ID
-      description: 'mail assessment id.'
+      description: The mail assessment ID.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.Url
-      description: 'the URL.'
+      description: The URL of the URL assessment.
       type: string
     - contextPath: MSGraphMail.UrlAssessment.CreatedDateTime
-      description: 'mail assessment Created DateTime.'
+      description: The datetime the URL assessment was created.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.ContentType
-      description: 'Content Type.'
+      description: The content type of the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.ExpectedAssessment
-      description: 'Expected Assessment.'
+      description: The expected assessment of the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.Category
-      description: 'Category.'
+      description: The category of the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.Status
-      description: 'Status.'
+      description: The status of the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.RequestSource
-      description: 'Request Source.'
+      description: The request source for the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.RecipientEmail
-      description: 'Recipient Email.'
+      description: The recipient email for the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.DestinationRoutingReason
-      description: 'Destination Routing Reason.'
+      description: The destination routing reason for the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.CreatedUserID
-      description: 'Created user id.'
+      description: The user ID created for the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.CreatedUsername
-      description: 'Created user name.'
+      description: The user name created for the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.ResultType
-      description: 'Result Type.'
+      description: The result type of the URL assessment.
       type: String
     - contextPath: MSGraphMail.UrlAssessment.ResultMessage
-      description: 'Result message.'
+      description: The result message of the URL assessment.
       type: String
   - arguments:
     - description: request id.
