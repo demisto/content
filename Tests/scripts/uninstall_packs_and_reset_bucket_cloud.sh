@@ -15,7 +15,11 @@ else
 fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  if [ $TEST_XDR_ENV ]; then
+    cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  else
+    echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  fi
 fi
 
 if [[ -z "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then

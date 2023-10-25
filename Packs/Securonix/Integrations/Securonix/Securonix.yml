@@ -656,6 +656,15 @@ script:
     - contextPath: Securonix.Incidents.IsWhitelisted
       description: Whether the incident is added to allow list.
       type: Boolean
+    - contextPath: Securonix.Incidents.Policystarttime
+      description: Epoch time when the policy is first violated.
+      type: Number
+    - contextPath: Securonix.Incidents.Policyendtime
+      description: Epoch time when the policy is last violated.
+      type: Number
+    - contextPath: Securonix.Incidents.Solrquery
+      description: Spotter query to fetch the related violations.
+      type: String
   - arguments:
     - description: Incident ID.
       name: incident_id
@@ -708,6 +717,15 @@ script:
     - contextPath: Securonix.Incidents.IsWhitelisted
       description: Whether the incident is added to allow list.
       type: Boolean
+    - contextPath: Securonix.Incidents.Policystarttime
+      description: Epoch time when the policy is first violated.
+      type: Number
+    - contextPath: Securonix.Incidents.Policyendtime
+      description: Epoch time when the policy is last violated.
+      type: Number
+    - contextPath: Securonix.Incidents.Solrquery
+      description: Spotter query to fetch the related violations.
+      type: String
   - arguments:
     - description: Incident ID.
       name: incident_id
@@ -1528,7 +1546,7 @@ script:
       required: true
     description: Deletes the entries from the lookup table.
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   runonce: false
   script: '-'
