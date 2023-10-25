@@ -383,9 +383,9 @@ def main():
             branch = options.current_branch
             if triggering_workflow == BUCKET_UPLOAD and BUCKET_UPLOAD_BRANCH_SUFFIX in branch:
                 branch = branch[:branch.find(BUCKET_UPLOAD_BRANCH_SUFFIX)]
+            logging.info(f"Searching for pull request for origin branch:{options.current_branch} and calculated branch:{branch}")
             pull_request = GithubPullRequest(
                 options.github_token,
-                sha1=options.current_sha,
                 branch=branch,
                 fail_on_error=True,
                 verify=False,
