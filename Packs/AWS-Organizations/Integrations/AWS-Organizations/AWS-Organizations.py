@@ -101,6 +101,7 @@ def test_module(aws_client: 'OrganizationsClient') -> str:
 
 
 def root_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
     roots, next_token = paginate(
         aws_client.get_paginator('list_roots'),
         'Roots',
@@ -109,15 +110,13 @@ def root_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandR
         page_size=args.get('page_size'),
     )
 
-    for root in roots:
-        del root['PolicyTypes']
-
     return CommandResults(
         outputs=next_token_output_dict(
             'Root', next_token, roots, 'Id',
         ),
         readable_output=tableToMarkdown(
             'AWS Organizations Roots',
+            ['Arn', 'Id', 'Name'],
             roots, removeNull=True,
         )
     )
@@ -246,20 +245,116 @@ def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
         )
 
 
-def organization_get_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    ...
+def organization_get_command(aws_client: 'OrganizationsClient') -> CommandResults:
+
+    organization = aws_client.describe_organization()
+
+    return CommandResults(
+        outputs=organization['Organization'],
+        outputs_prefix='AWS.Organizations.Organization',
+        outputs_key_field='Id',
+        readable_output=tableToMarkdown(
+            'AWS Organization',
+            organization['Organization'],
+            [
+                'Id', 'Arn', 'FeatureSet', 'MasterAccountArn',
+                'MasterAccountId', 'MasterAccountEmail'
+            ],
+            removeNull=True
+        )
+    )
 
 
 def account_remove_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    ...
+
+    aws_client.remove_account_from_organization(
+        AccountId=args['account_id']
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'AWS Account Removed',
+            {'AccountId': args['account_id']}
+        )
+    )
 
 
 def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    ...
+
+    aws_client.move_account(
+        AccountId=args['account_id'],
+        SourceParentId=args['source_parent_id'],
+        DestinationParentId=args['destination_parent_id'],
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'AWS Account Moved',
+            {'AccountId': args['account_id']}
+        )
+    )
 
 
-def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    ...
+@polling_function(
+    'aws-org-account-create',
+    interval=demisto.getArg('interval_in_seconds'),
+    timeout=demisto.getArg('timeout'),
+    requires_polling_arg=False
+)
+def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:
+
+    def build_tags(keys: str | None, values: str | None) -> list:
+        try:
+            return [
+                {
+                    'Key': key,
+                    'Value': value
+                }
+                for key, value in zip(
+                    argToList(keys),
+                    argToList(values),
+                    strict=True
+                )
+            ]
+        except ValueError:
+            raise DemistoException('"tag_key" and "tag_value" must have the same length.')
+    
+    result = PollResult(
+        None, continue_to_poll=True
+    )
+
+    if (request_id := args.get('request_id')):
+        account = aws_client.describe_create_account_status(
+            CreateAccountRequestId=request_id
+        )
+        result.partial_result = CommandResults(
+            readable_output=tableToMarkdown(
+                'AWS account creation request was sent successfully.',
+                account['CreateAccountStatus'],
+                ['Id', 'State']
+            )
+        )
+        args['request_id'] = account['CreateAccountStatus']['Id']
+    else:
+        account = aws_client.create_account(
+            Email=args['email'],
+            AccountName=args['account_name'],
+            RoleName=args['role_name'],
+            IamUserAccessToBilling=args['iam_user_access_to_billing'].upper(),
+            Tags=build_tags(
+                args.get('tag_key'),
+                args.get('tag_value')
+            )
+        )
+
+    if account['CreateAccountStatus']['State'] == 'SUCCEEDED':
+        result.continue_to_poll = False
+        result.response = account_list_command(
+            {'account_id': account.get('AccountId')},
+            aws_client
+        )
+
+    return result
 
 
 def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
@@ -338,7 +433,7 @@ def main():
             case 'aws-org-account-list':
                 return_results(account_list_command(args, aws_client))
             case 'aws-org-organization-get':
-                return_results(organization_get_command(args, aws_client))
+                return_results(organization_get_command(aws_client))
             case 'aws-org-account-remove':
                 return_results(account_remove_command(args, aws_client))
             case 'aws-org-account-move':

@@ -203,12 +203,32 @@ script:
         name: roleSessionName
       - description: 
         name: roleSessionDuration
-      description: 
-      outputs: []
+      description: Retrieves information about the organization that the user's account belongs to.
+      outputs:
+      - contextPath: AWS.Organizations.Organization.Id
+        description: The unique identifier (ID) of the organization.
+        type: String
+      - contextPath: AWS.Organizations.Organization.Arn
+        description: The Amazon Resource Name (ARN) of the organization.
+        type: String
+      - contextPath: AWS.Organizations.Organization.FeatureSet
+        description: |
+          Specifies the functionality that currently is available to the organization.
+          If set to “ALL”, then all features are enabled and policies can be applied to accounts in the organization.
+          If set to “CONSOLIDATED_BILLING”, then only consolidated billing functionality is available.
+        type: String
+      - contextPath: AWS.Organizations.Organization.MasterAccountArn
+        description: The Amazon Resource Name (ARN) of the account that is designated as the management account for the organization.
+        type: String
+      - contextPath: AWS.Organizations.Organization.MasterAccountId
+        description: The unique identifier (ID) of the management account of the organization.
+        type: String
+      - contextPath: AWS.Organizations.Organization.MasterAccountEmail
+        description: The email address that is associated with the Amazon Web Services account that is designated as the management account for the organization.
+        type: String
     - name: aws-org-account-remove
       arguments:
-      - description: "Add description that the user can get this value by running the        \ command
-                          of “aws-organizations-account-list”"
+      - description: The unique identifier (ID) of the member account that you want to remove from the organization. This can be obtained with the command "aws-organizations-account-list".
         name: account_id
         required: true
       - description: 
@@ -217,12 +237,11 @@ script:
         name: roleSessionName
       - description: 
         name: roleSessionDuration
-      description: 
+      description: Remove the specified account from the organization.
       outputs: []
     - name: aws-org-account-move
       arguments:
-      - description: "Add description that the user can get this value by running the
-          \                        command of “account-list”"
+      - description: The unique identifier (ID) of the member account that you want to move. This can be obtained with the command "aws-organizations-account-list".
         name: account_id
         required: true
       - description: "The unique identifier (ID) of the root or organizational unit that        \ you
@@ -269,7 +288,7 @@ script:
         predefined:
         - Allow
         - Deny
-      - defaultValue: "“OrganizationAccountAccessrole”."
+      - defaultValue: "OrganizationAccountAccessrole"
         description: "The name of an IAM role that AWS Organizations automatically pre
           \                        configured in the new member account.
           default -“        OrganizationAccountAccessrole”."
@@ -288,6 +307,9 @@ script:
         name: tag_key
       - description: 
         name: tag_value
+      - description: The Id of the create request that is used for polling.
+        name: request_id
+        hidden: true
       - defaultValue: '600'
         description: default 600
         name: timeout
