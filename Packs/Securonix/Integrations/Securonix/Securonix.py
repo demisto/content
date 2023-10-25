@@ -815,7 +815,10 @@ class Client(BaseClient):
             'prettyJson': True
         }
         if query:
-            params['query'] = f'{params["query"]} AND {query}'
+            if re.findall(r"index\s*=\s*\w+", query):
+                params['query'] = query
+            else:
+                params['query'] = f'{params["query"]} AND {query}'
 
         remove_nulls_from_dictionary(params)
         violation_data = self.http_request('GET', '/spotter/index/search', headers={'token': self._token},
@@ -838,7 +841,7 @@ class Client(BaseClient):
         """
         headers = {
             'token': self._token,
-            'Accept': 'application/vnd.snypr.app-v2.0+json'
+            'Accept': 'application/vnd.snypr.app-v3.0+json'
         }
         params = {
             'type': 'list',
@@ -863,7 +866,7 @@ class Client(BaseClient):
         """
         headers = {
             'token': self._token,
-            'Accept': 'application/vnd.snypr.app-v2.0+json'
+            'Accept': 'application/vnd.snypr.app-v3.0+json'
         }
         params = {
             'type': 'metaInfo',
@@ -1725,7 +1728,7 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     incidents_items = incidents.get('incidentItems')
     incidents_readable, incidents_outputs = parse_data_arr(incidents_items)
-    headers = ['Incident Id', 'Incident Status', 'Incident Type', 'Priority', 'Reason']
+    headers = ['IncidentID', 'Incident Status', 'Incident Type', 'Priority', 'Reason']
     human_readable = tableToMarkdown(name="Incidents:", t=incidents_readable,
                                      headers=headers, removeNull=True)
     entry_context = {'Securonix.Incidents(val.IncidentID === obj.IncidentID)': incidents_outputs}
