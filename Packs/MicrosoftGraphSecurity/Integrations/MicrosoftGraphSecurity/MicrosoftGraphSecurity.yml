@@ -1827,40 +1827,40 @@ script:
     polling: true
     outputs:
     - contextPath: MSGraphMail.FileAssessment.ID
-      description: 'mail assessment id.'
+      description: The mail assessment ID.
       type: String
     - contextPath: MSGraphMail.FileAssessment.CreatedDateTime
-      description: 'mail assessment Created DateTime.'
+      description: The datetime the file assessment was created.
       type: String
     - contextPath: MSGraphMail.FileAssessment.ContentType
-      description: 'Content Type.'
+      description: The content type.
       type: String
     - contextPath: MSGraphMail.FileAssessment.ExpectedAssessment
-      description: 'Expected Assessment.'
+      description: The expected assessment.
       type: String
     - contextPath: MSGraphMail.FileAssessment.Category
-      description: 'Category.'
+      description: The category of the file assessment.
       type: String
     - contextPath: MSGraphMail.FileAssessment.Status
-      description: 'Status.'
+      description: The status of the file assessment.
       type: String
     - contextPath: MSGraphMail.FileAssessment.RequestSource
-      description: 'Request Source.'
+      description: The request source of the file assessment.
       type: String
     - contextPath: MSGraphMail.FileAssessment.FileName
-      description: 'File name.'
+      description: The file name of the file assessment.
       type: String
     - contextPath: MSGraphMail.FileAssessment.CreatedUserID
-      description: 'Created user id.'
+      description: The user ID that was created for the file assessment.
       type: String
     - contextPath: MSGraphMail.FileAssessment.CreatedUsername
-      description: 'Created user name.'
+      description: The user name that was created for the mail assessment.
       type: String
     - contextPath: MSGraphMail.FileAssessment.ResultType
-      description: 'Result Type.'
+      description: The result type of the file assessment.
       type: String
     - contextPath: MSGraphMail.FileAssessment.ResultMessage
-      description: 'Result message.'
+      description: The result message of the file assessment.
       type: String
   - arguments:
     - description: expected assessment.
