@@ -14,10 +14,10 @@ alter // Explicit extractions
     target_tag_name = arrayindex(regextract(msg, "Created\s+tag\s+\'([^\']+)"), 0),
     target_tag_type = arrayindex(regextract(msg, "Created\s+tag\s+\S+of\s+type\s+(.+)"), 0),
     target_var_name = arrayindex(regextract(msg, "var\s+\'([^\']+)"), 0),
-    threat_name = if(cefDeviceEventClassId = "Alert", coalesce(
+    threat_name = coalesce(
                     arrayindex(regextract(msg, "Threat (.+?) was detected"), 0), // predefined known threats
-                    arrayindex(regextract(msg, "^([^:]+)\:"), 0)), // general threat prefix 
-                    cefName) // threat name fallback 
+                    if(cefDeviceEventClassId = "Alert", arrayindex(regextract(msg, "^([^:]+)\:\s+"), 0), // general threat prefix 
+                    cefName)) // threat name fallback 
 | alter // additional extractions
     user_name = arrayindex(regextract(full_username, "(?:\S+\\)*(\S+)"), 0), 
     user_domain = arrayindex(regextract(full_username, "(\S+)\\"), 0),
@@ -38,17 +38,20 @@ alter // Explicit extractions
     xdm.alert.name = cefName,
     xdm.alert.original_alert_id = externalid,
     xdm.alert.original_threat_name = threat_name,
-    xdm.alert.severity = cefSeverity,
+    xdm.alert.severity = if(cs9Label = "Score", cs9),
     xdm.alert.subcategory = if(cs7Label = "Category", cs7),
     xdm.alert.description = msg,
-    xdm.event.is_completed = if(cs3 = "Resolved", to_boolean("TRUE"), if(cs3 = "Unresolved"), to_boolean("False")),
+    xdm.event.is_completed = if(cs3 in ("Resolved", "resolved"), to_boolean("TRUE"), cs3 = "Unresolved", to_boolean("False")),
     xdm.event.operation = cat,
     xdm.event.operation_sub_type = operation,
-    xdm.event.outcome = if(cs6Label = "SnifferStatus", if(cs6 = "down", XDM_CONST.OUTCOME_FAILED, cs6 = "UP", XDM_CONST.OUTCOME_SUCCESS)),
-    xdm.event.type = cefDeviceEventClassId,
+    xdm.event.outcome = if(cs6Label = "SnifferStatus", if(cs6 = "down", XDM_CONST.OUTCOME_FAILED, cs6 = "up", XDM_CONST.OUTCOME_SUCCESS)),
+    xdm.event.original_event_type = cefDeviceEventClassId,
+    xdm.event.type = cefName,
+    xdm.event.description = msg,
     xdm.network.application_protocol = application_protocol,
-    xdm.observer.name = if(cs2Label = "Network", cs2), // Network name
+    xdm.observer.name = if(cs2Label = "Network", cs2), 
     xdm.observer.version = cefDeviceVersion,
+    xdm.session_context_id = if(cs22Label = "StoryId", cs22), 
     xdm.source.host.device_category = if(cs11Label = "PrimaryAssetType", cs11),
     xdm.source.host.hostname = if(shost != null and shost != "N/A", shost, cs12Label = "PrimaryAssetHostname" and cs12 != "N/A", cs12),
     xdm.source.host.ipv4_addresses = src_ipv4_addresses,
