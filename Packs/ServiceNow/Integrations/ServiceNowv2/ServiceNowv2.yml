@@ -1561,7 +1561,7 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      defaultValue: '0'
+      defaultValue: 'GET'
       description: action to be performed on path.
       isArray: true
       name: method
