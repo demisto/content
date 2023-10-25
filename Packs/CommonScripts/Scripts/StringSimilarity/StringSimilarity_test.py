@@ -74,8 +74,7 @@ def test_main_with_no_similarity_match(mocker):
         # Execute the main function and check if ValueError is raised
         try:
             main()
-            results = return_results.call_args[0][0].to_context()['Contents'] 
-            assert results == expected_results
+            assert return_results.call_args[0][0].to_context()['Contents'] == expected_results
         except ValueError as e:
             assert str(e) == "No similarity score calculated. Check the similarityThreshold value."
 
