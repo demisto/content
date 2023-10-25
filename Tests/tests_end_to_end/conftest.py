@@ -37,8 +37,9 @@ def get_integration_params(integration_secrets_path: str, instance_name: str):
 
     for config in integrations_config:
         existing_instance_name = config.get("instance_name")
-        logging.info(f'{existing_instance_name=}')
-        if existing_instance_name == instance_name or config.get("name") == instance_name:
+        existing_name = config.get("name")
+        logging.info(f'{existing_instance_name=}, {existing_name=}')
+        if existing_instance_name == instance_name or existing_name == instance_name:
             return config.get("params")
 
     raise ValueError(f'Could not find integration parameters for {instance_name}')
