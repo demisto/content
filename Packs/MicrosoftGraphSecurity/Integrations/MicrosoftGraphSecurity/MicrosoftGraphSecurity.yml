@@ -1815,7 +1815,7 @@ script:
       isArray: false
       name: entry_id
       required: false
-    - description: whether to hide the polling result (automatically filled by polling).
+    - description: Whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
       deprecated: true
     - description: request_id (generated in polling command).
