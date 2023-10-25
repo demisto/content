@@ -625,17 +625,10 @@ def install_all_content_packs_for_nightly(
     production_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
     logging.debug(f"Installing all content packs for nightly flow in server {host}")
 
-    # Add deprecated packs to IGNORED_FILES list:
     for pack_id in pack_ids_to_install:
-        if is_pack_deprecated(pack_id=pack_id, production_bucket=False):
-            logging.debug(f'Skipping installation of hidden pack "{pack_id}"')
-            IGNORED_FILES.append(pack_id)
-
-    for pack_id in pack_ids_to_install:
-        if pack_id not in IGNORED_FILES:
-            pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
-            if pack_version:
-                all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
+        if pack_version := get_latest_version_from_bucket(pack_id, production_bucket):
+            logging.debug(f'Found the {pack_version=} for {pack_id=}')
+            all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     success, _ = install_packs(client, host, all_packs)
     return success
 
