@@ -1926,7 +1926,7 @@ class Pack:
         Returns:
             (bool) Whether the dict contains the RN entries by the entities types.
         """
-        return release_notes_str and (not release_notes_dict or (set(release_notes_dict.keys()) != {ContentType.PACK.value}))
+        return release_notes_str and (not release_notes_dict or (set(release_notes_dict.keys()) == {ContentType.PACK.value}))
 
     def filter_release_notes_by_tags(self, release_notes, upload_marketplace):
         """
