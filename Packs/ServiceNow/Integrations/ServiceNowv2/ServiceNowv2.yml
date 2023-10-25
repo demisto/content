@@ -30,7 +30,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- defaultvalue: stateNOT IN6,7
+- defaultvalue: We should change it to close code not status
   display: The query to use when fetching incidents
   name: sysparm_query
   type: 0
