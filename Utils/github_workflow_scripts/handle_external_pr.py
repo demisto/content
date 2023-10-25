@@ -44,6 +44,8 @@ CONTRIBUTION_LABEL = 'Contribution'
 EXTERNAL_LABEL = "External PR"
 SECURITY_LABEL = "Security Review"
 TIM_LABEL = "TIM Review"
+TIM_TAGS = "Threat Intelligence Management"
+TIM_CATEGORIES = "Data Enrichment & Threat Intelligence"
 SECURITY_CONTENT_ITEMS = [
     "Playbooks",
     "IncidentTypes",
@@ -192,17 +194,23 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_reviewer_needed(packs_in_pr: set[str]) -> bool:
+def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     for pack in packs_in_pr:
         pack_metadata = get_pack_metadata(pack)
-        for pr_file in pack:
+        for pr_file in pr_files:
             if "yml" in pr_file:
                 if "feed: true" in pr_file:
                     return True
         tags = pack_metadata.get("tags")
         categories = pack_metadata.get("categories")
-        if "Threat Intelligence Management" in tags or "Data Enrichment & Threat Intelligence" in categories:
+        if TIM_TAGS in tags or TIM_CATEGORIES in categories:
             return True
+    return False
+
+
+def is_tim_reviewer_needed(packs_in_pr: set[str], pr_files: list[str], support_labels: set[str]) -> bool:
+    if support_labels in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
+        return is_tim_content(packs_in_pr, pr_files)
     return False
 
 
@@ -293,10 +301,9 @@ def main():
 
     # adding TIM reviewer
     packs_in_pr = packs_to_check_in_pr(pr_files)
-    if is_tim_reviewer_needed(packs_in_pr):
-        if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
-            reviewers.append(tim_reviewer)
-            pr.add_to_labels(TIM_LABEL)
+    if is_tim_reviewer_needed(packs_in_pr, pr_files, support_label):
+        reviewers.append(tim_reviewer)
+        pr.add_to_labels(TIM_LABEL)
 
     pr.create_review_request(reviewers=reviewers)
     print(f'{t.cyan}Assigned and requested review from "{",".join(reviewers)}" to the PR{t.normal}')
