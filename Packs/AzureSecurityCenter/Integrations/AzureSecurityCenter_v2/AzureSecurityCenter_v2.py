@@ -1,11 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
-import urllib3
 import ast
 from MicrosoftApiModule import *  # noqa: E402
 
-# disable insecure warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 """ GLOBAL VARS """
 
@@ -26,6 +23,7 @@ SUB_ID_REQUIRING_CMD = (
     "azure-sc-delete-jit",
     "azure-sc-list-storage",
 )
+DEFAULT_LIMIT = 50
 # API Versions
 SUBSCRIPTION_API_VERSION = "2015-01-01"
 ALERT_API_VERSION = "2019-01-01"
@@ -36,6 +34,7 @@ IPP_API_VERSION = "2017-08-01-preview"
 JIT_API_VERSION = "2015-06-01-preview"
 STORAGE_API_VERSION = "2018-07-01"
 SECURE_STORES_API_VERSION = "2020-01-01"
+LIST_RESOURCE_GROUP_VERSION = "2021-04-01"
 
 """ HELPER FUNCTIONS """
 
@@ -414,6 +413,21 @@ class MsClient:
         params = {"api-version": SECURE_STORES_API_VERSION}
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
+    def list_resource_groups(self, tag, limit) -> dict:
+        """
+        List all resource groups.
+
+        Args:
+            tag str: Tag to filter by.
+            limit (int): Maximum number of resource groups to retrieve. Default is 50.
+
+        Returns:
+            List[dict]: API response from Azure.
+        """
+        filter_by_tag = azure_tag_formatter(tag) if tag else None
+        params = {"$filter": filter_by_tag, "$top": limit, "api-version": LIST_RESOURCE_GROUP_VERSION}
+        return self.ms_client.http_request(method="GET", url_suffix="resourcegroups", params=params)
+
 
 """ FUNCTIONS """
 
@@ -610,6 +624,8 @@ def update_alert_command(client: MsClient, args: dict):
     asc_location = args.get("asc_location")
     alert_id = args.get("alert_id")
     alert_update_action_type = args.get("alert_update_action_type")
+    if alert_update_action_type == "in_progress":
+        alert_update_action_type = "inProgress"
     client.update_alert(resource_group_name, asc_location, alert_id, alert_update_action_type)
     outputs = {"ID": alert_id, "ActionTaken": alert_update_action_type}
 
@@ -1302,6 +1318,44 @@ def get_secure_scores_command(client: MsClient, args: dict):
 """ Secure Scores End"""
 
 
+def list_resource_groups_command(client: MsClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List all resource groups in the subscription.
+
+    Args:
+        client (KeyVaultClient):  Azure Key Vault API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+
+    """
+    tag = args.get('tag', '')
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+
+    response = client.list_resource_groups(tag=tag, limit=limit).get('value', [])
+
+    resource_groups = []
+    for resource_group in response:
+        resource_group_context = {
+            'Name': resource_group.get('name'),
+            'Location': resource_group.get('location'),
+            'Tags': resource_group.get('tags'),
+            'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
+        }
+        resource_groups.append(resource_group_context)
+
+    readable_output = tableToMarkdown('Resource Groups List', resource_groups, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='Azure.ResourceGroupName',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
 def test_module(client: MsClient):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -1393,6 +1447,8 @@ def main():
             return_outputs(*list_sc_subscriptions_command(client))
         elif demisto.command() == "azure-get-secure-score":
             return_outputs(*get_secure_scores_command(client, demisto.args()))
+        elif demisto.command() == "azure-resource-group-list":
+            return_results(list_resource_groups_command(client, demisto.args()))
         elif demisto.command() == "azure-sc-auth-reset":
             return_results(reset_auth())
     except Exception as err:

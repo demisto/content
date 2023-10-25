@@ -250,7 +250,7 @@ script:
       required: true
     - default: true
       defaultValue: current
-      description: Name of the Advanced Threat Detection setting, default is 'current'.
+      description: Name of the Advanced Threat Detection setting.
       name: setting_name
     - description: The storage name in your Azure account.
       name: storage_account
@@ -440,6 +440,28 @@ script:
     execution: false
     name: azure-sc-auth-reset
     arguments: []
+  - name: azure-resource-group-list
+    description: List all resource groups for a subscription.
+    arguments:
+    - name: subscription_id
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+    - name: limit
+      description: Limit on the number of resource groups to return.
+      defaultValue: 50
+    - name: tag
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+    outputs:
+    - contextPath: Azure.ResourceGroupName.name
+      description: Resource group name.
+      type: String
+    - contextPath: Azure.ResourceGroupName.location
+      description: Resource group location.
+      type: String
+    - contextPath: Azure.ResourceGroupName.tags
+      description: Resource group tags.
+      type: Unknown
+    - contextPath: Azure.ResourceGroupName.properties.provisioningState
+      description: Resource group provisioning state.
   dockerimage: demisto/crypto:1.0.0.78196
   runonce: false
   script: '-'
