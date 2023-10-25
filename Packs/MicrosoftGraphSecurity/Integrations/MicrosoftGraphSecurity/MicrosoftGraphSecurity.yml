@@ -1637,7 +1637,7 @@ script:
       - 'block'
       - 'unblock'
       required: true
-    - description: category of threat.
+    - description: The category of the threat.
       isArray: false
       name: category
       defaultValue: all
