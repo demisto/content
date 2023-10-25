@@ -1703,7 +1703,7 @@ script:
       description: The result type of the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.ResultMessage
-      description: 'Result message.'
+      description: The result message of the mail assessment.
       type: String
   - arguments:
     - description: The email of the user who recieved the mail.
