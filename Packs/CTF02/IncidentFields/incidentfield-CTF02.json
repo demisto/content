@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CTF02"
+    ],
     "caseInsensitive": true,
     "cliName": "ctf02",
     "closeForm": false,
@@ -26,5 +29,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.9.0"
+    "fromVersion": "6.10.0"
 }
