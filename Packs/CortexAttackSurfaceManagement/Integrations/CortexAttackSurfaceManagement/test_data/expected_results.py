@@ -854,18 +854,17 @@ RCS_GET_SCAN_STATUS_OTHER_RESULTS_200 = {
 }
 
 ASM_GET_ATTACK_SURFACE_RULE_RESULTS = [
-            {
-                "attack_surface_rule_id": "RdpServer",
-                "attack_surface_rule_name": "RDP Server",
-                "category": "Attack Surface Reduction",
-                "created": 1698035622000,
-                "description": "Remote Desktop Protocol (RDP) servers provide remote access to a computer over a network connection. Externally accessible RDP servers pose a significant security risk as they are frequent targets for attackers and can be vulnerable to a variety of documented exploits.",
-                "enabled_status": "ON",
-                "knowledge_base_link": null,
-                "modified": 1605140275000,
-                "modified_by": null,
-                "priority": "High",
-                "remediation_guidance": "Recommendations to reduce the likelihood of malicious RDP attempts are as follows:\n\n1. Best practice is to not have RDP publicly accessible on the Internet and instead only on trusted local networks.\n2. Implement a risk-based approach that prioritizes patching RDP vulnerabilities that have known weaponized public exploits.\n3. Limit RDP access to a specific user group and implementing lockout policies is an additional measure to protect against RDP brute-forcing which is another common tactic used by attackers. In addition, enable NLA (Network Level Authentication) which is non-default on older versions.\n4. If remote access to RDP or terminal services is a business requirement, it should only be made accessible through a secure Virtual Private Network (VPN) connection with multi-factor authentication (MFA) to the corporate network or through a zero-trust remote access gateway."
-            }
-        ]
-
+    {
+        "attack_surface_rule_id": "RdpServer",
+        "attack_surface_rule_name": "RDP Server",
+        "category": "Attack Surface Reduction",
+        "created": 1698035622000,
+        "description": "Remote Desktop Protocol (RDP) servers provide remote access to a computer over a network connection. Externally accessible RDP servers pose a significant security risk as they are frequent targets for attackers and can be vulnerable to a variety of documented exploits.",
+        "enabled_status": "ON",
+        "knowledge_base_link": None,
+        "modified": 1605140275000,
+        "modified_by": None,
+        "priority": "High",
+        "remediation_guidance": "Recommendations to reduce the likelihood of malicious RDP attempts are as follows:\\n\\n1. Best practice is to not have RDP publicly accessible on the Internet and instead only on trusted local networks.\\n2. Implement a risk-based approach that prioritizes patching RDP vulnerabilities that have known weaponized public exploits.\\n3. Limit RDP access to a specific user group and implementing lockout policies is an additional measure to protect against RDP brute-forcing which is another common tactic used by attackers. In addition, enable NLA (Network Level Authentication) which is non-default on older versions.\\n4. If remote access to RDP or terminal services is a business requirement, it should only be made accessible through a secure Virtual Private Network (VPN) connection with multi-factor authentication (MFA) to the corporate network or through a zero-trust remote access gateway."
+    }
+]
