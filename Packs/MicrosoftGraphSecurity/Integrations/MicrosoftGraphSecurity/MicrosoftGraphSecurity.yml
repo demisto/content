@@ -1647,7 +1647,7 @@ script:
       - 'phishing'
       - 'malware'
       required: true
-    - description: message user, could be the user's id or the user's email.
+    - description: Message user. Could be the user's ID or the user's email.
       isArray: false
       name: message_user
       required: true
