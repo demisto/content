@@ -836,7 +836,7 @@ class Pack:
         entry_result = {}
 
         if new_version:
-            logging.info(f"Creating changelog entry for a new version for pack {self.name} and version {version_display_name}")
+            logging.debug(f"Creating changelog entry for a new version for pack {self.name} and version {version_display_name}")
             pull_request_numbers = self.get_pr_numbers_for_version(version_display_name)
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
@@ -844,7 +844,7 @@ class Pack:
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
         elif initial_release:
-            logging.info(
+            logging.debug(
                 f"Creating changelog entry for an initial version for pack {self.name} and version {version_display_name}")
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
@@ -852,7 +852,7 @@ class Pack:
                             Changelog.PULL_REQUEST_NUMBERS: pull_request_numbers}
 
         elif self.is_modified and not is_override:
-            logging.info(
+            logging.debug(
                 f"Creating changelog entry for an existing version for pack {self.name} and version {version_display_name}")
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - R{build_number}',
@@ -1638,7 +1638,7 @@ class Pack:
                         return task_status, not_updated_build, pack_versions_to_keep
                     else:
                         if latest_release_notes in changelog:
-                            logging.info(f"Found existing release notes for version: {latest_release_notes}")
+                            logging.debug(f"Found existing release notes for version: {latest_release_notes}")
                             version_changelog, not_updated_build = self._create_changelog_entry(
                                 release_notes=release_notes_lines,
                                 version_display_name=latest_release_notes,
@@ -1787,8 +1787,8 @@ class Pack:
             (dict) The filtered changelog entry.
             (bool) Whether the pack is not updated because the entries are not relevant to the current marketplace.
         """
-        logging.info(f"Starting to filter changelog entries by the entities that are given from id-set for pack "
-                     f"{self._pack_name} and marketplace {marketplace}")
+        logging.debug(f"Starting to filter changelog entries by the entities that are given from id-set for pack "
+                      f"{self._pack_name} and marketplace {marketplace}")
 
         release_notes = self.filter_release_notes_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES), marketplace)
 
@@ -1798,7 +1798,7 @@ class Pack:
 
         if self.release_notes_dont_contain_entities_sections(release_notes_str=release_notes,
                                                              release_notes_dict=release_notes_dict):
-            logging.info(f"The pack {self._pack_name} release notes does not contain any entities")
+            logging.debug(f"The pack {self._pack_name} release notes does not contain any entities")
             return changelog_entry, False
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
@@ -4385,7 +4385,7 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
         if list(id_set_entity.values())[0]['display_name'] == display_name:
             return True
 
-    logging.info(f"Could not find the entity with display name {display_name} in id_set.")
+    logging.debug(f"Could not find the entity with display name {display_name} in id_set.")
     return False
 
 
