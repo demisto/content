@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import lru_cache
 from pathlib import Path
 from threading import Lock
-from typing import Any, List
+from typing import Any
 
 import demisto_client
 from demisto_sdk.commands.common import tools
@@ -22,8 +22,7 @@ from requests import Session
 
 from Tests.Marketplace.common import ALREADY_IN_PROGRESS
 from Tests.Marketplace.common import wait_until_not_updating, generic_request_with_retries
-from Tests.Marketplace.marketplace_constants import (IGNORED_FILES,
-                                                     PACKS_FOLDER,
+from Tests.Marketplace.marketplace_constants import (PACKS_FOLDER,
                                                      GCPConfig, Metadata)
 from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
                                                     load_json)
@@ -607,7 +606,7 @@ def get_pack_installation_request_data(pack_id: str, pack_version: str):
 
 
 def install_all_content_packs_for_nightly(
-    client: demisto_client, host: str, service_account: str, pack_ids_to_install: List[str]
+    client: demisto_client, host: str, service_account: str, pack_ids_to_install: list[str]
 ) -> bool:
     """ Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
     Retrieving the latest version of each pack from the production bucket.
