@@ -199,6 +199,18 @@
   - demisto-sdk --version
   - section_end "Build Parameters"
 
+.checkout-upload-commit-nightly: &checkout-upload-commit
+  - section_start "Checkout upload commit"
+  - | 
+    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
+      echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
+      git worktree add Packs $LAST_UPLOAD_COMMIT
+    else
+      echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
+    fi
+  - |
+  - section_end "Checkout upload commit"
+
 
 .default-before-script:
   before_script:
@@ -216,6 +228,7 @@
     - *install_ssh_keys
     - *neo4j-setup
     - *build_parameters
+    - *checkout-upload-commit
 
 .default-after-script:
   - source .gitlab/helper_functions.sh
@@ -325,7 +338,7 @@
   extends:
     - .unittests-and-lint-settings
   script:
-    - section_start "Test Infrastructure"
+    - section_start "Test Infrastructure" # need to think if this should be tested against master/upload commit
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/tests -v --disable-warnings
