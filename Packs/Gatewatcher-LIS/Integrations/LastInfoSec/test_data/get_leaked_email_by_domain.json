@@ -1,0 +1,83 @@
+[
+    [
+        {
+            "Value": "foo.bar@baz.test",
+            "CreationDate": "2023-07-29T02:18:39+00:00",
+            "ModificationDate": "2023-07-29T02:18:39+00:00",
+            "Tags": [],
+            "ExternalLinks": [
+                {
+                    "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+                    "url": "4a10a5f41c846c1f64b470a29cb6bc3fdfc55a900366adfa29bd2768d086c4af"
+                },
+                {
+                    "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+                    "url": "https://t.me/c/1736933682/1562"
+                }
+            ]
+        },
+        {
+            "Value": "valerie@fr.baz.test",
+            "CreationDate": "2023-07-26T14:08:17+00:00",
+            "ModificationDate": "2023-07-26T14:08:17+00:00",
+            "Tags": [],
+            "ExternalLinks": [
+                {
+                    "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+                    "url": "8ccc2f98697572358a34d5f3dd4f0e2860cef636b86fa3d087eedfe1a211adb5"
+                },
+                {
+                    "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+                    "url": "https://t.me/c/1621795118/874"
+                }
+            ]
+        }
+    ],
+    [],
+    [
+        {
+            "Value": "foo.bar@baz.test",
+            "CreationDate": "2023-07-29T02:18:39+00:00",
+            "ModificationDate": "2023-07-29T02:18:39+00:00",
+            "Tags": [],
+            "ExternalLinks": [
+                {
+                    "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+                    "url": "4a10a5f41c846c1f64b470a29cb6bc3fdfc55a900366adfa29bd2768d086c4af"
+                },
+                {
+                    "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+                    "url": "https://t.me/c/1736933682/1562"
+                }
+            ]
+        },
+        {
+            "Value": "valerie@fr.baz.test",
+            "CreationDate": "2023-07-26T14:08:17+00:00",
+            "ModificationDate": "2023-07-26T14:08:17+00:00",
+            "Tags": [],
+            "ExternalLinks": [
+                {
+                    "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+                    "url": "8ccc2f98697572358a34d5f3dd4f0e2860cef636b86fa3d087eedfe1a211adb5"
+                },
+                {
+                    "source_name": "Telegram_Email_Leaked_Instant_Messaging",
+                    "url": "https://t.me/c/1621795118/874"
+                }
+            ]
+        }
+    ],
+    {
+        "detail": [
+            {
+                "loc": [
+                    "query",
+                    "added_after"
+                ],
+                "msg": "invalid datetime format",
+                "type": "value_error.datetime"
+            }
+        ]
+    }
+]
