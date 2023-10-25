@@ -205,6 +205,10 @@
   - demisto-sdk --version
   - section_end "Build Parameters"
 
+.gitlab_ci_build_parameters: &gitlab_ci_build_parameters
+  - section_start "Gitlab CI Build Parameters" --collapsed
+  - set | grep -E "^CI_.*=|^GITLAB.*=" | sort
+  - section_end "Gitlab CI Build Parameters"
 
 .default-before-script:
   before_script:
@@ -222,6 +226,7 @@
     - *install_ssh_keys
     - *neo4j-setup
     - *build_parameters
+    - *gitlab_ci_build_parameters
 
 .default-after-script:
   - source .gitlab/helper_functions.sh
