@@ -528,6 +528,14 @@ def get_last_mirrored_in_time(args):
 
 
 def get_incident_extra_data_command(client, args):
+    '''
+    This function was changed to retrieve predefined data , based in customized incident. The incident data was masked and changed
+    Note that the data is used to retrive information on the same incident that the integration fetches. See Fetch_Incidents
+    funtion.
+    :param client: N.A.
+    :param args: N.A.
+    :return: Json on predefined incident data
+    '''
     incident_id = args.get('incident_id')
     int(args.get('alerts_limit', 1000))
     return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
@@ -982,6 +990,11 @@ def get_remote_data_command(client, args):
 
 
 def createIncidentsListCTF3(max_fetch):
+    '''
+    Custom function to mange which predefinded incident will ve fethced.
+    :param max_fetch: not in use -> the idea was to generate another CTF, however, won't be in use.
+    :return: list of incident to be generated in XSOAR [currently only 1].
+    '''
     incidents = [{
         "alert_categories": [
             "Credential Access"
@@ -1241,6 +1254,19 @@ def createIncidentsListCTF3(max_fetch):
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None):
+    '''
+    This function will fetch predefined and customized incident using the createIncidentsListCTF3.
+
+    :param client: N.A.
+    :param first_fetch_time: N.A.
+    :param integration_instance:
+    :param last_run: N.A.
+    :param max_fetch: N.A.
+    :param statuses: N.A.
+    :param starred: N.A.
+    :param starred_incidents_fetch_window: N.A.
+    :return: Incident in the system.
+    '''
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
@@ -1368,6 +1394,12 @@ def file_details_results(client: Client, args: Dict, add_to_context: bool) -> No
 
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:  # type:ignore[no-redef]
+    '''
+    This command was changed to return predefined alerts. Instead of using the passed client, the raw_response will contain the returned json
+    :param client: N.A.
+    :param args: N.A.
+    :return: List of predefined json alerts.
+    '''
     prefix = "PaloAltoNetworksXDR"
     # filter_data['filter'] = filter_res
     # demisto.debug(f'sending the following request data: {request_data}')
@@ -5331,6 +5363,9 @@ def main():  # pragma: no cover
             return_results(isolate_endpoint_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-endpoint-isolate-ctf':
+            '''
+            This command not in use.
+            '''
             polling_args = {
                 **args,
                 "endpoint_id_list": args.get('endpoint_id')
@@ -5478,6 +5513,9 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))  # type:ignore[arg-type]
 
         elif command == 'xdr-file-retrieve-ctf':
+            '''
+            Command not in use
+            '''
             return_error('This command is missing, try something else.')
 
         elif command == 'xdr-retrieve-file-details':
