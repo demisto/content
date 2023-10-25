@@ -236,6 +236,8 @@
     strategy: depend
     include:
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
+  inherit: # see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27775
+    variables: false
 
 .lock-machine:
   - section_start "Lock Machine" --collapsed
@@ -255,7 +257,7 @@
       if [[ -e "$ARTIFACTS_FOLDER/logs/lock_file.txt" ]]; then
         echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
-        gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
+        gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
         echo "Finished removing lock file"
       else
         echo "No lock file found, skipping unlocking"
@@ -281,7 +283,7 @@
   - |
     if [[ "${CI_COMMIT_BRANCH}" = "master" ]]; then
       echo "Skipping, Should not run on master branch."
-    elif [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -u "gitlab-ci-token" -t "${CI_JOB_TOKEN}" -h "code.pan.run" --repo "xsoar/content-test-conf" -b "${CI_COMMIT_BRANCH}") ]; then
+    elif [ 'true' = $(./Tests/scripts/check_if_branch_exist.sh -u "gitlab-ci-token" -t "${CI_JOB_TOKEN}" -h "${CI_SERVER_HOST}" --repo "${CI_PROJECT_NAMESPACE}/content-test-conf" -b "${CI_COMMIT_BRANCH}") ]; then
       RED='\033[0;31m'
       NC='\033[0m'
       echo -e "${RED}ERROR: Found a branch with the same name:${CI_COMMIT_BRANCH} in contest-test-conf repository.\n Merge it in order to merge the current branch into content repo.${NC}"
@@ -301,12 +303,12 @@
     reports:
       coverage_report:
         coverage_format: cobertura
-        path: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
+        path: ${CI_PROJECT_DIR}/artifacts/coverage_report/coverage.xml
     expire_in: 30 days
     paths:
-      - /builds/xsoar/content/unit-tests
-      - /builds/xsoar/content/artifacts/*
-      - /builds/xsoar/content/pipeline_jobs_folder/*
+      - ${CI_PROJECT_DIR}/unit-tests
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   services:
     - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
@@ -336,7 +338,7 @@
     - section_end "Test Infrastructure"
     - section_start "Run Unit Testing and Lint"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "${TEST_XDR_PREFIX}marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
         echo "Skipping validations when uploading to a test bucket."
       else
         echo "demisto-sdk version: $(demisto-sdk --version)"
@@ -378,7 +380,7 @@
               python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage-min.json
             fi
           else
-            demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
+            demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/${TEST_XDR_PREFIX}marketplace-dist-dev/code-coverage-reports/coverage-min.json
           fi
         fi
       fi
@@ -398,8 +400,8 @@
   artifacts:
     expire_in: 30 days
     paths:
-      - /builds/xsoar/content/artifacts/*
-      - /builds/xsoar/content/pipeline_jobs_folder/*
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   script:
     - section_start "Look For Secrets"
@@ -426,7 +428,7 @@
     - |
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
       echo "successfully activated google cloud service account"
-      gsutil cp "gs://marketplace-dist/content/packs/index.zip" $INDEX_PATH
+      gsutil cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip" $INDEX_PATH
       echo "successfully downloaded index.zip"
       gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - echo "successfully downloaded index.zip into $INDEX_PATH"

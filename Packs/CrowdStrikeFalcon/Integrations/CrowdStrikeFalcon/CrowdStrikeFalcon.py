@@ -2528,7 +2528,7 @@ def fetch_incidents():
     iom_last_run: dict = {} if len(last_run) < 4 else last_run[3]
     ioa_last_run: dict = {} if len(last_run) < 5 else last_run[4]
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections', "")
-    look_back = int(demisto.params().get('look_back', 0))
+    look_back = int(demisto.params().get('look_back') or 1)
     fetch_limit = INCIDENTS_PER_FETCH
 
     demisto.debug(f"CrowdstrikeFalconMsg: Starting fetch incidents with {fetch_incidents_or_detections}")

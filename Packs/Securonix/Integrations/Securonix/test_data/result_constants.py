@@ -83,7 +83,10 @@ EXPECTED_LIST_INCIDENT = {
                 'WorkflowName': 'SOCTeamReview',
                 'Url': "https://source_url.com",
                 'IsWhitelisted': False,
-                'Watchlisted': False
+                'Watchlisted': False,
+                "Policystarttime": 1692950376801,
+                "Policyendtime": 1695613655539,
+                "Solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
             }
         ]
 }
@@ -110,6 +113,8 @@ EXPECTED_GET_INCIDENT = {
             "Url": "https://source_url.com",
             "IsWhitelisted": False,
             "Watchlisted": False,
+            "Policystarttime": 1692950376801,
+            "Policyendtime": 1695613655539,
             "Solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
         }
     ]

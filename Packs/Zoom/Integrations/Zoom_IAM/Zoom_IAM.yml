@@ -164,7 +164,7 @@ script:
       required: true
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/pyjwt3:1.0.0.55864
+  dockerimage: demisto/auth-utils:1.0.0.76157
   ismappable: true
   isremotesyncout: true
   script: '-'

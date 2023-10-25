@@ -4,8 +4,8 @@ default:
   artifacts:
     expire_in: 30 days
     paths:
-      - /builds/xsoar/content/artifacts/*
-      - /builds/xsoar/content/pipeline_jobs_folder/*
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
 
 stages:
@@ -13,6 +13,7 @@ stages:
 
 
 include:
+  - local: .gitlab/ci/.gitlab-ci.variables.yml
   - local: .gitlab/ci/.gitlab-ci.global.yml
 
 

@@ -5,9 +5,13 @@ import sys
 import time
 import requests
 from Tests.scripts.utils.log_util import install_logging
+from Utils.github_workflow_scripts.utils import get_env_var
 
+GITLAB_SERVER_URL = get_env_var('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
+GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '2596')  # the default is the id of the content project in code.pan.run
 
-GITLAB_CONTENT_PIPELINES_BASE_URL = 'http://code.pan.run/api/v4/projects/2596/pipelines/'  # disable-secrets-detection
+# disable-secrets-detection
+GITLAB_CONTENT_PIPELINES_BASE_URL = f'{GITLAB_SERVER_URL}/api/v4/projects/{GITLAB_PROJECT_ID}/pipelines/'
 TIMEOUT = 60 * 60 * 6  # 6 hours - TODO - Decrease after replacing id-set with graph
 
 
@@ -55,6 +59,7 @@ def get_job_status(job_name, pipelines_jobs_response):
     for job in pipelines_jobs_response:
         if job.get('name') == job_name:
             return job.get('status')
+    return None
 
 
 def main():
