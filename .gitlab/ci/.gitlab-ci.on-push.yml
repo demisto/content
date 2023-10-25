@@ -404,7 +404,8 @@ fan-in-on-push:
     - echo "fan in on push"
 
 jobs-done-check-on-push:
-  when: always
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   extends:
     - .push-rule
     - .jobs-done-check
@@ -429,6 +430,34 @@ jobs-done-check-on-push:
     - gke
   variables:
     WORKFLOW: 'Content PR'
+
+jobs-done-check-merge:
+  rules:
+      - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+  extends:
+    - .push-rule
+    - .jobs-done-check
+  needs:
+    - run-unittests-and-lint
+    - run-validations
+    - test-upload-flow
+    - trigger-private-build
+    - validate-content-conf
+    - mpv2-prepare-testing-bucket
+    - xpanse-prepare-testing-bucket
+    - xsoar-prepare-testing-bucket
+    - xsoar-saas-prepare-testing-bucket
+    - xsiam_server_ga
+    - tests_xsoar_server
+    - xsoar_ng_server_ga
+    - xsoar-test_playbooks_results
+    - xsiam-test_playbooks_results
+    - xsiam-test_modeling_rule_results
+  tags:
+    - gke
+  variables:
+    WORKFLOW: 'Content Merge'
+    master_branch_name: master
 
 
 slack-notify-nightly-build:
