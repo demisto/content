@@ -502,7 +502,7 @@ def attack_report_command(args: dict, client: Client) -> CommandResults:
         return {
             'outputs': {'id': takedown_id} if code == TAKEDOWN_OK_CODE else None,
             'readable_output': tableToMarkdown(
-                'Netcraft Takedown',
+                'Netcraft attack reported',
                 table, list(table),
                 removeNull=True
             )
@@ -718,7 +718,7 @@ def attack_type_list_command(args: dict, client: Client) -> CommandResults:
 
     def response_to_readable(response: list[dict]) -> str:
         return tableToMarkdown(
-            'Takedown Notes', response,
+            'Netcraft Attack Types', response,
             [
                 'name', 'display_name', 'base_type', 'description',
                 'automated', 'auto_escalation', 'auto_authorize',
@@ -773,7 +773,7 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
 
     def response_to_readable(submission: dict) -> str:
         return tableToMarkdown(
-            f'Submission {submission["uuid"]}',
+            'Netcraft Submission',
             {
                 'Submission UUID': submission['uuid'],
                 'Submission Date': str(arg_to_datetime(submission.get('date'))),
@@ -857,7 +857,7 @@ def submission_list_command(args: dict, client: Client) -> CommandResults:
         return submission_list(args, client)
 
 
-def sumbmission_report_results(args: dict, response: dict, client: Client) -> CommandResults:
+def submission_report_results(args: dict, response: dict, client: Client) -> CommandResults:
     '''Handle the response from a submission report endpoint and poll if needed.'''
 
     if not argToBoolean(args['polling']):
@@ -907,7 +907,7 @@ def file_report_submit_command(args: dict, client: Client) -> CommandResults:
     response = client.file_report_submit(
         args_to_body(args)
     )
-    return sumbmission_report_results(args, response, client)
+    return submission_report_results(args, response, client)
 
 
 def submission_file_list_command(args: dict, client: Client) -> CommandResults:
@@ -963,7 +963,7 @@ def email_report_submit_command(args: dict, client: Client) -> CommandResults:
     response = client.email_report_submit(
         {'email': args.pop('reporter_email')} | pop_keys(args, 'message', 'password')
     )
-    return sumbmission_report_results(args, response, client)
+    return submission_report_results(args, response, client)
 
 
 def submission_mail_get_command(args: dict, client: Client) -> CommandResults:
@@ -1014,7 +1014,7 @@ def url_report_submit_command(args: dict, client: Client) -> CommandResults:
             {'url': url} for url in argToList(args.pop('urls'))
         ]
     })
-    return sumbmission_report_results(args, response, client)
+    return submission_report_results(args, response, client)
 
 
 def submission_url_list_command(args: dict, client: Client) -> CommandResults:

@@ -5,13 +5,13 @@
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
-	"id": "9807cd88-b9e6-4894-8b90-07cfee68aa71",
+	"fromServerVersion": "6.9.0",
+	"id": "c7c6197f-1b4d-45ca-88f1-cba11e9de4a7",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
 	"itemVersion": "",
-	"keyTypeMap": {},
+	"keyTypeMap": null,
 	"locked": false,
 	"logicalVersion": 1,
 	"mapping": {
@@ -41,13 +41,11 @@
 							{
 								"args": {
 									"input_values": {
-										"isContext": false,
 										"value": {
 											"simple": "0,1"
 										}
 									},
 									"mapped_values": {
-										"isContext": false,
 										"value": {
 											"simple": "false,true"
 										}
@@ -92,20 +90,31 @@
 						"transformers": [
 							{
 								"args": {
-									"add_utc_timezone": {
-										"isContext": false
-									},
-									"dayfirst": {
-										"isContext": false
-									},
-									"fuzzy": {
-										"isContext": false
-									},
-									"yearfirst": {
-										"isContext": false
-									}
+									"add_utc_timezone": {},
+									"dayfirst": {},
+									"fuzzy": {},
+									"yearfirst": {}
 								},
 								"operator": "DateStringToISOFormat"
+							}
+						]
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": ".",
+						"transformers": [
+							{
+								"args": {
+									"conditions": {
+										"value": {
+											"simple": "[{\"default\": 0}]"
+										}
+									},
+									"flags": {}
+								},
+								"operator": "If-Elif"
 							}
 						]
 					}
@@ -119,12 +128,12 @@
 	},
 	"name": "Netcraft Incoming Mapper",
 	"nameRaw": "Netcraft Incoming Mapper",
-	"packID": "1df1592a-9e15-456f-8c6c-450c1354b586",
-	"packName": "Netcraft Incoming Mapper Contribution Pack",
+	"packID": "Netcraft",
+	"packName": "Netcraft Incoming Mapper",
 	"propagationLabels": [
 		"all"
 	],
-	"sourceClassifierId": "",
+	"sourceClassifierId": "Netcraft Incoming Mapper",
 	"system": false,
 	"toServerVersion": "",
 	"transformer": {},
