@@ -96,3 +96,4 @@ def test_main_with_invalid_similarity_threshold(mocker):
         main()
         result = return_results.call_args[0][0]
         assert result == "Failed to check string similarity. Problem: could not convert string to float: 'invalid_threshold'"
+        
