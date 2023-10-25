@@ -16,5 +16,11 @@
     "keywords": [],
     "marketplaces": [
         "xsoar"
-    ]
-}
+    ],
+    "dependencies": {
+        "CTF01": {
+            "mandatory": true,
+            "display_name": "Capture The Flag - 01"
+        }
+    }
+    }
