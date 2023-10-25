@@ -53,6 +53,7 @@ select = [
     "F523", # string-dot-format-extra-positional-arguments
     "F524", # string-dot-format-missing-arguments
     "F525", # string-dot-format-mixing-automatic
+    "F541", # f-string-missing-placeholders
     "F601", # multi-value-repeated-key-literal
     "F602", # multi-value-repeated-key-variable
     "F621", # expressions-in-star-assignment
