@@ -11,6 +11,7 @@ import copy
 from packaging.version import Version
 import requests
 from demisto_sdk.commands.common.tools import run_command, get_dict_from_file
+from demisto_sdk.commands.content_graph.common import ContentType
 from Tests.scripts.utils.log_util import install_logging
 
 PACKS_DIR = 'Packs'
@@ -128,7 +129,7 @@ def construct_entities_block(entities_data: dict) -> str:
     release_notes = ''
 
     # Keep general notes on top.
-    general_notes = entities_data.pop('Pack', None)
+    general_notes = entities_data.pop(ContentType.PACK.value, None)
     if general_notes:
         for pack_name, general_comments in sorted(general_notes.items()):
             release_notes += f'## {pack_name}\n{general_comments}'
@@ -168,7 +169,7 @@ def get_pack_entities(pack_path):
             entity_type = match.group(1)
         else:
             # General pack comment
-            entity_type = 'Pack'
+            entity_type = ContentType.PACK.value
 
         name, description = get_new_entity_record(entity_path)
         entities_data.setdefault(entity_type, {})[name] = description
@@ -375,7 +376,7 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> t
         if general_note_sections:
             # Assume only one general notes section at the start of the file.
             general_note_components = general_note_sections[0]
-            entity_type = 'Pack'
+            entity_type = ContentType.PACK.value
             entities_data.setdefault(entity_type, {})
             # Extract Pack name
             entity_name = general_note_components[0] or general_note_components[2] or general_note_components[4]
