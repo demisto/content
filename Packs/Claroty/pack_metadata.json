@@ -13,7 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [
-        "Claroty"
+        "Claroty",
+        "CTD", 
+        "Continuos Threat Detection"
     ],
     "githubUser": [
         "asaf96"
