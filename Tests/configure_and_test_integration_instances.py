@@ -40,6 +40,7 @@ from Tests.test_integration import __get_integration_config, test_integration_in
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
 
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
 NO_PROXY = ','.join([
@@ -72,8 +73,12 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
 ID_SET_PATH = './artifacts/id_set.json'
 XSOAR_BUILD_TYPE = "XSOAR"
 CLOUD_BUILD_TYPE = "XSIAM"
-MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
-MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
+MARKETPLACE_TEST_BUCKET = (
+    f'{TEST_XDR_PREFIX}marketplace-ci-build/content/builds'
+)
+MARKETPLACE_XSIAM_BUCKETS = (
+    f'{TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam'
+)
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', '/builds/xsoar/content/artifacts/marketplacev2')
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
 SET_SERVER_KEYS = True
@@ -731,7 +736,8 @@ class XSOARBuild(Build):
                             marketplace_buckets=None):
         url_suffix = f'{quote_plus(branch_name)}/{ci_build_number}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
-        config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
+        config = {config_path:
+                  f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/builds/{url_suffix}'}
         for server in servers:
             server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
         logging.success('Updated marketplace url and restarted servers')

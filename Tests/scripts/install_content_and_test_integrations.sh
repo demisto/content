@@ -13,7 +13,11 @@ if [ -n "${CLOUD_SERVERS_FILE}" ]; then
   echo "CLOUD_SERVERS_PATH is set to: ${CLOUD_SERVERS_PATH}"
 fi
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  if [ $TEST_XDR_ENV ]; then
+    cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  else
+    echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  fi
 fi
 
 INSTANCE_ROLE=$1
