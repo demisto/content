@@ -191,7 +191,7 @@ class RecoClient(BaseClient):
         try:
             response = self._http_request(
                 method="PUT",
-                url_suffix="/alert-inbox/table",
+                url_suffix="/policy-subsystem/alert-inbox/table",
                 data=json.dumps(params),
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
@@ -212,7 +212,7 @@ class RecoClient(BaseClient):
         try:
             response = self._http_request(
                 method="GET",
-                url_suffix=f"/alert-inbox/{alert_id}",
+                url_suffix=f"/policy-subsystem/alert-inbox/{alert_id}",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
             if response.get("alert") is None:
@@ -706,7 +706,7 @@ class RecoClient(BaseClient):
         try:
             response = self._http_request(
                 method="PUT",
-                url_suffix=f"/alert-inbox/{alert_id}/status/{status}",
+                url_suffix=f"/policy-subsystem/alert-inbox/{alert_id}/status/{status}",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
         except Exception as e:
