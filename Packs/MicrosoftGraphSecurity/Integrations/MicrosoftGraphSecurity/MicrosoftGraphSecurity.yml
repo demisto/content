@@ -1803,7 +1803,7 @@ script:
       - 'phishing'
       - 'malware'
       required: true
-    - description: file name.
+    - description: The file name.
       isArray: false
       name: file_name
       required: true
