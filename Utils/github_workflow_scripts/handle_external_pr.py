@@ -43,6 +43,7 @@ COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
 CONTRIBUTION_LABEL = 'Contribution'
 EXTERNAL_LABEL = "External PR"
 SECURITY_LABEL = "Security Review"
+TIM_LABEL = "TIM Review"
 SECURITY_CONTENT_ITEMS = [
     "Playbooks",
     "IncidentTypes",
@@ -53,7 +54,6 @@ SECURITY_CONTENT_ITEMS = [
     "Classifiers",
     "Wizards"
 ]
-TIM_LABEL = "TIM Review"
 
 
 def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
