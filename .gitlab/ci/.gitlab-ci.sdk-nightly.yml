@@ -169,10 +169,16 @@ demisto-sdk-nightly:run-commands-against-instance:
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSOAR"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_Server Master"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
     - !reference [.ssh-config-setup]
+    - section_start "Create Artifacts instance directory" --collapsed
+    - |
+      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
+      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+    - section_end "Create Artifacts instance directory"
     - section_start "Wait Until Server Ready"
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false

@@ -430,6 +430,7 @@ jobs-done-check-on-push:
     - gke
   variables:
     WORKFLOW: 'Content PR'
+    master_branch_name: master
 
 jobs-done-check-merge:
   rules:
