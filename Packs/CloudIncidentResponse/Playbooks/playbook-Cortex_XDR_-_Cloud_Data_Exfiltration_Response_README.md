@@ -20,13 +20,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cloud Threat Hunting - Persistence
 * Cloud Response - Generic
 
-### Integrations
-
-This playbook does not use any integrations.
-
-### Scripts
-
-This playbook does not use any scripts.
 
 ### Commands
 
