@@ -1651,7 +1651,7 @@ script:
       isArray: false
       name: message_user
       required: true
-    - description: "Message id, Message has to contain 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages. Use msgraph-mail-list-emails from Microsoft Graph Mail pack  with proper user_id in order to get all available messages."
+    - description: "Message ID. Message has to contain the 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages. Use the msgraph-mail-list-emails command from the Microsoft Graph Mail pack  with the proper user_id in order to get all available messages."
       isArray: false
       name: message_id
       required: true
