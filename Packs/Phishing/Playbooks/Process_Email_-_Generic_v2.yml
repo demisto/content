@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Process Email - Generic v2
-description: |
+description: |-
   This playbook adds email details to the relevant context entities and handles original email attachments.
 
   The v2 playbook enables parsing email artifacts more efficiently, including:
@@ -156,10 +156,24 @@ tasks:
                 root: Email
                 accessor: HTML
             iscontext: true
+          right:
+            value: {}
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: Text
+            iscontext: true
       - - operator: isNotEmpty
           left:
             value:
               simple: Email.HTML
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Email.Text
             iscontext: true
       - - operator: isExists
           left:
@@ -222,6 +236,13 @@ tasks:
         complex:
           root: Email
           accessor: HTML
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${Email.Text="<html><body>"+val +"</body></html>"}
       offline:
         simple: 'true'
     reputationcalc: 1
