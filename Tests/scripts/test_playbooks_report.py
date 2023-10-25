@@ -34,7 +34,7 @@ def calculate_test_playbooks_results(test_playbooks_result_files_list: dict[str,
 
 @tenacity.retry(
     wait=tenacity.wait_exponential(multiplier=1, min=2, max=10),
-    stop=tenacity.stop_after_attempt(5),
+    stop=tenacity.stop_after_attempt(2),
     reraise=True,
     retry=tenacity.retry_if_exception_type(JIRAError),
     before_sleep=tenacity.before_sleep_log(logging.getLogger(), logging.DEBUG)

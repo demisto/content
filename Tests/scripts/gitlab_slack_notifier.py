@@ -264,10 +264,11 @@ def construct_slack_msg(triggering_workflow: str,
     check_unittests_substrings = {'lint', 'unit', 'demisto sdk nightly', TEST_NATIVE_CANDIDATE.lower()}
     failed_jobs_or_workflow_title = {job_name.lower() for job_name in failed_jobs_names}
     failed_jobs_or_workflow_title.add(triggering_workflow_lower)
-    for means_include_unittests_results in failed_jobs_or_workflow_title:
-        if any(substr in means_include_unittests_results for substr in check_unittests_substrings):
-            content_fields += unit_tests_results()
-            break
+
+    if any(substr in means_include_unittests_results
+           for substr in check_unittests_substrings
+           for means_include_unittests_results in failed_jobs_or_workflow_title):
+        content_fields += unit_tests_results()
 
     # report pack updates
     if 'upload' in triggering_workflow_lower:
