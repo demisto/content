@@ -16,7 +16,7 @@ from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, TEST_NATIVE_CANDIDATE, WORKFLOW_TYPES, get_instance_directories, \
     get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX, TEST_MODELING_RULES_REPORT_FILE_NAME, \
-    get_test_results_files
+    get_test_results_files, CONTENT_MERGE
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results
 from Tests.scripts.utils.log_util import install_logging
@@ -278,7 +278,7 @@ def construct_slack_msg(triggering_workflow: str,
 
     slack_msg_append = []
     # report failing test-playbooks and test modeling rules.
-    if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR}:
+    if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR, CONTENT_MERGE}:
         slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, pipeline_url, title="XSOAR")
         slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
         slack_msg_append += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
