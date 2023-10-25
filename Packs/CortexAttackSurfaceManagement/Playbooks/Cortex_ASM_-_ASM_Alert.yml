@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "5"
@@ -45,7 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -70,10 +70,10 @@ tasks:
       id: 9c94a65b-ec31-4f84-8e53-238c0ba400e5
       version: -1
       name: Triage and Qualifier Stage
+      description: ''
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "171"
@@ -3221,8 +3221,8 @@ inputs:
           </p>
           <p>
               <b>Alert Details:</b> ${alert.details}<br>
-              <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
-              <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
+              <b>Action Taken:</b> ${alert.asmremediation.[0].action}<br>
+              <b>Action Outcome:</b> ${alert.asmremediation.[0].outcome}<br>
           </p>
       </body>
       </html>
@@ -3262,6 +3262,6 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.9.0
 contentitemexportablefields:
   contentitemfields: {}
