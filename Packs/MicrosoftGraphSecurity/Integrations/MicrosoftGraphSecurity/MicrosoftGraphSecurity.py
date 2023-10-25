@@ -1562,7 +1562,6 @@ def create_url_assessment_request_command(args, client: MsGraphClient) -> PollRe
                                  outputs_prefix='MSGraphMail.UrlAssessment')
         return PollResult(response=results)
     else:
-        demisto.debug("in else")
         return PollResult(continue_to_poll=True, args_for_next_run={"request_id": request_id, **args},
                           response=None,
                           partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))

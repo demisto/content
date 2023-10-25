@@ -1655,6 +1655,9 @@ script:
       isArray: false
       name: message_id
       required: true
+    - description: request_id (generated in polling command).
+      name: request_id
+      deprecated: true
     description: Create and retrieve a mail threat assessment.
     execution: false
     name: msg-create-mail-assessment-request
@@ -1734,6 +1737,9 @@ script:
       isArray: false
       name: entry_id
       required: false
+    - description: request_id (generated in polling command).
+      name: request_id
+      deprecated: true
     description: Create email file assessment request.
     execution: false
     name: msg-create-email-file-assessment-request
@@ -1812,6 +1818,9 @@ script:
     - description: whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
       deprecated: true
+    - description: request_id (generated in polling command).
+      name: request_id
+      deprecated: true
     description: Create file assessment request.
     execution: false
     name: msg-create-file-assessment-request
@@ -1876,6 +1885,9 @@ script:
       isArray: false
       name: url
       required: true
+    - description: request_id (generated in polling command).
+      name: request_id
+      deprecated: true
     description: Create url assessment request.
     execution: false
     name: msg-create-url-assessment-request
