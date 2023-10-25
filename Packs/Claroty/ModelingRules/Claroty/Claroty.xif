@@ -47,6 +47,7 @@ alter // Explicit extractions
     xdm.event.outcome = if(cs6Label = "SnifferStatus", if(cs6 = "down", XDM_CONST.OUTCOME_FAILED, cs6 = "UP", XDM_CONST.OUTCOME_SUCCESS)),
     xdm.event.type = cefDeviceEventClassId,
     xdm.network.application_protocol = application_protocol,
+    xdm.observer.name = if(cs2Label = "Network", cs2), // Network name
     xdm.observer.version = cefDeviceVersion,
     xdm.source.host.device_category = if(cs11Label = "PrimaryAssetType", cs11),
     xdm.source.host.hostname = if(shost != null and shost != "N/A", shost, cs12Label = "PrimaryAssetHostname" and cs12 != "N/A", cs12),
