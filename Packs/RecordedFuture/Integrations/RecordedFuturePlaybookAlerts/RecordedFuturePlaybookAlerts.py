@@ -78,7 +78,7 @@ class Client(BaseClient):
     def fetch_incidents(self) -> Dict[str, Any]:
         """Fetch incidents."""
         return self._call(
-            url_suffix=f'/v2/playbook_alert/fetch',
+            url_suffix='/v2/playbook_alert/fetch',
             json_data={
                 'demisto_command': demisto.command(),
                 'demisto_args': demisto.args(),

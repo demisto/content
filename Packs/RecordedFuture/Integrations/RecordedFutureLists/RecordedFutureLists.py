@@ -120,7 +120,7 @@ class Client(BaseClient):
         if list_ids := parsed_args.get("list_ids"):
             parsed_args["list_ids"] = list_ids.split(",")
         return self._call(
-            url_suffix=f'/v2/lists/entities/lookup', demisto_args=parsed_args
+            url_suffix='/v2/lists/entities/lookup', demisto_args=parsed_args
         )
 
 
