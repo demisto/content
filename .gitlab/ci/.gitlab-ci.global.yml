@@ -338,7 +338,7 @@
   extends:
     - .unittests-and-lint-settings
   script:
-    - section_start "Test Infrastructure" # need to think if this should be tested against master/upload commit
+    - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v --disable-warnings
     - python3 -m pytest ./Tests/tests -v --disable-warnings
