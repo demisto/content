@@ -60,7 +60,7 @@ repos:
   - id: delete-old-coverage-files
     name: delete-old-coverage-files
     description: Delete old coverage files.
-    entry: bash -c "find . -name ".coverage" -type f -delete"
+    entry: ./Tests/scripts/delete_old_coverage_files.sh
     language: script
     pass_filenames: false
 
@@ -79,6 +79,8 @@ repos:
 
           # enable with --test
   - id: run-unit-tests
+
+  - id: merge-coverage-report
 
   - id: coverage-analyze
     args: [ "-i", ".coverage", "--report-dir", "coverage_report", "--report-type", "all"]
