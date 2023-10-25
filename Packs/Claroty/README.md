@@ -39,7 +39,8 @@ Follow these steps to configure Claroty CTD to forward Syslog messages to Cortex
    
 ### Remark
 Since the syslog forwarding configuration is set for each log type individually, 
-repeat the steps above for each log type (*Alerts*, *Events*, etc.) that you wish to monitor on Cortex XSIAM.
+repeat the steps above for each log type (*Alerts*, *Events*, etc.) to monitor on Cortex XSIAM.
+
 
 
 ## Collect Events from Vendor
