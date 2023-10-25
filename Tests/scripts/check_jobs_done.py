@@ -2,7 +2,7 @@ import sys
 from argparse import ArgumentParser
 from pathlib import Path
 
-from Tests.scripts.common import WORKFLOW_TYPES, CONTENT_NIGHTLY, BUCKET_UPLOAD, CONTENT_PR, SDK_NIGHTLY
+from Tests.scripts.common import WORKFLOW_TYPES, CONTENT_NIGHTLY, BUCKET_UPLOAD, CONTENT_PR, SDK_NIGHTLY, CONTENT_MERGE
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -80,11 +80,35 @@ CONTENT_PR_JOBS = [
     'xsiam-test_modeling_rule_results',
 ]
 
+CONTENT_MERGE_JOBS = [
+    'run-unittests-and-lint: [native:dev,from-yml]',
+    'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
+    'run-validations',
+    'test-upload-flow',
+    'trigger-private-build',
+    'validate-content-conf',
+    'mpv2-prepare-testing-bucket',
+    'xpanse-prepare-testing-bucket',
+    'xsoar-prepare-testing-bucket',
+    'xsoar-saas-prepare-testing-bucket',
+    'xsiam_server_ga',
+    'tests_xsoar_server: [Server 6.9]',
+    'tests_xsoar_server: [Server 6.10]',
+    'tests_xsoar_server: [Server 6.11]',
+    'tests_xsoar_server: [Server 6.12]',
+    'tests_xsoar_server: [Server Master]',
+    'xsoar_ng_server_ga',
+    'xsoar-test_playbooks_results',
+    'xsiam-test_playbooks_results',
+    'xsiam-test_modeling_rule_results',
+]
+
 JOBS_PER_TRIGGERING_WORKFLOW = {
     CONTENT_NIGHTLY: CONTENT_NIGHTLY_JOBS,
     SDK_NIGHTLY: SDK_NIGHTLY_JOBS,
     BUCKET_UPLOAD: BUCKET_UPLOAD_JOBS,
-    CONTENT_PR: CONTENT_PR_JOBS
+    CONTENT_PR: CONTENT_PR_JOBS,
+    CONTENT_MERGE: CONTENT_MERGE_JOBS,
 }
 
 

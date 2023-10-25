@@ -10,6 +10,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 CONTENT_NIGHTLY = 'Content Nightly'
 CONTENT_PR = 'Content PR'
+CONTENT_MERGE = 'Content Merge'
 BUCKET_UPLOAD = 'Upload Packs to Marketplace Storage'
 SDK_NIGHTLY = 'Demisto SDK Nightly'
 PRIVATE_NIGHTLY = 'Private Nightly'
@@ -19,6 +20,7 @@ BUILD_MACHINES_CLEANUP = 'Build Machines Cleanup'
 WORKFLOW_TYPES = {
     CONTENT_NIGHTLY,
     CONTENT_PR,
+    CONTENT_MERGE,
     SDK_NIGHTLY,
     BUCKET_UPLOAD,
     PRIVATE_NIGHTLY,
