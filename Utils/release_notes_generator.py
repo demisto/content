@@ -369,7 +369,6 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> t
     for pack_version, version_release_notes in sorted(pack_versions_dict.items(),
                                                       key=lambda pack_item: Version(pack_item[0])):
         latest_version = pack_version
-        version_release_notes = version_release_notes.strip()
 
         # Handle general pack notes.
         general_note_sections = PACK_GENERAL_NOTES_REGEX.findall(version_release_notes)
@@ -382,9 +381,11 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> t
             entity_name = general_note_components[0] or general_note_components[2] or general_note_components[4]
             entity_name = entity_name.replace('__', '')
             # release notes of the entity
-            entity_comment = general_note_components[1] or general_note_components[3] or general_note_components[5]
+            last_place_entity_comment = general_note_components[5] if len(general_note_components) >= 5 else ''
+            entity_comment = general_note_components[1] or general_note_components[3] or last_place_entity_comment
             entities_data = append_commment_to_data(entities_data, entity_type, entity_name, entity_comment)
 
+        version_release_notes = version_release_notes.strip()
         # extract release notes sections by content types (all playbooks, all scripts, etc...)
         # assuming all entity titles start with level 4 header ("####") and then a list of all comments
         sections = ENTITY_TYPE_SECTION_REGEX.findall(version_release_notes)
