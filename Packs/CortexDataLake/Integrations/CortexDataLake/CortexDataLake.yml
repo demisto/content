@@ -53,6 +53,12 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+- displaypassword: Instance ID
+  name: instance_id
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
 - display: Fetch incidents
   name: isFetch
   type: 8

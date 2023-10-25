@@ -50,7 +50,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, registration_id_and_url, use_ssl, proxy, refresh_token, enc_key, client_id, client_secret, auth_code):
+    def __init__(self, registration_id_and_url, use_ssl, proxy, refresh_token, enc_key, client_id, client_secret, auth_code, instance_id):
         headers = get_x_content_info_headers()
         headers['Accept'] = 'application/json'
         registration_id_and_url = registration_id_and_url.split('@')
@@ -67,6 +67,7 @@ class Client(BaseClient):
             self.client_id = client_id
             self.client_secret = client_secret
             self.auth_code = auth_code
+            self.instance_id = instance_id
             self.is_oproxy = False
         else:
             headers['Authorization'] = registration_id
@@ -84,6 +85,7 @@ class Client(BaseClient):
             None
         """
         integration_context = demisto.getIntegrationContext()
+        print(integration_context)
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
         valid_until = integration_context.get(EXPIRES_IN)
         if access_token and valid_until:
@@ -116,6 +118,10 @@ class Client(BaseClient):
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
         expires_in = int(response.get(EXPIRES_IN, MINUTES_60) or 0)
+        if not self.is_oproxy:
+            # Only in this case we do not get those params in the response
+            api_url = DEFAULT_API_URL
+            instance_id = self.instance_id
         if not access_token or not api_url or not instance_id:
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
                                    f'response: {response}')
@@ -194,6 +200,7 @@ class Client(BaseClient):
                 if re.match(BAD_REQUEST_REGEX, str(e)):
                     demisto.error('The request to retrieve the access token from oproxy has failed with 400 status code.')
                     demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
+                    self.reset_failure_times()
                 raise e
 
         else:
@@ -202,10 +209,18 @@ class Client(BaseClient):
                 body = {
                     "client_id": self.client_id,
                     "client_secret": self.client_secret,
-                    "code": self.auth_code,
-                    "redirect_uri": "https://localhost",
-                    "grant_type": "authorization_code",
                 }
+                if refresh_token := demisto.getIntegrationContext().get('refresh_token'):
+                    body |= {"grant_type": "refresh_token",
+                             "refresh_token": refresh_token}
+                else:
+                    # First configuration, no refresh token yet, need to first get it with grant_type = authorization_code
+                    body |= {"code": self.auth_code,
+                             "redirect_uri": "https://localhost/auth-callback",
+                             "grant_type": "authorization_code"}
+
+                demisto.debug(f"request body: {body}")
+                demisto.debug(f"integration context: {demisto.getIntegrationContext()}")
                 response = self._http_request('POST',
                                                      full_url='https://api.paloaltonetworks.com/api/oauth2/RequestToken',
                                                      json_data=body,
@@ -213,14 +228,15 @@ class Client(BaseClient):
                                                      retries=3,
                                                      backoff_factor=10,
                                                      status_list_to_retry=[400])
+                if not response.get('refresh_token'):
+                    # added to the response the refresh token in case it is not in the response, so later we will update the context with it
+                    response |= {'refresh_token': refresh_token}
             except DemistoException as e:
                 if re.match(BAD_REQUEST_REGEX, str(e)):
                     demisto.error('The request to retrieve the access token has failed with 400 status code.')
-                    demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
                 raise e
-
-            self.reset_failure_times()
-            return response
+        demisto.debug(f"response is: {response}")
+        return response
 
     @staticmethod
     def _cache_failure_times(integration_context: dict) -> dict:
@@ -253,6 +269,7 @@ class Client(BaseClient):
                 del integration_context[failure_time_key]
 
         demisto.setIntegrationContext(integration_context)
+        demisto.debug("set integration context")
 
     def query_loggings(self, query: str) -> Tuple[List[dict], list]:
         """
@@ -1195,9 +1212,10 @@ def main():
     enc_key = params.get('credentials_auth_key', {}).get('password') or params.get('auth_key')
 
 
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
-    auth_code = params.get('auth_code')
+    client_id = params.get('client_id', {}).get('password')
+    client_secret = params.get('client_secret', {}).get('password')
+    auth_code = params.get('auth_code', {}).get('password')
+    instance_id = params.get('instance_id', {}).get('password')
 
     if (not enc_key or not refresh_token or not registration_id_and_url) and \
         (not client_id or not client_secret or not auth_code):
@@ -1216,7 +1234,7 @@ def main():
         return_outputs(readable_output="Caching mechanism failure time counters have been successfully reset.")
         return
 
-    client = Client(registration_id_and_url, use_ssl, proxy, refresh_token, enc_key, client_id, client_secret, auth_code)
+    client = Client(registration_id_and_url, use_ssl, proxy, refresh_token, enc_key, client_id, client_secret, auth_code, instance_id)
 
     try:
         if command == 'test-module':
