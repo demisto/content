@@ -1667,7 +1667,7 @@ script:
       description: Mail assessment ID.
       type: String
     - contextPath: MSGraphMail.MailAssessment.CreatedDateTime
-      description: 'mail assessment Created DateTime.'
+      description: The datetime the mail assessment was created.
       type: String
     - contextPath: MSGraphMail.MailAssessment.ContentType
       description: 'Content Type.'
