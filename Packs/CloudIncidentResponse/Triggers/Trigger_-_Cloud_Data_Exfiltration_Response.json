@@ -1,0 +1,18 @@
+{
+  "trigger_id": "8e153b5ab6f8d93578fa6e19a908efdf",
+  "playbook_id": "Cloud Data Exfiltration Response",
+  "suggestion_reason": "Recommended for alerts involving cloud data exfiltration",
+  "description": "This trigger is responsible for handling Cloud data exfiltration alerts",
+  "trigger_name": "Cloud Data Exfiltration",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_name",
+          "SEARCH_TYPE": "CONTAINS",
+          "SEARCH_VALUE": "An identity performed a suspicious download of multiple cloud storage object"
+        }
+      ]
+    }
+  }
+}
