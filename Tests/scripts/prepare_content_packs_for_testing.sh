@@ -36,7 +36,7 @@ gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&
 echo "Auth loaded successfully."
 
 # ====== BUILD CONFIGURATION ======
-GCS_BUILD_BUCKET="marketplace-ci-build"
+GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
 BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID$STAGING_SUFFIX/$MARKETPLACE_TYPE"
 BUILD_BUCKET_PACKS_DIR_PATH="$BUILD_BUCKET_PATH/content/packs"
 BUILD_BUCKET_CONTENT_DIR_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
@@ -96,7 +96,7 @@ if [ -z "${BUCKET_UPLOAD}" ] && [ -z "${FORCE_BUCKET_UPLOAD}" ]; then
 else
   # In Upload-Flow, we exclude test-pbs in the zipped packs
   REMOVE_PBS=true
-  GCS_PRIVATE_BUCKET="marketplace-dist-private"
+  GCS_PRIVATE_BUCKET="${TEST_XDR_PREFIX}marketplace-dist-private"
   if [ -n "${FORCE_BUCKET_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
     # In case the workflow is force upload, we override the forced packs
     echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"

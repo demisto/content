@@ -20,7 +20,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import XSIAM_MP, PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
-    CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES
+    CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES, XSOAR_MP, XSOAR_SAAS_MP
 from demisto_sdk.commands.common.tools import str2bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
@@ -29,6 +29,7 @@ import traceback
 from Tests.Marketplace.pack_readme_handler import download_markdown_images_from_artifacts
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 
 
 def get_packs_names(packs_to_upload: str) -> set:
@@ -208,17 +209,12 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 
     logging.info("Start cleaning non existing packs in index.")
     valid_pack_names = {p.name for p in content_packs}
-    if marketplace == 'xsoar':
+    if marketplace in [XSOAR_MP, XSOAR_SAAS_MP]:
         private_packs_names = {p.get('id', '') for p in private_packs}
         valid_pack_names.update(private_packs_names)
-        # search for invalid packs folder inside index
-        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                               entry.name not in valid_pack_names and entry.is_dir()}
-    else:
-        # search for invalid packs folder inside index
-        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                               entry.name not in valid_pack_names and entry.is_dir()}
-
+    # search for invalid packs folder inside index
+    invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
+                           entry.name not in valid_pack_names and entry.is_dir()}
     if invalid_packs_names:
         try:
             logging.warning(f"Found the following invalid packs: {invalid_packs_names}")
@@ -769,7 +765,7 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
         build_num = os.environ['CI_BUILD_ID']
 
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
-                      f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
+                      f'{TEST_XDR_PREFIX}marketplace-ci-build/content/builds/{branch_name}/{build_num}'
 
         pr_comment = f'Number of successful uploaded packs: {len(successful_packs)}\n' \
                      f'Uploaded packs:\n{successful_packs_table}\n\n' \
@@ -1460,7 +1456,7 @@ def main():
                             )
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
-    if is_create_dependencies_zip and marketplace == 'xsoar':
+    if is_create_dependencies_zip and marketplace == XSOAR_MP:
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                            packs_for_current_marketplace_dict)

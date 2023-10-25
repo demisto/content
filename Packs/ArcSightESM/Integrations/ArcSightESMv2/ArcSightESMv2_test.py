@@ -30,22 +30,22 @@ def test_decode_ip(mocker):
 test_data = [
     (
         True,
-        'get_entries_command',
+        'as-get-entries',
         'https://server/www/manager-service/rest/ActiveListService/getEntries?alt=json'
     ),
     (
         False,
-        'get_entries_command',
+        'as-get-entries',
         'https://server/www/manager-service/services/ActiveListService/'
     ),
     (
         True,
-        'clear_entries_command',
+        'as-clear-entries',
         'https://server/www/manager-service/rest/ActiveListService/clearEntries?alt=json'
     ),
     (
         False,
-        'clear_entries_command',
+        'as-clear-entries',
         'https://server/www/manager-service/services/ActiveListService/'
     )
 ]
@@ -88,6 +88,7 @@ def test_use_rest(mocker, use_rest, cmd_name, expected_rest_endpoint):
         'proxy': True
     }
     mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value=cmd_name)
     mocker.patch.object(demisto, 'args', return_value={'resourceId': 'blah'})
     with requests_mock.Mocker() as m:
         fake_response = {'log.loginResponse': {'log.return': 'fake'}}
@@ -101,8 +102,7 @@ def test_use_rest(mocker, use_rest, cmd_name, expected_rest_endpoint):
                    '<entryList><entry>1.1.1.1</entry></entryList><columns>Blah</columns>' \
                    '</return></getEntriesResponse></Body></Envelope>'
         m.post('https://server/www/manager-service/services/ActiveListService/', text=fake_xml)
-        arcsight_cmd = getattr(ArcSightESMv2, cmd_name)
-        arcsight_cmd()
+        ArcSightESMv2.main()
         last_request = m.last_request
         assert last_request.url == expected_rest_endpoint
 
@@ -186,6 +186,7 @@ def test_get_case(mocker, requests_mock):
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='as-get-case')
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     requests_mock.get(
         PARAMS['server'] + '/www/manager-service/rest/CaseService/getResourceById',
@@ -205,10 +206,86 @@ def test_get_case(mocker, requests_mock):
         },
     )
     import ArcSightESMv2
-    ArcSightESMv2.get_case_command()
+    ArcSightESMv2.AUTH_TOKEN = 'token'
+
+    ArcSightESMv2.main()
+
     results = demisto.results.call_args[0][0]
     events = results['Contents']['events']
     assert events[0]['test_object']['test_big_int_number'] == '10000000000000001'
+
+
+def test_add_entries_using_detect_api(mocker, requests_mock):
+    """
+    Given
+    - an active list in ArcSight with resource id=100, and fields Name, IP
+    - entries [{"Name": "foo", "IP": "8.8.8.8"},{"Name": "roo", "IP": "1.1.1.1"}]
+
+    When
+    - adding entries to the active list
+
+    Then
+    - ensure token is passed in the Authorization header with Bearer prefix
+    - entries passed in the body in the format like:
+
+    {
+        "fields": ["Name", "IP"],
+        "entries": [
+            {
+                "fields": ["foo", "8.8.8.8"]
+            },
+            {
+                "fields": ["roo", "1.1.1.1"]
+            }
+        ]
+    }
+    """
+    # Given
+    # - an active list in ArcSight with resource id=100, and fields Name, IP
+    # - entries [{"Name": "foo", "IP": "8.8.8.8"},{"Name": "roo", "IP": "1.1.1.1"}]
+    base_url = 'https://testurl.com'
+    params = {
+        'server': base_url,
+        'credentials': {},
+        'productVersion': '7.4 and above',
+        'proxy': True
+    }
+    entries = [{"Name": "foo", "IP": "8.8.8.8"}, {"Name": "roo", "IP": "1.1.1.1"}]
+    resource_id = '100'
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='as-add-entries')
+    mocker.patch.object(demisto, 'args', return_value={'resourceId': resource_id, 'entries': entries})
+
+    post_mock = requests_mock.post(f'{base_url}/detect-api/rest/activelists/{resource_id}/entries')
+
+    import ArcSightESMv2
+
+    token = 'TEST_TOKEN'
+    mocker.patch.object(ArcSightESMv2, 'login', return_value=token)
+
+    # When
+    # - adding entries to the active list
+    ArcSightESMv2.main()
+
+    # Then
+    # - ensure token is passed in the Authorization header with Bearer prefix
+    # - entries passed in the body in the format like:
+
+    res = post_mock.last_request.json()
+    expected_request_body = {
+        "fields": ["Name", "IP"],
+        "entries": [
+            {
+                "fields": ["foo", "8.8.8.8"]
+            },
+            {
+                "fields": ["roo", "1.1.1.1"]
+            }
+        ]
+    }
+
+    assert expected_request_body == res
 
 
 def test_get_all_cases(mocker, requests_mock):
@@ -224,6 +301,7 @@ def test_get_all_cases(mocker, requests_mock):
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='as-get-all-cases')
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
 
     requests_mock.get(
@@ -239,7 +317,7 @@ def test_get_all_cases(mocker, requests_mock):
         },
     )
     import ArcSightESMv2
-    ArcSightESMv2.get_all_cases_command()
+    ArcSightESMv2.main()
     results = demisto.results.call_args[0][0]
     cases = results['Contents']
     assert len(cases) == 3
@@ -259,6 +337,7 @@ def test_get_query_viewer_results_command(mocker, requests_mock):
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='as-get-query-viewer-results')
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     mocker.patch.object(demisto, 'args', return_value={'onlyColumns': "false", "resource_id": "id"})
 
@@ -304,7 +383,7 @@ def test_get_query_viewer_results_command(mocker, requests_mock):
         },
     )
     import ArcSightESMv2
-    ArcSightESMv2.get_query_viewer_results_command()
+    ArcSightESMv2.main()
     results = demisto.results.call_args[0][0]
     output = results['Contents']
     assert len(output) == 2
@@ -376,6 +455,7 @@ def test_delete_case_command(mocker):
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='as-case-delete')
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     mocker.patch.object(demisto, 'args', return_value={"caseId": "test"})
 
@@ -387,7 +467,7 @@ def test_delete_case_command(mocker):
     mocker.patch.object(ArcSightESMv2, "send_request", return_value=ReqMock())
 
     import ArcSightESMv2
-    ArcSightESMv2.delete_case_command()
+    ArcSightESMv2.main()
     results = demisto.results.call_args[0][0]
     assert results['Contents'] == 'Case test  was deleted successfully'
 
@@ -405,6 +485,7 @@ def test_get_case_event_ids_command(mocker, requests_mock):
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='as-get-case-event-ids')
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     requests_mock.get(
         PARAMS['server'] + '/www/manager-service/rest/CaseService/getCaseEventIDs',
@@ -419,7 +500,7 @@ def test_get_case_event_ids_command(mocker, requests_mock):
         },
     )
     import ArcSightESMv2
-    ArcSightESMv2.get_case_event_ids_command()
+    ArcSightESMv2.main()
     results = demisto.results.call_args[0][0]
     events_ids = results['Contents']['cas.getCaseEventIDsResponse']['cas.return']
     assert len(events_ids) == 3
@@ -439,6 +520,7 @@ def test_get_all_query_viewers_command(mocker, requests_mock):
     """
     mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'command', return_value='as-get-all-query-viewers')
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
 
     requests_mock.post(
@@ -456,7 +538,7 @@ def test_get_all_query_viewers_command(mocker, requests_mock):
         },
     )
     import ArcSightESMv2
-    ArcSightESMv2.get_all_query_viewers_command()
+    ArcSightESMv2.main()
     results = demisto.results.call_args[0][0]
     output = results['Contents']
     assert len(output) == 3

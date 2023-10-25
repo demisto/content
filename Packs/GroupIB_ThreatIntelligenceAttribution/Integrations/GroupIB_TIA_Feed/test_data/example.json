@@ -680,5 +680,34 @@
         "timeLineData": [],
         "title": "CVE-2021-27152",
         "type": "cve"
+    },
+    "ioc/common":{
+        "id": "1111111111111111111111111111111111111111",
+            "type": "network",
+            "dateFirstSeen": "2012-10-24T00:00:00Z",
+            "dateLastSeen": "2016-10-24T00:00:00Z",
+            "domain": "some.ru",
+            "url": "https://some.ru",
+            "ip": [
+                "11.11.11.11"
+            ],
+           "hash": [
+                "1111111111111111111111111111111111111111",
+                "1111111111111111111111111111111111111111111111111111111111111111",
+                "11111111111111111111111111111111"
+            ],
+            "seqUpdate": 16408877331936,
+            "malwareList": [
+                {
+                    "name": "GratefulPOS",
+                    "aliases": []
+                }
+            ],
+            "threatList": [
+                {
+                    "name": "FIN6",
+                    "title": "Discovered GratefulPOS samples, presumably, linked with Fin6 activity"
+                }
+            ]
     }
 }
