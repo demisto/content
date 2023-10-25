@@ -1700,7 +1700,7 @@ script:
       description: The user name that was created for the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.ResultType
-      description: 'Result Type.'
+      description: The result type of the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.ResultMessage
       description: 'Result message.'
