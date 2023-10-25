@@ -16,22 +16,25 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Cloud Response - Generic
+* Cloud Threat Hunting - Persistence
 * Cloud User Investigation - Generic
 * Handle False Positive Alerts
-* Cloud Threat Hunting - Persistence
-* Cloud Response - Generic
 
+### Integrations
+
+This playbook does not use any integrations.
 
 ### Scripts
 
-SearchAlertsV2
+* SearchAlertsV2
 
 ### Commands
 
-* core-get-cloud-original-alerts
-* closeInvestigation
 * core-get-IP-analytics-prevalence
+* core-get-cloud-original-alerts
 * ip
+* closeInvestigation
 
 ## Playbook Inputs
 
@@ -39,8 +42,13 @@ SearchAlertsV2
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Auto containmnet | Whether to execute containment automatically.<br/>This action allows you to respond rapidly but has a higher probability for a False Positive. | False | Optional |
+| autoUserRemediation | Whether to execute the user remediation automatically. \(Default: False\) | False | Optional |
+| autoBlockIndicators | Whether to execute the block remediation automatically. \(Default: False\) | False | Optional |
 
+## Playbook Outputs
+
+---
+There are no outputs for this playbook.
 
 ## Playbook Image
 

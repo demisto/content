@@ -35,8 +35,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | alertID | The XDR alert ID |  | Optional |
-| autoResourceRemediation | Whether to execute the resource remediation automatically. \(Default: False\) | False | Optional |
-| autoAccessKeyRemediation | Whether to execute the access key remediation automatically. \(Default: False\) | False | Optional |
 | autoUserRemediation | Whether to execute the user remediation automatically. \(Default: False\) | False | Optional |
 | autoBlockIndicators | Whether to execute the block remediation automatically. \(Default: False\) | False | Optional |
 
