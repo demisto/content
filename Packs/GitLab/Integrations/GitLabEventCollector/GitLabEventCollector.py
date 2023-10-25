@@ -92,7 +92,7 @@ class Client(BaseClient):
 
                     if event.get('id') == last_run.get('last_id'):
                         demisto.debug('Encountered an event that was already fetched - stopping.')
-                        current_url = None
+                        current_url = None  # type:ignore[assignment]
                         if aggregated_events:
                             last_run.update({'last_id': aggregated_events[0].get("id")})
                         break
@@ -112,7 +112,7 @@ class Client(BaseClient):
                         events, next_url = self.get_events_request(current_url)
                         continue
                     else:
-                        current_url = None
+                        current_url = None  # type:ignore[assignment]
 
                 demisto.debug('Finished iterating through all events in this fetch run.')
                 break
