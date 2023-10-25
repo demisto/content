@@ -10,12 +10,13 @@ import gzip
 import pytz
 from pathlib import Path
 import tempfile
+import os
 
 disable_warnings()
 
 VENDOR = "symantec_long_running"
 PRODUCT = "swg"
-FETCH_SLEEP = 1800
+FETCH_SLEEP = 120
 FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR = 180
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
@@ -204,11 +205,25 @@ def get_file_size(file_path: Path) -> int:
 #     return logs
 
 
+def get_the_last_row_that_incomplete(lines: list[bytes], file_size: int) -> bytes:
+    if lines and not lines[-1].endswith(b"\n") and file_size > 0:
+        return lines[-1]
+    return b""
+
+
 def calculate_seek_file(bytes_read: int, last_line_subtract: bytes) -> int:
     if last_line_subtract.endswith(b"\n"):
         return bytes_read
     else:
         return bytes_read - len(last_line_subtract)
+
+
+def reading_file_in_batches(file_size: int) -> list[int]:
+    batch_size: list[int] = []
+    while file_size > 0:
+        batch_size.append(min(file_size, 1024 * 1024 * 20)) # Append minimum of file size or 1MB
+        file_size -= 1024 * 1024 * 20 # Subtract 20MB from file size
+    return batch_size
 
 
 def extract_logs_from_response(file_path: Path) -> Generator[list[bytes], None, None]:
@@ -235,29 +250,45 @@ def extract_logs_from_response(file_path: Path) -> Generator[list[bytes], None, 
                         with outer_zip.open(file) as nested_zip_file, gzip.open(
                             nested_zip_file, "rb"
                         ) as f:
-                            demisto.debug("test test test")
-                            chunk_size = (1024 ** 2) * 200
-                            end_part: bytes
-                            seek_file = 0
+                            f.seek(0, os.SEEK_END)
+                            file_size = f.tell()
+                            f.seek(0)
+                            demisto.debug(f"size of gzip file: {file_size / (1024 ** 2):.2f} MB")
+                            demisto.debug(f"size of gzip file: {file_size} Bytes")
+                            # chunk_size = (1024 ** 2) * 200
+                            # end_part: bytes
+                            # seek_file = 0
                             last_line_subtract = b""
-                            while True:
-                                f.seek(calculate_seek_file(seek_file, last_line_subtract))
+                            while file_size > 0:
+                                # f.seek(calculate_seek_file(seek_file, last_line_subtract))
+                                chunk = min(file_size, 1024 * 1024 * 150)
+                                file_size -= chunk
                                 try:
-                                    parts = f.read(chunk_size)
+                                    parts = f.read(chunk)
+                                    part = parts.splitlines()
+                                    demisto.debug(f"Current position: {chunk}")
                                 except Exception as e:
                                     demisto.debug(f"Error occurred while reading file: {e}")
                                     break
-                                seek_file += chunk_size
-                                if not parts:
-                                    break
-                                end_part = parts
-                                logs_end_part = end_part.splitlines()
-                                try:
-                                    last_line_subtract = logs_end_part[-1]
-                                except Exception as e:
-                                    demisto.debug(f"Error occurred while reading file 1: {e}")
-                                    break
-                                yield logs_end_part
+                                part[0] = last_line_subtract + part[0]
+                                demisto.debug(f"First item that reading complete {part[-1]}")
+                                if last_line_subtract := get_the_last_row_that_incomplete(part, file_size):
+                                    demisto.debug(f"Last line that incomplete: {last_line_subtract}")
+                                    yield part[:-1]
+                                else:
+                                    demisto.debug(f"Last line that complete: {part[-1]}")
+                                    yield part
+                                # seek_file += chunk_size
+                                # if not parts:
+                                #     break
+                                # end_part = parts
+                                # logs_end_part = end_part.splitlines()
+                                # try:
+                                #     last_line_subtract = logs_end_part[-1]
+                                # except Exception as e:
+                                #     demisto.debug(f"Error occurred while reading file 1: {e}")
+                                #     break
+                                # yield logs_end_part
                     except Exception as e:
                         demisto.debug(
                             f"Crashed at the open the internal file {file.filename} file, Error: {e}"
@@ -333,11 +364,6 @@ def organize_of_events(
     max_time = time_of_last_fetched_event
     max_values = events_suspected_duplicates
 
-    try:
-        if logs and not logs[-1].endswith(b"\n"):
-            logs = logs[:-1]
-    except Exception as e:
-        demisto.debug(f"Error occurred while reading file 2: {e}")
     demisto.debug(f"The len of the events before filter {len(logs)}")
     for log in logs:
         event = log.decode()
@@ -464,7 +490,8 @@ def get_events_command(
                     time_of_last_fetched_event or last_run_model.time_of_last_fetched_event or "",
                     events_suspected_duplicates or last_run_model.events_suspected_duplicates or [],
                 )
-                events_suspected_duplicates.extend(parts_events_suspected_duplicates)
+                # events_suspected_duplicates.extend(parts_events_suspected_duplicates)
+                # a = 2
             except Exception as e:
                 demisto.debug(f"Error organizing events: {e}")
         res.unlink()
@@ -522,7 +549,7 @@ def perform_long_running_loop(
                 last_run_obj = (
                     LastRun(**integration_context) if integration_context else LastRun()
                 )
-                # last_run_obj = last_run_obj
+            # last_run_obj = LastRun()
 
             # if last_run_obj.last_fetch and is_more_than_half_an_hour_since_last_fetch(
             #     last_run_obj.last_fetch, int(get_current_time_as_timestamp() / 1000)
@@ -540,14 +567,14 @@ def perform_long_running_loop(
             #     time.sleep(FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR)
             #     continue
 
-            # logs, last_run_obj = get_events_command(
-            #     client, args, last_run_obj, is_first_fetch=is_first_fetch
-            # )
-            # is_first_fetch = False
+            logs, last_run_obj = get_events_command(
+                client, args, last_run_obj, is_first_fetch=is_first_fetch
+            )
+            is_first_fetch = False
 
-            # set_integration_context({"last_run": last_run_obj._asdict()})
-            # integration_context_for_debug = get_integration_context()
-            # demisto.debug(f"{integration_context_for_debug=}")
+            set_integration_context({"last_run": last_run_obj._asdict()})
+            integration_context_for_debug = get_integration_context()
+            demisto.debug(f"{integration_context_for_debug=}")
             # try:
             #     if logs:
             #         send_events_to_xsiam(logs[:10000], VENDOR, PRODUCT)
