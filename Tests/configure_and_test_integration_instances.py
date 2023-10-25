@@ -771,7 +771,7 @@ class XSOARBuild(Build):
             if pack_path:
                 kwargs['pack_path'] = pack_path
             if packs_to_install:
-                kwargs["packs_to_install"] = packs_to_install
+                kwargs["pack_ids_to_install"] = packs_to_install
 
             futures = [
                 executor.submit(
