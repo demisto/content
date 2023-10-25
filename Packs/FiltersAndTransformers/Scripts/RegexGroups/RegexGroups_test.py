@@ -12,8 +12,9 @@ def test_main__error(mocker):
         'flags': 'invalidflag',
         'value': 'test'
     }
-    mocker.patch.object(demisto, 'args', return_value=args)
     results_mock = mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'args', return_value=args)
     main()
     assert results_mock.call_count == 1
     assert results_mock.call_args[0][0] == 'Error in RegexGroups script: Unknown flag: invalidflag'
