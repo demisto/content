@@ -50,14 +50,18 @@ def get_regex_matches(args):
 
 
 def main():
+    matches: str | list = []
     args = demisto.args()
-    matches = ''
     try:
         matches = get_regex_matches(args)
     except Exception as e:
-        demisto.error(f'Error in RegexGroups script: {str(e)}')
+        matches = f'Error in RegexGroups script: {str(e)}'
+        demisto.error(matches)
     finally:
+        if not matches:
+            matches = 'No matches found'
         return_results(matches)
+
 
 if __name__ in ('__builtin__', 'builtins'):
     main()
