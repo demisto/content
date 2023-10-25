@@ -1673,7 +1673,7 @@ script:
       description: The content type.
       type: String
     - contextPath: MSGraphMail.MailAssessment.ExpectedAssessment
-      description: 'Expected Assessment.'
+      description: The expected assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.Category
       description: 'Category.'
