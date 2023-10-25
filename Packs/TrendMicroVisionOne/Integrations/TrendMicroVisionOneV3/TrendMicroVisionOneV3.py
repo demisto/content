@@ -1881,7 +1881,7 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
     """
     # Required Params
     collect_files: List[Dict[str, str]] = []
-    for file in args["collect_files"]:
+    for file in args[COLLECT_FILES]:
         collect_files.append(file)
     # Create file task list
     file_tasks: List[FileTask] = []
