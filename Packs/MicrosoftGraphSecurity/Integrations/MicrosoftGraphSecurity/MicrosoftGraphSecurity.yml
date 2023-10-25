@@ -1694,7 +1694,7 @@ script:
       description: The message ID of the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.CreatedUserID
-      description: 'Created user id.'
+      description: The user ID that was created for the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.CreatedUsername
       description: 'Created user name.'
