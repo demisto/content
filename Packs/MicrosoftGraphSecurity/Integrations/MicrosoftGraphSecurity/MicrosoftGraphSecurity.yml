@@ -1940,7 +1940,7 @@ script:
       isArray: false
       name: request_id
       required: false
-    - description: The filter for the request. Example: category eq 'malware’ and ContentType eq 'file'. Available fields are expectedAssessment, ContentType, status, requestSource.
+    - description: The filter for the request. Example category eq 'malware’ and ContentType eq 'file'. Available fields are expectedAssessment, ContentType, status, requestSource.
       isArray: false
       name: filter
       required: false
@@ -2026,7 +2026,7 @@ script:
     - contextPath: MSGraphMail.AssessmentRequest.ResultMessage
       description: The result message of the assessment request.
       type: String
-  dockerimage: demisto/crypto:1.0.0.79207
+  dockerimage: demisto/crypto:1.0.0.79506
   isfetch: true
   runonce: false
   script: '-'

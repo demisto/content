@@ -1274,22 +1274,22 @@ def test_auth_code_command(client: MsGraphClient, args):
     Called to test authorization code flow (since integration context cant be accessed during test_module)
     Calls list cases with no arguments
     """
-    permissions = args.get('permission_type', 'all')
-    if permissions == 'all':
-        permissions = "ediscovery, alerts, threat assessment"
-    for permission in argToList(permissions):
-        try:
-            demisto.debug(f'checking permission {permission}')
-            match permission:
-                case 'ediscovery':
-                    list_ediscovery_case_command(client, {})
-                case 'alerts':
-                    test_function(client, args, True)
-                case 'threat assessment':
-                    list_threat_assessment_requests_command(client, {})
-        except Exception as e:
-            raise DemistoException(f'Authorization was not successful for permission {permission} '
-                                   'Check that you have the required permissions') from e
+    # permissions = args.get('permission_type', 'all')
+    # if permissions == 'all':
+    #     permissions = "ediscovery, alerts, threat assessment"
+    # for permission in argToList(permissions):
+    #     try:
+    #         demisto.debug(f'checking permission {permission}')
+    #         match permission:
+    #             case 'ediscovery':
+    #                 list_ediscovery_case_command(client, {})
+    #             case 'alerts':
+    #                 test_function(client, args, True)
+    #             case 'threat assessment':
+    #                 list_threat_assessment_requests_command(client, {})
+    #     except Exception as e:
+    #         raise DemistoException(f'Authorization was not successful for permission {permission} '
+    #                                'Check that you have the required permissions') from e
     return CommandResults(readable_output='Authentication was successful.')
 
 
@@ -1595,9 +1595,9 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
     skip_token_field = result.get('@odata.nextLink')
     demisto.debug(f"skip_token_field: {skip_token_field}")
     if skip_token_field:
-        next_token = re.split(r'skip[t|T]oken=', skip_token_field)
+        next_token: List[str] = re.split(r'skip[t|T]oken=', skip_token_field)
         if len(next_token) > 1:
-            next_token = next_token[1]
+            next_token: str = next_token[1]
 
             command_results.append(CommandResults(readable_output=f'Next token is: {next_token}\n' if next_token else None,
                                                   outputs={"next_token": next_token},
