@@ -355,7 +355,7 @@ def get_vulnerabilities_command(args: Dict[str, Any], client: Client) -> Union[C
 
 
 @polling_function('tenable-export-assets', requires_polling_arg=False)
-def get_assets_command(client: Client, args: Dict[str, Any]):
+def get_assets_command(args: Dict[str, Any], client: Client):
     """
     Getting assets from Tenable. Polling as long as the report is not ready (status FINISHED or failed)
     Args:
@@ -390,10 +390,8 @@ def get_assets_command(client: Client, args: Dict[str, Any]):
                                  entry_type=entryTypes['error'])
         return PollResult(response=results)
     else:
-        results = CommandResults(readable_output='Export job failed',
-                                 entry_type=entryTypes['error'])
         return PollResult(continue_to_poll=True, args_for_next_run={"export_uuid": export_uuid, **args},
-                          response=results)
+                          response=None, partial_result=CommandResults(readable_output="still processing pulling the assets..."))
 
 
 def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_last_run: Dict[str, Union[str, float, None]]):
@@ -454,7 +452,7 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
         assets, status = try_get_assets_chunks(client=client, export_uuid=export_uuid)
         # status = 'inProgress'
         demisto.debug(f"status is: {status}")
-        if status == 'inProgress':
+        if status in ['PROCESSING', 'QUEUED']:
             demisto.debug("status is in progress, merit test")
             assets_last_run.update({'nextTrigger': '30'})
         # set params for next run
@@ -472,7 +470,7 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
             #         last_fetch = created_at
             #         assets_last_run.update({"asset_id": asset.get("id")})
             # assets_last_run.update({'last_fetch': last_fetch})
-            assets = assets[:max_fetch] if len(assets) > max_fetch else assets
+            assets = assets[:max_fetch]
         elif status in ['CANCELLED', 'ERROR'] and last_fetch:
             export_uuid = client.export_assets_request(chunk_size=2, fetch_from=last_fetch)
             assets_last_run.update({'export_uuid': export_uuid})
@@ -655,7 +653,7 @@ def main() -> None:  # pragma: no cover
             # send_assets_to_xsiam(assets=assets)
 
         elif command == 'tenable-export-assets':
-            results = get_assets_command(client, args)
+            results = get_assets_command(args, client)
             return_results(results)
 
     # Log exceptions and return errors
