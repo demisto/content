@@ -638,6 +638,30 @@ script:
     - contextPath: ReversingLabs.ip_report
       description: The IP address analysis report.
       type: Unknown
+  - name: reversinglabs-titaniumcloud-ip-downloaded-files
+    description: Returns a list of files downloaded from an IP address.
+    arguments:
+    - name: ip
+      description: IP address.
+      required: true
+    - name: classification
+      description: Return only files of this classification. Possible values are MALICIOUS, SUSPICIOUS and KNOWN.
+      auto: PREDEFINED
+      predefined:
+        - 'MALICIOUS'
+        - 'SUSPICIOUS'
+        - 'KNOWN'
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.ip_downloaded_files
+      description: The a list of files downloaded from an IP address.
+      type: Unknown
+
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.79362
   runonce: false
   script: '-'

@@ -1907,7 +1907,56 @@ def ip_report_output(response_json, ip):
 
 
 def ip_downloaded_files_command():
-    pass
+    ip_ti = create_ip_ti_object()
+
+    ip = demisto.getArg("ip")
+    classification = demisto.getArg("classification")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = ip_ti.get_downloaded_files_aggregated(
+            ip_address=ip,
+            classification=classification,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = ip_downloaded_files_output(response=response, ip=ip)
+    return_results(results)
+
+
+def ip_downloaded_files_output(response, ip):
+    files_table = tableToMarkdown(
+        name="Downloaded files",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs Files downloaded from IP address {ip}\n {files_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"ip_downloaded_files": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
 
 
 def ip_urls_command():
@@ -2028,6 +2077,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-ip-report":
         ip_report_command()
+
+    elif command == "reversinglabs-titaniumcloud-ip-downloaded-files":
+        ip_downloaded_files_command()
 
     else:
         return_error(f"Command {command} does not exist")
