@@ -186,7 +186,7 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     return events, results
 
 
-def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[list, dict]:
+def fetch_events_command(client: Client, params: dict, last_run: dict, events_types_ids: dict) -> tuple[list, list, dict]:
     """
     Collects log events from GitLab using pagination.
 
@@ -194,14 +194,28 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> tuple[
         client (Client): the client implementing the API to GitLab.
         params (dict): the instance configuration parameters.
         last_run (dict): the lastRun object, holding information from the previous run.
+        events_types_ids (dict): The groups / projects Ids to fetch events for.
 
     Returns:
-        (list) the events retrieved from the API call.
+        (list) the audit events retrieved from the API call.
+        (list) the groups and projects events retrieved from the API call.
         (dict) the updated lastRun object.
     """
-    query_params_url_suffix = prepare_query_params(params, last_run)
-    events = client.fetch_events(query_params_url_suffix, last_run, params)
-    return events, last_run
+
+    query_params_url_suffix = prepare_query_params(params, last_run["audit_events"])
+    audit_events = client.fetch_events(query_params_url_suffix, last_run["audit_events"], params)
+    demisto.debug(f"Aggregated audits events: {len(audit_events)}")
+
+    group_and_project_events = []
+    for event_type in ['groups', 'projects']:
+        for obj_id in events_types_ids.get(f'{event_type}_ids', []):
+            client._base_url = f"{params['url']}/api/v4/{event_type}/{obj_id}/audit_events"
+            query_params_url_suffix = prepare_query_params(params, last_run[event_type])
+            events = client.fetch_events(query_params_url_suffix, last_run[event_type], params)
+            group_and_project_events.extend(events)
+
+    demisto.debug(f"Aggregated group and project events: {len(group_and_project_events)}")
+    return audit_events, group_and_project_events, last_run
 
 
 ''' MAIN FUNCTION '''
@@ -249,16 +263,10 @@ def main() -> None:
                     "projects": {},
                     "audit_events": {}
                 }
-            audit_events, last_run["audit_events"] = fetch_events_command(client, params, last_run["audit_events"])
-            demisto.debug(f"Aggregated audits events: {len(audit_events)}")
-
-            group_and_project_events = []
-            for event_type in ['groups', 'projects']:
-                for obj_id in events_collection_management[f'{event_type}_ids']:
-                    client._base_url = f"{params['url']}/api/v4/{event_type}/{obj_id}/audit_events"
-                    events, last_run[event_type] = fetch_events_command(client, params, last_run[event_type])
-                    group_and_project_events.extend(events)
-            demisto.debug(f"Aggregated group and project events: {len(group_and_project_events)}")
+            audit_events, group_and_project_events, last_run = fetch_events_command(
+                client, params, last_run,
+                events_collection_management
+            )
 
             send_events_to_xsiam(
                 audit_events + group_and_project_events,

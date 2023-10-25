@@ -52,9 +52,13 @@ def test_fetch_events(mocker):
         - Make sure only events 2 and 3 are returned (1 should not).
         - Verify the new lastRun is calculated correctly.
     """
-    from GitLabEventCollector import fetch_events_command
+    from GitLabEventCollector import fetch_events_command, main, demisto
 
-    last_run = {'last_id': '1'}
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'params', return_value={'url': ''})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'audit_events': {'last_id': '1'}})
+
+    last_run = {'audit_events': {'last_id': '1'}}
 
     mock_response = MockResponse([
         {'id': '3', 'date_create': 1521214345},
@@ -62,14 +66,49 @@ def test_fetch_events(mocker):
         {'id': '1', 'date_create': 1521214343},
     ])
     mocker.patch.object(Session, 'request', return_value=mock_response)
-    events, new_last_run = fetch_events_command(Client(base_url=''), params={}, last_run=last_run)
+    events, _, new_last_run = fetch_events_command(Client(base_url=''), params={}, last_run=last_run, events_types_ids={})
 
     assert len(events) == 2
     assert events[0].get('id') != '1'
-    assert new_last_run['last_id'] == '3'
+    assert new_last_run['audit_events']['last_id'] == '3'
+
+    # Tests main()
+    mock_setLastRun = mocker.patch.object(demisto, 'setLastRun')
+    mock_events_result = mocker.patch('GitLabEventCollector.send_events_to_xsiam')
+    main()
+
+    assert len(mock_events_result.call_args[0][0]) == 2
+    assert mock_events_result.call_args[0][0][0].get('id') != '1'
+    assert mock_setLastRun.call_args[0][0]['audit_events']['last_id'] == '3'
 
 
 def test_fetch_events_with_two_iterations(mocker):
+    """
+    Given:
+        - fetch-events command execution.
+    When:
+        - Limit parameter value is 300.
+        - A single logs API call retrieves 200 events.
+        - first_id is saved in lastRun.
+    Then:
+        - Make sure the logs API is called twice.
+        - Make sure the first event has the same id as the first_id in the lastRun.
+    """
+    from GitLabEventCollector import fetch_events_command
+
+    first_id = 2
+    last_run = {"groups": {}, "projects": {}, "audit_events": {'first_id': first_id}}
+
+    mock_response = MockResponse([{'id': i, 'date_create': 1521214343} for i in range(200)])
+    mock_response.links = {'next': {'url': 'https://example.com?param=value'}}
+    mock_request = mocker.patch.object(Session, 'request', return_value=mock_response)
+    events, _, _ = fetch_events_command(Client(base_url=''), params={'limit': 300}, last_run=last_run, events_types_ids={})
+
+    assert events[0].get('id') == first_id
+    assert mock_request.call_count == 2
+
+
+def test_fetch_events_with_groups_and_projects(mocker):
     """
     Given:
         - fetch-events command execution.
@@ -81,13 +120,29 @@ def test_fetch_events_with_two_iterations(mocker):
     """
     from GitLabEventCollector import fetch_events_command
 
-    last_run = {}
+    last_run = {"groups": {}, "projects": {'last_id': '2'}, "audit_events": {'last_id': '1'}}
 
-    mock_response = MockResponse([{'id': '1', 'date_create': 1521214343}] * 200)
-    mock_response.links = {'next': {'url': 'https://example.com?param=value'}}
-    mock_request = mocker.patch.object(Session, 'request', return_value=mock_response)
-    fetch_events_command(Client(base_url=''), params={'limit': 300}, last_run=last_run)
-    assert mock_request.call_count == 2
+    mock_response = MockResponse([
+        {'id': '5', 'date_create': 1521214345},
+        {'id': '4', 'date_create': 1521214343},
+        {'id': '3', 'date_create': 1521214345},
+        {'id': '2', 'date_create': 1521214343},
+        {'id': '1', 'date_create': 1521214343},
+    ])
+
+    mocker.patch.object(Session, 'request', return_value=mock_response)
+    audit_events, group_and_project_events, new_last_run = fetch_events_command(
+        Client(base_url=''), params={'limit': 4, 'url': ''}, last_run=last_run,
+        events_types_ids={'groups_ids': [1], 'projects_ids': [2, 3, 4]}
+    )
+
+    assert len(audit_events) == 4
+    assert len(group_and_project_events) == 7
+    assert new_last_run['audit_events']['last_id'] == '5'
+    assert new_last_run['projects']['last_id'] == '5'
+    assert new_last_run['groups']['last_id'] == '5'
+    assert new_last_run['groups']['first_id'] == '1'
+    assert 'first_id' not in new_last_run['projects']
 
 
 def test_get_events(mocker):
@@ -102,7 +157,10 @@ def test_get_events(mocker):
     Then:
         - Make sure all of the events are returned as part of the CommandResult.
     """
-    from GitLabEventCollector import get_events_command
+    from GitLabEventCollector import get_events_command, main, demisto
+
+    mocker.patch.object(demisto, 'command', return_value='gitlab-get-events')
+    mocker.patch.object(demisto, 'params', return_value={'url': ''})
 
     mock_response = MockResponse([
         {'id': '3', 'date_create': 1521214345},
@@ -115,6 +173,11 @@ def test_get_events(mocker):
     assert len(results.raw_response) == 3
     assert results.raw_response == mock_response.json()
 
+    # Tests main()
+    mock_results = mocker.patch.object(demisto, 'results')
+    main()
+    assert mock_results.call_args[0][0]['Contents'] == mock_response.json()
+
 
 def test_test_module(mocker):
     """
@@ -125,7 +188,16 @@ def test_test_module(mocker):
     Then:
         - Make sure 'ok' is returned.
     """
-    from GitLabEventCollector import test_module_command
+    from GitLabEventCollector import test_module_command, main, demisto
+
+    params = {'url': ''}
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'params', return_value=params)
 
     mocker.patch.object(Session, 'request', return_value=MockResponse([]))
     assert test_module_command(Client(base_url=''), {'url': ''}, {'groups_ids': [1, 2], 'projects_ids': [3, 4, 5]}) == 'ok'
+
+    # Tests main()
+    mock_results = mocker.patch.object(demisto, 'results')
+    main()
+    assert mock_results.call_args[0][0] == 'ok'
