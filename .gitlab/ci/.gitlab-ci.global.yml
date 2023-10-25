@@ -202,7 +202,7 @@
 .checkout-upload-commit-nightly: &checkout-upload-commit
   - section_start "Checkout upload commit"
   - | 
-    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
+    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "install_packs_nightly_bugs" ]]; then
       echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
       git worktree add Packs $LAST_UPLOAD_COMMIT
     else
