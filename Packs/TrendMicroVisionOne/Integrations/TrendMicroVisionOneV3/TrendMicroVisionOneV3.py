@@ -63,7 +63,6 @@ ACCOUNT_NAME = "account_name"
 INTEGRATION_RELIABILITY = "integrationReliability"
 INCIDENT_SEVERITY = "incidentSeverity"
 EMPTY_STRING = ""
-EMPTY_BYTE = b""
 API_TOKEN = "apikey"
 AGENT_GUID = "agent_guid"
 DESCRIPTION = "description"
@@ -2154,7 +2153,7 @@ def submit_file_to_sandbox(
     :rtype: ``dict`
     """
     # Required Params
-    file_path = args.get(FILE_PATH, EMPTY_BYTE)
+    file_path = args.get(FILE_PATH, EMPTY_STRING)
     file_name = args.get(FILE_NAME, EMPTY_STRING)
     # Optional Params
     document_pass = args.get(DOCUMENT_PASSWORD, EMPTY_STRING)
@@ -2163,7 +2162,7 @@ def submit_file_to_sandbox(
     # Initialize pytmv1 client
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Get file contents
-    _file = requests.get(file_path)
+    _file = requests.get(file_path, allow_redirects=True, timeout=30)
     # Make rest call
     resp = v1_client.submit_file_to_sandbox(
         file=_file.content,
@@ -2219,7 +2218,7 @@ def submit_file_entry_to_sandbox(
     # Use entry ID to get file details from demisto
     file_ = demisto.getFilePath(entry)
     file_name = file_.get(NAME, EMPTY_STRING)
-    file_path = file_.get(PATH, EMPTY_BYTE)
+    file_path = file_.get(PATH, EMPTY_STRING)
     with open(file_path, "rb") as f:
         contents = f.read()
     # Make rest call
