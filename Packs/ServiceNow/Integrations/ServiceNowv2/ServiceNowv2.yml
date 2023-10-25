@@ -89,6 +89,7 @@ configuration:
   name: display_date_format
   options:
   - MM-dd-yyyy
+  - MM/dd/yyyy
   - dd/MM/yyyy
   - dd-MM-yyyy
   - dd.MM.yyyy

@@ -20,6 +20,7 @@ DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 DATE_FORMAT_OPTIONS = {
     'MM-dd-yyyy': '%m-%d-%Y %H:%M:%S',
+    'MM/dd/yyyy': '%m/%d/%Y %H:%M:%S',
     'dd/MM/yyyy': '%d/%m/%Y %H:%M:%S',
     'dd-MM-yyyy': '%d-%m-%Y %H:%M:%S',
     'dd.MM.yyyy': '%d.%m.%Y %H:%M:%S',
