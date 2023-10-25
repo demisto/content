@@ -1670,7 +1670,7 @@ script:
       description: The datetime the mail assessment was created.
       type: String
     - contextPath: MSGraphMail.MailAssessment.ContentType
-      description: 'Content Type.'
+      description: The content type.
       type: String
     - contextPath: MSGraphMail.MailAssessment.ExpectedAssessment
       description: 'Expected Assessment.'
