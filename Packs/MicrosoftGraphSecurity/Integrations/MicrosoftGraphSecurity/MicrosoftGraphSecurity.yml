@@ -1936,7 +1936,7 @@ script:
       description: The result message of the URL assessment.
       type: String
   - arguments:
-    - description: request id.
+    - description: The request ID.
       isArray: false
       name: request_id
       required: false
