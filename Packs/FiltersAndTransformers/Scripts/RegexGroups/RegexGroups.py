@@ -55,11 +55,11 @@ def main():
     try:
         matches = get_regex_matches(args)
     except Exception as e:
-        matches = f'Error in RegexGroups script: {str(e)}'
-        demisto.error(matches)
+        demisto.error(f'Error in RegexGroups script: {str(e)}')
     finally:
+        # empty list is not supported
         if not matches:
-            matches = 'No matches found'
+            matches = ''
         return_results(matches)
 
 
