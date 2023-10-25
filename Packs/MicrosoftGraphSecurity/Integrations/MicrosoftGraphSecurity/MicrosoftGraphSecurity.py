@@ -1593,11 +1593,15 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
                                           outputs_prefix='MSGraphMail.AssessmentRequest'))
 
     skip_token_field = result.get('@odata.nextLink')
+    demisto.debug(f"skip_token_field: {skip_token_field}")
     if skip_token_field:
-        next_token = skip_token_field.split('skiptoken=')[1]
-        command_results.append(CommandResults(readable_output=f'Next token is: {next_token}\n',
-                                              outputs={"next_token": next_token},
-                                              outputs_prefix='MsGraph.AssessmentRequestNextToken'))
+        next_token = re.split(r'skip[t|T]oken=', skip_token_field)
+        if len(next_token) > 1:
+            next_token = next_token[1]
+
+            command_results.append(CommandResults(readable_output=f'Next token is: {next_token}\n' if next_token else None,
+                                                  outputs={"next_token": next_token},
+                                                  outputs_prefix='MsGraph.AssessmentRequestNextToken'))
 
     return command_results
 
