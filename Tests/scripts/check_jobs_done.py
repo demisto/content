@@ -1,11 +1,12 @@
-from pathlib import Path
-from argparse import ArgumentParser
-from os import getenv
-from Tests.scripts.utils import logging_wrapper as logging
 import sys
+from argparse import ArgumentParser
+from pathlib import Path
 
+from Tests.scripts.common import WORKFLOW_TYPES, CONTENT_NIGHTLY, BUCKET_UPLOAD, CONTENT_PR, SDK_NIGHTLY
+from Tests.scripts.utils import logging_wrapper as logging
+from Tests.scripts.utils.log_util import install_logging
 
-NIGHTLY_JOBS = [
+CONTENT_NIGHTLY_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
     'run-validations',
@@ -19,6 +20,9 @@ NIGHTLY_JOBS = [
     'tests_xsoar_server: [Server 6.11]',
     'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
+    'xsoar-test_playbooks_results',
+    'xsiam-test_playbooks_results',
+    'xsiam-test_modeling_rule_results',
 ]
 
 SDK_NIGHTLY_JOBS = [
@@ -32,7 +36,8 @@ SDK_NIGHTLY_JOBS = [
     'demisto-sdk-nightly:run-commands-against-instance',
     'demisto-sdk-nightly:run-end-to-end-tests',
 ]
-UPLOAD_JOBS = [
+
+BUCKET_UPLOAD_JOBS = [
     'run-unittests-and-lint-upload-flow: [native:dev,from-yml]',
     'run-unittests-and-lint-upload-flow: [native:ga,native:maintenance,native:candidate]',
     'run-validations-upload-flow',
@@ -50,14 +55,19 @@ UPLOAD_JOBS = [
     'upload-packs-to-marketplace-v2',
     'upload-packs-to-xpanse-marketplace',
 ]
-PUSH_JOBS = [
+
+CONTENT_PR_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
+    'run-validations',
+    'stop-running-pipelines',
+    'test-upload-flow',
     'trigger-private-build',
     'validate-content-conf',
     'mpv2-prepare-testing-bucket',
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',
+    'xsoar-saas-prepare-testing-bucket',
     'xsiam_server_ga',
     'tests_xsoar_server: [Server 6.9]',
     'tests_xsoar_server: [Server 6.10]',
@@ -65,34 +75,35 @@ PUSH_JOBS = [
     'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
     'xsoar_ng_server_ga',
+    'xsoar-test_playbooks_results',
+    'xsiam-test_playbooks_results',
+    'xsiam-test_modeling_rule_results',
 ]
-JOBS_PER_BUILD_TYPE = {
-    'NIGHTLY': NIGHTLY_JOBS,
-    'DEMISTO_SDK_NIGHTLY': SDK_NIGHTLY_JOBS,
-    'BUCKET_UPLOAD': UPLOAD_JOBS,
-    'push': PUSH_JOBS
+
+JOBS_PER_TRIGGERING_WORKFLOW = {
+    CONTENT_NIGHTLY: CONTENT_NIGHTLY_JOBS,
+    SDK_NIGHTLY: SDK_NIGHTLY_JOBS,
+    BUCKET_UPLOAD: BUCKET_UPLOAD_JOBS,
+    CONTENT_PR: CONTENT_PR_JOBS
 }
 
 
 def parse_args():
-    args = ArgumentParser()
-    args.add_argument('--job-done-files', required=True, help='the folder where the job files are located')
-    return args.parse_args()
-
-
-def get_build_jobs():
-    for build in ['NIGHTLY', 'DEMISTO_SDK_NIGHTLY', 'BUCKET_UPLOAD']:
-        if getenv(build):
-            return JOBS_PER_BUILD_TYPE[build]
-    return PUSH_JOBS
+    parser = ArgumentParser()
+    parser.add_argument('--job-done-files', required=True, help='the folder where the job files are located')
+    parser.add_argument(
+        '-tw', '--triggering-workflow', help='The type of ci pipeline workflow the notifier is reporting on',
+        choices=WORKFLOW_TYPES)
+    return parser.parse_args()
 
 
 def main():
+    install_logging('check_jobs_done.log', logger=logging)
     args = parse_args()
 
     base_path = Path(args.job_done_files)
     should_fail = False
-    for job in get_build_jobs():
+    for job in JOBS_PER_TRIGGERING_WORKFLOW[args.triggering_workflow]:
         job_file = base_path / f'{job}.txt'
         logging.info(f'checking job {job} with file {job_file} in {job_file.absolute()}')
         if not job_file.exists():
