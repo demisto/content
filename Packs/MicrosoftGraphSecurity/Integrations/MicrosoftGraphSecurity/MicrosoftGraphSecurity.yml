@@ -1818,7 +1818,7 @@ script:
     - description: Whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
       deprecated: true
-    - description: request_id (generated in polling command).
+    - description: The ID of the request (generated in the polling command).
       name: request_id
       deprecated: true
     description: Create file assessment request.
