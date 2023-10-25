@@ -1527,7 +1527,33 @@ This is visible
 <~XSIAM>
 - **Field Name 1**
 - **Field Name 2**
-</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.')
+</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.'),
+        (  # Case 11
+        '''
+## PackName
+- General pack change
+
+#### Integrations
+##### Integration Display Name
+<~XSIAM>
+- Fixed an issue
+</~XSIAM>''', 'xsoar', '## PackName\n- General pack change'),
+        (  # Case 12
+         '''
+## PackName
+- General pack change''', 'xsoar', '## PackName\n- General pack change'),
+        (  # Case 13
+            '''
+## PackName
+- General pack change
+
+#### Integrations
+##### Integration Display Name
+<~XSOAR>
+- Fixed an issue
+</~XSOAR>''', 'xsoar',
+            '## PackName\n- General pack change\n#### Integrations\n##### Integration Display Name\n- Fixed an issue'),
+
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
                                                         expected_result):
@@ -1553,6 +1579,15 @@ This is visible
         version_display_name = "1.2.3"
         build_number = "5555"
         id_set = {
+            "Packs": [
+                {
+                    'id':
+                        {
+                            "name": "PackName",
+                            "marketplaces": []
+                        }
+                }
+            ],
             "integrations": [
                 {
                     'id':

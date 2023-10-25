@@ -1788,7 +1788,7 @@ class Pack:
             (bool) Whether the pack is not updated because the entries are not relevant to the current marketplace.
         """
         logging.info(f"Starting to filter changelog entries by the entities that are given from id-set for pack "
-                      f"{self._pack_name} and marketplace {marketplace}")
+                     f"{self._pack_name} and marketplace {marketplace}")
 
         release_notes = self.filter_release_notes_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES), marketplace)
 
@@ -1926,7 +1926,7 @@ class Pack:
         Returns:
             (bool) Whether the dict contains the RN entries by the entities types.
         """
-        return release_notes_str and (not release_notes_dict or (set(release_notes_dict.keys()) == {ContentType.PACK.value}))
+        return release_notes_str and not release_notes_dict
 
     def filter_release_notes_by_tags(self, release_notes, upload_marketplace):
         """
@@ -4380,7 +4380,8 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
         return True
 
     for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
-
+        if rn_header == ContentType.PACK.value and list(id_set_entity.values())[0]['name'] == display_name:
+            return True
         if list(id_set_entity.values())[0]['display_name'] == display_name:
             return True
 
