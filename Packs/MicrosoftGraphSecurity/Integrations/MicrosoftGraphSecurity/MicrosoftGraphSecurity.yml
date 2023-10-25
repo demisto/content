@@ -1888,7 +1888,7 @@ script:
     - description: The request_id (generated in the polling command).
       name: request_id
       deprecated: true
-    description: Create url assessment request.
+    description: Create the URL assessment request.
     execution: false
     name: msg-create-url-assessment-request
     polling: true
