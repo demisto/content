@@ -734,7 +734,8 @@ def generate_threat_incidents(threats, current_iso_format_time):
     incidents = []
     for threat in threats:
         incident = {"dbotMirrorId": str(threat["threatId"]), "name": "Threat", "occurred": current_iso_format_time,
-                    'details': "Threat"}
+                    'details': "Threat", "rawJSON": json.dumps(threat),
+}
         incidents.append(incident)
     return incidents
 
@@ -743,7 +744,7 @@ def generate_abuse_campaign_incidents(campaigns, current_iso_format_time):
     incidents = []
     for campaign in campaigns:
         incident = {"dbotMirrorId": str(campaign["campaignId"]), "name": "Abuse Campaign", "occurred": current_iso_format_time,
-                    'details': "Abuse Campaign"}
+                    'details': "Abuse Campaign", "rawJSON": json.dumps(campaign)}
         incidents.append(incident)
     return incidents
 
@@ -752,7 +753,7 @@ def generate_account_takeover_cases_incidents(cases, current_iso_format_time):
     incidents = []
     for case in cases:
         incident = {"dbotMirrorId": str(case["caseId"]), "name": "Account Takeover Case", "occurred": current_iso_format_time,
-                    'details': case['description']}
+                    'details': case['description'], "rawJSON": json.dumps(case)}
         incidents.append(incident)
     return incidents
 
