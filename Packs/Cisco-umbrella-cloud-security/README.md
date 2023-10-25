@@ -27,6 +27,11 @@ At the end of this process, you should have a folder created for each type of lo
 - dnslogs
 - proxylogs
 
+Note:
+Make sure that the Log schema version is configure to **v8**.
+More information can be found [here](https://docs.umbrella.com/deployment-umbrella/docs/log-formats-and-versioning)
+
+
 **On XSIAM:**
 
 1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source**.
