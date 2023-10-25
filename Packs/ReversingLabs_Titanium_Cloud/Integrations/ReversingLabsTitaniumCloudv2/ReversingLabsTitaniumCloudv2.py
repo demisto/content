@@ -2062,7 +2062,50 @@ def ip_to_domain_output(response, ip):
 
 
 def network_reputation_command():
-    pass
+    net_reputation = NetworkReputation(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    network_locations = argToList(demisto.getArg("network_locations"))
+
+    try:
+        response = net_reputation.get_network_reputation(
+            network_locations=network_locations
+        )
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        sys.exit()
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = network_reputation_output(response_json=response_json, network_locations=network_locations)
+    return_results(results)
+
+
+def network_reputation_output(response_json, network_locations):
+    entries = response_json.get("rl").get("entries")
+    entries_table = tableToMarkdown(
+        name="Network locations",
+        t=entries
+    )
+
+    markdown = f"## ReversingLabs Reputation for the following network locations: {network_locations}\n {entries_table}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"network_reputation": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
 
 
 def network_reputation_override_command():
@@ -2180,6 +2223,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-ip-to-domain":
         ip_to_domain_command()
+
+    elif command == "reversinglabs-titaniumcloud-network-reputation":
+        network_reputation_command()
 
     else:
         return_error(f"Command {command} does not exist")

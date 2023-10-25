@@ -693,6 +693,17 @@ script:
     - contextPath: ReversingLabs.ip_to_domain
       description: The list of IP to domain mappings.
       type: Unknown
+  - name: reversinglabs-titaniumcloud-network-reputation
+    description: Returns network reputation for requested network locations.
+    arguments:
+    - name: network_locations
+      description: A comma-separated list of network location. The list should have no spaces.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: ReversingLabs.network_reputation
+      description: Network reputation.
+      type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.79362
   runonce: false
   script: '-'
