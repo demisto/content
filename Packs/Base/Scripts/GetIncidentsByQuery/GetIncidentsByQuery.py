@@ -104,7 +104,10 @@ def get_incidents_by_page(args, page, fields_to_populate, include_context):
     args['page'] = page
     if is_demisto_version_ge('6.2.0') and len(fields_to_populate) > 0:
         args['populateFields'] = get_fields_to_populate_arg(fields_to_populate)
+
+    demisto.debug(f'Calling getIncidents with following args = {args}')
     res = demisto.executeCommand("getIncidents", args)
+    demisto.debug(f'Result of getIncidents {res=}')
     if is_error(res):
         error_message = get_error(res)
         raise Exception("Failed to get incidents by query args: %s error: %s" % (args, error_message))

@@ -79,10 +79,20 @@ def get_existing_incidents(input_args, current_incident_type):
         get_incidents_args['populateFields'] = ','.join([','.join(fields), input_args['populateFields']])
     else:
         get_incidents_args['populateFields'] = ','.join(fields)
-    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
+
+    demisto.debug(f'Calling GetIncidentsByQuery {get_incidents_args=}')
+    incidents_query_res = demisto.executeCommand('GetIncidentsByQuery_dev', get_incidents_args)
+
+    demisto.debug(f'Received results from GetIncidentsByQuery: {json.dumps(incidents_query_res)}\n')
+    demisto.debug(f'incidents_query_res[-1]: {incidents_query_res[-1]}\n')
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
-    incidents = json.loads(incidents_query_res[-1]['Contents'])
+
+    incidents_query_contents = {}
+    for res in incidents_query_res:
+        if res['Contents']:
+            incidents_query_contents = res['Contents']
+    incidents = json.loads(incidents_query_contents)
     return incidents
 
 

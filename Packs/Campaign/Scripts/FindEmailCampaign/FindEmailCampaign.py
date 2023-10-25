@@ -183,8 +183,8 @@ def create_empty_context():
     return context
 
 
-def is_number_of_incidents_too_low(res, incidents):
-    if not res["EntryContext"]['isDuplicateIncidentFound'] or \
+def is_number_of_incidents_too_low(res_entry_context, incidents):
+    if not res_entry_context.get('isDuplicateIncidentFound') or \
             len(incidents) < MIN_CAMPAIGN_SIZE:
         return_outputs_custom('No possible campaign was detected', create_empty_context())
         return True
@@ -548,13 +548,21 @@ def main():
         fields_to_display = get_comma_sep_list(fields_to_display)
     else:
         fields_to_display = []
-    res = demisto.executeCommand('FindDuplicateEmailIncidents', input_args)
+    demisto.debug(f'Calling FindDuplicateEmailIncidents {input_args=}')
+    res = demisto.executeCommand('FindDuplicateEmailIncidents_dev', input_args)
     if is_error(res):
         return_error(get_error(res))
-    res = res[-1]
-    incidents = json.loads(res['Contents'])
 
-    if is_number_of_incidents_too_low(res, incidents):
+    res_contents = {}
+    res_entry_context = {}
+    for r in res:
+        if r['Contents']:
+            res_contents = r['Contents']
+        if r['EntryContext']:
+            res_entry_context = r['EntryContext']
+    incidents = json.loads(res_contents)
+
+    if is_number_of_incidents_too_low(res_entry_context, incidents):
         return
     if is_number_of_unique_recipients_is_too_low(incidents):
         return
