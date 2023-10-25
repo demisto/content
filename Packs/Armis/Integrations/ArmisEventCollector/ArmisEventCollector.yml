@@ -24,18 +24,18 @@ configuration:
   section: Collect
 - display: Maximum number of device events per fetch
   name: devices_max_fetch
-  additionalinfo: Devices events
   type: 0
-  defaultvalue: 10000
   section: Collect
+  additionalinfo: Devices events
+  defaultvalue: 10000
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
 - display: Use system proxy settings
   name: proxy
-  type: 8
   section: Connect
+  type: 8
 - display: Event types to fetch
   name: event_types_to_fetch
   section: Collect
