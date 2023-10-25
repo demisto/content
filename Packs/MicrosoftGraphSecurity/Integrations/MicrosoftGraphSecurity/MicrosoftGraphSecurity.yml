@@ -1957,7 +1957,7 @@ script:
       - 'status'
       - 'requestSource'
       required: false
-    - description: sort order.
+    - description: The sort order.
       isArray: false
       name: sort_order
       auto: PREDEFINED
