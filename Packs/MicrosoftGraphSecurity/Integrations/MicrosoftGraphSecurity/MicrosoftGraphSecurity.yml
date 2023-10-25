@@ -1688,7 +1688,7 @@ script:
       description: The email recipient of the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.DestinationRoutingReason
-      description: 'Destination Routing Reason.'
+      description: The destination routing reason for the mail assessment.
       type: String
     - contextPath: MSGraphMail.MailAssessment.MessageID
       description: 'Message ID.'
