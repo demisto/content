@@ -441,6 +441,22 @@
     - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
 
+.pre-commit:
+  stage: unittests-and-validations
+  extends:
+    - .default-job-settings
+    - .unittests-and-lint-settings
+  needs: []
+  # rules:
+  #   - if: '$NIGHTLY'
+  #     when: always
+  script:
+    - section_start "Run pre-commit"
+    - demisto-sdk pre-commit --all-files --unit-test --mode=nightly --verbose --show-diff-on-failure --sdk-ref=MW/run_unit_tests/New_flag_mount_files
+    - section_end "Run pre-commit"
+    - job-done
+  allow_failure: true
+
 .jobs-done-check:
   stage: are-jobs-really-done
   script:
