@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -ex
 
-echo "CI_COMMIT_BRANCH: $CI_COMMIT_BRANCH CI: $CI DEMISTO_README_VALIDATION: $DEMISTO_README_VALIDATION"
+echo "CI_COMMIT_BRANCH: $CI_COMMIT_BRANCH CI: $CI DEMISTO_README_VALIDATION: $DEMISTO_README_VALIDATION, Packs commit: $(git log -1 --format="%H" -- ./Packs), CI_COMMIT_SHA: $CI_COMMIT_SHA"
 if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
     if [[ -n "${PACKS_TO_UPLOAD}" ]]; then
         echo "Packs upload - Validating only the supplied packs"
