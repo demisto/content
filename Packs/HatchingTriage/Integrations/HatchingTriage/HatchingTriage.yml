@@ -12,19 +12,27 @@ configuration:
   type: 0
 - display: API Key
   name: API Key
-  required: true
+  required: false
   type: 4
   additionalinfo: The API Key to use for the connection.
+  displaypassword: API Key
+  hiddenusername: true
+- display: ''
+  name: credentials
+  type: 9
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
 - display: Verify SSL
-  defaultvalue: 'true'
   name: Verify SSL
+  defaultvalue: 'true'
   type: 8
   required: false
-- display: Use system proxy settings
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: 'false'
-  type: 8
   required: false
+  type: 8
 description: Submit a high volume of samples to run in a sandbox and view reports
 display: Hatching Triage
 name: Hatching Triage
@@ -588,9 +596,9 @@ script:
       required: true
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.78960
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
