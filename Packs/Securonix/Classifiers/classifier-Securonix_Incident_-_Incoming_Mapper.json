@@ -180,7 +180,20 @@
                     "complex": {
                         "filters": [],
                         "root": "solrquery",
-                        "transformers": []
+                        "transformers": [
+							{
+								"args": {
+									"limit": {},
+									"replaceWith": {},
+									"toReplace": {
+										"value": {
+											"simple": "@"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
                     }
                 },
                 "Securonix Violator ID": {
