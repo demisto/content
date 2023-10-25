@@ -1785,7 +1785,7 @@ script:
       description: 'Result message.'
       type: String
   - arguments:
-    - description: expected assessment.
+    - description: The expected assessment.
       isArray: false
       name: expected_assessment
       defaultValue: all
