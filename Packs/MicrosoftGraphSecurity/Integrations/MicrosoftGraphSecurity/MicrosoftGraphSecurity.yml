@@ -1881,7 +1881,7 @@ script:
       - 'phishing'
       - 'malware'
       required: true
-    - description: url.
+    - description: The URL of the threat.
       isArray: false
       name: url
       required: true
