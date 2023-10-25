@@ -10,7 +10,7 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
             python3 -m demisto_sdk validate -i Packs/"$item" --post-commit --graph --skip-pack-dependencies
         done       
     else 
-        python3 -m demisto_sdk validate -a --post-commit --graph --skip-pack-dependencies
+        python3 -m demisto_sdk validate -a --post-commit --graph --skip-pack-dependencies --prev-ver $(git log -1 --format="%H" -- ./Packs)
     fi
 elif [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
     python3 -m demisto_sdk validate -g --post-commit --graph --skip-pack-dependencies
