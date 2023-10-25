@@ -43,7 +43,6 @@ def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGA
 
     integration_id = request.cls.integration_id
     instance_name = integration_params.pop("integrationInstanceName", f'e2e-test-{integration_params.get("name")}')
-    integration_params["edl_size"] = "10"
     response = xsoar_ng_client.create_integration_instance(
         _id=integration_id,
         name=instance_name,
@@ -68,7 +67,7 @@ class TestEDL:
         ("2.2.2.2", "IP", 0),
         ("3.3.3.3", "IP", 0)
     ]
-    instance_name_gsm = "edl_auto_from_8_0_0"
+    instance_name_gsm = "edl_e2e_instance"
     integration_id = "EDL"
 
     def test_edl(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: dict):
@@ -95,7 +94,7 @@ class TestEDL:
 
         try:
             response = run_edl_request()
-        except ApiException:
+        except Exception:
             time.sleep(7200)
             raise
 
