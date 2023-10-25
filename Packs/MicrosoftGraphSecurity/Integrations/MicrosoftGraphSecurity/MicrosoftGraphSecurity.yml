@@ -1746,43 +1746,43 @@ script:
     polling: true
     outputs:
     - contextPath: MSGraphMail.EmailAssessment.ID
-      description: 'mail assessment id.'
+      description: The mail assessment ID.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.CreatedDateTime
-      description: 'mail assessment Created DateTime.'
+      description: The datetime the mail assessment was created.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.ContentType
-      description: 'Content Type.'
+      description: The content type.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.ExpectedAssessment
-      description: 'Expected Assessment.'
+      description: The expected assessment.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.Category
-      description: 'Category.'
+      description: The category of the mail assessment.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.Status
-      description: 'Status.'
+      description: The status of the mail assessment.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.RequestSource
-      description: 'Request Source.'
+      description: The request source of the mail assessment.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.RecipientEmail
-      description: 'Recipient Email.'
+      description: The email recipient of the mail assessment.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.DestinationRoutingReason
-      description: 'Destination Routing Reason.'
+      description: The destination routing reason for the mail assessment.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.CreatedUserID
-      description: 'Created user id.'
+      description: The user ID that was created for the mail assessment.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.CreatedUsername
-      description: 'Created user name.'
+      description: The user name that was created for the mail assessment.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.ResultType
-      description: 'Result Type.'
+      description: The result type of the mail assessment.
       type: String
     - contextPath: MSGraphMail.EmailAssessment.ResultMessage
-      description: 'Result message.'
+      description: The result message of the mail assessment.
       type: String
   - arguments:
     - description: The expected assessment.
