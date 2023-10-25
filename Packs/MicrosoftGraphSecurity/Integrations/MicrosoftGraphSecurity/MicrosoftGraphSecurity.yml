@@ -1940,7 +1940,7 @@ script:
       isArray: false
       name: request_id
       required: false
-    - description: filter, Example:category eq 'malware’ and ContentType eq 'file'. Available Fields are expectedAssessment,ContentType,status,requestSource.
+    - description: The filter for the request. Example: category eq 'malware’ and ContentType eq 'file'. Available fields are expectedAssessment, ContentType, status, requestSource.
       isArray: false
       name: filter
       required: false
