@@ -132,7 +132,7 @@ class Client(BaseClient):
         return response
 
     def get_attack_surface_rule_request(
-        self, attack_surface_rule_id: str, enabled_status: str, priority: str, category: str
+        self, search_params: List[dict]
     ) -> Dict[str, Any]:
         """Get Attack Surface Rule details for an attack surface rule id using the '/get_attack_surface_rules/' endpoint.
 
@@ -142,32 +142,7 @@ class Client(BaseClient):
         Returns:
             dict: dict containing information about Attack surface rule.
         """
-        filters = []
-        if attack_surface_rule_id != 'None':
-            filters.append({
-                "field": "attack_surface_rule_id",
-                "operator": "in",
-                "value": attack_surface_rule_id.split(",")
-            })
-        if enabled_status != 'None':
-            filters.append({
-                "field": "enabled_status",
-                "operator": "in",
-                "value": enabled_status.split(",")
-            })
-        if priority != 'None':
-            filters.append({
-                "field": "priority",
-                "operator": "in",
-                "value": priority.split(",")
-            })
-        if category != 'None':
-            filters.append({
-                "field": "category",
-                "operator": "in",
-                "value": category.split(",")
-            })
-        data = {"request_data": {"filters": filters}}
+        data = {"request_data": {"filters": search_params}}
         response = self._http_request(
             "POST",
             "/get_attack_surface_rules/",
@@ -589,16 +564,39 @@ def get_attack_surface_rule_command(
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
         that contains Remediation guidance information.
     """
-    attack_surface_rule_id = str(args.get("attack_surface_rule_id"))
-    enabled_status = str(args.get("enabled_status"))
-    priority = str(args.get("priority"))
-    category = str(args.get("category"))
+    attack_surface_rule_id = args.get("attack_surface_rule_id")
+    enabled_status = args.get("enabled_status")
+    priority = args.get("priority")
+    category = args.get("category")
 
-    response = client.get_attack_surface_rule_request(attack_surface_rule_id, enabled_status, priority, category)
-    if response is not None:
-        parsed = response.get('reply', {}).get('attack_surface_rules')
-    else:
-        parsed = None
+    search_params = []
+    if attack_surface_rule_id and attack_surface_rule_id != 'None':
+        search_params.append({
+            "field": "attack_surface_rule_id",
+            "operator": "in",
+            "value": attack_surface_rule_id.split(",")
+        })
+    if enabled_status and enabled_status != 'None':
+        search_params.append({
+            "field": "enabled_status",
+            "operator": "in",
+            "value": enabled_status.split(",")
+        })
+    if priority and priority != 'None':
+        search_params.append({
+            "field": "priority",
+            "operator": "in",
+            "value": priority.split(",")
+        })
+    if category and category != 'None':
+        search_params.append({
+            "field": "category",
+            "operator": "in",
+            "value": category.split(",")
+        })
+
+    response = client.get_attack_surface_rule_request(search_params)
+    parsed = response.get("reply", {}).get("attack_surface_rules")
     command_results = CommandResults(
         outputs_prefix="ASM.AttackSurfaceRule",
         outputs_key_field="attack_surface_rule",
