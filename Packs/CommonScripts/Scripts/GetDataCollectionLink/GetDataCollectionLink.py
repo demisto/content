@@ -7,6 +7,9 @@ from distutils.version import LooseVersion
 
 
 def is_machine_saas() -> bool:
+    """
+    Checks if the instance is SaaS by checking the demistoVersion.
+    """
     demisto_version = demisto.demistoVersion()
     if demisto_version["platform"] == "x2":
         return True
@@ -15,6 +18,16 @@ def is_machine_saas() -> bool:
 
 
 def generate_url(server_url: str, encoded_task: str, encoded_user: str) -> str:
+    """Generates a data collection URL.
+    
+    Args:
+        server_url: The Demisto server URL.
+        encoded_task: The encoded task ID.
+        encoded_user: The encoded user ID.
+        
+    Returns:
+        The data collection URL.
+    """
     if is_machine_saas():
         try:
             otp = execute_command("generateOTP", {})
@@ -22,18 +35,6 @@ def generate_url(server_url: str, encoded_task: str, encoded_user: str) -> str:
             return f'{server_url}/#/external/form/{encoded_task}/{encoded_user}'
         return f'{server_url}/external/form/{encoded_task}/{encoded_user}?otp={otp}'
     return f'{server_url}/#/external/form/{encoded_task}/{encoded_user}'
-
-
-def warning_message_for_unsupported_versions(urls: list[dict[str, str]]) -> CommandResults:
-    if is_machine_saas() and urls and "#" in urls[0]["url"]:
-        return CommandResults(
-            readable_output=(
-                "In the current release, URL output isn't properly supported. "
-                "However, comprehensive support will be available in XSOAR starting "
-                "from version 8.4.0 and in XSIAM starting from version 2.0.1 and onwards."
-            )
-        )
-    return []
 
 
 def encode_string(value: str) -> str:
@@ -59,7 +60,7 @@ def get_data_collection_url(task_id: str, users: List[str]) -> List[Dict[str, st
     return urls
 
 
-def get_data_collection_url_command(args: Dict[str, Any]) -> list[CommandResults]:  # pragma: no cover
+def get_data_collection_url_command(args: Dict[str, Any]) -> CommandResults:  # pragma: no cover
     task_id = args.get('task_id', None)
     if not task_id:
         raise ValueError('task_id not specified')
@@ -70,13 +71,12 @@ def get_data_collection_url_command(args: Dict[str, Any]) -> list[CommandResults
 
     result = get_data_collection_url(task_id, users)
 
-    return [CommandResults(
-        readable_output=tableToMarkdown("Result", result),
+    return CommandResults(
         outputs_prefix='DataCollectionURL',
         outputs_key_field='user',
         outputs=result,
         ignore_auto_extract=True
-    )].extend(warning_message_for_unsupported_versions(result))
+    )
 
 
 def main():  # pragma: no cover
