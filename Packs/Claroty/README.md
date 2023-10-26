@@ -29,10 +29,8 @@ Follow these steps to configure Claroty CTD to forward Syslog messages to Cortex
    | Parameter          | Value   
    | :---               | :---        
    | `Message Contents` | Select the log type to forward to Cortex XSIAM.
-
    | `Message Format`   | Select **CEF**.
    | `Server`           | Enter the IP address of the target Cortex XSIAM Broker VM syslog server.
-
    | `Port`             | Enter the port number which the target Cortex XSIAM Broker VM syslog server would be listening on for receiving syslog messages from Claroty CTD.
    | `Protocol`         | Select the requested forwarding transport protocol (*UDP*, *TCP* or *TLS*). 
 5. Click **Save**.
