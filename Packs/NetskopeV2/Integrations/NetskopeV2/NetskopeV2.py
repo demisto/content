@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import traceback
 from typing import Any, Dict
 
@@ -228,7 +230,9 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get('api_key')
+    api_key = demisto.params().get("api_key_credentials", {}).get("password") or demisto.params().get("api_key")
+    if not api_key:
+        return_error('Please provide a valid API token')
     base_url = urljoin(demisto.params()['url'], '/api/v2/policy/urllist/')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
