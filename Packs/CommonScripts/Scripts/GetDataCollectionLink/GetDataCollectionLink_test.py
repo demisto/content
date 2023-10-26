@@ -80,14 +80,31 @@ def test_generate_url_generateOTP_unsupported(mocker):
     Given:
         - server url, encoded task and user
     When:
-        - `generate_url` is called and `execute_command` raises an exception
+        - `generate_url` is called and `execute_command` raises `Unsupported Command` exception
     Then:
         - it returns the expected url without OTP
     """
 
     mocker.patch("GetDataCollectionLink.is_machine_saas", return_value=True)
-    mocker.patch("GetDataCollectionLink.execute_command", side_effect=Exception)
+    mocker.patch("GetDataCollectionLink.execute_command", side_effect=Exception("Unsupported Command"))
 
     url = generate_url("https://server", "abc", "xyz")
 
     assert url == "https://server/#/external/form/abc/xyz"
+
+
+def test_generate_url_failure(mocker):
+    """
+    Given:
+        - server url, encoded task and user
+    When:
+        - `generate_url` is called and `execute_command` raises an exception
+    Then:
+        - Ensure the exception is raised
+    """
+
+    mocker.patch("GetDataCollectionLink.is_machine_saas", return_value=True)
+    mocker.patch("GetDataCollectionLink.execute_command", side_effect=Exception("test"))
+
+    with pytest.raises(Exception):
+        generate_url("https://server", "abc", "xyz")

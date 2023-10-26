@@ -30,8 +30,10 @@ def generate_url(server_url: str, encoded_task: str, encoded_user: str) -> str:
     if is_machine_saas():
         try:
             otp = execute_command("generateOTP", {})
-        except Exception:
-            return f"{server_url}/#/external/form/{encoded_task}/{encoded_user}"
+        except Exception as err:
+            if "Unsupported Command" in str(err):
+                return f"{server_url}/#/external/form/{encoded_task}/{encoded_user}"
+            raise err
         return f"{server_url}/external/form/{encoded_task}/{encoded_user}?otp={otp}"
     return f"{server_url}/#/external/form/{encoded_task}/{encoded_user}"
 
