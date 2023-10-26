@@ -45,7 +45,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, token: str, use_ssl: bool, use_proxy: bool):
         super().__init__(urljoin(base_url, '/api/v1/'), verify=use_ssl, proxy=use_proxy)
-        self._session.params['token'] = token
+        self._session.params['token'] = token   # type: ignore
 
     def list_events_request(self,
                             query: Optional[str] = None,
@@ -394,8 +394,8 @@ def get_pagination_arguments(args: Dict[str, Any]) -> Tuple[int, int, int]:
         Tuple[int, int]: The page, calculated skip and limit after validation.
     """
 
-    page = arg_to_number(args.get('page', DEFAULT_PAGE))
-    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    page = arg_to_number(args.get('page')) or DEFAULT_PAGE
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
 
     if page < 1:
         raise DemistoException('Page argument must be greater than 1')
@@ -419,7 +419,7 @@ def list_events_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
     query = args.get('query')
     event_type = args['event_type']
-    timeperiod = TIME_PERIOD_MAPPING.get(args.get('timeperiod'))
+    timeperiod = TIME_PERIOD_MAPPING.get(args.get('timeperiod', ''))
     start_time = arg_to_seconds_timestamp(args.get('start_time'))
     end_time = arg_to_seconds_timestamp(args.get('end_time'))
     insertion_start_time = arg_to_seconds_timestamp(args.get('insertion_start_time'))
@@ -477,7 +477,7 @@ def list_alerts_command(client: Client, args: Dict[str, str]) -> CommandResults:
     query = args.get('query')
     alert_type = args.get('alert_type')
     acked = arg_to_boolean(args.get('acked'))
-    timeperiod = TIME_PERIOD_MAPPING.get(args.get('timeperiod'))
+    timeperiod = TIME_PERIOD_MAPPING.get(args.get('timeperiod', ''))
     start_time = arg_to_seconds_timestamp(args.get('start_time'))
     end_time = arg_to_seconds_timestamp(args.get('end_time'))
     insertion_start_time = arg_to_seconds_timestamp(args.get('insertion_start_time'))
@@ -542,8 +542,8 @@ def list_quarantined_files_command(client: Client, args: Dict[str, str]) -> Comm
                                                      limit=limit,
                                                      skip=skip)
 
-    outputs = dict_safe_get(response, ['data', 'quarantined'])
-    for output in outputs:
+    outputs = dict_safe_get(response, ['data', 'quarantined'])  # type: ignore
+    for output in outputs:  # type: ignore
         for file_output in output['files']:
             file_output['quarantine_profile_id'] = output['quarantine_profile_id']
             file_output['quarantine_profile_name'] = output['quarantine_profile_name']
@@ -651,7 +651,7 @@ def update_file_hash_list_command(client: Client, args: Dict[str, str]) -> Comma
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    name = args.get('name')
+    name = args.get('name', '')
     hashes = argToList(args.get('hash'))
 
     client.update_file_hash_list_request(name=name, hashes=hashes)
@@ -902,11 +902,11 @@ def main():
     token = params['credentials']['password']
     use_ssl = not params.get('insecure', False)
     use_proxy = params.get('proxy', False)
-    max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_MAX_FETCH))
+    max_fetch = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_FETCH
     first_fetch = params.get('first_fetch', DEFAULT_FIRST_FETCH)
     fetch_events = argToBoolean(params.get('fetch_events', False))
     event_types = argToList(params.get('fetch_event_types', DEFAULT_EVENT_TYPE))
-    max_events_fetch = arg_to_number(params.get('max_events_fetch', DEFAULT_EVENTS_FETCH))
+    max_events_fetch = arg_to_number(params.get('max_events_fetch')) or DEFAULT_EVENTS_FETCH
 
     client = Client(url, token, use_ssl, use_proxy)
 
