@@ -246,7 +246,7 @@ tasks:
           | where OperationNameValue in~ ("microsoft.compute/virtualMachines/write", "microsoft.compute/virtualMachines/extensions/write", "Microsoft.Network/networkSecurityGroups/securityRules/write", "Microsoft.Compute/virtualMachines/runCommand/action") and Caller contains "${inputs.username}"
       timespan:
         complex:
-          root: inputs.timespan
+          root: inputs.AzureTimespan
     separatecontext: false
     continueonerrortype: ""
     view: |-
