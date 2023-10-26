@@ -283,6 +283,7 @@ xpanse-prepare-testing-bucket:
     - |
       echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -556,6 +557,7 @@ slack-notify-on-merge:
     - |
       echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
