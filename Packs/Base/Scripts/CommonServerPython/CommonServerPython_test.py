@@ -1650,27 +1650,6 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
-def test_indicator_type_by_server_version_under_6_1(mocker, clear_version_cache):
-    """
-    Given
-    - demisto version mock under 6.2
-
-    When
-    - demisto version mock under 6.2
-
-    Then
-    - Do not remove the STIX indicator type prefix.
-    """
-    mocker.patch.object(
-        demisto,
-        'demistoVersion',
-        return_value={
-            'version': '6.1.0',
-        }
-    )
-    assert FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern") == "STIX Attack Pattern"
-
-
 def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
     """
     Given
@@ -4166,7 +4145,6 @@ def test_update_context_no_merge(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
     mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
-    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=True)
 
     new_conversation = {
         'id': 'A0123456',
