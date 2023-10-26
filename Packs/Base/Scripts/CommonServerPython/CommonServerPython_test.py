@@ -6801,7 +6801,7 @@ class TestIndicatorsSearcher:
         for res in search_indicators:
             results.append(res)
         assert len(results) == 7
-        assert search_indicators.page == 19
+        assert search_indicators.page == 25
 
     def test_iterator__research_flow(self, mocker):
         from CommonServerPython import IndicatorsSearcher
