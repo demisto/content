@@ -53,7 +53,7 @@ merge-dev-secrets:
     master_branch_name: master
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   stage: unittests-and-validations
   script:
     - EXIT_CODE=0
@@ -76,7 +76,7 @@ stop-running-pipelines:
     master_branch_name: master
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running pipelines on current branch"
     - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
@@ -400,7 +400,7 @@ fan-in-on-push:
   when: always
   stage: fan-in
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   tags:
     - gke
   script:
@@ -410,7 +410,7 @@ fan-in-on-push:
 
 jobs-done-check-on-push:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   extends:
     - .push-rule
     - .jobs-done-check
@@ -441,7 +441,7 @@ fan-in-on-merge:
   when: always
   stage: fan-in
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   tags:
     - gke
   script:
@@ -451,7 +451,7 @@ fan-in-on-merge:
 
 jobs-done-check-on-merge:
   rules:
-      - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+      - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   extends:
     - .push-rule
     - .jobs-done-check
@@ -501,7 +501,7 @@ slack-notify-nightly-build:
 
 slack-notify-on-push:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+    - if: '$$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   extends:
     - .trigger-slack-notification
   variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
@@ -522,7 +522,7 @@ slack-notify-on-push:
 
 slack-notify-on-merge:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   extends:
     - .trigger-slack-notification
   variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
