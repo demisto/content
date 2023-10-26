@@ -328,10 +328,11 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
 
     - !reference [.export_xsiam_machine_constants]
     - echo "Server URL $DEMISTO_BASE_URL"
+    - echo "XSIAM_AUTH_ID $XSIAM_AUTH_ID"
     - echo "Checking infra."
   
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
-    - demisto-sdk upload -i Packs/AzureSentinel -z -x --insecure 
+    - demisto-sdk upload -i Packs/AzureSentinel -z -x --insecure
     - demisto-sdk download -lf --insecure
     - demisto-sdk download -a -o Packs/ -f --insecure
 
@@ -382,6 +383,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - !reference [.export_xsoar_ng_machine_constants]
 
     - echo "Checking infra."
+    - echo "Server URL $DEMISTO_BASE_URL"
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
