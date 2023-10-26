@@ -1253,7 +1253,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
         end = start + limit
         outputs["bindings"] = bindings[start:end]
         if len(bindings) < 50:
-            readable_header = f'Project {resource_name} IAM Policy List:\n Current page size: {len(bindings)}.'
+            readable_header = f'Project {resource_name} IAM Policy List:\n Current page size: {len(bindings)}'
 
     readable_output = tableToMarkdown(
         readable_header,
