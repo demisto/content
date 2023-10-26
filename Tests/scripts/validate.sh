@@ -14,7 +14,6 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
     else
         if [ -n "$NIGHTLY" ]; then
             PREV_VER=$LATEST_PACKS_FOLDER_COMMIT
-            echo "successfully set the PREV_VER to be the latest successful Packs folder commit: $LATEST_PACKS_FOLDER_COMMIT"
         else
             PREV_VER="origin/master"
         fi
