@@ -4,16 +4,22 @@ from CommonServerPython import *
 import requests
 import json
 import re
-import urllib3
 import urllib
 
-urllib3.disable_warnings()
+from cryptography.hazmat.primitives.serialization.pkcs12 import load_key_and_certificates
+from cryptography.hazmat.primitives.serialization import Encoding, PrivateFormat, NoEncryption
+from requests_toolbelt.adapters.x509 import X509Adapter
+
 
 ''' GLOBAL VARS '''
 SERVER = None
 BASE_URL = ''
 USERNAME = None
 PASSWORD = None
+TOKEN = ''
+CERTIFICATE = None
+CERTIFICATE_PASS = ''
+CERTIFICATE_TYPE = ''
 USE_SSL = None
 FETCH_PRIORITY = 0
 FETCH_STATUS = ''
@@ -55,13 +61,40 @@ def ticket_string_to_id(ticket_string):
     return ticket_id
 
 
+def handle_p12_certificate() -> None:
+    certificate_file_path = demisto.getFilePath(CERTIFICATE).get('path', '')
+    demisto.debug(f"{certificate_file_path=}")
+    with open(certificate_file_path, 'rb') as pkcs12_file:
+        pkcs12_data = pkcs12_file.read()
+
+    pkcs12_password_bytes = CERTIFICATE_PASS.encode('utf8')
+
+    pycaP12 = load_key_and_certificates(pkcs12_data, pkcs12_password_bytes)
+    pk_bytes = pycaP12[0].private_bytes(Encoding.DER, PrivateFormat.PKCS8, NoEncryption())  # type: ignore[union-attr]
+    cert_bytes = pycaP12[1].public_bytes(Encoding.DER)  # type: ignore[union-attr]
+
+    adapter = X509Adapter(max_retries=3, cert_bytes=cert_bytes, pk_bytes=pk_bytes, encoding=Encoding.DER)
+
+    SESSION.mount('https://', adapter)
+
+
+def handle_certificate() -> None:
+    if not CERTIFICATE:
+        return
+
+    if CERTIFICATE_TYPE == 'PKCS #12':
+        handle_p12_certificate()
+
+
 def http_request(method, suffix_url, data=None, files=None, query=None):
     # Returns the http request
 
     url = urljoin(BASE_URL, suffix_url)
-    params = {'user': USERNAME, 'pass': PASSWORD}
+    params = {'user': USERNAME, 'pass': PASSWORD} if not TOKEN else {}
     if query:
         params.update(query)
+
+    handle_certificate()
 
     response = SESSION.request(method, url, data=data, params=params, files=files,
                                headers=HEADERS)  # type: ignore
@@ -69,7 +102,7 @@ def http_request(method, suffix_url, data=None, files=None, query=None):
     # handle request failure
     if response.status_code not in {200}:
         message = parse_error_response(response)
-        return_error('Error in API call with status code {}\n{}'.format(response.status_code, message))
+        raise DemistoException(f'Error in API call with status code {response.status_code}\n{message}')
 
     return response
 
@@ -83,23 +116,6 @@ def parse_error_response(response):
     except Exception:
         return response.text
     return msg
-
-
-def login():
-    data = {
-        'user': USERNAME,
-        'pass': PASSWORD
-    }
-    res = SESSION.post(SERVER, data=data)  # type: ignore
-    response_text = res.text
-    are_credentials_wrong = 'Your username or password is incorrect' in response_text
-    if are_credentials_wrong:
-        return_error("Error: login failed. please check your credentials.")
-
-
-def logout():
-    suffix_url = 'logout'
-    http_request('POST', suffix_url)
 
 
 def parse_ticket_data(raw_query):
@@ -137,6 +153,22 @@ def parse_ticket_data(raw_query):
 ''' FUNCTIONS '''
 
 
+def test_module():
+    try:
+        res = http_request('GET', '')
+        if '401 Credentials required' in res.text:
+            raise DemistoException("Error: Test failed. please check your credentials.")
+        else:
+            return_results('ok')
+    except ValueError as e:
+        if "Item not found" in str(e):
+            raise DemistoException("When using Certificate, "
+                                   "Please enable the integration and run the !rtir-auth-test command in order to test it"
+                                   ) from e
+        else:
+            raise
+
+
 def create_ticket_request(encoded):
     suffix_url = 'ticket/new'
     ticket_id = http_request('POST', suffix_url, data=encoded)
@@ -154,54 +186,54 @@ def create_ticket():
     args = dict(demisto.args())
     args = {arg: value for arg, value in args.items() if isinstance(value, str)}
     queue = args.get('queue')
-    data = 'id: ticket/new\nQueue: {}\n'.format(queue)
+    data = f'id: ticket/new\nQueue: {queue}\n'
 
     subject = args.get('subject')
     if subject:
-        data += "Subject: {}\n".format(subject)
+        data += f"Subject: {subject}\n"
 
     requestor = args.get('requestor')
     if requestor:
-        data += "Requestor: {}\n".format(requestor)
+        data += f"Requestor: {requestor}\n"
 
     cc = args.get('cc', '')
     if cc:
-        data += "Cc: {}\n".format(cc)
+        data += f"Cc: {cc}\n"
 
     admin_cc = args.get('admin-cc', '')
     if admin_cc:
-        data += "AdminCc: {}\n".format(admin_cc)
+        data += f"AdminCc: {admin_cc}\n"
 
     owner = args.get('owner')
     if owner:
-        data += "Owner: {}\n".format(owner)
+        data += f"Owner: {owner}\n"
 
     status = args.get('status')
     if status:
-        data += "Status: {}\n".format(status)
+        data += f"Status: {status}\n"
 
     priority = args.get('priority')
     if priority:
-        data += "Priority: {}\n".format(priority)
+        data += f"Priority: {priority}\n"
 
     initial_priority = args.get('initial-priority')
     if initial_priority:
-        data += "Initial-priority: {}\n".format(initial_priority)
+        data += f"Initial-priority: {initial_priority}\n"
 
     final_priority = args.get('final-priority')
     if final_priority:
-        data += "FinalPriority: {}\n".format(final_priority)
+        data += f"FinalPriority: {final_priority}\n"
 
     text = args.get('text')
     if text:
-        data += "Text: {}\n".format(text)
+        data += f"Text: {text}\n"
 
     customfields = args.get('customfields')
     if customfields:
         cf_list = customfields.split(',')
         for cf in cf_list:
             equal_index = cf.index('=')
-            key = 'CF-{}: '.format(cf[:equal_index])
+            key = f'CF-{cf[:equal_index]}: '
             value = cf[equal_index + 1:]
             data = data + key + value + '\n'
 
@@ -216,8 +248,8 @@ def create_ticket():
         for i, file_pair in enumerate(attachments_list):
             file = demisto.getFilePath(file_pair)
             file_name = file['name']
-            files_data['attachment_{:d}'.format(i + 1)] = (file_name, open(file['path'], 'rb'))
-            data += 'Attachment: {}'.format(file_name)
+            files_data[f'attachment_{i + 1:d}'] = (file_name, open(file['path'], 'rb'))
+            data += f'Attachment: {file_name}'
 
     encoded = "content=" + urllib.parse.quote_plus(data)
     if attachments:
@@ -228,7 +260,7 @@ def create_ticket():
     ticket_id = re.findall('\d+', raw_ticket_res.text)[-1]
     demisto.debug(f"got ticket with id: {ticket_id}")
     if ticket_id == -1:
-        return_error('Ticket creation failed')
+        raise DemistoException('Ticket creation failed')
 
     ticket_context = ({
         'ID': ticket_id,
@@ -242,7 +274,7 @@ def create_ticket():
     ec = {
         'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket_context
     }
-    hr = 'Ticket {} was created successfully.'.format(ticket_id)
+    hr = f'Ticket {ticket_id} was created successfully.'
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': raw_ticket_res.text,
@@ -273,51 +305,51 @@ def build_search_query():
     args = {arg: value for arg, value in args.items() if isinstance(value, str)}
     ticket_id = args.get('ticket-id')
     if ticket_id:
-        raw_query += 'id={}{}{}+AND+'.format(apostrophe, ticket_id, apostrophe)
+        raw_query += f'id={apostrophe}{ticket_id}{apostrophe}+AND+'
 
     subject = args.get('subject')
     if subject:
-        raw_query += 'Subject={}{}{}+AND+'.format(apostrophe, subject, apostrophe)
+        raw_query += f'Subject={apostrophe}{subject}{apostrophe}+AND+'
 
     status = args.get('status')
     if status:
-        raw_query += 'Status={}{}{}+AND+'.format(apostrophe, status, apostrophe)
+        raw_query += f'Status={apostrophe}{status}{apostrophe}+AND+'
 
     creator = args.get('creator')
     if creator:
-        raw_query += 'Creator={}{}{}+AND+'.format(apostrophe, creator, apostrophe)
+        raw_query += f'Creator={apostrophe}{creator}{apostrophe}+AND+'
 
     priority_equal_to = args.get('priority-equal-to')
     if priority_equal_to:
-        raw_query += 'Priority={}{}{}+AND+'.format(apostrophe, priority_equal_to, apostrophe)
+        raw_query += f'Priority={apostrophe}{priority_equal_to}{apostrophe}+AND+'
 
     priority_greater_than = args.get('priority-greater-than')
     if priority_greater_than:
-        raw_query += 'Priority>{}{}{}+AND+'.format(apostrophe, priority_greater_than, apostrophe)
+        raw_query += f'Priority>{apostrophe}{priority_greater_than}{apostrophe}+AND+'
 
     created_after = args.get('created-after')
     if created_after:
-        raw_query += 'Created>{}{}{}+AND+'.format(apostrophe, created_after, apostrophe)
+        raw_query += f'Created>{apostrophe}{created_after}{apostrophe}+AND+'
 
     created_on = args.get('created-on')
     if created_on:
-        raw_query += 'Created={}{}{}+AND+'.format(apostrophe, created_on, apostrophe)
+        raw_query += f'Created={apostrophe}{created_on}{apostrophe}+AND+'
 
     created_before = args.get('created-before')
     if created_before:
-        raw_query += 'Created<{}{}{}+AND+'.format(apostrophe, created_before, apostrophe)
+        raw_query += f'Created<{apostrophe}{created_before}{apostrophe}+AND+'
 
     owner = args.get('owner')
     if owner:
-        raw_query += 'Created={}{}{}+AND+'.format(apostrophe, owner, apostrophe)
+        raw_query += f'Created={apostrophe}{owner}{apostrophe}+AND+'
 
     due = args.get('due')
     if due:
-        raw_query += 'Due={}{}{}+AND+'.format(apostrophe, due, apostrophe)
+        raw_query += f'Due={apostrophe}{due}{apostrophe}+AND+'
 
     queue = args.get('queue')
     if queue:
-        raw_query += 'Queue={}{}{}+AND+'.format(apostrophe, queue, apostrophe)
+        raw_query += f'Queue={apostrophe}{queue}{apostrophe}+AND+'
     raw_query = fix_query_suffix(raw_query)
     return raw_query
 
@@ -327,7 +359,7 @@ def build_ticket(rtir_search_ticket):
     for entity in rtir_search_ticket:
         if ': ' in entity:
             header, content = entity.split(': ', 1)
-            if 'ID' == header:
+            if header == 'ID':
                 content = ticket_string_to_id(content)
             if header in {'ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner',
                           'InitialPriority', 'FinalPriority'}:
@@ -398,7 +430,7 @@ def search_ticket_request(raw_query):
 
 
 def close_ticket_request(ticket_id, encoded):
-    suffix_url = 'ticket/{}/edit'.format(ticket_id)
+    suffix_url = f'ticket/{ticket_id}/edit'
     closed_ticket = http_request('POST', suffix_url, data=encoded)
 
     return closed_ticket
@@ -416,7 +448,7 @@ def close_ticket():
                 'State': 'resolved'
             }
         }
-        hr = 'Ticket {} was resolved successfully.'.format(ticket_id)
+        hr = f'Ticket {ticket_id} was resolved successfully.'
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': hr,
@@ -426,7 +458,7 @@ def close_ticket():
             'EntryContext': ec
         })
     else:
-        return_error('Failed to resolve ticket')
+        raise DemistoException('Failed to resolve ticket')
 
 
 def edit_ticket_request(ticket_id, encoded):
@@ -481,7 +513,7 @@ def edit_ticket():
         cf_list = customfields.split(',')
         for cf in cf_list:
             equal_index = cf.index('=')
-            key = 'CF-{}: '.format(cf[:equal_index])
+            key = f'CF-{cf[:equal_index]}: '
             value = cf[equal_index + 1:]
             content += '\n' + key + value
 
@@ -500,7 +532,7 @@ def edit_ticket():
                 'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket_context
             }
 
-            hr = 'Ticket {} was edited successfully.'.format(ticket_id)
+            hr = f'Ticket {ticket_id} was edited successfully.'
             demisto.results({
                 'Type': entryTypes['note'],
                 'Contents': hr,
@@ -510,13 +542,13 @@ def edit_ticket():
                 'EntryContext': ec
             })
         else:
-            return_error('Failed to edit ticket')
+            raise DemistoException('Failed to edit ticket')
     else:
-        return_error('No arguments were given to edit the ticket.')
+        raise DemistoException('No arguments were given to edit the ticket.')
 
 
 def get_ticket_attachments(ticket_id):
-    suffix_url = 'ticket/{}/attachments'.format(ticket_id)
+    suffix_url = f'ticket/{ticket_id}/attachments'
     raw_attachments = http_request('GET', suffix_url).text
 
     attachments = []
@@ -530,7 +562,7 @@ def get_ticket_attachments(ticket_id):
             'Size': attachment_size
         })
 
-        suffix_url = 'ticket/{}/attachments/{}'.format(ticket_id, attachment_id)
+        suffix_url = f'ticket/{ticket_id}/attachments/{attachment_id}'
         raw_attachment_content = http_request('GET', suffix_url).text
         attachment_content = parse_attachment_content(attachment_id, raw_attachment_content)
         attachments_content.append(fileResult(attachment_name, attachment_content))
@@ -589,7 +621,7 @@ def parse_attachment_content(attachment_id, raw_attachment_content):
     attachment_content_pattern = re.compile(r'Content: (.*)', flags=re.DOTALL)
     attachment_content = attachment_content_pattern.findall(raw_attachment_content)
     if not attachment_content:
-        return_error('Could not parse attachment content for attachment id {}'.format(attachment_id))
+        raise DemistoException(f'Could not parse attachment content for attachment id {attachment_id}')
     return attachment_content[0]
 
 
@@ -603,7 +635,7 @@ def get_ticket_attachments_command():
                 'Attachment': attachments
             }
         }
-        title = 'RTIR ticket {} attachments'.format(ticket_id)
+        title = f'RTIR ticket {ticket_id} attachments'
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': attachments,
@@ -620,7 +652,7 @@ def get_ticket_attachments_command():
 def get_ticket_history_by_id(ticket_id, history_id):
     """Accepts ticket ID and history ID as input and returns a dictionary of ticket history entry properties"""
 
-    suffix_url = 'ticket/{}/history/id/{}'.format(ticket_id, history_id)
+    suffix_url = f'ticket/{ticket_id}/history/id/{history_id}'
     raw_history = http_request('GET', suffix_url)
     return parse_history_response(raw_history.text)
 
@@ -679,7 +711,7 @@ def parse_history_response(raw_history):
 
 
 def get_ticket_history(ticket_id):
-    suffix_url = 'ticket/{}/history'.format(ticket_id)
+    suffix_url = f'ticket/{ticket_id}/history'
     raw_history = http_request('GET', suffix_url)
     history_context = []
     headers = ['ID', 'Created', 'Creator', 'Description', 'Content']
@@ -704,7 +736,7 @@ def get_ticket_history_command():
                 'History': history_context
             }
         }
-        title = 'RTIR ticket {} history'.format(ticket_id)
+        title = f'RTIR ticket {ticket_id} history'
         demisto.results({
             'Type': entryTypes['note'],
             'Contents': history_context,
@@ -720,8 +752,8 @@ def get_ticket_history_command():
 def get_ticket():
     ticket_id = demisto.args().get('ticket-id')
     raw_ticket = get_ticket_request(ticket_id)
-    if not raw_ticket or 'Ticket {} does not exist'.format(ticket_id) in raw_ticket.text:
-        return_error('Failed to get ticket, possibly does not exist.')
+    if not raw_ticket or f'Ticket {ticket_id} does not exist' in raw_ticket.text:
+        raise DemistoException('Failed to get ticket, possibly does not exist.')
     ticket_context = []
     data_list = raw_ticket.text
     data = data_list.split('\n')
@@ -752,7 +784,7 @@ def get_ticket():
                                                                                       '')  # Regex and removing white spaces
                 ticket[custom_field_regex] = split_key[1]
 
-    suffix_url = 'ticket/{}/links/show'.format(ticket_id)
+    suffix_url = f'ticket/{ticket_id}/links/show'
     raw_links = http_request('GET', suffix_url)
     links = parse_ticket_links(raw_links.text)
     ticket['LinkedTo'] = links
@@ -761,7 +793,7 @@ def get_ticket():
     ec = {
         'RTIR.Ticket(val.ID && val.ID === obj.ID)': ticket
     }
-    title = 'RTIR ticket {}'.format(ticket_id)
+    title = f'RTIR ticket {ticket_id}'
     headers = ['ID', 'Subject', 'Status', 'Priority', 'Created', 'Queue', 'Creator', 'Owner', 'InitialPriority',
                'FinalPriority', 'LinkedTo']
     demisto.results({
@@ -799,14 +831,14 @@ def parse_ticket_links(raw_links):
 
 
 def add_comment_request(ticket_id, encoded):
-    suffix_url = 'ticket/{}/comment'.format(ticket_id)
+    suffix_url = f'ticket/{ticket_id}/comment'
     added_comment = http_request('POST', suffix_url, data=encoded)
 
     return added_comment
 
 
 def add_comment_attachment(ticket_id, encoded, files_data):
-    suffix_url = 'ticket/{}/comment'.format(ticket_id)
+    suffix_url = f'ticket/{ticket_id}/comment'
     comment = http_request('POST', suffix_url, files=files_data)
 
     return comment.text
@@ -828,24 +860,24 @@ def add_comment():
         for i, file_pair in enumerate(attachments_list):
             file = demisto.getFilePath(file_pair)
             file_name = file['name']
-            files_data['attachment_{:d}'.format(i + 1)] = (file_name, open(file['path'], 'rb'))
-            content += 'Attachment: {}\n'.format(file_name)
+            files_data[f'attachment_{i + 1:d}'] = (file_name, open(file['path'], 'rb'))
+            content += f'Attachment: {file_name}\n'
 
     encoded = f"content={urllib.parse.quote_plus(content)}"
     if attachments:
         files_data.update({'content': (None, content)})  # type: ignore
         comment = add_comment_attachment(ticket_id, encoded, files_data)
-        return_outputs('Added comment to ticket {} successfully.'.format(ticket_id), {}, comment)
+        return_outputs(f'Added comment to ticket {ticket_id} successfully.', {}, comment)
     else:
         added_comment = add_comment_request(ticket_id, encoded)
         if '200' in added_comment.text:
-            demisto.results('Added comment to ticket {} successfully.'.format(ticket_id))
+            demisto.results(f'Added comment to ticket {ticket_id} successfully.')
         else:
-            return_error('Failed to add comment')
+            raise DemistoException('Failed to add comment')
 
 
 def add_reply_request(ticket_id, encoded):
-    suffix_url = 'ticket/{}/comment'.format(ticket_id)
+    suffix_url = f'ticket/{ticket_id}/comment'
     added_reply = http_request('POST', suffix_url, data=encoded)
 
     return added_reply
@@ -862,12 +894,12 @@ def add_reply():
         encoded = "content=" + urllib.parse.quote_plus(content)
         added_reply = add_reply_request(ticket_id, encoded)
         if '200' in added_reply.text:
-            demisto.results('Replied successfully to ticket {}.'.format(ticket_id))
+            demisto.results(f'Replied successfully to ticket {ticket_id}.')
         else:
-            return_error('Failed to reply')
+            raise DemistoException('Failed to reply')
     except Exception as e:
         demisto.error(str(e))
-        return_error('Failed to reply')
+        raise DemistoException('Failed to reply')
 
 
 def get_ticket_id(ticket):
@@ -883,7 +915,7 @@ def fetch_incidents():
         status_list = FETCH_STATUS.split(',')
         status_query = '+AND+('
         for status in status_list:
-            status_query += 'Status={}{}{}+OR+'.format(apostrophe, status, apostrophe)
+            status_query += f'Status={apostrophe}{status}{apostrophe}+OR+'
         status_query = fix_query_suffix(status_query)
         raw_query += status_query + ')'
     tickets = parse_ticket_data(raw_query)
@@ -910,62 +942,72 @@ def main():
     handle_proxy()
 
     params = demisto.params()
+    command = demisto.command()
 
-    ''' GLOBAL VARS '''
-    global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER
-    SERVER = params.get('server', '')[:-1] if params.get('server', '').endswith(
-        '/') else params.get('server', '')
-    USERNAME = params.get('credentials', {}).get('identifier', '')
-    PASSWORD = params.get('credentials', {}).get('password', '')
-    BASE_URL = urljoin(SERVER, '/REST/1.0/')
-    USE_SSL = not params.get('unsecure', False)
-    FETCH_PRIORITY = int(params.get('fetch_priority', "0")) - 1
-    FETCH_STATUS = params.get('fetch_status')
-    FETCH_QUEUE = params.get('fetch_queue')
-    REFERER = params.get('referer')
-    HEADERS = {'Referer': REFERER} if REFERER else {}
-
-    LOG('command is %s' % (demisto.command(),))
     try:
-        if demisto.command() == 'test-module':
-            login()
-            logout()
-            demisto.results('ok')
+        ''' GLOBAL VARS '''
+        global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER, \
+            TOKEN, CERTIFICATE, CERTIFICATE_PASS, CERTIFICATE_TYPE
+        SERVER = params.get('server', '')[:-1] if params.get('server', '').endswith(
+            '/') else params.get('server', '')
+        USERNAME = params.get('credentials', {}).get('identifier', '')
+        PASSWORD = params.get('credentials', {}).get('password', '')
+        TOKEN = params.get('token', {}).get('password', '')
+        if not (USERNAME and PASSWORD) and not TOKEN:
+            raise DemistoException("Username and password or Token must be provided.")
+        CERTIFICATE = params.get('certificate', {}).get('password')
+        CERTIFICATE_PASS = params.get('certificate_pass', {}).get('password')
+        CERTIFICATE_TYPE = params.get('certificate_type')
+        if CERTIFICATE and not all((CERTIFICATE_PASS, CERTIFICATE_TYPE)):
+            raise DemistoException(
+                "Certificate Password and Certificate Type are required when using a Certificate for authentication.")
+        BASE_URL = urljoin(SERVER, '/REST/1.0/')
+        USE_SSL = not params.get('unsecure', False)
+        FETCH_PRIORITY = int(params.get('fetch_priority', "0")) - 1
+        FETCH_STATUS = params.get('fetch_status')
+        FETCH_QUEUE = params.get('fetch_queue')
+        REFERER = params.get('referer')
+        HEADERS = {"Authorization": f"token {TOKEN}"} if TOKEN else {}
+        HEADERS |= {'Referer': REFERER} if REFERER else {}
 
-        if demisto.command() in {'fetch-incidents'}:
+        demisto.debug(f'Command being called is {command}')
+        if command in ('test-module', 'rtir-auth-test'):
+            test_module()
+
+        if command in {'fetch-incidents'}:
             fetch_incidents()
 
-        elif demisto.command() == 'rtir-create-ticket':
+        elif command == 'rtir-create-ticket':
             create_ticket()
 
-        elif demisto.command() == 'rtir-search-ticket':
+        elif command == 'rtir-search-ticket':
             search_ticket()
 
-        elif demisto.command() == 'rtir-resolve-ticket':
+        elif command == 'rtir-resolve-ticket':
             close_ticket()
 
-        elif demisto.command() == 'rtir-edit-ticket':
+        elif command == 'rtir-edit-ticket':
             edit_ticket()
 
-        elif demisto.command() == 'rtir-ticket-history':
+        elif command == 'rtir-ticket-history':
             get_ticket_history_command()
 
-        elif demisto.command() == 'rtir-ticket-attachments':
+        elif command == 'rtir-ticket-attachments':
             get_ticket_attachments_command()
 
-        elif demisto.command() == 'rtir-get-ticket':
+        elif command == 'rtir-get-ticket':
             get_ticket()
 
-        elif demisto.command() == 'rtir-add-comment':
+        elif command == 'rtir-add-comment':
             add_comment()
 
-        elif demisto.command() == 'rtir-add-reply':
+        elif command == 'rtir-add-reply':
             add_reply()
 
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
-        raise
+        return_error(
+            f'Failed to execute {command} command. Error: {str(e)}'
+        )
 
 
 if __name__ in ('__builtin__', 'builtins', "__main__"):

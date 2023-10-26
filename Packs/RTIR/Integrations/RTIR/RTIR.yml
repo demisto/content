@@ -7,10 +7,30 @@ configuration:
   name: server
   required: true
   type: 0
-- display: Credentials
+- display: Username
   name: credentials
-  required: true
+  required: false
   type: 9
+- displaypassword: Token
+  name: token
+  type: 9
+  hiddenusername: true
+- name: certificate
+  type: 9
+  required: false
+  displaypassword: Certificate
+  hiddenusername: true
+- name: certificate_pass
+  type: 9
+  required: false
+  displaypassword: Certificate Password
+  hiddenusername: true
+- display: Certificate Type
+  name: certificate_type
+  type: 15
+  required: false
+  options:
+  - "PKCS #12"
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
@@ -383,11 +403,14 @@ script:
       name: cc
     description: Send a reply from an existing ticket to the user
     name: rtir-add-reply
+  - name: rtir-auth-test
+    description: Tests the authentication.
+    arguments: []
   isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/auth-utils:1.0.0.77807
 tests:
 - RTIR Test
 fromversion: 5.0.0
