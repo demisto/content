@@ -85,32 +85,28 @@ def test_get_profile_id_preset() -> None:
 
 
 def test_get_profile_id_custom(requests_mock: Any) -> None:
-    
     from BinalyzeAIR import Client
     mock_response = util_load_json('test_data/profile_id.json')
     requests_mock.get('https://nonexistent-domain.com/api/public/acquisitions/profiles?'
-                          'filter[name]=profile_name&filter[organizationIds]=0',
-                          json=mock_response)
+                      'filter[name]=profile_name&filter[organizationIds]=0',
+                      json=mock_response)
     client: Client = Client(
         base_url='https://nonexistent-domain.com',
         verify=False
     )
     result = client.get_profile_id("profile_name", 0)
     expected_mocked_profile_id = mock_response.get('result', {}).get('entities', {})[0].get('_id', None)
-    assert expected_mocked_profile_id == result                 
-
+    assert expected_mocked_profile_id == result
 
 
 def test_air_acquire_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_acquire_command
-
     args: Dict[str, Any] = {
         'hostname': 'endpointhostname',
         'profile': "profile_name",
         'case_id': 'case_id will be here',
         'organization_id': 0
     }
-
     headers: Dict[str, Any] = {
         'Authorization': 'Bearer api_key',
         'User-Agent': 'Binalyze AIR',
@@ -146,7 +142,6 @@ def test_air_acquire_command(requests_mock: Any) -> None:
 
 def test_air_isolate_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_isolate_command
-
     args: Dict[str, Any] = {
         'hostname': 'endpointhostname',
         'organization_id': 0,
