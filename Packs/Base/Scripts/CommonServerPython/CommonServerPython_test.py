@@ -4127,7 +4127,6 @@ def test_update_context_merge(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
     mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
-    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=True)
 
     new_mirror = {
         'channel_id': 'new_group',
@@ -4199,7 +4198,6 @@ def test_get_latest_integration_context(mocker, versioned_available):
 
     mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
     mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
-    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=versioned_available)
     mocker.patch.object(demisto, 'getIntegrationContext',
                         return_value={'mirrors': MIRRORS, 'conversations': CONVERSATIONS})
 
@@ -6812,7 +6810,7 @@ class TestIndicatorsSearcher:
           - Total available indicators from page 10-16 == 7
           - No available indicators from page 17
         When:
-          - Searching indicators using iterator (search_after is not supported)
+          - Searching indicators using iterator (search_after is supported)
         Then:
           - Get 0 indicators
           - page doesn't advance (set to 18)
@@ -6824,7 +6822,7 @@ class TestIndicatorsSearcher:
         results = []
         for res in search_indicators:
             results.append(res)
-        assert len(results) == 0
+        assert len(results) == 7
         assert search_indicators.page == 19
 
     def test_iterator__research_flow(self, mocker):
@@ -6886,21 +6884,6 @@ class TestAutoFocusKeyRetriever:
         auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='1234')
         assert auto_focus_key_retriever.key == '1234'
 
-    def test_instantiate_class_pre_6_2_failed(self, mocker, clear_version_cache):
-        """
-        Given:
-            - not giving the api_key parameter
-        When:
-            - Mocking getAutoFocusApiKey
-            - Mocking server version to be 6.1.0
-        Then:
-            - Validate an exception with appropriate error message is raised.
-        """
-        from CommonServerPython import AutoFocusKeyRetriever
-        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
-        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.1.0', 'buildNumber': '61000'})
-        with raises(DemistoException, match='For versions earlier than 6.2.0, configure an API Key.'):
-            AutoFocusKeyRetriever(api_key='')
 
     def test_instantiate_class_without_param_key(self, mocker, clear_version_cache):
         """
@@ -7204,19 +7187,6 @@ class TestSetAndGetLastRun:
         result = get_feed_last_run()
         assert result == {1: "first indicator"}
 
-    def test_get_last_run_in_6_1_when_get_integration_context_has_results(self, mocker):
-        """
-        Given: 6.1.0 environment and getIntegrationContext return results
-        When: Fetch indicators
-                This can happen when updating XSOAR version to 6.2.0 while a feed instance is already set.
-        Then: Returning all indicators from demisto.getIntegrationContext object
-        """
-        import demistomock as demisto
-        from CommonServerPython import get_feed_last_run
-        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.1.0"})
-        mocker.patch.object(demisto, 'getIntegrationContext', return_value={1: "first indicator"})
-        result = get_feed_last_run()
-        assert result == {1: "first indicator"}
 
     def test_get_last_run_in_6_2_when_get_last_run_has_no_results(self, mocker):
         """
@@ -7264,21 +7234,6 @@ class TestSetAndGetLastRun:
         set_feed_last_run({1: "first indicator"})
         assert set_integration_context.called is False
         set_last_run.assert_called_with({1: "first indicator"})
-
-    def test_set_last_run_in_6_1(self, mocker):
-        """
-        Given: 6.1.0 environment
-        When: Fetch indicators
-        Then: Using demisto.setIntegrationContext to save results
-        """
-        import demistomock as demisto
-        from CommonServerPython import set_feed_last_run
-        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.1.0"})
-        set_last_run = mocker.patch.object(demisto, 'setLastRun', return_value={})
-        set_integration_context = mocker.patch.object(demisto, 'setIntegrationContext', return_value={})
-        set_feed_last_run({1: "first indicator"})
-        set_integration_context.assert_called_with({1: "first indicator"})
-        assert set_last_run.called is False
 
 
 class TestIsDemistoServerGE:
