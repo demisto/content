@@ -1,4 +1,6 @@
 import argparse
+import contextlib
+import json
 import logging
 import os
 import sys
@@ -16,7 +18,7 @@ from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, TEST_NATIVE_CANDIDATE, WORKFLOW_TYPES, get_instance_directories, \
     get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX, TEST_MODELING_RULES_REPORT_FILE_NAME, \
-    get_test_results_files
+    get_test_results_files, CONTENT_MERGE
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results
 from Tests.scripts.utils.log_util import install_logging
@@ -68,17 +70,16 @@ def get_artifact_data(artifact_folder: Path, artifact_relative_path: str) -> str
     Returns:
         (Optional[str]): data of the artifact as str if exists, None otherwise.
     """
-    artifact_data = None
+    file_name = artifact_folder / artifact_relative_path
     try:
-        file_name = artifact_folder / artifact_relative_path
-        if os.path.isfile(file_name):
-            logging.info(f'Extracting {artifact_relative_path}')
-            artifact_data = Path(file_name).read_text()
+        if file_name.exists():
+            logging.info(f'Extracting {file_name}')
+            return file_name.read_text()
         else:
-            logging.info(f'Did not find {artifact_relative_path} file')
+            logging.info(f'Did not find {file_name} file')
     except Exception:
-        logging.exception(f'Error getting {artifact_relative_path} file')
-    return artifact_data
+        logging.exception(f'Error getting {file_name} file')
+    return None
 
 
 def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
@@ -278,7 +279,7 @@ def construct_slack_msg(triggering_workflow: str,
 
     slack_msg_append = []
     # report failing test-playbooks and test modeling rules.
-    if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR}:
+    if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR, CONTENT_MERGE}:
         slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, pipeline_url, title="XSOAR")
         slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
         slack_msg_append += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
@@ -401,6 +402,13 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request)
+
+    with contextlib.suppress(Exception):
+        output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
+        logging.info(f'Writing slack message to {output_file}')
+        with open(output_file, 'w') as f:
+            f.write(json.dumps(slack_msg_data, indent=4, sort_keys=True, default=str))
+        logging.info(f'Successfully wrote slack message to {output_file}')
 
     try:
         slack_client.chat_postMessage(

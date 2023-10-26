@@ -53,12 +53,15 @@ merge-dev-secrets:
     master_branch_name: master
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   stage: unittests-and-validations
   script:
+    - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-    - section_start "Merging and deleting dev secrets" --collapsed
-    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log"
+    - section_start "Merging and deleting dev secrets"
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log" 2>&1 || EXIT_CODE=$?
+    - job-done
+    - exit $EXIT_CODE
     - section_end "Merging and deleting dev secrets"
   allow_failure: true
 
@@ -73,7 +76,7 @@ stop-running-pipelines:
     master_branch_name: master
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running pipelines on current branch"
     - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
@@ -396,15 +399,18 @@ jobs-done-check-nightly:
 fan-in-on-push:
   when: always
   stage: fan-in
-  extends:
-    - .push-rule
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   tags:
     - gke
   script:
     - echo "fan in on push"
+  variables:
+    master_branch_name: master
 
 jobs-done-check-on-push:
-  when: always
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   extends:
     - .push-rule
     - .jobs-done-check
@@ -429,6 +435,47 @@ jobs-done-check-on-push:
     - gke
   variables:
     WORKFLOW: 'Content PR'
+    master_branch_name: master
+
+fan-in-on-merge:
+  when: always
+  stage: fan-in
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+  tags:
+    - gke
+  script:
+    - echo "fan in on merge"
+  variables:
+    master_branch_name: master
+
+jobs-done-check-on-merge:
+  rules:
+      - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+  extends:
+    - .push-rule
+    - .jobs-done-check
+  needs:
+    - run-unittests-and-lint
+    - run-validations
+    - test-upload-flow
+    - trigger-private-build
+    - validate-content-conf
+    - mpv2-prepare-testing-bucket
+    - xpanse-prepare-testing-bucket
+    - xsoar-prepare-testing-bucket
+    - xsoar-saas-prepare-testing-bucket
+    - xsiam_server_ga
+    - tests_xsoar_server
+    - xsoar_ng_server_ga
+    - xsoar-test_playbooks_results
+    - xsiam-test_playbooks_results
+    - xsiam-test_modeling_rule_results
+  tags:
+    - gke
+  variables:
+    WORKFLOW: 'Content Merge'
+    master_branch_name: master
 
 
 slack-notify-nightly-build:
@@ -452,14 +499,15 @@ slack-notify-nightly-build:
     JIRA_PROJECT_ID: $JIRA_PROJECT_ID
     JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
 
-slack-notify-on-push-build:
-  when: always
+slack-notify-on-push:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   extends:
-    - .push-rule
     - .trigger-slack-notification
   variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Content PR'
+    master_branch_name: master
     JOB_NAME: 'fan-in-on-push'
     SLACK_CHANNEL: "#dmst-build-private-"
     SLACK_JOB: 'true'
@@ -471,6 +519,20 @@ slack-notify-on-push-build:
     JIRA_API_KEY: $JIRA_API_KEY
     JIRA_PROJECT_ID: $JIRA_PROJECT_ID
     JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
+
+slack-notify-on-merge:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+  extends:
+    - .trigger-slack-notification
+  variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Content Merge'
+    master_branch_name: master
+    JOB_NAME: 'fan-in-on-merge'
+    SLACK_CHANNEL: "#dmst-build-test"
+    SLACK_JOB: 'true'
+    SLACK_ALLOW_FAILURE: 'false'
 
 .test_content_on_cloud_server_instances_base:
   tags:
@@ -647,6 +709,7 @@ test-upload-flow:
     - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
     - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
     -   echo "No upload-flow related files were modified, skipping upload test"
+    -   job-done
     -   exit 0
     - fi
     - echo "Found modified files that should be tested in upload-flow"
