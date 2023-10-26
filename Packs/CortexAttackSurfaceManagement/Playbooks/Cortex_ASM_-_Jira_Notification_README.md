@@ -24,7 +24,7 @@ jira-create-issue
 | --- | --- | --- | --- |
 | OwnerNotificationBody | Body of the notification \(email or ticket\) sent to the potential service owner. |  | Required |
 | JiraProjectKey | The Jira project key to associate with the issue. | XPANSE | Required |
-| RemediationGuidance | Remediation Guidance of the Attack Surface Rule |  | Required |
+| RemediationGuidance | Remediation Guidance of the Attack Surface Rule. |  | Required |
 
 ## Playbook Outputs
 
