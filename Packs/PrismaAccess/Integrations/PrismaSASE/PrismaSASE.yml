@@ -370,7 +370,7 @@ script:
       name: to
     - description: Whether the rule is disabled.
       name: disabled
-    - description: Negate source
+    - description: Negate source.
       name: negate_source
     - description: Negate the destination.
       name: negate_destination
@@ -456,7 +456,7 @@ script:
       - ip_range
       - ip_wildcard
       - fqdn
-    - description: The address value (should match the type)
+    - description: The address value (should match the type).
       name: address_value
       required: true
     - description: A comma-separated list of address object tags.
@@ -579,7 +579,7 @@ script:
     - description: A comma-separated list of address object tags.
       isArray: true
       name: tag
-    - description: The address value (should match the type)
+    - description: The address value (should match the type).
       name: address_value
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
@@ -871,7 +871,7 @@ script:
       description: The tag comments.
       type: String
   - arguments:
-    - description: The specific tag to delete
+    - description: The specific tag to delete.
       name: tag_id
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
