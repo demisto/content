@@ -32,9 +32,11 @@ build-machines-cleanup:
     CLOUD_MACHINES_COUNT: "all"
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
     INSTANCE_ROLE: "XSIAM"
+    PRODUCT_TYPE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
+    CLOUD_API_TOKENS: $XSIAM_TOKENS
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
@@ -54,15 +56,20 @@ fan-in-build-machines-cleanup:
     - echo "fan in"
 
 slack-notify-build-machines-cleanup:
-  variables:
-    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
-    WORKFLOW: 'Build Machines Cleanup'
-    JOB_NAME: 'fan-in-build-machines-cleanup'
-    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
-    # when triggering pipeline with alternate env variable value passed in the API call
-    SLACK_CHANNEL: $SLACK_CHANNEL
-    SLACK_JOB: 'true'
   extends:
     - .trigger-slack-notification
     - .build-machines-cleanup-rule-always
-
+  variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Build Machines Cleanup'
+    JOB_NAME: 'fan-in-build-machines-cleanup'
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_JOB: 'true'
+    SLACK_ALLOW_FAILURE: 'false'
+    CI_PROJECT_ID: $CI_PROJECT_ID
+    CI_SERVER_URL: $CI_SERVER_URL
+    JIRA_SERVER_URL: $JIRA_SERVER_URL
+    JIRA_VERIFY_SSL: $JIRA_VERIFY_SSL
+    JIRA_API_KEY: $JIRA_API_KEY
+    JIRA_PROJECT_ID: $JIRA_PROJECT_ID
+    JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
