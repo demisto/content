@@ -10,7 +10,7 @@ This integration was integrated and tested with version 1.2.0 of Cortex Attack S
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-    | API Key ID | For more information please see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>.  Only standard API key type is supported. | True |
+    | API Key ID | For more information please see <https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis>.  Only a standard API key type is supported. | True |
     | API Key |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
