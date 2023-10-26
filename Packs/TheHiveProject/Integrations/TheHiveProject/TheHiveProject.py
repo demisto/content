@@ -34,14 +34,6 @@ class Client(BaseClient):
                     "_name": "listCase",
                 },
                 {
-                    "_name": "filter",
-                    "_gt":
-                        {
-                            "_field": "_createdAt",
-                            "_value": last_timestamp
-                        }
-                },
-                {
                     "_name": "sort",
                     "fields": [{"_createdAt": "asc"}]
                 },
