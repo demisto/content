@@ -69,6 +69,9 @@ INVESTIGATION_UPDATE_FIELDS = {
     "assigneeId",
     "title",
     "type",
+    "serviceDeskId",
+    "serviceDeskType",
+    "tags",
 }
 SHARELINK_TYPES = {
     "alertId",
@@ -180,8 +183,8 @@ def add_evidence_to_investigation_command(client: Client, env: str, args=None):
     variables: dict = {
         "input": {
             "investigationId": args.get("id"),
-            "alerts": split_and_trim(args.get("alerts", [])),
-            "events": split_and_trim(args.get("events", [])),
+            "alerts": argToList(args.get("alerts")),
+            "events": argToList(args.get("events")),
             "alertsSearchQuery": args.get("alert_query", ""),
         }
     }
@@ -278,12 +281,13 @@ def create_investigation_command(client: Client, env: str, args=None):
     variables = {
         "input": {
             "title": args.get("title"),
-            "priority": arg_to_number(args.get("priority")) or 3,
+            "priority": arg_to_number(args.get("priority", 3)),
             "status": args.get("status", "OPEN"),
-            "alerts": split_and_trim(args.get("alerts", [])),
+            "alerts": argToList(args.get("alerts")),
             "keyFindings": args.get("key_findings", ""),
             "type": args.get("type", "SECURITY_INVESTIGATION"),
             "assigneeId": args.get("assignee_id", "@secureworks"),
+            "tags": argToList(args.get("tags")),
         }
     }
 
@@ -440,8 +444,8 @@ def fetch_alerts_command(client: Client, env: str, args=None):
     """
     variables: dict = {
         "cql_query": args.get("cql_query", "from alert severity >= 0.4 and status='OPEN'"),
-        "limit": args.get("limit", 10),
-        "offset": args.get("offset", 0),
+        "limit": arg_to_number(args.get("limit", 10)),
+        "offset": arg_to_number(args.get("offset", 0)),
         "ids": args.get("ids", []),  # ["alert://id1", "alert://id2"]
     }
     fields: str = args.get("fields") or """
@@ -516,7 +520,7 @@ def fetch_alerts_command(client: Client, env: str, args=None):
         }
         """ % (fields)
 
-        variables["ids"] = split_and_trim(variables["ids"])
+        variables["ids"] = argToList(variables["ids"])
     else:
         field = "alertsServiceSearch"
         query = """
@@ -719,8 +723,8 @@ def fetch_comments_command(client: Client, env: str, args=None):
     variables = {
         "arguments": {
             "investigationId": args.get("id"),
-            "page": arg_to_number(args.get("page")) or 0,
-            "perPage": arg_to_number(args.get("page_size")) or 10,
+            "page": arg_to_number(args.get("page", 0)),
+            "perPage": arg_to_number(args.get("page_size", 10)),
             "orderBy": args.get("order_direction", "DESCENDING")
         }
     }
@@ -897,7 +901,7 @@ def fetch_incidents(
         """
 
         variables = {
-            "limit": max_fetch,
+            "limit": arg_to_number(max_fetch),
             # We only support Medium, High, Critical
             "cql_query": f"from alert where severity >=0.4 AND earliest = '{start_time}'",
         }
@@ -905,7 +909,8 @@ def fetch_incidents(
         asset_query = ""
         if include_assets:
             demisto.debug("include_assets=True, fetching assets with investigation")
-            asset_query = "assets {id hostnames {id hostname} tags {tag}}"
+            # Assets to be deprecated in the future
+            asset_query = "assets {id hostnames {id hostname} tags {tag}} assetsEvidence {id assetId}"
 
         query = """
         query investigationsSearch(
@@ -930,6 +935,12 @@ def fetch_incidents(
                 key_findings
                 assignee {
                     name
+                    id
+                    email
+                }
+                assignee_user {
+                    family_name
+                    given_name
                     id
                     email
                 }
@@ -962,6 +973,8 @@ def fetch_incidents(
                 status
                 created_at
                 archived_at
+                alertsEvidence {id alertId}
+                tags
                 %s
             }
           }
@@ -972,7 +985,7 @@ def fetch_incidents(
             "orderByField": "created_at",
             "orderDirection": "asc",
             "page": 0,
-            "perPage": max_fetch,
+            "perPage": arg_to_number(max_fetch),
             "query": f"status in ('Open', 'Active', 'Awaiting Action') AND earliest = '{start_time}'"
         }
 
@@ -1024,8 +1037,8 @@ def fetch_incidents(
 
 def fetch_investigation_alerts_command(client: Client, env: str, args=None):
     investigation_id = args.get("id")
-    page = arg_to_number(args.get("page")) or 0
-    page_size = arg_to_number(args.get("page_size")) or 10
+    page = arg_to_number(args.get("page", 0))
+    page_size = arg_to_number(args.get("page_size", 10))
     if not investigation_id:
         raise ValueError("Cannot fetch investigation, missing investigation_id")
 
@@ -1076,7 +1089,9 @@ def fetch_investigation_alerts_command(client: Client, env: str, args=None):
 
 def fetch_investigation_command(client: Client, env: str, args=None):
     fields: str = ""
+    variables: Dict[str, Any] = {}
     if args.get("id"):
+        # alerts, assets, and assignee to be deprecated in the future
         fields = args.get("fields") or """
             id
             shortId
@@ -1084,6 +1099,8 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             keyFindings
             alerts
             assets
+            alertsEvidence {id alertId}
+            assetsEvidence {id assetId}
             status
             assignee {
                 id
@@ -1098,6 +1115,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                 alerts
             }
             archivedAt
+            tags
             """
 
         query = """
@@ -1115,6 +1133,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         result = client.graphql_run(query=query, variables=variables)
     else:
+        # assignee {} to be deprecated in the future
         fields = args.get("fields") or """
             id
             tenant_id
@@ -1159,6 +1178,12 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                 id
                 email
             }
+            assignee_user {
+                family_name
+                given_name
+                email
+                id
+            }
             archived_at
             created_at
             updated_at
@@ -1168,7 +1193,7 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             priority
             status
             type
-            processingStatus {
+            processing_status {
                 assets
                 events
                 alerts
@@ -1183,6 +1208,9 @@ def fetch_investigation_command(client: Client, env: str, args=None):
                     tag
                 }
             }
+            alertsEvidence {id alertId}
+            assetsEvidence {id assetId}
+            tags
             """
 
         query = """
@@ -1194,6 +1222,11 @@ def fetch_investigation_command(client: Client, env: str, args=None):
             $query: String
         ) {
             investigationsSearch(
+                page: $page
+                perPage: $perPage
+                orderByField: $orderByField
+                orderDirection: $orderDirection
+                query: $query
             ) {
                 totalCount
                 investigations {
@@ -1203,8 +1236,8 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         }
         """ % (fields)
         variables = {
-            "page": args.get("page", 0),
-            "perPage": args.get("page_size", 10),
+            "page": arg_to_number(args.get("page", 0)),
+            "perPage": arg_to_number(args.get("page_size", 10)),
             "query": args.get("query", "deleted_at is null"),
             "orderByField": args.get("order_by", "created_at"),
             "orderDirection": args.get("order_direction", "desc")
@@ -1215,6 +1248,10 @@ def fetch_investigation_command(client: Client, env: str, args=None):
         investigations = [result["data"]["investigationV2"]] if args.get("id") \
             else result["data"]["investigationsSearch"]["investigations"]
     except (KeyError, TypeError):
+        investigations = []
+
+    # If no investigation found, no error status is returned but investigation will be null
+    if len(investigations) == 1 and investigations[0] is None:
         investigations = []
 
     for investigation in investigations:
@@ -1531,7 +1568,10 @@ def update_investigation_command(client: Client, env: str, args=None):
                 f"The provided type, {args['type']}, is not valid for updating an investigation. "
                 f"Supported Type Values: {INVESTIGATION_TYPES}")
 
-        variables["input"][field] = args.get(field)
+        if field == "tags":
+            variables["input"]["tags"] = argToList(args["tags"])
+        else:
+            variables["input"][field] = args.get(field)
 
     if len(variables["input"]) < 2:
         raise ValueError(f"No valid investigation fields provided. Supported Update Fields: {INVESTIGATION_UPDATE_FIELDS}")
@@ -1668,12 +1708,6 @@ def test_module(client: Client) -> str:
 
 
 """ UTILITIES """
-
-
-def split_and_trim(element):
-    if type(element) == str:
-        element = element.split(",")  # alerts://id1,alerts://id2
-    return [x.strip() for x in element]  # Ensure no whitespace
 
 
 def generate_id_url(env: str, endpoint: str, element_id: str):

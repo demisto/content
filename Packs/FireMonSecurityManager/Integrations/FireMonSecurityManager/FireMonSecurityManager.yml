@@ -50,74 +50,74 @@ display: FireMon Security Manager
 name: FireMonSecurityManager
 script:
   commands:
-  - description: Returns authentication token
+  - description: Returns authentication token.
     name: firemon-user-authentication
     outputs:
     - contextPath: FireMonSecurityManager.Authentication.token
-      description: Authentication token
+      description: Authentication token.
       type: String
     arguments: []
   - arguments:
-    - description: Domain Id
+    - description: Domain Id.
       name: domain_id
       required: true
     - default: true
       defaultValue: Access Req WF
-      description: Workflow Name
+      description: Workflow Name.
       name: workflow_name
-    - description: Add requirement
+    - description: Add requirement.
       isArray: true
       name: requirement
     - defaultValue: LOW
-      description: Priority of Policy Planner Ticket
+      description: Priority of Policy Planner Ticket.
       name: priority
       required: true
-    - description: Due Date of Policy Planner Ticket
+    - description: Due Date of Policy Planner Ticket.
       name: due_date
       required: true
-    description: Creates a ticket in policy planner application
+    description: Creates a ticket in policy planner application.
     name: firemon-create-pp-ticket
     outputs:
     - contextPath: FireMonSecurityManager.CreatePPTicket.pp_ticket
-      description: Response for Policy Planner Ticket
+      description: Response for Policy Planner Ticket.
       type: Unknown
   - arguments:
-    - description: Domain ID
+    - description: Domain ID.
       name: domain_id
-    - description: DeviceGroup ID
+    - description: DeviceGroup ID.
       name: device_group_id
-    - description: Enter comma seperated destination values
+    - description: Enter comma seperated destination values.
       name: destinations
-    - description: Enter comma seperated source values
+    - description: Enter comma seperated source values.
       name: sources
-    - description: Enter comma seperated service values
+    - description: Enter comma seperated service values.
       name: services
-    - description: PCA
+    - description: PCA.
       name: action
       required: true
     description: "PCA- Pre-Change Assessment is process of showing impact of created devices changes in early stages before implementing changes to devices. \nWe can check the PCA table in Review stage of Policy planner ticket."
     name: firemon-pca
     outputs:
     - contextPath: FireMonSecurityManager.PCA.pca
-      description: Response for PCA
+      description: Response for PCA.
       type: Unknown
   - arguments:
     - description: SIQL query to search for security rules.
       name: q
       required: true
     - defaultValue: '10'
-      description: Number of results in the page
+      description: Number of results in the page.
       name: pageSize
     - defaultValue: '0'
-      description: Page in which to retrieve results
+      description: Page in which to retrieve results.
       name: page
-    description: Searches for security rules using the SIQL language query (limit to 10k)
+    description: Searches for security rules using the SIQL language query (limit to 10k).
     name: firemon-secmgr-secrule-search
     outputs:
     - contextPath: FireMonSecurityManager.SIQL.matchId
-      description: Resposne for the SIQL query
+      description: Resposne for the SIQL query.
       type: Unknown
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.74666
   isfetch: true
   script: ''
   subtype: python3

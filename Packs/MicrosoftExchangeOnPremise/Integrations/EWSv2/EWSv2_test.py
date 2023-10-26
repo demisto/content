@@ -10,6 +10,7 @@ from EWSv2 import fetch_last_emails
 from exchangelib.errors import UnauthorizedError
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
+import demistomock as demisto
 
 
 class TestNormalCommands:
@@ -557,3 +558,17 @@ def test_get_entry_for_object():
     from EWSv2 import get_entry_for_object
     obj = {"a": 1, "b": 2}
     assert get_entry_for_object("test", "keyTest", obj)['HumanReadable'] == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'
+
+
+def test_get_time_zone(mocker):
+    """
+    When -
+        trying to send/reply an email we check the XOSAR user time zone
+
+    Then -
+        verify that info returns
+    """
+    from EWSv2 import get_time_zone
+    mocker.patch.object(demisto, 'callingContext', new={'context': {'User': {'timeZone': 'Asia/Jerusalem'}}})
+    results = get_time_zone()
+    assert results.key == 'Asia/Jerusalem'

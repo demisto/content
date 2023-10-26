@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 def parse_filter_field(filter_str):
     filters = []
-    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-]+)', flags=re.I)
+    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)', flags=re.I)
     for f in filter_str.split(';'):
         match = regex.match(f)
         if match is None:
@@ -605,7 +605,7 @@ def describe_subnets_command(args, aws_client):
         data.append({
             'AvailabilityZone': subnet['AvailabilityZone'],
             'AvailableIpAddressCount': subnet['AvailableIpAddressCount'],
-            'CidrBlock': subnet['CidrBlock'],
+            'CidrBlock': subnet.get('CidrBlock', ""),
             'DefaultForAz': subnet['DefaultForAz'],
             'State': subnet['State'],
             'SubnetId': subnet['SubnetId'],
@@ -721,7 +721,7 @@ def associate_address_command(args, aws_client):
     if args.get('instanceId') is not None:
         kwargs.update({'InstanceId': args.get('instanceId')})
     if args.get('allowReassociation') is not None:
-        kwargs.update({'AllowReassociation': args.get('allowReassociation') == 'True'})
+        kwargs.update({'AllowReassociation': argToBoolean(args.get('allowReassociation'))})
     if args.get('networkInterfaceId') is not None:
         kwargs.update({'NetworkInterfaceId': args.get('networkInterfaceId')})
     if args.get('privateIpAddress') is not None:
@@ -826,7 +826,7 @@ def create_image_command(args, aws_client):
     if args.get('description') is not None:
         kwargs.update({'Description': args.get('description')})
     if args.get('noReboot') is not None:
-        kwargs.update({'NoReboot': args.get('noReboot') == 'True'})
+        kwargs.update({'NoReboot': argToBoolean(args.get('noReboot'))})
 
     response = client.create_image(**kwargs)
 
@@ -1005,7 +1005,7 @@ def create_volume_command(args, aws_client):
     kwargs = {'AvailabilityZone': args.get('availabilityZone')}
 
     if args.get('encrypted') is not None:
-        kwargs.update({'Encrypted': args.get('encrypted') == 'True'})
+        kwargs.update({'Encrypted': argToBoolean(args.get('encrypted'))})
     if args.get('iops') is not None:
         kwargs.update({'Iops': int(args.get('iops'))})
     if args.get('kmsKeyId') is not None:
@@ -1104,7 +1104,7 @@ def detach_volume_command(args, aws_client):
     kwargs = {'VolumeId': args.get('volumeId')}
 
     if args.get('force') is not None:
-        kwargs.update({'Force': args.get('force') == 'True'})
+        kwargs.update({'Force': argToBoolean(args.get('force'))})
     if args.get('device') is not None:
         kwargs.update({'Device': int(args.get('device'))})
     if args.get('instanceId') is not None:
@@ -1172,9 +1172,9 @@ def run_instances_command(args, aws_client):
     if args.get('keyName') is not None:
         kwargs.update({'KeyName': args.get('keyName')})
     if args.get('ebsOptimized') is not None:
-        kwargs.update({'EbsOptimized': args.get('ebsOptimized')})
+        kwargs.update({'EbsOptimized': argToBoolean(args.get('ebsOptimized'))})
     if args.get('disableApiTermination') is not None:
-        kwargs.update({'DisableApiTermination': args.get('disableApiTermination') == 'True'})
+        kwargs.update({'DisableApiTermination': argToBoolean(args.get('disableApiTermination'))})
     if args.get('deviceName') is not None:
         BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
         BlockDeviceMappings.update({'Ebs': {}})
@@ -1186,13 +1186,13 @@ def run_instances_command(args, aws_client):
         BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
-            {'DeleteOnTermination': args.get('ebsDeleteOnTermination') == 'True'})
+            {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
     if args.get('ebsKmsKeyId') is not None:
         BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
     if args.get('ebsSnapshotId') is not None:
         BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
     if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': args.get('ebsEncrypted') == 'True'})
+        BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if BlockDeviceMappings:
         kwargs.update({'BlockDeviceMappings': [BlockDeviceMappings]})  # type: ignore
 
@@ -1703,7 +1703,7 @@ def copy_image_command(args, aws_client):
     if args.get('description') is not None:
         kwargs.update({'Description': args.get('description')})
     if args.get('encrypted') is not None:
-        kwargs.update({'Encrypted': args.get('ebsEncrypted') == 'True'})
+        kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('kmsKeyId') is not None:
         kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
 
@@ -1734,7 +1734,7 @@ def copy_snapshot_command(args, aws_client):
     if args.get('description') is not None:
         kwargs.update({'Description': args.get('description')})
     if args.get('encrypted') is not None:
-        kwargs.update({'Encrypted': args.get('ebsEncrypted') == 'True'})
+        kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('kmsKeyId') is not None:
         kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
 
@@ -1902,12 +1902,12 @@ def modify_network_interface_attribute_command(args, aws_client):
     kwargs = {'NetworkInterfaceId': args.get('networkInterfaceId')}
 
     if args.get('sourceDestCheck') is not None:
-        kwargs.update({'SourceDestCheck': {'Value': args.get('sourceDestCheck') == 'True'}})
+        kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
     if args.get('attachmentId') is not None and args.get('deleteOnTermination') is not None:
         kwargs.update({
             'Attachment': {
                 'AttachmentId': args.get('attachmentId'),
-                'DeleteOnTermination': args.get('deleteOnTermination') == 'True'
+                'DeleteOnTermination': argToBoolean(args.get('deleteOnTermination'))
             }})
     if args.get('description') is not None:
         kwargs.update({'Description': {'Value': args.get('description')}})
@@ -1930,14 +1930,14 @@ def modify_instance_attribute_command(args, aws_client):
     kwargs = {'InstanceId': args.get('instanceId')}
 
     if args.get('sourceDestCheck') is not None:
-        kwargs.update({'SourceDestCheck': {'Value': args.get('sourceDestCheck') == 'True'}})
+        kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
     if args.get('disableApiTermination') is not None:
         kwargs.update(
-            {'DisableApiTermination': {'Value': args.get('disableApiTermination') == 'True'}})
+            {'DisableApiTermination': {'Value': argToBoolean(args.get('disableApiTermination'))}})
     if args.get('ebsOptimized') is not None:
-        kwargs.update({'EbsOptimized': {'Value': args.get('ebsOptimized') == 'True'}})
+        kwargs.update({'EbsOptimized': {'Value': argToBoolean(args.get('ebsOptimized'))}})
     if args.get('enaSupport') is not None:
-        kwargs.update({'EnaSupport': {'Value': args.get('enaSupport') == 'True'}})
+        kwargs.update({'EnaSupport': {'Value': argToBoolean(args.get('enaSupport'))}})
     if args.get('instanceType') is not None:
         kwargs.update({'InstanceType': {'Value': args.get('instanceType')}})
     if args.get('instanceInitiatedShutdownBehavior') is not None:
@@ -1962,7 +1962,7 @@ def create_network_acl_command(args, aws_client):
     kwargs = {'VpcId': args.get('VpcId')}
 
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     response = client.create_network_acl(**kwargs)
     network_acl = response['NetworkAcl']
@@ -1993,7 +1993,7 @@ def create_network_acl_entry_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        'Egress': args.get('Egress') == 'True',
+        'Egress': argToBoolean(args.get('Egress')),
         'NetworkAclId': args.get('NetworkAclId'),
         'Protocol': args.get('Protocol'),
         'RuleAction': args.get('RuleAction'),
@@ -2013,7 +2013,7 @@ def create_network_acl_entry_command(args, aws_client):
     if args.get('To') is not None:
         kwargs.update({'PortRange': {'To': int(args.get('To'))}})
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     response = client.create_network_acl_entry(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -2031,7 +2031,7 @@ def create_fleet_command(args, aws_client):
     kwargs = {}  # type: dict
 
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     if args.get('ClientToken') is not None:
         kwargs.update({'ClientToken': (args.get('ClientToken'))})
@@ -2049,11 +2049,11 @@ def create_fleet_command(args, aws_client):
         SpotOptions.update({
             'InstancePoolsToUseCount': args.get('InstancePoolsToUseCount')
         })
-    if args.get('SingleInstanceType') is not None:
-        SpotOptions.update({'SingleInstanceType': args.get('SingleInstanceType') == 'True'})
+    if args.get('SpotSingleInstanceType') is not None:
+        SpotOptions.update({'SpotSingleInstanceType': argToBoolean(args.get('SpotSingleInstanceType'))})
     if args.get('SingleAvailabilityZone') is not None:
         SpotOptions.update({
-            'SingleAvailabilityZone': args.get('SingleAvailabilityZone') == 'True'
+            'SingleAvailabilityZone': argToBoolean(args.get('SingleAvailabilityZone'))
         })
     if args.get('MinTargetCapacity') is not None:
         SpotOptions.update({
@@ -2070,11 +2070,11 @@ def create_fleet_command(args, aws_client):
         })
     if args.get('OnDemandSingleInstanceType') is not None:
         SpotOptions.update({
-            'SingleInstanceType': args.get('OnDemandSingleInstanceType') == 'True'
+            'SingleInstanceType': argToBoolean(args.get('OnDemandSingleInstanceType'))
         })
     if args.get('OnDemandSingleAvailabilityZone') is not None:
         SpotOptions.update({
-            'SingleAvailabilityZone': args.get('OnDemandSingleAvailabilityZone') == 'True'
+            'SingleAvailabilityZone': argToBoolean(args.get('OnDemandSingleAvailabilityZone'))
         })
     if args.get('OnDemandMinTargetCapacity') is not None:
         SpotOptions.update({
@@ -2187,7 +2187,7 @@ def create_fleet_command(args, aws_client):
         kwargs.update({'TargetCapacitySpecification': TargetCapacitySpecification})
 
     if args.get('TerminateInstancesWithExpiration') is not None:
-        kwargs.update({'TerminateInstancesWithExpiration': args.get('TerminateInstancesWithExpiration') == 'True'})
+        kwargs.update({'TerminateInstancesWithExpiration': argToBoolean(args.get('TerminateInstancesWithExpiration'))})
 
     if args.get('Type') is not None:
         kwargs.update({'Type': (args.get('Type'))})
@@ -2239,7 +2239,7 @@ def delete_fleet_command(args, aws_client):
     kwargs = {}
     output = []
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
     if args.get('FleetIds') is not None:
         kwargs.update({'FleetIds': parse_resource_ids(args.get('FleetIds'))})
     if args.get('TerminateInstances') is not None:
@@ -2453,7 +2453,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('KernelId') is not None:
         LaunchTemplateData.update({'KernelId': args.get('KernelId')})
     if args.get('EbsOptimized') is not None:
-        LaunchTemplateData.update({'EbsOptimized': args.get('EbsOptimized')})
+        LaunchTemplateData.update({'EbsOptimized': argToBoolean(args.get('EbsOptimized'))})
 
     if args.get('iamInstanceProfileArn') is not None and args.get('iamInstanceProfileName') is not None:
         LaunchTemplateData.update({
@@ -2475,13 +2475,13 @@ def create_launch_template_command(args, aws_client):
         BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
-            {'DeleteOnTermination': args.get('ebsDeleteOnTermination') == 'True'})
+            {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
     if args.get('ebsKmsKeyId') is not None:
         BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
     if args.get('ebsSnapshotId') is not None:
         BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
     if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': args.get('ebsEncrypted') == 'True'})
+        BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('NoDevice') is not None:
         BlockDeviceMappings.update({'NoDevice': {args.get('NoDevice')}})
     if BlockDeviceMappings:
@@ -2489,9 +2489,9 @@ def create_launch_template_command(args, aws_client):
 
     NetworkInterfaces = {}  # type: dict
     if args.get('AssociatePublicIpAddress') is not None:
-        NetworkInterfaces.update({'AssociatePublicIpAddress': args.get('AssociatePublicIpAddress')})
+        NetworkInterfaces.update({'AssociatePublicIpAddress': argToBoolean(args.get('AssociatePublicIpAddress'))})
     if args.get('NetworkInterfacesDeleteOnTermination') is not None:
-        NetworkInterfaces.update({'DeleteOnTermination': args.get('NetworkInterfacesDeleteOnTermination')})
+        NetworkInterfaces.update({'DeleteOnTermination': argToBoolean(args.get('NetworkInterfacesDeleteOnTermination'))})
     if args.get('NetworkInterfacesDescription') is not None:
         NetworkInterfaces.update({'Description': args.get('NetworkInterfacesDescription')})
     if args.get('NetworkInterfacesDeviceIndex') is not None:
@@ -2520,7 +2520,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('KeyName') is not None:
         LaunchTemplateData.update({'KeyName': args.get('KeyName')})
     if args.get('Monitoring') is not None:
-        LaunchTemplateData.update({'Monitoring': {'Enabled': args.get('Monitoring')}})
+        LaunchTemplateData.update({'Monitoring': {'Enabled': argToBoolean(args.get('Monitoring'))}})
     if args.get('AvailabilityZone') is not None:
         LaunchTemplateData.update({
             'Placement': {
@@ -2554,7 +2554,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('RamDiskId') is not None:
         LaunchTemplateData.update({'RamDiskId': args.get('RamDiskId')})
     if args.get('DisableApiTermination') is not None:
-        LaunchTemplateData.update({'DisableApiTermination': args.get('DisableApiTermination')})
+        LaunchTemplateData.update({'DisableApiTermination': argToBoolean(args.get('DisableApiTermination'))})
     if args.get('InstanceInitiatedShutdownBehavior') is not None:
         LaunchTemplateData.update(
             {'InstanceInitiatedShutdownBehavior': args.get('InstanceInitiatedShutdownBehavior')})
@@ -2896,7 +2896,7 @@ def create_traffic_mirror_session_command(args, aws_client):
     if args.get('ClientToken') is not None:
         kwargs.update({'ClientToken': args.get('ClientToken')})
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': args.get('DryRun') == 'True'})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     tag_specifications = []  # type: list
     if args.get('Tags') is not None:
@@ -3199,9 +3199,6 @@ def main():
 
         elif command == 'aws-ec2-modify-image-attribute':
             modify_image_attribute_command(args, aws_client)
-
-        elif command == 'aws-ec2-modify-network-interface-attribute':
-            modify_network_interface_attribute_command(args, aws_client)
 
         elif command == 'aws-ec2-modify-instance-attribute':
             modify_instance_attribute_command(args, aws_client)

@@ -70,7 +70,7 @@ def fetch_incidents_command(client: Client, last_run_dict: Optional[dict], first
     ]
     # Get last fetch from incidents
     if incidents:
-        incidents.sort(key=lambda row: row.get('occurred'))
+        incidents.sort(key=lambda row: row.get('occurred'))  # type: ignore[arg-type, return-value]
         last_fetch = incidents[-1]['occurred']
     return {'last_run': last_fetch}, incidents
 
@@ -85,9 +85,9 @@ def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
     raw_response = client.query(query)
     if raw_response:
         if columns:
-            context = list()
+            context = []
             for row in raw_response:
-                context_entry = dict()
+                context_entry = {}
                 for i in range(len(columns)):
                     context_entry[columns[i]] = row[i]
                 context.append(context_entry)

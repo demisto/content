@@ -1542,7 +1542,7 @@ script:
       name: entry_id
       required: true
     - auto: PREDEFINED
-      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc)
+      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc).
       name: file_extension
       predefined:
       - ioc
@@ -1603,7 +1603,7 @@ script:
       name: entry_id
       required: true
     - auto: PREDEFINED
-      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc)
+      description: The suffix at the end of a filename. (Available file types - yara, stix, ioc).
       name: file_extension
       predefined:
       - ioc
@@ -1667,7 +1667,7 @@ script:
       description: The modification date of the last intel deployment.
       type: Date
     - contextPath: Tanium.IntelDeployStatus.CurrentRevision
-      description: Revision number, incremented each time the intel is modified
+      description: Revision number, incremented each time the intel is modified.
       type: Number
     - contextPath: Tanium.IntelDeployStatus.CurrentSize
       description: The size of the intel document contents, in bytes.
@@ -1775,7 +1775,7 @@ script:
     - description: The intel document ID.
       name: intel_doc_id
       required: true
-    description: Remove an intel document from the system by providing its ID
+    description: Remove an intel document from the system by providing its ID.
   - name: tanium-tr-start-quick-scan
     arguments:
     - description: The intel document ID.
@@ -1792,40 +1792,40 @@ script:
       description: The ID of a Tanium computer group.
       type: Number
     - contextPath: Tanium.QuickScan.ID
-      description: The ID of the quick scan
+      description: The ID of the quick scan.
       type: Number
     - contextPath: Tanium.QuickScan.AlertCount
-      description: The number of alerts returned from the quick scan
+      description: The number of alerts returned from the quick scan.
       type: Number
     - contextPath: Tanium.QuickScan.CreatedAt
-      description: The date the quick scan was created
+      description: The date the quick scan was created.
       type: Date
     - contextPath: Tanium.QuickScan.UserId
-      description: The user ID which initiated the quick scan
+      description: The user ID which initiated the quick scan.
       type: Number
     - contextPath: Tanium.QuickScan.QuestionId
-      description: The ID of the quick scan question
+      description: The ID of the quick scan question.
       type: Number
     description: Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response product console. Computer group names and IDs can also be retrieved by using the `tn-list-groups` command in the `Tanium` integration.
   - arguments:
-    - description: Offset to start getting response actions (default is '0')
+    - description: Offset to start getting response actions (default is '0').
       name: offset
-    - description: Max number of response actions to return (default is '50')
+    - description: Max number of response actions to return (default is '50').
       name: limit
     - auto: PREDEFINED
       defaultValue: desc
-      description: Specify whether to sort by column in ascending or descending order (default is 'desc')
+      description: Specify whether to sort by column in ascending or descending order (default is 'desc').
       name: sort_order
       predefined:
       - asc
       - desc
-    - description: Filter on a partial computer name
+    - description: Filter on a partial computer name.
       name: partial_computer_name
-    - description: Filter on status
+    - description: Filter on status.
       name: status
-    - description: Filter on type
+    - description: Filter on type.
       name: type
-    description: Returns the Response Actions matching the specified filters
+    description: Returns the Response Actions matching the specified filters.
     name: tanium-tr-get-response-actions
     outputs:
     - contextPath: Tanium.ResponseActions.id
@@ -1871,12 +1871,12 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: Target computer name
+    - description: Target computer name.
       name: computer_name
       required: true
     - description: Time unit to specify how long a snapshot should persist (i.e. "7 days", "1 month". Default is "7 days").
       name: expiration_time
-    description: Creates a "gatherSnapshot" Response Action for the specified host
+    description: Creates a "gatherSnapshot" Response Action for the specified host.
     name: tanium-tr-response-action-gather-snapshot
     outputs:
     - contextPath: Tanium.ResponseActions.type
@@ -1915,7 +1915,7 @@ script:
     - contextPath: Tanium.ResponseActions.eid
       description: ''
       type: String
-  dockerimage: demisto/lxml:1.0.0.68945
+  dockerimage: demisto/lxml:1.0.0.76061
   isfetch: true
   script: ''
   subtype: python3

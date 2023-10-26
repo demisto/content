@@ -1,0 +1,6 @@
+!xet-ad-get-user email="james.bond@xsoar.local"
+!xet-ad-set-new-password username="XSOAR007" password="bondjamesbond"
+!xet-ad-expire-password username="XSOAR007"
+!xet-send-mail to="james.bond@xsoar.local" body="shaken or stirred?"
+!xet-siem-search query="host:crossiscoming81"
+!xet-get-events

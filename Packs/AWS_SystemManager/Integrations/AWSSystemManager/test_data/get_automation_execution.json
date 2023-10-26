@@ -1,0 +1,84 @@
+{
+    "AutomationExecution": {
+        "AutomationExecutionId": "AutomationExecutionId",
+        "DocumentName": "AWS",
+        "DocumentVersion": "1",
+        "ExecutionStartTime": "2023-08-29T19:00:50.101000+03:00",
+        "ExecutionEndTime": "2023-08-29T19:00:51.618000+03:00",
+        "AutomationExecutionStatus": "Success",
+        "StepExecutions": [
+            {
+                "StepName": "Instances",
+                "Action": "aws:",
+                "OnFailure": "Continue",
+                "ExecutionStartTime": "2023-08-29T19:00:50.463000+03:00",
+                "ExecutionEndTime": "2023-08-29T19:00:50.961000+03:00",
+                "StepStatus": "Success",
+                "Inputs": {
+                    "DesiredState": "\"stopped\"",
+                    "InstanceIds": "[\"i-\"]"
+                },
+                "Outputs": {
+                    "InstanceStates": [
+                        "stopped"
+                    ]
+                },
+                "StepExecutionId": "StepExecutionId",
+                "OverriddenParameters": {},
+                "ValidNextSteps": [
+                    "Instances"
+                ]
+            },
+            {
+                "StepName": "Instances",
+                "Action": "aws",
+                "ExecutionStartTime": "2023-08-29T19:00:51.140000+03:00",
+                "ExecutionEndTime": "2023-08-29T19:00:51.573000+03:00",
+                "StepStatus": "Success",
+                "Inputs": {
+                    "CheckStateOnly": "false",
+                    "DesiredState": "\"stopped\"",
+                    "Force": "true",
+                    "InstanceIds": "[\"i-\"]"
+                },
+                "Outputs": {
+                    "InstanceStates": [
+                        "stopped"
+                    ]
+                },
+                "StepExecutionId": "StepExecutionId",
+                "OverriddenParameters": {}
+            }
+        ],
+        "StepExecutionsTruncated": false,
+        "Parameters": {
+            "AutomationAssumeRole": [
+                "arn"
+            ],
+            "InstanceId": [
+                "i-"
+            ]
+        },
+        "Outputs": {},
+        "Mode": "Auto",
+        "ExecutedBy": "arn",
+        "Targets": [],
+        "ResolvedTargets": {
+            "ParameterValues": [],
+            "Truncated": false
+        }
+    },
+    "ResponseMetadata": {
+        "RequestId": "",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Wed, 30 Aug 2023 12:41:14 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "",
+            "connection": "keep-alive",
+            "x-amzn-requestid": ""
+        },
+        "RetryAttempts": 0
+    }
+}

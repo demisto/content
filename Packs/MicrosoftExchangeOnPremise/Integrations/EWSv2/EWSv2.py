@@ -3,6 +3,7 @@ import hashlib
 import subprocess
 import warnings
 from multiprocessing import Process
+from typing import Optional
 
 import dateparser  # type: ignore
 import exchangelib
@@ -470,7 +471,7 @@ def construct_config_args(context_dict, credentials):  # pragma: no cover
     return config_args
 
 
-def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):  # pragma: no cover
+def get_account_autodiscover(account_email, access_type=ACCESS_TYPE, time_zone=None):  # pragma: no cover
     account = None
     original_exc = None  # type: ignore
     context_dict = demisto.getIntegrationContext()
@@ -480,7 +481,7 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):  # pragma:
             config_args = construct_config_args(context_dict, credentials)
             account = Account(
                 primary_smtp_address=account_email, autodiscover=False, config=Configuration(**config_args),
-                access_type=access_type,
+                access_type=access_type, default_timezone=time_zone
             )
             account.root.effective_rights.read  # pylint: disable=E1101
             return account
@@ -505,12 +506,13 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE):  # pragma:
     return account
 
 
-def get_account(account_email, access_type=ACCESS_TYPE):  # pragma: no cover
+def get_account(account_email, access_type=ACCESS_TYPE, time_zone=None):  # pragma: no cover
     if not AUTO_DISCOVERY:
         return Account(
             primary_smtp_address=account_email, autodiscover=False, config=config, access_type=access_type,
+            default_timezone=time_zone
         )
-    return get_account_autodiscover(account_email, access_type)
+    return get_account_autodiscover(account_email, access_type, time_zone)
 
 
 # LOGGING
@@ -592,6 +594,18 @@ def is_empty_object(obj):
     else:
         size = len(obj)
     return size == 0
+
+
+def get_time_zone() -> Optional[EWSTimeZone]:
+    """get the XSOAR user time zone
+    :return:
+        returns an ``EWSTimeZone`` if TZ available or ``None`` if not
+    :rtype: ``Optional[EWSTimeZone]``
+    """
+    time_zone = demisto.callingContext.get('context', {}).get('User', {}).get('timeZone', None)
+    if time_zone:
+        time_zone = EWSTimeZone(time_zone)
+    return time_zone
 
 
 def get_attachment_name(attachment_name):  # pragma: no cover
@@ -2229,7 +2243,8 @@ def get_none_empty_addresses(addresses_ls):
 
 
 def send_email(args):
-    account = get_account(ACCOUNT_EMAIL)
+    time_zone = get_time_zone()
+    account = get_account(account_email=ACCOUNT_EMAIL, time_zone=time_zone)
     bcc = get_none_empty_addresses(argToList(args.get('bcc')))
     cc = get_none_empty_addresses(argToList(args.get('cc')))
     to = get_none_empty_addresses(argToList(args.get('to')))
@@ -2271,7 +2286,8 @@ def send_email(args):
 
 
 def reply_email(args):  # pragma: no cover
-    account = get_account(ACCOUNT_EMAIL)
+    time_zone = get_time_zone()
+    account = get_account(account_email=ACCOUNT_EMAIL, time_zone=time_zone)
     bcc = args.get('bcc').split(",") if args.get('bcc') else None
     cc = args.get('cc').split(",") if args.get('cc') else None
     to = args.get('to').split(",") if args.get('to') else None

@@ -290,11 +290,13 @@ script:
       description: Is the machine isolated.
       type: boolean
   - arguments:
-    - description: Machine name to be un-isolated.
+    - default: true
+      description: Machine name to be un-isolated.
       name: machine
       default: true
       required: true
     description: Stops isolation of a machine.
+    execution: true
     name: cybereason-unisolate-machine
     outputs:
     - contextPath: Cybereason.Machine
@@ -557,10 +559,10 @@ script:
       description: Was domain ever resolved as a second level domain.
       type: boolean
   - arguments:
-    - description: Username to query.
+    - default: true
+      description: Username to query.
       name: username
       required: true
-      default: true
     description: Query users as part of investigation.
     name: cybereason-query-user
     outputs:
@@ -613,10 +615,10 @@ script:
     description: Downloads the actual file to the machine.
     name: cybereason-download-file
   - arguments:
-    - description: The batch id to abort a file download operation.
+    - default: true
+      description: The batch id to abort a file download operation.
       name: batchID
       required: true
-      default: true
     description: Aborts a file download operation that is in progress.
     name: cybereason-close-file-batch-id
   - arguments:
@@ -792,7 +794,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.78960
 tests:
 - Cybereason Test
 fromversion: 5.0.0

@@ -2589,11 +2589,13 @@ def list_alerts_command(client: MsClient, args: dict):
                'ThreatFamilyName', 'MachineID']
     severity = args.get('severity')
     status = args.get('status')
+    category = args.get('category')
     limit = arg_to_number(args.get('limit', 50))
     creation_time = arg_to_datetime(args.get('creation_time'), required=False)
     fields_to_filter_by = {
         'severity': severity,
-        'status': status
+        'status': status,
+        'category': category,
     }
     filter_req = reformat_filter(fields_to_filter_by)
     alerts_response = client.list_alerts(filter_req, limit, creation_time=creation_time, evidence=True)
@@ -3668,7 +3670,7 @@ def _get_incidents_query_params(client, fetch_evidence, last_fetch_time):
         sources = argToList(client.alert_detectionsource_to_fetch)
         source_filter_list = [f"detectionSource+eq+'{DETECTION_SOURCE_TO_API_VALUE[source]}'" for source in sources]
         if len(source_filter_list) > 1:
-            source_filter_list = list(map(lambda x: f"({x})", source_filter_list))
+            source_filter_list = [f"({x})" for x in source_filter_list]
         filter_query = filter_query + " and (" + " or ".join(source_filter_list) + ")"
     if client.alert_status_to_fetch:
         statuses = argToList(client.alert_status_to_fetch)

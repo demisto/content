@@ -213,7 +213,7 @@ script:
       description: |-
         The type of asset.
 
-        Supported values: 'ip', 'domain', 'cert', 'webapp', 'iprange'
+        Supported values: 'ip', 'domain', 'cert', 'webapp', 'iprange'.
       name: asset_type
       predefined:
       - ip
@@ -383,7 +383,7 @@ script:
       description: |-
         The type of asset.
 
-        Supported values: 'ip', 'domain', 'cert', 'webapp', 'iprange'
+        Supported values: 'ip', 'domain', 'cert', 'webapp', 'iprange'.
       name: asset_type
       predefined:
       - ip
@@ -402,7 +402,7 @@ script:
       description: |-
         The investigation status of the asset. 
 
-        Supported values: 'uninvestigated', 'investigating', 'investigated'
+        Supported values: 'uninvestigated', 'investigating', 'investigated'.
       name: investigation_status
       predefined:
       - uninvestigated
@@ -441,7 +441,7 @@ script:
       description: |-
         The investigation status of the issue.
 
-        Supported values: 'uninvestigated', 'investigating', 'investigated'
+        Supported values: 'uninvestigated', 'investigating', 'investigated'.
       name: investigation_status
       predefined:
       - uninvestigated
@@ -465,7 +465,7 @@ script:
       description: |-
         The number of results to retrieve.
 
-        Maximum value is '1000'
+        Maximum value is '1000'.
       name: count
     - defaultValue: '0'
       description: |-
@@ -483,14 +483,14 @@ script:
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: first_detected
     - description: |-
         The date and time at which CyCognito most recently attributed the asset to the organization.
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: last_detected
     - description: Filters the issues according to the provided organizations. Supports comma-separated values.
       name: organizations
@@ -499,7 +499,7 @@ script:
     - description: |-
         Filters the records according to the issue type. Supports comma-separated values.
 
-        Supported values: "Abandoned Asset", "Certificate Validity", "Cryptographic Vulnerability", "E-mail Security", "Exposed Asset", "Exposed Data", "Exposed Dev Environment", "Information Gathering", "Phishing Threat", "Potential Imposter Asset", "Security Hygiene", "Unmaintained Asset", "Unsafe Authentication", "Vulnerable Software", "Weak Encryption", "XSS"
+        Supported values: "Abandoned Asset", "Certificate Validity", "Cryptographic Vulnerability", "E-mail Security", "Exposed Asset", "Exposed Data", "Exposed Dev Environment", "Information Gathering", "Phishing Threat", "Potential Imposter Asset", "Security Hygiene", "Unmaintained Asset", "Unsafe Authentication", "Vulnerable Software", "Weak Encryption", "XSS".
       name: issue_type
     - description: |-
         The name of the field by which to sort the results. The response fields available for sorting the data are found in the following documentation:
@@ -509,7 +509,7 @@ script:
       description: |-
         Specifies whether to sort the results in either ascending or descending order.
 
-        Supported values: 'asc', 'desc'
+        Supported values: 'asc', 'desc'.
       name: sort_order
       predefined:
       - asc
@@ -599,7 +599,7 @@ script:
       description: |-
         The type of asset.
 
-        Supported values: 'ip', 'domain', 'cert', 'webapp', 'iprange'
+        Supported values: 'ip', 'domain', 'cert', 'webapp', 'iprange'.
       name: asset_type
       predefined:
       - ip
@@ -612,7 +612,7 @@ script:
       description: |-
         The number of results to be retrieved in a response. 
 
-        Maximum value is '1000'
+        Maximum value is '1000'.
       name: count
     - defaultValue: '0'
       description: |-
@@ -628,7 +628,7 @@ script:
     - description: |-
         Filters the assets according to the selected status. Supports comma-separated values.
 
-        Supported values: 'changed', 'new', 'normal'
+        Supported values: 'changed', 'new', 'normal'.
       name: status
     - description: Filters the assets according to the provided organizations. Supports comma-separated values.
       name: organizations
@@ -642,7 +642,7 @@ script:
         B = Strong
         C = Less vulnerable
         D = Vulnerable
-        F = Highly vulnerable
+        F = Highly vulnerable.
       name: security_grade
     - description: |-
         The geographical locations in which the asset is found. Supported values contain the three-letter ISO country code for the respective countries'e.g., IND, USA.
@@ -653,14 +653,14 @@ script:
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: first_seen
     - description: |-
         The date and time at which CyCognito most recently attributed the asset to the organization.
 
         Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: last_seen
     - description: |-
         Specifies the field by which to sort.
@@ -673,7 +673,7 @@ script:
       description: |-
         Specifies whether to sort the results in either ascending or descending order.
 
-        Supported values: 'asc', 'desc'
+        Supported values: 'asc', 'desc'.
       name: sort_order
       predefined:
       - asc
@@ -827,7 +827,7 @@ script:
     - contextPath: CyCognito.Asset.discoverability
       description: Quantifies an asset's level of exposure.
       type: String
-  dockerimage: demisto/pycountry:1.0.0.72312
+  dockerimage: demisto/pycountry:1.0.0.75004
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true

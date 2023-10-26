@@ -4805,3 +4805,42 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The Attack Pattern entities with ids 2222, 1111 were associated successfully to entity id: 26769.
+
+### threatstream-add-indicator-tag
+
+***
+Add tags to the indicators
+
+#### Base Command
+
+`threatstream-add-indicator-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_ids | A comma-separated list of unique IDs of the indicator to which you are adding tags. | Required | 
+| tags | A comma-separated list of values of the tags you want to add. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### threatstream-remove-indicator-tag
+
+***
+Remove tags from the indicators
+
+#### Base Command
+
+`threatstream-remove-indicator-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_ids | A comma-separated list of unique IDs of the indicator to which you are removing tags. | Required | 
+| tags | A comma-separated list of values of the tags you want to remove. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

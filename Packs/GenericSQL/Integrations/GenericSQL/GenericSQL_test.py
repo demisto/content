@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 import pytest
 import sqlalchemy
@@ -16,6 +17,17 @@ class ResultMock:
     def fetchall(self):
         return []
 
+    def mappings(self):
+        class NestedResultMock:
+
+            def fetchall(self):
+                return []
+
+            def fetchmany(self, fetch_limit):
+                return []
+
+        return NestedResultMock()
+
 
 class ConnectionMock:
     def __enter__(self):
@@ -28,6 +40,9 @@ class ConnectionMock:
         return ResultMock()
 
     def execution_options(self, isolation_level):
+        pass
+
+    def commit(self):
         pass
 
 
@@ -239,7 +254,7 @@ def test_sql_queries_with_empty_table(mocker):
     mocker.patch.object(Client, '_create_engine_and_connect', return_value=ConnectionMock())
     client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
     result = sql_query_execute(client, ARGS3)
-    assert EMPTY_OUTPUT == result[1]  # entry context is found in the 2nd place in the result of the command
+    assert result[1] == EMPTY_OUTPUT  # entry context is found in the 2nd place in the result of the command
 
 
 def test_mysql_integration():
@@ -536,3 +551,35 @@ def test_fetch_incidents_de_duplication(table_first_cycle, table_second_cycle, t
     incidents, last_run = fetch_incidents(client, params)
     assert expected_last_run_5_3 == last_run
     assert len(incidents) == 1
+
+
+GENERATE_VARS_NAMES_MSSQL = ([1, 123], "SELECT * FROM TABLE WHERE ID = ? and EMPLOYEE = ?", "Microsoft SQL Server",
+                             ({"bind_variable_1": 1, "bind_variable_2": 123}, "SELECT * FROM TABLE WHERE ID = :bind_variable_1"
+                                                                              " and EMPLOYEE = :bind_variable_2"))
+GENERATE_VARS_NAMES_MYSQL = ([1, 123], "SELECT * FROM TABLE WHERE ID = %s and EMPLOYEE = %s", "MySQL",
+                             ({"bind_variable_1": 1, "bind_variable_2": 123}, "SELECT * FROM TABLE WHERE ID = :bind_variable_1"
+                                                                              " and EMPLOYEE = :bind_variable_2"))
+GENERATE_VARS_NAMES_POSTGRES = ([1, 123], "SELECT * FROM TABLE WHERE ID = %s", "MySQL",
+                                ({"bind_variable_1": 1}, "SELECT * FROM TABLE WHERE ID = :bind_variable_1"))
+GENERATE_VARS_NAMES_DO_NOTHING = ([1, 123], "SELECT * FROM TABLE", "MySQL", ({}, "SELECT * FROM TABLE"))
+
+
+@pytest.mark.parametrize('bind_variables_values_list, query, dialect, expected_result',
+                         [GENERATE_VARS_NAMES_MSSQL, GENERATE_VARS_NAMES_MYSQL, GENERATE_VARS_NAMES_POSTGRES,
+                          GENERATE_VARS_NAMES_DO_NOTHING])
+def test_generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str,
+                                             expected_result: tuple[dict[str, Any], str | Any]):
+    """
+    Given
+    - A query with placeholders
+    - A list of bind variables values
+    When
+    - Executing generate_variable_names_and_mapping function
+    Then
+    - Ensure the mapping is correct
+    - Ensure the query contains unique variables names instead of the placeholders
+    """
+    from GenericSQL import generate_variable_names_and_mapping
+    result = generate_variable_names_and_mapping(bind_variables_values_list, query, dialect)
+    assert expected_result[0] == result[0]
+    assert expected_result[1] == result[1]
