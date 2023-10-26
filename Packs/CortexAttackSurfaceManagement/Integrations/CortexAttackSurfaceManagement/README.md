@@ -1263,7 +1263,7 @@ Get the status of an existing Remediation Confirmation Scan.
 ### asm-get-attack-surface-rule
 
 ***
-Get information of an attack surface rule id.
+Get information of an attack surface rule ID.
 
 #### Base Command
 
