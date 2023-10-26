@@ -33,7 +33,7 @@ if [ -n "${CLOUD_SERVERS_FILE}" ]; then
   echo "CLOUD_SERVERS_PATH is set to: ${CLOUD_SERVERS_PATH}"
 fi
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  if [ $TEST_XDR_ENV ]; then
+  if [ "${TEST_XDR_ENV}" == "true" ]; then
     cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
   else
     echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
@@ -50,7 +50,6 @@ echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> "${BASH_ENV}"
 source "${BASH_ENV}"
 
 echo "Running server tests on Instance role:${INSTANCE_ROLE}, nightly:${IS_NIGHTLY}, AMI run:${IS_AMI_RUN} mem check:${MEM_CHECK} ARTIFACTS_FOLDER:${ARTIFACTS_FOLDER}"
-echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
 
 exit_code=0
 if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; then
