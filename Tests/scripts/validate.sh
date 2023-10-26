@@ -13,7 +13,7 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
         done       
     else
         if [ -n "$NIGHTLY" ]; then
-            PREV_VER=$LATEST_PACKS_FOLDER_COMMIT
+            PREV_VER=$LAST_UPLOAD_COMMIT
         else
             PREV_VER="origin/master"
         fi
