@@ -780,7 +780,7 @@ script:
       description: File's SHA-1.
     - type: String
       contextPath: CiscoAMP.Event.file.identity.md5
-      description: File's MD5
+      description: File's MD5.
     - type: Number
       contextPath: CiscoAMP.Event.file.parent.process_id
       description: Parent's process ID.
