@@ -608,7 +608,7 @@ xsiam_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
+    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ || $NIGHTLY)
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
@@ -660,7 +660,7 @@ xsoar_ng_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
+    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/)
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
