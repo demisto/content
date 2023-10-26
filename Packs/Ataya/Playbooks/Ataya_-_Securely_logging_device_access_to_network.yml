@@ -1,0 +1,526 @@
+id: Ataya - Securely logging device access to network
+version: -1
+name: Ataya - Securely logging device access to network
+description: Basic Playbook for Login/Logout User ID on pan-os
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 42dfc20c-14c3-4e5e-86d4-1cd61e2f0498
+    type: start
+    task:
+      id: 42dfc20c-14c3-4e5e-86d4-1cd61e2f0498
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 751ff58f-95d4-4b09-882e-1a620c8c7a06
+    type: regular
+    task:
+      id: 751ff58f-95d4-4b09-882e-1a620c8c7a06
+      version: -1
+      name: Check 5G UE IMEI Value for clarity
+      description: Check the 5G UE IMEI value.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${incident.atayaimei}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 044cbc8c-2b94-49b4-8ebc-f53043fe15f7
+    type: regular
+    task:
+      id: 044cbc8c-2b94-49b4-8ebc-f53043fe15f7
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      closeNotes:
+        simple: User ID has been successfully updated
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: dd83e5cc-3e69-49c2-883c-ed37469c6daf
+    type: regular
+    task:
+      id: dd83e5cc-3e69-49c2-883c-ed37469c6daf
+      version: -1
+      name: Update User ID
+      description: User logged in.
+      script: '|||pan-os'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cmd:
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
+      type:
+        simple: user-id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 52549b85-5836-4b54-8cc4-615a073c5631
+    type: condition
+    task:
+      id: 52549b85-5836-4b54-8cc4-615a073c5631
+      version: -1
+      name: Event Type Inspection
+      description: Check the action of 5G UE sessions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      create:
+      - "3"
+      delete:
+      - "6"
+      modify:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: create
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: create
+          ignorecase: true
+    - label: delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: delete
+          ignorecase: true
+    - label: modify
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: modify
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6d68ac54-c2e9-49d3-8760-d08058f7ba1d
+    type: regular
+    task:
+      id: 6d68ac54-c2e9-49d3-8760-d08058f7ba1d
+      version: -1
+      name: Remove User ID Mapping
+      description: User logged out.
+      script: '|||pan-os'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cmd:
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <logout> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </logout> \n     </payload> \n</uid-message>"
+      type:
+        simple: user-id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a7e97d0d-511f-4052-848d-cf050df030a6
+    type: regular
+    task:
+      id: a7e97d0d-511f-4052-848d-cf050df030a6
+      version: -1
+      name: Update User ID
+      description: User logged in.
+      script: '|||pan-os'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cmd:
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
+      type:
+        simple: user-id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c4102ff8-ea2d-4e8b-8908-0f5fe18f412e
+    type: condition
+    task:
+      id: c4102ff8-ea2d-4e8b-8908-0f5fe18f412e
+      version: -1
+      name: IsIntegrationAvailable
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "12"
+    scriptarguments:
+      brandname:
+        simple: Panorama
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 01fc0b8c-5012-455a-8ef1-297c88fd5b25
+    type: title
+    task:
+      id: 01fc0b8c-5012-455a-8ef1-297c88fd5b25
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1610,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 33b33989-7a41-4109-88aa-f5d1f7b46616
+    type: collection
+    task:
+      id: 33b33989-7a41-4109-88aa-f5d1f7b46616
+      version: -1
+      name: Pause for review
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator
+      subject:
+        simple: Needs approval
+      body:
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Should it be approved?
+            ID: ${incident.atayaid}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: New device needs approval
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0878477b-2162-41c9-8fc9-c17a6c4efe21
+    type: regular
+    task:
+      id: 0878477b-2162-41c9-8fc9-c17a6c4efe21
+      version: -1
+      name: Assign New Device
+      description: assign user
+      script: '|||assign-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      imsi:
+        simple: ${incident.atayaid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 7954b47b-9377-4737-87fe-0bddc2d6c1e8
+    type: condition
+    task:
+      id: 7954b47b-9377-4737-87fe-0bddc2d6c1e8
+      version: -1
+      name: Reject Type Detect
+      description: Check the action of 5G UE sessions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      Authentication:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Authentication
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: reject
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "8_12_yes": 0.88,
+      "8_9_#default#": 0.66
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1775,
+        "width": 2240,
+        "x": -250,
+        "y": -190
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
