@@ -591,6 +591,7 @@ def fetch_incidents(client: Client, fetch_queue: str, fetch_priority: str, fetch
 
 def get_remote_data_command(client: Client, args: dict[str, str]):
     ticket_id = args.get("id")
+    headers = ["ArticleID", "To", "Cc", "Subject", "CreateTime", "From", "ContentType", "Body"]
     demisto.debug(f"Getting update for remote {ticket_id}")
     if args.get("lastUpdate"):
         last_update = round(
@@ -626,16 +627,13 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
                 for article in articles:
 
                     # Get article details
-                    description = f'ID: {str(article["ArticleID"])}\nTo: {article.get("To")}\nCC: {article.get("Cc")}\n'\
-                                  f'Subject: {article.get("Subject")}\nCreateTime: {article.get("CreateTime")}\n'\
-                                  f'From: {article.get("From")}\nContentType: {article.get("ContentType")}\n'\
-                                  f'Body:\n\n{article.get("Body")}'
+                    description = tableToMarkdown("OTRS Mirroring Update", article, headers=headers)
 
                     if article["IncomingTime"] > last_update:
                         entries.append({
                             'Type': EntryType.NOTE,
                             'Contents': description,
-                            'ContentsFormat': EntryFormat.TEXT,
+                            'ContentsFormat': EntryFormat.MARKDOWN,
                             'Tags': ["FromOTRS"],  # the list of tags to add to the entry
                             'Note': False  # boolean, True for Note, False otherwise
                         })
