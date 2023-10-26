@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Generator
+from collections.abc import Generator
 
 from CommonServerUserPython import *
 
@@ -44,6 +44,7 @@ def get_time_obj(t, time_format=None):
         else:
             # in case of "2018-09-14T13:27:18.123456Z"
             return datetime.strptime(t, TIME_FORMAT)
+    return None
 
 
 def get_time_str(time_obj, time_format=None):
@@ -81,9 +82,9 @@ def http_request(requests_func, url_suffix, **kwargs):
         raise Exception('API Key is incorrect')
 
     if res.status_code not in [200, 201, ]:
-        LOG('result is: %s' % (res.json(),))
+        LOG(f'result is: {res.json()}')
         error = res.json()
-        raise Exception('Your request failed with the following error: {}.\n'.format(error, ))
+        raise Exception(f'Your request failed with the following error: {error}.\n')
 
     return res.json()
 
@@ -107,14 +108,14 @@ def playbook_name_to_id(name):
     playbooks = http_get('/automate/playbooks')['data']
     ids = [p['id'] for p in playbooks if p['name'] == name]
     if len(ids) != 1:
-        raise ValueError('Could not find specific id for name "{}"'.format(name))
+        raise ValueError(f'Could not find specific id for name "{name}"')
 
     return ids[0]
 
 
 def get_endpoint_context(res=None, endpoint_id=None):
     if res is None:
-        res = http_get('/endpoints/{}'.format(endpoint_id)).get('data', [])
+        res = http_get(f'/endpoints/{endpoint_id}').get('data', [])
 
     endpoint_context = []
     for endpoint in res:
@@ -152,7 +153,7 @@ def get_endpoint_context(res=None, endpoint_id=None):
 
 def get_endpoint_user_context(res=None, endpoint_user_id=None):
     if res is None:
-        res = http_get('/endpoint_users/{}'.format(endpoint_user_id))['data']
+        res = http_get(f'/endpoint_users/{endpoint_user_id}')['data']
 
     endpoint_users = []
     for endpoint_user in res:
@@ -180,7 +181,7 @@ def get_full_timeline(detection_id, per_page=100):
     last_data = {}  # type:ignore
 
     while not done:
-        res = http_get('/detections/{}/timeline'.format(detection_id), params={
+        res = http_get(f'/detections/{detection_id}/timeline', params={
             'page': page,
             'per_page': per_page,
         })
@@ -297,12 +298,18 @@ def detection_to_context(raw_detection):
 
 def detections_to_entry(detections, show_timeline=False):
     fixed_detections = [detection_to_context(d) for d in detections]
-    endpoints = [get_endpoint_context(endpoint_id=d['relationships']['affected_endpoint']['data']['id'])
-                 for d in detections]
+    endpoints = []
+    for d in detections:
+        if 'affected_endpoint' in d['relationships']:
+            endpoints.append(
+                get_endpoint_context(endpoint_id=d['relationships']['affected_endpoint']['data']['id']))
+
     endpoints = sum(endpoints, [])  # type: list
-    endpoint_users = [
-        get_endpoint_user_context(endpoint_user_id=d['relationships']['related_endpoint_user']['data']['id'])
-        for d in detections]
+    endpoint_users = []
+    for d in detections:
+        if 'related_endpoint_user' in d['relationships']:
+            endpoint_users.append(
+                get_endpoint_user_context(endpoint_user_id=d['relationships']['related_endpoint_user']['data']['id']))
     endpoint_users = sum(endpoint_users, [])  # type: list
 
     domains, files, ips, processes = [], [], [], []  # type:ignore
@@ -409,7 +416,7 @@ def get_detection_command():
 
 @logger
 def get_detection(_id):
-    res = http_get('/detections/{}'.format(_id))
+    res = http_get(f'/detections/{_id}')
     return res['data']
 
 
@@ -423,7 +430,7 @@ def acknowledge_detection_command():
 
 @logger
 def acknowledge_detection(_id):
-    res = http_patch('/detections/{}/mark_acknowledged'.format(_id))
+    res = http_patch(f'/detections/{_id}/mark_acknowledged')
     return res['data']
 
 
@@ -439,7 +446,7 @@ def remediate_detection_command():
 
 @logger
 def remediate_detection(_id, remediation_state, comment):
-    res = http_patch('/detections/{}/update_remediation_state'.format(_id), data={
+    res = http_patch(f'/detections/{_id}/update_remediation_state', data={
         'remediation_state': remediation_state,
         'comment': comment,
     })
@@ -500,7 +507,7 @@ def get_endpoint_command():
 
 @logger
 def get_endpoint(_id):
-    res = http_get('/endpoints/{}'.format(_id))
+    res = http_get(f'/endpoints/{_id}')
 
     return res['data']
 
@@ -537,11 +544,11 @@ def execute_playbook_command():
 
     execute_playbook(playbook_id, detection_id)
 
-    return 'playbook #{} execution started successfully.'.format(playbook_id)
+    return f'playbook #{playbook_id} execution started successfully.'
 
 
 def execute_playbook(playbook_id, detection_id):
-    res = http_post('/automate/playbooks/{}/execute'.format(playbook_id), params={
+    res = http_post(f'/automate/playbooks/{playbook_id}/execute', params={
         'resource_type': 'Detection',
         'resource_id': detection_id,
     })
@@ -560,7 +567,7 @@ def fetch_incidents(last_run):
         # first time fetching
         last_fetch = parse_date_range(demisto.params().get('fetch_time', '3 days'), TIME_FORMAT)[0]
 
-    demisto.debug('iterating on detections, looking for more recent than {}'.format(last_fetch))
+    demisto.debug(f'iterating on detections, looking for more recent than {last_fetch}')
     incidents = []
     new_incidents_ids = []
     for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
@@ -608,7 +615,7 @@ def main():
 
     try:
         handle_proxy()
-        LOG('command is %s' % (demisto.command(),))
+        LOG(f'command is {demisto.command()}')
         command_func = COMMANDS.get(demisto.command())
         if command_func is not None:
             if demisto.command() == 'fetch-incidents':
@@ -623,7 +630,7 @@ def main():
         LOG(str(e))
         if demisto.command() != 'test-module':
             LOG.print_log()
-        return_error('error has occurred: {}'.format(str(e)))
+        return_error(f'error has occurred: {str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins'):
