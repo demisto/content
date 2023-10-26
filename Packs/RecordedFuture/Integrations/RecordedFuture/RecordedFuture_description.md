@@ -19,11 +19,11 @@ The following data points are collected as part of Collective Insights:
 5. Indicator - Type, Name
 6. Recurrence
 7. Schedule
-
+ 
 ## Configuration
 | Parameter                                      | Description                                                                                                                                                                                                                                 |
 |------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Server URL                                     | The URL to the Recorded Future ConnectAPI.                                                                                                                                                                                                  |
+ | Server URL                                     | The URL to the Recorded Future ConnectAPI.                                                                                                                                                                                                  |
 | API Token                                      | Valid API Token from Recorded Future.                                                                                                                                                                                                       |
 | Classifier                                     | Select "Recorded Future - Classifier".                                                                                                                                                                                                      |
 | Mapper (Incoming)                              | Select "Recorded Future - Incoming Mapper".                                                                                                                                                                                                 |
