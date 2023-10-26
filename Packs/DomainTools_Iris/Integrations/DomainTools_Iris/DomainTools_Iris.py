@@ -79,8 +79,6 @@ def http_request(method, params=None):
             response = api.hosting_history(params.get('domain')).response()
         elif method == 'reverse-whois':
             response = api.reverse_whois(**params).response()
-        elif method == 'domain-profile':
-            response = api.domain_profile(params.get('domain')).response()
         elif method == 'parsed-whois':
             response = api.parsed_whois(params.get('domain')).response()
         else:
@@ -165,28 +163,25 @@ def format_contact_grid(title, contact_dict):
 def format_dns_grid(type, dns_dict):
     return [{
     "type": type,
-    "ip": ','.join([ip.get('value') for ip in item.get('ip')]),
+    "ip": ','.join([ip['value'] for ip in item.get('ip', []) if ip.get('value')]),
     "host": item.get('host', {}).get('value')
   } for item in dns_dict]
 
 
 def format_risk_grid(domain_risk):
-    result = [{
-        'threatcategory': 'risk_score',
-        'threatcategoryconfidence': domain_risk.get('risk_score')
-    }]
+    result = [Common.ThreatTypes(threat_category='risk_score', threat_category_confidence=domain_risk.get('risk_score'))]
 
     for component in domain_risk.get('components', []):
-        result.append({
-            'threatcategory': component.get('name'),
-            'threatcategoryconfidence': component.get('risk_score')
-        })
+        result.append(
+            Common.ThreatTypes(threat_category=component.get('name'),
+                               threat_category_confidence=component.get('risk_score'))
+        )
 
     return result
 
 
 def format_tags(tags):
-    return ' '.join([tag.get('label') for tag in tags])
+    return ' '.join([tag['label'] for tag in tags])
 
 
 def convert_and_format_date(
@@ -205,13 +200,16 @@ def convert_and_format_date(
     return datetime.strptime(string_date, string_date_format).strftime(new_format)
 
 
-def create_domain_context_outputs(domain_result):
+def create_results(domain_result):
     """
     Creates all the context data necessary given a domain result
     Args:
         domain_result: DomainTools domain data
 
-    Returns: Dict with context data
+    Returns: Dict {
+        domain: <Common.Domain> - Domain indicator object with Iris results that map to Domain context
+        domaintools: <Dict> - DomainTools context with all Iris results
+    }
 
     """
     domain = f"{domain_result.get('domain')}"
@@ -344,54 +342,55 @@ def create_domain_context_outputs(domain_result):
         'ServerType': server_type,
     }
 
-    domain_context = {
-        'Name': domain,
-        'CreationDate': create_date,
-        'DomainStatus': domain_status,
-        'ExpirationDate': expiration_date,
-        'DNS':  [{"type": 'DNS', "ip": ip.get('address').get('value')} for ip in ip_addresses]
-            + format_dns_grid('MX', mx_servers)
-            + format_dns_grid('NS', name_servers),
-        'Registrant': {
-            'Name': registrant_name ,
-            'Organization': registrant_org,
-        },
-        'Geo': {
-            'Country': ' '.join([ip.get('country_code').get('value') for ip in ip_addresses])
-        },
-        'WHOIS': format_contact_grid('Admin', contact_dict.get('admin_contact', {}))
-            + format_contact_grid('Registrant', contact_dict.get('registrant_contact', {}))
-            + format_contact_grid('Billing', contact_dict.get('billing_contact', {}))
-            + format_contact_grid('Technical', contact_dict.get('technical_contact', {}))
-            + [{'key': 'Registrar', 'value': domain_registrar}],
-        'Rank': [
-            {
-                "source": "DomainTools Popularity Rank",
-                "rank": popularity_rank if popularity_rank else 'None'
-            }],
-        'ThreatTypes': format_risk_grid(domain_result.get('domain_risk', {})),
-        'Tags': format_tags(tags)
-    }
+    dns = [{"type": 'DNS', "ip": ip.get('address', {}).get('value')} for ip in ip_addresses] + format_dns_grid('MX', mx_servers) + format_dns_grid('NS', name_servers)
+    registrar = domain_result.get('registrar')
+    registrant_country = domain_result.get('registrant_contact', {}).get('country', {}).get('value')
+    admin_name = domain_result.get('admin_contact', {}).get('name', {}).get('value')
+    admin_email =  [email for email in domain_result.get('admin_contact', {}).get('email', [])]
+    admin_phone = domain_result.get('admin_contact', {}).get('phone', {}).get('value')
+    admin_country = domain_result.get('admin_contact', {}).get('country', {}).get('value')
+    threat_types = format_risk_grid(domain_result.get('domain_risk', {}))
+    tech_name = domain_result.get('technical_contact', {}).get('name', {}).get('value')
+    tech_email = [email for email in domain_result.get('technical_contact', {}).get('email', [])]
+    tech_org = domain_result.get('technical_contact', {}).get('org', {}).get('value')
+    tech_country = domain_result.get('technical_contact', {}).get('country', {}).get('value')
+    rank = [Common.Rank(source="DomainTools Popularity Rank", rank=popularity_rank if popularity_rank else 'None')]
 
-    dbot_score = 0
+    dbot_score_value = 0
     if first_seen:
         first_seen = convert_and_format_date(first_seen)
         domain_age = utils.get_domain_age(first_seen)
-        dbot_score = get_dbot_score(proximity_risk_score, domain_age, threat_profile_risk_score)
-    dbot_context = {'Indicator': domain,
-                    'Type': 'domain',
-                    'Vendor': 'DomainTools Iris',
-                    'Score': dbot_score,
-                    'Reliability': demisto.params().get('integrationReliability')}
-    if dbot_score == 3:
-        domain_context['Malicious'] = {
-            'Vendor': 'DomainTools Iris',
-            'Description': threat_profile_evidence if threat_profile_evidence is not None and len(
+        dbot_score_value = get_dbot_score(proximity_risk_score, domain_age, threat_profile_risk_score)
+
+    malicious_description = None
+    if dbot_score_value == 3:
+        malicious_description = threat_profile_evidence if threat_profile_evidence is not None and len(
                 threat_profile_evidence) else 'This domain has been profiled as a threat.'
-        }
-    outputs = {'domain': domain_context,
-               'domaintools': domain_tools_context,
-               'dbotscore': dbot_context}
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name='DomainTools Iris',
+        score=dbot_score_value,
+        reliability=demisto.params().get('integrationReliability'),
+        malicious_description=malicious_description
+    )
+
+    domain_indicator = Common.Domain(domain, dbot_score=dbot_score, dns=dns,
+         organization=registrant_org, creation_date=create_date,
+         expiration_date=expiration_date,
+         domain_status=domain_status,
+         registrar_name=registrar,
+         registrant_name=registrant_name,
+         registrant_country=registrant_country,
+         admin_name=admin_name, admin_email=admin_email, admin_phone=admin_phone,
+         admin_country=admin_country, tags=tags,
+         threat_types=threat_types,
+         tech_country=tech_country, tech_name=tech_name, tech_email=tech_email,
+         tech_organization=tech_org,
+         rank=rank)
+
+    outputs = {'domain': domain_indicator, 'domaintools': domain_tools_context}
     return outputs
 
 
@@ -441,10 +440,6 @@ def hosting_history(domain):
 
 def reverse_whois(**kwargs):
     return http_request('reverse-whois', kwargs)
-
-
-def domain_profile(domain):
-    return http_request('domain-profile', {'domain': domain})
 
 
 def parsed_whois(domain):
@@ -512,12 +507,13 @@ def chunks(lst, n):
 
 def format_enrich_output(result):
     domain = result.get('domain')
-    context = create_domain_context_outputs(result)
+    indicators = create_results(result)
 
-    domaintools_analytics_data = context.get('domaintools', {}).get('Analytics', {})
-    domaintools_hosting_data = context.get('domaintools', {}).get('Hosting', {})
-    domaintools_identity_data = context.get('domaintools', {}).get('Identity', {})
-    domaintools_registration_data = context.get('domaintools', {}).get('Registration', {})
+
+    domaintools_analytics_data = indicators.get('domaintools', {}).get('Analytics', {})
+    domaintools_hosting_data = indicators.get('domaintools', {}).get('Hosting', {})
+    domaintools_identity_data = indicators.get('domaintools', {}).get('Identity', {})
+    domaintools_registration_data = indicators.get('domaintools', {}).get('Registration', {})
 
     human_readable_data = {
         'Name': f"{domain}",
@@ -555,10 +551,10 @@ def format_enrich_output(result):
         'SSL Certificate': domaintools_hosting_data.get('SSLCertificate', ''),
         'Redirects To': domaintools_hosting_data.get('RedirectsTo', ''),
         'Redirect Domain': domaintools_hosting_data.get('RedirectDomain', ''),
-        'Website Title': context.get('domaintools', {}).get('WebsiteTitle'),
-        'First Seen': context.get('domaintools', {}).get('FirstSeen'),
-        'Server Type': context.get('domaintools', {}).get('ServerType'),
-        'Popularity': context.get('domain', {}).get('Rank'),
+        'Website Title': indicators.get('domaintools', {}).get('WebsiteTitle'),
+        'First Seen': indicators.get('domaintools', {}).get('FirstSeen'),
+        'Server Type': indicators.get('domaintools', {}).get('ServerType'),
+        'Popularity': indicators.get('domain', {}).rank,
     }
 
     demisto_title = f'DomainTools Iris Enrich for {domain}.'
@@ -568,7 +564,7 @@ def format_enrich_output(result):
         f'{demisto_title} {iris_title}', human_readable_data, headers=headers
     )
 
-    return (human_readable, context)
+    return (human_readable, indicators)
 
 
 def format_ips(ips):
@@ -713,11 +709,11 @@ def format_guided_pivot_link(link_type, item, domain=None):
 def format_investigate_output(result):
     domain = result.get('domain')
     result_copy = copy.deepcopy(result)
-    context = create_domain_context_outputs(result_copy)
+    indicators = create_results(result_copy)
 
-    domaintools_analytics_data = context.get('domaintools', {}).get('Analytics', {})
-    domaintools_hosting_data = context.get('domaintools', {}).get('Hosting', {})
-    domaintools_registration_data = context.get('domaintools', {}).get('Registration', {})
+    domaintools_analytics_data = indicators.get('domaintools', {}).get('Analytics', {})
+    domaintools_hosting_data = indicators.get('domaintools', {}).get('Hosting', {})
+    domaintools_registration_data = indicators.get('domaintools', {}).get('Registration', {})
 
     human_readable_data = {
         'Name': f"[{domain}](https://domaintools.com)",
@@ -768,7 +764,7 @@ def format_investigate_output(result):
         f'{demisto_title} {iris_title}', human_readable_data, headers=headers
     )
 
-    return (human_readable, context)
+    return (human_readable, indicators)
 
 ''' COMMANDS '''
 
@@ -781,40 +777,41 @@ def domain_command():
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
     include_context = demisto.args().get('include_context')
-
-    all_human_readable_output = ''
-    all_raw_response = []
-    all_context = {'Domain': [], 'DomainTools': [], "DBotScore": []}
-    all_missing_domains = []
+    command_results_list: List[CommandResults] = []
 
     for chunk in domain_chunks:
         response = domain_investigate(','.join(chunk))
-        all_raw_response.append(response)
-        all_missing_domains += response.get("missing_domains")
+        missing_domains = response.get("missing_domains")
         for result in response.get('results', []):
-            human_readable_output, context = format_investigate_output(result)
-            all_human_readable_output += human_readable_output
+            human_readable_output, indicators = format_investigate_output(result)
 
-            if should_include_context(include_context):
-                all_context['Domain'].append(context.get('domain'))
-                all_context['DomainTools'].append(context.get('domaintools'))
-                all_context['DBotScore'].append(context.get('dbotscore'))
+            if len(missing_domains) > 0:
+                human_readable_output += f"Missing Domains: {','.join(missing_domains)}"
 
-    if len(all_missing_domains) > 0:
-        all_human_readable_output += f"Missing Domains: {','.join(all_missing_domains)}"
+            domain_indicator = indicators.get('domain') if should_include_context(include_context) else None
+            domaintools_context = indicators.get('domaintools') if should_include_context(include_context) else None
 
-    if not should_include_context(include_context):
-        all_context = None
-
-    results = CommandResults(
-        outputs_prefix='',
-        outputs_key_field='Name',
-        outputs=all_context,
-        readable_output=all_human_readable_output,
-        ignore_auto_extract=True,
-        raw_response=all_raw_response
-    )
-    return_results(results)
+            command_results_list.extend(
+                (
+                    CommandResults(
+                        outputs_prefix='Domain',
+                        outputs_key_field='Name',
+                        indicator=domain_indicator,
+                        outputs=domaintools_context,
+                        readable_output=human_readable_output,
+                        raw_response=result,
+                        ignore_auto_extract=True,
+                    ),
+                    CommandResults(
+                        outputs_prefix='DomainTools',
+                        outputs_key_field='Name',
+                        readable_output='see output for domain indicator',
+                        outputs=domaintools_context,
+                        ignore_auto_extract=True,
+                    ),
+                )
+            )
+    return_results(command_results_list)
 
 
 def domain_enrich_command():
@@ -826,40 +823,42 @@ def domain_enrich_command():
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
     include_context = demisto.args().get('include_context', False)
-
-    all_human_readable_output = ''
-    all_raw_response = []
-    all_context = {'Domain': [], 'DomainTools': [], "DBotScore": []}
-    all_missing_domains = []
+    command_results_list: List[CommandResults] = []
 
     for chunk in domain_chunks:
         response = domain_enrich(','.join(chunk))
-        all_raw_response.append(response)
-        all_missing_domains += response.get("missing_domains")
+        missing_domains = response.get("missing_domains")
         for result in response.get('results', []):
-            human_readable_output, context = format_enrich_output(result)
-            all_human_readable_output += human_readable_output
+            human_readable_output, indicators = format_enrich_output(result)
 
-            if should_include_context(include_context):
-                all_context['Domain'].append(context.get('domain'))
-                all_context['DomainTools'].append(context.get('domaintools'))
-                all_context['DBotScore'].append(context.get('dbotscore'))
+            if len(missing_domains) > 0:
+                human_readable_output += f"Missing Domains: {','.join(missing_domains)}"
 
-    if len(all_missing_domains) > 0:
-        all_human_readable_output += f"Missing Domains: {','.join(all_missing_domains)}"
+            domain_indicator = indicators.get('domain') if should_include_context(include_context) else None
+            domaintools_context = indicators.get('domaintools') if should_include_context(include_context) else None
 
-    if not should_include_context(include_context):
-        all_context = None
+            command_results_list.extend(
+                (
+                    CommandResults(
+                        outputs_prefix='Domain',
+                        outputs_key_field='Name',
+                        indicator=domain_indicator,
+                        readable_output=human_readable_output,
+                        raw_response=result,
+                        ignore_auto_extract=True,
+                    ),
+                    CommandResults(
+                        outputs_prefix='DomainTools',
+                        outputs_key_field='Name',
+                        outputs=domaintools_context,
+                        readable_output='see output for domain indicator',
+                        ignore_auto_extract=True,
+                    ),
+                )
+            )
 
-    results = CommandResults(
-        outputs_prefix='',
-        outputs_key_field='Name',
-        outputs=all_context,
-        readable_output=all_human_readable_output,
-        ignore_auto_extract=True,
-        raw_response=all_raw_response
-    )
-    return_results(results)
+
+    return_results(command_results_list)
 
 
 def domain_analytics_command():
@@ -869,20 +868,17 @@ def domain_analytics_command():
     """
     domain = demisto.args()['domain']
     response = domain_investigate(domain)
-    human_readable = 'No results found.'
-    outputs = {}  # type: Dict[Any, Any]
+    command_results_list: List[CommandResults] = []
 
     if response.get('results_count'):
         domain_result = response.get('results')[0]
-        context = create_domain_context_outputs(domain_result)
-        outputs = {'Domain(val.Name && val.Name == obj.Name)': context.get('domain'),
-                   'DomainTools.Domains(val.Name && val.Name == obj.Name)': context.get('domaintools'),
-                   'DBotScore': context.get('dbotscore')}
-        prune_context_data(outputs)
-        domaintools_analytics_data = context.get('domaintools', {}).get('Analytics', {})
+        indicators = create_results(domain_result)
+        domain_indicator = indicators.get('domain')
+        domaintools_context = indicators.get('domaintools')
+
+        domaintools_analytics_data = domaintools_context.get('Analytics', {})
         domain_age = 0
-        first_seen = context.get('domaintools').get('FirstSeen', '')
-        if first_seen:
+        if first_seen := domaintools_context.get('FirstSeen', ''):
             first_seen = convert_and_format_date(first_seen)
             domain_age = utils.get_domain_age(first_seen)
         human_readable_data = {
@@ -904,12 +900,35 @@ def domain_analytics_command():
                    'Google Adsense',
                    'Google Analytics',
                    'Tags']
-        demisto_title = 'DomainTools Domain Analytics for {}.'.format(domain)
+        demisto_title = f'DomainTools Domain Analytics for {domain}.'
         iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
-        human_readable = tableToMarkdown('{} {}'.format(demisto_title, iris_title),
-                                         human_readable_data,
-                                         headers=headers)
-    return_outputs(human_readable, outputs, response)
+        human_readable = tableToMarkdown(
+            f'{demisto_title} {iris_title}',
+            human_readable_data,
+            headers=headers,
+        )
+
+        command_results_list.extend(
+            (
+                CommandResults(
+                    outputs_prefix='Domain',
+                    outputs_key_field='Name',
+                    indicator=domain_indicator,
+                    readable_output=human_readable,
+                    raw_response=domain_result,
+                    ignore_auto_extract=True,
+                ),
+                CommandResults(
+                    outputs_prefix='DomainTools',
+                    outputs_key_field='Name',
+                    outputs=domaintools_context,
+                    readable_output='see output for domain indicator',
+                    ignore_auto_extract=True,
+                ),
+            )
+        )
+
+    return_results(command_results_list)
 
 
 def threat_profile_command():
@@ -920,15 +939,14 @@ def threat_profile_command():
     domain = demisto.args()['domain']
     response = domain_investigate(domain)
     human_readable = 'No results found.'
-    outputs = {}  # type: Dict[Any, Any]
+    command_results_list: List[CommandResults] = []
 
     if response.get('results_count'):
         domain_result = response.get('results')[0]
-        context = create_domain_context_outputs(domain_result)
-        outputs = {'Domain(val.Name && val.Name == obj.Name)': context.get('domain'),
-                   'DomainTools.Domains(val.Name && val.Name == obj.Name)': context.get('domaintools'),
-                   'DBotScore': context.get('dbotscore')}
-        prune_context_data(outputs)
+        indicators = create_results(domain_result)
+        domain_indicator = indicators.get('domain')
+        domaintools_context = indicators.get('domaintools')
+
         proximity_risk_score = 0
         threat_profile_risk_score = 0
         threat_profile_malware_risk_score = 0
@@ -985,7 +1003,27 @@ def threat_profile_command():
         human_readable = tableToMarkdown('{} {}'.format(demisto_title, iris_title),
                                          human_readable_data,
                                          headers=headers)
-    return_outputs(human_readable, outputs, response)
+    command_results_list.extend(
+        (
+            CommandResults(
+                outputs_prefix='Domain',
+                outputs_key_field='Name',
+                indicator=domain_indicator,
+                readable_output=human_readable,
+                raw_response=domain_result,
+                ignore_auto_extract=True,
+            ),
+            CommandResults(
+                outputs_prefix='DomainTools',
+                outputs_key_field='Name',
+                outputs=domaintools_context,
+                readable_output='see output for domain indicator',
+                ignore_auto_extract=True,
+            ),
+        )
+    )
+
+    return_results(command_results_list)
 
 
 def domain_pivot_command():
@@ -1061,7 +1099,7 @@ def domain_pivot_command():
                 domain_age = utils.get_domain_age(first_seen)
                 age_list.append(domain_age)
             if should_include_context(include_context):
-                domain_context = create_domain_context_outputs(domain_result)
+                domain_context = create_results(domain_result)
                 domain_context_list.append(domain_context.get('domaintools'))
 
             count += 1
@@ -1138,7 +1176,10 @@ def whois_history_command():
         human_readable += tableToMarkdown(f"{domain}: {entry.get('date')}", table, headers=headers)
         all_context.append(entry_context)
 
-    all_context = {'Domain' : {'Name' : domain, 'WhoisHistory' : all_context}}
+    history_result = {
+        "Value": domain,
+        "WhoisHistory": all_context
+    }
 
     if mode == 'count':
         human_readable = f'record count: {response.get("record_count")}'
@@ -1146,13 +1187,14 @@ def whois_history_command():
         human_readable = f'has history entiries: {response.get("has_history_entries")}'
 
     results = CommandResults(
-        outputs_prefix='Domain',
-        outputs_key_field='Name',
-        outputs=all_context,
+        outputs_prefix='DomainTools.History',
+        outputs_key_field='Value',
+        outputs=history_result,
         readable_output=human_readable,
         ignore_auto_extract=True
     )
     return_results(results)
+
 
 
 def create_history_table(data, headers):
@@ -1194,12 +1236,12 @@ def hosting_history_command():
     )
 
     human_readable_all = human_readable_registrar + human_readable_ns + human_readable_ip
-    all_context = {'Name': domain, 'IPHistory': ip_table, 'NameserverHistory': ns_table, 'RegistrarHistory': registrar_table}
+    history_result = {'Value': domain, 'IPHistory': ip_table, 'NameserverHistory': ns_table, 'RegistrarHistory': registrar_table}
 
     results = CommandResults(
-        outputs_prefix='DomainTools',
-        outputs_key_field='DomainTools.Name',
-        outputs=all_context,
+        outputs_prefix='DomainTools.History',
+        outputs_key_field='Value',
+        outputs=history_result,
         readable_output=human_readable_all,
         ignore_auto_extract=True
     )
@@ -1228,25 +1270,15 @@ def reverse_whois_command():
         human_readable += f'* {domain}' + '\n'
         context.append({'Name': domain})
 
-    all_context = {'Domain': context}
+    all_context = {'Value': terms, 'Results': context}
     results = CommandResults(
-        outputs_prefix='Domain',
-        outputs_key_field='Name',
+        outputs_prefix='DomainTools.ReverseWhois',
+        outputs_key_field='Value',
         outputs=all_context,
         readable_output=human_readable,
         ignore_auto_extract=True
     )
     return_results(results)
-
-
-def domain_profile_command():
-    """
-    Command to get registration details for a domain using domain-profile API endpoint.
-    e.g. !domainProfile domain=domaintools.com
-    """
-    domain = demisto.args()['domain']
-    results = domain_profile(domain)
-    return_results({'response': results})
 
 
 def change_keys(conv, obj):
@@ -1275,20 +1307,39 @@ def parsed_whois_command():
 
     human_readable = tableToMarkdown(f'DomainTools whois result for {domain}', table, headers=headers)
 
-    context = {
-        'Domain': {
-            'Name': response.get('record_source'),
-            'Whois': change_keys(to_camel_case, response.get('parsed_whois'))
-        }
-    }
+    parsed = response.get('parsed_whois', {})
+    domain_indicator = Common.Domain(domain, None,
+         registrar_name=parsed.get('registrar', {}).get('name'),
+         registrar_abuse_email=parsed.get('registrar', {}).get('abuse_contact_email'),
+         registrar_abuse_phone=parsed.get('registrar', {}).get('abuse_contact_phone'),
+
+         registrant_name=parsed.get('contacts', {}).get('registrant', {}).get('name'),
+         registrant_email=parsed.get('contacts', {}).get('registrant', {}).get('email'),
+         registrant_phone=parsed.get('contacts', {}).get('registrant', {}).get('phone'),
+         registrant_country=parsed.get('contacts', {}).get('registrant', {}).get('country'),
+
+         admin_name=parsed.get('contacts', {}).get('admin', {}).get('name'),
+         admin_email=parsed.get('contacts', {}).get('admin', {}).get('email'),
+         admin_phone=parsed.get('contacts', {}).get('admin', {}).get('phone'),
+         admin_country=parsed.get('contacts', {}).get('admin', {}).get('country'),
+
+         tech_country=parsed.get('contacts', {}).get('tech', {}).get('country'),
+         tech_name=parsed.get('contacts', {}).get('tech', {}).get('name'),
+         tech_organization=parsed.get('contacts', {}).get('tech', {}).get('org'),
+         tech_email=parsed.get('contacts', {}).get('tech', {}).get('email'),
+         billing = parsed.get('contacts', {}).get('billing', {}).get('name'),
+         name_servers=parsed.get('name_servers'),
+        whois_records=[Common.WhoisRecord(whois_record_value=whois_record, whois_record_date=parsed.get('updated_date'))]
+         )
 
     results = CommandResults(
         outputs_prefix='Domain',
         outputs_key_field='Name',
-        outputs=context,
+        indicator=domain_indicator,
         readable_output=human_readable,
         ignore_auto_extract=True
     )
+
     return_results(results)
 
 
@@ -1554,8 +1605,6 @@ def main():
             hosting_history_command()
         elif demisto.command() == 'reverseWhois':
             reverse_whois_command()
-        elif demisto.command() == 'domainProfile':
-            domain_profile_command()
         elif demisto.command() == 'whois':
             parsed_whois_command()
         elif demisto.command() == 'reverseIP':
