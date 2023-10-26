@@ -18,8 +18,7 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   hidden: true
-- display: ''
-  name: credentials
+- name: credentials
   type: 9
   required: false
   displaypassword: API Key
