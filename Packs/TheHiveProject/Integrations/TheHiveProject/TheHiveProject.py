@@ -22,21 +22,62 @@ class Client(BaseClient):
                 return res.json()['versions']['TheHive']
             else:
                 return "Unknown"
+        return None
 
-    def get_cases(self, limit: int = None):
+    def get_cases(self, limit: int = 50, last_timestamp: int = 0, fetch_closed: bool = False):
         instance = demisto.integrationInstance()
-        cases = list()
-        res = self._http_request('GET', 'case')
+        cases = []
+        query = {
+            "query": [
+                {
+                    "_name": "listCase",
+                },
+                {
+                    "_name": "filter",
+                    "_gt":
+                        {
+                            "_field": "_createdAt",
+                            "_value": last_timestamp
+                        }
+                },
+                {
+                    "_name": "sort",
+                    "fields": [{"_createdAt": "asc"}]
+                },
+                {
+                    "_name": "page",
+                    "from": 0,
+                    "to": limit
+                }, {
+                    "_name": "filter",
+                    "_gt":
+                        {
+                            "_field": "_createdAt",
+                            "_value": last_timestamp
+                        }
+                },
 
+            ]
+        }
+        if not fetch_closed:
+            query["query"][-1]["_eq"] = {
+                "_field": "status",
+                "_value": "Open"
+            }
+
+        res = self._http_request('POST', 'v1/query',
+                                 json_data=query, params={"name": "list-cases"})
         for case in res:
-            case['tasks'] = self.get_tasks(case['id'])
-            case['observables'] = self.list_observables(case['id'])
+            case["id"] = case["_id"]
+            case["createdAt"] = case["_createdAt"]
+            case["type"] = case["_type"]
+            case["updatedBy"] = case["_updatedBy"]
+            case["updatedAt"] = case["_updatedAt"]
+            case['tasks'] = self.get_tasks(case['_id'])
+            case['observables'] = self.list_observables(case['_id'])
             case['instance'] = instance
             case['mirroring'] = self.mirroring
             cases.append(case)
-        if limit and type(cases) == list:
-            if len(cases) > limit:
-                return cases[0:limit]
         return cases
 
     def get_case(self, case_id):
@@ -162,7 +203,7 @@ class Client(BaseClient):
             )
             if res.status_code != 200:
                 return None
-            tasks = [x for x in res.json()]
+            tasks = list(res.json())
         if tasks:
             for task in tasks:
                 if "id" in task:
@@ -260,9 +301,9 @@ class Client(BaseClient):
         if res.status_code != 200:
             return []
         else:
-            logs = list()
+            logs = []
             for log in res.json():
-                log['has_attachments'] = True if log.get('attachment', None) else False
+                log['has_attachments'] = bool(log.get('attachment', None))
                 logs.append(log)
             return logs
 
@@ -284,7 +325,7 @@ class Client(BaseClient):
         headers = self._headers.update({
             "name": filename
         })
-        data = bytes()
+        data = b''
         with self._http_request('GET', f'datastore/{fileId}', stream=True, headers=headers, resp_type="response") as r:
             r.raise_for_status()
             for chunk in r.iter_content(chunk_size=8192):
@@ -320,7 +361,7 @@ class Client(BaseClient):
 
     def block_user(self, user_id: str = None):
         res = self._http_request('DELETE', f'user/{user_id}', ok_codes=[204, 404], resp_type='response')
-        return True if res.status_code == 204 else False
+        return res.status_code == 204
 
     def list_observables(self, case_id: str = None):
         if self.version[0] == "4":
@@ -841,7 +882,7 @@ def create_observable_command(client: Client, args: dict):
             "message": args.get('message'),
             "startDate": args.get('startDate', None),
             "tlp": args.get('tlp', None),
-            "ioc": True if args.get('ioc', 'false') == 'true' else False,
+            "ioc": args.get('ioc', 'false') == 'true',
             "status": args.get('status', None)
         }
         data = {k: v for k, v in data.items() if v}
@@ -865,7 +906,7 @@ def update_observable_command(client: Client, args: dict):
     data = {
         "message": args.get('message'),
         "tlp": args.get('tlp', None),
-        "ioc": True if args.get('ioc', 'false') == 'true' else False,
+        "ioc": args.get('ioc', 'false') == 'true',
         "status": args.get('status', None)
     }
     data = {k: v for k, v in data.items() if v}
@@ -895,7 +936,7 @@ def get_mapping_fields_command(client: Client, args: dict) -> Dict[str, Any]:
 
 def update_remote_system_command(client: Client, args: dict) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
-    changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data.keys()}
+    changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data}
     if parsed_args.remote_incident_id:
         # Apply the updates
         client.update_case(case_id=parsed_args.remote_incident_id, updates=changes)
@@ -974,15 +1015,11 @@ def test_module(client: Client):
 def fetch_incidents(client: Client, fetch_closed: bool = False):
     last_run = demisto.getLastRun()
     last_timestamp = int(last_run.get('timestamp', 0))
-    res = client.get_cases()
-    demisto.debug(f"number of returned cases from the api:{len(res)}")
-    if fetch_closed:
-        res[:] = [x for x in res if x['createdAt'] > last_timestamp]
-    else:
-        res[:] = [x for x in res if x['createdAt'] > last_timestamp and x['status'] == 'Open']
+    max_fetch = arg_to_number(demisto.params().get('max_fetch')) or 50
 
-    res = sorted(res, key=lambda x: x['createdAt'])
-    incidents = list()
+    res = client.get_cases(limit=max_fetch, last_timestamp=last_timestamp, fetch_closed=fetch_closed)
+    demisto.debug(f"number of returned cases from the api:{len(res)}")
+    incidents = []
     instance_name = demisto.integrationInstance()
     mirror_direction = demisto.params().get('mirror')
     mirror_direction = None if mirror_direction == "Disabled" else mirror_direction
@@ -996,7 +1033,7 @@ def fetch_incidents(client: Client, fetch_closed: bool = False):
             'rawJSON': json.dumps(case)
         }
         incidents.append(incident)
-        last_timestamp = case['createdAt'] if case['createdAt'] > last_timestamp else last_timestamp
+        last_timestamp = max(case['createdAt'], last_timestamp)
     demisto.setLastRun({"timestamp": str(last_timestamp)})
     demisto.debug(f"number of cases after filtering: {len(incidents)}")
     return incidents
