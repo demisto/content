@@ -292,7 +292,7 @@ tasks:
           | where OperationNameValue in~ ("Microsoft.Logic/workflows/write", "Microsoft.Logic/workflows/run/action", "Microsoft.Web/sites/Write", "microsoft.web/sites/functions/write", "Microsoft.Automation/automationAccounts/runbooks", "Microsoft.Automation/automationAccounts/jobs/write", "Microsoft.Automation/automationAccounts/runbooks/publish/action", "Microsoft.Automation/automationAccounts/runbooks/draft/write", "Microsoft.Automation/automationAccounts/runbooks/write", "Microsoft.Automation/automationAccounts/Schedules/write") and Caller contains "${inputs.username}"
       timespan:
         complex:
-          root: inputs.timespan
+          root: inputs.AzureTimespan
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -338,7 +338,7 @@ tasks:
           | where OperationNameValue in~ ("microsoft.directory/users/create", "microsoft.directory/users/enable", "microsoft.directory/users/restore", "microsoft.directory/servicePrincipals/owners/update", "microsoft.directory/servicePrincipals/credentials/update", "microsoft.directory/servicePrincipals/enable", "microsoft.directory/users/password/update", "microsoft.directory/servicePrincipals/create", "microsoft.directory/applications/create", "microsoft.directory/servicePrincipals/create") and Caller contains "${inputs.username}"
       timespan:
         complex:
-          root: inputs.timespan
+          root: inputs.AzureTimespan
     separatecontext: false
     continueonerrortype: ""
     view: |-

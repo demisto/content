@@ -330,14 +330,16 @@ tasks:
         - Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands (such as API keys).
 
 
-        Did you find this alert malicious/suspicious?
+            Did you find this alert to be malicious/suspicious?
+          - If you choose yes, the playbook will continue with containment actions
+          - No, will finish end the playbook."
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      Finish Playbook:
+      No:
       - "30"
-      True Positive:
+      Yes:
       - "76"
     separatecontext: false
     continueonerrortype: ""
@@ -365,6 +367,8 @@ tasks:
 
 
           Did you find this alert malicious/suspicious?
+          - If you choose yes, the playbook will continue with containment actions
+          - No, will finish end the playbook."
       methods: []
       format: ""
       bcc:
@@ -376,8 +380,8 @@ tasks:
         completeafterv2: true
         completeaftersla: false
       replyOptions:
-      - True Positive
-      - Finish Playbook
+      - Yes
+      - No
     skipunavailable: false
     quietmode: 0
     isoversize: false
