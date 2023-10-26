@@ -437,11 +437,13 @@ def uptycs_get_alerts_command():
 
     if context is not None:
         for index in range(len(context)):
-            if bool(json.loads(context[index].get('metadata')).get('pid')):
-                context[index]['pid'] = json.loads(
-                    context[index].get('metadata')).get('pid')
-            else:
-                context[index]['pid'] = 'Not applicable or unknown'
+            for key in ['pid', 'PID', 'Process ID']:
+                if bool(json.loads(context[index].get('metadata')).get(key)):
+                    context[index]['pid'] = json.loads(
+                        context[index].get('metadata')).get(key)
+                    break
+                else:
+                    context[index]['pid'] = 'Not applicable or unknown'
             if bool(json.loads(
                     context[index].get('metadata')).get('indicatorId')):
                 context[index]['threat_indicator_id'] =\
