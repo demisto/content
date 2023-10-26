@@ -1221,7 +1221,7 @@ def update_time_format(data: Union[dict, list], keys: list) -> list:
 
 def generate_iam_policy_command_output(response: dict, resource_name: str = None,
                                        readable_header: str = None, limit: int = None,
-                                       page: int = None) -> CommandResults:
+                                       page: int = None, roles: list = None) -> CommandResults:
     """
     Generate command output for iam-policy commands.
     Args:
@@ -1239,13 +1239,24 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
         readable_header = f'{resource_name} IAM policy information:'
     outputs = copy.deepcopy(response)
     outputs['name'] = resource_name
+    bindings = outputs.get("bindings", [])
+    if roles and bindings:
+        print(roles)
+        bindings_roles_only = []
+        for index, entry in enumerate(bindings):
+            if entry["role"] in roles:
+                print(entry["role"], index)
+                bindings_roles_only.append(bindings.pop(index))
+
+        bindings = bindings_roles_only
 
     if limit and page:
         start = (page - 1) * limit
         end = start + limit
-
-        bindings = outputs.get("bindings", [])
+        print(bindings)
         outputs["bindings"] = bindings[start:end]
+        if len(bindings) < 50:
+            readable_header = f'Project {resource_name} IAM Policy List:\n Current page size: {len(bindings)}\n.'
 
     readable_output = tableToMarkdown(
         readable_header,
@@ -1555,6 +1566,7 @@ def gcp_iam_project_iam_policy_get_command(client: Client, args: Dict[str, Any])
     project_name = args.get('project_name', '')
     limit = arg_to_number(args.get('limit')) or 50
     page = arg_to_number(args.get('page')) or 1
+    roles = argToList(args.get('roles', []))
     validate_pagination_arguments(limit, page)
 
     readable_message = get_pagination_readable_message(header=f'Project {project_name} IAM Policy List:',
@@ -1562,7 +1574,7 @@ def gcp_iam_project_iam_policy_get_command(client: Client, args: Dict[str, Any])
 
     response = client.gcp_iam_project_iam_policy_get_request(project_name)
     return generate_iam_policy_command_output(response, project_name, readable_header=readable_message,
-                                              limit=limit, page=page)
+                                              limit=limit, page=page, roles=roles)
 
 
 def generate_test_permission_command_output(response: dict, readable_header: str) -> CommandResults:
