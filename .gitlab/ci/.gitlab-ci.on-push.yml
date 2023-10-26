@@ -400,6 +400,7 @@ fan-in-on-push:
   when: always
   stage: fan-in
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   tags:
     - gke
@@ -442,6 +443,7 @@ fan-in-on-merge:
   when: always
   stage: fan-in
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   tags:
     - gke
@@ -452,7 +454,8 @@ fan-in-on-merge:
 
 jobs-done-check-on-merge:
   rules:
-      - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   extends:
     - .push-rule
     - .jobs-done-check
@@ -502,6 +505,7 @@ slack-notify-nightly-build:
 
 slack-notify-on-push:
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   extends:
     - .trigger-slack-notification
@@ -523,6 +527,7 @@ slack-notify-on-push:
 
 slack-notify-on-merge:
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   extends:
     - .trigger-slack-notification
