@@ -17,6 +17,7 @@ configuration:
   required: false
   displaypassword: API Token
   hiddenusername: true
+  hidden: true
 - display: ''
   name: token_credential
   type: 9
