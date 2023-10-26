@@ -11,12 +11,6 @@ import base64
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
 """ GLOBALS """
-MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
-FETCH_CHUNK_SIZE = int(demisto.params().get('fetch_chunk_size', 50))
-FETCH_CHUNK_SIZE = min(300, FETCH_CHUNK_SIZE)  # fetch size should no exceed 300
-
-BASE_URL = demisto.params().get('server').rstrip('/') + '/'
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
@@ -41,16 +35,10 @@ ENTRY = "<entry>{}</entry>".format
 COLUMN = "<columns>{}</columns>".format
 BODY = "<act:entryList>{}</act:entryList>".format
 
-if not demisto.params().get("proxy", False):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
-
 
 @logger
 def int_to_ip(num):
-    return "{}.{}.{}.{}".format((num >> 24) & 255, (num >> 16) & 255, (num >> 8) & 255, num & 255)
+    return f"{(num >> 24) & 255}.{(num >> 16) & 255}.{(num >> 8) & 255}.{num & 255}"
 
 
 @logger
@@ -94,6 +82,7 @@ def parse_timestamp_to_datestring(timestamp):
                 # Unix epoch 00:00:00 UTC
                 return 'None'
             return timestamp
+    return None
 
 
 @logger
@@ -153,7 +142,7 @@ def filter_entries(entries, entry_filter):
         for f in filters:
             k, v = f.split(':')
             if k:
-                if not entry.get(k) == v:
+                if entry.get(k) != v:
                     # if there is a key and its value is not equal to the entry_filter value
                     append_flag = False
             elif v not in entry.values():
@@ -214,6 +203,8 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
         if not res.ok and not is_login:
             if params and not body:
                 params['authToken'] = login()
+            elif 'Authorization' in headers:
+                headers['Authorization'] = f'Bearer {login()}'
             else:
                 body = body.replace(demisto.getIntegrationContext().get('auth_token'), login())
             return requests.request(
@@ -248,12 +239,12 @@ def test():
     if events_query_viewer_id:
         fields, results = get_query_viewer_results(events_query_viewer_id)
         if 'Event ID' not in fields or 'Start Time' not in fields:
-            return_error('Query "{}" must contain "Start Time" and "Event ID" fields'.format(events_query_viewer_id))
+            return_error(f'Query "{events_query_viewer_id}" must contain "Start Time" and "Event ID" fields')
 
     if cases_query_viewer_id:
         fields, results = get_query_viewer_results(cases_query_viewer_id)
         if 'ID' not in fields or 'Create Time' not in fields:
-            return_error('Query "{}" must contain "Create Time" and "ID" fields'.format(cases_query_viewer_id))
+            return_error(f'Query "{cases_query_viewer_id}" must contain "Create Time" and "ID" fields')
 
 
 @logger
@@ -269,7 +260,7 @@ def get_query_viewer_results(query_viewer_id):
     if not res.ok:
         demisto.debug(res.text)
         if 'ResourceNotFoundException' in res.text:
-            return_error('Invalid resource ID {} for Query Viewer(ResourceNotFoundException)'.format(query_viewer_id))
+            return_error(f'Invalid resource ID {query_viewer_id} for Query Viewer(ResourceNotFoundException)')
         else:
             return_error('Failed to get query viewer results.')
 
@@ -286,14 +277,14 @@ def get_query_viewer_results(query_viewer_id):
 
     else:
         return_error('Invalid response structure. Open ticket to Demisto support and attach the logs')
-        return
+        return None
 
     fields = return_object.get('columnHeaders', [])
-    if not isinstance(fields, (list,)):
+    if not isinstance(fields, list):
         fields = [fields]
 
     results = return_object.get("rows", [])
-    if not isinstance(results, (list,)):
+    if not isinstance(results, list):
         results = [results]
 
     if len(fields) == 0 or len(results) == 0:
@@ -369,7 +360,7 @@ def get_query_viewer_results_command():
         demisto.debug('printing Query Viewer results')
 
         contents = query_results
-        human_readable = tableToMarkdown(name='Query Viewer Results: {}'.format(resource_id), t=contents,
+        human_readable = tableToMarkdown(name=f'Query Viewer Results: {resource_id}', t=contents,
                                          removeNull=True)
         outputs = {'ArcSightESM.QueryViewerResults': contents}
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -399,7 +390,7 @@ def fetch():
         if r_id not in already_fetched:
             create_time_epoch = int(result.get('Start Time') or result.get('Create Time'))
             result['Create Time'] = parse_timestamp_to_datestring(create_time_epoch)
-            incident_name = result.get('Name') or 'New {} from arcsight at {}'.format(type_of_incident, datetime.now())
+            incident_name = result.get('Name') or f'New {type_of_incident} from arcsight at {datetime.now()}'
             labels = [{'type': key.encode('utf-8'), 'value': value.encode('utf-8') if value else value} for key, value
                       in result.items()]
             incident = {
@@ -448,9 +439,9 @@ def get_case(resource_id, fetch_base_events=False):
     if not res.ok:
         demisto.debug(res.text)
         if 'InvalidResourceIDException: Invalid resource ID' in res.text and 'for Case' in res.text:
-            return_error('Invalid resource ID {} for Case'.format(resource_id))
+            return_error(f'Invalid resource ID {resource_id} for Case')
         else:
-            return_error('Failed to get case. StatusCode: {}'.format(res.status_code))
+            return_error(f'Failed to get case. StatusCode: {res.status_code}')
 
     res_json = res.json()
     if 'cas.getResourceByIdResponse' in res_json and 'cas.return' in res_json.get('cas.getResourceByIdResponse'):
@@ -466,7 +457,8 @@ def get_case(resource_id, fetch_base_events=False):
 
         return case
 
-    return_error('Case {} not found'.format(resource_id))
+    return_error(f'Case {resource_id} not found')
+    return None
 
 
 @logger
@@ -490,7 +482,7 @@ def get_case_command():
     contents = decode_arcsight_output(raw_case)
     if contents.get('events'):
         contents['events'] = decode_arcsight_output(contents['events'])
-    human_readable = tableToMarkdown(name='Case {}'.format(resource_id), t=case, removeNull=True)
+    human_readable = tableToMarkdown(name=f'Case {resource_id}', t=case, removeNull=True)
     outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
@@ -506,7 +498,7 @@ def get_all_cases_command():
 
     if not res.ok:
         demisto.debug(res.text)
-        return_error('Failed to get case list. StatusCode: {}'.format(res.status_code))
+        return_error(f'Failed to get case list. StatusCode: {res.status_code}')
 
     contents = res.json().get('cas.findAllIdsResponse').get('cas.return')
     human_readable = tableToMarkdown(name='All cases', headers='caseID', t=contents, removeNull=True)
@@ -579,6 +571,8 @@ def get_security_events(event_ids, last_date_range=None, ignore_empty=False):
     demisto.debug(res.text)
     if not ignore_empty:
         demisto.results('No events were found')
+        return None
+    return None
 
 
 @logger
@@ -598,7 +592,7 @@ def update_case_command():
         'CreatedTime': epochToTimestamp(raw_updated_case.get('createdTimestamp'))
     }
     contents = decode_arcsight_output(raw_updated_case)
-    human_readable = tableToMarkdown(name='Case {}'.format(case_id), t=updated_case, removeNull=True)
+    human_readable = tableToMarkdown(name=f'Case {case_id}', t=updated_case, removeNull=True)
     outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': contents}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
@@ -633,7 +627,8 @@ def update_case(case_id, stage, severity):
     if 'cas.updateResponse' in res_json and 'cas.return' in res_json.get('cas.updateResponse'):
         return case
 
-    return_error('Failed to update case, fail to parse response. Response Body: {}'.format(res.text))
+    return_error(f'Failed to update case, fail to parse response. Response Body: {res.text}')
+    return None
 
 
 @logger
@@ -666,7 +661,7 @@ def get_case_event_ids_command():
     res = send_request(query_path, params=params, method='get')
     if not res.ok:
         demisto.debug(res.text)
-        return_error("Failed to get Event IDs with:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
+        return_error(f"Failed to get Event IDs with:\nStatus Code: {res.status_code}\nResponse: {res.text}")
 
     res_json = res.json()
     if 'cas.getCaseEventIDsResponse' in res_json and 'cas.return' in res_json.get('cas.getCaseEventIDsResponse'):
@@ -678,7 +673,7 @@ def get_case_event_ids_command():
             event_ids = get_correlated_events_ids(event_ids)
 
         contents = decode_arcsight_output(res_json)
-        human_readable = tableToMarkdown(name='', headers='Case {} Event IDs'.format(case_id), t=event_ids,
+        human_readable = tableToMarkdown(name='', headers=f'Case {case_id} Event IDs', t=event_ids,
                                          removeNull=True)
         outputs = {'ArcSightESM.CaseEvents': event_ids}
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
@@ -703,23 +698,22 @@ def delete_case_command():
     res = send_request(query_path, params=params, body=req_body)
     if not res.ok:
         demisto.debug(res.text)
-        return_error("Failed to delete case.\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
+        return_error(f"Failed to delete case.\nStatus Code: {res.status_code}\nResponse: {res.text}")
 
     entry_context = {
         'resourceid': case_id,
         'deleted': 'True'
     }
-    contents = 'Case {}  was deleted successfully'.format(case_id)
-    human_readable = 'Case {} successfully deleted'.format(case_id)
+    contents = f'Case {case_id}  was deleted successfully'
+    human_readable = f'Case {case_id} successfully deleted'
     outputs = {'ArcSightESM.Cases(val.resourceid===obj.resourceid)': entry_context}
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
 @logger
-def get_entries_command():
-    resource_id = demisto.args().get('resourceId')
-    entry_filter = demisto.args().get('entryFilter')
-    use_rest = demisto.params().get('use_rest', False)
+def get_entries_command(use_rest, args):
+    resource_id = args.get('resourceId')
+    entry_filter = args.get('entryFilter')
 
     if use_rest:
         query_path = 'www/manager-service/rest/ActiveListService/getEntries'
@@ -777,10 +771,10 @@ def get_entries_command():
             'Entries': contents,
         }
         outputs = {
-            'ArcSightESM.ActiveList.{id}'.format(id=resource_id): contents,
+            f'ArcSightESM.ActiveList.{resource_id}': contents,
             'ArcSightESM.ActiveList(val.ResourceID===obj.ResourceID)': ActiveListContext
         }
-        human_readable = tableToMarkdown(name='Active List entries: {}'.format(resource_id), t=filtered_entries,
+        human_readable = tableToMarkdown(name=f'Active List entries: {resource_id}', t=filtered_entries,
                                          removeNull=True)
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=entries)
 
@@ -789,9 +783,8 @@ def get_entries_command():
 
 
 @logger
-def clear_entries_command():
-    resource_id = demisto.args().get('resourceId')
-    use_rest = demisto.params().get('use_rest', False)
+def clear_entries_command(use_rest, args):
+    resource_id = args.get('resourceId')
 
     if use_rest:
         query_path = 'www/manager-service/rest/ActiveListService/clearEntries'
@@ -830,7 +823,7 @@ def entries_command(func):
         except ValueError as ex:
             demisto.debug(str(ex))
             return_error('Entries must be in JSON format. Must be array of objects.')
-        if not all([entry.keys() == entries[0].keys() for entry in entries[1:]]):
+        if not all(entry.keys() == entries[0].keys() for entry in entries[1:]):
             return_error('All entries must have the same fields')
 
     columns = ''.join(COLUMN(column) for column in entries[0])  # the fields in the entryList matrix are the columns
@@ -844,6 +837,57 @@ def entries_command(func):
                      "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(resource_id,
                                                                                                  res.status_code, body,
                                                                                                  res.text))
+
+    demisto.results("Success")
+
+
+def add_entries_command(args):
+    resource_id = args.get('resourceId')
+    entries_arg = args.get('entries')
+    query_path = f'detect-api/rest/activelists/{resource_id}/entries'
+    fields = []
+    entries = []
+
+    if not isinstance(entries_arg, list):
+        try:
+            entries_arg = json.loads(entries_arg)
+
+        except ValueError as ex:
+            demisto.error(str(ex))
+            raise ValueError('entries must be in JSON format. Must be array of objects.')
+
+    if len(entries_arg) > 0:
+        if len(entries_arg) > 0:
+            fields = list(entries_arg[0].keys())
+
+        if not all(entry.keys() == entries_arg[0].keys() for entry in entries_arg[1:]):
+            return_error('All entries must have the same fields')
+
+        for entry_input in entries_arg:
+            entry = []
+            for k in fields:
+                val = entry_input[k]
+                entry.append(val)
+
+            entries.append({
+                'fields': entry
+            })
+
+    body = {
+        'fields': fields,
+        'entries': entries
+    }
+    headers = HEADERS
+    headers['Authorization'] = f'Bearer {AUTH_TOKEN}'
+
+    body = json.dumps(body)
+    res = send_request(query_path, body=body)
+
+    if not res.ok:
+        raise ValueError("Failed to add entries. Please make sure to enter Active List resource ID"
+                         "\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(resource_id,
+                                                                                                     res.status_code, body,
+                                                                                                     res.text))
 
     demisto.results("Success")
 
@@ -862,7 +906,7 @@ def get_all_query_viewers_command():
     res = send_request(query_path, headers=headers, params=params)
     if not res.ok:
         demisto.debug(res.text)
-        return_error("Failed to get query viewers:\nStatus Code: {}\nResponse: {}".format(res.status_code, res.text))
+        return_error(f"Failed to get query viewers:\nStatus Code: {res.status_code}\nResponse: {res.text}")
 
     res_json = res.json()
     if 'qvs.findAllIdsResponse' in res_json and 'qvs.return' in res_json.get('qvs.findAllIdsResponse'):
@@ -877,10 +921,36 @@ def get_all_query_viewers_command():
         demisto.results('No Query Viewers were found')
 
 
-AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
+AUTH_TOKEN: str
+MAX_UNIQUE: int
+FETCH_CHUNK_SIZE: int
+BASE_URL: str
+VERIFY_CERTIFICATE: bool
 
 
 def main():
+    global BASE_URL
+    BASE_URL = demisto.params().get('server').rstrip('/') + '/'
+
+    handle_proxy()
+
+    global MAX_UNIQUE
+    MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
+
+    global FETCH_CHUNK_SIZE
+    FETCH_CHUNK_SIZE = int(demisto.params().get('fetch_chunk_size', 50))
+    FETCH_CHUNK_SIZE = min(300, FETCH_CHUNK_SIZE)  # fetch size should no exceed 300
+
+    global VERIFY_CERTIFICATE
+    VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+
+    use_rest = demisto.params().get('use_rest', False)
+
+    global AUTH_TOKEN
+    AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
+
+    use_detect_api = demisto.params().get('productVersion') == '7.4 and above'
+
     try:
         if demisto.command() == 'test-module':
             test()
@@ -908,16 +978,19 @@ def main():
             get_security_events_command()
 
         elif demisto.command() == 'as-get-entries':
-            get_entries_command()
+            get_entries_command(use_rest, demisto.args())
 
         elif demisto.command() == 'as-add-entries':
-            entries_command(func='addEntries')
+            if use_detect_api:
+                add_entries_command(demisto.args())
+            else:
+                entries_command(func='addEntries')
 
         elif demisto.command() == 'as-delete-entries':
             entries_command(func='deleteEntries')
 
         elif demisto.command() == 'as-clear-entries':
-            clear_entries_command()
+            clear_entries_command(use_rest, demisto.args())
 
         elif demisto.command() == 'as-get-case-event-ids':
             get_case_event_ids_command()
@@ -926,7 +999,7 @@ def main():
             get_all_query_viewers_command()
 
     except Exception as e:
-        return_error('Unexpected error:' + str(e), error=traceback.format_exc())
+        return_error('Error:' + str(e), error=traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins
