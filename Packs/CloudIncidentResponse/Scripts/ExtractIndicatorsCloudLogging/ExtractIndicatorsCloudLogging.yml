@@ -13,19 +13,19 @@ args:
   description: The event JSON or data.
 outputs:
 - contextPath: CloudIndicators.arn
-  description: "The ARN extracted from the event"
+  description: "The ARN extracted from the event."
 - contextPath: CloudIndicators.access_key_id
-  description: "The access key ID extracted from the event"
+  description: "The access key ID extracted from the event."
 - contextPath: CloudIndicators.resource_name
-  description: "The resource name extracted from the event"
+  description: "The resource name extracted from the event."
 - contextPath: CloudIndicators.source_ip
-  description: "The source ip extracted from the event"
+  description: "The source ip extracted from the event."
 - contextPath: CloudIndicators.username
-  description: "The username extracted from the event"
+  description: "The username extracted from the event."
 - contextPath: CloudIndicators.event_name
-  description: "The event name extracted from the event"
+  description: "The event name extracted from the event."
 - contextPath: CloudIndicators.user_agent
-  description: "The user agent extracted from the event"
+  description: "The user agent extracted from the event."
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/bs4-tld:1.0.0.79303
