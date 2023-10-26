@@ -946,20 +946,17 @@ def validate_url_is_type_compatible(args: dict,
     dynamic_list_type = args.get('type') or original_dynamic_list_type
     if dynamic_list_type in ('ip', 'domain', 'url'):
         url = args.get('source_url', '')
-        if not url:
-            if type_changed:
-                raise DemistoException('Please provide the source_url argument when using IP, URL or Domain types')
+        if not url and type_changed:
+            raise DemistoException('Please provide the source_url argument when using IP, URL or Domain types')
 
     elif dynamic_list_type == 'predefined_url':
         url = args.get('predefined_url_list', '')
-        if not url:
-            if type_changed:
-                raise DemistoException('Please provide the predefined_url_list argument when using predefined_url type')
+        if not url and type_changed:
+            raise DemistoException('Please provide the predefined_url_list argument when using predefined_url type')
     else:  # dynamic_list_type == 'predefined_ip':
         url = args.get('predefined_ip_list', '')
-        if not url:
-            if type_changed:
-                raise DemistoException('Please provide the predefined_ip_list argument when using predefined_ip')
+        if not url and type_changed:
+            raise DemistoException('Please provide the predefined_ip_list argument when using predefined_ip')
     url = url if url else original_dynamic_list_url
     return url
 
@@ -1896,15 +1893,14 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     original_frequency_object = original_dynamic_list_type_object[original_dynamic_list_type].get('recurring',
                                                                                                   {'recurring': {}})
     type_changed = False
-    if dynamic_list_type := args.get('type'):
-        if original_dynamic_list_type != dynamic_list_type:
-            # changing the key that indicates the type
-            original_dynamic_list['type'][dynamic_list_type] = original_dynamic_list_type_object[
-                original_dynamic_list_type]
-            demisto.info(f"setting overwrite parameter to True as the type of the dynamic list has changed."
-                         f"overwrite original value: {overwrite}")
-            type_changed = True
-            overwrite = True
+    if (dynamic_list_type := args.get('type')) and original_dynamic_list_type != dynamic_list_type:
+        # changing the key that indicates the type
+        original_dynamic_list['type'][dynamic_list_type] = original_dynamic_list_type_object[
+            original_dynamic_list_type]
+        demisto.info(f"setting overwrite parameter to True as the type of the dynamic list has changed."
+                     f"overwrite original value: {overwrite}")
+        type_changed = True
+        overwrite = True
 
     dynamic_list_type = dynamic_list_type if dynamic_list_type else original_dynamic_list_type
     if exception_list := argToList(args.get('exception_list')):
@@ -1980,7 +1976,7 @@ def list_url_category_command(client: Client, args: Dict[str, Any]) -> CommandRe
     for profile in profiles:
         # we only want predefined profiles
         if profile.get('folder', '') == 'predefined':
-            for category in categories.keys():
+            for category in categories:
                 categories[category].extend(profile.get(category, []))
                 categories[category].extend(profile.get('credential_enforcement', {}).get(category, []))
                 # remove duplicates
