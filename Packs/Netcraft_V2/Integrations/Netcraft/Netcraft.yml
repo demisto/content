@@ -163,7 +163,9 @@ script:
     - name: id
       description: Filter to the takedown with the specified ID.
     - name: statuses
-      description: Filter to takedowns that are currently in the given status. Multiple values may be provided as a comma-separated list.
+      description: |
+        Filter to takedowns that are currently in the given status. Multiple values may be provided as a comma-separated list.
+        Possible values: "inactive_monitoring", "verified", "contacted_hosting", "contacted_police", "contacted_upstream", "resolved_monitoring", "resolved", "stale".
       isArray: true
       auto: PREDEFINED
       predefined:
