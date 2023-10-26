@@ -1,7 +1,4 @@
 category: Identity and Access Management
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: SailPointIdentityIQ
   version: -1
@@ -468,11 +465,12 @@ script:
     - contextPath: IdentityIQ.Alert.application
       description: List of applications that are related to this alert.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   script: ''
   subtype: python3
   type: python
+  runonce: false
 fromversion: 6.0.0
 tests:
 - SailPointIdentityIQ-Test
