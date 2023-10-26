@@ -70,13 +70,21 @@ if [[ -z "${MODELING_RULES_TO_TEST}" ]]; then
 fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  if [ "${TEST_XDR_ENV}" == "true" ]; then
+    cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  else
+    echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+  fi
 else
   exit_on_error 1 "CLOUD_API_KEYS is empty"
 fi
 
 if [ -n "${CLOUD_API_TOKENS}" ]; then
-  echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
+  if [ "${TEST_XDR_ENV}" == "true" ]; then
+    cat "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
+  else
+    echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
+  fi
 else
   exit_on_error 1 "CLOUD_API_TOKENS is empty"
 fi
