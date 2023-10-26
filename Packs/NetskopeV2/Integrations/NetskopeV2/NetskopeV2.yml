@@ -13,6 +13,7 @@ configuration:
   type: 4
   displaypassword: API Key
   hiddenusername: true
+  hidden: true
 - display: ''
   name: api_key_credentials
   type: 9
