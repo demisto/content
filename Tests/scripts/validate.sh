@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -ex
 
+LATEST_PACKS_FOLDER_COMMIT=$(git log -1 --format="%H" -- ./Packs)
 
-echo "CI_COMMIT_BRANCH: $CI_COMMIT_BRANCH CI: $CI DEMISTO_README_VALIDATION: $DEMISTO_README_VALIDATION, Latest Packs folder commit: $(git log -1 --format="%H" -- ./Packs), CI_COMMIT_SHA: $CI_COMMIT_SHA, LAST_UPLOAD_COMMIT: $LAST_UPLOAD_COMMIT"
+echo "CI_COMMIT_BRANCH: $CI_COMMIT_BRANCH CI: $CI DEMISTO_README_VALIDATION: $DEMISTO_README_VALIDATION, LATEST_PACKS_FOLDER_COMMIT: $LATEST_PACKS_FOLDER_COMMIT, CI_COMMIT_SHA: $CI_COMMIT_SHA, LAST_UPLOAD_COMMIT: $LAST_UPLOAD_COMMIT"
 if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
     if [[ -n "${PACKS_TO_UPLOAD}" ]]; then
         echo "Packs upload - Validating only the supplied packs"
@@ -12,12 +13,11 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
         done       
     else
         if [ -n "$NIGHTLY" ]; then
-            PREV_VER=$LAST_UPLOAD_COMMIT
-            echo "successfully set the PREV_VER to be the latest successful upload commit: $LAST_UPLOAD_COMMIT"
+            PREV_VER=$LATEST_PACKS_FOLDER_COMMIT
+            echo "successfully set the PREV_VER to be the latest successful Packs folder commit: $LATEST_PACKS_FOLDER_COMMIT"
         else
             PREV_VER="origin/master"
         fi
-        echo "Running validate -a against prev-ver $PREV_VER"
         python3 -m demisto_sdk validate -a --post-commit --graph --skip-pack-dependencies --prev-ver $PREV_VER
     fi
 elif [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
