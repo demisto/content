@@ -30,8 +30,8 @@
       export XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_SERVERS_PATH")
       export DEMISTO_BASE_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
       export XSIAM_AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
-      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_API_KEYS")
-      export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$XSIAM_TOKENS")
+      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
+      export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_tokens.json")
     done
 
 .export_xsoar_ng_machine_constants: &export_xsoar_ng_machine_constants
@@ -40,7 +40,7 @@
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
       export XSOAR_NG_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_SERVERS_PATH")
       export DEMISTO_BASE_URL=$(echo "$XSOAR_NG_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
-      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_API_KEYS")
+      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
     done
 
 demisto-sdk-nightly:run-unittests-and-lint:
@@ -418,8 +418,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_start "Run Lint" --collapsed
     - demisto-sdk lint --console-log-threshold DEBUG -i Packs/HelloWorld/
     - section_end "Run Lint"
-    - *change-file-ids
-    - *upload-entities-to-cortex-xsoar
     - section_start "Download Custom Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -a -o Packs/ -f --insecure
     - section_end "Download Custom Entities from XSOAR Instance"
