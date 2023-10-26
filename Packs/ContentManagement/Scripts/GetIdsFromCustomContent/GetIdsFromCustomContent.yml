@@ -1,5 +1,5 @@
 args:
-- description: 'List of dictionaries of IDs to exclude in a JSON format (e.g., [{"job": ["job1", "job2"], "pack": ["pack1"]}, {"job": ["job3"]}]'
+- description: 'List of dictionaries of IDs to exclude in a JSON format (e.g., [{"job": ["job1", "job2"], "pack": ["pack1"]}, {"job": ["job3"]}].'
   name: exclude_ids_list
 - description: The entry ID of the custom content tar file.
   name: file_entry_id
