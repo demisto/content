@@ -6,6 +6,7 @@ import urllib3
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DEFAULT_LIMIT = 50
 
 
 class Client(BaseClient):
@@ -24,7 +25,7 @@ class Client(BaseClient):
                 return "Unknown"
         return None
 
-    def get_cases(self, limit: int = 50, last_timestamp: int = 0, fetch_closed: bool = False):
+    def get_cases(self, limit: int = DEFAULT_LIMIT, last_timestamp: int = 0, fetch_closed: bool = False):
         instance = demisto.integrationInstance()
         cases = []
         query = {
@@ -60,7 +61,7 @@ class Client(BaseClient):
             ]
         }
         if not fetch_closed:
-            query["query"][-1]["_eq"] = {
+            query["query"][-1]["_eq"] = {  # type: ignore[index]
                 "_field": "status",
                 "_value": "Open"
             }
@@ -454,8 +455,8 @@ def output_results(title: str, outputs: Any, headers: list, outputs_prefix: str,
 
 
 def list_cases_command(client: Client, args: dict):
-    limit: int = args.get('limit', None)
-    res = client.get_cases(limit=int(limit) if limit else None)
+    limit: int = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
+    res = client.get_cases(limit=limit)
     res = sorted(res, key=lambda x: x['caseId'])
     if res:
         for case in res:
