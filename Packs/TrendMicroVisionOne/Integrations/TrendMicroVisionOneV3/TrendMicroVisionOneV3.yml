@@ -334,6 +334,7 @@ script:
   - arguments:
     - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data.'
       name: fields
+      required: true
     - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
       name: start
     - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
@@ -489,6 +490,7 @@ script:
   - arguments:
     - description: 'Statement that allows you to retrieve a subset of the collected email activity data.'
       name: fields
+      required: true
     - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
       name: start
     - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
@@ -673,7 +675,7 @@ script:
     description: Compresses a file on an endpoint in a password-protected archive and then sends the archive to the XDR service platform.
     name: trendmicro-visionone-collect-forensic-file
   - arguments:
-    - description: taskId output from the collect command used to collect the file.
+    - description: taskId output from the collect forensic file command.
       name: task_id
       required: true
     - description: If script should wait until the task is finished before returning the result, enabled by default.
@@ -827,7 +829,7 @@ script:
     - description: URL pointing to the location of the file to be submitted.
       name: file_path
       required: true
-    - description: Name of the file to be analyzed.
+    - description: Name of the file (including extension) to be analyzed.
       name: file_name
       required: true
     - description: The Base64 encoded password for decrypting the submitted document. sample.
@@ -908,7 +910,7 @@ script:
     - contextPath: VisionOne.Submit_Urls_to_Sandbox.status
       description: HTTPS status code of making the request.
       type: string
-    - contextPath: VisionOne.Submit_Urls_to_Sandbox.id
+    - contextPath: VisionOne.Submit_Urls_to_Sandbox.task_id
       description: Task ID generated for the URL sent to sandbox for analysis.
       type: string
     description: Sends URL(s) to sandbox for analysis.
@@ -976,6 +978,9 @@ script:
     outputs:
     - contextPath: VisionOne.Sandbox_Submission_Polling.message
       description: Status of the sandbox analysis.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.status_code
+      description: Status code of the request.
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.status
       description: Status of action to analyze file in sandbox.

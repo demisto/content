@@ -1,5 +1,4 @@
-Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development.In this new release 2 actions have been added, one to fetch email activity data with count and another to fetch endpoint activity data with count.
-This integration was integrated and tested with version 3 API of Trend Micro Vision One V3.
+Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. In this new release 2 actions have been added, one to fetch email activity data with count and another to fetch endpoint activity data with count. This integration was integrated and tested with version 3 API of Trend Micro Vision One V3.
 
 ## Configure Trend Micro Vision One V3. on Cortex XSOAR
 
@@ -388,7 +387,7 @@ Displays search results from the Endpoint Activity Data source that match the pa
 
 | **Argument Name**       | **Description**                                                                                                                                                     | **Required** |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| fields                  | Statement that allows you to retrieve a subset of the collected endpoint activity data.                                                                             | Optional     |
+| fields                  | Statement that allows you to retrieve a subset of the collected endpoint activity data.                                                                             | Required     |
 | start                   | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
 | end                     | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
 | top                     | Number of records displayed on a page.                                                                                                                              | Optional     |
@@ -458,7 +457,7 @@ Displays search results from the Email Activity Data source that match the param
 
 | **Argument Name**       | **Description**                                                                                                                                                     | **Required** |
 | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| fields                  | Statement that allows you to retrieve a subset of the collected email activity data.                                                                                | Optional     |
+| fields                  | Statement that allows you to retrieve a subset of the collected email activity data.                                                                                | Required     |
 | start                   | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
 | end                     | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
 | top                     | Number of records displayed on a page.                                                                                                                              | Optional     |
@@ -608,7 +607,7 @@ Retrieves a URL and other information required to download a collected file via 
 
 | **Argument Name** | **Description**                                                                                                                     | **Required** |
 | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| task_id           | taskId output from the collect command used to collect the file.                                                                    | Required     |
+| task_id           | taskId output from the collect forensic file command.                                                                               | Required     |
 | poll              | If script should wait until the task is finished before returning the result, enabled by default. Possible values are: true, false. | Optional     |
 | poll_time_sec     | Maximum time to wait for the result to be available.                                                                                | Optional     |
 
@@ -726,7 +725,7 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 | **Argument Name** | **Description**                                                                                       | **Required** |
 | ----------------- | ----------------------------------------------------------------------------------------------------- | ------------ |
 | file_path         | URL pointing to the location of the file to be submitted.                                             | Required     |
-| file_name         | Name of the file to be analyzed.                                                                      | Required     |
+| file_name         | Name of the file (including extension) to be analyzed.                                                | Required     |
 | document_password | The Base64 encoded password for decrypting the submitted document. sample.                            | Optional     |
 | archive_password  | The Base64 encoded password for decrypting the submitted archive.                                     | Optional     |
 | arguments         | Parameter that allows you to specify Base64-encoded command line arguments to run the submitted file. | Optional     |
@@ -789,13 +788,13 @@ Sends URL(s) to sandbox for analysis.
 
 #### Context Output
 
-| **Path**                                | **Type** | **Description**                                                 |
-| --------------------------------------- | -------- | --------------------------------------------------------------- |
-| VisionOne.Submit_Urls_to_Sandbox.id     | string   | ID generated for the URL sent to sandbox for analysis           |
-| VisionOne.Submit_Urls_to_Sandbox.url    | string   | URL sent to sandbox for analysis                                |
-| VisionOne.Submit_Urls_to_Sandbox.digest | string   | Digest value generated for the URL sent to sandbox for analysis |
-| VisionOne.Submit_Urls_to_Sandbox.status | string   | HTTPS status code of making the request                         |
-| VisionOne.Submit_Urls_to_Sandbox.id     | string   | Task ID generated for the URL sent to sandbox for analysis      |
+| **Path**                                 | **Type** | **Description**                                                  |
+| ---------------------------------------- | -------- | ---------------------------------------------------------------- |
+| VisionOne.Submit_Urls_to_Sandbox.id      | string   | ID generated for the URL sent to sandbox for analysis.           |
+| VisionOne.Submit_Urls_to_Sandbox.url     | string   | URL sent to sandbox for analysis.                                |
+| VisionOne.Submit_Urls_to_Sandbox.digest  | string   | Digest value generated for the URL sent to sandbox for analysis. |
+| VisionOne.Submit_Urls_to_Sandbox.status  | string   | HTTPS status code of making the request.                         |
+| VisionOne.Submit_Urls_to_Sandbox.task_id | string   | Task ID generated for the URL sent to sandbox for analysis.      |
 
 ### trendmicro-visionone-get-alert-details
 
@@ -814,23 +813,23 @@ Fetches details for a specific alert.
 
 #### Context Output
 
-| **Path**                                           | **Type** | **Description**                                                                                                    |
-| -------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
-| VisionOne.Alert_Details.etag                       | string   | The ETag of the resource you want to update.                                                                       |
-| VisionOne.Alert_Details.alert.id                   | string   | ID of the workbench alert                                                                                          |
-| VisionOne.Alert_Details.alert.model                | string   | Name of the detection model that triggered the alert                                                               |
-| VisionOne.Alert_Details.alert.score                | number   | Overall severity assigned to the alert based on the severity of the matched detection model and the impact scope   |
-| VisionOne.Alert_Details.alert.severity             | string   | Workbench alert severity                                                                                           |
-| VisionOne.Alert_Details.alert.indicators           | string   | The indicators refer to those objects which are found by RCA or sweeping                                           |
-| VisionOne.Alert_Details.alert.description          | string   | Description of the detection model that triggered the alert                                                        |
-| VisionOne.Alert_Details.alert.impact_scope         | string   | Affected entities information                                                                                      |
-| VisionOne.Alert_Details.alert.matched_rules        | string   | The rules are triggered                                                                                            |
-| VisionOne.Alert_Details.alert.alert_provider       | string   | Alert provider                                                                                                     |
-| VisionOne.Alert_Details.alert.schema_version       | string   | The version of the JSON schema, not the version of alert trigger content                                           |
-| VisionOne.Alert_Details.alert.workbench_link       | string   | Workbench URL                                                                                                      |
-| VisionOne.Alert_Details.alert.created_date_time    | string   | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the created date time of the alert      |
-| VisionOne.Alert_Details.alert.updated_date_time    | string   | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the last updated date time of the alert |
-| VisionOne.Alert_Details.alert.investigation_status | string   | Workbench alert status                                                                                             |
+| **Path**                                           | **Type** | **Description**                                                                                                     |
+| -------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
+| VisionOne.Alert_Details.etag                       | string   | The ETag of the resource you want to update.                                                                        |
+| VisionOne.Alert_Details.alert.id                   | string   | ID of the workbench alert.                                                                                          |
+| VisionOne.Alert_Details.alert.model                | string   | Name of the detection model that triggered the alert.                                                               |
+| VisionOne.Alert_Details.alert.score                | number   | Overall severity assigned to the alert based on the severity of the matched detection model and the impact scope.   |
+| VisionOne.Alert_Details.alert.severity             | string   | Workbench alert severity.                                                                                           |
+| VisionOne.Alert_Details.alert.indicators           | string   | The indicators refer to those objects which are found by RCA or sweeping.                                           |
+| VisionOne.Alert_Details.alert.description          | string   | Description of the detection model that triggered the alert.                                                        |
+| VisionOne.Alert_Details.alert.impact_scope         | string   | Affected entities information.                                                                                      |
+| VisionOne.Alert_Details.alert.matched_rules        | string   | The rules are triggered.                                                                                            |
+| VisionOne.Alert_Details.alert.alert_provider       | string   | Alert provider.                                                                                                     |
+| VisionOne.Alert_Details.alert.schema_version       | string   | The version of the JSON schema, not the version of alert trigger content.                                           |
+| VisionOne.Alert_Details.alert.workbench_link       | string   | Workbench URL.                                                                                                      |
+| VisionOne.Alert_Details.alert.created_date_time    | string   | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the created date time of the alert.      |
+| VisionOne.Alert_Details.alert.updated_date_time    | string   | Datetime in ISO 8601 format \(yyyy-MM-ddThh:mm:ssZ in UTC\) that indicates the last updated date time of the alert. |
+| VisionOne.Alert_Details.alert.investigation_status | string   | Workbench alert status.                                                                                             |
 
 ### trendmicro-visionone-run-sandbox-submission-polling
 
@@ -853,6 +852,7 @@ Runs a polling command to retrieve the status of a sandbox analysis submission.
 | **Path**                                                      | **Type** | **Description**                                                         |
 | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
 | VisionOne.Sandbox_Submission_Polling.message                  | string   | Status of the sandbox analysis.                                         |
+| VisionOne.Sandbox_Submission_Polling.status_code              | string   | Status code of the request.                                             |
 | VisionOne.Sandbox_Submission_Polling.status                   | string   | Status of action to analyze file in sandbox.                            |
 | VisionOne.Sandbox_Submission_Polling.report_id                | string   | Report ID of the submission queried.                                    |
 | VisionOne.Sandbox_Submission_Polling.digest                   | string   | The hash values of file analyzed.                                       |
