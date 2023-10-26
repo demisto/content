@@ -143,6 +143,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix='Dragos.Indicators',
         outputs_key_field='indicator_id',
         outputs=data,
+        readable_output=tableToMarkdown('Dragos Indicators', data),
         raw_response=full_response
     )
 
