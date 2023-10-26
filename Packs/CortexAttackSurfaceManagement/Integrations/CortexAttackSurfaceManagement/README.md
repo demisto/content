@@ -974,7 +974,7 @@ Get internet exposure asset details according to the asset ID.
 | ASM.AssetInternetExposure.domain | Unknown | Asset associated domain. | 
 | ASM.AssetInternetExposure.certificate_issuer | String | Asset certificate issuer. | 
 | ASM.AssetInternetExposure.certificate_algorithm | String | Asset certificate algorithm. | 
-| ASM.AssetInternetExposure.certificate_classifications | String | Asset certificate.classifications | 
+| ASM.AssetInternetExposure.certificate_classifications | String | Asset certificate.classifications. | 
 | ASM.AssetInternetExposure.resolves | Boolean | Whether the asset has a DNS resolution. | 
 | ASM.AssetInternetExposure.details | Unknown | Additional details. | 
 | ASM.AssetInternetExposure.externally_inferred_vulnerability_score | Unknown | Asset vulnerability score. | 
