@@ -32,7 +32,7 @@ fi
 # We can freely use these buckets since its only reading the prod to the circle-ci bucket.
 
 echo "Preparing content packs for testing ..."
-gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
 echo "Auth loaded successfully."
 
 # ====== BUILD CONFIGURATION ======

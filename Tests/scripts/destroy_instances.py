@@ -89,9 +89,9 @@ def tqdm_progress4_update(tqdm_progress: tqdm) -> Callable[[bytes, int, int, tup
     return update_to
 
 
-def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, role: str) -> bool:
+def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, readable_role: str, role: str) -> bool:
     try:
-        download_path = (Path(artifacts_dir) / f"server_{role}_{server_ip}.log").as_posix()
+        download_path = (Path(artifacts_dir) / f"instance_{readable_role}" / f"server_{role}_{server_ip}.log").as_posix()
         logging.info(f'Downloading server logs from server {server_ip} from:{SERVER_LOG_FILE_PATH} to {download_path}')
         with (tqdm(unit='B', unit_scale=True, unit_divisor=1024, desc='Downloading server logs', mininterval=1.0, leave=True,
                    colour='green') as tqdm_progress,
@@ -110,7 +110,7 @@ def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip:
             ssh.load_system_host_keys()
             ssh.connect(server_ip, username=SSH_USER)
             success &= chmod_logs(ssh, server_ip)
-            success &= download_logs(ssh, server_ip, artifacts_dir, role)
+            success &= download_logs(ssh, server_ip, artifacts_dir, readable_role, role)
 
             if (Path(artifacts_dir) / f'is_build_passed_{role}.txt').exists() and \
                     (Path(artifacts_dir) / f'is_post_update_passed_{role}.txt').exists():
