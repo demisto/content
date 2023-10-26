@@ -220,7 +220,7 @@
       echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
     fi
   - |
-  - section_end "Checkout upload commit"g
+  - section_end "Checkout upload commit"
 
 
 .default-before-script:
