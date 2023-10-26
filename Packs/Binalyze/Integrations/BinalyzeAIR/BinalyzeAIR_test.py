@@ -75,12 +75,13 @@ def test_api_connection_fail(requests_mock: Any) -> None:
 
 
 def test_get_profile_id_preset() -> None:
-    # Test preset profiles
-    preset_profiles = ["browsing-history", "compromise-assessment", "event-logs", "full", "memory-ram-pagefile", "quick"]
-    expected_mocked_profile = "full"
-
-    if expected_mocked_profile in preset_profiles:
-        assert expected_mocked_profile
+    from BinalyzeAIR import Client
+    client: Client = Client(
+        base_url='https://nonexistent-domain.com',
+        verify=False
+    )
+    result = client.get_profile_id("full", 1)
+    assert result == "full"
 
 
 def test_get_profile_id_custom(requests_mock: Any) -> None:
