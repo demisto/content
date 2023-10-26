@@ -1518,7 +1518,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "xsoar_client"
-resolved_reference = "5824297462c03fd752bc2e966d307c359f16ef77"
+resolved_reference = "7cd4a107ed51cc49b69826edeab131651a504d9c"
 
 [[package]]
 name = "deprecated"

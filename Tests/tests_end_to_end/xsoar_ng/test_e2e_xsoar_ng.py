@@ -96,12 +96,7 @@ class TestEDL:
         def run_edl_request():
             return requests.get(url, auth=basic_auth)
 
-        try:
-            response = run_edl_request()
-        except Exception:
-            time.sleep(7200)
-            raise
-
+        response = run_edl_request()
         assert response.text, f'could not get indicators from {url=} with available indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, status code={response.status_code}, response={response.text}'
 
 
@@ -114,8 +109,9 @@ class TestEDL:
 #         ("2.2.2.2", "IP", 0),
 #         ("3.3.3.3", "IP", 0)
 #     ]
-#     instance_name_gsm = "taxii2_server_e2e_test"
+#     instance_name_gsm = "taxii2server-e2e"
 #     integration_id = "TAXII2 Server"
+#     is_long_running = True
 #
 #     def test_taxii2_server(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: dict):
 #         import requests
