@@ -56,11 +56,10 @@ BUCKET_UPLOAD_JOBS = [
     'upload-packs-to-xpanse-marketplace',
 ]
 
-CONTENT_PR_JOBS = [
+CONTENT_COMMON_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
     'run-validations',
-    'stop-running-pipelines',
     'test-upload-flow',
     'trigger-private-build',
     'validate-content-conf',
@@ -80,27 +79,12 @@ CONTENT_PR_JOBS = [
     'xsiam-test_modeling_rule_results',
 ]
 
-CONTENT_MERGE_JOBS = [
-    'run-unittests-and-lint: [native:dev,from-yml]',
-    'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
-    'run-validations',
-    'test-upload-flow',
-    'trigger-private-build',
-    'validate-content-conf',
-    'mpv2-prepare-testing-bucket',
-    'xpanse-prepare-testing-bucket',
-    'xsoar-prepare-testing-bucket',
-    'xsoar-saas-prepare-testing-bucket',
-    'xsiam_server_ga',
-    'tests_xsoar_server: [Server 6.9]',
-    'tests_xsoar_server: [Server 6.10]',
-    'tests_xsoar_server: [Server 6.11]',
-    'tests_xsoar_server: [Server 6.12]',
-    'tests_xsoar_server: [Server Master]',
-    'xsoar_ng_server_ga',
-    'xsoar-test_playbooks_results',
-    'xsiam-test_playbooks_results',
-    'xsiam-test_modeling_rule_results',
+CONTENT_PR_JOBS = CONTENT_COMMON_JOBS + [
+    'stop-running-pipelines',
+]
+
+CONTENT_MERGE_JOBS = CONTENT_COMMON_JOBS + [
+    'merge-dev-secrets',
 ]
 
 JOBS_PER_TRIGGERING_WORKFLOW = {
