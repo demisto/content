@@ -8,6 +8,12 @@ else
 fi
 
 if [[ "${SERVER_TYPE}" == "XSIAM" ]]; then
+  test_path="./Tests/tests_end_to_end/xsiam"
+elif [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; then
+  test_path="./Tests/tests_end_to_end/xsoar_ng"
+fi
+
+if [[ -n "$test_path" ]]; then
   if [[ -z "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
     echo "CLOUD_CHOSEN_MACHINE_IDS is not defined, exiting..."
     exit 1
@@ -15,14 +21,8 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]]; then
     exit_code=0
     IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
-      echo "Running end-to-end tests on ${CLOUD_CHOSEN_MACHINE_ID}"
-      if [[ "${MARKETPLACE_NAME}" == "xsoar_saas" ]]; then
-        path="./Tests/tests_end_to_end/xsoar_ng"
-      else
-        path="./Tests/tests_end_to_end/xsiam"
-      fi
-      echo "Running end-to-end tests on ${CLOUD_CHOSEN_MACHINE_ID} from ${path}"
-      python3 -m pytest "$path" -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --integration_secrets_path "${SECRET_CONF_PATH}" --disable-warnings
+      echo "Running end-to-end tests on ${CLOUD_CHOSEN_MACHINE_ID} from ${test_path}"
+      python3 -m pytest "$test_path" -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --integration_secrets_path "${SECRET_CONF_PATH}" --disable-warnings
       if [[ $? -ne 0 ]]; then
         exit_code=1
       fi
