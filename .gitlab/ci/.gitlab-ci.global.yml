@@ -216,7 +216,7 @@
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "install_packs_nightly_bugs" ]]; then
       echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
       git checkout $LAST_UPLOAD_COMMIT -- ./Packs
-      git commit -m
+      git commit ./Packs -m "make packs last upload commit"
     else
       echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
     fi
