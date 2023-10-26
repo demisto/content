@@ -374,16 +374,16 @@ tasks:
       version: -1
       name: Review the alert findings
       description: "The enrichment process didn't identify any further suspicious activity.\nPlease review these alert findings and choose how to handle it.\n\nSuggested checklist for the analyst:\n- Check the environment of the bucket - Is it in QA / Dev / Alpha / Production? Is it should be publicly available?
-- Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands (such as API keys).\nDid you find this alert to be malicious/suspicious?"
+- Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands (such as API keys).\nDid you find this alert to be malicious/suspicious?\nIf you choose yes, the playbook will continue with containment actions\nNo will execute 'Handle False Positive' sub-playbook.\nFinish Playbook will end the playbook."
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      False Positive:
+      No:
       - "51"
       Finish Playbook:
       - "30"
-      True Positive:
+      Yes:
       - "76"
     separatecontext: false
     continueonerrortype: ""
