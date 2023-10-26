@@ -35,7 +35,6 @@ configuration:
   name: apikey
   required: false
   type: 4
-  displaypassword: API Key
   hidden: true
 - display: API Key
   name: credentials
