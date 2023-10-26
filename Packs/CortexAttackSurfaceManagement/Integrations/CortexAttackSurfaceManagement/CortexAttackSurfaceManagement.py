@@ -570,25 +570,25 @@ def get_attack_surface_rule_command(
     category = args.get("category")
 
     search_params = []
-    if attack_surface_rule_id and attack_surface_rule_id != 'None':
+    if attack_surface_rule_id:
         search_params.append({
             "field": "attack_surface_rule_id",
             "operator": "in",
             "value": attack_surface_rule_id.split(",")
         })
-    if enabled_status and enabled_status != 'None':
+    if enabled_status:
         search_params.append({
             "field": "enabled_status",
             "operator": "in",
             "value": enabled_status.split(",")
         })
-    if priority and priority != 'None':
+    if priority:
         search_params.append({
             "field": "priority",
             "operator": "in",
             "value": priority.split(",")
         })
-    if category and category != 'None':
+    if category:
         search_params.append({
             "field": "category",
             "operator": "in",
