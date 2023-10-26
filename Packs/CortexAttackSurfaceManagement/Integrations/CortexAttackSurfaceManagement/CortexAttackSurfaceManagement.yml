@@ -419,15 +419,15 @@ script:
       description: Result of the Remediation Confirmation Scan.
       type: string
   - arguments:
-    - description: 'Attack surface rule ID. Has to be command separated. For example: RdpServer,InsecureOpenSSH.'
+    - description: 'A comma-separated list of attack surface rule IDs. For example: RdpServer,InsecureOpenSSH.'
       name: attack_surface_rule_id
-    - description: 'Get the info about Rules ID(s) with enabled status on or off. Has to be command separated. For example: on,off.'
+    - description: 'Get the info about rule IDs with enabled status on or off. Has to be comma separated. For example: on,off.'
       name: enabled_status
-    - description: 'Get the info about Rules ID(s) with a priority. Has to be command separated. For example: high,medium.'
+    - description: 'Get the info about rule IDs with a priority. Has to be comma separated. For example: high,medium.'
       name: priority
-    - description: Get the info about Rules ID(s) of a category. Has to be command separated.
+    - description: Get the info about rule IDs of a category. Has to be comma separated.
       name: category
-    description: Get information of an attack surface rule id.
+    description: Get information of an attack surface rule ID.
     name: asm-get-attack-surface-rule
     outputs:
     - contextPath: ASM.AttackSurfaceRule.attack_surface_rule_id
