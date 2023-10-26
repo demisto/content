@@ -197,7 +197,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: 'Send an email'
+      description: 'Send an email.'
     nexttasks:
       '#none#':
       - "86"
