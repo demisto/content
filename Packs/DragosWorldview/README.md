@@ -78,6 +78,10 @@ Get Indicators from the Dragos WorldView API
 
 #### Human Readable Output
 
+## Dragos Indicators
+| activity_groups | attack_techniques | category | comment | confidence | first_seen | ics_attack_techniques | id | indicator_type | kill_chain | kill_chains | last_seen | pre_attack_techniques | products | severity | status | threat_groups | updated_at | uuid | value |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  | moderate |  2018-04-06T00:00:00.000Z |  | 0000 | domain | | | 2023-09-12T19:37:31.000Z |  | {'serial': 'DOM-2023-37'} |  | released |  |  2024-09-12T21:31:51.000Z |  | example.com | 
 
 
 ### dragos-get-full-report
