@@ -44,7 +44,7 @@
     - |
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload packs_dependencies.json to GCP" --collapsed
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
         gsutil cp $ARTIFACTS_FOLDER/packs_dependencies.json "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/content-cache-docs/$MARKETPLACE_VERSION/packs_dependencies.json"
         section_end "Upload packs_dependencies.json to GCP"
       fi
@@ -69,6 +69,8 @@ jobs-done-check-upload-flow:
   needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'xsoar-saas-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_9', 'install-packs-in-server6_10', 'install-packs-in-server6_11', 'install-packs-in-server6_12', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace', 'upload-packs-to-xsoar-saas-marketplace']
   tags:
     - gke
+  variables:
+    WORKFLOW: 'Upload Packs to Marketplace Storage'
 
 
 
@@ -90,7 +92,7 @@ xsoar-saas-prepare-testing-bucket-upload-flow:
     - xsoar-saas-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
@@ -136,7 +138,10 @@ xpanse-prepare-testing-bucket-upload-flow:
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   variables:
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
@@ -146,9 +151,11 @@ xpanse-prepare-testing-bucket-upload-flow:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - section_start "Download content-test-conf and infra" --collapsed
-    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
-    - section_end "Download content-test-conf and infra"
+    - section_start "Create Artifacts instance directory" --collapsed
+    - |
+      [ -d "${ARTIFACTS_FOLDER_INSTANCE}" ] || mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+    - section_end "Create Artifacts instance directory"
+    - !reference [.download-demisto-conf]
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
@@ -164,10 +171,10 @@ xpanse-prepare-testing-bucket-upload-flow:
       python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
     - section_end "Wait Until Server Ready"
     - section_start "Install Packs"
-    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/Marketplace/install_packs.sh || EXIT_CODE=$?
     - section_end "Install Packs"
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ARTIFACTS_FOLDER}/env_results.json" --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
     - section_end "Destroy instances"
     - job-done
     - exit "$EXIT_CODE"
@@ -236,16 +243,14 @@ install-packs-in-server-master:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - section_start "Download content-test-conf and infra" --collapsed
-    - ./Tests/scripts/download_conf_repos.sh 2>&1 | tee --append "${ARTIFACTS_FOLDER}/logs/download_conf_repos.log"
-    - section_end "Download content-test-conf and infra"
+    - !reference [.download-demisto-conf]
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
     - section_end "Secrets Fetch"
     - section_start "Lock Machine"
     - echo "Authenticating GCP"
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > $ARTIFACTS_FOLDER/logs/gauth.out 2>$ARTIFACTS_FOLDER/logs/gauth.err
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - echo "Auth done successfully"
     - ./Tests/scripts/wait_in_line_for_cloud_env.sh "$CLOUD_MACHINES_TYPE"
     - source CloudEnvVariables
@@ -273,7 +278,7 @@ install-packs-in-server-master:
     - section_end "Get Instance Variables"
 
     - section_start "Install Packs"
-    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
+    - ./Tests/Marketplace/install_packs.sh || EXIT_CODE=$?
     - section_end "Install Packs"
 
     - job-done
@@ -286,6 +291,8 @@ install-packs-in-server-master:
 #  extends: .install-mpv2-packs-on-xsiam-instances
 #  variables:
 #    INSTANCE_ROLE: "XSIAM"
+#    PRODUCT_TYPE: "XSIAM"
+#    SERVER_TYPE: "XSIAM"
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 
@@ -293,11 +300,14 @@ install-packs-in-xsiam-ga:
   extends: .install-mpv2-packs-on-xsiam-instances
   variables:
     INSTANCE_ROLE: "XSIAM"
+    PRODUCT_TYPE: "XSIAM"
+    SERVER_TYPE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
+    CLOUD_API_TOKENS: $XSIAM_TOKENS
     NON_REMOVABLE_PACKS: "Base"
 
 
@@ -316,6 +326,8 @@ upload-packs-to-marketplace:
     MARKETPLACE_VERSION: "xsoar"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
@@ -360,7 +372,7 @@ upload-packs-to-marketplace:
 
       PACKS_SRC="gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
-      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
@@ -398,6 +410,8 @@ upload-packs-to-marketplace-v2:
     MARKETPLACE_VERSION: "marketplacev2"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XSIAM"
+    SERVER_TYPE: "XSIAM"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -440,7 +454,7 @@ upload-packs-to-marketplace-v2:
       
       PACKS_SRC="gs://$GCS_MARKET_V2_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
-      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
@@ -468,6 +482,8 @@ upload-packs-to-xpanse-marketplace:
     MARKETPLACE_VERSION: "xpanse"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XPANSE"
+    SERVER_TYPE: "XPANSE"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -510,7 +526,7 @@ upload-packs-to-xpanse-marketplace:
       
       PACKS_SRC="gs://$GCS_MARKET_XPANSE_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
-      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
@@ -537,8 +553,10 @@ upload-packs-to-xsoar-saas-marketplace:
     when: always
   variables:
     MARKETPLACE_VERSION: "xsoar_saas"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     INSTANCE_ROLE: "Server Master"
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR SAAS"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -580,7 +598,7 @@ upload-packs-to-xsoar-saas-marketplace:
       
       PACKS_SRC="gs://$GCS_MARKET_XSOAR_SAAS_BUCKET/$STORAGE_BASE_PATH/packs"
       ZIP_FOLDER=$(mktemp -d)
-      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
       echo "successfully activated google cloud service account"
       gsutil -m cp -r $PACKS_SRC $ZIP_FOLDER
       echo "successfully downloaded index.zip"
@@ -665,18 +683,23 @@ fan-in-bucket-upload:
 
 
 slack-notify-bucket-upload:
-  variables:
-    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
-    WORKFLOW: 'Upload Packs to Marketplace Storage'
-    JOB_NAME: 'fan-in-bucket-upload'
-    # Passes the environment variable from the parent pipeline to the child which can be useful for cases
-    # when triggering pipeline with alternate env variable value passed in the API call
-    SLACK_CHANNEL: $SLACK_CHANNEL
-    SLACK_JOB: 'true'
   extends:
     - .trigger-slack-notification
     - .bucket-upload-rule-always
-
+  variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Upload Packs to Marketplace Storage'
+    JOB_NAME: 'fan-in-bucket-upload'
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    SLACK_JOB: 'true'
+    SLACK_ALLOW_FAILURE: 'false'
+    CI_PROJECT_ID: $CI_PROJECT_ID
+    CI_SERVER_URL: $CI_SERVER_URL
+    JIRA_SERVER_URL: $JIRA_SERVER_URL
+    JIRA_VERIFY_SSL: $JIRA_VERIFY_SSL
+    JIRA_API_KEY: $JIRA_API_KEY
+    JIRA_PROJECT_ID: $JIRA_PROJECT_ID
+    JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
 
 upload-id-set-bucket:
   tags:
@@ -695,7 +718,7 @@ upload-id-set-bucket:
       fi
 
     - !reference [.create-id-set-xsoar]
-    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
+    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - gsutil cp $ARTIFACTS_FOLDER/id_set.json "gs://$GCS_MARKET_BUCKET/content/id_set.json"
     - job-done
 
@@ -731,7 +754,7 @@ sync-buckets-between-projects:
         job-done
         exit 1
       else
-        gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY"
+        gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_DEV_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
 
         echo "Syncing gs://marketplace-xsoar-dev"
         gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-dev
@@ -742,7 +765,7 @@ sync-buckets-between-projects:
       
         ./Tests/scripts/validate_synced_buckets.sh "dev"
 
-        gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_PROD_KEY"
+        gcloud auth activate-service-account --key-file="$GCS_XSOAR_CONTENT_PROD_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
 
         echo "Syncing gs://marketplace-xsoar-prod-us"
         gsutil -m rsync -r gs://marketplace-dist gs://marketplace-xsoar-prod-us

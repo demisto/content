@@ -46,6 +46,7 @@ Packs/**/__init__.py
 requirements.txt
 **/collect_tests.log
 temp/*
+artifacts/*
 
 # Environment and reports
 .demisto-sdk-conf
