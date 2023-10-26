@@ -36,3 +36,9 @@ ignore=BA101
 
 [file:layoutscontainer-Cortex_XDR_-_XCLOUD_Cryptomining.json]
 ignore=BA101
+
+[file:playbook-Cloud_Data_Exfiltration_Response.yml]
+ignore=PB101,PB123
+
+[file:playbook-Cortex_XDR_-_Cloud_Data_Exfiltration_Response.yml]
+ignore=PB101,PB123
