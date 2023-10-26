@@ -13,7 +13,7 @@ import tldextract
 from urllib.parse import urlparse
 import re
 
-no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
+no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=None)
 pd.options.mode.chained_assignment = None  # default='warn'
 
 SIMILARITY_THRESHOLD = float(demisto.args().get('threshold', 0.97))
@@ -79,10 +79,16 @@ def get_existing_incidents(input_args, current_incident_type):
         get_incidents_args['populateFields'] = ','.join([','.join(fields), input_args['populateFields']])
     else:
         get_incidents_args['populateFields'] = ','.join(fields)
+
+    demisto.debug(f'Calling GetIncidentsByQuery with {get_incidents_args=}')
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
-    incidents = json.loads(incidents_query_res[-1]['Contents'])
+    incidents_query_contents = {}
+    for res in incidents_query_res:
+        if res['Contents']:
+            incidents_query_contents = res['Contents']
+    incidents = json.loads(incidents_query_contents)
     return incidents
 
 
@@ -97,6 +103,7 @@ def extract_domain(address):
     global no_fetch_extract
     if address == '':
         return ''
+    demisto.debug(f'Going to extract domain from {address=}')
     email_address = parseaddr(address)[1]
     ext = no_fetch_extract(email_address)
     return '{}.{}'.format(ext.domain, ext.suffix)
