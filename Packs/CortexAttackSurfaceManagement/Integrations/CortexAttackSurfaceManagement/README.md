@@ -48,7 +48,7 @@ Get a list of all your external services filtered by business units, externally 
 | ASM.ExternalService.service_name | String | Name of the external service. | 
 | ASM.ExternalService.service_type | String | Type of the external service. | 
 | ASM.ExternalService.ip_address | String | IP address of the external service. | 
-| ASM.ExternalService.externally_detected_providers | String | Providers of external service. | 
+| ASM.ExternalService.externally_detected_providers | String | Providers of an external service. | 
 | ASM.ExternalService.is_active | String | Whether the external service is active. | 
 | ASM.ExternalService.first_observed | Date | Date of the first observation of the external service. | 
 | ASM.ExternalService.last_observed | Date | Date of the last observation of the external service. | 
