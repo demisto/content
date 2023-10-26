@@ -1,7 +1,7 @@
 Integration to pull assets and other ASM related information.
 This integration was integrated and tested with version 1.2.0 of Cortex Attack Surface Management.
 
-## Configure Cortex Attack Surface Management on Cortex XSOAR
+## Configure Cortex Attack Surface Management
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Cortex Attack Surface Management.
