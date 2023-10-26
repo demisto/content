@@ -36,10 +36,13 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/pcap-miner:1.0.0.30520
+dockerimage: demisto/pcap-miner:1.0.0.78355
 enabled: true
 name: PcapFileExtractStreams
 outputs:
+- contextPath: PCAPStream.entry_id
+  description: The entry ID of the pcap file parsed.
+  type: string
 - contextPath: PCAPStream.protocol
   description: Protocol.
   type: string
