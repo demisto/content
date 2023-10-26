@@ -22,7 +22,7 @@ subtype: python3
 timeout: '0'
 type: python
 fromversion: 6.0.0
-dockerimage: demisto/teams:1.0.0.43500
+dockerimage: demisto/teams:1.0.0.79583
 tests:
 - No tests (auto formatted)
 marketplaces:
