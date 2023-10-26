@@ -1467,7 +1467,7 @@ script:
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
-    description: 'Quarantine a host'
+    description: Quarantine a host.
     name: prisma-sase-quarantine-host
   dockerimage: demisto/python3:3.10.13.78960
   runonce: false
