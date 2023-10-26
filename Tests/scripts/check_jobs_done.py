@@ -2,7 +2,7 @@ import sys
 from argparse import ArgumentParser
 from pathlib import Path
 
-from Tests.scripts.common import WORKFLOW_TYPES, CONTENT_NIGHTLY, BUCKET_UPLOAD, CONTENT_PR, SDK_NIGHTLY
+from Tests.scripts.common import WORKFLOW_TYPES, CONTENT_NIGHTLY, BUCKET_UPLOAD, CONTENT_PR, SDK_NIGHTLY, CONTENT_MERGE
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -56,11 +56,10 @@ BUCKET_UPLOAD_JOBS = [
     'upload-packs-to-xpanse-marketplace',
 ]
 
-CONTENT_PR_JOBS = [
+CONTENT_COMMON_JOBS = [
     'run-unittests-and-lint: [native:dev,from-yml]',
     'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
     'run-validations',
-    'stop-running-pipelines',
     'test-upload-flow',
     'trigger-private-build',
     'validate-content-conf',
@@ -80,11 +79,20 @@ CONTENT_PR_JOBS = [
     'xsiam-test_modeling_rule_results',
 ]
 
+CONTENT_PR_JOBS = CONTENT_COMMON_JOBS + [
+    'stop-running-pipelines',
+]
+
+CONTENT_MERGE_JOBS = CONTENT_COMMON_JOBS + [
+    'merge-dev-secrets',
+]
+
 JOBS_PER_TRIGGERING_WORKFLOW = {
     CONTENT_NIGHTLY: CONTENT_NIGHTLY_JOBS,
     SDK_NIGHTLY: SDK_NIGHTLY_JOBS,
     BUCKET_UPLOAD: BUCKET_UPLOAD_JOBS,
-    CONTENT_PR: CONTENT_PR_JOBS
+    CONTENT_PR: CONTENT_PR_JOBS,
+    CONTENT_MERGE: CONTENT_MERGE_JOBS,
 }
 
 
