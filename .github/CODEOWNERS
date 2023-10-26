@@ -35,7 +35,7 @@
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
-/Packs/PAN-OS/Integrations/ @GuyAfik
+/Packs/PAN-OS/Integrations/ @GuyAfik @jlevypaloalto
 /Packs/PrismaCloudCompute/Integrations/ @GuyAfik
 /Packs/PrismaSaasSecurity/Integrations/ @GuyAfik
 
@@ -80,7 +80,6 @@
 .gitlab/ci/* @yucohen
 .gitlab/* @yucohen
 .gitlab-ci.yml @yucohen
-.gitlab/ci/.gitlab-ci.on-push.yml @daryakoval
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
 .gitlab/ci/.gitlab-ci.staging.yml @ilaner
 /Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
