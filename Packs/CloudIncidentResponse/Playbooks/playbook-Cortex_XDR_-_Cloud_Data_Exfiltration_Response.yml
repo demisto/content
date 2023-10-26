@@ -315,10 +315,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 44855669-ae80-4416-87b6-8dcf491c450e
+    taskid: ae9cdfb0-7471-4fd2-842c-dd034b3e2439
     type: condition
     task:
-      id: 44855669-ae80-4416-87b6-8dcf491c450e
+      id: ae9cdfb0-7471-4fd2-842c-dd034b3e2439
       version: -1
       name: Review the alert findings
       description: |-
@@ -766,7 +766,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -848,7 +848,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -920,7 +920,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1017,8 +1017,8 @@ view: |-
     "linkLabelsPosition": {
       "32_47_#default#": 0.28,
       "32_64_Malicious": 0.21,
-      "37_30_Finish Playbook": 0.18,
-      "37_76_True Positive": 0.43
+      "37_30_Finish Playbook": 0.31,
+      "37_76_True Positive": 0.38
     },
     "paper": {
       "dimensions": {
@@ -1051,4 +1051,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 marketplaces: ["xsoar"]
-fromversion: 6.8.0
+fromversion: 6.9.0
