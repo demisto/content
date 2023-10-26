@@ -125,7 +125,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     # If there are still more dragos pages (ie more indicators) than was returned by
     # the intial query, iterate through the remaining pages and add all unique indicators
     # to the return data
-    while raw_response['total_pages'] > raw_response['page']:
+    while int(raw_response['total_pages']) > int(raw_response['page']):
         if query_list:  
             api_query = f'indicators?page={page_number}&{query_string}'
         else:
