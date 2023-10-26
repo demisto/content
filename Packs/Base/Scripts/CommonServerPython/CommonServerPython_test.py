@@ -4106,6 +4106,7 @@ def test_update_context_merge(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
     mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=True)
 
     new_mirror = {
         'channel_id': 'new_group',
@@ -4145,6 +4146,7 @@ def test_update_context_no_merge(mocker):
 
     mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
     mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=True)
 
     new_conversation = {
         'id': 'A0123456',
@@ -4176,6 +4178,7 @@ def test_get_latest_integration_context(mocker, versioned_available):
 
     mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
     mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
+    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=versioned_available)
     mocker.patch.object(demisto, 'getIntegrationContext',
                         return_value={'mirrors': MIRRORS, 'conversations': CONVERSATIONS})
 
@@ -6788,7 +6791,7 @@ class TestIndicatorsSearcher:
           - Total available indicators from page 10-16 == 7
           - No available indicators from page 17
         When:
-          - Searching indicators using iterator (search_after is supported)
+          - Searching indicators using iterator (search_after is not supported)
         Then:
           - Get 0 indicators
           - page doesn't advance (set to 18)
