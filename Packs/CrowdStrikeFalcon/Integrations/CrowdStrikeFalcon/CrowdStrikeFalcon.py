@@ -2091,6 +2091,7 @@ def get_remote_data_command(args: dict[str, Any]):
                       f'and last_update: {remote_args.last_update}')
         incident_type = find_incident_type(remote_incident_id)
         if incident_type == IncidentType.INCIDENT:
+            demisto.debug('incident found')
             mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
@@ -2143,7 +2144,9 @@ def get_remote_incident_data(remote_incident_id: str):
     Gets the relevant incident entity from the remote system (CrowdStrike Falcon). The remote system returns a list with this
     entity in it. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
     """
+    demisto.debug(f'in get_remote_incident_data({remote_incident_id=})')
     mirrored_data_list = get_incidents_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
+    demisto.debug(f'{mirrored_data_list=}')
     mirrored_data = mirrored_data_list[0]
 
     if 'status' in mirrored_data:
@@ -2151,6 +2154,7 @@ def get_remote_incident_data(remote_incident_id: str):
 
     updated_object: dict[str, Any] = {'incident_type': 'incident'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
+    demisto.debug(f'{mirrored_data=}, {updated_object=}')
     return mirrored_data, updated_object
 
 
@@ -2194,7 +2198,9 @@ def get_remote_idp_detection_data(remote_incident_id):
 
 
 def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str):
+    demisto.debug(f'in set_xsoar_incident_entries({updated_object=}, {entries=}, {remote_incident_id=})')
     if demisto.params().get('close_incident'):
+        demisto.debug('incident is being closed')
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
         elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}):
@@ -2306,18 +2312,22 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     raw_ids = []
 
     if 'Incidents' in fetch_types or "Endpoint Incident" in fetch_types:
+        LOG('fetching incidents')
         raw_ids += get_incidents_ids(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
 
     if 'Detections' in fetch_types or "Endpoint Detection" in fetch_types:
+        LOG('fetching endpoint detections')
         raw_ids += get_fetch_detections(last_updated_timestamp=last_update_timestamp, has_limit=False).get('resources', [])
 
     if "IDP Detection" in fetch_types:
+        LOG('fetching IDP detections')
         raw_ids += get_idp_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(IDP_DATE_FORMAT)}'+product:'idp'"
         ).get('resources', [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f'All ids to mirror in are: {modified_ids_to_mirror}')
+    LOG(f'All ids to mirror in are: {modified_ids_to_mirror}')
     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
 
 
