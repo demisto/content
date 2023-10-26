@@ -99,7 +99,7 @@ script:
     - contextPath: BinalyzeAIR.Acquire.result.name
       description: Acquisition task name.
       type: string
-    - contextPath: BinalyzeAIR.Acquire.result.organizationIdzzzzz
+    - contextPath: BinalyzeAIR.Acquire.result.organizationId
       description: Organization Id of endpoint.
       type: number
     description: Acquire evidence from an endpoint.
