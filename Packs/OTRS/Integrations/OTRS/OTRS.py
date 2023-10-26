@@ -627,7 +627,7 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
                 for article in articles:
 
                     # Get article details
-                    description = tableToMarkdown("OTRS Mirroring Update", article, headers=headers)
+                    description = tableToMarkdown("OTRS Mirroring Update", article, headers=headers, removeNull=True)
 
                     if article["IncomingTime"] > last_update:
                         entries.append({
