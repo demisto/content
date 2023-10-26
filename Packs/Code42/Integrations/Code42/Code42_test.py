@@ -2315,3 +2315,19 @@ def test_file_events_table_command_handles_v2_events(mocker):
     client = _create_client(code42_sdk_mock)
     cmd_res = file_events_to_table_command(client, args={"include": "all"})
     assert cmd_res.outputs is None
+
+
+def test_module_authenticated_returns_ok(code42_sdk_mock):
+    from Code42 import test_module
+    code42_sdk_mock.usercontext.get_current_tenant_id.return_value = "tenant_id"
+    client = _create_client(code42_sdk_mock)
+    cmd_res = test_module(client)
+    assert cmd_res == "ok"
+
+
+def test_module_unauthenticated_returns_invalid(code42_sdk_mock):
+    from Code42 import test_module
+    code42_sdk_mock.usercontext.get_current_tenant_id.side_effect = Exception()
+    client = _create_client(code42_sdk_mock)
+    cmd_res = test_module(client)
+    assert cmd_res != "ok"

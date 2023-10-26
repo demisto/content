@@ -219,21 +219,6 @@ def _create_alert_query(event_severity_filter, start_time):
     return alert_query
 
 
-def _get_all_high_risk_employees_from_page(page, risk_tags):
-    res = []
-    employees = page.get("items") or []
-    for employee in employees:
-        if not risk_tags:
-            res.append(employee)
-            continue
-
-        employee_tags = employee.get("riskFactors")
-        # If the employee risk tags contain all the given risk tags
-        if employee_tags and set(risk_tags) <= set(employee_tags):
-            res.append(employee)
-    return res
-
-
 class Code42Client(BaseClient):
     """
     Client will implement the service API, should not contain Cortex XSOAR logic.
@@ -1126,18 +1111,6 @@ def file_events_to_table_command(client, args):
 
 
 """Fetching"""
-
-
-def _process_event_from_observation(event):
-    # We need to convert certain fields to a stringified list else React.JS will throw an error
-    shared_with = event.get("sharedWith")
-    private_ip_addresses = event.get("privateIpAddresses")
-    if shared_with:
-        shared_list = [u.get("cloudUsername") for u in shared_with if u.get("cloudUsername")]
-        event["sharedWith"] = str(shared_list)
-    if private_ip_addresses:
-        event["privateIpAddresses"] = str(private_ip_addresses)
-    return event
 
 
 class Code42SecurityIncidentFetcher:
