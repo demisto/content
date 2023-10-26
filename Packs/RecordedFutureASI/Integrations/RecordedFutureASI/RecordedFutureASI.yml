@@ -87,12 +87,12 @@ script:
   - name: asi-project-issues-fetch
     arguments:
     - name: issues_start
-      description: timestamp to get incidents after
+      description: timestamp to get incidents after.
     - name: group_by_host
-      description: true/false whether to group incidents by changed host
+      description: true/false whether to group incidents by changed host.
     - name: expand_issues
-      description: true/false to make an incident per host & per new issue
-    description: Gets the issues for a project from a particular snapshot (defaults to recent)
+      description: true/false to make an incident per host & per new issue.
+    description: Gets the issues for a project from a particular snapshot (defaults to recent).
   dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   subtype: python3
