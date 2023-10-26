@@ -622,8 +622,9 @@ def main() -> None:  # pragma: no cover
                                       should_push_events=argToBoolean(args.get('should_push_events', 'true')))
 
         elif command == 'fetch-events':
-            pass
-            # last_run = demisto.getLastRun()
+            last_run = demisto.getLastRun()
+            demisto.debug(f"last run from demisto: {last_run}")
+            new_last_run = {"testing": "last_run"}
             # if run_vulnerabilities_fetch(last_run=last_run, first_fetch=first_fetch,
             #                              vuln_fetch_interval=vuln_fetch_interval):
             #     generate_export_uuid(client, first_fetch, last_run, severity)
@@ -632,9 +633,9 @@ def main() -> None:  # pragma: no cover
             # events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
             #
             # call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities, should_push_events=True)
-            #
-            # demisto.debug(f'Setting new last_run to {new_last_run}')
-            # demisto.setLastRun(new_last_run)
+
+            demisto.debug(f'Setting new last_run to {new_last_run}')
+            demisto.setLastRun(new_last_run)
 
         elif command == 'fetch-assets':
 
