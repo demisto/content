@@ -1273,10 +1273,10 @@ Get information of an attack surface rule ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attack_surface_rule_id | Attack surface rule ID. Has to be command separated. For example: RdpServer,InsecureOpenSSH. | Optional | 
-| enabled_status | Get the info about Rules ID(s) with enabled status on or off. Has to be command separated. For example: on,off. | Optional | 
-| priority | Get the info about Rules ID(s) with a priority. Has to be command separated. For example: high,medium. | Optional | 
-| category | Get the info about Rules ID(s) of a category. Has to be command separated. | Optional | 
+| attack_surface_rule_id |  A comma-separated list of attack surface rule IDs. For example: RdpServer,InsecureOpenSSH. | Optional | 
+| enabled_status | Get the info about rule IDs with enabled status on or off. Has to be comma separated. For example: on,off. | Optional | 
+| priority | Get the info about rule IDs with a priority. Has to be comma separated. For example: high,medium. | Optional | 
+| category | Get the info about rule IDs of a category. Has to be comma separated. | Optional | 
 
 #### Context Output
 
