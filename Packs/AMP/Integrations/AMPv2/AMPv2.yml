@@ -780,7 +780,7 @@ script:
       description: File's SHA-1.
     - type: String
       contextPath: CiscoAMP.Event.file.identity.md5
-      description: File's MD5
+      description: File's MD5.
     - type: Number
       contextPath: CiscoAMP.Event.file.parent.process_id
       description: Parent's process ID.
@@ -1747,7 +1747,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   runonce: false
   script: '-'
