@@ -1,5 +1,5 @@
-import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 from collections.abc import Callable, Generator, Iterable
 from math import ceil
 import base64
@@ -960,8 +960,20 @@ def file_screenshot_get_command(args: dict, client: Client) -> dict | CommandRes
 
 def email_report_submit_command(args: dict, client: Client) -> CommandResults:
 
+    if from_message := args.get('message'):
+        message = from_message
+    if from_entry_id := args.get('entry_id'):
+        with open(get_file_path(from_entry_id)['path']) as f:
+            message = f.read()
+    if not bool(from_message) ^ bool(from_entry_id):
+        raise DemistoException('Please provide entry_id OR message.')
+
     response = client.email_report_submit(
-        {'email': args.pop('reporter_email')} | pop_keys(args, 'message', 'password')
+        {
+            'email': args['reporter_email'],
+            'message': message,
+            'password': args.get('password'),
+        }
     )
     return submission_report_results(args, response, client)
 

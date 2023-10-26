@@ -22,13 +22,13 @@ Netcraft takedown, submission and screenshot management.
     | Submission Server URL | The URL to use for the Submission Service. | True |
     | API Key | The API key associated with the Netcraft account. | True |
     | Region | The default region to use with the Takedown Service. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Maximum number of incidents per fetch |  | False |
     | First fetch time |  | True |
     | Incidents Fetch Interval |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, API Key, and connection.
 
@@ -469,7 +469,7 @@ There is no context output for this command.
 Escalate an automated takedown to a managed takedown.
 Only attacks that are in an authorized state can be escalated.
 The minimum access level required to escalate is "Escalator".
-Note that escalating a takedown may cost one or more Netcraft managed credits.
+**Note that escalating a takedown may cost one or more Netcraft managed credits.**
 
 
 #### Base Command
@@ -1291,6 +1291,7 @@ Get a screenshot for a file associated with a submission.
 Report email messages to Netcraft for analysis.
 The email will be examined for malicious attachments and URLs.
 Optionally, emails can be encrypted before upload. If an email is encrypted before upload, it should be encrypted with AES-256-CBC, for example using OpenSSL.
+The email must be provided using either the "message" or "entry_id" arguments.
 
 
 #### Base Command
@@ -1302,8 +1303,9 @@ Optionally, emails can be encrypted before upload. If an email is encrypted befo
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | reporter_email | The reporter's email address, to which the result of Netcraft's analysis will be sent. | Required | 
-| message | Either a plain text string of the malicious email in MIME format or if the "password" argument is provided, a base64 encoded AES-256-CBC encrypted email in MIME format. Max message size is 20MiB. | Required | 
-| password | The password used to encrypt/decrypt the MIME email. Should not be provided if the email is not encrypted. | Optional | 
+| message | Either a plain text string of the malicious email in MIME format or if the "password" argument is provided, a base64 encoded AES-256-CBC encrypted email in MIME format. Max message size is 20MiB. | Optional | 
+| entry_id | Entry ID of an EML file uploaded to Cortex XSOAR. Max message size is 20MiB. | Optional | 
+| password | The password used to encrypt/decrypt the MIME email provided with the "message" argument. Should not be provided if the email is not encrypted. | Optional | 
 | polling | Use Cortex XSOAR built-in polling to wait for the report to be processed. Possible values are: true, false. Default is true. | Optional | 
 | interval_in_seconds | Indicates how long to wait between command executions (in seconds) when the 'polling' argument is true. Minimum value is 10 seconds. Default is 30. | Optional | 
 | timeout | Indicates the time in seconds until the polling sequence times out. Default is 600. | Optional | 
