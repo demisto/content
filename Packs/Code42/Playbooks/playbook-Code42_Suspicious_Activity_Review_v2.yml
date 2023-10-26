@@ -38,23 +38,25 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f6742328-5f1d-4378-8463-0c1a6c9fb6da
+    taskid: 6628da6c-5017-432f-8144-313b13c20a14
     type: regular
     task:
-      id: f6742328-5f1d-4378-8463-0c1a6c9fb6da
+      id: 6628da6c-5017-432f-8144-313b13c20a14
       version: -1
       name: Retrieve Exfiltration Events
-      description: Searches for a file in Security Data by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
-      script: '|||code42-securitydata-search'
+      description: Search for Code42 Incydr File Events.
+      script: Code42|||code42-file-events-search
       type: regular
       iscommand: true
-      brand: ""
+      brand: Code42
     nexttasks:
       '#none#':
       - "14"
     scriptarguments:
-      exposure:
-        simple: All
+      add-to-context:
+        simple: "true"
+      min_risk_score:
+        simple: "9"
       username:
         simple: ${inputs.Username}
     separatecontext: false
@@ -333,10 +335,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: cef2e894-3c93-48da-87a4-83e7400c2040
+    taskid: 9c4d9309-4696-4496-870e-5402a40af0ce
     type: regular
     task:
-      id: cef2e894-3c93-48da-87a4-83e7400c2040
+      id: 9c4d9309-4696-4496-870e-5402a40af0ce
       version: -1
       name: ConvertTableToHTML
       description: Converts a given array to an HTML table
@@ -349,7 +351,7 @@ tasks:
       - "3"
     scriptarguments:
       table:
-        simple: ${Code42.SecurityData}
+        simple: ${Code42.FileEvents}
       title:
         simple: Exposed Files
     separatecontext: false
@@ -370,10 +372,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: d721cf0d-493e-4c94-83d6-c5e3851a0853
+    taskid: 3948361e-a2fb-4b0f-8072-b59b273cbd24
     type: condition
     task:
-      id: d721cf0d-493e-4c94-83d6-c5e3851a0853
+      id: 3948361e-a2fb-4b0f-8072-b59b273cbd24
       version: -1
       name: Were exposure events found?
       description: Checks if exposure events were found.
@@ -394,7 +396,7 @@ tasks:
             value:
               complex:
                 root: Code42
-                accessor: SecurityData.EventID
+                accessor: FileEvents
                 transformers:
                 - operator: count
             iscontext: true

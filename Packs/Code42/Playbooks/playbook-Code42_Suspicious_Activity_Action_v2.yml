@@ -149,7 +149,7 @@ tasks:
       version: -1
       name: Add User to Watchlist
       description: Add a user to a watchlist.
-      script: '|||code42-watchlists-add-user'
+      script: Code42|||code42-watchlists-add-user
       type: regular
       iscommand: true
       brand: ""

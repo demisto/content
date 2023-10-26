@@ -110,18 +110,6 @@ SECURITY_EVENT_HEADERS = [
 
 SECURITY_ALERT_HEADERS = ["Type", "Occurred", "Username", "Name", "Description", "State", "ID"]
 
-DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS = CommandResults(
-    outputs_prefix="Code42.DepartingEmployee",
-    outputs_key_field="UserID",
-    readable_output="Deprecated",
-)
-
-DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS = CommandResults(
-    outputs_prefix="Code42.HighRiskEmployee",
-    outputs_key_field="UserID",
-    readable_output="Deprecated",
-)
-
 
 def _format_list(_list):
     return "\n".join(f"• {item}" for item in _list)
@@ -688,52 +676,94 @@ def alert_resolve_command(client, args):
 
 @logger
 def departingemployee_add_command(client, args):
-    return DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.DepartingEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. Please use the code42-watchlists-add-user command.",
+    )
 
 
 @logger
 def departingemployee_remove_command(client, args):
-    return DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.DepartingEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. Please use the code42-watchlists-remove-user command.",
+    )
 
 
 @logger
 def departingemployee_get_all_command(client, args):
-    return DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.DepartingEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. Please use the code42-watchlists-list-included-users command.",
+    )
 
 
 @logger
 def departingemployee_get_command(client, args):
-    return DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.DepartingEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. Please use the code42-user-get-risk-profile command.",
+    )
 
 
 @logger
 def highriskemployee_get_command(client, args):
-    return DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. Please use the code42-user-get-risk-profile command.",
+    )
 
 
 @logger
 def highriskemployee_add_command(client, args):
-    return DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. Please use the code42-watchlists-add-user command.",
+    )
 
 
 @logger
 def highriskemployee_remove_command(client, args):
-    return DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. Please use the code42-watchlists-remove-user command.",
+    )
 
 
 @logger
 def highriskemployee_get_all_command(client, args):
-    return DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. Please use the code42-watchlists-list-included-users command.",
+    )
 
 
 @logger
 def highriskemployee_add_risk_tags_command(client, args):
-    return DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. The risk tags are now represented as separate watchlist types "
+                        + "and there is no replacement for this command.",
+    )
 
 
 @logger
 def highriskemployee_remove_risk_tags_command(client, args):
-    return DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    return CommandResults(
+        outputs_prefix="Code42.HighRiskEmployee",
+        outputs_key_field="UserID",
+        readable_output="Deprecated. The risk tags are now represented as separate watchlist types "
+                        + "and there is no replacement for this command.",
+    )
 
 
 @logger
@@ -1312,48 +1342,54 @@ def create_client():
 
 
 def main():
-    client = create_client()
-    command_key = demisto.command()
-    # switch case
-    commands = {
-        "code42-alert-get": alert_get_command,
-        "code42-alert-resolve": alert_resolve_command,
-        "code42-securitydata-search": securitydata_search_command,
-        "code42-file-events-search": file_events_search_command,
-        "code42-file-events-table": file_events_to_table_command,
-        "code42-departingemployee-add": departingemployee_add_command,
-        "code42-departingemployee-remove": departingemployee_remove_command,
-        "code42-departingemployee-get-all": departingemployee_get_all_command,
-        "code42-departingemployee-get": departingemployee_get_command,
-        "code42-highriskemployee-add": highriskemployee_add_command,
-        "code42-highriskemployee-remove": highriskemployee_remove_command,
-        "code42-highriskemployee-get-all": highriskemployee_get_all_command,
-        "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
-        "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
-        "code42-highriskemployee-get": highriskemployee_get_command,
-        "code42-user-create": user_create_command,
-        "code42-user-block": user_block_command,
-        "code42-user-unblock": user_unblock_command,
-        "code42-user-deactivate": user_deactivate_command,
-        "code42-user-reactivate": user_reactivate_command,
-        "code42-user-get-risk-profile": get_user_risk_profile,
-        "code42-user-update-risk-profile": update_user_risk_profile,
-        "code42-legalhold-add-user": legal_hold_add_user_command,
-        "code42-legalhold-remove-user": legal_hold_remove_user_command,
-        "code42-download-file": download_file_command,
-        "code42-watchlists-list": list_watchlists_command,
-        "code42-watchlists-list-included-users": list_watchlists_included_users,
-        "code42-watchlists-add-user": add_user_to_watchlist_command,
-        "code42-watchlists-remove-user": remove_user_from_watchlist_command,
-    }
-    LOG(f"Command being called is {command_key}.")
-    if command_key == "test-module":
-        result = test_module(client)
-        demisto.results(result)
-    elif command_key == "fetch-incidents":
-        handle_fetch_command(client)
-    elif command_key in commands:
-        run_command(lambda: commands[command_key](client, demisto.args()))
+    try:
+        client = create_client()
+        command_key = demisto.command()
+        # switch case
+        commands = {
+            "code42-alert-get": alert_get_command,
+            "code42-alert-resolve": alert_resolve_command,
+            "code42-securitydata-search": securitydata_search_command,
+            "code42-file-events-search": file_events_search_command,
+            "code42-file-events-table": file_events_to_table_command,
+            "code42-departingemployee-add": departingemployee_add_command,
+            "code42-departingemployee-remove": departingemployee_remove_command,
+            "code42-departingemployee-get-all": departingemployee_get_all_command,
+            "code42-departingemployee-get": departingemployee_get_command,
+            "code42-highriskemployee-add": highriskemployee_add_command,
+            "code42-highriskemployee-remove": highriskemployee_remove_command,
+            "code42-highriskemployee-get-all": highriskemployee_get_all_command,
+            "code42-highriskemployee-add-risk-tags": highriskemployee_add_risk_tags_command,
+            "code42-highriskemployee-remove-risk-tags": highriskemployee_remove_risk_tags_command,
+            "code42-highriskemployee-get": highriskemployee_get_command,
+            "code42-user-create": user_create_command,
+            "code42-user-block": user_block_command,
+            "code42-user-unblock": user_unblock_command,
+            "code42-user-deactivate": user_deactivate_command,
+            "code42-user-reactivate": user_reactivate_command,
+            "code42-user-get-risk-profile": get_user_risk_profile,
+            "code42-user-update-risk-profile": update_user_risk_profile,
+            "code42-legalhold-add-user": legal_hold_add_user_command,
+            "code42-legalhold-remove-user": legal_hold_remove_user_command,
+            "code42-download-file": download_file_command,
+            "code42-watchlists-list": list_watchlists_command,
+            "code42-watchlists-list-included-users": list_watchlists_included_users,
+            "code42-watchlists-add-user": add_user_to_watchlist_command,
+            "code42-watchlists-remove-user": remove_user_from_watchlist_command,
+        }
+        LOG(f"Command being called is {command_key}.")
+        if command_key == "test-module":
+            result = test_module(client)
+            demisto.results(result)
+        elif command_key == "fetch-incidents":
+            handle_fetch_command(client)
+        elif command_key in commands:
+            run_command(lambda: commands[command_key](client, demisto.args()))
+        else:
+            raise NotImplementedError(f'{command_key} command is not implemented.')
+
+    except Exception as e:
+        return_error(str(e))
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

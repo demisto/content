@@ -14,7 +14,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* jira-v2
+* Jira V3
 * Code42
 
 ### Scripts

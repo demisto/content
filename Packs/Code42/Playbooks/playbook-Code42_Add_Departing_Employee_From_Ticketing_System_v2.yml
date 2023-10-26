@@ -66,23 +66,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 6626e856-511a-4ce6-8998-54175167492a
+    taskid: 1dcbb265-1286-4f59-8d7a-ee9b5f96cea3
     type: regular
     task:
-      id: 6626e856-511a-4ce6-8998-54175167492a
+      id: 1dcbb265-1286-4f59-8d7a-ee9b5f96cea3
       version: -1
       name: Get Ticket
-      description: Fetches an issue from a ticketing system.
-      script: jira-v2|||jira-get-issue
+      description: Fetches an issue from Jira.
+      script: Jira V3|||jira-get-issue
       type: regular
       iscommand: true
-      brand: jira-v2
+      brand: Jira V3
     nexttasks:
       '#none#':
       - "25"
       - "26"
     scriptarguments:
-      issueId:
+      issue_id:
         simple: ${inputs.IssueId}
     separatecontext: false
     continueonerrortype: ""
@@ -102,14 +102,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: b0b7a7c8-411c-4f87-8476-8a8462fba5d3
+    taskid: 7ceccfdf-ce0c-4d5c-8067-a458fa571fe3
     type: regular
     task:
-      id: b0b7a7c8-411c-4f87-8476-8a8462fba5d3
+      id: 7ceccfdf-ce0c-4d5c-8067-a458fa571fe3
       version: -1
       name: Add user to Departing Employee watchlist
       description: Add a user to a watchlist.
-      script: '|||code42-watchlists-add-user'
+      script: Code42|||code42-watchlists-add-user
       type: regular
       iscommand: true
       brand: ""
@@ -161,14 +161,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: a2d2a136-a52c-417c-88ef-905f4ef8354f
+    taskid: 0e5d7154-4957-49a6-8781-ccf7728e77eb
     type: regular
     task:
-      id: a2d2a136-a52c-417c-88ef-905f4ef8354f
+      id: 0e5d7154-4957-49a6-8781-ccf7728e77eb
       version: -1
       name: Update Departure Date on User Risk Profile
       description: Update a user's risk profile.
-      script: '|||code42-user-update-risk-profile'
+      script: Code42|||code42-user-update-risk-profile
       type: regular
       iscommand: true
       brand: ""
@@ -246,10 +246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: f5d74ebd-1f50-4a65-821b-2a176e87200d
+    taskid: 5d610e80-dbef-455d-8691-aa80cad55100
     type: condition
     task:
-      id: f5d74ebd-1f50-4a65-821b-2a176e87200d
+      id: 5d610e80-dbef-455d-8691-aa80cad55100
       version: -1
       name: Is Jira available?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -264,7 +264,7 @@ tasks:
       - "24"
     scriptarguments:
       brandname:
-        simple: jira-v2
+        simple: Jira V3
     results:
     - brandInstances
     separatecontext: false

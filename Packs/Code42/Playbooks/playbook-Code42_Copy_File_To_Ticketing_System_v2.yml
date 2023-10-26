@@ -66,10 +66,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: a20a49c7-c5bd-449b-8586-586513f08bf2
+    taskid: 0213431c-6c1a-4c43-82bd-309be99440fc
     type: regular
     task:
-      id: a20a49c7-c5bd-449b-8586-586513f08bf2
+      id: 0213431c-6c1a-4c43-82bd-309be99440fc
       version: -1
       name: Download File
       description: Downloads a file from Code42 servers.
@@ -103,28 +103,28 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 1451f320-7e82-4d17-851f-d879fa6682b9
+    taskid: 4249ab1f-ea70-4ef2-89a5-1fbd528f25bf
     type: regular
     task:
-      id: 1451f320-7e82-4d17-851f-d879fa6682b9
+      id: 4249ab1f-ea70-4ef2-89a5-1fbd528f25bf
       version: -1
       name: Upload to Ticketing System
       description: Uploads a file attachment to an issue.
-      script: jira-v2|||jira-issue-upload-file
+      script: Jira V3|||jira-issue-upload-file
       type: regular
       iscommand: true
-      brand: jira-v2
+      brand: Jira V3
     nexttasks:
       '#none#':
       - "23"
     scriptarguments:
-      attachmentName:
+      attachment_name:
         complex:
           root: File
           accessor: Name
           transformers:
           - operator: LastArrayElement
-      issueId:
+      issue_id:
         simple: ${inputs.IssueId}
       upload:
         complex:
@@ -150,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: cbdf6e77-a3eb-4a19-8842-e4081cec0d71
+    taskid: ce280a8c-0c97-4b2c-8af4-d149b9fcd736
     type: condition
     task:
-      id: cbdf6e77-a3eb-4a19-8842-e4081cec0d71
+      id: ce280a8c-0c97-4b2c-8af4-d149b9fcd736
       version: -1
       name: Is Jira available?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -168,7 +168,7 @@ tasks:
       - "24"
     scriptarguments:
       brandname:
-        simple: jira-v2
+        simple: Jira V3
     results:
     - brandInstances
     separatecontext: false

@@ -51,8 +51,6 @@ from Code42 import (
     Code42MissingSearchArgumentsError,
     file_events_search_command,
     file_events_to_table_command,
-    DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS,
-    DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS,
 )
 from requests import Response, HTTPError
 import time
@@ -1395,31 +1393,41 @@ def test_departingemployee_add_command(code42_sdk_mock):
     cmd_res = departingemployee_add_command(
         client, {"username": _TEST_USERNAME, "departuredate": "2020-01-01", "note": "Dummy note"}
     )
-    assert cmd_res == DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-add-user command."
 
 
 def test_departingemployee_remove_command(code42_sdk_mock):
     client = _create_client(code42_sdk_mock)
     cmd_res = departingemployee_remove_command(client, {"username": _TEST_USERNAME})
-    assert cmd_res == DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-remove-user command."
 
 
 def test_departingemployee_get_all_command(code42_sdk_mock):
     client = _create_client(code42_sdk_mock)
     cmd_res = departingemployee_get_all_command(client, {})
-    assert cmd_res == DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-list-included-users command."
 
 
 def test_departingemployee_get_command(code42_sdk_mock):
     client = _create_client(code42_sdk_mock)
     cmd_res = departingemployee_get_command(client, {"username": _TEST_USERNAME})
-    assert cmd_res == DEPRECATED_DEPARTING_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-user-get-risk-profile command."
 
 
 def test_highriskemployee_get_command(code42_sdk_mock):
     client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_get_command(client, {"username": _TEST_USERNAME})
-    assert cmd_res == DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-user-get-risk-profile command."
 
 
 def test_highriskemployee_add_command(code42_sdk_mock):
@@ -1427,19 +1435,25 @@ def test_highriskemployee_add_command(code42_sdk_mock):
     cmd_res = highriskemployee_add_command(
         client, {"username": _TEST_USERNAME, "note": "Dummy note"}
     )
-    assert cmd_res == DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-add-user command."
 
 
 def test_highriskemployee_remove_command(code42_sdk_mock):
     client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_remove_command(client, {"username": _TEST_USERNAME})
-    assert cmd_res == DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-remove-user command."
 
 
 def test_highriskemployee_get_all_command(code42_sdk_mock):
     client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_get_all_command(client, {})
-    assert cmd_res == DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-list-included-users command."
 
 
 def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
@@ -1448,7 +1462,11 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     cmd_res = highriskemployee_add_risk_tags_command(
         client, {"username": _TEST_USERNAME, "risktags": tags}
     )
-    assert cmd_res == DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == (
+        "Deprecated. The risk tags are now represented as separate watchlist types and there is no replacement for this command."
+    )
 
 
 def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
@@ -1457,7 +1475,11 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
         client,
         {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK,CONTRACT_EMPLOYEE"},
     )
-    assert cmd_res == DEPRECATED_HIGH_RISK_EMPLOYEE_COMMAND_RESULTS
+    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
+    assert cmd_res.outputs_key_field == "UserID"
+    assert cmd_res.readable_output == (
+        "Deprecated. The risk tags are now represented as separate watchlist types and there is no replacement for this command."
+    )
 
 
 def test_legalhold_add_user_command(code42_legal_hold_mock):

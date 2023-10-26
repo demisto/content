@@ -18,7 +18,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* code42-securitydata-search
+* code42-file-events-search
 
 ## Playbook Inputs
 
