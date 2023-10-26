@@ -1274,9 +1274,9 @@ Get information of an attack surface rule id.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | attack_surface_rule_id | Attack surface rule ID. Has to be command separated. For example: RdpServer,InsecureOpenSSH. | Optional | 
-| enabled_status | Get the info about Rules ID(s) with enabled status on or off. | Optional | 
-| priority | Get the info about Rules ID(s) with a priority. Example: high, medium or low. | Optional | 
-| category | Get the info about Rules ID(s) of a category. | Optional | 
+| enabled_status | Get the info about Rules ID(s) with enabled status on or off. Has to be command separated. For example: on,off. | Optional | 
+| priority | Get the info about Rules ID(s) with a priority. Has to be command separated. For example: high,medium. | Optional | 
+| category | Get the info about Rules ID(s) of a category. Has to be command separated. | Optional | 
 
 #### Context Output
 

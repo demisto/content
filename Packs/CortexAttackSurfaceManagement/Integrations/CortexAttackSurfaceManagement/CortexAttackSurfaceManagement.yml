@@ -421,11 +421,11 @@ script:
   - arguments:
     - description: 'Attack surface rule ID. Has to be command separated. For example: RdpServer,InsecureOpenSSH.'
       name: attack_surface_rule_id
-    - description: Get the info about Rules ID(s) with enabled status on or off.
+    - description: 'Get the info about Rules ID(s) with enabled status on or off. Has to be command separated. For example: on,off.'
       name: enabled_status
-    - description: 'Get the info about Rules ID(s) with a priority. Example: high, medium or low.'
+    - description: 'Get the info about Rules ID(s) with a priority. Has to be command separated. For example: high,medium.'
       name: priority
-    - description: Get the info about Rules ID(s) of a category.
+    - description: Get the info about Rules ID(s) of a category. Has to be command separated.
       name: category
     description: Get information of an attack surface rule id.
     name: asm-get-attack-surface-rule
