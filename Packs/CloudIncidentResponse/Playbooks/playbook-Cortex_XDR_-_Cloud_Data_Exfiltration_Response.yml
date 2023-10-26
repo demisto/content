@@ -326,7 +326,7 @@ tasks:
         Please review these alert findings and choose how to handle it.
 
         Suggested checklist for the analyst:
-        - Check the environment of the bucket - Is it in QA / Dev / Alpha / Production? Is it should be publically available?
+        - Check the environment of the bucket - Is it in QA / Dev / Alpha / Production? Is it should be publicly available?
         - Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands (such as API keys).
 
 
