@@ -85,16 +85,20 @@ def test_get_profile_id_preset() -> None:
 
 
 def test_get_profile_id_custom(requests_mock: Any) -> None:
-    # Test preset profiles
-    preset_profiles = ["browsing-history", "compromise-assessment", "event-logs", "full", "memory-ram-pagefile", "quick"]
-    expected_mocked_profile = "custom_profile"
-    if expected_mocked_profile not in preset_profiles:
-        mock_response = util_load_json('test_data/profile_id.json')
-        requests_mock.get('https://nonexistent-domain.com/api/public/acquisitions/profiles?'
+    
+    from BinalyzeAIR import Client
+    mock_response = util_load_json('test_data/profile_id.json')
+    requests_mock.get('https://nonexistent-domain.com/api/public/acquisitions/profiles?'
                           'filter[name]=profile_name&filter[organizationIds]=0',
                           json=mock_response)
-        expected_mocked_profile_id = mock_response.get('result', {}).get('entities', {})[0].get('_id', None)
-        return expected_mocked_profile_id
+    client: Client = Client(
+        base_url='https://nonexistent-domain.com',
+        verify=False
+    )
+    result = client.get_profile_id("profile_name", 0)
+    expected_mocked_profile_id = mock_response.get('result', {}).get('entities', {})[0].get('_id', None)
+    assert expected_mocked_profile_id == result                 
+
 
 
 def test_air_acquire_command(requests_mock: Any) -> None:
