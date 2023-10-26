@@ -154,6 +154,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     - section_start "Create Artifacts instance directory" --collapsed
     - |
       [ -d "${ARTIFACTS_FOLDER_INSTANCE}" ] || mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - section_start "Secrets Fetch" --collapsed
