@@ -23,7 +23,7 @@ servicenow-create-ticket
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | OwnerNotificationBody | Body of the notification \(email or ticket\) sent to the potential service owner. |  | Required |
-| RemediationGuidance | Remediation Guidance of the Attack Surface Rule |  | Required |
+| RemediationGuidance | Remediation Guidance of the Attack Surface Rule. |  | Required |
 
 ## Playbook Outputs
 
