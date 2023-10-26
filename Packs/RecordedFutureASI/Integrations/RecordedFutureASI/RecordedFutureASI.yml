@@ -16,6 +16,7 @@ configuration:
   required: false
   displaypassword: API Key
   hiddenusername: true
+  hidden: true
 - display: Project ID
   name: project_id
   type: 4
@@ -23,11 +24,7 @@ configuration:
   additionalinfo: 'The Project ID to fetch issues from '
   displaypassword: Project ID
   hiddenusername: true
-- display: Incident type
-  name: incidentType
-  type: 13
-  defaultvalue: Recorded Future ASI Alert
-  required: false
+  hidden: true
 - display: ''
   name: credential_apikey
   type: 9
@@ -40,6 +37,11 @@ configuration:
   required: false
   displaypassword: Project ID
   hiddenusername: true
+- display: Incident type
+  name: incidentType
+  type: 13
+  defaultvalue: Recorded Future ASI Alert
+  required: false
 - defaultvalue: 'Informational'
   display: Minimum severity of alerts to fetch
   name: min_severity
