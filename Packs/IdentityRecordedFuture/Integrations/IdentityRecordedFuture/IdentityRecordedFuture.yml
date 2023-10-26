@@ -59,7 +59,7 @@ configuration:
   required: true
   additionalinfo: List of domains.
 script:
-  script: ''
+  script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.13.78960
