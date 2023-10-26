@@ -4,7 +4,7 @@ from GetDataCollectionLink import (
     encode_string,
     get_data_collection_url,
     is_machine_saas,
-    generate_url
+    generate_url,
 )
 
 
@@ -51,10 +51,13 @@ def test_is_machine_saas(mocker, platform, version, expected):
     assert is_machine_saas() == expected
 
 
-@pytest.mark.parametrize("is_saas, expected", [
-    (True, "https://server/external/form/abc/xyz?otp=123"),
-    (False, "https://server/#/external/form/abc/xyz")
-])
+@pytest.mark.parametrize(
+    "is_saas, expected",
+    [
+        (True, "https://server/external/form/abc/xyz?otp=123"),
+        (False, "https://server/#/external/form/abc/xyz"),
+    ],
+)
 def test_generate_url(mocker, is_saas, expected):
     """
     Given:
@@ -64,9 +67,27 @@ def test_generate_url(mocker, is_saas, expected):
     Then:
         - it returns the expected url
     """
-    mocker.patch('GetDataCollectionLink.is_machine_saas', return_value=is_saas)
-    mocker.patch('GetDataCollectionLink.execute_command', return_value="123")
+    mocker.patch("GetDataCollectionLink.is_machine_saas", return_value=is_saas)
+    mocker.patch("GetDataCollectionLink.execute_command", return_value="123")
 
     url = generate_url("https://server", "abc", "xyz")
 
     assert url == expected
+
+
+def test_generate_url_generateOTP_unsupported(mocker):
+    """
+    Given:
+        - server url, encoded task and user
+    When:
+        - `generate_url` is called and `execute_command` raises an exception
+    Then:
+        - it returns the expected url without OTP
+    """
+
+    mocker.patch("GetDataCollectionLink.is_machine_saas", return_value=True)
+    mocker.patch("GetDataCollectionLink.execute_command", side_effect=Exception)
+
+    url = generate_url("https://server", "abc", "xyz")
+
+    assert url == "https://server/#/external/form/abc/xyz"
