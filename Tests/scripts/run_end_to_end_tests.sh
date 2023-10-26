@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-if [ $TEST_XDR_ENV ]; then
+if [ "${TEST_XDR_ENV}" == "true" ]; then
     cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
 else
     echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
