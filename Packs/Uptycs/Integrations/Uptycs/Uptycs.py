@@ -437,10 +437,10 @@ def uptycs_get_alerts_command():
 
     if context is not None:
         for index in range(len(context)):
+            metadata = json.loads(context[index].get('metadata'))
             for key in ['pid', 'PID', 'Process ID']:
-                if bool(json.loads(context[index].get('metadata')).get(key)):
-                    context[index]['pid'] = json.loads(
-                        context[index].get('metadata')).get(key)
+                if metadata.get(key):
+                    context[index]['pid'] = metadata.get(key)
                     break
                 else:
                     context[index]['pid'] = 'Not applicable or unknown'
