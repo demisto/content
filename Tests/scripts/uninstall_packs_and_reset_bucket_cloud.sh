@@ -15,7 +15,7 @@ else
 fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  if [ $TEST_XDR_ENV ]; then
+  if [ "${TEST_XDR_ENV}" == "true" ]; then
     cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
   else
     echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
