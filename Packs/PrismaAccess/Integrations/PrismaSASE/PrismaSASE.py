@@ -797,8 +797,8 @@ class Client(BaseClient):
         headers['Authorization'] = f"Bearer {access_token}"
         return headers
 
-    def quarantine_host(self, tag: dict, host_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Creating a new tag
+    def quarantine_host(self, host_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
+        """Quarantine a given host
         Args:
             host_id: Host ID that needs to be added to quarantine List
             tsg_id: Target Prisma SASE tenant ID
@@ -808,7 +808,7 @@ class Client(BaseClient):
         return self.http_request(
             method="POST",
             url_suffix=uri,
-            json_data=tag,
+            json_data={'host_id': host_id},
             tsg_id=tsg_id
         )
 
@@ -1996,12 +1996,10 @@ def quarantine_host_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """
     Command quarantine a given host
     """
-    tag = {}
-    host_id = args.get('host_id'),
+    host_id = args.get('host_id')
     tsg_id = args.get('tsg_id')
-    tag["host_id"] = host_id[0]
 
-    raw_response = client.quarantine_host(tag=tag, host_id=host_id, tsg_id=tsg_id)
+    raw_response = client.quarantine_host(host_id=host_id, tsg_id=tsg_id)
 
     outputs = raw_response
 
