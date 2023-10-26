@@ -662,7 +662,7 @@ tasks:
         simple: CloudPersistence.IAM=
       filter:
         simple: |-
-          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${GCPTimespan}" AND
+          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${inputs.GCPTimespan}" AND
           protoPayload.methodName =("google.iam.admin.v1.EnableServiceAccount" OR "google.iam.admin.v1.CreateServiceAccountKey" OR "google.iam.admin.v1.CreateServiceAccount" OR "google.iam.admin.v1.CreateRole" OR "google.iam.admin.v1.UpdateRole" OR "google.iam.admin.v1.generateAccessToken" OR "google.iam.serviceAccount.setIamPolicy")
       ignore-outputs:
         simple: "false"
@@ -708,7 +708,7 @@ tasks:
         simple: CloudPersistence.ComputeInstances=
       filter:
         simple: |-
-          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${GCPTimespan}" AND
+          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${inputs.GCPTimespan}" AND
           protoPayload.methodName =("compute.v1.instances.insert" OR "compute.v1.instances.setMetadata" OR "compute.v1.disks.insert" OR "compute.v1.instanceTemplates.insert" OR "compute.v1.instanceGroups.insert" OR "compute.v1.firewalls.insert" OR "compute.v1.firewalls.update" OR "compute.v1.firewalls.patch")
       ignore-outputs:
         simple: "false"
@@ -754,7 +754,7 @@ tasks:
         simple: CloudPersistence.ComputeFunctions=
       filter:
         simple: |-
-          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${GCPTimespan}" AND
+          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${inputs.GCPTimespan}" AND
           protoPayload.methodName =("google.cloud.functions.v1.CloudFunctionsService.CreateFunction" OR "google.cloud.functions.v1.CloudFunctionsService.UpdateFunction")
       ignore-outputs:
         simple: "false"
