@@ -263,7 +263,7 @@ inputs:
 - key: RemediationGuidance
   value: {}
   required: true
-  description: Remediation Guidance of the Attack Surface Rule
+  description: Remediation Guidance of the Attack Surface Rule.
   playbookInputQuery:
 outputs: []
 tests:
