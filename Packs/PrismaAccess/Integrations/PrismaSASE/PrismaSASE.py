@@ -1996,7 +1996,7 @@ def quarantine_host_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """
     Command quarantine a given host
     """
-    host_id = args.get('host_id')
+    host_id = args.get('host_id', '')
     tsg_id = args.get('tsg_id')
 
     raw_response = client.quarantine_host(host_id=host_id, tsg_id=tsg_id)
@@ -2004,8 +2004,7 @@ def quarantine_host_command(client: Client, args: Dict[str, Any]) -> CommandResu
     outputs = raw_response
 
     return CommandResults(
-        readable_output=tableToMarkdown('Host Quarantined',
-                                        outputs),
+        readable_output=tableToMarkdown('Host Quarantined', outputs),
         raw_response=raw_response
     )
 
