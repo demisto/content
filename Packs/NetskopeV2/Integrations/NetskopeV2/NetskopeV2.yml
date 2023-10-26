@@ -34,14 +34,14 @@ name: Netskope (API v2)
 script:
   commands:
   - arguments:
-    - description: Name of the URL list
+    - description: Name of the URL list.
       name: list_name
       required: true
-    - description: URLs to add to the list
+    - description: URLs to add to the list.
       isArray: true
       name: url
       required: true
-    description: Add URLs to the Netskope URL block list
+    description: Add URLs to the Netskope URL block list.
     name: netskopev2-add-url
     outputs:
     - contextPath: Netskope.URLList.id
@@ -70,14 +70,14 @@ script:
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
   - arguments:
-    - description: Name of the URL list
+    - description: Name of the URL list.
       name: list_name
       required: true
-    - description: URLs to remove from the list
+    - description: URLs to remove from the list.
       isArray: true
       name: url
       required: true
-    description: Remove URLs from the Netskope URL block list
+    description: Remove URLs from the Netskope URL block list.
     name: netskopev2-remove-url
     outputs:
     - contextPath: Netskope.URLList.id
@@ -106,7 +106,7 @@ script:
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
   - arguments: []
-    description: Get all applied and pending URL lists
+    description: Get all applied and pending URL lists.
     name: netskopev2-get-lists
     outputs:
     - contextPath: Netskope.List.id
@@ -135,10 +135,10 @@ script:
       description: URL List pending status ('1' if pending, '0' if not).
       type: number
   - arguments:
-    - description: Name of the URL list
+    - description: Name of the URL list.
       name: list_name
       required: true
-    description: Get URL list by ID
+    description: Get URL list by ID.
     name: netskopev2-get-list
     outputs:
     - contextPath: Netskope.List.id
