@@ -648,6 +648,7 @@ def main() -> None:  # pragma: no cover
 
             assets, new_assets_last_run = fetch_assets_command(client, assets_last_run, max_fetch)
             demisto.debug(f"Done fetching {len(assets)} assets, sending to xsiam.")
+            demisto.debug(f"new assets lastrun: {new_assets_last_run}")
             demisto.setAssetsLastRun(new_assets_last_run)
 
             # todo: to be implemented in CSP once we have the api endpoint from server
