@@ -1256,8 +1256,6 @@ class TestHappyPath:
     @pytest.mark.parametrize('args, client, expected_result', [  # disable-secrets-detection
         ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 1}, mock_client(),
          {'last_fetch_ids': ['inc_ID'], 'last_incident_number': 2}),  # case 1
-        ({'last_fetch_ids': ['inc_ID'], 'min_severity': 3, 'last_incident_number': 2}, mock_client(),
-         {'last_fetch_ids': [], 'last_incident_number': 2})  # case 2
     ])
     def test_process_incidents(self, args, client, expected_result):
         """
@@ -1274,13 +1272,12 @@ class TestHappyPath:
         """
         # prepare
         raw_incidents = [MOCKED_RAW_INCIDENT_OUTPUT.get('value')[0]]
-        last_fetch_ids = args.get('last_fetch_ids')
         min_severity = args.get('min_severity')
         last_incident_number = args.get('last_incident_number')
         latest_created_time = dateparser.parse('2020-02-02T14:05:01.5348545Z')
 
         # run
-        next_run, _ = process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time,
+        next_run, _ = process_incidents(raw_incidents, min_severity, latest_created_time,
                                         last_incident_number)
 
         # validate
@@ -1322,6 +1319,37 @@ class TestHappyPath:
         assert 'properties/createdTimeUtc ge' in call_args.get('params').get('$filter')
         assert call_args.get('params').get('$orderby') == 'properties/createdTimeUtc asc'
 
+    def test_last_run_in_fetch_incidents_duplicates(self, mocker):
+        """
+        Scenario: Update the last run when duplicates are found.
+        Given:
+            - AzureSentinel client, last_run dictionary, first_fetch_time, and a minimum severity.
+
+            The last_run dictionary mimics a last_run dict from a previous version of the integration, containing an
+            empty 'last_fetch_ids' array with the previous detected incident, and has the same incident ID from the API.
+
+        When:
+            - Calling the fetch_incidents command.
+
+        Then:
+            - Validate that the incidents was deduped and not processed.
+        """
+        # prepare
+        client = mock_client()
+        last_run = {'last_fetch_time': '2022-03-16T13:01:08Z',
+                    'last_fetch_ids': ['inc_name']}
+        first_fetch_time = '3 days'
+        minimum_severity = 0
+
+        process_mock = mocker.patch('AzureSentinel.process_incidents', return_value=({}, []))
+        mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
+
+        # run
+        fetch_incidents(client, last_run, first_fetch_time, minimum_severity)
+
+        # validate
+        assert not process_mock.call_args[0][0]
+
     @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 1)])
     def test_last_fetched_incident_for_various_severity_levels(self, mocker, min_severity, expected_incident_num):
         """
@@ -1341,7 +1369,6 @@ class TestHappyPath:
 
         # run
         next_run, incidents = process_incidents(raw_incidents=raw_incidents,
-                                                last_fetch_ids=[],
                                                 min_severity=min_severity,
                                                 latest_created_time=latest_created_time,
                                                 last_incident_number=1)
