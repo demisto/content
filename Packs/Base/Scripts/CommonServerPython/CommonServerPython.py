@@ -9043,9 +9043,11 @@ def set_integration_context(context, sync=True, version=-1):
     :return: The new integration context
     """
     demisto.debug('Setting integration context')
-
-    demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
-    return demisto.setIntegrationContextVersioned(context, version, sync)
+    if is_versioned_context_available():
+        demisto.debug('Updating integration context with version {}. Sync: {}'.format(version, sync))
+        return demisto.setIntegrationContextVersioned(context, version, sync)
+    else:
+        return demisto.setIntegrationContext(context)
 
 
 def get_integration_context(sync=True, with_version=False):
@@ -9061,12 +9063,25 @@ def get_integration_context(sync=True, with_version=False):
     :rtype: ``dict``
     :return: The integration context.
     """
-    integration_context = demisto.getIntegrationContextVersioned(sync)
+    if is_versioned_context_available():
+        integration_context = demisto.getIntegrationContextVersioned(sync)
 
-    if with_version:
-        return integration_context
+        if with_version:
+            return integration_context
+        else:
+            return integration_context.get('context', {})
     else:
-        return integration_context.get('context', {})
+        return demisto.getIntegrationContext()
+
+
+def is_versioned_context_available():
+    """
+    Determines whether versioned integration context is available according to the server version.
+
+    :rtype: ``bool``
+    :return: Whether versioned integration context is available
+    """
+    return is_demisto_version_ge(MIN_VERSION_FOR_VERSIONED_CONTEXT)
 
 
 def set_to_integration_context_with_retries(context, object_keys=None, sync=True,
