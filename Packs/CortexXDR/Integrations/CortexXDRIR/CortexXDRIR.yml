@@ -776,12 +776,12 @@ script:
       isArray: true
       name: dist_name
     - description: |-
-        A comma-separated list of IP addresses.
-        Example: 8.8.8.8,1.1.1.1.
+        A comma-separated list of private IP addresses.
+        Example: 10.1.1.1,192.168.1.1.
       isArray: true
       name: ip_list
     - description: |-
-        A comma-separated list of public IP addresses.
+        A comma-separated list of public IP addresses that correlate to the last IPv4 address from which the XDR agent connected (know as `Last Origin IP`).
         Example: 8.8.8.8,1.1.1.1.
       isArray: true
       name: public_ip_list
