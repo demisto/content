@@ -3,16 +3,15 @@ from datetime import datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-import tenacity
-from jira import JIRA, Issue, JIRAError
+from jira import JIRA, Issue
 from jira.client import ResultList
 from junitparser import TestSuite, JUnitXml
 from tabulate import tabulate
 
 from Tests.scripts.common import get_properties_for_test_suite
-from Tests.scripts.jira_issues import generate_ticket_summary, generate_query, \
+from Tests.scripts.jira_issues import generate_ticket_summary, generate_query_with_summary, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
-    generate_build_markdown_link
+    generate_build_markdown_link, convert_jira_time_to_datetime
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
@@ -35,7 +34,7 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
                        f"{properties['file_name']}.xml")
     description = generate_description_for_test_modeling_rule(ci_pipeline_id, properties, test_suite, junit_file_name)
     summary = generate_ticket_summary(get_summary_for_test_modeling_rule(properties))  # type: ignore[arg-type]
-    jql_query = generate_query(summary)
+    jql_query = generate_query_with_summary(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen,
                                                                               search_issues[0] if search_issues else None)
@@ -79,7 +78,8 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
 def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
                                                 properties: dict[str, str],
                                                 test_suite: TestSuite,
-                                                junit_file_name: str) -> str:
+                                                junit_file_name: str,
+                                                ) -> str:
     build_markdown_link = generate_build_markdown_link(ci_pipeline_id)
     table = tabulate(tabular_data=[
         ["Total", test_suite.tests],
@@ -98,28 +98,10 @@ def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
     return description
 
 
-@tenacity.retry(
-    wait=tenacity.wait_exponential(multiplier=1, min=2, max=10),
-    stop=tenacity.stop_after_attempt(2),
-    reraise=True,
-    retry=tenacity.retry_if_exception_type(JIRAError),
-    before_sleep=tenacity.before_sleep_log(logging.getLogger(), logging.DEBUG)
-)
-def search_in_jira_ticket_for_test_modeling_rule(jira_server: JIRA, summary: str) -> Issue | None:
-    ticket_summary = generate_ticket_summary(summary)
-    jql_query = generate_query(ticket_summary)
-    search_issues: ResultList[Issue] = jira_server.search_issues(jql_query)  # type: ignore[assignment]
-    if search_issues:
-        summary_lower = summary.lower()
-        for issue in search_issues:
-            if summary_lower in issue.get_field("summary").lower():
-                return issue
-    return None
-
-
 def calculate_test_modeling_rule_results(test_modeling_rules_results_files: dict[str, Path],
-                                         jira_server: JIRA | None = None
+                                         issues: dict[str, list[Issue]] | None = None,
                                          ) -> tuple[dict[str, dict[str, TestSuite]], dict[str, Issue], set[str]]:
+    issues = issues or {}
     modeling_rules_to_test_suite: dict[str, dict[str, TestSuite]] = defaultdict(dict)
     jira_tickets_for_modeling_rule: dict[str, Issue] = {}
     server_versions: set[str] = set()
@@ -130,11 +112,12 @@ def calculate_test_modeling_rule_results(test_modeling_rules_results_files: dict
             properties = get_properties_for_test_suite(test_suite)
             if summary := get_summary_for_test_modeling_rule(properties):
                 modeling_rules_to_test_suite[summary][instance_role] = test_suite
-                if jira_server:
-                    try:
-                        if issue := search_in_jira_ticket_for_test_modeling_rule(jira_server, summary):
-                            jira_tickets_for_modeling_rule[summary] = issue
-                    except JIRAError:
-                        logging.error(f"Failed to search for Jira ticket for {summary}")
+                ticket_summary = generate_ticket_summary(summary).lower()
+                if issues_matching_summary := issues.get(ticket_summary, []):
+                    sorted_issues_matching_summary = sorted(issues_matching_summary,
+                                                            key=lambda issue: convert_jira_time_to_datetime(
+                                                                issue.get_field("created")),
+                                                            reverse=True)
+                    jira_tickets_for_modeling_rule[summary] = sorted_issues_matching_summary[0]
 
     return modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions
