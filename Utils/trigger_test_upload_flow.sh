@@ -30,7 +30,8 @@ _bucket_xsoar_saas="${TEST_XDR_PREFIX}marketplace-saas-dist-dev"
 _bucket_upload="true"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
-_sdk_ref=${SDK_REF:-master}
+_sdk_ref="${SDK_REF:-master}"
+_override_sdk_ref="${DEMISTO_SDK_NIGHTLY:-}"
 # Parsing the user inputs.
 
 while [[ "$#" -gt 0 ]]; do
@@ -96,7 +97,9 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -sr|--sdk-ref) _sdk_ref="$2"
+  -sr|--sdk-ref)
+    _sdk_ref="${2}"
+    _override_sdk_ref="true"
     shift
     shift;;
 
@@ -169,6 +172,6 @@ curl --request POST \
   --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
   --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
-  --form "variables[OVERRIDE_SDK_REF]=${DEMISTO_SDK_NIGHTLY}" \
   --form "variables[SDK_REF]=${_sdk_ref}" \
+  --form "variables[OVERRIDE_SDK_REF]=${_override_sdk_ref}" \
   "$BUILD_TRIGGER_URL"
