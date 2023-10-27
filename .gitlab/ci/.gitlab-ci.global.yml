@@ -210,18 +210,22 @@
   - set | grep -E "^CI_.*=|^GITLAB.*=" | sort
   - section_end "Gitlab CI Build Parameters"
 
-.checkout-upload-commit-nightly: &checkout-upload-commit
-  - section_start "Checkout upload commit"
+.checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
+  - section_start "Checkout upload commit content nightly"
   - | 
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "install_packs_nightly_bugs" ]]; then
       echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
-      git checkout $LAST_UPLOAD_COMMIT -- ./Packs
-      git commit ./Packs -m "make packs last upload commit"
+      git reset $LAST_UPLOAD_COMMIT -- ./Packs
+      git checkout -- ./Packs
+      git clean -fd ./Packs
+      git status
+      git commit ./Packs -m "content nightly: revert Packs folder to upload commit $LAST_UPLOAD_COMMIT"
+      echo "content nightly: successfully reverted the Packs folder to upload commit $LAST_UPLOAD_COMMIT
     else
       echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
     fi
   - |
-  - section_end "Checkout upload commit"
+  - section_end "Checkout upload commit content nightly"
 
 
 .default-before-script:
@@ -241,7 +245,7 @@
     - *neo4j-setup
     - *build_parameters
     - *gitlab_ci_build_parameters
-    - *checkout-upload-commit
+    - *checkout-upload-commit-content-nightly
 
 .default-after-script:
   - source .gitlab/helper_functions.sh
