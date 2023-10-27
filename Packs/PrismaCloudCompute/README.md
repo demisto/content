@@ -1,6 +1,77 @@
-![image](https://user-images.githubusercontent.com/49071222/72906531-0e452a00-3d3b-11ea-8703-8b97ddf30be0.png)
+# Prisma Cloud Compute
+This pack includes Cortex XSIAM content.
+
+<~XSIAM>
+A step-by-step configuration process is available at Cortex XSIAM Administrator Guide- [Ingest Alerts from Prisma Cloud Compute](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Alerts-from-Prisma-Cloud). 
+
+## Configuration on XSIAM
+1. Click **Settings** > **Data Sources**.
+2. In the Prisma Cloud Compute Collector configuration, click **Add Instance** to begin a new alerts integration.
+3. Specify the name for the Prisma Cloud Compute Collector displayed in Cortex XSIAM.
+4. Save & Generate Token. The token is displayed in a blue box, which is blurred in the image below.
+   * Click the Copy icon next to the Username and Password, and record them in a safe place, as you will need to provide them when you configure the Prisma Cloud Compute Collector for alerts integration. If you forget to record the key and close the window, you will need to generate a new key and repeat this process. When you are finished, click **Done** to close the window.
+5. Copy api url.
+   * In the Data Sources page for the Prisma Cloud Compute Collector that you created, click **Copy api url**, and record it somewhere safe. You will need to provide this API URL when you set the Incoming Webhook URL as part of the configuration in Prisma Cloud Compute.
+
+**Note**:
+The URL format for the tenant is `https://api-<tenant name>.xdr.us.paloaltonetworks.com/logs/v1/prisma`.
+
+## Configuration on Prisma Cloud Compute
+1. In Prisma Cloud Compute, create a webhook as explained in the [Webhook Alerts](https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-admin-compute/alerts/webhook) section of the Prisma Cloud Administrator’s Guide (Compute).
+   * Config file for Webhook:
+```json
+//{
+  "type": "#type",
+  "time": "#time",
+  "container": "#container",
+  "containerID": "#containerID",
+  "image": "#image",
+  "imageID": "#imageID",
+  "tags": "#tags",
+  "host": "#host",
+  "fqdn": "#fqdn",
+  "function": "#function",
+  "region": "#region",
+  "provider": "#provider",
+  "osRelease": "#osRelease",
+  "osDistro": "#osDistro",
+  "runtime": "#runtime",
+  "appID": "#appID",
+  "rule": "#rule",
+  "message": "#message",
+  "aggregatedAlerts": #aggregatedAlerts,
+  "dropped": #dropped,
+  "forensics": "#forensics",
+  "accountID": "#accountID",
+  "category": "#category",
+  "command": "#command",
+  "startupProcess": "#startupProcess",
+  "labels": #labels,
+  "collections": #collections,
+  "complianceIssues": #complianceIssues,
+  "vulnerabilities": #vulnerabilities,
+  "clusters": #clusters,
+  "namespaces": #namespaces,
+  "accountIDs": #accountIDs,
+  "user": "#user"
+//}
+```
+2. Use the **Webhook** option to configure the webhook.
+3. In **Incoming Webhook URL**, paste the API URL that you copied and recorded from **Copy api url**.
+4. In **Credential Options**, select **Basic Authentication**, and use the Username and Password that you saved when you generated the token.
+5. Select **Container Runtime**.
+6. Click **Save**.
+   * In Cortex XSIAM, once alerts start to come in, a green checkmark appears underneath the Prisma Cloud Compute Collector configuration with the amount of data received.
+7. After Cortex XSIAM begins receiving data from Prisma Cloud Compute, you can use XQL Search to search for specific data using the `prisma_cloud_compute_raw` dataset.
 
 
+**Pay Attention**:
+Timestamp parsing support is available for the **time** field in `%h %d, %Y %H:%M:%S UTC` format (E.g `Oct 14, 2023 09:16:04 UTC`)
+
+
+</~XSIAM>
+
+<~XSOAR>
 ## Overview
 
 This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Demisto
@@ -68,3 +139,4 @@ At this point, you can add tasks that extend the playbook to check and respond t
 If any alerts are missing in Demisto, check the status of the integration:
 
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_instance.png)
+</~XSOAR>
