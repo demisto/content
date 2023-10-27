@@ -1,4 +1,5 @@
 import pytest
+from pytest_mock import MockerFixture
 
 from AzureLogAnalytics import Client, execute_query_command, list_saved_searches_command, tags_arg_to_request_format
 
@@ -78,7 +79,7 @@ def mock_client():
     return client
 
 
-def test_execute_query_command(mocker):
+def test_execute_query_command(mocker: MockerFixture):
     """
     Given:
         - A LogAnalytics client object
@@ -89,7 +90,7 @@ def test_execute_query_command(mocker):
         - Ensure the output's structure is as expected
     """
     client = mock_client()
-    args = {}
+    args: dict = {"query": "dummy"}
     mocker.patch.object(client, 'http_request', return_value=MOCKED_EXECUTE_QUERY_OUTPUT)
 
     command_result = execute_query_command(client, args=args)
@@ -100,7 +101,7 @@ def test_execute_query_command(mocker):
     assert command_result.outputs[1].get('Data')[1].get('column4') == 4
 
 
-def test_list_saved_searches_command(mocker):
+def test_list_saved_searches_command(mocker: MockerFixture):
     """
     Given:
         - A LogAnalytics client object
@@ -145,7 +146,7 @@ def test_tags_arg_to_request_format():
 
 
 @pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
-def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+def test_test_module_command_with_managed_identities(mocker: MockerFixture, requests_mock, client_id):
     """
     Scenario: run test module when managed identities client id provided.
     Given:
@@ -179,7 +180,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert 'ok' in AzureLogAnalytics.return_results.call_args[0][0]
 
 
-def test_generate_login_url(mocker):
+def test_generate_login_url(mocker: MockerFixture):
     """
     Given:
         - Self-deployed are true and auth code are the auth flow

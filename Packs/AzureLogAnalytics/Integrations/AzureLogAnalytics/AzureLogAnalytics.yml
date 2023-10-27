@@ -266,6 +266,30 @@ script:
     execution: false
     name: azure-log-analytics-auth-reset
     arguments: []
+  - arguments:
+    - description: the name of the table to add
+      name: table_name
+      required: true
+    - description: Maximum number of records in the result set, up to one million records.
+      name: limit
+      defaultValue: 50
+    - description: Log query written in KQL to retrieve data.
+      name: query
+      required: true
+    - description: Start of the time range to search.
+      name: start_search_time
+    - description: End of the time range to search.
+      name: end_search_time
+    - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution.
+      name: first_run
+      defaultValue: true
+      hidden: true
+    - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+      name: hide_polling_output
+      hidden: true
+    polling: true
+    description: Run a search job to fetch records from large datasets into a new search results table in your workspace.
+    name: azure-log-analytics-run-search-job
   dockerimage: demisto/crypto:1.0.0.66562
   runonce: false
   script: '-'

@@ -1,18 +1,15 @@
-# IMPORTS
+from collections.abc import Callable
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from MicrosoftApiModule import *  # noqa: E402
-import urllib3
-
-# Disable insecure warnings
-urllib3.disable_warnings()
+from json import JSONDecodeError
 
 ''' CONSTANTS '''
 
 APP_NAME = 'ms-azure-log-analytics'
 
-API_VERSION = '2021-06-01'
+API_VERSION = "2021-12-01-preview" #'2021-06-01'
 
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
@@ -20,7 +17,7 @@ AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access t
 SAVED_SEARCH_HEADERS = [
     'etag', 'id', 'category', 'displayName', 'functionAlias', 'functionParameters', 'query', 'tags', 'version', 'type'
 ]
-
+PARAMS = demisto.params()
 LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
 AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
 AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation'
@@ -50,7 +47,7 @@ class Client:
             scope='' if client_credentials else AUTH_CODE_SCOPE,
             tenant_id=tenant_id,
             auth_code=auth_code,
-            ok_codes=(200, 204, 400, 401, 403, 404, 409),
+            ok_codes=(200, 202, 204, 400, 401, 403, 404, 409),
             multi_resource=True,
             resources=[AZURE_MANAGEMENT_RESOURCE, LOG_ANALYTICS_RESOURCE],
             certificate_thumbprint=certificate_thumbprint,
@@ -94,10 +91,10 @@ class Client:
 ''' INTEGRATION HELPER METHODS '''
 
 
-def format_query_table(table):
+def format_query_table(table: dict[str, Any]):
     name = table.get('name')
-    columns = [column.get('name') for column in table.get('columns')]
-    rows = table.get('rows')
+    columns = [column.get('name') for column in table.get('columns', [])]
+    rows = table.get('rows', [])
     data = [
         dict(zip(columns, row)) for row in rows
     ]
@@ -105,21 +102,19 @@ def format_query_table(table):
     return name, columns, data
 
 
-def query_output_to_readable(tables):
-    readable_output = '## Query Results\n'
+def query_output_to_readable(tables):  #TODO no use
     tables_markdown = [tableToMarkdown(name=name,
                                        t=data,
                                        headers=columns,
                                        headerTransform=pascalToSpace,
                                        removeNull=True) for name, columns, data in tables]
-    readable_output += '\n'.join(tables_markdown)
-
+    readable_output = '## Query Results\n' + '\n'.join(tables_markdown)
     return readable_output
 
 
-def flatten_saved_search_object(saved_search_obj):
-    ret = saved_search_obj.get('properties')
-    ret['id'] = saved_search_obj.get('id').split('/')[-1]
+def flatten_saved_search_object(saved_search_obj : dict[str, Any]) -> dict[str, Any]:
+    ret: dict = saved_search_obj.get('properties', {})
+    ret['id'] = saved_search_obj.get('id','').split('/')[-1]
     ret['etag'] = saved_search_obj.get('etag')
     ret['type'] = saved_search_obj.get('type')
     if ret.get('tags'):
@@ -128,7 +123,7 @@ def flatten_saved_search_object(saved_search_obj):
     return ret
 
 
-def tags_arg_to_request_format(tags):
+def tags_arg_to_request_format(tags) -> list[dict[str, str]] | None:
     bad_arg_msg = 'The `tags` argument is malformed. ' \
                   'Value should be in the following format: `name=value;name=value`'
     if not tags:
@@ -147,15 +142,19 @@ def tags_arg_to_request_format(tags):
         } for tag in tags]
     except IndexError:
         return_error(bad_arg_msg)
-
+    return None
 
 ''' INTEGRATION COMMANDS '''
 
 
-def test_connection(client, params):
-    if not client.ms_client.managed_identities_client_id \
-        and (params.get('self_deployed', False) and not params.get('client_credentials')
-             and not (params.get('credentials_auth_code', {}).get('password') or params.get('auth_code'))):
+def test_connection(client: Client, params: dict[str, Any]) -> str:
+    if (
+        not client.ms_client.managed_identities_client_id
+        and params.get('self_deployed', False)
+        and not params.get('client_credentials')
+        and not params.get('credentials_auth_code', {}).get('password')
+        and not params.get('auth_code')
+    ):
         return_error('You must enter an authorization code in a self-deployed configuration.')
 
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
@@ -168,9 +167,9 @@ def test_connection(client, params):
     return 'ok'
 
 
-def execute_query_command(client, args):
-    query = args.get('query')
-    timeout = int(args.get('timeout', 10))
+def execute_query_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    query = args['query']
+    timeout = arg_to_number(args.get('timeout', 10))
     workspace_id = demisto.params().get('workspaceID')
     full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
 
@@ -188,7 +187,7 @@ def execute_query_command(client, args):
     output = []
 
     readable_output = '## Query Results\n'
-    for table in response.get('tables'):
+    for table in response.get('tables', []):
         name, columns, data = format_query_table(table)
         readable_output += tableToMarkdown(name=name,
                                            t=data,
@@ -210,9 +209,9 @@ def execute_query_command(client, args):
     )
 
 
-def list_saved_searches_command(client, args):
-    page = int(args.get('page'))
-    limit = int(args.get('limit'))
+def list_saved_searches_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    page = arg_to_number(args.get('page')) or 0
+    limit = arg_to_number(args.get('limit')) or 50
     url_suffix = '/savedSearches'
 
     response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
@@ -239,8 +238,8 @@ def list_saved_searches_command(client, args):
     )
 
 
-def get_saved_search_by_id_command(client, args):
-    saved_search_id = args.get('saved_search_id')
+def get_saved_search_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    saved_search_id = args['saved_search_id']
     url_suffix = f'/savedSearches/{saved_search_id}'
 
     response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
@@ -261,12 +260,12 @@ def get_saved_search_by_id_command(client, args):
     )
 
 
-def create_or_update_saved_search_command(client, args):
-    saved_search_id = args.get('saved_search_id')
+def create_or_update_saved_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    saved_search_id = args['saved_search_id']
+    display_name = args['display_name']
+    category = args['category']
+    query = args['query']
     etag = args.get('etag')
-    category = args.get('category')
-    display_name = args.get('display_name')
-    query = args.get('query')
 
     if not etag and not (category and query and display_name):
         return_error('You must specify category, display_name and query arguments for creating a new saved search.')
@@ -306,8 +305,8 @@ def create_or_update_saved_search_command(client, args):
     )
 
 
-def delete_saved_search_command(client, args):
-    saved_search_id = args.get('saved_search_id')
+def delete_saved_search_command(client: Client, args: dict[str, Any]) -> str:
+    saved_search_id = args['saved_search_id']
     url_suffix = f'/savedSearches/{saved_search_id}'
 
     client.http_request('DELETE', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
@@ -315,13 +314,99 @@ def delete_saved_search_command(client, args):
     return f'Successfully deleted the saved search {saved_search_id}.'
 
 
-def main():
-    """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-    """
-    params = demisto.params()
+def get_search_job_status(client: Client, table_name: str) -> str:
+    url_suffix = f"/tables/{table_name}_SRCH"
+    response = client.http_request(
+                'GET',
+                url_suffix,
+                resource=AZURE_MANAGEMENT_RESOURCE,
+                timeout=60
+            )
 
-    LOG(f'Command being called is {demisto.command()}')
+    return response["properties"]["provisioningState"]
+
+@polling_function(
+    name="azure-log-analytics-run-search-job",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 60),),
+    timeout=arg_to_number(demisto.args().get("timeout", 600)),
+    requires_polling_arg=False,  # means it will always default to poll
+)
+def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
+    table_name = args['table_name']
+    if argToBoolean(args["first_run"]):
+        query = args['query']
+        limit = arg_to_number(args['limit'])
+        start_search_time = args.get('start_search_time')
+        end_search_time = args.get('end_search_time')
+        timespan = args.get('timespan')
+        url_suffix = f"/tables/{table_name}_SRCH"
+        data = {
+        "properties": { 
+            "searchResults": {
+                    "query": query,
+                    "limit": limit,
+                    "startSearchTime": start_search_time,
+                    "endSearchTime": end_search_time
+                }
+        }
+    }
+        try:
+            client.http_request(
+                'PUT',
+                url_suffix,
+                resource=AZURE_MANAGEMENT_RESOURCE,
+                data=data,
+                timeout=60
+            )
+        except JSONDecodeError as e:
+            print(e)
+        except Exception as e:
+            if "[InvalidParameter 400] This operation is not permitted as properties.searchResult is immutable." in  e.args[0]:
+                return_warning(f"Search job {table_name}_SRCH already exists - please choose another name", exit=True)
+            raise e
+        args["first_run"] = False
+        return PollResult(
+            response=None,
+            partial_result=CommandResults(readable_output="Command was sent successfully."),
+            args_for_next_run=args,
+            continue_to_poll=True
+        )
+    else:
+        if get_search_job_status(client, table_name) not in ["Succeeded"]:
+            return PollResult(
+                continue_to_poll=True,
+                args_for_next_run=args,
+                response=None,
+            )
+        else:
+            args["workspaces"] = demisto.params()['workspaceName']
+            args["query"] = f'{table_name}_SRCH'
+            
+            return PollResult(
+                continue_to_poll=False,
+                response=execute_query_command(client, args)
+            )
+        
+
+def validate_params(refresh_token, managed_identities_client_id, client_credentials, enc_key, self_deployed, certificate_thumbprint, private_key):
+    if not refresh_token:
+        raise DemistoException('Token / Tenant ID must be provided.')
+    if not managed_identities_client_id:
+        if client_credentials and not enc_key:
+            raise DemistoException("Client Secret must be provided for client credentials flow.")
+        elif not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+    
+
+def main():
+    command = demisto.command()
+    params = demisto.params()
+    args = demisto.args()
+
+    demisto.debug(f'Command being called is {command}')
 
     try:
         self_deployed = params.get('self_deployed', False)
@@ -335,16 +420,16 @@ def main():
         self_deployed = self_deployed or client_credentials or managed_identities_client_id is not None
         refresh_token = params.get('credentials_refresh_token', {}).get('password') or params.get('refresh_token')
         auth_code = params.get('credentials_auth_code', {}).get('password') or params.get('auth_code')
-        if not refresh_token:
-            raise DemistoException('Token / Tenant ID must be provided.')
-        if not managed_identities_client_id:
-            if client_credentials and not enc_key:
-                raise DemistoException("Client Secret must be provided for client credentials flow.")
-            elif not self_deployed and not enc_key:
-                raise DemistoException('Key must be provided. For further information see '
-                                       'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
-            elif not enc_key and not (certificate_thumbprint and private_key):
-                raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+        validate_params(
+            refresh_token,
+            managed_identities_client_id,
+            client_credentials,
+            enc_key,
+            self_deployed,
+            certificate_thumbprint,
+            private_key
+            )
+
 
         client = Client(
             self_deployed=self_deployed,
@@ -353,9 +438,9 @@ def main():
             enc_key=enc_key,  # client_secret or enc_key
             redirect_uri=params.get('redirect_uri', ''),
             auth_code=auth_code if not client_credentials else '',
-            subscription_id=params.get('subscriptionID'),
-            resource_group_name=params.get('resourceGroupName'),
-            workspace_name=params.get('workspaceName'),
+            subscription_id=params['subscriptionID'],
+            resource_group_name=params['resourceGroupName'],
+            workspace_name=params['workspaceName'],
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             certificate_thumbprint=certificate_thumbprint,
@@ -364,7 +449,7 @@ def main():
             managed_identities_client_id=managed_identities_client_id,
         )
 
-        commands = {
+        commands: dict[str, Callable[[Client, dict], CommandResults | str]] = {
             'azure-log-analytics-execute-query': execute_query_command,
             'azure-log-analytics-list-saved-searches': list_saved_searches_command,
             'azure-log-analytics-get-saved-search-by-id': get_saved_search_by_id_command,
@@ -372,7 +457,7 @@ def main():
             'azure-log-analytics-delete-saved-search': delete_saved_search_command,
         }
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             if not managed_identities_client_id:
                 # cannot use test module if not using Managed Identities
                 # due to the lack of ability to set refresh token to integration context
@@ -381,21 +466,25 @@ def main():
             test_connection(client, params)
             return_results('ok')
 
-        elif demisto.command() == 'azure-log-analytics-generate-login-url':
+        elif command == 'azure-log-analytics-generate-login-url':
             return_results(generate_login_url(client.ms_client))
 
-        elif demisto.command() == 'azure-log-analytics-test':
+        elif command == 'azure-log-analytics-test':
             test_connection(client, params)
             return_outputs('```✅ Success!```')
 
-        elif demisto.command() == 'azure-log-analytics-auth-reset':
+        elif command == 'azure-log-analytics-auth-reset':
             return_results(reset_auth())
-
-        elif demisto.command() in commands:
-            return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
+        elif command == 'azure-log-analytics-run-search-job':
+            return_results(run_search_job_command(args, client))
+        elif command in commands:
+            return_results(commands[command](client, args))
+        
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
