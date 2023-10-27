@@ -98,7 +98,7 @@ def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
 
 
 def calculate_test_modeling_rule_results(test_modeling_rules_results_files: dict[str, Path],
-                                         issues: dict[str, list[Issue]] | None = None
+                                         issues: dict[str, list[Issue]] | None = None,
                                          ) -> tuple[dict[str, dict[str, TestSuite]], dict[str, Issue], set[str]]:
     issues = issues or {}
     modeling_rules_to_test_suite: dict[str, dict[str, TestSuite]] = defaultdict(dict)

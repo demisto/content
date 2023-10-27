@@ -25,7 +25,7 @@ JIRA_LABELS = json.loads(os.environ.get("JIRA_LABELS", "[]"))
 
 
 def generate_ticket_summary(prefix: str) -> str:
-    summary = f"{prefix} fails nightly"
+    summary = f"{prefix} fails nightly"  # This is the existing conventions of the Content gold bot, don't change as it will break backward compatibility.
     return summary
 
 
@@ -100,7 +100,8 @@ def jira_server_information(jira_server: JIRA):
 
 def jira_search_all_by_query(jira_server: JIRA,
                              jql_query: str,
-                             max_results_per_request: int = 100) -> dict[str, list[Issue]]:
+                             max_results_per_request: int = 100,
+                             ) -> dict[str, list[Issue]]:
 
     # Initialize pagination parameters
     start_at = 0
