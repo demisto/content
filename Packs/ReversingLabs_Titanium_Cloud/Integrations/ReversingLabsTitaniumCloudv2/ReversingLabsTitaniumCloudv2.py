@@ -2166,7 +2166,7 @@ def network_reputation_override_output(response_json):
     removed_overrides = response_json.get("rl").get("user_override").get("removed_overrides")
     invalid = response_json.get("rl").get("user_override").get("invalid_network_locations")
 
-    markdown = "## ReversingLabs Network reputation user override - Response"
+    markdown = "## ReversingLabs Network reputation user override"
 
     if created_overrides:
         created_overrides_table = tableToMarkdown(
@@ -2201,9 +2201,35 @@ def network_reputation_override_output(response_json):
     return results
 
 
-
 def network_reputation_overrides_list_command():
-    pass
+    net_rep_override = create_net_rep_override_obj()
+
+    limit = int(demisto.getArg("result_limit"))
+
+    try:
+        response = net_rep_override.list_overrides_aggregated(max_results=limit)
+    except Exception as e:
+        return_error(str(e))
+
+    results = network_reputation_overrides_list_output(response=response)
+    return_results(results)
+
+
+def network_reputation_overrides_list_output(response):
+    entries_table = tableToMarkdown(
+        name="Network location list",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs Network reputation active user overrides list\n {entries_table}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"network_reputation_overrides_list": response},
+        readable_output=markdown
+    )
+
+    return results
 
 
 def main():
@@ -2319,6 +2345,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-network-reputation-override":
         network_reputation_override_command()
+
+    elif command == "reversinglabs-titaniumcloud-network-reputation-overrides-list":
+        network_reputation_overrides_list_command()
 
     else:
         return_error(f"Command {command} does not exist")

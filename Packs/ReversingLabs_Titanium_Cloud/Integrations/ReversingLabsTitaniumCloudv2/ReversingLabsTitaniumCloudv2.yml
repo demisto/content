@@ -717,6 +717,17 @@ script:
     - contextPath: ReversingLabs.network_reputation_override
       description: Network reputation user override.
       type: Unknown
+  - name: reversinglabs-titaniumcloud-network-reputation-overrides-list
+    description: Lists the active network reputation overrides.
+    arguments:
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+      required: false
+    outputs:
+    - contextPath: ReversingLabs.network_reputation_overrides_list
+      description: Network reputation overrides list.
+      type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.79362
   runonce: false
   script: '-'
