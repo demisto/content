@@ -220,7 +220,7 @@
       git clean -fd ./Packs
       git status
       git commit ./Packs -m "content nightly: revert Packs folder to upload commit $LAST_UPLOAD_COMMIT"
-      echo "content nightly: successfully reverted the Packs folder to upload commit $LAST_UPLOAD_COMMIT
+      echo "content nightly: successfully reverted the Packs folder to upload commit $LAST_UPLOAD_COMMIT"
     else
       echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
     fi
