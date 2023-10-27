@@ -127,7 +127,7 @@ class TestTaxiiServer:
 
         @retry_http_request(times=20)
         def do_taxii2_server_request(url: str):
-            return requests.get(url, auth=basic_auth)
+            return requests.get(url, auth=basic_auth, headers={"Accept": "application/taxii+json;version=2.1"})
 
         collection_api_url = f'{xsoar_ng_client.external_base_url}/instance/execute/{instance_name}/threatintel/collections/'
 
