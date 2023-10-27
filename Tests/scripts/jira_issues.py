@@ -109,9 +109,10 @@ def jira_search_all_by_query(jira_server: JIRA,
 
     start_at = 0  # Initialize pagination parameters
     issues: dict[str, list[Issue]] = defaultdict(list)
-    issues_batch: ResultList[Issue]
-    while issues_batch := jira_server.search_issues(jql_query, startAt=start_at,
-                                                    maxResults=max_results_per_request):
+    while True:
+        issues_batch: ResultList[Issue] = jira_server.search_issues(jql_query,
+                                                                    startAt=start_at,
+                                                                    maxResults=max_results_per_request)
         for issue in issues_batch:
             summary: str = issue.get_field("summary").lower()
             issues[summary].append(issue)
