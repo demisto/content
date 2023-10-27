@@ -218,6 +218,11 @@
       git reset $LAST_UPLOAD_COMMIT -- ./Packs
       git checkout -- ./Packs
       git clean -fd ./Packs
+      deleted_files=$(git diff --name-only --diff-filter=D $LAST_UPLOAD_COMMIT..master -- Packs)
+      echo "deleted files between last upload commit $LAST_UPLOAD_COMMIT to master are $deleted_files"
+      for file in $deleted_files; do
+        git checkout HEAD -- "$file"
+      done
       git status
       git commit ./Packs -m "content nightly: revert Packs folder to upload commit $LAST_UPLOAD_COMMIT"
       echo "content nightly: successfully reverted the Packs folder to upload commit $LAST_UPLOAD_COMMIT"
