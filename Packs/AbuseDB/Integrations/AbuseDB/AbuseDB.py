@@ -248,8 +248,10 @@ def check_ip_command(reliability, ip, days=MAX_AGE, verbose=VERBOSE, threshold=T
     ip_list = argToList(ip)
     entry_list = []
     private_ips = []
+    override_private_lookup = argToBoolean(args.get("override_private_lookup", "False"))
+    
     for current_ip in ip_list:
-        if disable_private_ip_lookup and ipaddress.ip_address(current_ip).is_private:
+        if disable_private_ip_lookup and ipaddress.ip_address(current_ip).is_private and not override_private_lookup:
             private_ips.append(current_ip)
             continue
         params["ipAddress"] = current_ip

@@ -14,6 +14,7 @@
 <li><strong>Source Reliability</strong>: Reliability of the source providing the intelligence data.</li>
 <li><strong>IP Threshold. Minimum score from AbuseIPDB analysis to consider the IP malicious. (&gt;20).</strong></li>
 <li><strong>Max reports age.</strong></li>
+<li><strong>Disable reputation lookups for private IP addresses</strong>: To reduce the number of lookups made to the AbuseIPDB API.</li>
 <li><strong>Disregard quota errors.</strong></li>
 </ul>
 </li>

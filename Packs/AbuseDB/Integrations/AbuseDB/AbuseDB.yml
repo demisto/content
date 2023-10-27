@@ -87,6 +87,13 @@ script:
       description: The IP address to check (CSV supported).
       isArray: true
       name: ip
+    - default: false
+    - name: override_private_lookup
+      description: When set to "true", enrichment of private IP addresses will be conducted even if it has been disabled at the integration level.
+      defaultValue: false
+      predefined:
+      - 'true'
+      - 'false'
     - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
       name: days
@@ -278,7 +285,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.72123
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test
