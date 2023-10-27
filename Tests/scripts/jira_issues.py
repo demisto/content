@@ -25,7 +25,8 @@ JIRA_LABELS = json.loads(os.environ.get("JIRA_LABELS", "[]"))
 
 
 def generate_ticket_summary(prefix: str) -> str:
-    summary = f"{prefix} fails nightly"  # This is the existing conventions of the Content gold bot, don't change as it will break backward compatibility.
+    # This is the existing conventions of the Content Gold Bot, don't change as it will break backward compatibility.
+    summary = f"{prefix} fails nightly"
     return summary
 
 
