@@ -891,8 +891,8 @@ def test_submit_file_to_sandbox(mocker):
         mock_submit_file_to_sandbox_response,
     )
     args = {
-        "file_path": "http://adsd.com",
-        "filename": "XDR_ResponseApp_CollectFile.7z",
+        "file_path": "https://docs.docker.com/get-started/docker_cheatsheet.pdf",
+        "filename": "cheat_sheet.pdf",
         "archive_password": "6hn467c8",
         "document_password": "",
         "arguments": "",
