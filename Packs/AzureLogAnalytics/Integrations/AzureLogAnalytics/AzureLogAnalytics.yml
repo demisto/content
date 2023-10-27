@@ -290,7 +290,7 @@ script:
     polling: true
     description: Run a search job to fetch records from large datasets into a new search results table in your workspace.
     name: azure-log-analytics-run-search-job
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.79610
   runonce: false
   script: '-'
   subtype: python3

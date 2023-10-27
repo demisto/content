@@ -9,7 +9,7 @@ from json import JSONDecodeError
 
 APP_NAME = 'ms-azure-log-analytics'
 
-API_VERSION = "2021-12-01-preview" #'2021-06-01'
+API_VERSION = "2021-12-01-preview"  # '2021-06-01'
 
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
@@ -102,7 +102,7 @@ def format_query_table(table: dict[str, Any]):
     return name, columns, data
 
 
-def query_output_to_readable(tables):  #TODO no use
+def query_output_to_readable(tables):  # TODO no use
     tables_markdown = [tableToMarkdown(name=name,
                                        t=data,
                                        headers=columns,
@@ -112,9 +112,9 @@ def query_output_to_readable(tables):  #TODO no use
     return readable_output
 
 
-def flatten_saved_search_object(saved_search_obj : dict[str, Any]) -> dict[str, Any]:
+def flatten_saved_search_object(saved_search_obj: dict[str, Any]) -> dict[str, Any]:
     ret: dict = saved_search_obj.get('properties', {})
-    ret['id'] = saved_search_obj.get('id','').split('/')[-1]
+    ret['id'] = saved_search_obj.get('id', '').split('/')[-1]
     ret['etag'] = saved_search_obj.get('etag')
     ret['type'] = saved_search_obj.get('type')
     if ret.get('tags'):
@@ -143,6 +143,7 @@ def tags_arg_to_request_format(tags) -> list[dict[str, str]] | None:
     except IndexError:
         return_error(bad_arg_msg)
     return None
+
 
 ''' INTEGRATION COMMANDS '''
 
@@ -317,13 +318,14 @@ def delete_saved_search_command(client: Client, args: dict[str, Any]) -> str:
 def get_search_job_status(client: Client, table_name: str) -> str:
     url_suffix = f"/tables/{table_name}_SRCH"
     response = client.http_request(
-                'GET',
-                url_suffix,
-                resource=AZURE_MANAGEMENT_RESOURCE,
-                timeout=60
-            )
+        'GET',
+        url_suffix,
+        resource=AZURE_MANAGEMENT_RESOURCE,
+        timeout=60
+    )
 
     return response["properties"]["provisioningState"]
+
 
 @polling_function(
     name="azure-log-analytics-run-search-job",
@@ -338,18 +340,17 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
         limit = arg_to_number(args['limit'])
         start_search_time = args.get('start_search_time')
         end_search_time = args.get('end_search_time')
-        timespan = args.get('timespan')
         url_suffix = f"/tables/{table_name}_SRCH"
         data = {
-        "properties": { 
-            "searchResults": {
+            "properties": {
+                "searchResults": {
                     "query": query,
                     "limit": limit,
                     "startSearchTime": start_search_time,
                     "endSearchTime": end_search_time
                 }
+            }
         }
-    }
         try:
             client.http_request(
                 'PUT',
@@ -361,7 +362,7 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
         except JSONDecodeError as e:
             print(e)
         except Exception as e:
-            if "[InvalidParameter 400] This operation is not permitted as properties.searchResult is immutable." in  e.args[0]:
+            if "[InvalidParameter 400] This operation is not permitted as properties.searchResult is immutable." in e.args[0]:
                 return_warning(f"Search job {table_name}_SRCH already exists - please choose another name", exit=True)
             raise e
         args["first_run"] = False
@@ -379,14 +380,14 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
                 response=None,
             )
         else:
-            args["workspaces"] = demisto.params()['workspaceName']
+            args["workspaces"] = demisto.params()['workspaceName'] # TODO chack if nedded
             args["query"] = f'{table_name}_SRCH'
-            
+
             return PollResult(
                 continue_to_poll=False,
                 response=execute_query_command(client, args)
             )
-        
+
 
 def validate_params(refresh_token, managed_identities_client_id, client_credentials, enc_key, self_deployed, certificate_thumbprint, private_key):
     if not refresh_token:
@@ -399,7 +400,7 @@ def validate_params(refresh_token, managed_identities_client_id, client_credenti
                                     'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
         elif not enc_key and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
-    
+
 
 def main():
     command = demisto.command()
@@ -428,8 +429,7 @@ def main():
             self_deployed,
             certificate_thumbprint,
             private_key
-            )
-
+        )
 
         client = Client(
             self_deployed=self_deployed,
@@ -479,7 +479,7 @@ def main():
             return_results(run_search_job_command(args, client))
         elif command in commands:
             return_results(commands[command](client, args))
-        
+
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
