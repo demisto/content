@@ -697,12 +697,25 @@ script:
     description: Returns network reputation for requested network locations.
     arguments:
     - name: network_locations
-      description: A comma-separated list of network location. The list should have no spaces.
+      description: A comma-separated list of network locations. The list should have no spaces.
       required: true
       isArray: true
     outputs:
     - contextPath: ReversingLabs.network_reputation
       description: Network reputation.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-network-reputation-override
+    description: Sets and removes user-requested network reputation overrides.
+    arguments:
+    - name: set_overrides_list
+      description: Network locations whose reputations should be overriden. The locations should be written as a string in the following format - 'network_location,location_type,new_classification|network_location,location_type,new_classification|network_location,location_type,new_classification'
+      required: false
+    - name: remove_overrides_list
+      description: Network locations whose reputation overrides should be removed. The locations should be written as a string in the following format - 'network_location,location_type|network_location,location_type|network_location,location_type'
+      required: false
+    outputs:
+    - contextPath: ReversingLabs.network_reputation_override
+      description: Network reputation user override.
       type: Unknown
   dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.79362
   runonce: false

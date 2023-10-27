@@ -2106,10 +2106,100 @@ def network_reputation_output(response_json, network_locations):
     return results
 
 
+def create_net_rep_override_obj():
+    """Creates an NetworkReputationUserOverride object."""
+    net_rep_override = NetworkReputationUserOverride(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    return net_rep_override
+
+
+def create_override_payload(piped_string, action=None):
+    """A function for creating the Network Reputation User Override objects."""
+    split_by_pipe = piped_string.split("|")
+    list_of_dicts = []
+
+    for one_location in split_by_pipe:
+        values_list = one_location.split(",")
+        location_dict = {
+            "network_location": values_list[0],
+            "type": values_list[1]
+        }
+        if action == "set_override":
+            location_dict["classification"] = values_list[2]
+        list_of_dicts.append(location_dict)
+
+    return list_of_dicts
 
 
 def network_reputation_override_command():
-    pass
+    net_rep_override = create_net_rep_override_obj()
+
+    set_override_str = demisto.getArg("set_overrides_list")
+    remove_override_str = demisto.getArg("remove_overrides_list")
+
+    set_list = create_override_payload(piped_string=set_override_str, action="set_override") if set_override_str else []
+    remove_list = create_override_payload(piped_string=remove_override_str) if remove_override_str else []
+
+    try:
+        response = net_rep_override.reputation_override(
+            override_list=set_list,
+            remove_overrides_list=remove_list
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = network_reputation_override_output(response_json=response_json)
+
+    return_results(results)
+
+
+def network_reputation_override_output(response_json):
+    created_overrides = response_json.get("rl").get("user_override").get("created_overrides")
+    removed_overrides = response_json.get("rl").get("user_override").get("removed_overrides")
+    invalid = response_json.get("rl").get("user_override").get("invalid_network_locations")
+
+    markdown = "## ReversingLabs Network reputation user override - Response"
+
+    if created_overrides:
+        created_overrides_table = tableToMarkdown(
+            name="Created overrides",
+            t=created_overrides
+        )
+
+        markdown = f"{markdown}\n {created_overrides_table}"
+
+    if removed_overrides:
+        removed_overrides_table = tableToMarkdown(
+            name="Removed overrides",
+            t=removed_overrides
+        )
+
+        markdown = f"{markdown}\n {removed_overrides_table}"
+
+    if invalid:
+        invalid_table = tableToMarkdown(
+            name="Invalid network locations",
+            t=invalid
+        )
+
+        markdown = f"{markdown}\n {invalid_table}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"network_reputation_override": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
 
 
 def network_reputation_overrides_list_command():
@@ -2226,6 +2316,9 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-network-reputation":
         network_reputation_command()
+
+    elif command == "reversinglabs-titaniumcloud-network-reputation-override":
+        network_reputation_override_command()
 
     else:
         return_error(f"Command {command} does not exist")
