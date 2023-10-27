@@ -110,7 +110,7 @@ def jira_search_all_by_query(jira_server: JIRA,
     while issues_batch := jira_server.search_issues(jql_query, startAt=start_at,
                                                     maxResults=max_results_per_request):
         for issue in issues_batch:
-            summary = issue.get_field("summary").lower()
+            summary: str = issue.get_field("summary").lower()
             issues.setdefault(summary, []).append(issue)
 
         # Update the startAt value for the next page
