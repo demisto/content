@@ -9147,10 +9147,12 @@ def get_integration_context_with_version(sync=True):
     """
     latest_integration_context_versioned = get_integration_context(sync, with_version=True)
     version = -1
-
-    integration_context = latest_integration_context_versioned.get('context', {})
-    if sync:
-        version = latest_integration_context_versioned.get('version', 0)
+    if is_versioned_context_available():
+        integration_context = latest_integration_context_versioned.get('context', {})
+        if sync:
+            version = latest_integration_context_versioned.get('version', 0)
+    else:
+        integration_context = latest_integration_context_versioned
 
     return integration_context, version
 
