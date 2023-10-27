@@ -103,27 +103,17 @@ def jira_search_all_by_query(jira_server: JIRA,
                              max_results_per_request: int = 100,
                              ) -> dict[str, list[Issue]]:
 
-    # Initialize pagination parameters
-    start_at = 0
-    total_issues = float('inf')  # Set an initial value to enter the loop.
+    start_at = 0  # Initialize pagination parameters
     issues: dict[str, list[Issue]] = {}
-    while start_at < total_issues:
-        # Perform the Jira issue search with pagination
-        issues_batch = jira_server.search_issues(jql_query, startAt=start_at,
-                                                 maxResults=max_results_per_request)
-
-        if not issues_batch:
-            break  # No more results to fetch
-
-        # Print the matching issues for this page
+    while issues_batch := jira_server.search_issues(jql_query, startAt=start_at,
+                                                    maxResults=max_results_per_request):
         for issue in issues_batch:
             summary = issue.get_field("summary").lower()
             issues.setdefault(summary, []).append(issue)
 
         # Update the startAt value for the next page
         start_at += max_results_per_request
-
-        # Update the total_issues based on the actual total in the result
-        total_issues = issues_batch.total
+        if start_at >= issues_batch.total:
+            break
 
     return issues
