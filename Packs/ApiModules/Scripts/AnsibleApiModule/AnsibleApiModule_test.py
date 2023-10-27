@@ -1,6 +1,8 @@
 import os
+import unittest
 
-from AnsibleApiModule import dict2md, rec_ansible_key_strip, generate_ansible_inventory, generic_ansible
+from AnsibleApiModule import dict2md, rec_ansible_key_strip, generate_ansible_inventory, generic_ansible, \
+    clean_ansi_codes
 from test_data.markdown import MOCK_SINGLE_LEVEL_LIST, EXPECTED_MD_LIST, MOCK_SINGLE_LEVEL_DICT, EXPECTED_MD_DICT
 from test_data.markdown import MOCK_MULTI_LEVEL_DICT, EXPECTED_MD_MULTI_DICT, MOCK_MULTI_LEVEL_LIST
 from test_data.markdown import EXPECTED_MD_MULTI_LIST, MOCK_MULTI_LEVEL_LIST_ID_NAMES, EXPECTED_MD_MULTI_LIST_ID_NAMES
@@ -285,3 +287,25 @@ def test_generic_ansible_with_problematic_stdout():
 
         assert CommandResults.readable_output == expected_readable
         assert CommandResults.outputs == expected_outputs
+
+
+class TestCleanAnsiCodes(unittest.TestCase):
+    def test_clean_ansi_codes(self):
+        # Given: A string with ANSI escape codes.
+        input_string = "\x1b[0;32mHello\x1b[0m World\x1b[0;31m!"
+
+        # When: The function is invoked.
+        result = clean_ansi_codes(input_string)
+
+        # Then: The returned string should be cleaned of ANSI codes.
+        self.assertEqual(result, "Hello World!")
+
+    def test_without_ansi_codes(self):
+        # Given: A string without any ANSI escape codes.
+        input_string = "Hello World!"
+
+        # When: The function is invoked.
+        result = clean_ansi_codes(input_string)
+
+        # Then: The returned string should remain unchanged.
+        self.assertEqual(result, "Hello World!")
