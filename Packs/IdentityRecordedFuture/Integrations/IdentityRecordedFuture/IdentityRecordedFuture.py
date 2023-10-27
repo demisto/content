@@ -125,10 +125,13 @@ def main() -> None:
         base_url = demisto_params.get("server_url", "").rstrip("/")
         verify_ssl = not demisto_params.get("unsecure", False)
         proxy = demisto_params.get("proxy", False)
-        # If user has not set password properties we will get empty string but client require empty list
+        api_token = demisto_params.get("credential", {}).get("password") or demisto_params.get("token")
+        if not api_token:
+            return_error('Please provide a valid API token')
 
+        # If user has not set password properties we will get empty string but client require empty list
         headers = {
-            "X-RFToken": demisto_params["token"],
+            "X-RFToken": api_token,
             "X-RF-User-Agent": f"xsoar-identity/{__version__} rfclient (Cortex_XSOAR_"
             f'{demisto.demistoVersion()["version"]})',
         }
