@@ -15,8 +15,6 @@ configuration:
   required: false
   type: 4
   additionalinfo: The API Key to use for the connection.
-  displaypassword: API Key
-  hiddenusername: true
   hidden: true
 - name: credentials
   type: 9
