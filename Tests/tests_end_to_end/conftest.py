@@ -1,5 +1,4 @@
 import json
-import os
 import pytest
 
 from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (

@@ -1,6 +1,3 @@
-import json
-import logging
-import time
 
 import pytest
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
@@ -97,7 +94,9 @@ class TestEDL:
             return requests.get(url, auth=basic_auth)
 
         response = do_edl_request()
-        assert response.text, f'could not get indicators from {url=} with available indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, status code={response.status_code}, response={response.text}'
+        assert response.text, f'could not get indicators from {url=} with available ' \
+                              f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
+                              f'status code={response.status_code}, response={response.text}'
 
 
 class TestTaxiiServer:
@@ -123,7 +122,7 @@ class TestTaxiiServer:
         def get_json_response(_response: requests.Response) -> dict:
             try:
                 return _response.json()
-            except json.JSONDecoder as e:
+            except ValueError as e:
                 raise ValueError(f'Could not parse {_response.text}, error: {e}')
 
         @retry_http_request(times=20)
@@ -135,17 +134,20 @@ class TestTaxiiServer:
         # get the collections available
         response = do_taxii2_server_request(collection_api_url)
         collections = get_json_response(response).get("collections")
-        assert collections, f'could not get collections from url={collection_api_url}, status_code={response.status_code}, response={collections}'
+        assert collections, f'could not get collections from url={collection_api_url}, ' \
+                            f'status_code={response.status_code}, response={collections}'
 
         collection_id = collections[0]["id"]
 
         # get the actual indicators from the collection
-        indicators_url = f'{xsoar_ng_client.external_base_url}/instance/execute/{instance_name}/threatintel/collections/{collection_id}/objects'
+        indicators_url = f'{xsoar_ng_client.external_base_url}/instance/execute/{instance_name}/' \
+                         f'threatintel/collections/{collection_id}/objects'
         response = do_taxii2_server_request(indicators_url)
         indicators = get_json_response(response).get("objects")
 
-        assert indicators, f'could not get indicators from url={indicators_url} with available indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, status code={response.status_code}, response={indicators}'
-
+        assert indicators, f'could not get indicators from url={indicators_url} with available ' \
+                           f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
+                           f'status code={response.status_code}, response={indicators}'
 
 
 # class TestQradar:
@@ -156,4 +158,3 @@ class TestTaxiiServer:
 #     integration_id = "QRadar v3"
 #
 #     def test_qradar_mirroring(self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, integration_params: dict):
-
