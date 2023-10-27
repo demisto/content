@@ -219,7 +219,7 @@
       git checkout -- ./Packs
       git clean -fd ./Packs
       deleted_files=$(git diff --name-only --diff-filter=D $LAST_UPLOAD_COMMIT..HEAD -- Packs)
-      if [[ -n "${NIGHTLY}" ]]; then
+      if [[ -n "${deleted_files}" ]]; then
         echo "deleted files between last upload commit $LAST_UPLOAD_COMMIT to branch $(git branch --show-current) are $deleted_files"
       fi
       for file in $deleted_files; do
