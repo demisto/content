@@ -9,6 +9,7 @@ urllib3.disable_warnings()
 
 DEFAULT_SEARCH_LIMIT = 100
 MAX_ALERTS = 100  # max alerts per fetch
+ONE_HOUR = 3600
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 V1_URL_SUFFIX = "/public_api/v1"
 V2_URL_SUFFIX = "/public_api/v2"
@@ -40,6 +41,20 @@ ALERT_STATUSES = [
     "resolved_contested_asset",
     "resolved_remediated_automatically",
     "resolved"
+]
+ASSET_HEADER_HEADER_LIST = [
+    "name",
+    "ip",
+    "first_observed",
+    "last_observed",
+    "domain",
+    "asset_type",
+    "asm_ids",
+    "asset_explainers",
+    "service_type",
+    "tags",
+    "recent_ips",
+    "domain_details"
 ]
 
 
@@ -125,16 +140,19 @@ class Client(BaseClient):
 
         return response
 
-    def list_asset_internet_exposure_request(self, search_params: list[dict]) -> dict[str, Any]:
+    def list_asset_internet_exposure_request(self, search_params: list[dict], search_from: int = 0,
+                                             search_to: int = DEFAULT_SEARCH_LIMIT) -> dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
 
         Args:
             search_params (list): list of search parameters to add to the API call body.
+            search_from (int): Starting search index.
+            search_to (int): Ending search index.
 
         Returns:
             dict: dict containing list of internet exposure assets.
         """
-        data = {"request_data": {"filters": search_params, "search_to": DEFAULT_SEARCH_LIMIT}}
+        data = {"request_data": {"filters": search_params, "search_to": int(search_to), "search_from": int(search_from)}}
 
         response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/get_assets_internet_exposure/', json_data=data)
 
@@ -212,6 +230,22 @@ class Client(BaseClient):
             dict: dict containing whether the assignment request was successful.
         """
         response = self._http_request('POST', f'{V1_URL_SUFFIX}/incidents/get_incidents/', json_data=request_data)
+
+        return response
+
+    def get_incident_request(self, incident_id: str) -> dict[str, Any]:
+        """Fetches an incident from the 'incidents/get_incident_extra_data' endpoint.
+
+        Args:
+            incident_id (str): Incident ID
+
+        Returns:
+            dict: dict containing whether the assignment request was successful.
+        """
+        request_data = {
+            "request_data": {"incident_id": incident_id}
+        }
+        response = self._http_request('POST', f'{V1_URL_SUFFIX}/incidents/get_incident_extra_data/', json_data=request_data)
 
         return response
 
@@ -532,6 +566,8 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
             ``args['name']`` name of asset to search on.
             ``args['type']`` type of external service.
             ``args['has_active_external_services']`` if the internet exposure have an active external service.
+            ``args['search_from']`` Represents the start offset index of results.
+            ``args['search_to']`` Represents the end offset index of results.
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
@@ -541,6 +577,8 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
     name = args.get('name')
     asm_type = args.get('type')
     has_active_external_services = args.get('has_active_external_services')
+    search_from = int(args.get('search_from', 0))
+    search_to = int(args.get('search_to', DEFAULT_SEARCH_LIMIT))
     # create list of search parameters or pass empty list.
     search_params = []
     if ip_address:
@@ -552,7 +590,8 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
     if has_active_external_services:
         search_params.append({"field": "has_active_external_services", "operator": "in", "value": [has_active_external_services]})
 
-    response = client.list_asset_internet_exposure_request(search_params)
+    response = client.list_asset_internet_exposure_request(
+        search_params=search_params, search_to=search_to, search_from=search_from)
     formatted_response = response.get('reply', {}).get('assets_internet_exposure')
     parsed = format_asm_id(formatted_response)
     markdown = tableToMarkdown('Asset Internet Exposures', parsed, removeNull=True,
@@ -810,7 +849,7 @@ def remove_tag_to_ranges_command(client: Client, args: dict[str, Any]) -> Comman
 
 def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
-    asm-list-alerts command: Returns list of asm incidents.
+    asm-list-incidents command: Returns list of asm incidents.
 
     Args:
         client (Client): CortexXpanse client to use.
@@ -887,6 +926,48 @@ def list_incidents_command(client: Client, args: dict[str, Any]) -> CommandResul
         outputs_prefix='ASM.Incident',
         outputs_key_field='incident_id',
         outputs=parsed,
+        raw_response=response,
+        readable_output=markdown
+    )
+
+    return command_results
+
+
+def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    asm-get-incident command: Returns a single incident
+
+    Args:
+        client (Client): CortexXpanse client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['incident_id']`` Integer of the Incident ID.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains incident details
+    """
+    incident_id = args.get('incident_id')
+
+    if not incident_id:
+        raise ValueError('Incident ID must be provided.')
+
+    response = client.get_incident_request(incident_id)
+
+    parsed = response.get('reply', {})
+    incident = parsed.get('incident', {})
+    alerts = []
+    for alert in parsed.get("alerts", {}).get("data", {}):
+        alerts.append({
+            "alert_id": alert.get("alert_id"),
+            "name": alert.get("name"),
+            "description": alert.get("description"),
+            "resolution_status": alert.get("resolution_status"),
+        })
+    incident["alerts"] = alerts
+    markdown = tableToMarkdown('ASM Incident', incident, removeNull=True, headerTransform=string_to_table_header)
+    command_results = CommandResults(
+        outputs_prefix='ASM.Incident',
+        outputs_key_field='incident_id',
+        outputs=incident,
         raw_response=response,
         readable_output=markdown
     )
@@ -1002,6 +1083,137 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     return command_results
 
 
+def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    """
+    ip command returns enrichment for an IP address.
+
+    Args:
+        client (Client): CortexXpanse client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['ip']`` IP to enrich
+
+    Returns:
+        List of CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
+    """
+    ips = argToList(args.get('ip'))
+    if len(ips) == 0:
+        raise ValueError('ip(s) not specified')
+
+    # trim down the list to the max number of supported results
+    if len(ips) > DEFAULT_SEARCH_LIMIT:
+        ips = ips[:DEFAULT_SEARCH_LIMIT]
+
+    ip_data_list: list[dict[str, Any]] = []
+    command_results = []
+    for ip in ips:
+        search_params = [{"field": "ip_address", "operator": "eq", "value": ip}]
+        ip_data = client.list_asset_internet_exposure_request(search_params=search_params)
+        formatted_response = ip_data.get("reply", {}).get("assets_internet_exposure", {})
+        if len(formatted_response) > 0:
+            formatted_response = formatted_response[0]
+        else:
+            continue
+
+        formatted_response['ip'] = ip
+        ip_standard_context = Common.IP(
+            ip=ip,
+            dbot_score=Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name="CortexXpanse",
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integration_reliability')
+            ),
+            hostname=formatted_response.get("domain", "N/A")
+        )
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown("New IP indicator was found", {"IP": ip}),
+            indicator=ip_standard_context
+        ))
+
+        ip_data_list.append({
+            k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
+        })
+
+    readable_output = tableToMarkdown(
+        'Xpanse IP List', ip_data_list) if len(ip_data_list) > 0 else "## No IPs found"
+    command_results.append(CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='ASM.IP',
+        outputs_key_field=['ip', 'asset_type'],
+        outputs=ip_data_list if len(ip_data_list) > 0 else None,
+    ))
+    return command_results
+
+
+def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    """
+    domain command returns enrichment for a domain.
+
+    Args:
+        client (Client): CortexXpanse client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+            ``args['domain']`` Domain to enrich
+
+    Returns:
+        List of CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
+    """
+    domains = argToList(args.get('domain'))
+    if len(domains) == 0:
+        raise ValueError('domains(s) not specified')
+
+    # trim down the list to the max number of supported results
+    if len(domains) > DEFAULT_SEARCH_LIMIT:
+        domains = domains[:DEFAULT_SEARCH_LIMIT]
+
+    domain_data_list: list[dict[str, Any]] = []
+    command_results = []
+    for domain in domains:
+        search_params = [{"field": "name", "operator": "eq", "value": domain}]
+        domain_data = client.list_asset_internet_exposure_request(search_params=search_params)
+        formatted_response = domain_data.get("reply", {}).get("assets_internet_exposure", {})
+        if len(formatted_response) > 0:
+            formatted_response = formatted_response[0]
+        else:
+            continue
+
+        formatted_response['domain'] = domain
+
+        if domain.startswith('*.'):
+            indicator_type = DBotScoreType.DOMAINGLOB
+        else:
+            indicator_type = DBotScoreType.DOMAIN
+
+        domain_standard_context = Common.Domain(
+            domain=domain,
+            dbot_score=Common.DBotScore(
+                indicator=domain,
+                indicator_type=indicator_type,
+                integration_name="CortexXpanse",
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integration_reliability')
+            )
+        )
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown("New Domain indicator was found", {"Domain": domain}),
+            indicator=domain_standard_context
+        ))
+
+        domain_data_list.append({
+            k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
+        })
+
+    readable_output = tableToMarkdown(
+        'Xpanse Domain List', domain_data_list) if len(domain_data_list) > 0 else "## No Domains found"
+    command_results.append(CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='ASM.Domain',
+        outputs_key_field=['name', 'asset_type'],
+        outputs=domain_data_list if len(domain_data_list) > 0 else None,
+    ))
+    return command_results
+
+
 def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
                     first_fetch_time: Optional[int], severity: Optional[list],
                     status: Optional[list], tags: Optional[str]
@@ -1027,6 +1239,10 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
     last_fetch = first_fetch_time if last_fetch is None else int(last_fetch)
 
     latest_created_time = cast(int, last_fetch)
+    # because some values are not populated immediately at alert creation time,
+    # we will add an additional offset to increase the likelihood that these are available
+    latest_created_time = latest_created_time + ONE_HOUR
+
     incidents = []
 
     # Changed from 'last_fetch' to 'latest_created time' because they are the same and fixed type error.
@@ -1046,7 +1262,6 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: dict[str, int],
 
     items = raw.get('reply', {}).get('alerts')
     for item in items:
-        # for item in items.outputs:
         incident_created_time = item['detection_timestamp']
         incident = {
             'name': item['name'],
@@ -1162,8 +1377,11 @@ def main() -> None:
             'asm-tag-range-assign': assign_tag_to_ranges_command,
             'asm-tag-range-remove': remove_tag_to_ranges_command,
             'asm-list-incidents': list_incidents_command,
+            'asm-get-incident': get_incident_command,
             'asm-update-incident': update_incident_command,
-            'asm-update-alerts': update_alert_command
+            'asm-update-alerts': update_alert_command,
+            'ip': ip_command,
+            'domain': domain_command
         }
 
         if command == 'test-module':

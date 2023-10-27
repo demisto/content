@@ -23,7 +23,7 @@ def parseIds(idsArg):
     return str(idsArg)
 
 
-def should_run_with_guid():
+def should_run_with_guid():  # pragma: no cover
     """
     The function verifies that the server has the right version in order to support
      the stopScheduleEntry command and the add-on of the GUID to the Schedule command.
@@ -50,9 +50,19 @@ def calculate_end_time(timeout):
     return end_time.strftime(short_format)
 
 
-def main():
+def is_value_sanitized(value):
+    arg_names = ['pollingCommand', 'pollingCommandArgName',
+                 'additionalPollingCommandArgNames', 'additionalPollingCommandArgValues',
+                 ]
+    return all(current_arg_name not in value for current_arg_name in arg_names)
+
+
+def main():  # pragma: no cover
     args = demisto.args()
     ids = parseIds(args.get('ids'))
+    if not is_value_sanitized(ids):
+        return_error("The value of ids is malformed")
+
     dt = args.get('dt')
     pollingCommand = args.get('pollingCommand')
     pollingCommandArgName = args.get('pollingCommandArgName')
@@ -77,11 +87,12 @@ def main():
         demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
                         "that all ids have finished running.")
 
-    command_string = '''!GenericPollingScheduledTask pollingCommand="{0}" pollingCommandArgName="{1}"{2} ids="{3}" \
-                        pendingIds="{4}" interval="{5}" timeout="{6}" tag="{7}" additionalPollingCommandArgNames="{8}" \
-                        additionalPollingCommandArgValues="{9}"'''.format(pollingCommand, pollingCommandArgName, playbookId,
-                                                                          ids.replace('"', r'\"'), dt.replace('"', r'\"'),
-                                                                          interval, timeout, tag, args_names, args_values)
+    command_string = '''!GenericPollingScheduledTask ids="{}" pollingCommand="{}" pollingCommandArgName="{}"{} \
+                        pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
+                        additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
+                                                                         pollingCommandArgName, playbookId,
+                                                                         dt.replace('"', r'\"'), interval, timeout,
+                                                                         tag, args_names, args_values)
     schedule_command_args = {
         'command': command_string,
         'cron': f'*/{interval} * * * *',

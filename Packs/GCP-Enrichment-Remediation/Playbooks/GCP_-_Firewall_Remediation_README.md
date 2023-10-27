@@ -14,14 +14,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* Set
 
 ### Commands
 
-* gcp-compute-insert-firewall
 * gcp-compute-list-firewall
-* gcp-compute-get-instance
 * gcp-compute-add-network-tag
+* gcp-compute-get-instance
+* gcp-compute-insert-firewall
 
 ## Playbook Inputs
 

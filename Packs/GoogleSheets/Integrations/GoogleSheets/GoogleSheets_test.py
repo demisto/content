@@ -3,6 +3,7 @@ import io
 import pytest
 import GoogleSheets
 import os
+from pathlib import Path
 from googleapiclient.discovery import build
 from googleapiclient.http import HttpMock
 from googleapiclient.http import HttpMockSequence
@@ -48,6 +49,29 @@ def test_make_markdown_matrix():
     with open(path + 'result.md', 'r') as file:
         result = file.read()
     assert GoogleSheets.make_markdown_matrix(util_load_json(os.path.join(path, 'sheets.json'))) == result
+
+
+def test_make_markdown_matrix_with_none_value():
+    """
+    Given:
+         - The sheet with values of none after they have been processed
+
+    When:
+        - we prepare the human-readable response and include_grid_data is True
+
+    Then:
+        - return a Markdown table with the headers of the sheets and the data inside them
+    """
+    assert (
+        GoogleSheets.make_markdown_matrix(
+            util_load_json(
+                "test_data/helper_functions/test_make_markdown_matrix/sheets_with_none_value.json"
+            )
+        )
+        == Path(
+            "test_data/helper_functions/test_make_markdown_matrix/result_with_none_value.md"
+        ).read_text()
+    )
 
 
 def test_prepare_result_with_echo(mocker):

@@ -455,3 +455,31 @@ There is no context output for this command.
 
 #### Human Readable Output
 >The configuration of TEST was unlocked successfully.
+
+
+
+### msgraph-apps-service-principal-lock-configuration
+
+***
+Lock configuration of a service principal.
+
+#### Base Command
+
+`msgraph-apps-service-principal-lock-configuration`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The application object id (not the app id). | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+
+#### Command Example
+```!msgraph-apps-service-principal-lock-configuration id=TEST```
+
+#### Human Readable Output
+>The configuration of TEST was locked successfully.

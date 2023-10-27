@@ -5,23 +5,29 @@ If none of the conditions is true, the verdict is set to non-malicious.
 It is possible to change the threshold value of the inputs to change the sensitivity of the verdict.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 * SetMultipleValues
-* SetGridField
 * Set
+* SetGridField
 
 ### Commands
+
 * setIncident
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -39,8 +45,11 @@ This playbook does not use any integrations.
 | NumOfOktaSuspiciousUserAgent | The number of suspicious user agents from Okta. |  | Optional |
 | NumOfOktaSuspiciousActivities | The number of suspicious activities for the user from Okta. |  | Optional |
 | PermanentCountry | True if the user works from a permanent country from Okta. Otherwise, false. |  | Optional |
+| XDRRiskyUser | Usernames of users that were found as risky by Cortex XDR. | PaloAltoNetworksXDR.RiskyUser.id | Optional |
+| XDRRiskyHost | Hostnames that were found as risky by Cortex XDR | PaloAltoNetworksXDR.RiskyHost.id<br/> | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -48,5 +57,7 @@ This playbook does not use any integrations.
 | Verdict | The verdict based on the results of multiple checks. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR - First SSO Access - Set Verdict](../doc_files/Cortex_XDR_-_First_SSO_Access_-_Set_Verdict.png)
