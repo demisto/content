@@ -624,7 +624,7 @@ xsiam_server_ga:
         CLOUD_MACHINES_TYPE: "nightly"
         CLOUD_MACHINES_COUNT: 1
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
-      timeout: 12 hours
+  timeout: 12 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
