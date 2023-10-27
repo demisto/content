@@ -1,9 +1,11 @@
 import json
 import os
+from collections import defaultdict
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 
 from jira import JIRA, Issue
+from jira.client import ResultList
 
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -106,12 +108,13 @@ def jira_search_all_by_query(jira_server: JIRA,
                              ) -> dict[str, list[Issue]]:
 
     start_at = 0  # Initialize pagination parameters
-    issues: dict[str, list[Issue]] = {}
+    issues: dict[str, list[Issue]] = defaultdict(list)
+    issues_batch: ResultList[Issue]
     while issues_batch := jira_server.search_issues(jql_query, startAt=start_at,
                                                     maxResults=max_results_per_request):
         for issue in issues_batch:
             summary: str = issue.get_field("summary").lower()
-            issues.setdefault(summary, []).append(issue)
+            issues[summary].append(issue)
 
         # Update the startAt value for the next page
         start_at += max_results_per_request
