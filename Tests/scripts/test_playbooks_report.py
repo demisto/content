@@ -29,7 +29,8 @@ def calculate_test_playbooks_results(test_playbooks_result_files_list: dict[str,
 
 
 def get_jira_tickets_for_playbooks(playbook_ids: list[str],
-                                   issues: dict[str, list[Issue]]) -> dict[str, Issue]:
+                                   issues: dict[str, list[Issue]],
+                                   ) -> dict[str, Issue]:
     playbook_ids_to_jira_tickets: dict[str, Issue] = {}
     for playbook_id in playbook_ids:
         jira_ticket_summary = generate_ticket_summary(playbook_id)

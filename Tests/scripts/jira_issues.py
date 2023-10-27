@@ -30,13 +30,13 @@ def generate_ticket_summary(prefix: str) -> str:
     return summary
 
 
-def generate_query(summary: str) -> str:
-    jql_query = f"{generate_query_by_component_and_issue_type()} AND summary ~ \"{summary}\" ORDER BY created DESC"
+def generate_query_by_component_and_issue_type() -> str:
+    jql_query = f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" AND component = \"{JIRA_COMPONENT}\""
     return jql_query
 
 
-def generate_query_by_component_and_issue_type() -> str:
-    jql_query = f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" AND component = \"{JIRA_COMPONENT}\""
+def generate_query_with_summary(summary: str) -> str:
+    jql_query = f"{generate_query_by_component_and_issue_type()} AND summary ~ \"{summary}\" ORDER BY created DESC"
     return jql_query
 
 
@@ -47,7 +47,8 @@ def convert_jira_time_to_datetime(jira_time: str) -> datetime:
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
                               max_days_to_reopen: int,
-                              jira_issue: Issue | None) -> tuple[Issue | None, Issue | None, bool]:
+                              jira_issue: Issue | None,
+                              ) -> tuple[Issue | None, Issue | None, bool]:
     link_to_issue = None
     jira_issue_to_use = None
     if use_existing_issue := (jira_issue is not None):

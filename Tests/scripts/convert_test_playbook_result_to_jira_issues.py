@@ -70,7 +70,8 @@ def create_jira_issue(jira_server: JIRA,
                       max_days_to_reopen: int,
                       now: datetime,
                       junit_file_name: str,
-                      failed: bool) -> Issue:
+                      failed: bool,
+                      ) -> Issue:
     summary = generate_ticket_summary(playbook_id)
     description = generate_description(playbook_id, build_number, junit_file_name, table_data, failed)
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen, jira_issue)
@@ -102,7 +103,7 @@ def create_jira_issue(jira_server: JIRA,
     return jira_issue
 
 
-def get_attachment_file_name(playbook_id, build_number):
+def get_attachment_file_name(playbook_id: str, build_number: str) -> str:
     build_number_dash = f"-{build_number}" if build_number else ""
     playbook_id_sanitized = re.sub('[^a-zA-Z0-9-]', '_', playbook_id).lower()
     junit_file_name = f"test-playbook{build_number_dash}-{playbook_id_sanitized}.xml"
@@ -181,6 +182,7 @@ def main():
                 if jira_ticket and jira_ticket.get_field("resolution") and not total_errors:
                     logging.debug(f"Skipped updating Jira issue for resolved test playbook:{playbook_id}")
                     continue
+                # We append the headers to the table data, as we want to have them within the Jira issue.
                 jira_table_data = [headers] + tabulate_data
                 junit_file_name = get_attachment_file_name(playbook_id, options.build_number)
                 create_jira_issue(jira_server, jira_ticket, xml, playbook_id, options.build_number, jira_table_data,

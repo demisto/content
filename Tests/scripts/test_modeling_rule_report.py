@@ -9,7 +9,7 @@ from junitparser import TestSuite, JUnitXml
 from tabulate import tabulate
 
 from Tests.scripts.common import get_properties_for_test_suite
-from Tests.scripts.jira_issues import generate_ticket_summary, generate_query, \
+from Tests.scripts.jira_issues import generate_ticket_summary, generate_query_with_summary, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
     generate_build_markdown_link, convert_jira_time_to_datetime
 from Tests.scripts.utils import logging_wrapper as logging
@@ -34,7 +34,7 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
                        f"{properties['file_name']}.xml")
     description = generate_description_for_test_modeling_rule(ci_pipeline_id, properties, test_suite, junit_file_name)
     summary = generate_ticket_summary(get_summary_for_test_modeling_rule(properties))  # type: ignore[arg-type]
-    jql_query = generate_query(summary)
+    jql_query = generate_query_with_summary(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
     jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen,
                                                                               search_issues[0] if search_issues else None)
@@ -78,7 +78,8 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
 def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
                                                 properties: dict[str, str],
                                                 test_suite: TestSuite,
-                                                junit_file_name: str) -> str:
+                                                junit_file_name: str,
+                                                ) -> str:
     build_markdown_link = generate_build_markdown_link(ci_pipeline_id)
     table = tabulate(tabular_data=[
         ["Total", test_suite.tests],
