@@ -14,6 +14,7 @@ GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id 
 GITLAB_CANCEL_TOKEN = os.getenv('GITLAB_CANCEL_TOKEN', '')
 CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
 CI_PIPELINE_ID = os.getenv('CI_PIPELINE_ID', '')
+GITLAB_STATUSES_TO_CANCEL = "created,waiting_for_resource,preparing,pending,running"
 
 
 def options_handler() -> argparse.Namespace:
@@ -39,7 +40,7 @@ def cancel_pipelines_for_branch_name(gitlab_client: gitlab.Gitlab,
 
     logging.info(f"Canceling pipelines for branch:{branch_name}, triggering source:{triggering_source}")
     success = True
-    for pipeline in project.pipelines.list(ref=branch_name, status='running', source=triggering_source):
+    for pipeline in project.pipelines.list(ref=branch_name, status=GITLAB_STATUSES_TO_CANCEL, source=triggering_source):
         # Only cancel pipelines that were created before the current pipeline, If there is a newer
         # pipeline it will cancel our run, If the build number is None cancel all pipelines.
         if build_number is None or pipeline.id < int(build_number):
