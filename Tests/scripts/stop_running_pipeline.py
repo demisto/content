@@ -2,7 +2,8 @@ import argparse
 import os
 import sys
 import traceback
-import gitlab
+from gitlab import Gitlab
+from gitlab.v4.objects import Project, ProjectPipeline
 
 from Tests.scripts.common import BUCKET_UPLOAD_BRANCH_SUFFIX
 from Tests.scripts.utils import logging_wrapper as logging
@@ -14,7 +15,7 @@ GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id 
 GITLAB_CANCEL_TOKEN = os.getenv('GITLAB_CANCEL_TOKEN', '')
 CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
 CI_PIPELINE_ID = os.getenv('CI_PIPELINE_ID', '')
-GITLAB_STATUSES_TO_CANCEL = "created,waiting_for_resource,preparing,pending,running"
+GITLAB_STATUSES_TO_CANCEL = {"created", "waiting_for_resource", "preparing", "pending", "running"}
 
 
 def options_handler() -> argparse.Namespace:
@@ -31,8 +32,21 @@ def branch_name_for_test_upload_flow(branch_name: str, pipeline_id: str) -> str:
     return f"{branch_name}{BUCKET_UPLOAD_BRANCH_SUFFIX}-{pipeline_id}"
 
 
-def cancel_pipelines_for_branch_name(gitlab_client: gitlab.Gitlab,
-                                     project: gitlab.v4.objects.Project,
+def get_all_pipelines_for_all_statuses(project: Project, branch_name: str, triggering_source: str) -> list[ProjectPipeline]:
+    # Get all pipelines for all statuses, some pipelines might be duplicated as they might change
+    # transition (e.g. from pending to running)
+    pipelines: dict[str, ProjectPipeline] = {}
+    for status in GITLAB_STATUSES_TO_CANCEL:
+        pipelines_for_status: list[ProjectPipeline] = project.pipelines.list(status=status,  # type: ignore[assignment]
+                                                                             ref=branch_name,
+                                                                             source=triggering_source)
+        for pipeline in pipelines_for_status:
+            pipelines[pipeline.id] = pipeline
+    return list(pipelines.values())
+
+
+def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
+                                     project: Project,
                                      branch_name: str,
                                      triggering_source: str,
                                      cancel_children: bool = True,
@@ -40,10 +54,10 @@ def cancel_pipelines_for_branch_name(gitlab_client: gitlab.Gitlab,
 
     logging.info(f"Canceling pipelines for branch:{branch_name}, triggering source:{triggering_source}")
     success = True
-    for pipeline in project.pipelines.list(ref=branch_name, status=GITLAB_STATUSES_TO_CANCEL, source=triggering_source):
+    for pipeline in get_all_pipelines_for_all_statuses(project, branch_name, triggering_source):
         # Only cancel pipelines that were created before the current pipeline, If there is a newer
         # pipeline it will cancel our run, If the build number is None cancel all pipelines.
-        if build_number is None or pipeline.id < int(build_number):
+        if not build_number or pipeline.id < int(build_number):
             try:
                 pipeline.cancel()
                 logging.info(f"Pipeline id:{pipeline.id} for branch:{branch_name} was canceled")
@@ -70,9 +84,9 @@ def main():
                      f"Current branch: {options.current_branch}\n"
                      f"Pipeline ID: {options.pipeline_id}\n")
 
-        gitlab_client = gitlab.Gitlab(options.url, private_token=options.ci_token)
+        gitlab_client = Gitlab(options.url, private_token=options.ci_token)
         project = gitlab_client.projects.get(int(options.gitlab_project_id))
-        if not cancel_pipelines_for_branch_name(gitlab_client, project, options.curret_branch, "push"):
+        if not cancel_pipelines_for_branch_name(gitlab_client, project, options.current_branch, "push"):
             logging.info(f"Failed to cancel pipelines for branch:{options.current_branch}")
             sys.exit(1)
         logging.success(f"Successfully canceled pipelines for branch:{options.current_branch}")
