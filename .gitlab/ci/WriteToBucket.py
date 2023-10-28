@@ -42,7 +42,7 @@ def options_handler() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    file_name = "koby_is_a_king.txt"
+    file_name = "PR number.txt"
     install_logging('lock_cloud_machines.log', logger=logging)
     logging.info('Starting to search for a CLOUD machine/s to lock')
     options = options_handler()
@@ -50,14 +50,16 @@ if __name__ == "__main__":
     storage_bucket = storage_client.bucket(LOCKS_BUCKET)
     blob = storage_bucket.blob(file_name)
 
-    lock = dimutex.GCS(bucket='(LOCKS_BUCKET', name='lock-name')
-    try:
-        lock.acquire()
-    except dimutex.AlreadyAcquiredError:
-        print('already acquired')
+    # lock = dimutex.GCS(bucket=LOCKS_BUCKET, name='lock-name')
+    # try:
+    #     lock.acquire()
+    # except dimutex.AlreadyAcquiredError:
+    #     print('already acquired')
 
-    print("starting to write to the bucket")
-    # with blob.open("w") as f:
-    #     f.write("abc")
-    print("done writing to the bucket, the lock is released")
-    lock.release()
+    file_already_exist = storage.Blob(bucket=storage_bucket, name=file_name).exists(storage_client)
+    if not file_already_exist:
+        blob.upload_from_string(data="nothing", if_generation_match=None)
+        print("this is the first failure, trigger a slack message")
+    else:
+        print("this is not the first failure, trigger a 'reply in thread' slack message")
+    # lock.release()
