@@ -22,6 +22,7 @@ class EVENT_TYPE(NamedTuple):
 
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+AQL_DATE_FORMAT = '%Y-%m-%d'
 VENDOR = 'armis'
 PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
@@ -72,7 +73,7 @@ class Client(BaseClient):
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
         if not after:  # this should only happen when get-events command is used without from_date argument
             after = datetime.now()
-        params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
+        params['aql'] += f' after:{after.strftime(AQL_DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
         results = raw_response.get('data', {}).get('results', [])
 
@@ -269,7 +270,7 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         return new_events, new_ids
 
 
-def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, client: Client,
+def fetch_by_event_type(event_type: EVENT_TYPE, events: dict, next_run: dict, client: Client,
                         max_fetch: int, last_run: dict, fetch_start_time: datetime | None):
     """ Fetch events by specific event type.
 
@@ -299,8 +300,7 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: list, next_run: dict, cl
         new_events, next_run[last_fetch_ids] = dedup_events(
             response, last_run.get(last_fetch_ids, []), event_type.unique_id_key)
         next_run[last_fetch_time] = new_events[-1].get('time') if new_events else last_run.get(last_fetch_time)
-
-        events.extend(new_events)
+        events.setdefault(event_type.type, []).extend(new_events)
         demisto.debug(f'debug-log: overall {len(new_events)} {event_type.type} (after dedup)')
         demisto.debug(f'debug-log: last {event_type.type} in list: {new_events[-1] if new_events else {}}')
     else:
@@ -326,7 +326,7 @@ def fetch_events(client: Client,
     Returns:
         (list[dict], dict) : List of fetched events and next run dictionary.
     """
-    events: list[dict] = []
+    events: dict[str, list[dict]] = {}
     next_run: dict[str, list | str] = {}
     if 'Devices' in event_types_to_fetch\
             and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
@@ -377,7 +377,8 @@ def handle_from_date_argument(from_date: str) -> datetime | None:
     return from_date_datetime if from_date_datetime else None
 
 
-def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str | list]):
+def handle_fetched_events(events: dict[str, list[dict[str, Any]]],
+                          next_run: dict[str, str | list]):
     """ Handle fetched events.
     - Send the fetched events to XSIAM.
     - Set last run values for next fetch cycle.
@@ -387,22 +388,24 @@ def handle_fetched_events(events: list[dict[str, Any]], next_run: dict[str, str 
         next_run (dict[str, str | list]): Next run dictionary.
     """
     if events:
-        add_time_to_events(events)
-        demisto.debug(f'debug-log: {len(events)} events are about to be sent to XSIAM.')
-        send_events_to_xsiam(
-            events,
-            vendor=VENDOR,
-            product=PRODUCT
-        )
-        demisto.setLastRun(next_run)
-        demisto.debug(f'debug-log: {len(events)} events were sent to XSIAM.')
+        for event_type, events_list in events.items():
+            add_time_to_events(events_list)
+            demisto.debug(f'debug-log: {len(events_list)} events are about to be sent to XSIAM.')
+            product = f'{PRODUCT}_{event_type}' if event_type != 'alerts' else PRODUCT
+            send_events_to_xsiam(
+                events_list,
+                vendor=VENDOR,
+                product=product
+            )
+            demisto.setLastRun(next_run)
+            demisto.debug(f'debug-log: {len(events)} events were sent to XSIAM.')
     else:
         demisto.debug('debug-log: No new events fetched.')
 
     demisto.debug(f'debug-log: {next_run=}')
 
 
-def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
+def events_to_command_results(events: dict[str, list[dict[str, Any]]]) -> list:
     """ Return a CommandResults object with a table of fetched events.
 
     Args:
@@ -411,11 +414,15 @@ def events_to_command_results(events: list[dict[str, Any]]) -> CommandResults:
     Returns:
         CommandResults: CommandResults object with a table of fetched events.
     """
-    return CommandResults(
-        raw_response=events,
-        readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT} events',
-                                        t=events,
-                                        removeNull=True))
+    CommandResultsList: list = []
+    for key, value in events.items():
+        product = f'{PRODUCT}_{key}' if key != 'alerts' else PRODUCT
+        CommandResultsList.append(CommandResults(
+            raw_response=events,
+            readable_output=tableToMarkdown(name=f'{VENDOR} {product} events',
+                                            t=value,
+                                            removeNull=True)))
+    return CommandResultsList
 
 
 def set_last_run_with_current_time(last_run: dict, event_types_to_fetch) -> None:
@@ -472,6 +479,7 @@ def main():  # pragma: no cover
     devices_max_fetch = arg_to_number(params.get('devices_max_fetch')) or DEVICES_DEFAULT_MAX_FETCH
     proxy = params.get('proxy', False)
     event_types_to_fetch = argToList(params.get('event_types_to_fetch', []))
+    event_types_to_fetch = [event_type.strip(' ') for event_type in event_types_to_fetch]
     should_push_events = argToBoolean(args.get('should_push_events', False))
     from_date = args.get('from_date')
     fetch_start_time = handle_from_date_argument(from_date) if from_date else None
@@ -515,8 +523,8 @@ def main():  # pragma: no cover
                     event_types_to_fetch=event_types_to_fetch,
                     device_fetch_interval=device_fetch_interval
                 )
-
-                demisto.debug(f'debug-log: {len(events)} events fetched from armis api')
+                for key, value in events.items():
+                    demisto.debug(f'debug-log: {len(value)} events of type: {key} fetched from armis api')
 
                 if should_push_events:
                     handle_fetched_events(events, next_run)

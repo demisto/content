@@ -41,7 +41,7 @@ configuration:
   section: Collect
   required: true
   type: 16
-  defaultvalue: Alerts
+  defaultvalue: Alerts,Devices,Activities
   options:
   - Alerts
   - Devices
@@ -57,10 +57,10 @@ configuration:
 - section: Collect
   advanced: true
   display: Device Fetch Interval
-  additionalinfo: Device events.
+  additionalinfo: Time between fetch of devices (for example 12 hours, 60 minutes, etc.).
   name: deviceFetchInterval
-  defaultvalue: 24 hours
-  type: 19
+  defaultvalue: "24 hours"
+  type: 0
   required: false
 description: Collects alerts, devices and activities from Armis resources.
 display: Armis Event Collector
@@ -77,7 +77,7 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: The date from which to fetch events. The format should be YYYY-MM-DD or YYYY-MM-DDT:HH:MM:SS. If not specified, the current date will be used.
+    - description: The date from which to fetch events. The format should be '20 minutes', '1 hour' or '2 days'. If not specified, the current date will be used.
       name: from_date
       required: false
     description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
