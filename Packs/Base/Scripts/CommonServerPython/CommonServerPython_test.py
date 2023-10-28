@@ -4178,7 +4178,7 @@ def test_get_latest_integration_context(mocker, versioned_available):
 
     mocker.patch.object(demisto, 'getIntegrationContextVersioned', return_value=get_integration_context_versioned())
     mocker.patch.object(demisto, 'setIntegrationContextVersioned', side_effecet=set_integration_context_versioned)
-    # mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=versioned_available)
+    mocker.patch.object(CommonServerPython, 'is_versioned_context_available', return_value=versioned_available)
     mocker.patch.object(demisto, 'getIntegrationContext',
                         return_value={'mirrors': MIRRORS, 'conversations': CONVERSATIONS})
 
