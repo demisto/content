@@ -17,7 +17,6 @@
         "beauchompers"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }
