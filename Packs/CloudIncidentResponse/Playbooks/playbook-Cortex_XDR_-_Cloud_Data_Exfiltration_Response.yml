@@ -239,7 +239,7 @@ tasks:
       id: f8d3d697-5489-448b-8e44-ad7beb407a02
       version: -1
       name: Found malicious evidence based on enrichment data
-      description: "This step will ensure check the following and if one of them those conditions match, this alert as malicious/suspicious:\n\n- Is there access to a backup bucket? \n - if the IP is a known IP in the company\n- Is the IP malicious?\n- Is there an enumeration alert associated with the same user?\n- Is the IP considered as a VPN?\n- Are there minimum access to this bucket? Will be determined by a threshold"
+      description: "This step will ensure check the following and if one of them those conditions match, this alert as malicious/suspicious:\n\n- Is there access to a backup bucket? \n - if the IP is a known IP in the company\n- Is the IP malicious?\n- Is there an enumeration alert associated with the same user?\n- Is the IP known as one of the organization VPN address?\n- Are there minimum access to this bucket? Will be determined by a threshold"
       type: condition
       iscommand: false
       brand: ""
@@ -719,8 +719,8 @@ tasks:
         simple: 2h
       GCPProjectName:
         complex:
-          root: PaloAltoNetworksXDR.OriginalAlert.event
-          accessor: cloud_provider
+          root: incident.xdralerts
+          accessor: project
       GCPTimespan:
         complex:
           root: incident

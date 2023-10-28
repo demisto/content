@@ -288,7 +288,7 @@ tasks:
       id: 9c4eb7f8-d21f-4ac7-83bc-167244ce5cb7
       version: -1
       name: Found malicious evidence based on enrichment data
-      description: "This step will check the following and if one of those conditions match, this alert is malicious/suspicious:\n\n- Is there access to a backup bucket? \n- Check IP prevalence - if the IP is a known IP in the company\n- Is the IP malicious?\n- Is there an enumeration alert associated with the same user?\n- Is the IP considered as a proxy?\n- Is there minimum access to this bucket? Will be determined by a threshold."
+      description: "This step will check the following and if one of those conditions match, this alert is malicious/suspicious:\n\n- Is there access to a backup bucket? \n- Check IP prevalence - if the IP is a known IP in the company\n- Is the IP malicious?\n- Is there an enumeration alert associated with the same user?\n- Is the IP known as one of the organization VPN address?\n- Is there minimum access to this bucket? Will be determined by a threshold."
       type: condition
       iscommand: false
       brand: ""
@@ -1119,6 +1119,10 @@ tasks:
           accessor: cloudprovider
       failedLogonThreshold:
         simple: "20"
+      GcpProjectName:
+        complex:
+          root: alert.cloudproject
+          accessor: cloudproject
     separatecontext: true
     continueonerrortype: ""
     loop:
