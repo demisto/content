@@ -65,7 +65,7 @@ def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
                     test_upload = branch_name_for_test_upload_flow(branch_name, pipeline.id)
                     logging.info(f"Trying to cancel pipeline for test upload flow branch:{test_upload}")
                     success &= cancel_pipelines_for_branch_name(gitlab_client, project, test_upload,
-                                                                "trigger", False, pipeline.id)
+                                                                "trigger", False)
             except Exception:
                 logging.error(f'Failed to cancel pipeline:{pipeline.id} for branch:{branch_name}')
                 logging.error(traceback.format_exc())
@@ -86,7 +86,7 @@ def main():
 
         gitlab_client = Gitlab(options.url, private_token=options.ci_token)
         project = gitlab_client.projects.get(int(options.gitlab_project_id))
-        if not cancel_pipelines_for_branch_name(gitlab_client, project, options.current_branch, "push"):
+        if not cancel_pipelines_for_branch_name(gitlab_client, project, options.current_branch, "push", True, options.pipeline_id):
             logging.info(f"Failed to cancel pipelines for branch:{options.current_branch}")
             sys.exit(1)
         logging.success(f"Successfully canceled pipelines for branch:{options.current_branch}")
