@@ -256,7 +256,7 @@ def construct_slack_msg(triggering_workflow: str,
     if failed_jobs_names:
         content_fields.append({
             "title": f'Failed Jobs - ({len(failed_jobs_names)})',
-            "value": '\n'.join(failed_jobs_names),
+            "value": '\n'.join(sorted(failed_jobs_names)),
             "short": False
         })
 
