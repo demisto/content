@@ -854,7 +854,6 @@ def get_tsf_export_status(job_id: str):
     """
     Get status of TSF export.
     """
-    return_results('Getting TSF export status...')
     params = {
         'type': 'export',
         'category': 'tech-support',
@@ -924,7 +923,6 @@ def export_tsf_command(args: dict):
             continue_to_poll=continue_to_poll,
             args_for_next_run={
                 'job_id': job_id,
-                'polling': True,
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
                 'timeout': arg_to_number(args.get('timeout'))
             },
