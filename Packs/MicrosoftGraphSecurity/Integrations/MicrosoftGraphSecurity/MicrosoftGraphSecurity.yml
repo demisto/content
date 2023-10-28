@@ -1623,7 +1623,7 @@ script:
       Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
     execution: false
     name: msg-purge-ediscovery-data
-  dockerimage: demisto/crypto:1.0.0.68914
+  dockerimage: demisto/crypto:1.0.0.79610
   isfetch: true
   runonce: false
   script: '-'
