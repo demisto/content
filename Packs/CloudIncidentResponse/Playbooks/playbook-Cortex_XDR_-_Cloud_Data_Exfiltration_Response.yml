@@ -115,6 +115,11 @@ tasks:
     scriptarguments:
       alert_name:
         simple: '*enumeration*'
+      user_name:
+        complex:
+          root: Account.Username
+          transformers:
+            - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -209,7 +214,7 @@ tasks:
       - "30"
     scriptarguments:
       closeReason:
-        simple: True Positive - Handled by automation.
+        simple: True Positive.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -234,7 +239,7 @@ tasks:
       id: f8d3d697-5489-448b-8e44-ad7beb407a02
       version: -1
       name: Found malicious evidence based on enrichment data
-      description: "This step will ensure check the following and if one of them those conditions match, this alert as malicious/suspicious:\n\n- Is there access to a backup bucket? \n- Check IP prevalence - if the IP is a known IP in the company\n- Is the IP malicious?\n- Is there an enumeration alert associated with the same user?\n- Is the IP considered as a proxy?\n- Are there minimum access to this bucket? Will be determined by a threshold"
+      description: "This step will ensure check the following and if one of them those conditions match, this alert as malicious/suspicious:\n\n- Is there access to a backup bucket? \n - if the IP is a known IP in the company\n- Is the IP malicious?\n- Is there an enumeration alert associated with the same user?\n- Is the IP considered as a VPN?\n- Are there minimum access to this bucket? Will be determined by a threshold"
       type: condition
       iscommand: false
       brand: ""
@@ -896,7 +901,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: key
+                  simple: key(
           transformers:
           - operator: uniq
       cloudProvider:

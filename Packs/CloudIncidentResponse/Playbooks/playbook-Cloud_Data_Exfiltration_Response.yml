@@ -263,7 +263,7 @@ tasks:
       - "30"
     scriptarguments:
       closeReason:
-        simple: True Positive - Handled by automation.
+        simple: True Positive.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1111,7 +1111,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: key
+                  simple: key(
               ignorecase: true
       cloudProvider:
         complex:
