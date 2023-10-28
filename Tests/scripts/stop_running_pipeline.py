@@ -50,17 +50,23 @@ def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
                                      branch_name: str,
                                      triggering_source: str,
                                      cancel_children: bool = True,
-                                     build_number: int | None = None) -> bool:
+                                     pipeline_id: int | None = None) -> bool:
 
-    logging.info(f"Canceling pipelines for branch:{branch_name}, triggering source:{triggering_source}")
+    pipelines = get_all_pipelines_for_all_statuses(project, branch_name, triggering_source)
+    if not pipelines:
+        logging.info(f"No pipelines found for branch:{branch_name}, triggering source:{triggering_source}")
+        return True
+
+    logging.info(f"Canceling {len(pipelines)} pipelines for branch:{branch_name}, triggering source:{triggering_source}")
     success = True
-    for pipeline in get_all_pipelines_for_all_statuses(project, branch_name, triggering_source):
+    for pipeline in pipelines:
         # Only cancel pipelines that were created before the current pipeline, If there is a newer
         # pipeline it will cancel our run, If the build number is None cancel all pipelines.
-        if not build_number or pipeline.id < int(build_number):
+        if not pipeline_id or pipeline.id < pipeline_id:
             try:
+                logging.info(f"Canceling pipeline id:{pipeline.id} for branch:{branch_name}")
                 pipeline.cancel()
-                logging.info(f"Pipeline id:{pipeline.id} for branch:{branch_name} was canceled")
+                logging.success(f"Pipeline id:{pipeline.id} for branch:{branch_name} was canceled")
                 if cancel_children:
                     test_upload = branch_name_for_test_upload_flow(branch_name, pipeline.id)
                     logging.info(f"Trying to cancel pipeline for test upload flow branch:{test_upload}")
@@ -70,6 +76,8 @@ def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
                 logging.error(f'Failed to cancel pipeline:{pipeline.id} for branch:{branch_name}')
                 logging.error(traceback.format_exc())
                 success = False
+        elif pipeline.id == pipeline_id:
+            logging.info(f"Pipeline {pipeline.id} was not canceled as it is the current pipeline")
         else:
             logging.info(f"Pipeline {pipeline.id} was not canceled")
     return success
@@ -86,7 +94,9 @@ def main():
 
         gitlab_client = Gitlab(options.url, private_token=options.ci_token)
         project = gitlab_client.projects.get(int(options.gitlab_project_id))
-        if not cancel_pipelines_for_branch_name(gitlab_client, project, options.current_branch, "push", True, options.pipeline_id):
+        pipeline_id = int(options.pipeline_id) if options.pipeline_id else None
+        if not cancel_pipelines_for_branch_name(gitlab_client, project, options.current_branch, "push",
+                                                True, pipeline_id):
             logging.info(f"Failed to cancel pipelines for branch:{options.current_branch}")
             sys.exit(1)
         logging.success(f"Successfully canceled pipelines for branch:{options.current_branch}")
