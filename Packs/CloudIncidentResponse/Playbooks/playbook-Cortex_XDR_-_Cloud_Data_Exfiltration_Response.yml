@@ -838,8 +838,26 @@ tasks:
           - operator: uniq
       username:
         complex:
-          root: PaloAltoNetworksXDR.Alert
-          accessor: actor_effective_username
+          root: PaloAltoNetworksXDR.Incident.alerts.user_name
+          filters:
+          - - operator: notStartWith
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                iscontext: true
+              right:
+                value:
+                  simple: key1(
+            - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                iscontext: true
+              right:
+                value:
+                  simple: key2(
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -894,14 +912,22 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts.user_name
           filters:
-          - - operator: notStartWith
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.user_name
-                iscontext: true
-              right:
-                value:
-                  simple: key(
+            - - operator: notStartWith
+                left:
+                  value:
+                    simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                  iscontext: true
+                right:
+                  value:
+                    simple: key1(
+              - operator: notStartWith
+                left:
+                  value:
+                    simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                  iscontext: true
+                right:
+                  value:
+                    simple: key2(
           transformers:
           - operator: uniq
       cloudProvider:

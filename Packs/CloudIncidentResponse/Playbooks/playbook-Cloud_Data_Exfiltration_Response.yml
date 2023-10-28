@@ -935,8 +935,25 @@ tasks:
           accessor: cloudprovider
       username:
         complex:
-          root: alert
-          accessor: username
+          root: alert.username
+          filters:
+          - - operator: notStartWith
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: key1(
+              ignorecase: true
+            - operator: notStartWith
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: key2(
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1111,8 +1128,16 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: key(
+                  simple: key1(
               ignorecase: true
+            - operator: notStartWith
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: key2(
       cloudProvider:
         complex:
           root: alert
