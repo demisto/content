@@ -87,7 +87,7 @@ class TestEDL:
         password = integration_params["credentials"]["password"]
 
         response = xsoar_ng_client.do_long_running_instance_request(instance_name, username=username, password=password)
-        assert response.text, f'could not get indicators from {response.request.url=} with available ' \
+        assert response.text, f'could not get indicators from url={response.request.url} with available ' \
                               f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
                               f'status code={response.status_code}, response={response.text}'
 
