@@ -74,7 +74,7 @@ class TestEDL:
     def test_edl(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: dict):
         """
         Given:
-            - indicators in xsoar
+            - indicators in xsoar-ng
             - long-running EDL instance
         When:
             - Trying to query the URL of edl
@@ -112,7 +112,18 @@ class TestTaxiiServer:
     integration_id = "TAXII2 Server"
     is_long_running = True
 
-    def test_taxii2_server(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: dict):
+    def test_taxii2_server(
+        self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: dict
+    ):
+        """
+        Given:
+            - indicators in xsoar-ng
+            - long-running taxii2 server instance
+        When:
+            - Trying to query the URL(s) of taxii2 server
+        Then:
+            - make sure that indicators are returned in the response of taxii2 server instance
+        """
         import requests
         from requests.auth import HTTPBasicAuth
 
