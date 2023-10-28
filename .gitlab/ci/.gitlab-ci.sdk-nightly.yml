@@ -178,6 +178,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - |
       echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
     - section_start "Wait Until Server Ready"
     - |
