@@ -1,4 +1,3 @@
-import json
 import pytest
 
 from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (
@@ -8,7 +7,7 @@ from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClientConfig, XsoarNGApiClient
 
 from Tests.configure_and_test_integration_instances import CloudBuild
-from Tests.scripts.utils import logging_wrapper as logging
+from Tests.tools import get_integration_params
 
 
 def pytest_addoption(parser):
@@ -28,20 +27,6 @@ def get_cloud_machine_credentials(request):
 
     api_key, _, url, api_key_id = CloudBuild.get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys)
     return url, api_key, api_key_id
-
-
-def get_integration_params(integration_secrets_path: str, instance_name: str):
-    with open(integration_secrets_path) as file:
-        integrations_config = json.load(file)["integrations"]
-
-    for config in integrations_config:
-        existing_instance_name = config.get("instance_name")
-        existing_name = config.get("name")
-        logging.info(f'{existing_instance_name=}, {existing_name=}')
-        if existing_instance_name == instance_name or existing_name == instance_name:
-            return config.get("params")
-
-    raise ValueError(f'Could not find integration parameters for {instance_name}')
 
 
 @pytest.fixture()
