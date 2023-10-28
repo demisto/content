@@ -15,8 +15,7 @@ summary_exit_code=$?
 if [ -n "${NIGHTLY}" ]; then
   if [ "${TEST_PLAYBOOKS_JIRA_TICKETS,,}" == "true" ]; then
     echo "This is a nightly build, converting the results to Jira issues and exiting with 0"
-    echo "The current directory is ${CURRENT_DIR}"
-    python3 "${CURRENT_DIR}/Tests/scripts/convert_test_playbook_result_to_jira_issues.py" --artifacts-path "${ARTIFACTS_FOLDER_INSTANCE}" --build-number "${CI_PIPELINE_ID}"
+    python3 ./Tests/scripts/convert_test_playbook_result_to_jira_issues.py --artifacts-path "${ARTIFACTS_FOLDER_INSTANCE}" --build-number "${CI_PIPELINE_ID}"
     exit_on_error $? "Failed to convert the Test playbook results to Jira issues"
 
     echo "Finished converting the Test playbook results to Jira issues, exiting with 0"
