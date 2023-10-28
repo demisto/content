@@ -246,7 +246,7 @@ tasks:
           | where OperationNameValue in~ ("microsoft.compute/virtualMachines/write", "microsoft.compute/virtualMachines/extensions/write", "Microsoft.Network/networkSecurityGroups/securityRules/write", "Microsoft.Compute/virtualMachines/runCommand/action") and Caller contains "${inputs.username}"
       timespan:
         complex:
-          root: inputs.timespan
+          root: inputs.AzureTimespan
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -292,7 +292,7 @@ tasks:
           | where OperationNameValue in~ ("Microsoft.Logic/workflows/write", "Microsoft.Logic/workflows/run/action", "Microsoft.Web/sites/Write", "microsoft.web/sites/functions/write", "Microsoft.Automation/automationAccounts/runbooks", "Microsoft.Automation/automationAccounts/jobs/write", "Microsoft.Automation/automationAccounts/runbooks/publish/action", "Microsoft.Automation/automationAccounts/runbooks/draft/write", "Microsoft.Automation/automationAccounts/runbooks/write", "Microsoft.Automation/automationAccounts/Schedules/write") and Caller contains "${inputs.username}"
       timespan:
         complex:
-          root: inputs.timespan
+          root: inputs.AzureTimespan
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -338,7 +338,7 @@ tasks:
           | where OperationNameValue in~ ("microsoft.directory/users/create", "microsoft.directory/users/enable", "microsoft.directory/users/restore", "microsoft.directory/servicePrincipals/owners/update", "microsoft.directory/servicePrincipals/credentials/update", "microsoft.directory/servicePrincipals/enable", "microsoft.directory/users/password/update", "microsoft.directory/servicePrincipals/create", "microsoft.directory/applications/create", "microsoft.directory/servicePrincipals/create") and Caller contains "${inputs.username}"
       timespan:
         complex:
-          root: inputs.timespan
+          root: inputs.AzureTimespan
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -662,7 +662,7 @@ tasks:
         simple: CloudPersistence.IAM=
       filter:
         simple: |-
-          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${GCPTimespan}" AND
+          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${inputs.GCPTimespan}" AND
           protoPayload.methodName =("google.iam.admin.v1.EnableServiceAccount" OR "google.iam.admin.v1.CreateServiceAccountKey" OR "google.iam.admin.v1.CreateServiceAccount" OR "google.iam.admin.v1.CreateRole" OR "google.iam.admin.v1.UpdateRole" OR "google.iam.admin.v1.generateAccessToken" OR "google.iam.serviceAccount.setIamPolicy")
       ignore-outputs:
         simple: "false"
@@ -708,7 +708,7 @@ tasks:
         simple: CloudPersistence.ComputeInstances=
       filter:
         simple: |-
-          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${GCPTimespan}" AND
+          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${inputs.GCPTimespan}" AND
           protoPayload.methodName =("compute.v1.instances.insert" OR "compute.v1.instances.setMetadata" OR "compute.v1.disks.insert" OR "compute.v1.instanceTemplates.insert" OR "compute.v1.instanceGroups.insert" OR "compute.v1.firewalls.insert" OR "compute.v1.firewalls.update" OR "compute.v1.firewalls.patch")
       ignore-outputs:
         simple: "false"
@@ -754,7 +754,7 @@ tasks:
         simple: CloudPersistence.ComputeFunctions=
       filter:
         simple: |-
-          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${GCPTimespan}" AND
+          log_id("cloudaudit.googleapis.com/activity") AND timestamp>="${inputs.GCPTimespan}" AND
           protoPayload.methodName =("google.cloud.functions.v1.CloudFunctionsService.CreateFunction" OR "google.cloud.functions.v1.CloudFunctionsService.UpdateFunction")
       ignore-outputs:
         simple: "false"
