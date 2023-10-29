@@ -99,7 +99,7 @@ class Client(BaseClient):
         """
         aggregated_events: List[dict] = []
 
-        user_defined_limit = user_defined_params.get('limit') or DEFAULT_LIMIT
+        user_defined_limit = arg_to_number(user_defined_params.get('limit')) or DEFAULT_LIMIT
         query_params: str | None = query_params_url
 
         try:
