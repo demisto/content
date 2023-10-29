@@ -29,30 +29,46 @@ def prepare_query_params(params: dict, last_run: dict = {}) -> str:
     return f"pagination=keyset&created_after={arg_to_strtime(params.get('after'))}&per_page=100"
 
 
+def reformat_details(audit_events: list, groups_and_projects_events: list) -> tuple[list, list]:
+    for event in groups_and_projects_events:
+        if 'details' in event:
+            for action in ['add', 'change', 'remove']:
+                if action in event['details']:
+                    event['details']['action'] = f'{action}_{event["details"][action]}'
+                    event['details']['action_type'] = action
+                    event["details"]['action_category'] = event['details'][action]
+                    break
+
+    for event in audit_events + groups_and_projects_events:
+        event['_time'] = event['created_at']
+
+    return audit_events, groups_and_projects_events
+
+
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
 
-    def get_events_request(self, next_url_link: str) -> tuple:
+    def get_events_request(self, query_params: str | None, url_suffix: str = '/audit_events') -> tuple:
         """
         Sends request to get events from GitLab.
         """
-        response = self._http_request(method='GET', url_suffix=f'?{next_url_link}', resp_type='response')
+        response = self._http_request(method='GET', url_suffix=f'{url_suffix}?{query_params}', resp_type='response')
 
         events = response.json()
         next_url = (response.links or {}).get("next", {}).get("url")
 
-        demisto.debug(f'Succesfully got {len(events)} events.')
+        demisto.debug(f'Successfully got {len(events)} events.')
         return events, next_url
 
-    def handle_pagination_first_batch(self, params_url_suffix: str, last_run: dict) -> tuple:
+    def handle_pagination_first_batch(self, query_params: str | None, last_run: dict, url_suffix: str) -> tuple:
         """
         Makes the first events API call in the current fetch run.
         If `first_id` exists in the lastRun obj, finds it in the response and
         returns only the subsequent events (that weren't collected yet).
         """
-        events, next_url = self.get_events_request(params_url_suffix)
+        events, next_url = self.get_events_request(query_params, url_suffix)
 
         if last_run.get('first_id'):
 
@@ -65,7 +81,8 @@ class Client(BaseClient):
 
         return events, next_url
 
-    def fetch_events(self, params_url_suffix: str, last_run: dict, user_defined_params: dict) -> List[dict]:
+    def fetch_events(self, query_params_url: str, last_run: dict, user_defined_params: dict,
+                     url_suffix: str = '/audit_events') -> List[dict]:
         """
         Aggregates events using cursor-based pagination, until one of the following occurs:
         1. Encounters an event that was already fetched in a previous run / reaches the end of the pagination.
@@ -83,16 +100,16 @@ class Client(BaseClient):
         aggregated_events: List[dict] = []
 
         user_defined_limit = user_defined_params.get('limit') or DEFAULT_LIMIT
-        current_url = params_url_suffix
+        query_params: str | None = query_params_url
 
         try:
-            events, next_url = self.handle_pagination_first_batch(current_url, last_run)
+            events, next_url = self.handle_pagination_first_batch(query_params, last_run, url_suffix)
             while events:
                 for event in events:
 
                     if event.get('id') == last_run.get('last_id'):
                         demisto.debug('Encountered an event that was already fetched - stopping.')
-                        current_url = None  # type:ignore[assignment]
+                        query_params = None
                         if aggregated_events:
                             last_run.update({'last_id': aggregated_events[0].get("id")})
                         break
@@ -108,13 +125,13 @@ class Client(BaseClient):
                     # Finished iterating through all events in this batch
                     if next_url:
                         demisto.debug('Using the given next_url from the last API call to execute the next call.')
-                        current_url = next_url.split('?', 1)[1]
-                        events, next_url = self.get_events_request(current_url)
+                        query_params = next_url.split('?', 1)[1]
+                        events, next_url = self.get_events_request(query_params, url_suffix)
                         continue
                     else:
-                        current_url = None  # type:ignore[assignment]
+                        query_params = None
 
-                demisto.debug('Finished iterating through all events in this fetch run.')
+                demisto.debug('Finished iterating through all events in this fetch run for the current event type.')
                 break
 
         except DemistoException as e:
@@ -125,7 +142,7 @@ class Client(BaseClient):
         if not last_run.get('last_id') and aggregated_events:
             last_run['last_id'] = aggregated_events[0].get("id")
 
-        last_run['next_url'] = current_url,
+        last_run['next_url'] = query_params
         return aggregated_events
 
 
@@ -145,19 +162,7 @@ def test_module_command(client: Client, params: dict, events_types_ids: dict) ->
     Returns:
         (str) 'ok' if success.
     """
-    params_url_suffix = prepare_query_params(params)
-    client.get_events_request(params_url_suffix)
-
-    if groups_ids := events_types_ids.get('groups_ids'):
-        for obj_id in groups_ids:
-            client._base_url = f"{params['url']}/api/v4/groups/{obj_id}/audit_events"
-            client.get_events_request(params_url_suffix)
-
-    if projects_ids := events_types_ids.get('projects_ids'):
-        for obj_id in projects_ids:
-            client._base_url = f"{params['url']}/api/v4/projects/{obj_id}/audit_events"
-            client.get_events_request(params_url_suffix)
-
+    fetch_events_command(client, params, {}, events_types_ids)
     return 'ok'
 
 
@@ -202,16 +207,16 @@ def fetch_events_command(client: Client, params: dict, last_run: dict, events_ty
         (dict) the updated lastRun object.
     """
 
-    query_params_url_suffix = prepare_query_params(params, last_run["audit_events"])
-    audit_events = client.fetch_events(query_params_url_suffix, last_run["audit_events"], params)
+    query_params_url_suffix = prepare_query_params(params, last_run.get("audit_events", {}))
+    audit_events = client.fetch_events(query_params_url_suffix, last_run.get("audit_events", {}), params)
     demisto.debug(f"Aggregated audits events: {len(audit_events)}")
 
     group_and_project_events = []
     for event_type in ['groups', 'projects']:
         for obj_id in events_types_ids.get(f'{event_type}_ids', []):
-            client._base_url = f"{params['url']}/api/v4/{event_type}/{obj_id}/audit_events"
-            query_params_url_suffix = prepare_query_params(params, last_run[event_type])
-            events = client.fetch_events(query_params_url_suffix, last_run[event_type], params)
+            query_params_url_suffix = prepare_query_params(params, last_run.get(event_type, {}))
+            events = client.fetch_events(query_params_url_suffix, last_run.get(event_type, {}), params,
+                                         url_suffix=f'/{event_type}/{obj_id}/audit_events')
             group_and_project_events.extend(events)
 
     demisto.debug(f"Aggregated group and project events: {len(group_and_project_events)}")
@@ -231,7 +236,7 @@ def main() -> None:
     try:
 
         client = Client(
-            base_url=f"{params['url']}/api/v4/audit_events",
+            base_url=f"{params['url']}/api/v4",
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             headers={'PRIVATE-TOKEN': params.get('api_key', {}).get('password')},
@@ -246,7 +251,7 @@ def main() -> None:
             return_results(test_module_command(client, params, events_collection_management))
 
         elif command == 'gitlab-get-events':
-            events, results = get_events_command(client, args)
+            events, results = get_events_command(client, params)
             return_results(results)
             if argToBoolean(args.get('should_push_events', 'false')):
                 send_events_to_xsiam(
@@ -267,6 +272,7 @@ def main() -> None:
                 client, params, last_run,
                 events_collection_management
             )
+            audit_events, group_and_project_events = reformat_details(audit_events, group_and_project_events)
 
             send_events_to_xsiam(
                 audit_events + group_and_project_events,

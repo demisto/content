@@ -45,9 +45,9 @@ def test_fetch_events(mocker):
         - fetch-events call, where last_id = 1
     When:
         - Three following results are retrieved from the API:
-            1. id = 1, date_create = 1521214343
-            2. id = 2, date_create = 1521214343
-            3. id = 3, date_create = 1521214345
+            1. id = 1, created_at = '2023-10-28T20:29:34.872Z'
+            2. id = 2, created_at = '2023-10-28T20:29:34.872Z'
+            3. id = 3, created_at = '2023-10-28T20:29:34.872Z'
     Then:
         - Make sure only events 2 and 3 are returned (1 should not).
         - Verify the new lastRun is calculated correctly.
@@ -61,9 +61,9 @@ def test_fetch_events(mocker):
     last_run = {'audit_events': {'last_id': '1'}}
 
     mock_response = MockResponse([
-        {'id': '3', 'date_create': 1521214345},
-        {'id': '2', 'date_create': 1521214343},
-        {'id': '1', 'date_create': 1521214343},
+        {'id': '3', 'created_at': '2023-10-28T20:29:34.872Z'},
+        {'id': '2', 'created_at': '2023-10-28T20:29:34.872Z'},
+        {'id': '1', 'created_at': '2023-10-28T20:29:34.872Z'},
     ])
     mocker.patch.object(Session, 'request', return_value=mock_response)
     events, _, new_last_run = fetch_events_command(Client(base_url=''), params={}, last_run=last_run, events_types_ids={})
@@ -99,7 +99,7 @@ def test_fetch_events_with_two_iterations(mocker):
     first_id = 2
     last_run = {"groups": {}, "projects": {}, "audit_events": {'first_id': first_id}}
 
-    mock_response = MockResponse([{'id': i, 'date_create': 1521214343} for i in range(200)])
+    mock_response = MockResponse([{'id': i, 'created_at': 1521214343} for i in range(200)])
     mock_response.links = {'next': {'url': 'https://example.com?param=value'}}
     mock_request = mocker.patch.object(Session, 'request', return_value=mock_response)
     events, _, _ = fetch_events_command(Client(base_url=''), params={'limit': 300}, last_run=last_run, events_types_ids={})
@@ -123,11 +123,11 @@ def test_fetch_events_with_groups_and_projects(mocker):
     last_run = {"groups": {}, "projects": {'last_id': '2'}, "audit_events": {'last_id': '1'}}
 
     mock_response = MockResponse([
-        {'id': '5', 'date_create': 1521214345},
-        {'id': '4', 'date_create': 1521214343},
-        {'id': '3', 'date_create': 1521214345},
-        {'id': '2', 'date_create': 1521214343},
-        {'id': '1', 'date_create': 1521214343},
+        {'id': '5', 'created_at': 1521214345},
+        {'id': '4', 'created_at': 1521214343},
+        {'id': '3', 'created_at': 1521214345},
+        {'id': '2', 'created_at': 1521214343},
+        {'id': '1', 'created_at': 1521214343},
     ])
 
     mocker.patch.object(Session, 'request', return_value=mock_response)
@@ -151,9 +151,9 @@ def test_get_events(mocker):
         - gitlab-get-events call
     When:
         - Three following results are retrieved from the API:
-            1. id = 1, date_create = 1521214343
-            2. id = 2, date_create = 1521214343
-            3. id = 3, date_create = 1521214345
+            1. id = 1, created_at = 1521214343
+            2. id = 2, created_at = 1521214343
+            3. id = 3, created_at = 1521214345
     Then:
         - Make sure all of the events are returned as part of the CommandResult.
     """
@@ -163,9 +163,9 @@ def test_get_events(mocker):
     mocker.patch.object(demisto, 'params', return_value={'url': ''})
 
     mock_response = MockResponse([
-        {'id': '3', 'date_create': 1521214345},
-        {'id': '2', 'date_create': 1521214343},
-        {'id': '1', 'date_create': 1521214343},
+        {'id': '3', 'created_at': 1521214345},
+        {'id': '2', 'created_at': 1521214343},
+        {'id': '1', 'created_at': 1521214343},
     ])
     mocker.patch.object(Session, 'request', return_value=mock_response)
     _, results = get_events_command(Client(base_url=''), args={})
