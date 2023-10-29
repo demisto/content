@@ -23,10 +23,10 @@ args:
   predefined:
   - 'true'
   - 'false'
-- description: If encrypted office files are encountered, try decryption with this password. (if specified dont specify the non_secret_password parameter)
+- description: If encrypted office files are encountered, try decryption with this password. (if specified dont specify the non_secret_password parameter).
   name: password
   secret: true
-- description: If encrypted office files are encountered, try decryption with this password. This argument is non secret for playbook flows. (if specified dont specify the password parameter)
+- description: If encrypted office files are encountered, try decryption with this password. This argument is non secret for playbook flows. (if specified dont specify the password parameter).
   name: non_secret_password
 comment: This is an automation to run oletools malware analysis for office files. Oletools is a tool for analyzing Microsoft OLE2 files, such as Microsoft Office documents or Outlook messages, mainly for malware analysis, forensics, and debugging. This automation allows performing some basic oletools commands from Cortex XSOAR. Note that oletools is open source code and is subject to change.
 outputs:
@@ -125,7 +125,7 @@ outputs:
 - contextPath: DBotScore.Score
   description: The actual score.
 subtype: python3
-dockerimage: demisto/parse-emails:1.0.0.63730
+dockerimage: demisto/parse-emails:1.0.0.79263
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
