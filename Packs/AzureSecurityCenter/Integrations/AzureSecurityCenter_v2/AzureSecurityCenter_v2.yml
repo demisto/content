@@ -421,7 +421,7 @@ script:
     execution: false
     name: azure-sc-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.74979
+  dockerimage: demisto/crypto:1.0.0.78196
   runonce: false
   script: '-'
   type: python

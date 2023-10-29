@@ -1,0 +1,21 @@
+[INGEST:vendor="radware", product="access_logs", target_dataset="radware_access_logs_raw", no_hit=keep]
+// Split grouped events
+filter json_extract_array(_raw_log, "$") != null
+| alter _raw_log = json_extract_array(_raw_log, "$")
+| alter _raw_log_records = _raw_log
+| arrayexpand _raw_log
+| alter tmp_time = json_extract_scalar(_raw_log, "$.time")
+| alter _time = if(tmp_time != null and tmp_time != "", parse_timestamp("%d/%b/%Y:%X %z", tmp_time), _insert_time)
+| fields -tmp_time;
+
+filter json_extract_array(_raw_log, "$") = null
+| alter _raw_log = to_json_string(_raw_log)
+| alter tmp_time = json_extract_scalar(_raw_log, "$.time")
+| alter _time = if(tmp_time != null and tmp_tme != "", parse_timestamp("%d/%b/%Y:%X %z", tmp_time), _insert_time)
+| fields -tmp_time;
+
+[INGEST:vendor="radware", product="appwall", target_dataset="radware_appwall_raw", no_hit=keep]
+filter _raw_log ~= "AppWallAttackSysLogMessage|SystemAttackSysLogMessage" // AppWall WAS/DDoS Events 
+| alter tmp_unix_timestamp = arrayindex(regextract(_raw_log,"(?:appWallTimeStamp|receivedTimeStamp|Timestamp)\=\"?(\d{13})"), 0)
+| alter _time = to_timestamp(to_integer(tmp_unix_timestamp), "MILLIS")
+| fields - tmp_unix_timestamp;
