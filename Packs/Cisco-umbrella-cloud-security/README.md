@@ -15,7 +15,7 @@ See this[doc](https://docs.umbrella.com/deployment-umbrella/docs/setting-up-an-a
 
 **On Cisco Umbrella cloud security**
 
-1. Navigate to **Admin** -> **Log Management** and select **Use your company-managed Amazon S3 bucket**.
+1. Navigate to **Admin** > **Log Management** and select **Use your company-managed Amazon S3 bucket**.
 2. In the **Bucket Name** put the bucket name you created in Amazon S3 and click **Verify**.
 3. After Cisco Umbrella verifies your bucket, it saves a file called **README_FROM_UMBRELLA.txt** in the bucket. 
    Open the file and copy and paste the token listed in it into **Token Number** and click **Save**.
