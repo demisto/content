@@ -25,8 +25,8 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 VENDOR = 'armis'
 PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
-DEFAULT_MAX_FETCH = 5
-DEVICES_DEFAULT_MAX_FETCH = 10
+DEFAULT_MAX_FETCH = 5000
+DEVICES_DEFAULT_MAX_FETCH = 10000
 EVENT_TYPES = {
     'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts', 'time'),
     'Activities': EVENT_TYPE('activityUUID', 'in:activity', 'activity', 'time'),
