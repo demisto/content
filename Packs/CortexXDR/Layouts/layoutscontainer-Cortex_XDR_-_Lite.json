@@ -787,24 +787,6 @@
                         "i": "caseinfoid-e59a5480-6e5b-11ee-bb7d-5f7d74b63139",
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "riskyusers",
-                                "height": 53,
-                                "id": "1943e2b0-6e5c-11ee-bb7d-5f7d74b63139",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "riskyhosts",
-                                "height": 53,
-                                "id": "1a2bd1b0-6e5c-11ee-bb7d-5f7d74b63139",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "numberoffoundrelatedalerts",
@@ -1579,6 +1561,6 @@
     },
     "system": false,
     "version": -1,
-    "fromVersion": "6.5.0",
+    "fromVersion": "6.9.0",
     "description": ""
 }
