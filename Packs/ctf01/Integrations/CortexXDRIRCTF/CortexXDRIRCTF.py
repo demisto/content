@@ -2496,7 +2496,8 @@ def main():  # pragma: no cover
             return_outputs(*get_incident_extra_data_command(client, args))
 
         elif command == 'xdr-update-incident':
-            return_outputs(*update_incident_command(client, args))  # type:ignore[name-defined]
+            # return_outputs(*update_incident_command(client, args))  # type:ignore[name-defined]
+            return_outputs(None)
 
         elif command == 'xdr-get-endpoints':
             return_results(get_endpoints_command(client, args))
@@ -2649,7 +2650,8 @@ def main():  # pragma: no cover
             return_results(get_remote_data_command(client, args))
 
         elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args))  # type:ignore[name-defined]
+            # return_results(update_remote_system_command(client, args))  # type:ignore[name-defined]
+            return_results(None)
 
         elif command == 'xdr-delete-endpoints':
             return_outputs(*delete_endpoints_command(client, args))  # type:ignore[arg-type]
