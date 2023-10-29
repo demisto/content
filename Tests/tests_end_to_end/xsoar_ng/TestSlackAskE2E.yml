@@ -1,0 +1,209 @@
+id: TestSlackAskE2E
+version: 13
+vcShouldKeepItemLegacyProdMachine: false
+name: TestSlackAskE2E
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 83f1ff2b-1557-45e8-87aa-c4df5848ecd3
+    type: start
+    task:
+      id: 83f1ff2b-1557-45e8-87aa-c4df5848ecd3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6674c76e-972f-440e-8c9b-25852e3f02fe
+    type: regular
+    task:
+      id: 6674c76e-972f-440e-8c9b-25852e3f02fe
+      version: -1
+      name: Run Slack Ask
+      description: Sends a message (question) to either user (in a direct message)
+        or to a channel. The message includes predefined reply options. The response
+        can also close a task (might be conditional) in a playbook.
+      scriptName: SlackAskV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      channel:
+        simple: random
+      defaultResponse:
+        simple: "Yes"
+      lifetime:
+        simple: 5 seconds
+      message:
+        simple: end-to-end-xsoar-ng-test
+      responseType:
+        simple: thread
+      retry-count:
+        simple: "10"
+      retry-interval:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9c3c6b04-c73a-4fdb-800a-2aef2e26e425
+    type: regular
+    task:
+      id: 9c3c6b04-c73a-4fdb-800a-2aef2e26e425
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 48c64387-ca0a-49bb-8e04-0a62b7aa072b
+    type: regular
+    task:
+      id: 48c64387-ca0a-49bb-8e04-0a62b7aa072b
+      version: -1
+      name: Reply Yes To Slack Ask
+      description: Sends a message to a user, group, or channel.
+      script: SlackV3|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      channel:
+        simple: random
+      message:
+        simple: "Yes"
+      retry-count:
+        simple: "10"
+      retry-interval:
+        simple: "5"
+      threadID:
+        simple: ${Slack.Thread.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f4c1fef8-9181-4fee-83b7-1ea3df41c906
+    type: title
+    task:
+      id: f4c1fef8-9181-4fee-83b7-1ea3df41c906
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
