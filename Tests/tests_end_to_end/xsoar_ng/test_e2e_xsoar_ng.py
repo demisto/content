@@ -40,7 +40,7 @@ def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGA
 
     integration_id = request.cls.integration_id
     is_long_running = getattr(request.cls, "is_long_running", False)
-    instance_name = integration_params.pop("integrationInstanceName", f'e2e-test-{integration_params.get("name")}')
+    instance_name = integration_params.pop("integrationInstanceName", f'e2e-test-{integration_params.get("name", integration_id)}')
     response = xsoar_ng_client.create_integration_instance(
         _id=integration_id,
         name=instance_name,
@@ -56,6 +56,36 @@ def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGA
 
     request.addfinalizer(delete_instance)
     return instance_name
+
+
+@pytest.fixture()
+def create_incident(request, xsoar_ng_client: XsoarNGApiClient):
+    integration_id = request.cls.integration_id
+    playbook_id = request.cls.playbook_id
+    response = xsoar_ng_client.create_incident(f'end-to-end-{integration_id}-test', should_create_investigation=True, attached_playbook_id=playbook_id)
+
+    incident_id = response.id
+
+    def delete_incident():
+        xsoar_ng_client.delete_incidents(incident_id)
+
+    request.addfinalizer(delete_incident)
+    return response
+
+
+@pytest.fixture()
+def create_playbook(request, xsoar_ng_client: XsoarNGApiClient):
+
+    playbook_path = request.cls.playbook_path
+    xsoar_ng_client.client.import_playbook(playbook_path)
+
+    playbook_id = request.cls.playbook_id
+    playbook_name = request.cls.playbook_name
+
+    def delete_playbook():
+        xsoar_ng_client.delete_playbook(playbook_name, playbook_id)
+
+    request.addfinalizer(delete_playbook)
 
 
 class TestEDL:
@@ -158,14 +188,34 @@ class TestSlack:
     instance_name_gsm = "cached"
     integration_id = "SlackV3"
     is_long_running = True
+    playbook_path = "Tests/tests_end_to_end/xsoar_ng/TestSlackAskE2E.yml"
+    # playbook_path = "TestSlackAskE2E.yml"
+    playbook_id = "TestSlackAskE2E"
+    playbook_name = "TestSlackAskE2E"
 
-    def test_slack_ask(self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, integration_params: dict):
-        pass
+    def test_slack_ask(self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, create_playbook, create_incident):
+        """
+        Given:
+            - playbook that runs slack-ask (runs SlackAskV2 and then answers the slack ask with the slack V3 integration)
+            - slack V3 integration
+        When:
+            - running slack ask flow with slack V3
+        Then:
+            - make sure that the playbook finishes.
+            - make sure that the context is populated with thread ID(s) from the slack-ask and slack-response.
+        """
+        investigation_id = create_incident.investigation_id
+        incident_id = create_incident.id
 
-# class TestQradar:
-#     instance_name_gsm = "cached"
-#     integration_id = "QRadar v3"
-#     is_long_running = True
-#
-#     def test_qradar_mirroring(self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, integration_params: dict):
-#         pass
+        playbook_status = xsoar_ng_client.get_playbook_state(incident_id)
+        playbook_state = playbook_status.get("state", "").lower()
+        while playbook_state not in {"completed", "failed"}:
+            playbook_status = xsoar_ng_client.get_playbook_state(incident_id)
+            playbook_state = playbook_status.get("state", "").lower()
+
+        # make sure the playbook finished successfully.
+        assert playbook_state == "completed", f'playbook state ended with status {playbook_state}, full playbook status response: {playbook_status}'
+
+        context = xsoar_ng_client.get_investigation_context(investigation_id)
+        # make sure the context is populated with thread id(s) from slack ask
+        assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
