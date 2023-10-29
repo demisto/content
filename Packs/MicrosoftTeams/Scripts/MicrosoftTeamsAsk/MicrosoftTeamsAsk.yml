@@ -1,13 +1,13 @@
 args:
-- auto: PREDEFINED
-  default: true
-  required: true
-  defaultValue: predefined-options
-  description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
+- description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
   name: form_type
+  required: true
+  auto: PREDEFINED
+  default: true
+  defaultValue: predefined-options
   predefined:
-    - predefined-options
-    - open-answer
+  - predefined-options
+  - open-answer
 - description: Question (message) to send to the specified team member or channel.
   name: message
   required: true
@@ -44,7 +44,7 @@ tags:
 - microsoftteams
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.78960
 tests:
 - No test
 dependson:
