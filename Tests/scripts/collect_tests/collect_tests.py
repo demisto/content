@@ -806,8 +806,9 @@ class BranchTestCollector(TestCollector):
         return CollectionResult.union(collected)
 
     def add_conf_json_changes(self, changed_files: tuple[str, ...]):
-        if ('conf.json' not in changed_files):
+        if ('Tests/conf.json' not in changed_files):
             return
+        logger.debug('going over conf.json changes')
         repo = PATHS.content_repo
         latest_commit = repo.head.commit.tree
         conf_json_path = 'Tests/conf.json'
