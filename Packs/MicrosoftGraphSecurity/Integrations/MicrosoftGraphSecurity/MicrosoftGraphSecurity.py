@@ -1436,7 +1436,9 @@ def get_threat_assessment_request(client: MsGraphClient, request_id):
                            outputs_prefix='MSGraphMail.AssessmentRequest')]
 
 
-@polling_function('msg-create-mail-assessment-request', requires_polling_arg=False)
+@polling_function('msg-create-mail-assessment-request',
+                  timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 720)),
+                  requires_polling_arg=False)
 def create_mail_assessment_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
 
     request_id = args.get('request_id')
@@ -1470,7 +1472,9 @@ def create_mail_assessment_request_command(args, client: MsGraphClient) -> PollR
                           partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
 
 
-@polling_function('msg-create-email-file-assessment-request', requires_polling_arg=False)
+@polling_function('msg-create-email-file-assessment-request',
+                  timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 720)),
+                  requires_polling_arg=False)
 def create_email_file_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
 
     request_id = args.get('request_id')

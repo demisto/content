@@ -1658,6 +1658,10 @@ script:
     - description: The ID of the request (generated in the polling command).
       name: request_id
       deprecated: true
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      deprecated: true
+      defaultValue: '720'
     description: Create and retrieve a mail threat assessment.
     execution: false
     name: msg-create-mail-assessment-request
@@ -1740,6 +1744,10 @@ script:
     - description: The ID of the request (generated in the polling command).
       name: request_id
       deprecated: true
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      deprecated: true
+      defaultValue: '720'
     description: Create email file assessment request.
     execution: false
     name: msg-create-email-file-assessment-request
@@ -1891,7 +1899,7 @@ script:
     - description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
       deprecated: true
-      defaultValue: '600'
+      defaultValue: '720'
     description: Create the URL assessment request.
     execution: false
     name: msg-create-url-assessment-request
