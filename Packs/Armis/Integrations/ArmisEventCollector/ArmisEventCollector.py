@@ -396,8 +396,8 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]],
                 vendor=VENDOR,
                 product=product
             )
-            demisto.setLastRun(next_run)
             demisto.debug(f'debug-log: {len(events)} events were sent to XSIAM.')
+        demisto.setLastRun(next_run)
     else:
         demisto.debug('debug-log: No new events fetched.')
 
@@ -411,17 +411,17 @@ def events_to_command_results(events: dict[str, list[dict[str, Any]]]) -> list:
         events (list[dict[str, Any]]): list of fetched events.
 
     Returns:
-        CommandResults: CommandResults object with a table of fetched events.
+        command_results_list: a List of CommandResults objects containing tables of fetched events.
     """
-    CommandResultsList: list = []
+    command_results_list: list = []
     for key, value in events.items():
         product = f'{PRODUCT}_{key}' if key != 'alerts' else PRODUCT
-        CommandResultsList.append(CommandResults(
+        command_results_list.append(CommandResults(
             raw_response=events,
             readable_output=tableToMarkdown(name=f'{VENDOR} {product} events',
                                             t=value,
                                             removeNull=True)))
-    return CommandResultsList
+    return command_results_list
 
 
 def set_last_run_with_current_time(last_run: dict, event_types_to_fetch) -> None:
