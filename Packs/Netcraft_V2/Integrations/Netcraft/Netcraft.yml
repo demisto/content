@@ -1059,6 +1059,7 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
+      type: string
   - name: netcraft-email-report-submit
     polling: true
     description: |
@@ -1248,6 +1249,7 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
+      type: string
   - name: netcraft-url-report-submit
     polling: true
     description: Report URLs to Netcraft for analysis.
@@ -1494,6 +1496,7 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
+      type: string
   script: '-'
   type: python
   dockerimage: demisto/python3:3.10.13.78960

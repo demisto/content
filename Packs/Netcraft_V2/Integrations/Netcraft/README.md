@@ -1262,7 +1262,7 @@ Get a screenshot for a file associated with a submission.
 | InfoFile.EntryID | string | The War Room entry ID of the screenshot. | 
 | InfoFile.Info | string | The format and encoding of the screenshot. | 
 | InfoFile.Type | string | The type of the screenshot. | 
-| InfoFile.Extension | unknown | The file extension of the screenshot. | 
+| InfoFile.Extension | string | The file extension of the screenshot. | 
 
 #### Command example
 ```!netcraft-file-screenshot-get file_hash=77fb7e37d57adddf4071f946cbd2a3dc submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70```
@@ -1510,7 +1510,7 @@ Get a screenshot for the email associated with a submission.
 | InfoFile.EntryID | string | The War Room entry ID of the screenshot. | 
 | InfoFile.Info | string | The format and encoding of the screenshot. | 
 | InfoFile.Type | string | The type of the screenshot. | 
-| InfoFile.Extension | unknown | The file extension of the screenshot. | 
+| InfoFile.Extension | string | The file extension of the screenshot. | 
 
 #### Command example
 ```!netcraft-mail-screenshot-get submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT```
@@ -1733,7 +1733,7 @@ Download associated screenshots for a specified URL.
 | InfoFile.EntryID | string | The War Room entry ID of the screenshot. | 
 | InfoFile.Info | string | The format and encoding of the screenshot. | 
 | InfoFile.Type | string | The type of the screenshot. | 
-| InfoFile.Extension | unknown | The file extension of the screenshot. | 
+| InfoFile.Extension | string | The file extension of the screenshot. | 
 
 #### Command example
 ```!netcraft-url-screenshot-get screenshot_hash="06f8715ba1b1ca5dee4af05e98bbc63a" submission_uuid="0qQt98P04o0qk46UXveNsCHhUN7zLopY" url_uuid="BZqSBm5i4KIoCq6TItXLWKZwGAm3nN08"```
