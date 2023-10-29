@@ -1393,7 +1393,7 @@ def file_details_results(client: Client, args: Dict, add_to_context: bool) -> No
         demisto.results(file_results)
 
 
-def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:  # type:ignore[no-redef]
+def get_alerts_by_filter_command_ctf(client: CoreClient, args: Dict) -> CommandResults:  # type:ignore[no-redef]
     '''
     This command was changed to return predefined alerts. Instead of using the passed client, the raw_response will contain
      the returned json.
@@ -2723,7 +2723,7 @@ def main():  # pragma: no cover
             return_results(get_original_alerts_command(client, args))   # type:ignore[arg-type]
 
         elif command == 'xdr-get-alerts-ctf':
-            return_results(get_alerts_by_filter_command(client, args))   # type:ignore[arg-type]
+            return_results(get_alerts_by_filter_command_ctf(client, args))   # type:ignore[arg-type]
 
         elif command == 'xdr-run-script-execute-commands':
             return_results(run_script_execute_commands_command(client, args))  # type:ignore[arg-type]
