@@ -891,7 +891,7 @@ script:
       isArray: false
       name: case_id
       required: false
-    - description: The maximum number of results to return. 
+    - description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -981,7 +981,7 @@ script:
       isArray: false
       name: custodian_id
       required: false
-    - description: Number of total results to return. 
+    - description: Number of total results to return.
       isArray: false
       name: limit
       required: false
@@ -1162,7 +1162,7 @@ script:
       isArray: false
       name: user_source_id
       required: false
-    - description: Number of total results to return. 
+    - description: Number of total results to return.
       isArray: false
       name: limit
       required: false
@@ -1228,7 +1228,7 @@ script:
       isArray: false
       name: site_source_id
       required: false
-    - description: Number of total results to return. 
+    - description: Number of total results to return.
       isArray: false
       name: limit
       required: false
@@ -1328,7 +1328,7 @@ script:
       isArray: false
       name: data_source_id
       required: false
-    - description: The maximum number of results to return. 
+    - description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -1508,7 +1508,7 @@ script:
       isArray: false
       name: search_id
       required: false
-    - description: The maximum number of results to return. 
+    - description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false

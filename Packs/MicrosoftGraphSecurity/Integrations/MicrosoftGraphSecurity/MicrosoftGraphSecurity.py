@@ -1326,7 +1326,7 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):    
             fetch_time = params.get('fetch_time', '1 day')
             fetch_providers = params.get('fetch_providers', '')
             fetch_filter = params.get('fetch_filter', '')
-            fetch_service_sources = params.get('service_sources', '')
+            fetch_service_sources = params.get('fetch_service_sources', '')
 
             filter_query = create_filter_query(fetch_filter, fetch_providers, fetch_service_sources)
             timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
