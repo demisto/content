@@ -19,7 +19,10 @@
     "group": 0,
     "hidden": true,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CTF01"
+    ],
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
