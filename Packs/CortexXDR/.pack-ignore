@@ -120,3 +120,6 @@ ignore=IF115
 
 [file:incidentfield-XDR_Risky_Host_Count.json]
 ignore=IF115
+
+[file:InvestigationVerdict.yml]
+ignore=BA124
