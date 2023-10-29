@@ -590,7 +590,7 @@ slack-notify-on-merge:
 
     - section_start "Packs re-installation test"
     - |
-      if [ -z "${NIGHTLY}" && -s $ARTIFACTS_FOLDER/packs_reinstall_to_test.txt ]; then
+      if [[ -z "${NIGHTLY}" && -s $ARTIFACTS_FOLDER/packs_reinstall_to_test.txt ]]; then
         echo "Running the packs re-installation test."
         ./Tests/scripts/reinstall_packs_on_cloud_instances.sh || EXIT_CODE=$?
       fi
