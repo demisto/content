@@ -574,13 +574,13 @@ def get_incident_extra_data_command(client, args):
                                       'end_match_attempt_ts': None, 'local_insert_ts': 1671731192490, 'last_modified_ts': None, 'bioc_indicator': None,   # noqa: E501
                                       'matching_service_rule_id': 'fd879de7-fb74-44f0-b699-805d0b08b1fd', 'attempt_counter': None,   # noqa: E501
                                       'bioc_category_enum_key': None, 'case_id': 413, 'is_whitelisted': False, 'starred': False, 'deduplicate_tokens': None,   # noqa: E501
-                                      'filter_rule_id': None, 'mitre_technique_id_and_name': 'T1110.001 - Brute Force: Password Guessing', # noqa: E501
+                                      'filter_rule_id': None, 'mitre_technique_id_and_name': 'T1110.001 - Brute Force: Password Guessing',   # noqa: E501
                                       'mitre_tactic_id_and_name': 'TA0006 - Credential Access', 'agent_version': '7.9.0.18674', 'agent_ip_addresses_v6': None,     # noqa: E501
                                       'agent_device_domain': None, 'agent_fqdn': None, 'agent_os_type': 'Windows',
                                       'agent_os_sub_type': 'Windows 10 [10.0 (Build 19044)]', 'agent_data_collection_status': None, 'mac': None,   # noqa: E501
                                       'agent_is_vdi': None, 'agent_install_type': 'STANDARD', 'agent_host_boot_time': 1671032983204, 'event_sub_type': 1,   # noqa: E501
                                       'module_id': None, 'association_strength': 50, 'dst_association_strength': 0, 'story_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==',   # noqa: E501
-                                      'event_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==', 'event_type': 'Login', 'event_timestamp': 1671730625375, # noqa: E501
+                                      'event_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==', 'event_type': 'Login', 'event_timestamp': 1671730625375,   # noqa: E501
                                       'actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe',     # noqa: E501
                                       'actor_process_image_name': 'lsass.exe', 'actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe',   # noqa: E501
                                       'actor_process_signature_status': 'Signed', 'actor_process_signature_vendor': 'Microsoft Corporation',   # noqa: E501
@@ -597,7 +597,7 @@ def get_incident_extra_data_command(client, args):
                                       'causality_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',   # noqa: E501
                                       'action_file_path': None, 'action_file_name': None,
                                       'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None,   # noqa: E501
-                                      'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, # noqa: E501
+                                      'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None,    # noqa: E501
                                       'action_local_ip': 'None', 'action_local_ip_v6': None, 'action_local_port': 0, 'action_remote_ip': '137.184.208.116',     # noqa: E501
                                       'action_remote_ip_v6': None, 'action_remote_port': 0, 'action_external_hostname': 'kali', 'action_country': 'UNKNOWN',   # noqa: E501
                                       'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None,   # noqa: E501
