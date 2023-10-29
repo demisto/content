@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 # type: ignore
 from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urljoin
 
 import urllib3
 
@@ -285,7 +284,7 @@ def arg_to_boolean(arg: Optional[str]) -> Optional[bool]:
     return argToBoolean(arg)
 
 
-def arg_to_seconds_timestamp(arg: Optional[str]) -> Optional[int]:
+def arg_to_seconds_timestamp(arg: Optional[str]):
     """
     Converts an XSOAR date string argument to a timestamp in seconds.
 
@@ -300,7 +299,7 @@ def arg_to_seconds_timestamp(arg: Optional[str]) -> Optional[int]:
     if arg is None:
         return None
 
-    return date_to_seconds_timestamp(arg_to_datetime(arg))
+    return date_to_seconds_timestamp(arg_to_datetime(arg))  # type: ignore
 
 
 def date_to_seconds_timestamp(date_str_or_dt: Union[str, datetime]) -> int:
@@ -547,7 +546,7 @@ def list_quarantined_files_command(client: Client, args: Dict[str, str]) -> Comm
         for file_output in output['files']:
             file_output['quarantine_profile_id'] = output['quarantine_profile_id']
             file_output['quarantine_profile_name'] = output['quarantine_profile_name']
-    outputs = sum((output['files'] for output in outputs), [])
+    outputs: list = sum((output['files'] for output in outputs), [])
 
     readable_header = get_pagination_readable_message('Quarantined Files List:',
                                                       page=page,
@@ -718,7 +717,7 @@ def list_host_associated_user_command(client: Client, args: Dict[str, str]) -> C
                                            limit=limit,
                                            skip=skip)
 
-    outputs = sum((client['attributes'].get('users') for client in response['data']), [])
+    outputs: list = sum((client['attributes'].get('users') for client in response['data']), [])
     for output in outputs:
         output['user_id'] = output['_id']
 
@@ -849,7 +848,7 @@ def fetch_incidents(client: Client, max_fetch: int, first_fetch: str, fetch_even
     validate_fetch_params(max_fetch, max_events_fetch, fetch_events, first_fetch, event_types)
 
     last_run = demisto.getLastRun() or {}
-    first_fetch = arg_to_seconds_timestamp(first_fetch)
+    first_fetch: int = arg_to_seconds_timestamp(first_fetch)
 
     last_alert_time = last_run.get('last_alert_time') or first_fetch
     alerts = client.list_alerts_request(start_time=last_alert_time,
