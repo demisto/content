@@ -22,7 +22,6 @@ class EVENT_TYPE(NamedTuple):
 
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
-AQL_DATE_FORMAT = '%Y-%m-%d'
 VENDOR = 'armis'
 PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
@@ -73,7 +72,7 @@ class Client(BaseClient):
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
         if not after:  # this should only happen when get-events command is used without from_date argument
             after = datetime.now()
-        params['aql'] += f' after:{after.strftime(AQL_DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
+        params['aql'] += f' after:{after.strftime(DATE_FORMAT)}'  # add 'after' date filter to AQL query in the desired format
         raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
         results = raw_response.get('data', {}).get('results', [])
 

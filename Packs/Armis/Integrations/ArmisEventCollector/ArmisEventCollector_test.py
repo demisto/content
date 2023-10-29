@@ -51,7 +51,7 @@ class TestClientFunctions:
 
         expected_args = {
             'url_suffix': '/search/', 'method': 'GET',
-            'params': {'aql': 'example_query after:2023-01-01', 'includeTotal':
+            'params': {'aql': 'example_query after:2023-01-01T01:00:00', 'includeTotal':
                        'true', 'length': 2, 'orderBy': 'time', 'from': 1},
             'headers': {'Authorization': 'test_access_token', 'Accept': 'application/json'}
         }
@@ -98,7 +98,7 @@ class TestClientFunctions:
 
         expected_args = {
             'url_suffix': '/search/', 'method': 'GET',
-            'params': {'aql': 'example_query after:2023-01-01',
+            'params': {'aql': 'example_query after:2023-01-01T01:00:01',
                        'includeTotal': 'true', 'length': 2, 'orderBy': 'time', 'from': 1},
             'headers': {'Authorization': 'test_access_token', 'Accept': 'application/json'}
         }
