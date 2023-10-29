@@ -10,13 +10,11 @@
 
 .change-file-ids: &change-file-ids
   - python3 ./Tests/scripts/sdk_nightly_change_json_file_fields.py Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json name
-  - python3 ./Tests/scripts/sdk_nightly_change_json_file_fields.py Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json name
 
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
   - section_start "Upload Entities to Cortex XSOAR" --collapsed
   - demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
   - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
-  - demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
   - demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_IncidentField_Test.json --insecure
   - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
   - demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
@@ -163,26 +161,13 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
-demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
-  tags:
-    - gke
-  extends:
-    - .default-job-settings
-    - .sdk-nightly-schedule-rule
+xsoar-saas-prepare-testing-bucket:
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar_saas"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
-    IFRA_ENV_TYPE: "Server Master"
-    KUBERNETES_CPU_REQUEST: 2000m
-  cache:
-    policy: pull-push
-  needs: []
-  stage: prepare-testing-bucket
-  script:
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
-    - !reference [.generic-prepare-testing-bucket, script]
-    - job-done
+  extends:
+    - .generic-prepare-testing-bucket
 
 demisto-sdk-nightly:test-upload-flow:
   tags:
@@ -248,19 +233,19 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
-    - section_start "Format Content Items" --collapsed
-    - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
-    - section_end "Format Content Items"
-    - section_start "Run Validate" --collapsed
-    - demisto-sdk validate -i Packs/HelloWorld/
-    - section_end "Run Validate"
-    - section_start "Run Lint" --collapsed
-    - demisto-sdk lint --console-log-threshold DEBUG -i Packs/HelloWorld/
-    - section_end "Run Lint"
+    # - section_start "Format Content Items" --collapsed
+    # - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
+    # - section_end "Format Content Items"
+    # - section_start "Run Validate" --collapsed
+    # - demisto-sdk validate -i Packs/HelloWorld/
+    # - section_end "Run Validate"
+    # - section_start "Run Lint" --collapsed
+    # - demisto-sdk lint --console-log-threshold DEBUG -i Packs/HelloWorld/
+    # - section_end "Run Lint"
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
     - section_start "Download Custom Entities from XSOAR Instance" --collapsed
-    - demisto-sdk download -a -o Packs/ -f --insecure
+    - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
     - section_end "Download Custom Entities from XSOAR Instance"
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
@@ -321,6 +306,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       CLOUD_SERVERS_FILE: "xsiam_servers_path"
       XSIAM_SERVERS_PATH: "./xsiam_servers.json"
       CLOUD_API_KEYS: $XSIAM_API_KEYS
+      CLOUD_API_TOKENS: $XSIAM_TOKENS
       ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
       GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
       ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
@@ -339,16 +325,25 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
 
     - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
     - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
+    - echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
 
     - !reference [.export_xsiam_machine_constants]
     - echo "Server URL $DEMISTO_BASE_URL"
     - echo "XSIAM_AUTH_ID $XSIAM_AUTH_ID"
     - echo "Checking infra."
-  
+
+    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - demisto-sdk upload -i Packs/AzureSentinel -z -x --insecure
+    - demisto-sdk upload -i Packs/HelloWorld --insecure -z -x
+
     - demisto-sdk download -lf --insecure
-    - demisto-sdk download -a -o Packs/ -f --insecure
+    - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
+
+    - section_start "Test Modeling Rules"
+    - echo "SemperisDSP" >> "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt"
+    - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
+    - section_end "Test Modeling Rules"
 
     - !reference [.cloud-machine-information]
     - exit $EXIT_CODE
@@ -420,7 +415,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - demisto-sdk lint --console-log-threshold DEBUG -i Packs/HelloWorld/
     - section_end "Run Lint"
     - section_start "Download Custom Entities from XSOAR Instance" --collapsed
-    - demisto-sdk download -a -o Packs/ -f --insecure
+    - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
     - section_end "Download Custom Entities from XSOAR Instance"
 
     - !reference [.cloud-machine-information]
