@@ -732,7 +732,7 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-fromversion: 6.10.0
+fromversion: 6.9.0
 defaultmapperin: XDR - Incoming Mapper CTF
 defaultclassifier: Cortex XDR Incident Handler - Classifier CTF
 tests:
