@@ -79,7 +79,7 @@ def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
         elif pipeline.id == pipeline_id:
             logging.info(f"Pipeline {pipeline.id} was not canceled as it is the current pipeline")
         else:
-            logging.info(f"Pipeline {pipeline.id} was not canceled")
+            logging.info(f"Pipeline {pipeline.id} was not canceled because it's newer than the current build")
     return success
 
 
