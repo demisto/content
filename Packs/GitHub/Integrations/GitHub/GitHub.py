@@ -83,10 +83,13 @@ def get_installation_access_token(installation_id: str, jwt_token: str):
         return response.json()['token']
     elif response.status_code == 403:
         return_error('403 Forbidden - The credentials are incorrect')
+        return None
     elif response.status_code == 404:
         return_error('404 Not found - Installation wasn\'t found')
+        return None
     else:
         return_error(f'Encountered an error: {response.text}')
+        return None
 
 
 def safe_get(obj_to_fetch_from: dict, what_to_fetch: str, default_val: dict | list | str) -> Any:
@@ -151,7 +154,7 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
             raise DemistoException(f'Error in API call to GitHub Integration [{res.status_code}] - {res.reason}')
 
     try:
-        if res.status_code == 204:
+        if res.status_code in (204, 202):
             return res
         elif is_raw_response:
             return res.content.decode('utf-8')
@@ -2060,6 +2063,40 @@ def github_trigger_workflow_command():
         ))
 
 
+def github_cancel_workflow_command():
+    """
+    Cancels a GitHub workflow.
+
+        Args:
+            owner (str): The GitHub owner (organization or username) of the repository.
+            repository (str): The GitHub repository name.
+            workflow_id (str): The workflow id to cancel.
+
+        Returns:
+            CommandResults object with informative prints out if triggering the workflow succeeded or not.
+    """
+    args = demisto.args()
+    owner = args.get('owner') or USER
+    repository = args.get('repository') or REPOSITORY
+    workflow_id = args.get('workflow_id')
+
+    suffix = f"/repos/{owner}/{repository}/actions/runs/{workflow_id}/cancel"
+    headers = {
+        "Authorization": f"Bearer {TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    response = http_request('POST', url_suffix=suffix, headers=headers)
+
+    if response.status_code == 202:
+        return_results(CommandResults(readable_output="Workflow canceled successfully."))
+    else:
+        return_results(CommandResults(
+            raw_response=response,
+            readable_output=f"Failed to cancel workflow. {response.json().get('message')}"
+        ))
+
+
 def github_list_workflows_command():
     """Returns a list of GitHub workflows on a given repository.
 
@@ -2149,6 +2186,7 @@ COMMANDS = {
     'GitHub-delete-comment': github_delete_comment_command,
     'GitHub-add-assignee': github_add_assignee_command,
     'GitHub-trigger-workflow': github_trigger_workflow_command,
+    'GitHub-cancel-workflow': github_cancel_workflow_command,
     'GitHub-list-workflows': github_list_workflows_command,
 }
 

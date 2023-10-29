@@ -398,13 +398,33 @@ def test_users_list_command(mocker, prisma_cloud_v2_client):
     When:
         - prisma-cloud-users-list command is executed
     Then:
-        - The http request is called with the right arguments
+        - The http request is called with the right arguments and the right result is returned
     """
     from PrismaCloudV2 import users_list_command
-    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request')
-    args = {}
-    users_list_command(prisma_cloud_v2_client, args)
+    return_value = [{"displayName": "User Test", "email": "test@paloaltonetworks.com", "enabled": True,
+                     "roles": [{"id": "a4b4", "name": "Read Only", "type": "Account Group Read Only"},
+                               {"id": "b2n3", "name": "Other Role", "type": "Role"}],
+                     "type": "USER_ACCOUNT", "username": "test@paloaltonetworks.com"},
+                    {"displayName": "User Other", "email": "other@paloaltonetworks.com", "enabled": True,
+                     "roles": [{"id": "a4b4", "name": "Read Only", "type": "Account Group Read Only"}],
+                     "type": "USER_ACCOUNT", "username": "other@paloaltonetworks.com"},
+                    {"displayName": "User Not Listed", "email": "mail", "enabled": True,
+                     "roles": [{"id": "a4b4", "name": "Read Only", "type": "Account Group Read Only"}],
+                     "type": "USER_ACCOUNT", "username": "not_to_appear"},
+                    ]
+    http_request = mocker.patch.object(prisma_cloud_v2_client, '_http_request', return_value=return_value)
+    args = {'usernames': 'test@paloaltonetworks.com,other@paloaltonetworks.com'}
+    command_results = users_list_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with('GET', 'v3/user')
+    assert command_results.outputs == [{'displayName': 'User Test', 'email': 'test@paloaltonetworks.com', 'enabled': True,
+                                        'roles': [{'id': 'a4b4', 'name': 'Read Only', 'type': 'Account Group Read Only'},
+                                                  {'id': 'b2n3', 'name': 'Other Role', 'type': 'Role'}],
+                                        'roles names': ['Read Only', 'Other Role'], 'type': 'USER_ACCOUNT',
+                                        'username': 'test@paloaltonetworks.com'},
+                                       {'displayName': 'User Other', 'email': 'other@paloaltonetworks.com', 'enabled': True,
+                                        'roles': [{'id': 'a4b4', 'name': 'Read Only', 'type': 'Account Group Read Only'}],
+                                        'roles names': ['Read Only'], 'type': 'USER_ACCOUNT',
+                                        'username': 'other@paloaltonetworks.com'}]
 
 
 def test_account_list_command(mocker, prisma_cloud_v2_client):

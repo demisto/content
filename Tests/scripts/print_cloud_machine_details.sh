@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-CLOUD_SERVERS_PATH=$(cat "${CLOUD_SERVERS_FILE}")
+if [ -n "${CLOUD_SERVERS_FILE}" ]; then
+  CLOUD_SERVERS_PATH=$(cat "${CLOUD_SERVERS_FILE}")
+  echo "CLOUD_SERVERS_PATH is set to: ${CLOUD_SERVERS_PATH}"
+else
+  echo "CLOUD_SERVERS_FILE is not set, exiting"
+  exit 1
+fi
 
 if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
   IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"

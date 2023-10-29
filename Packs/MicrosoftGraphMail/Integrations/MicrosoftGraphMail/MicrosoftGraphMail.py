@@ -12,156 +12,6 @@ urllib3.disable_warnings()
 
 class MsGraphMailClient(MsGraphMailBaseClient):
 
-    @staticmethod
-    def get_emails_as_text_and_html(emails_as_html, emails_as_text):
-
-        text_emails_ids = {email.get('id'): email for email in emails_as_text}
-        emails_as_html_and_text = []
-
-        for email_as_html in emails_as_html:
-            html_email_id = email_as_html.get('id')
-            text_email_data = text_emails_ids.get(html_email_id) or {}
-            if not text_email_data:
-                demisto.info(f'There is no matching text email to html email-ID {html_email_id}')
-
-            body_as_text = text_email_data.get('body')
-            if body_as_html := email_as_html.get('body'):
-                email_as_html['body'] = (body_as_html, body_as_text)
-
-            unique_body_as_text = text_email_data.get('uniqueBody')
-            if unique_body_as_html := email_as_html.get('uniqueBody'):
-                email_as_html['uniqueBody'] = (unique_body_as_html, unique_body_as_text)
-
-            emails_as_html_and_text.append(email_as_html)
-
-        return emails_as_html_and_text
-
-    @staticmethod
-    def get_email_content_as_text_and_html(email):
-        email_body: tuple = email.get('body') or ()  # email body including replyTo emails.
-        email_unique_body: tuple = email.get('uniqueBody') or ()  # email-body without replyTo emails.
-
-        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
-        # in those cases for both html/text formats.
-        try:
-            email_content_as_html, email_content_as_text = email_body or email_unique_body
-        except ValueError:
-            demisto.info(f'email body content is missing from email {email}')
-            return '', ''
-
-        return email_content_as_html.get('content'), email_content_as_text.get('content')
-
-    def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
-        """
-        Fetches emails from given folder that were modified after specific datetime (last_fetch).
-        All fields are fetched for given email using select=* clause,
-        for more information https://docs.microsoft.com/en-us/graph/query-parameters.
-        The email will be excluded from returned results if it's id is presented in exclude_ids.
-        Number of fetched emails is limited by _emails_fetch_limit parameter.
-        The filtering and ordering is done based on modified time.
-        :type folder_id: ``str``
-        :param folder_id: Folder id
-        :type last_fetch: ``str``
-        :param last_fetch: Previous fetch date
-        :type exclude_ids: ``list``
-        :param exclude_ids: List of previous fetch email ids to exclude in current run
-        :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
-        :rtype: ``list`` and ``list``
-        """
-        demisto.debug(f'fetching emails since {last_fetch}')
-        fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch,
-                                         folder_id=folder_id, mark_emails_as_read=self._mark_fetched_read,
-                                         overwrite_rate_limit_retry=True)
-
-        fetched_emails_ids = {email.get('id') for email in fetched_emails}
-        exclude_ids_set = set(exclude_ids)
-        if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
-            # no new emails
-            demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
-            return [], exclude_ids
-        new_emails = [mail for mail in fetched_emails
-                      if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
-        last_email_time = new_emails[-1].get('receivedDateTime')
-        if last_email_time == last_fetch:
-            # next fetch will need to skip existing exclude_ids
-            excluded_ids_for_nextrun = exclude_ids + [email.get('id') for email in new_emails]
-        else:
-            # next fetch will need to skip messages the same time as last_email
-            excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
-                                        email.get('receivedDateTime') == last_email_time]
-
-        return new_emails, excluded_ids_for_nextrun
-
-    def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
-        """
-        Parses fetched emails as incidents.
-
-        :type email: ``dict``
-        :param email: Fetched email to parse
-
-        :return: Parsed email
-        :rtype: ``dict``
-        """
-        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
-        # in those cases for both html/text formats.
-        def body_extractor(email, parsed_email):
-            email_content_as_html, email_content_as_text = self.get_email_content_as_text_and_html(email)
-            parsed_email['Body'] = email_content_as_html
-            parsed_email['Text'] = email_content_as_text
-            parsed_email['BodyType'] = 'html'
-
-        parsed_email = GraphMailUtils.parse_item_as_dict(email, body_extractor)
-
-        # handling attachments of fetched email
-        attachments = self._get_email_attachments(
-            message_id=email.get('id', ''),
-            overwrite_rate_limit_retry=overwrite_rate_limit_retry
-        )
-        if attachments:
-            parsed_email['Attachments'] = attachments
-
-        parsed_email['Mailbox'] = self._mailbox_to_fetch
-
-        body = email.get('bodyPreview', '')
-        if not body or self._display_full_email_body:
-            _, body = self.get_email_content_as_text_and_html(email)
-
-        incident = {
-            'name': parsed_email.get('Subject'),
-            'details': body,
-            'labels': GraphMailUtils.parse_email_as_labels(parsed_email),
-            'occurred': parsed_email.get('ReceivedTime'),
-            'attachment': parsed_email.get('Attachments', []),
-            'rawJSON': json.dumps(parsed_email),
-            'ID': parsed_email.get('ID')  # only used for look-back to identify the email in a unique way
-        }
-
-        return incident
-
-    def get_emails(self, exclude_ids, last_fetch, folder_id, overwrite_rate_limit_retry=False,
-                   mark_emails_as_read: bool = False):
-
-        emails_as_html = self.get_emails_from_api(folder_id,
-                                                  last_fetch,
-                                                  body_as_text=False,
-                                                  limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
-                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
-
-        emails_as_text = self.get_emails_from_api(folder_id,
-                                                  last_fetch,
-                                                  limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
-                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
-
-        if mark_emails_as_read:
-            for email in emails_as_html:
-                if email.get('id'):
-                    self.update_email_read_status(user_id=self._mailbox_to_fetch,
-                                                  message_id=email["id"],
-                                                  read=True,
-                                                  folder_id=folder_id)
-
-        return self.get_emails_as_text_and_html(emails_as_html=emails_as_html, emails_as_text=emails_as_text)
-
     @logger
     def fetch_incidents(self, last_run):
         """
@@ -261,19 +111,19 @@ class MsGraphMailClient(MsGraphMailBaseClient):
         return next_run, incidents
 
 
-def main():
+def main():  # pragma: no cover
     try:
         """ COMMANDS MANAGER / SWITCH PANEL """
         args: dict = demisto.args()
         params: dict = demisto.params()
         # There're several options for tenant_id & auth_and_token_url due to the recent credentials set supoort enhancment.
-        tenant_id: str = params.get('tenant_id', '') \
+        tenant_id: str = params.get('creds_tenant_id', {}).get('password', '') \
             or params.get('_tenant_id', '') \
-            or params.get('creds_tenant_id', {}).get('password', '')
-        auth_and_token_url: str = params.get('auth_id', '') \
+            or params.get('tenant_id', '')
+        auth_and_token_url: str = params.get('creds_auth_id', {}).get('password', '') \
             or params.get('_auth_id', '') \
-            or params.get('creds_auth_id', {}).get('password', '')
-        enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password', '')
+            or params.get('auth_id', '')
+        enc_key: str = (params.get('credentials') or {}).get('password', '') or params.get('enc_key', '')
         server = params.get('url', '')
         base_url: str = urljoin(server, '/v1.0')
         endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')

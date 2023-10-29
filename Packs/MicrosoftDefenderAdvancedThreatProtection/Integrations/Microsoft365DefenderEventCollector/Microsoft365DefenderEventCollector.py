@@ -64,7 +64,7 @@ class IntegrationHTTPRequest(BaseModel):
     url: AnyUrl
     verify: bool = True
     headers: dict = {}  # type: ignore[type-arg]
-    auth: HTTPBasicAuth | None
+    auth: HTTPBasicAuth | None = None
     data: Any = None
 
     class Config(BaseConfig):
@@ -235,7 +235,7 @@ class DefenderAuthenticator(BaseModel):
 
 
 class DefenderHTTPRequest(IntegrationHTTPRequest):
-    params: dict = {}
+    params: dict | None = {}
     method: Method = Method.GET
 
     _normalize_url = validator('url', pre=True, allow_reuse=True)(

@@ -346,7 +346,7 @@ script:
       description: 'Specifies the visibility of a Microsoft 365 group. Possible values are: Private, Public, or Hiddenmembership. Blank values are treated as public.'
       type: String
     - contextPath: MicrosoftTeams.Team.proxyAddresses
-      description: 'Email addresses for the group that direct to the same group mailbox. For example: ["SMTP: bob@demisto.com", "smtp: bob@sales.demisto.com"]'
+      description: 'Email addresses for the group that direct to the same group mailbox. For example: ["SMTP: bob@demisto.com", "smtp: bob@sales.demisto.com"].'
       type: String
     - contextPath: MicrosoftTeams.Team.mail
       description: The SMTP address for the group, for example, "serviceadmins@contoso.onmicrosoft.com".
@@ -679,7 +679,7 @@ script:
     - contextPath: MicrosoftTeams.Team.description
       description: An optional description for the group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.76022
   runonce: false
   script: '-'
   subtype: python3

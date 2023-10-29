@@ -23,7 +23,7 @@ aws_secret_access_key = demisto.params().get('credentials', {}).get('password') 
 
 runtime = boto3.Session(aws_access_key_id=aws_access_key_id,
                         aws_secret_access_key=aws_secret_access_key,
-                        region_name=demisto.params()['AWSRegion']).client('runtime.sagemaker')
+                        region_name=demisto.params()['AWSRegion']).client('runtime.sagemaker')  # type: ignore[call-overload]
 endpoint_name = demisto.params()['EndpointName']
 
 

@@ -2,30 +2,11 @@ id: Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2
 version: -1
 fromversion: 6.5.0
 name: Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2
-description: |
+description: |-
   This playbook remediates Prisma Cloud AWS EC2 alerts.  It calls the following sub-playbooks to perform the remediation:
-  - AWS Default Security Group Does Not Restrict All Traffic
-  - AWS Security Groups Allow Internet Traffic
-  - AWS Security Groups With Inbound Rule Overly Permissive To All Traffic
-  - AWS Security Groups allow internet traffic from internet to FTP-Data port (20)
-  - AWS Security Groups allow internet traffic from internet to FTP port (21)
-  - AWS Security Groups allow internet traffic to SSH port (22)
-  - AWS Security Group allows all traffic on SSH port (22)
-  - AWS Security Groups allow internet traffic from internet to Telnet port (23)
-  - AWS Security Groups allow internet traffic from internet to SMTP port (25)
-  - AWS Security Groups allow internet traffic from internet to DNS port (53)
-  - AWS Security Groups allow internet traffic from internet to Windows RPC port (135)
-  - AWS Security Groups allow internet traffic from internet to NetBIOS port (137)
-  - AWS Security Groups allow internet traffic from internet to NetBIOS port (138)
-  - AWS Security Groups allow internet traffic from internet to CIFS port (445)
-  - AWS Security Groups allow internet traffic from internet to SQLServer port (1433)
-  - AWS Security Groups allow internet traffic from internet to SQLServer port (1434)
-  - AWS Security Groups allow internet traffic from internet to MYSQL port (3306)
-  - AWS Security Groups allow internet traffic from internet to RDP port (3389)
-  - AWS Security Groups allow internet traffic from internet to MSQL port (4333)
-  - AWS Security Groups allow internet traffic from internet to PostgreSQL port (5432)
-  - AWS Security Groups allow internet traffic from internet to VNC Listener port (5500)
-  - AWS Security Groups allow internet traffic from internet to VNC Server port (5900)
+  - AWS Default Security Group Does Not Restrict All Traffic (policy id: 2378dbf4-b104-4bda-9b05-7417affbba3f)
+  - AWS Security Group allows all traffic on SSH port (22) (policy id: 617b9138-584b-4e8e-ad15-7fbabafbed1a)
+  - AWS Security Groups allow internet traffic from internet to RDP port (3389) (policy id: b82f90ce-ed8b-4b49-970c-2268b0a6c2e5).
 starttaskid: "0"
 tasks:
   "0":
@@ -57,6 +38,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 3bd78b35-5c67-4c29-82d3-56cd93cb2e1a
@@ -95,6 +77,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 77885611-1518-41c5-8929-0da5c8de85cb
@@ -141,6 +124,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: a1526b70-d9ce-4d1c-8e36-4aaa1cf5d850
@@ -191,6 +175,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: f8dfdf9c-3271-4644-89ce-2fdfd9f25e9f
@@ -221,6 +206,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 6875afa1-821e-4015-81a8-97e77b6316f5
@@ -251,6 +237,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 5bfb7869-0a96-4ca5-875c-1ec4c9072953
@@ -278,6 +265,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 1b01f096-ed50-4e46-8dfc-1fc611535c7a
@@ -338,12 +326,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: c68e2c3c-f240-4454-8e97-ebfa0266b1df
+    taskid: 1ac99665-2df1-40fe-8293-7d2513605e2f
     type: condition
     task:
-      id: c68e2c3c-f240-4454-8e97-ebfa0266b1df
+      id: 1ac99665-2df1-40fe-8293-7d2513605e2f
       version: -1
       name: Execute playbook
       description: Execute the appropriate sub-playbook to perform the actual remediation.
@@ -377,24 +366,6 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 2dbda57f-33d4-459a-97ae-dec7e81f9ec4
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 566686e8-0581-4df5-ae22-5a901ed37b58
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
               simple: 617b9138-584b-4e8e-ad15-7fbabafbed1a
     - label: internetPorts
       condition:
@@ -406,151 +377,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 520308c5-57e3-4061-b9bf-1ce5325a2d61
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 6eaf6455-1659-4c4b-bff5-c8c7b0fda201
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 14d10ad2-51df-4b07-be69-e94951cc7067
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: cdcd663c-e9c9-4472-9779-e5f38751524a
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: ab7f8eda-18ab-457c-b5d3-fd4f53c722bc
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 65daa6a0-e040-434e-aca3-9d5765c96e7c
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 5599b97c-2965-4fd2-9370-927c368abd2d
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: a9f1b983-f216-486e-b8ea-7259764fc420
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 3b642d25-4534-487a-9399-c2622754ecb5
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
               simple: b82f90ce-ed8b-4b49-970c-2268b0a6c2e5
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: c2074d5a-aa28-4dde-90c1-82f528cec55e
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 760f2823-997e-495f-a538-5fb073c0ee78
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: ee03a420-89d6-4745-a0ac-98878cb56cf4
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 519456f2-f9eb-407b-b32d-064f1ac7f0ca
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 8dd9e369-0c09-4477-97a2-ff0d50507fe2
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: 89cbc2f1-fcb0-48b9-be71-4cbe2d18a5f7
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.policyId
-            iscontext: true
-          right:
-            value:
-              simple: ab8b6bb8-a730-4bdf-a4d5-080c01e97335
     view: |-
       {
         "position": {
@@ -565,6 +392,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
     taskid: 0d732bc3-22a0-4b2e-8b03-4d8aa68b9389
@@ -607,6 +435,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
     taskid: b5281377-31ef-472b-8699-6c94c222e807
@@ -647,6 +476,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 3d9a9afc-e7e3-4be6-8142-57b5ef3bffb2
@@ -678,6 +508,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
     taskid: f8385099-65e3-47ef-818d-0131c61c0d6f
@@ -734,6 +565,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {
@@ -782,4 +614,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- No Test
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

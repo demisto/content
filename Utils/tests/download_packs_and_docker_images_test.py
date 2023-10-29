@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from ..download_packs_and_docker_images import create_content_item_id_set, get_docker_images_with_tag, get_pack_names
+from Utils.download_packs_and_docker_images import create_content_item_id_set, get_docker_images_with_tag, get_pack_names
 
 MOCK_ID_SET = {
     'integrations':

@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment":"Mandatory: ID of the scan."
         },
         {
             "displayName": "ScanDone",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment":"Optional: Set to false if the scan failed."
         },
         {
             "displayName": "ScanResult",
@@ -46,7 +48,8 @@
                 "other"
             ],
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment":"Mandatory: Set to REMEDIATED or UNREMEDIATED based on the result of the scan."
         },
         {
             "displayName": "TimeStamp",
@@ -59,7 +62,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment":"Mandatory: Current timestamp the scan was seen completed by the playbook."
         },
         {
             "displayName": "ScanState",
@@ -72,14 +76,15 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment":"Mandatory: The status of the scan. Ex: SUCCESS, IN_PROGRESS, FAILED_ERROR, FAILED_TIMEOUT."
         }
     ],
     "content": true,
     "defaultRows": [
         {}
     ],
-    "description": "Pre/Post remediation scan to check if service is still detectable",
+    "description": "A post remediation scan to check if service is still detectable.",
     "editForm": true,
     "group": 0,
     "hidden": false,

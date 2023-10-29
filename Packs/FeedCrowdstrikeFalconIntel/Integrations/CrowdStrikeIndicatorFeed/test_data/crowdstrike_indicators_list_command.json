@@ -70,7 +70,8 @@
                 "Gootkit"
             ],
             "kill_chains": [
-                "C2"
+                "C2",
+                "delivery"
             ],
             "ip_address_types": [],
             "domain_types": [],

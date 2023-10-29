@@ -12,6 +12,7 @@ from scipy.spatial.distance import cdist
 from typing import List, Dict, Union
 
 warnings.simplefilter("ignore")
+warnings.filterwarnings('ignore', category=UserWarning)
 
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected  " \
                          " 2) Selected field are empty for this incident  3) Fields are misspelled"
@@ -684,9 +685,10 @@ def get_similar_incidents_by_indicators(args: Dict):
 
 
 def get_data_from_indicators_automation(res, TAG_SCRIPT_INDICATORS_VALUE):
-    for entry in res:
-        if entry and entry.get('Tags') and TAG_SCRIPT_INDICATORS_VALUE in entry.get('Tags'):
-            return entry['Contents']
+    if res is not None:
+        for entry in res:
+            if entry and entry.get('Tags') and TAG_SCRIPT_INDICATORS_VALUE in entry.get('Tags'):
+                return entry['Contents']
     return None
 
 
@@ -846,7 +848,7 @@ def enriched_with_indicators_similarity(full_args_indicators_script: Dict, simil
             columns=[SIMILARITY_COLUNM_NAME_INDICATOR, 'Identical indicators', 'id'])
     keep_columns = [x for x in KEEP_COLUMNS_INDICATORS if x not in similar_incidents]
     indicators_similarity_df.index = indicators_similarity_df.id
-    similar_incidents = similar_incidents.join(indicators_similarity_df[keep_columns])
+    similar_incidents.loc[:, keep_columns] = indicators_similarity_df[keep_columns]
     values = {SIMILARITY_COLUNM_NAME_INDICATOR: 0, 'Identical indicators': ""}
     similar_incidents = similar_incidents.fillna(value=values)
     return similar_incidents
@@ -856,7 +858,7 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
                              similar_json_field: List[str], similar_categorical_field: List[str],
                              exact_match_fields: List[str]) -> pd.DataFrame:
     """
-    Prepare current incident for vizualisation
+    Prepare current incident for visualization
     :param incident_df: incident_df
     :param display_fields: display_fields
     :param similar_text_field: similar_text_field
@@ -865,9 +867,10 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
     :param exact_match_fields: exact_match_fields
     :return:
     """
-    incident_filter = incident_df[[x for x in
-                                   display_fields + similar_text_field + similar_categorical_field
-                                   + exact_match_fields if x in incident_df.columns]]
+
+    incident_filter = incident_df.copy()[[x for x in
+                                          display_fields + similar_text_field + similar_categorical_field
+                                          + exact_match_fields if x in incident_df.columns]]
     if COLUMN_TIME in incident_filter.columns.tolist():
         incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if 'id' in incident_filter.columns.tolist():

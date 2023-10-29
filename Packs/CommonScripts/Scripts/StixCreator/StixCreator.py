@@ -382,7 +382,7 @@ def main():
                 demisto.info(f"Export failure exception: {traceback.format_exc()}")
                 continue
     if len(indicators) > 1:
-        bundle = Bundle(indicators, allow_custom=True)
+        bundle = Bundle(indicators, allow_custom=True, spec_version='2.1')
         context = {
             'StixExportedIndicators(val.pattern && val.pattern == obj.pattern)': json.loads(str(bundle))
         }

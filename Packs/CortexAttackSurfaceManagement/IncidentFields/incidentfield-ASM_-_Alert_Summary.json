@@ -15,7 +15,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: URL to display/download summary."
         },
         {
             "displayName": "EntryID",
@@ -28,7 +29,8 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "_comment": "Mandatory: File entryID."
         }
     ],
     "content": true,
@@ -37,7 +39,7 @@
         {},
         {}
     ],
-    "description": "Summary report of alert",
+    "description": "Summary report of alert.",
     "editForm": true,
     "group": 0,
     "hidden": false,
