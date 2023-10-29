@@ -1,0 +1,24 @@
+[MODEL: dataset ="dell_emc_unity_raw"]
+alter event_metadata = trim(arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+?)\:\:"), 0))
+| alter metadata_fields = arraymap(regextract(event_metadata, "(\S+)"), trim("@element", "\""))
+| alter 
+    timestamp = arrayindex(metadata_fields, 0),
+    hostname = arrayindex(metadata_fields, 1),
+    process_name = arrayindex(metadata_fields, 2),
+    process_id = arrayindex(metadata_fields, 3),
+    account = arrayindex(metadata_fields, 4),
+    severity = arrayindex(metadata_fields, 5),
+    message_id = arrayindex(metadata_fields, 6)
+| alter msg = trim(trim( arrayindex(regextract(_raw_log, "::\s*(.+)\s*::"), 0)), "\"")
+| alter category = arrayindex(regextract(_raw_log, "Category\=(\w+)"), 0)
+| alter component = arrayindex(regextract(_raw_log, "Component=(\w+)"), 0)
+| alter 
+    xdm.alert.severity = severity, 
+    xdm.event.id = message_id, 
+    xdm.event.description = msg, 
+    xdm.event.type = category,
+    xdm.observer.type = component,
+    xdm.source.host.hostname = hostname,
+    xdm.source.process.name = process_name,
+    xdm.source.process.pid = process_id,
+    xdm.source.user.username = account;
