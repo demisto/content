@@ -161,7 +161,7 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     - !reference [.generic-prepare-testing-bucket, script]
     - job-done
 
- demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
+demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar_saas"
