@@ -2,8 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def main():
-    args = demisto.args()
+def get_regex_matches(args):
     match_target = args['value']
     capture_groups = args.get('groups')
     dict_keys = args.get('keys')
@@ -20,7 +19,6 @@ def main():
         else:
             raise ValueError(f'Unknown flag: {flag}')
     regex_pattern = re.compile(r'{}'.format(args['regex']), regex_flags)
-
     if capture_groups:
         capture_groups = capture_groups.split(',')
         # Validating groups input to be integers
@@ -47,9 +45,22 @@ def main():
             raise ValueError('Error: Number of keys does not match number of items')
         else:
             dict_matches = dict(zip(dict_keys, matches))
-            demisto.results(dict_matches)
-    else:
-        demisto.results(matches)
+            return dict_matches
+    return matches
+
+
+def main():
+    matches: str | list = []
+    args = demisto.args()
+    try:
+        matches = get_regex_matches(args)
+    except Exception as e:
+        demisto.error(f'Error in RegexGroups script: {str(e)}')
+    finally:
+        # empty list is not supported
+        if not matches:
+            matches = ''
+        return_results(matches)
 
 
 if __name__ in ('__builtin__', 'builtins'):
