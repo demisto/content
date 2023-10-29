@@ -10,17 +10,17 @@ def prevent_duplication(current_incident):
     """
     result = True
     custom_fields = current_incident.get("CustomFields", {})
-    if "CustomFields" in current_incident.keys():
+    if "CustomFields" in current_incident:
         del current_incident["CustomFields"]
-    if "labels" in current_incident.keys():
+    if "labels" in current_incident:
         del current_incident["labels"]
-    if "occurred" in current_incident.keys():
+    if "occurred" in current_incident:
         del current_incident["occurred"]
-    if "sla" in current_incident.keys():
+    if "sla" in current_incident:
         del current_incident["sla"]
     current_incident.update(custom_fields)
     gibid = custom_fields.get('gibid')
-    search_incident = demisto.executeCommand("getIncidents", {"query": "gibid: {0} and -status:Closed".format(gibid)})
+    search_incident = demisto.executeCommand("getIncidents", {"query": f"gibid: {gibid} and -status:Closed"})
     if search_incident:
         total = int(search_incident[0].get("Contents", {}).get("total", 0))
         if total > 0:
@@ -36,7 +36,7 @@ def main():
     try:
         return_results(prevent_duplication(demisto.incident()))
     except Exception as e:
-        return_error("Error: {0}".format(str(e)))
+        return_error(f"Error: {str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
