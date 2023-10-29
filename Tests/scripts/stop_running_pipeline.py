@@ -9,13 +9,13 @@ from Tests.scripts.common import BUCKET_UPLOAD_BRANCH_SUFFIX
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
-
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 GITLAB_CANCEL_TOKEN = os.getenv('GITLAB_CANCEL_TOKEN', '')
 CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
 CI_PIPELINE_ID = os.getenv('CI_PIPELINE_ID', '')
-GITLAB_STATUSES_TO_CANCEL = {"created", "waiting_for_resource", "preparing", "pending", "running"}
+# The order of the statuses is important, we want to cancel the pipeline before it starts running.
+GITLAB_STATUSES_TO_CANCEL = ["created", "waiting_for_resource", "preparing", "pending", "running"]
 
 
 def options_handler() -> argparse.Namespace:
@@ -65,17 +65,22 @@ def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
         if not pipeline_id or pipeline.id < pipeline_id:
             try:
                 logging.info(f"Canceling pipeline id:{pipeline.id} for branch:{branch_name}")
-                pipeline.cancel()
-                logging.success(f"Pipeline id:{pipeline.id} for branch:{branch_name} was canceled")
-                if cancel_children:
-                    test_upload = branch_name_for_test_upload_flow(branch_name, pipeline.id)
-                    logging.info(f"Trying to cancel pipeline for test upload flow branch:{test_upload}")
-                    success &= cancel_pipelines_for_branch_name(gitlab_client, project, test_upload,
-                                                                "trigger", False)
+                if pipeline.status in GITLAB_STATUSES_TO_CANCEL:
+                    pipeline.cancel()
+                    logging.success(f"Pipeline id:{pipeline.id} for branch:{branch_name} was canceled")
+                else:
+                    # This is probably because the pipeline was already canceled or finished while we were running.
+                    logging.warning(f"Pipeline id:{pipeline.id} for branch:{branch_name} was not canceled because it's "
+                                    f"status is {pipeline.status}")
             except Exception:
                 logging.error(f'Failed to cancel pipeline:{pipeline.id} for branch:{branch_name}')
-                logging.error(traceback.format_exc())
                 success = False
+
+            if cancel_children:
+                test_upload = branch_name_for_test_upload_flow(branch_name, pipeline.id)
+                logging.info(f"Trying to cancel pipeline for test upload flow branch:{test_upload}")
+                success &= cancel_pipelines_for_branch_name(gitlab_client, project, test_upload,
+                                                            "trigger", False)
         elif pipeline.id == pipeline_id:
             logging.info(f"Pipeline {pipeline.id} was not canceled as it is the current pipeline")
         else:
