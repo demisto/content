@@ -525,7 +525,7 @@ view: |-
 inputs:
 - key: search_terms
   value: {}
-  required: true
+  required: false
   description: Search terms to be used in the ServiceNow ITSM query search.
   playbookInputQuery:
 outputs: []
