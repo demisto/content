@@ -2467,6 +2467,7 @@ def get_indicators_context(incident):
         file_details = {
             'Name': file.get('file_name'),
             'SHA256': file.get('file_sha256'),
+            'IsMalicious': file.get('is_malicious')
         }
         remove_nulls_from_dictionary(file_details)
         if file_details:

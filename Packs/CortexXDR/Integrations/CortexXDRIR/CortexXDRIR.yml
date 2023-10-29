@@ -561,6 +561,9 @@ script:
     - contextPath: Process.CommandLine
       description: The full command line (including arguments).
       type: String
+    - contextPath: Process.IsMalicious
+      description: Whether the artifact is malicious, as decided by the Wildfire verdict.
+      type: String
     - contextPath: IP.Address
       description: IP address.
       type: String
