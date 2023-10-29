@@ -40,7 +40,7 @@ Manual command to fetch and display events. This command is used for developing/
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to true in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
-| from_date | The date from which to fetch events. The format should be YYYY-MM-DD or YYYY-MM-DDT:HH:MM:SS. If not specified, the current date will be used. | Optional | 
+| from_date | The date from which to fetch events. The date from which to fetch events. The format should be '20 minutes', '1 hour' or '2 days'. | Optional | 
 
 #### Context Output
 
