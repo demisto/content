@@ -7,7 +7,7 @@
 
 **On AWS**
 
-First, make sure you have the below prerequisites:
+Ensure you have the below prerequisites:
 1. A login to Amazon AWS service
 2. A bucket configured in Amazon S3 to be used for storing logs.
 
