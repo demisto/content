@@ -785,6 +785,7 @@ class BranchTestCollector(TestCollector):
     def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
         collected = []
+        self.add_conf_json_changes(changed_files)
         for raw_path in changed_files:
             path = PATHS.content_path / raw_path
             logger.debug(f'Collecting tests for {raw_path}')
@@ -803,6 +804,27 @@ class BranchTestCollector(TestCollector):
                 logger.exception(f'Error while collecting tests for {raw_path}', exc_info=True, stack_info=True)
                 raise e
         return CollectionResult.union(collected)
+
+    def add_conf_json_changes(self, changed_files: tuple[str, ...]):
+        if ('conf.json' not in changed_files):
+            return
+        repo = PATHS.content_repo
+        latest_commit = repo.head.commit.tree
+        conf_json_path = 'Tests/conf.json'
+        new_conf_json = latest_commit[conf_json_path].data_stream.read().decode()
+
+        commits_for_file = list(repo.iter_commits(all=True, paths=conf_json_path))
+        tree = commits_for_file[-1].tree  # gets the first commit tree
+        old_conf_json = tree[conf_json_path].data_stream.read().decode()
+
+        print("new conf_json")
+        print(new_conf_json)
+        print("old conf_json")
+        print(old_conf_json)
+        # compare
+        # collect_changed_tpb
+        # get_changed_tpb_paths
+        # add_to_list
 
     def __collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
