@@ -58,8 +58,11 @@ if __name__ == "__main__":
 
     file_already_exist = storage.Blob(bucket=storage_bucket, name=file_name).exists(storage_client)
     if not file_already_exist:
-        blob.upload_from_string(data="nothing", if_generation_match=None)
-        print("this is the first failure, trigger a slack message")
+        try:
+            blob.upload_from_string(data="nothing", if_generation_match=None)
+            print("this is the first failure, trigger a slack message")
+        except Exception:
+            print("this is not the first failure, trigger a 'reply in thread' slack message")
     else:
         print("this is not the first failure, trigger a 'reply in thread' slack message")
     # lock.release()
