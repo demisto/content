@@ -29,7 +29,7 @@ ServiceNow v2
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| search_terms | Search terms to be used in the ServiceNow ITSM query search |  | Required |
+| search_terms | Search terms to be used in the ServiceNow ITSM query search |  | Optional |
 
 ## Playbook Outputs
 
