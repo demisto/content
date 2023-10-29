@@ -218,7 +218,7 @@ script:
     - description: The query expression for the saved search.
       name: query
       required: true
-    - description: 'The tags attached to the saved search. Value should be in the following format: ''name=value;name=value'''
+    - description: 'The tags attached to the saved search. Value should be in the following format: ''name=value;name=value''.'
       name: tags
     description: Creates or updates a saved search from the Log Analytics workspace.
     name: azure-log-analytics-create-or-update-saved-search
@@ -266,7 +266,7 @@ script:
     execution: false
     name: azure-log-analytics-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.79610
   runonce: false
   script: '-'
   subtype: python3
