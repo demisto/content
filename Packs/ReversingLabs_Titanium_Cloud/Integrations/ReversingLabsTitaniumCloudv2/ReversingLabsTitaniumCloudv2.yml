@@ -708,10 +708,10 @@ script:
     description: Sets and removes user-requested network reputation overrides.
     arguments:
     - name: set_overrides_list
-      description: Network locations whose reputations should be overriden. The locations should be written as a string in the following format - 'network_location,location_type,new_classification|network_location,location_type,new_classification|network_location,location_type,new_classification'
+      description: Network locations whose reputations should be overriden. The locations should be written as a string in the following format - 'network_location,location_type,new_classification|network_location,location_type,new_classification|network_location,location_type,new_classification'.
       required: false
     - name: remove_overrides_list
-      description: Network locations whose reputation overrides should be removed. The locations should be written as a string in the following format - 'network_location,location_type|network_location,location_type|network_location,location_type'
+      description: Network locations whose reputation overrides should be removed. The locations should be written as a string in the following format - 'network_location,location_type|network_location,location_type|network_location,location_type'.
       required: false
     outputs:
     - contextPath: ReversingLabs.network_reputation_override
