@@ -1,4 +1,7 @@
 category: Identity and Access Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: SailPointIdentityIQ
   version: -1
@@ -204,13 +207,13 @@ script:
       name: display_name
     - description: |-
         Timestamp of the last time the account(s) were refreshed from the target system.
-        [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd]
+        [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd].
       name: last_refresh
     - description: Unique identifier of the account on the target system.
       name: native_identity
     - description: |-
         Timestamp of the last targeted aggregation of the account from the target system.
-        [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd]
+        [format : yyyy-MM-dd'T'HH:mm:ss or yyyy-MM-dd].
       name: last_target_agg
     - description: Unique name of the identity for which all accounts will be returned.
       name: identity_name
@@ -412,10 +415,10 @@ script:
       description: Display name of the alert in IdentityIQ.
       type: String
     - contextPath: IdentityIQ.Alert.meta.created
-      description: Timestamp of when this alert was created in IdentityIQ
+      description: Timestamp of when this alert was created in IdentityIQ.
       type: Date
     - contextPath: IdentityIQ.Alert.name
-      description: Name of the alert in IdentityIQ
+      description: Name of the alert in IdentityIQ.
       type: String
     - contextPath: IdentityIQ.Alert.attributes
       description: Array of attributes associated with this alert.
