@@ -162,12 +162,25 @@ demisto-sdk-nightly:xpanse-prepare-testing-bucket:
     - job-done
 
 demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar_saas"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
-  extends:
-    - .generic-prepare-testing-bucket
+    IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
+  cache:
+    policy: pull-push
+  needs: []
+  stage: prepare-testing-bucket
+  script:
+    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE
+    - !reference [.generic-prepare-testing-bucket, script]
+    - job-done
 
 demisto-sdk-nightly:test-upload-flow:
   tags:
