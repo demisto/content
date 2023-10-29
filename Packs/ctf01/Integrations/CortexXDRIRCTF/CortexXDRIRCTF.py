@@ -1708,7 +1708,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "alert_name": "WildFire Malware",
                         "alert_source": "TRAPS",
                         "alert_type": "Unclassified",
-                            "category": "",
+                        "category": "",
                         "causality_actor_process_signature_status": [
                             "SIGNATURE_UNAVAILABLE"
                         ],
@@ -1724,11 +1724,11 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "contains_featured_user": [
                             "NO"
                         ],
-                                "dbotMirrorDirection": "",
+                        "dbotMirrorDirection": "",
                         "dbotMirrorId": "",
                         "dbotMirrorInstance": "",
                         "dbotMirrorLastSync": "0001-01-01T00:00:00Z",
-                            "droppedCount": 0,
+                        "droppedCount": 0,
                         "dueDate": "0001-01-01T00:00:00Z",
                         "event_type": [
                             1
@@ -1738,10 +1738,10 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "investigationId": "14863",
                         "isDebug": False,
                         "is_whitelisted": False,
-                            "lastJobRunTime": "0001-01-01T00:00:00Z",
+                        "lastJobRunTime": "0001-01-01T00:00:00Z",
                         "lastOpen": "0001-01-01T00:00:00Z",
                         "linkedCount": 0,
-                            "mac": "00:50:56:9f:f5:5f",
+                        "mac": "00:50:56:9f:f5:5f",
                         "module_id": [
                             "WildFire"
                         ],
@@ -1955,7 +1955,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "alert_name": "WildFire Malware",
                         "alert_source": "TRAPS",
                         "alert_type": "Unclassified",
-                            "category": "",
+                        "category": "",
                         "causality_actor_process_signature_status": [
                             "SIGNATURE_UNAVAILABLE"
                         ],
@@ -1971,11 +1971,11 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "contains_featured_user": [
                             "NO"
                         ],
-                                "dbotMirrorDirection": "",
+                        "dbotMirrorDirection": "",
                         "dbotMirrorId": "",
                         "dbotMirrorInstance": "",
                         "dbotMirrorLastSync": "0001-01-01T00:00:00Z",
-                            "droppedCount": 0,
+                        "droppedCount": 0,
                         "dueDate": "0001-01-01T00:00:00Z",
                         "event_type": [
                             1
@@ -1985,10 +1985,10 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "investigationId": "14862",
                         "isDebug": False,
                         "is_whitelisted": False,
-                            "lastJobRunTime": "0001-01-01T00:00:00Z",
+                        "lastJobRunTime": "0001-01-01T00:00:00Z",
                         "lastOpen": "0001-01-01T00:00:00Z",
                         "linkedCount": 0,
-                            "mac": "00:50:56:9f:f5:5f",
+                        "mac": "00:50:56:9f:f5:5f",
                         "module_id": [
                             "WildFire"
                         ],
@@ -2199,7 +2199,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "alert_name": "WildFire Malware",
                         "alert_source": "TRAPS",
                         "alert_type": "Unclassified",
-                            "category": "",
+                        "category": "",
                         "causality_actor_process_signature_status": [
                             "SIGNATURE_UNAVAILABLE"
                         ],
@@ -2215,11 +2215,11 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "contains_featured_user": [
                             "NO"
                         ],
-                                "dbotMirrorDirection": "",
+                        "dbotMirrorDirection": "",
                         "dbotMirrorId": "",
                         "dbotMirrorInstance": "",
                         "dbotMirrorLastSync": "0001-01-01T00:00:00Z",
-                            "droppedCount": 0,
+                        "droppedCount": 0,
                         "dueDate": "0001-01-01T00:00:00Z",
                         "event_type": [
                             1
@@ -2229,10 +2229,10 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                         "investigationId": "14861",
                         "isDebug": False,
                         "is_whitelisted": False,
-                            "lastJobRunTime": "0001-01-01T00:00:00Z",
+                        "lastJobRunTime": "0001-01-01T00:00:00Z",
                         "lastOpen": "0001-01-01T00:00:00Z",
                         "linkedCount": 0,
-                            "mac": "00:50:56:9f:f5:5f",
+                        "mac": "00:50:56:9f:f5:5f",
                         "module_id": [
                             "WildFire"
                         ],
@@ -2315,7 +2315,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
             }
         ],
         "result_count": 4
-}
+    }
 
     context = []
     for alert in raw_response.get('alerts', []):  # type:ignore[attr-defined]
@@ -2487,7 +2487,6 @@ def main():  # pragma: no cover
             last_run_obj['next_run'] = next_run
             demisto.setLastRun(last_run_obj)
             demisto.incidents(incidents)
-
 
         elif command == 'xdr-get-incidents':
             return_outputs(*get_incidents_command(client, args))
