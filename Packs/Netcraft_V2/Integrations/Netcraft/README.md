@@ -89,7 +89,7 @@ If a takedown for the attack already exists in the Netcraft system it will be au
 
 #### Human Readable Output
 
->### Netcraft Takedown
+>### Netcraft attack reported
 >|Report status|Takedown ID|Response code|
 >|---|---|---|
 >| The attack was submitted to Netcraft successfully. | 45492113 | TD_OK |
@@ -901,7 +901,7 @@ Get information on the attack types that are available under a given region.
 
 #### Human Readable Output
 
->### Takedown Notes
+>### Netcraft Attack Types
 >|Name|Display Name|Base Type|Description|Automated|Auto Escalation|Auto Authorize|
 >|---|---|---|---|---|---|---|
 >| phishing_url | Phishing URL | url | The URL for a webpage which impersonates your company in an attempt to trick users into submitting their login details. Usually the URL is linked to in an email sent to your users. | true | false | true |

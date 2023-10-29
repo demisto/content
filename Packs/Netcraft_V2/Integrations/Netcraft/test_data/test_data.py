@@ -47,7 +47,7 @@ submission_list_readable = """### Netcraft Submissions
 """
 
 
-submission_list_with_uuid_readable = """### Submission submission_uuid
+submission_list_with_uuid_readable = """### Netcraft Submission
 |Submission UUID|Submission Date|Submitter Email|State|Source|
 |---|---|---|---|---|
 | submission_uuid | 2001-09-09 01:46:40+00:00 | test@example.com | processing | scam@example.com |
@@ -61,7 +61,7 @@ submission_mail_get_readable = """### Submission Mails
 """
 
 
-attack_report_readable = """### Netcraft Takedown
+attack_report_readable = """### Netcraft attack reported
 |Report status|Takedown ID|Response code|
 |---|---|---|
 | The attack was submitted to Netcraft successfully. | 30480489 | TD_OK |
@@ -83,7 +83,7 @@ takedown_note_list_readable = """### Takedown Notes
 """
 
 
-attack_type_list_readable = """### Takedown Notes
+attack_type_list_readable = """### Netcraft Attack Types
 |Name|Display Name|Base Type|Description|Automated|Auto Escalation|Auto Authorize|
 |---|---|---|---|---|---|---|
 | phishing_url | Phishing URL | url | description | true | true | true |
@@ -580,7 +580,7 @@ class takedown_update:
                 "set_suspected_fraudulent_hostname": "true",
                 "add_tags": "add_tags,add_tags2",
                 "remove_tags": "remove_tags,remove_tags2",
-                'takedown_id': 'takedown_id',
+                "takedown_id": "takedown_id",
             },
             "files": None,
             "resp_type": "json",
@@ -612,7 +612,7 @@ class takedown_update:
             "tags": ["tag1", "tag2"],
             "takedown_id": "30480489",
             "target_brand": "Example Brand",
-        }
+        },
     )
 
 
@@ -692,7 +692,7 @@ class submission_list:
                     "uuid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                 },
             ],
-            "Netcraft(val.SubmissionNextToken || true)": {
+            "Netcraft(true)": {
                 "SubmissionNextToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             },
         },
@@ -852,6 +852,9 @@ class email_report_submit:
             "timeout": "600",
             "interval_in_seconds": "30",
             "ignore_404": True,
+            "reporter_email": "reporter_email",
+            "message": "message",
+            "password": "password",
         },
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     )
