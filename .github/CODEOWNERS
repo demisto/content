@@ -80,7 +80,6 @@
 .gitlab/ci/* @yucohen
 .gitlab/* @yucohen
 .gitlab-ci.yml @yucohen
-.gitlab/ci/.gitlab-ci.on-push.yml @daryakoval
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
 .gitlab/ci/.gitlab-ci.staging.yml @ilaner
 /Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
