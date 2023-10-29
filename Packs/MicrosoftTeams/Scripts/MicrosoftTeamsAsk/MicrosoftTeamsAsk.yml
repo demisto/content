@@ -1,4 +1,13 @@
 args:
+- auto: PREDEFINED
+  default: true
+  required: true
+  defaultValue: predefined-options
+  description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
+  name: form_type
+  predefined:
+    - predefined-options
+    - open-answer
 - description: Question (message) to send to the specified team member or channel.
   name: message
   required: true
@@ -9,12 +18,12 @@ args:
   - 'true'
   - 'false'
 - defaultValue: 'yes'
-  description: First reply option.
+  description: First reply option (used only for if the form type is "predefined-options").
   name: option1
 - defaultValue: 'no'
-  description: Second reply option.
+  description: Second reply option  (used only for if the form type is "predefined-options").
   name: option2
-- description: A CSV list of additional options (in case more than 2 options are required).
+- description: A CSV list of additional options (in case more than 2 options are required. Used only for if the form type is "predefined-options").
   name: additional_options
 - default: true
   description: Team member to which to send the question.
