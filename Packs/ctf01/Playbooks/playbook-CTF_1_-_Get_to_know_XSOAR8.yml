@@ -818,5 +818,5 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.0.0
+fromversion: 6.9.0
 description: 'Get to know XSOAR 8 - Run this playbook and follow the questions.'
