@@ -76,7 +76,7 @@ def get_stix(client: Client, args: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
-    exclude_suspect_domain = args.get('exclude_suspect_domain')
+    exclude_suspect_domain = argToBoolean(args.get('exclude_suspect_domain', False))
     page = args.get('page')
     page_size = args.get('page_size')
     updated_after = args.get('updated_after')
@@ -88,10 +88,10 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     # The arguments page, page_size and exclude_suspect_domain have an API default of 1, 500 and false respectively,
     # and do not need to be included in the query unless changed
     query_list = []
-    if exclude_suspect_domain:
-        query_list.append('exclude_suspect_domain=' + exclude_suspect_domain)
     if page:
         query_list.append('page=' + page)
+    if exclude_suspect_domain:
+        query_list.append('exclude_suspect_domain=' + str(exclude_suspect_domain).lower())
     if page_size:
         query_list.append('page_size=' + page_size)
     if updated_after:
@@ -105,8 +105,8 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     for tag in tags:
         query_list.append('tags%5B%5D=' + tag)
 
-    # If any arguments were submitted run the relevent query, else run the default
-    # behavior (returning all indicators from the last 48 hours)
+    # If any arguments were submitted then run the relevent query, 
+    # else return all indicators from the last 48 hours
     if query_list:
         query_string = '&'.join(query_list)
         api_query = f'indicators?{query_string}'
@@ -116,14 +116,17 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
         api_query = f'indicators?updated_after={time}'
     raw_response = client.api_request(api_query)
     data = raw_response['indicators']
-    page_number = 2 if not page else page + 1
+    page_number = 2 if not page else int(page) + 1
+    if page:   
+        query_list.pop(0)
+        query_string = '&'.join(query_list)
     full_response = raw_response
-
+        
     # If there are still more dragos pages (ie more indicators) than was returned by
     # the intial query, iterate through the remaining pages and add all unique indicators
     # to the return data
-    while raw_response['total_pages'] > raw_response['page']:
-        if query_list:
+    while int(raw_response['total_pages']) > int(raw_response['page']):
+        if query_list:  
             api_query = f'indicators?page={page_number}&{query_string}'
         else:
             api_query = f'indicators?page={page_number}&updated_after={time}'
@@ -138,8 +141,9 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     results = CommandResults(
         outputs_prefix='Dragos.Indicators',
-        outputs_key_field='id',
+        outputs_key_field='indicator_id',
         outputs=data,
+        readable_output=tableToMarkdown('Dragos Indicators', data),
         raw_response=full_response
     )
 

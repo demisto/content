@@ -10,13 +10,13 @@ configuration:
   type: 0
 - display: API Token
   name: credential_token
-  required: true
+  required: false
   type: 9
   displaypassword: API Token
   hiddenusername: true
 - display: API Key
   name: credential_key
-  required: true
+  required: false
   type: 9
   displaypassword: API Key
   hiddenusername: true
@@ -129,7 +129,7 @@ script:
       type: string
     - contextPath: Dragos.Indicators.ics_attack_techniques
       description: A list of ics attack techniques.
-    - contextPath: Dragos.Indicators.id
+    - contextPath: Dragos.Indicators.indicator_id
       description: The Dragos Indicator's id.
       type: number
     - contextPath: Dragos.Indicators.indicator_type
@@ -184,7 +184,7 @@ script:
       required: true
     description: Get the stix2 json bundle of indicators from a given report.
     name: dragos-get-stix2
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.78960
   isFetchSamples: true
   isfetch: true
   script: ''

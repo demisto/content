@@ -9,17 +9,17 @@ This integration was integrated and tested with version 1.0 of Dragos Worldview
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://portal.dragos.com) |  | True |
-    | API Token |  | True |
-    | API Key |  | True |
-    | First fetch time |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incidents Fetch Interval |  | False |
+    | Server URL (e.g. https://portal.dragos.com) | The Dragos server URL | True |
+    | API Token | The API token  | True |
+    | API Key | The key for the API Token | True |
+    | First fetch time | The first time to run a fetch request | False |
+    | Trust any certificate (not secure) | If true trust any certicicate | False |
+    | Use system proxy settings | If true use system proxy settings | False |
+    | Incidents Fetch Interval | How often to fetch incidents | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators | False |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | Fetch Limit |  | False |
+    | Fetch incidents | If true fetch incidents in a feed | False |
+    | Incident type | The incident type | False |
+    | Fetch Limit | The fetch limit | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -37,7 +37,7 @@ Get Indicators from the Dragos WorldView API
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclude_suspect_domain | Exclude indicators that are only associated with Suspect Domain Reports (API default false). | Optional | 
+| exclude_suspect_domain | Exclude indicators that are only associated with Suspect Domain Reports (API default false). | Optional | FContext
 | page | Page number to start at (API default 1). | Optional |
 | page_size | Page size (API default 500) (must be less than 1001). | Optional | 
 | serial | Report serial number to get indicators from, if no serial number provided command will retrieve all indicators from the last 48 hours. | Optional | 
@@ -48,36 +48,40 @@ Get Indicators from the Dragos WorldView API
 
 #### Context Output
 
-| **Context Path** | **Description** | **Type** |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Dragos.Indicators.activity_groups | A list of activity groups. | Unknown | 
-| Dragos.Indicators.attack_techniques | A list of attack techniques. | Unknown |
-| Dragos.Indicators.category | The Dragos Indicator's category. | String | 
-| Dragos.Indicators.comment | The Dragos Indicator's comment. | String | 
-| Dragos.Indicators.confidence | The Dragos Indicator's confidence. | String | 
-| Dragos.Indicators.first_seen | The first time the Indicator was seen in Dragos (yyyy-mm-ddThh:mm:ss.sssZ). | String |
-| Dragos.Indicators.ics_attack_techniques | A list of ics attack techniques. | Unknown |
-| Dragos.Indicators.id | The Dragos Indicator's id. | Number |
-| Dragos.Indicators.indicator_type | The Dragos Indicator's type. | String |
-| Dragos.Indicators.kill_chain | The Dragos Indicator's kill chain. | String |
-| Dragos.Indicators.kill_chains | A list of kill chains. | Unknown |
-| Dragos.Indicators.last_seen | The last time the Indicator was seen in Dragos (yyyy-mm-ddThh:mm:ss.sssZ). | String |
-| Dragos.Indicators.pre_attack_techniques | A list of pre-attack techniques. | Unknown |
-| Dragos.Indicators.products | A list of dictionaries, usually containing the serial numbers of related Dragos reports. | Unknown |
-| Dragos.Indicators.products.serial | The serial numbers of related Dragos reports. | Unknown |
-| Dragos.Indicators.severity | The Dragos Indicator's severity. | String |
-| Dragos.Indicators.status | The Dragos Indicator's status. | String |
-| Dragos.Indicators.threat_groups | A list of threat groups. | Unknown | 
-| Dragos.Indicators.updated_at | The last time the Indicator was updated in Dragos (yyyy-mm-ddThh:mm:ss.sssZ). | String |
-| Dragos.Indicators.uuid | The Dragos Indicator's uuid. | String |
-| Dragos.Indicators.value | The Dragos Indicator's value. | String |
+| Dragos.Indicators.activity_groups | Unknown | A list of activity groups. |
+| Dragos.Indicators.attack_techniques | Unknown | A list of attack techniques. |
+| Dragos.Indicators.category | String | The Dragos Indicator's category. |
+| Dragos.Indicators.comment | String | The Dragos Indicator's comment. |
+| Dragos.Indicators.confidence | String | The Dragos Indicator's confidence. |
+| Dragos.Indicators.first_seen | String | The first time the Indicator was seen in Dragos (yyyy-mm-ddThh:mm:ss.sssZ). |
+| Dragos.Indicators.ics_attack_techniques | Unknown | A list of ics attack techniques. |
+| Dragos.Indicators.indicator_id | Number | The Dragos Indicator's id. |
+| Dragos.Indicators.indicator_type | String | The Dragos Indicator's type. |
+| Dragos.Indicators.kill_chain | String | The Dragos Indicator's kill chain. |
+| Dragos.Indicators.kill_chains | Unknown | A list of kill chains. |
+| Dragos.Indicators.last_seen | String | The last time the Indicator was seen in Dragos (yyyy-mm-ddThh:mm:ss.sssZ). |
+| Dragos.Indicators.pre_attack_techniques | Unknown | A list of pre-attack techniques. |
+| Dragos.Indicators.products | Unknown | A list of dictionaries, usually containing the serial numbers of related Dragos reports. |
+| Dragos.Indicators.products.serial | Unknown | The serial numbers of related Dragos reports. |
+| Dragos.Indicators.severity | String | The Dragos Indicator's severity. |
+| Dragos.Indicators.status | String | The Dragos Indicator's status. |
+| Dragos.Indicators.threat_groups | Unknown | A list of threat groups. |
+| Dragos.Indicators.updated_at | String | The last time the Indicator was updated in Dragos (yyyy-mm-ddThh:mm:ss.sssZ). |
+| Dragos.Indicators.uuid | String | The Dragos Indicator's uuid. |
+| Dragos.Indicators.value | String | The Dragos Indicator's value. |
 
 
 #### Command Example
-``` ```
+```!dragos-get-indicators exclude_suspect_domain=false page=1 page_size=500 serial=DOM-2023-37 tags=test type=domain updated_after=2023-12-31 value=example.com```
 
 #### Human Readable Output
 
+## Dragos Indicators
+| activity_groups | attack_techniques | category | comment | confidence | first_seen | ics_attack_techniques | id | indicator_type | kill_chain | kill_chains | last_seen | pre_attack_techniques | products | severity | status | threat_groups | updated_at | uuid | value |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  | moderate |  2018-04-06T00:00:00.000Z |  | 0000 | domain | | | 2023-09-12T19:37:31.000Z |  | {'serial': 'DOM-2023-37'} |  | released |  |  2024-09-12T21:31:51.000Z |  | example.com | 
 
 
 ### dragos-get-full-report
@@ -100,7 +104,7 @@ Get the report file from the given serial number
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!dragos-get-full-report serial=DOM-2023-37```
 
 #### Human Readable Output
 
@@ -126,7 +130,7 @@ Get csv file with indicators from a given report
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!dragos-get-ioc-csv serial=DOM-2023-37```
 
 #### Human Readable Output
 
@@ -152,7 +156,7 @@ Get the stix2 json bundle of indicators from a given report
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!dragos-get-stix2 serial=DOM-2023-37```
 
 #### Human Readable Output
 
