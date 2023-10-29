@@ -1,24 +1,48 @@
 [MODEL: dataset ="dell_emc_unity_raw"]
-alter event_metadata = trim(arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+?)\:\:"), 0))
-| alter metadata_fields = arraymap(regextract(event_metadata, "(\S+)"), trim("@element", "\""))
+alter 
+    category = arrayindex(regextract(_raw_log, "Category\=(\w+)"), 0),
+    component = arrayindex(regextract(_raw_log, "Component=(\w+)"), 0),
+    event_metadata = trim(arrayindex(regextract(_raw_log, "\w+\[\d+\]:\s*(.+?)\:\:"), 0)),
+    msg = trim(trim( arrayindex(regextract(_raw_log, "::\s*(.+)\s*::"), 0)), "\"")
 | alter 
-    timestamp = arrayindex(metadata_fields, 0),
+    metadata_fields = arraymap(regextract(event_metadata, "(\S+)"), trim("@element", "\""))
+| alter 
+    // timestamp = arrayindex(metadata_fields, 0),
     hostname = arrayindex(metadata_fields, 1),
     process_name = arrayindex(metadata_fields, 2),
     process_id = arrayindex(metadata_fields, 3),
     account = arrayindex(metadata_fields, 4),
     severity = arrayindex(metadata_fields, 5),
     message_id = arrayindex(metadata_fields, 6)
-| alter msg = trim(trim( arrayindex(regextract(_raw_log, "::\s*(.+)\s*::"), 0)), "\"")
-| alter category = arrayindex(regextract(_raw_log, "Category\=(\w+)"), 0)
-| alter component = arrayindex(regextract(_raw_log, "Component=(\w+)"), 0)
+| alter 
+    client_ip = arrayindex(regextract(msg, "ClientIP:\s*([a-fA-F\d\.\:]+[\da-fA-F])"), 0),
+    dns_server_name = arrayindex(regextract(msg, "name\s+server\s+(\S+)"), 0),
+    domain_controller = arrayindex(regextract(msg, "\sDC\s+([\w\-]+)"), 0),
+    nas_server = arrayindex(regextract(msg, "NAS server\s+(\S+)"), 0),
+    session_id = arrayindex(regextract(msg, "session[\W]{1,2}(\w+)"), 0),
+    snapshot_name = arrayindex(regextract(msg, "snapshot\s+(\S+)"), 0),
+    user = arrayindex(regextract(msg, "(?:User|Username:)\s+([\w\-]+)"), 0)
+| alter 
+    client_ipv4 = if(client_ip ~= "(?:\d{1,3}\.){3}\d{1,3}", client_ip),
+    client_ipv6 = if(client_ip ~= "((?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4})", client_ip),
+    target_server = coalesce(dns_server_name, nas_server)
 | alter 
     xdm.alert.severity = severity, 
     xdm.event.id = message_id, 
     xdm.event.description = msg, 
+    xdm.event.log_level = if(severity ~= "EMERGENCY", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "ALERT", XDM_CONST.LOG_LEVEL_ALERT , severity = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "ERROR", XDM_CONST.LOG_LEVEL_ERROR, severity = "WARN", XDM_CONST.LOG_LEVEL_WARNING, severity = "NOTICE", XDM_CONST.LOG_LEVEL_NOTICE, severity = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "DEBUG", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.event.outcome = if(msg ~= "succeeded|successful|properly|normally|created", XDM_CONST.OUTCOME_SUCCESS, msg ~= "fail|error|cannot|not reachable|unable", XDM_CONST.OUTCOME_FAILED),
     xdm.event.type = category,
+    xdm.intermediate.host.hostname = domain_controller,
+    xdm.network.dhcp.dns_server = if(dns_server_name != null, arraycreate(dns_server_name)),
+    xdm.network.session_id = session_id,
     xdm.observer.type = component,
+    xdm.source.ipv4 = client_ipv4,
+    xdm.source.ipv6 = client_ipv6,
     xdm.source.host.hostname = hostname,
     xdm.source.process.name = process_name,
-    xdm.source.process.pid = process_id,
-    xdm.source.user.username = account;
+    xdm.source.process.pid = to_integer(process_id),
+    xdm.source.user.username = user,
+    xdm.target.user.username = account,
+    xdm.target.host.hostname = target_server,
+    xdm.target.resource.name = snapshot_name;
