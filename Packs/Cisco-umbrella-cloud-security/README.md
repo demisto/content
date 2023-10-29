@@ -32,7 +32,7 @@ Make sure that the Log schema version is configure to **v8**.
 More information can be found [here](https://docs.umbrella.com/deployment-umbrella/docs/log-formats-and-versioning)
 
 
-**On XSIAM:**
+**On Cortex XSIAM:**
 
 1. Navigate to **Settings** > **Data Sources** > **Add Data Source**.
 2. Click **Amazon S3**.
