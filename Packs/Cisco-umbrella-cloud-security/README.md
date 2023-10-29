@@ -47,6 +47,7 @@ More information can be found [here](https://docs.umbrella.com/deployment-umbrel
    - Vendor as `cisco`
    - Product as `umbrella`
    - Compression as `gzip`
+   - Multiline Parsing Regex as `^\"\d{4,}`
 
 For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
 
