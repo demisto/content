@@ -25,7 +25,7 @@ class Client(BaseClient):
                 return "Unknown"
         return None
 
-    def get_cases(self, limit: int = DEFAULT_LIMIT, last_timestamp: int = 0, fetch_closed: bool = False):
+    def get_cases(self, limit: int = DEFAULT_LIMIT, start_time: int = 0):
         instance = demisto.integrationInstance()
         cases = []
         query = {
@@ -34,32 +34,28 @@ class Client(BaseClient):
                     "_name": "listCase",
                 },
                 {
+                    "_name": "filter",
+                    "_gt": {
+                        "_field": "_createdAt",
+                        "_value": start_time
+                    },
+                },
+                {
                     "_name": "sort",
-                    "fields": [{"_createdAt": "asc"}]
+                    "_fields": [{"_createdAt": "asc"}]
                 },
                 {
                     "_name": "page",
                     "from": 0,
                     "to": limit
-                }, {
-                    "_name": "filter",
-                    "_gt":
-                        {
-                            "_field": "_createdAt",
-                            "_value": last_timestamp
-                        }
                 },
+
 
             ]
         }
-        if not fetch_closed:
-            query["query"][-1]["_eq"] = {  # type: ignore[index]
-                "_field": "status",
-                "_value": "Open"
-            }
-
         res = self._http_request('POST', 'v1/query',
                                  json_data=query, params={"name": "list-cases"})
+
         for case in res:
             case["id"] = case["_id"]
             case["createdAt"] = case["_createdAt"]
@@ -1006,11 +1002,20 @@ def test_module(client: Client):
 
 
 def fetch_incidents(client: Client, fetch_closed: bool = False):
+    params = demisto.params()
     last_run = demisto.getLastRun()
     last_timestamp = int(last_run.get('timestamp', 0))
-    max_fetch = arg_to_number(demisto.params().get('max_fetch')) or 50
+    look_back = int(params.get('look_back', 0))
+    first_fetch = params.get('first_fetch')
 
-    res = client.get_cases(limit=max_fetch, last_timestamp=last_timestamp, fetch_closed=fetch_closed)
+    max_fetch_param = arg_to_number(params.get('max_fetch')) or 50
+    max_fetch = last_run.get('limit') or max_fetch_param
+    start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
+                                                                look_back=look_back, date_format=DATE_FORMAT)
+
+    res = client.get_cases(limit=max_fetch, start_time=start_fetch_time)
+    if not fetch_closed:
+        res = list(filter(lambda case: case['status'] == 'Open', res))
     demisto.debug(f"number of returned cases from the api:{len(res)}")
     incidents = []
     instance_name = demisto.integrationInstance()
@@ -1021,13 +1026,19 @@ def fetch_incidents(client: Client, fetch_closed: bool = False):
         case['dbotMirrorInstance'] = instance_name
         incident = {
             'name': case['title'],
-            'occurred': timestamp_to_datestring(case['createdAt']),
+            'occurred': timestamp_to_datestring(case['createdAt'], date_format=DATE_FORMAT),
             'severity': case['severity'],
             'rawJSON': json.dumps(case)
         }
         incidents.append(incident)
         last_timestamp = max(case['createdAt'], last_timestamp)
-    demisto.setLastRun({"timestamp": str(last_timestamp)})
+    incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents, last_run=last_run,
+                                                         fetch_limit=max_fetch_param, id_field='name')
+    last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=max_fetch_param,
+                                      start_fetch_time=start_fetch_time, end_fetch_time=end_fetch_time, look_back=look_back,
+                                      created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
+
+    demisto.setLastRun(last_run)
     demisto.debug(f"number of cases after filtering: {len(incidents)}")
     return incidents
 
