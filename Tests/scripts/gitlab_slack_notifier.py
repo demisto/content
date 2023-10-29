@@ -1,4 +1,6 @@
 import argparse
+import contextlib
+import json
 import logging
 import os
 import sys
@@ -68,17 +70,16 @@ def get_artifact_data(artifact_folder: Path, artifact_relative_path: str) -> str
     Returns:
         (Optional[str]): data of the artifact as str if exists, None otherwise.
     """
-    artifact_data = None
+    file_name = artifact_folder / artifact_relative_path
     try:
-        file_name = artifact_folder / artifact_relative_path
-        if os.path.isfile(file_name):
-            logging.info(f'Extracting {artifact_relative_path}')
-            artifact_data = Path(file_name).read_text()
+        if file_name.exists():
+            logging.info(f'Extracting {file_name}')
+            return file_name.read_text()
         else:
-            logging.info(f'Did not find {artifact_relative_path} file')
+            logging.info(f'Did not find {file_name} file')
     except Exception:
-        logging.exception(f'Error getting {artifact_relative_path} file')
-    return artifact_data
+        logging.exception(f'Error getting {file_name} file')
+    return None
 
 
 def get_failed_modeling_rule_name_from_test_suite(test_suite: TestSuite) -> str:
@@ -255,7 +256,7 @@ def construct_slack_msg(triggering_workflow: str,
     if failed_jobs_names:
         content_fields.append({
             "title": f'Failed Jobs - ({len(failed_jobs_names)})',
-            "value": '\n'.join(failed_jobs_names),
+            "value": '\n'.join(sorted(failed_jobs_names)),
             "short": False
         })
 
@@ -374,11 +375,13 @@ def main():
     slack_token = options.slack_token
     slack_client = WebClient(token=slack_token)
 
-    logging.info(f'Sending Slack message for pipeline {pipeline_id} in project {project_id} on server {server_url} '
-                 f'triggering workflow:{triggering_workflow} allowing failure:{options.allow_failure} '
-                 f'slack channel:{computed_slack_channel}')
+    logging.info(f"Sending Slack message for pipeline {pipeline_id} in project {project_id} on server {server_url} "
+                 f"triggering workflow:'{triggering_workflow}' allowing failure:{options.allow_failure} "
+                 f"slack channel:{computed_slack_channel}")
     pull_request = None
-    if options.current_branch != DEFAULT_BRANCH:
+    if triggering_workflow in {BUCKET_UPLOAD}:
+        logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
+    elif options.current_branch != DEFAULT_BRANCH:
         try:
             branch = options.current_branch
             if triggering_workflow == BUCKET_UPLOAD and BUCKET_UPLOAD_BRANCH_SUFFIX in branch:
@@ -401,6 +404,13 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request)
+
+    with contextlib.suppress(Exception):
+        output_file = ROOT_ARTIFACTS_FOLDER / 'slack_msg.json'
+        logging.info(f'Writing slack message to {output_file}')
+        with open(output_file, 'w') as f:
+            f.write(json.dumps(slack_msg_data, indent=4, sort_keys=True, default=str))
+        logging.info(f'Successfully wrote slack message to {output_file}')
 
     try:
         slack_client.chat_postMessage(
