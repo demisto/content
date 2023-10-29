@@ -144,7 +144,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1720
+          "y": 1090
         }
       }
     note: false
@@ -233,7 +233,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2175
+          "y": 1575
         }
       }
     note: false
@@ -264,7 +264,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 2350
+          "y": 1750
         }
       }
     note: false
@@ -372,7 +372,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2700
+          "y": 2100
         }
       }
     note: false
@@ -389,7 +389,7 @@ tasks:
     task:
       id: 3ccd86fb-693f-405d-81f7-7444add80f10
       version: -1
-      name: True Positive
+      name: Malicious
       type: title
       iscommand: false
       brand: ""
@@ -403,7 +403,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 2910
+          "y": 2310
         }
       }
     note: false
@@ -420,7 +420,7 @@ tasks:
     task:
       id: 34f837cd-83aa-4268-8a9c-63725c629908
       version: -1
-      name: False Positive
+      name: Benign
       type: title
       iscommand: false
       brand: ""
@@ -434,7 +434,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 2910
+          "y": 2310
         }
       }
     note: false
@@ -462,7 +462,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 3260
+          "y": 2660
         }
       }
     note: false
@@ -603,128 +603,13 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 2700
+          "y": 2100
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "53":
-    id: "53"
-    taskid: c8b84676-d085-4424-84e7-806522185c01
-    type: condition
-    task:
-      id: c8b84676-d085-4424-84e7-806522185c01
-      version: -1
-      name: Has related Indicators to hunt?
-      description: Hunt for indicators that are related to the RDP Connection external IP.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "54"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelatedFiles
-            iscontext: true
-          right:
-            value: {}
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelatedDomains
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelatedIPs
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: RelatedURLs
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "54":
-    id: "54"
-    taskid: 264737a7-d382-4445-887b-f205ad7f02ba
-    type: playbook
-    task:
-      id: 264737a7-d382-4445-887b-f205ad7f02ba
-      version: -1
-      name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
-      playbookName: Threat Hunting - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "112"
-    scriptarguments:
-      IPAddress:
-        complex:
-          root: RelatedIPs
-      QRadarTimeFrame:
-        simple: LAST 7 DAYS
-      SHA256:
-        complex:
-          root: RelatedFiles
-      SplunkEarliestTime:
-        simple: -7d@d
-      SplunkLatestTime:
-        simple: now
-      URLDomain:
-        complex:
-          root: RelatedDomains
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 1230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -771,7 +656,7 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 2010
+          "y": 1410
         }
       }
     note: false
@@ -795,7 +680,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "53"
+      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -863,14 +748,13 @@ tasks:
     scriptarguments:
       verdict:
         simple: True Positive
-
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 160,
-          "y": 3050
+          "y": 2450
         }
       }
     note: false
@@ -905,7 +789,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 3050
+          "y": 2450
         }
       }
     note: false
@@ -944,6 +828,8 @@ tasks:
         complex:
           root: Account
           accessor: Manager
+      mitretacticname:
+        simple: ' '
       passwordchangeddate:
         complex:
           root: Account
@@ -952,8 +838,6 @@ tasks:
         complex:
           root: Account
           accessor: Created
-      mitretacticname:
-        simple: " "
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1026,116 +910,12 @@ tasks:
       {
         "position": {
           "x": 695,
-          "y": 1850
+          "y": 1250
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "112":
-    id: "112"
-    taskid: 4a4aa00d-20f1-4a40-8a0e-9197341914dc
-    type: condition
-    task:
-      id: 4a4aa00d-20f1-4a40-8a0e-9197341914dc
-      version: -1
-      name: Has hunt results?
-      description: Check if hunt results were found.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "113"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Splunk
-            iscontext: true
-          right:
-            value: {}
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PANWHunting
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: QRadar
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Microsoft365Defender
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "113":
-    id: "113"
-    taskid: 02e04643-3fae-4c0c-8c06-981790ed973d
-    type: regular
-    task:
-      id: 02e04643-3fae-4c0c-8c06-981790ed973d
-      version: -1
-      name: Set hunt results true
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      key:
-        simple: HasHuntResults
-      value:
-        simple: "true"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 430,
-          "y": 1550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: Hunt Results Count
-      output:
-        complex:
-          root: HasHuntResults
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1167,7 +947,7 @@ tasks:
       {
         "position": {
           "x": 1155,
-          "y": 2520
+          "y": 1920
         }
       }
     note: false
@@ -1505,19 +1285,16 @@ system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "112_113_yes": 0.31,
-      "112_6_#default#": 0.37,
       "20_21_yes": 0.4,
       "20_22_#default#": 0.34,
       "35_21_#default#": 0.1,
       "35_22_yes": 0.7,
-      "53_6_#default#": 0.11,
       "56_11_#default#": 0.42,
       "56_21_yes": 0.21
     },
     "paper": {
       "dimensions": {
-        "height": 3495,
+        "height": 2895,
         "width": 1530,
         "x": 160,
         "y": -170
@@ -1608,4 +1385,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
+fromversion: 6.10.0
