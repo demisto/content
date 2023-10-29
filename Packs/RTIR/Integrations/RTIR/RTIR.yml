@@ -15,22 +15,11 @@ configuration:
   type: 9
   displaypassword: Token
   hiddenusername: true
-- name: certificate
+- display: Certificate
+  name: certificate
   type: 9
   required: false
-  displaypassword: Certificate
-  hiddenusername: true
-- name: certificate_pass
-  type: 9
-  required: false
-  displaypassword: Certificate Password
-  hiddenusername: true
-- display: Certificate Type
-  name: certificate_type
-  type: 15
-  required: false
-  options:
-  - "PKCS #12"
+  displaypassword: Private Key
 - display: 'Trust any certificate (not secure)'
   name: unsecure
   type: 8
@@ -39,11 +28,11 @@ configuration:
   name: proxy
   type: 8
   required: false
-- display: Fetch incidents
+- display: 'Fetch incidents'
   name: isFetch
   type: 8
   required: false
-- display: Incident type
+- display: 'Incident type'
   name: incidentType
   type: 13
   required: false
@@ -52,12 +41,12 @@ configuration:
   name: fetch_status
   type: 0
   required: false
-- defaultvalue: '0'
-  display: 'Fetch incidents with priority greater or equal to:'
+- display: 'Fetch incidents with priority greater or equal to:'
   name: fetch_priority
   type: 0
   required: false
-- defaultvalue: Incident Reports
+  defaultvalue: '0'
+- defaultvalue: 'Incident Reports'
   display: Queue name to fetch incidents from
   name: fetch_queue
   type: 0
@@ -403,14 +392,11 @@ script:
       name: cc
     description: Send a reply from an existing ticket to the user.
     name: rtir-add-reply
-  - name: rtir-auth-test
-    description: Tests the authentication.
-    arguments: []
   isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.77807
+  dockerimage: demisto/auth-utils:1.0.0.79660
 tests:
 - RTIR Test
 fromversion: 5.0.0

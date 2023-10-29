@@ -1,14 +1,11 @@
 from CommonServerPython import *
 
 ''' IMPORTS '''
+import tempfile
 import requests
 import json
 import re
 import urllib
-
-from cryptography.hazmat.primitives.serialization.pkcs12 import load_key_and_certificates
-from cryptography.hazmat.primitives.serialization import Encoding, PrivateFormat, NoEncryption
-from requests_toolbelt.adapters.x509 import X509Adapter
 
 
 ''' GLOBAL VARS '''
@@ -18,8 +15,7 @@ USERNAME = None
 PASSWORD = None
 TOKEN = ''
 CERTIFICATE = None
-CERTIFICATE_PASS = ''
-CERTIFICATE_TYPE = ''
+PRIVATE_KEY = None
 USE_SSL = None
 FETCH_PRIORITY = 0
 FETCH_STATUS = ''
@@ -61,29 +57,14 @@ def ticket_string_to_id(ticket_string):
     return ticket_id
 
 
-def handle_p12_certificate() -> None:
-    certificate_file_path = demisto.getFilePath(CERTIFICATE).get('path', '')
-    demisto.debug(f"{certificate_file_path=}")
-    with open(certificate_file_path, 'rb') as pkcs12_file:
-        pkcs12_data = pkcs12_file.read()
+class TempFile:
+    def __init__(self, data):
+        _, self.path = tempfile.mkstemp()
+        with open(self.path, 'w') as temp_file:
+            temp_file.write(data)
 
-    pkcs12_password_bytes = CERTIFICATE_PASS.encode('utf8')
-
-    pycaP12 = load_key_and_certificates(pkcs12_data, pkcs12_password_bytes)
-    pk_bytes = pycaP12[0].private_bytes(Encoding.DER, PrivateFormat.PKCS8, NoEncryption())  # type: ignore[union-attr]
-    cert_bytes = pycaP12[1].public_bytes(Encoding.DER)  # type: ignore[union-attr]
-
-    adapter = X509Adapter(max_retries=3, cert_bytes=cert_bytes, pk_bytes=pk_bytes, encoding=Encoding.DER)
-
-    SESSION.mount('https://', adapter)
-
-
-def handle_certificate() -> None:
-    if not CERTIFICATE:
-        return
-
-    if CERTIFICATE_TYPE == 'PKCS #12':
-        handle_p12_certificate()
+    def __del__(self):
+        os.remove(self.path)
 
 
 def http_request(method, suffix_url, data=None, files=None, query=None):
@@ -94,10 +75,12 @@ def http_request(method, suffix_url, data=None, files=None, query=None):
     if query:
         params.update(query)
 
-    handle_certificate()
+    cert = TempFile(CERTIFICATE) if CERTIFICATE else None
+    key = TempFile(PRIVATE_KEY) if PRIVATE_KEY else None
+    cert_key_pair = (cert.path, key.path) if cert and key else None  # type: ignore[attr-defined]
 
     response = SESSION.request(method, url, data=data, params=params, files=files,
-                               headers=HEADERS)  # type: ignore
+                               headers=HEADERS, cert=cert_key_pair)
 
     # handle request failure
     if response.status_code not in {200}:
@@ -154,19 +137,11 @@ def parse_ticket_data(raw_query):
 
 
 def test_module():
-    try:
-        res = http_request('GET', '')
-        if '401 Credentials required' in res.text:
-            raise DemistoException("Error: Test failed. please check your credentials.")
-        else:
-            return_results('ok')
-    except ValueError as e:
-        if "Item not found" in str(e):
-            raise DemistoException("When using Certificate, "
-                                   "Please enable the integration and run the !rtir-auth-test command in order to test it"
-                                   ) from e
-        else:
-            raise
+    res = http_request('GET', '')
+    if '401 Credentials required' in res.text:
+        raise DemistoException("Error: Test failed. please check your credentials.")
+    elif "200 Ok" in res.text:
+        return_results('ok')
 
 
 def create_ticket_request(encoded):
@@ -947,7 +922,7 @@ def main():
     try:
         ''' GLOBAL VARS '''
         global SERVER, USERNAME, PASSWORD, BASE_URL, USE_SSL, FETCH_PRIORITY, FETCH_STATUS, FETCH_QUEUE, HEADERS, REFERER, \
-            TOKEN, CERTIFICATE, CERTIFICATE_PASS, CERTIFICATE_TYPE
+            TOKEN, CERTIFICATE, PRIVATE_KEY
         SERVER = params.get('server', '')[:-1] if params.get('server', '').endswith(
             '/') else params.get('server', '')
         USERNAME = params.get('credentials', {}).get('identifier', '')
@@ -955,12 +930,8 @@ def main():
         TOKEN = params.get('token', {}).get('password', '')
         if not (USERNAME and PASSWORD) and not TOKEN:
             raise DemistoException("Username and password or Token must be provided.")
-        CERTIFICATE = params.get('certificate', {}).get('password')
-        CERTIFICATE_PASS = params.get('certificate_pass', {}).get('password')
-        CERTIFICATE_TYPE = params.get('certificate_type')
-        if CERTIFICATE and not CERTIFICATE_TYPE:
-            raise DemistoException(
-                "Certificate Type are required when using a Certificate for authentication.")
+        CERTIFICATE = replace_spaces_in_credential(params.get('certificate', {}).get('identifier'))
+        PRIVATE_KEY = replace_spaces_in_credential(params.get('certificate', {}).get('password'))
         BASE_URL = urljoin(SERVER, '/REST/1.0/')
         USE_SSL = not params.get('unsecure', False)
         FETCH_PRIORITY = int(params.get('fetch_priority', "0")) - 1
@@ -971,7 +942,7 @@ def main():
         HEADERS |= {'Referer': REFERER} if REFERER else {}
 
         demisto.debug(f'Command being called is {command}')
-        if command in ('test-module', 'rtir-auth-test'):
+        if command == 'test-module':
             test_module()
 
         if command in {'fetch-incidents'}:
