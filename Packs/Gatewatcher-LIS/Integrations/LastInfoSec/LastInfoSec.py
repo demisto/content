@@ -1,12 +1,19 @@
 from typing import (
-    Any,
-    Dict
+    Any
 )
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+INDICATOR_TYPE_TO_DBOT_SCORE = {
+    'FILE': DBotScoreType.FILE,
+    'URL': DBotScoreType.URL,
+    'DOMAIN': DBotScoreType.DOMAIN,
+}
+
+INTEGRATION_NAME = "LastInfoSec"
 
 
 class GwAPIException(Exception):
@@ -222,9 +229,200 @@ class GwClient(GwRequests):
             return response.json()
         else:
             raise GwAPIException(
-                "Get search ioc: [FAILED]",
-                response.text, response.status_code, response.reason
+                "Get ioc by value: [FAILED]",
+                response.text,
+                response.status_code,
+                response.reason,
             )
+
+    def get_leaked_email_by_domain(self, domain: str, after: str) -> dict:
+        """Allows you to search for leaked email by domain in Gatewatcher's CTI database.
+
+        Args:
+            domain: Domain to be searched
+            after: results before this date won't be returned.
+
+        Returns:
+            Value data
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        url = f"/lis/leaked_emails/get_by_domain/{domain}?api_key={self.token}&headers=false"
+        url += f"&added_after={after}" if after else ""
+
+        response = self._get(endpoint=url)
+
+        if response.status_code == 200:
+            demisto.info("Get search leaked email: [OK]")
+            return response.json()
+        else:
+            raise GwAPIException(
+                "Get leaked email: [FAILED]",
+                response.text,
+                response.status_code,
+                response.reason,
+            )
+
+    def get_is_email_leaked(self, email: str, after: str) -> dict:
+        """Allows you to search if an email has leaked in Gatewatcher's CTI database.
+
+        Args:
+            email: Email to be searched.
+            after: results before this date won't be returned.
+
+        Returns:
+            Value data
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        url = f"/lis/leaked_emails/get_by_email/{email}?api_key={self.token}&headers=false"
+        url += f"&added_after={after}" if after else ""
+
+        response = self._get(
+            endpoint=url,
+            json_data=assign_params(value=email),
+        )
+        if response.status_code == 200:
+            demisto.info("Get search leaked email: [OK]")
+            return response.json()
+        else:
+            raise GwAPIException(
+                "Get is email leaked: [FAILED]",
+                response.text,
+                response.status_code,
+                response.reason,
+            )
+
+
+def get_dbot_score(risk: str) -> int:
+    if risk == 'Malicious':
+        return Common.DBotScore.BAD
+    if risk == 'Suspicious':
+        return Common.DBotScore.SUSPICIOUS
+    if risk == 'High suspicious':
+        return Common.DBotScore.SUSPICIOUS
+    return Common.DBotScore.NONE
+
+
+def file_indicator(ioc: dict):
+    md5 = None
+    sha1 = None
+    sha256 = None
+    sha512 = None
+
+    hash = ioc["Value"]
+    hash_type = ioc["Type"]
+
+    if hash_type == 'MD5':
+        md5 = hash
+    elif hash_type == 'SHA1':
+        sha1 = hash
+    elif hash_type == 'SHA256':
+        sha256 = hash
+    elif hash_type == 'SHA512':
+        sha512 = hash
+
+    return Common.File(
+        dbot_score=get_dbot_score(ioc.get("Risk", "")),
+        description=ioc.get("Description"),
+        ssdeep=ioc.get("MetaData", {}).get("ssdeep"),
+        file_type=ioc.get("MetaData", {}).get("filetype"),
+        traffic_light_protocol=ioc.get("TLP"),
+        imphash=ioc.get("MetaData", {}).get("imphash"),
+        md5=md5,
+        sha1=sha1,
+        sha256=sha256,
+        sha512=sha512,
+    )
+
+
+def domain_indicator(ioc: dict):
+    return Common.Domain(
+        domain=ioc.get("Value"),
+        dbot_score=get_dbot_score(ioc.get("Risk", "")),
+        description=ioc.get("Description"),
+        traffic_light_protocol=ioc.get("TLP"),
+    )
+
+
+def url_indicator(ioc: dict):
+    return Common.URL(
+        url=ioc.get("Value"),
+        dbot_score=get_dbot_score(ioc.get("Risk", "")),
+        description=ioc.get("Description"),
+        traffic_light_protocol=ioc.get("TLP"),
+    )
+
+
+def generic_reputation_command(
+    client: GwClient, args: dict, cmd_type: str, reliability: str
+) -> List[CommandResults]:
+    """Checks the reputation of a file, domain or url
+
+    Args:
+        client: Client to interact with the LIS API.
+        args: Command arguments.
+        cmd_type: Command type ("file", "domain" or "url")
+        reliability: Integration reliability
+
+    Return
+        List of CommandResults objects.
+    """
+    output_prefixes = {
+        "file": "LIS.File",
+        "domain": "LIS.Domain",
+        "url": "LIS.URL",
+    }
+    arg_list = argToList(args[cmd_type])
+    results: List[CommandResults] = []
+    indicator_type = cmd_type
+
+    # for each IOC in request args
+    for arg in arg_list:
+        response = client.get_by_value(value=arg)
+        ioc = list(filter(lambda x: x["Value"] == arg, response["IOCs"]))[0]
+
+        lis_result = {
+            "Value": ioc["Value"],
+            "Risk": ioc["Risk"],
+            "Categories": ioc["Categories"],
+            "Type": ioc["Type"],
+            "TLP": ioc["TLP"],
+            "UsageMode": ioc["UsageMode"],
+            "Vulnerabilities": ioc["Vulnerabilities"],
+        }
+
+        readable_result = tableToMarkdown("Get IoC corresponding to the value", lis_result)
+
+        if cmd_type == "file":
+            indicator = file_indicator(ioc)
+        elif cmd_type == "domain":
+            indicator = domain_indicator(ioc)
+        else:
+            indicator = url_indicator(ioc)
+
+        indicator.dbot_score = Common.DBotScore(
+            indicator=arg,
+            integration_name=INTEGRATION_NAME,
+            indicator_type=indicator_type,
+            score=get_dbot_score(ioc["Risk"]),
+            reliability=reliability,
+            malicious_description="Match found in LastInfoSec",
+        )
+
+        results.append(
+            CommandResults(
+                indicator=indicator,
+                readable_output=readable_result,
+                outputs_prefix=output_prefixes[cmd_type],
+                outputs_key_field="Value",
+                outputs=lis_result,
+                raw_response=response,
+            )
+        )
+    return results
 
 
 def test_module(client: GwClient) -> str:  # noqa: E501
@@ -243,7 +441,7 @@ def test_module(client: GwClient) -> str:  # noqa: E501
         return "Request error, please check ip/user/password/token: [ERROR]"
 
 
-def lis_get_by_minute(client: GwClient, args: Dict[Any, Any]) -> CommandResults:  # noqa: E501
+def lis_get_by_minute(client: GwClient, args: dict[Any, Any]) -> CommandResults:  # noqa: E501
     """Retrieve the data from Gatewatcher CTI feed by minute.
         Max 1440 minutes.
 
@@ -291,7 +489,7 @@ def lis_get_by_minute(client: GwClient, args: Dict[Any, Any]) -> CommandResults:
     )
 
 
-def lis_get_by_value(client: GwClient, args: Dict[Any, Any]) -> CommandResults:  # noqa: E501
+def lis_get_by_value(client: GwClient, args: dict[Any, Any]) -> CommandResults:  # noqa: E501
     """Allows you to search for an IOC (url, hash, host) or a vulnerability in the Gatewatcher CTI database.
         If the data is known, only the IOC corresponding to the value will be returned.
 
@@ -326,6 +524,63 @@ def lis_get_by_value(client: GwClient, args: Dict[Any, Any]) -> CommandResults: 
     )
 
 
+def lis_get_leaked_email_by_domain(
+    client: GwClient, args: dict[Any, Any]
+) -> CommandResults:
+    """Allows you to search for leaked email by domain in Gatewatcher's CTI database.
+
+    Args:
+        client: Client to interact with the LIS API.
+        args: Command arguments,
+            Domain: domain to search for.
+            After: date to do not return results before this date.
+
+    Returns:
+        CommandResults object with the "LIS.leakedEmail.GetByDomain" prefix.
+    """
+    domain = args.get("Domain", None)
+    after = args.get("After", None)
+    response = client.get_leaked_email_by_domain(domain, after)
+
+    emails = [res["Value"] for res in response]
+    result = emails if len(emails) > 0 else None
+    readable_result = tableToMarkdown("Leaked email", result, headers="Emails")
+
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="LIS.LeakedEmail.GetByDomain",
+        outputs=result,
+        raw_response=result,
+    )
+
+
+def lis_is_email_leaked(client: GwClient, args: dict[Any, Any]) -> CommandResults:
+    """Allows you to search if an email has leaked in Gatewatcher's CTI database.
+
+    Args:
+        client: Client to interact with the LIS API.
+        args: Command arguments,
+            Email: email to search for.
+            After: date to do not return results before this date.
+
+    Returns:
+        CommandResults object with the "LIS.leakedEmail.getByEmail" prefix.
+    """
+    email = args.get("Email", None)
+    after = args.get("After", None)
+    response = client.get_is_email_leaked(email, after)
+
+    result = email if len(response) > 0 else None
+    readable_result = tableToMarkdown("Is email leaked", result, headers="Value")
+
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="LIS.LeakedEmail.GetByEmail",
+        outputs=result,
+        raw_response=result,
+    )
+
+
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
@@ -334,6 +589,13 @@ def main() -> None:
     token = params.get("token")
     check_cert = params.get("check_cert", False)
     proxy = params.get("proxy", False)
+    reliability = params.get('integrationReliability', 'C - Fairly reliable')
+    reliability = reliability if reliability else DBotScoreReliability.B
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        return_error("Please provide a valid value for the Source Reliability parameter")
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -342,6 +604,18 @@ def main() -> None:
             return_results(
                 test_module(client=client)
             )
+        elif command == "url":
+            return_results(
+                generic_reputation_command(client=client, args=args, cmd_type='url', reliability=reliability)
+            )
+        elif command == "file":
+            return_results(
+                generic_reputation_command(client=client, args=args, cmd_type='file', reliability=reliability)
+            )
+        elif command == "domain":
+            return_results(
+                generic_reputation_command(client=client, args=args, cmd_type='domain', reliability=reliability)
+            )
         elif command == "gw-lis-get-by-minute":
             return_results(
                 lis_get_by_minute(client=client, args=args)
@@ -349,6 +623,14 @@ def main() -> None:
         elif command == "gw-lis-get-by-value":
             return_results(
                 lis_get_by_value(client=client, args=args)
+            )
+        elif command == "gw-lis-leaked-email-by-domain":
+            return_results(
+                lis_get_leaked_email_by_domain(client=client, args=args)
+            )
+        elif command == "gw-lis-is-email-leaked":
+            return_results(
+                lis_is_email_leaked(client=client, args=args)
             )
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
