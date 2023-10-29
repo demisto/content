@@ -1888,6 +1888,10 @@ script:
     - description: The request_id (generated in the polling command).
       name: request_id
       deprecated: true
+    - description: The timeout in seconds until polling ends.
+      name: timeout_in_seconds
+      deprecated: true
+      defaultValue: '600'
     description: Create the URL assessment request.
     execution: false
     name: msg-create-url-assessment-request

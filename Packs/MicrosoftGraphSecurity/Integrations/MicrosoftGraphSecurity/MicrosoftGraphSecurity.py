@@ -1537,7 +1537,9 @@ def create_file_assessment_request_command(args, client) -> PollResult | Command
                           partial_result=CommandResults(readable_output="The status is pending, still waiting to get results..."))
 
 
-@polling_function('msg-create-url-assessment-request', requires_polling_arg=False)
+@polling_function('msg-create-url-assessment-request',
+                  timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 720)),
+                  requires_polling_arg=False)
 def create_url_assessment_request_command(args, client: MsGraphClient) -> PollResult | CommandResults:
 
     request_id = args.get('request_id')
