@@ -570,65 +570,65 @@ def get_incident_extra_data_command(client, args):
                                  'mitre_techniques_ids_and_names': ['T1110.001 - Brute Force: Password Guessing'],
                                  'alert_categories': ['Credential Access'], 'original_tags': ['DS:PANW/XDR Agent'],
                                  'tags': ['DS:PANW/XDR Agent']}, 'alerts': {'total_count': 1, 'data': [
-                                     {'external_id': '2a6a3f42-9d2d-4226-922f-28e4c2a3147f', 'severity': 'low', 'matching_status': 'MATCHED',
-                                      'end_match_attempt_ts': None, 'local_insert_ts': 1671731192490, 'last_modified_ts': None, 'bioc_indicator': None,
-                                      'matching_service_rule_id': 'fd879de7-fb74-44f0-b699-805d0b08b1fd', 'attempt_counter': None,
-                                      'bioc_category_enum_key': None, 'case_id': 413, 'is_whitelisted': False, 'starred': False, 'deduplicate_tokens': None,
-                                      'filter_rule_id': None, 'mitre_technique_id_and_name': 'T1110.001 - Brute Force: Password Guessing',
-                                      'mitre_tactic_id_and_name': 'TA0006 - Credential Access', 'agent_version': '7.9.0.18674', 'agent_ip_addresses_v6': None,
+                                     {'external_id': '2a6a3f42-9d2d-4226-922f-28e4c2a3147f', 'severity': 'low', 'matching_status': 'MATCHED',   # noqa: E501
+                                      'end_match_attempt_ts': None, 'local_insert_ts': 1671731192490, 'last_modified_ts': None, 'bioc_indicator': None,   # noqa: E501
+                                      'matching_service_rule_id': 'fd879de7-fb74-44f0-b699-805d0b08b1fd', 'attempt_counter': None,   # noqa: E501
+                                      'bioc_category_enum_key': None, 'case_id': 413, 'is_whitelisted': False, 'starred': False, 'deduplicate_tokens': None,   # noqa: E501
+                                      'filter_rule_id': None, 'mitre_technique_id_and_name': 'T1110.001 - Brute Force: Password Guessing', # noqa: E501
+                                      'mitre_tactic_id_and_name': 'TA0006 - Credential Access', 'agent_version': '7.9.0.18674', 'agent_ip_addresses_v6': None,     # noqa: E501
                                       'agent_device_domain': None, 'agent_fqdn': None, 'agent_os_type': 'Windows',
-                                      'agent_os_sub_type': 'Windows 10 [10.0 (Build 19044)]', 'agent_data_collection_status': None, 'mac': None,
-                                      'agent_is_vdi': None, 'agent_install_type': 'STANDARD', 'agent_host_boot_time': 1671032983204, 'event_sub_type': 1,
-                                      'module_id': None, 'association_strength': 50, 'dst_association_strength': 0, 'story_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==',
-                                      'event_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==', 'event_type': 'Login', 'event_timestamp': 1671730625375,
-                                      'actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe',
-                                      'actor_process_image_name': 'lsass.exe', 'actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe',
-                                      'actor_process_signature_status': 'Signed', 'actor_process_signature_vendor': 'Microsoft Corporation',
-                                      'actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',
-                                      'actor_process_image_md5': '289d6a47b7692510e2fd3b51979a9fed', 'actor_process_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==',
-                                      'actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_os_pid': 756, 'actor_thread_thread_id': 4020,
+                                      'agent_os_sub_type': 'Windows 10 [10.0 (Build 19044)]', 'agent_data_collection_status': None, 'mac': None,   # noqa: E501
+                                      'agent_is_vdi': None, 'agent_install_type': 'STANDARD', 'agent_host_boot_time': 1671032983204, 'event_sub_type': 1,   # noqa: E501
+                                      'module_id': None, 'association_strength': 50, 'dst_association_strength': 0, 'story_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==',   # noqa: E501
+                                      'event_id': 'ODczNjk1Mzc1MTMwMzI1NjA1Nw==', 'event_type': 'Login', 'event_timestamp': 1671730625375, # noqa: E501
+                                      'actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe',     # noqa: E501
+                                      'actor_process_image_name': 'lsass.exe', 'actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe',   # noqa: E501
+                                      'actor_process_signature_status': 'Signed', 'actor_process_signature_vendor': 'Microsoft Corporation',   # noqa: E501
+                                      'actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',   # noqa: E501
+                                      'actor_process_image_md5': '289d6a47b7692510e2fd3b51979a9fed', 'actor_process_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==',   # noqa: E501
+                                      'actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'actor_process_os_pid': 756, 'actor_thread_thread_id': 4020,   # noqa: E501
                                       'causality_actor_process_image_name': 'lsass.exe',
                                       'causality_actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe',
                                       'causality_actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe',
                                       'causality_actor_process_signature_vendor': 'Microsoft Corporation',
-                                      'causality_actor_process_signature_status': 'Signed', 'causality_actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==',
+                                      'causality_actor_process_signature_status': 'Signed', 'causality_actor_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==',   # noqa: E501
                                       'causality_actor_process_execution_time': 1671033022857,
                                       'causality_actor_process_image_md5': '289d6a47b7692510e2fd3b51979a9fed',
-                                      'causality_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',
+                                      'causality_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',   # noqa: E501
                                       'action_file_path': None, 'action_file_name': None,
-                                      'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None,
-                                      'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None,
-                                      'action_local_ip': 'None', 'action_local_ip_v6': None, 'action_local_port': 0, 'action_remote_ip': '137.184.208.116',
-                                      'action_remote_ip_v6': None, 'action_remote_port': 0, 'action_external_hostname': 'kali', 'action_country': 'UNKNOWN',
-                                      'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None,
-                                      'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A',
+                                      'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None,   # noqa: E501
+                                      'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, # noqa: E501
+                                      'action_local_ip': 'None', 'action_local_ip_v6': None, 'action_local_port': 0, 'action_remote_ip': '137.184.208.116',     # noqa: E501
+                                      'action_remote_ip_v6': None, 'action_remote_port': 0, 'action_external_hostname': 'kali', 'action_country': 'UNKNOWN',   # noqa: E501
+                                      'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None,   # noqa: E501
+                                      'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A',    # noqa: E501
                                       'action_process_signature_vendor': None, 'os_actor_effective_username': None,
                                       'os_actor_process_instance_id': 'AdkP08aY7RwAAAL0AAAAAA==',
-                                      'os_actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe', 'os_actor_process_image_name': 'lsass.exe',
-                                      'os_actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe', 'os_actor_process_signature_status': 'Signed',
+                                      'os_actor_process_image_path': 'C:\\Windows\\System32\\lsass.exe', 'os_actor_process_image_name': 'lsass.exe',   # noqa: E501
+                                      'os_actor_process_command_line': 'C:\\WINDOWS\\system32\\lsass.exe', 'os_actor_process_signature_status': 'Signed',   # noqa: E501
                                       'os_actor_process_signature_vendor': 'Microsoft Corporation',
-                                      'os_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',
+                                      'os_actor_process_image_sha256': '0777fd312394ae1afeed0ad48ae2d7b5ed6e577117a4f40305eaeb4129233650',   # noqa: E501
                                       'os_actor_process_causality_id': 'AdkP08aY7RwAAAL0AAAAAA==', 'os_actor_causality_id': None,
-                                      'os_actor_process_os_pid': 756, 'os_actor_thread_thread_id': 4020, 'fw_app_id': '', 'fw_interface_from': '',
-                                      'fw_interface_to': '', 'fw_rule': '', 'fw_rule_id': None, 'fw_device_name': '', 'fw_serial_number': '',
-                                      'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None,
-                                      'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None,
-                                      'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': '', 'dst_causality_actor_process_execution_time': None,
+                                      'os_actor_process_os_pid': 756, 'os_actor_thread_thread_id': 4020, 'fw_app_id': '', 'fw_interface_from': '',   # noqa: E501
+                                      'fw_interface_to': '', 'fw_rule': '', 'fw_rule_id': None, 'fw_device_name': '', 'fw_serial_number': '',   # noqa: E501
+                                      'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None,   # noqa: E501
+                                      'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None,   # noqa: E501
+                                      'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': '', 'dst_causality_actor_process_execution_time': None,   # noqa: E501
                                       'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': '-',
-                                      'dst_action_external_port': None, 'is_pcap': False, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO',
-                                      'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None,
-                                      'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None,
-                                      'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None,
-                                      'alert_type': 'Unclassified', 'resolution_status': 'STATUS_010_NEW', 'resolution_comment': None, 'dynamic_fields': None,
-                                      'tags': 'DS:PANW/XDR Agent', 'events_length': 1, 'alert_id': '150807', 'detection_timestamp': 1671730626096,
+                                      'dst_action_external_port': None, 'is_pcap': False, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO',   # noqa: E501
+                                      'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None,    # noqa: E501
+                                      'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None,   # noqa: E501
+                                      'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None,     # noqa: E501
+                                      'alert_type': 'Unclassified', 'resolution_status': 'STATUS_010_NEW', 'resolution_comment': None, 'dynamic_fields': None,   # noqa: E501
+                                      'tags': 'DS:PANW/XDR Agent', 'events_length': 1, 'alert_id': '150807', 'detection_timestamp': 1671730626096,    # noqa: E501
                                       'name': 'Possible external RDP Brute-Force', 'category': 'Credential Access',
                                       'endpoint_id': 'f6ba1a18c35d416c8e27a319cc2fea09',
-                                      'description': "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password"
-                                      " 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in"
-                                      " successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has "
-                                      "had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",
-                                      'host_ip': '172.16.12.40', 'host_name': 'DC1ENV12APC05', 'source': 'XDR Analytics', 'action': 'DETECTED',
-                                      'action_pretty': 'Detected', 'user_name': 'administrator', 'original_tags': 'DS:PANW/XDR Agent'}]},
+                                      'description': "DC1ENV12APC05 successfully accessed administrator by systematically guessing the user's password"    # noqa: E501
+                                      " 22 times over an hour with 2 successful logons and 20 failed attempts. The user did not log in"    # noqa: E501
+                                      " successfully from 137.184.208.116 during the last 30 days. Over the past 30 days, DC1ENV12APC05 has "    # noqa: E501
+                                      "had an average of 0 failed login attempts with the user administrator from 137.184.208.116 per day",    # noqa: E501
+                                      'host_ip': '172.16.12.40', 'host_name': 'DC1ENV12APC05', 'source': 'XDR Analytics', 'action': 'DETECTED',    # noqa: E501
+                                      'action_pretty': 'Detected', 'user_name': 'administrator', 'original_tags': 'DS:PANW/XDR Agent'}]},    # noqa: E501
                     'network_artifacts': {'total_count': 1, 'data': [
                         {'type': 'DOMAIN', 'alert_count': 1, 'is_manual': False, 'network_domain': 'kali',
                          'network_remote_ip': None, 'network_remote_port': 0, 'network_country': 'UNKNOWN'}]},
@@ -1395,7 +1395,8 @@ def file_details_results(client: Client, args: Dict, add_to_context: bool) -> No
 
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:  # type:ignore[no-redef]
     '''
-    This command was changed to return predefined alerts. Instead of using the passed client, the raw_response will contain the returned json
+    This command was changed to return predefined alerts. Instead of using the passed client, the raw_response will contain
+     the returned json.
     :param client: N.A.
     :param args: N.A.
     :return: List of predefined json alerts.
@@ -1929,7 +1930,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
                             "000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"
                         ],
                         "actor_process_image_path": [
-                            "C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"
+                            "C:\\Users\\administrator.ENV4\\Downloads\\8872362056\\000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27.exe"    # noqa: E501
                         ],
                         "actor_process_image_sha256": [
                             "000001e7a228b2a7abdf7f7e40313324332b725e86907dde32176bccbbbb27"
