@@ -1844,6 +1844,13 @@ script:
       isArray: true
       name: alert_ids
       required: true
+    - description: Whether to return only a subset of the alert fields. Filtering the fields can reduce response size for large alerts.
+      name: filter_alert_fields
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+        - 'true'
+        - 'false'
     description: Returns information about each alert ID.
     name: core-get-cloud-original-alerts
     outputs:
@@ -2857,7 +2864,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.78960
 tests:
 - No tests
 fromversion: 6.2.0
