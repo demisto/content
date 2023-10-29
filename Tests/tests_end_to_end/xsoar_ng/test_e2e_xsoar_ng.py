@@ -3,7 +3,6 @@ import pytest
 import requests
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
 from demisto_client.demisto_api.rest import ApiException
-from demisto_sdk.utils.utils import retry_http_request
 
 
 @pytest.fixture()
@@ -92,7 +91,7 @@ class TestEDL:
                               f'status code={response.status_code}, response={response.text}'
 
 
-class TestTaxiiServer:
+class TestTaxii2Server:
     """
     Tests taxii2-server on xsoar-ng
     """
@@ -152,3 +151,21 @@ class TestTaxiiServer:
         assert indicators, f'could not get indicators from url={response.request.url} with available ' \
                            f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
                            f'status code={response.status_code}, response={indicators}'
+
+
+class TestSlack:
+
+    instance_name_gsm = "cached"
+    integration_id = "SlackV3"
+    is_long_running = True
+
+    def test_slack_ask(self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, integration_params: dict):
+        pass
+
+# class TestQradar:
+#     instance_name_gsm = "cached"
+#     integration_id = "QRadar v3"
+#     is_long_running = True
+#
+#     def test_qradar_mirroring(self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, integration_params: dict):
+#         pass
