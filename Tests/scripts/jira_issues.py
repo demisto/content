@@ -1,9 +1,11 @@
 import json
 import os
+from collections import defaultdict
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 
 from jira import JIRA, Issue
+from jira.client import ResultList
 
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -25,26 +27,36 @@ JIRA_LABELS = json.loads(os.environ.get("JIRA_LABELS", "[]"))
 
 
 def generate_ticket_summary(prefix: str) -> str:
-    summary = f"{prefix} failed nightly"
+    # This is the existing conventions of the Content Gold Bot, don't change as it will break backward compatibility.
+    summary = f"{prefix} fails nightly"
     return summary
 
 
-def generate_query(summary: str) -> str:
-    jql_query = (f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" "
-                 f"AND component = \"{JIRA_COMPONENT}\" AND summary ~ \"{summary}\" ORDER BY created DESC")
+def generate_query_by_component_and_issue_type() -> str:
+    jql_query = f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" AND component = \"{JIRA_COMPONENT}\""
     return jql_query
+
+
+def generate_query_with_summary(summary: str) -> str:
+    jql_query = f"{generate_query_by_component_and_issue_type()} AND summary ~ \"{summary}\" ORDER BY created DESC"
+    return jql_query
+
+
+def convert_jira_time_to_datetime(jira_time: str) -> datetime:
+    return datetime.strptime(jira_time, JIRA_TIME_FORMAT)
 
 
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
                               max_days_to_reopen: int,
-                              jira_issue: Issue | None) -> tuple[Issue | None, Issue | None, bool]:
+                              jira_issue: Issue | None,
+                              ) -> tuple[Issue | None, Issue | None, bool]:
     link_to_issue = None
     jira_issue_to_use = None
     if use_existing_issue := (jira_issue is not None):
         searched_issue: Issue = jira_issue
         if searched_issue.get_field("resolution"):
-            resolution_date = datetime.strptime(searched_issue.get_field("resolutiondate"), JIRA_TIME_FORMAT)
+            resolution_date = convert_jira_time_to_datetime(searched_issue.get_field("resolutiondate"))
             if use_existing_issue := (resolution_date
                                       and (now - resolution_date)
                                       <= timedelta(days=max_days_to_reopen)):  # type: ignore[assignment]
@@ -88,3 +100,26 @@ def jira_server_information(jira_server: JIRA):
     logging.info("Jira server information:")
     for key, value in jira_server_info.items():
         logging.info(f"\t{key}: {value}")
+
+
+def jira_search_all_by_query(jira_server: JIRA,
+                             jql_query: str,
+                             max_results_per_request: int = 100,
+                             ) -> dict[str, list[Issue]]:
+
+    start_at = 0  # Initialize pagination parameters
+    issues: dict[str, list[Issue]] = defaultdict(list)
+    while True:
+        issues_batch: ResultList[Issue] = jira_server.search_issues(jql_query,  # type: ignore[assignment]
+                                                                    startAt=start_at,
+                                                                    maxResults=max_results_per_request)
+        for issue in issues_batch:
+            summary: str = issue.get_field("summary").lower()
+            issues[summary].append(issue)
+
+        # Update the startAt value for the next page
+        start_at += max_results_per_request
+        if start_at >= issues_batch.total:
+            break
+
+    return issues
