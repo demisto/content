@@ -18,7 +18,7 @@ configuration:
   section: Connect
 - display: Maximum number of events per fetch
   name: max_fetch
-  additionalinfo: Alerts and activity events
+  additionalinfo: Alerts and activity events.
   type: 0
   defaultvalue: 5000
   section: Collect
@@ -26,7 +26,7 @@ configuration:
   name: devices_max_fetch
   type: 0
   section: Collect
-  additionalinfo: Devices events
+  additionalinfo: Devices events.
   defaultvalue: 10000
 - display: Trust any certificate (not secure)
   name: insecure

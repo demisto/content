@@ -11,8 +11,8 @@ This integration was integrated and tested with API V.1.8 of Armis API.
     | --- | --- | --- |
     | Server URL | URL of the Armis instance the event collector should connect to. | True |
     | API Secret Key | The API Secret Key allows you to programmatically integrate with the Armis ecosystem. | True |
-    | Maximum number of events per fetch | Alerts and activity events |  |
-    | Maximum number of device events per fetch | Devices events |  |
+    | Maximum number of events per fetch | Alerts and activity events. |  |
+    | Maximum number of device events per fetch | Devices events. |  |
     | Trust any certificate (not secure) |  |  |
     | Use system proxy settings |  |  |
     | Event types to fetch |  | True |
@@ -29,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### armis-get-events
 
 ***
-Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
+Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
 
 #### Base Command
 
@@ -40,7 +40,7 @@ Manual command to fetch and display events. This command is used for developing/
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to true in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
-| from_date | The date from which to fetch events. The date from which to fetch events. The format should be '20 minutes', '1 hour' or '2 days'. | Optional | 
+| from_date | The date from which to fetch events. The format should be '20 minutes', '1 hour' or '2 days'. | Optional | 
 
 #### Context Output
 
