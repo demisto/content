@@ -1860,7 +1860,8 @@ def ip_report_command():
 def ip_report_output(response_json, ip):
     files_statistics = response_json.get("rl").get("downloaded_files_statistics")
 
-    markdown = f"""## ReversingLabs IP address report for {ip}\n ### Downloaded files statistics\n **KNOWN**: {files_statistics.get("known")}
+    markdown = f"""## ReversingLabs IP address report for {ip}\n ### Downloaded files statistics\n **KNOWN**: {
+    files_statistics.get("known")}
     **MALICIOUS**: {files_statistics.get("malicious")}
     **SUSPICIOUS**: {files_statistics.get("suspicious")}
     **UNKNOWN**: {files_statistics.get("unknown")}
