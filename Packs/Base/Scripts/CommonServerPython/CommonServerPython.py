@@ -194,7 +194,7 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
-    
+
     from urllib3 import disable_warnings
     disable_warnings()
 
@@ -6830,8 +6830,10 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
-                 execution_metrics=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any]) -> None  # noqa: E501
+                 execution_metrics=None,
+                 next_token=None,
+                 next_token_prefix=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any], str, str) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -6873,6 +6875,8 @@ class CommandResults:
         self.scheduled_command = scheduled_command
         self.relationships = relationships
         self.execution_metrics = execution_metrics
+        self.next_token = next_token
+        self.next_token_prefix = next_token_prefix or (outputs_prefix or '') + 'NextToken'
 
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
             raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
@@ -6919,7 +6923,7 @@ class CommandResults:
         if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
-                if isinstance(self.outputs, dict) or isinstance(self.outputs, list):
+                if isinstance(self.outputs, (dict, list)):
                     human_readable = tableToMarkdown('Results', self.outputs)
                 else:
                     human_readable = self.outputs   # type: ignore[assignment]
@@ -6930,10 +6934,13 @@ class CommandResults:
                 outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
             elif self.outputs_prefix:
-                outputs_key = '{}'.format(self.outputs_prefix)
-                outputs[outputs_key] = self.outputs
+                outputs[str(self.outputs_prefix)] = self.outputs
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
+
+        if self.next_token:
+            next_token_path, _, next_token_key = self.next_token_prefix.rpartition('.')
+            outputs[next_token_path + '(true)'] = {next_token_key: self.next_token}
 
         if self.relationships:
             relationships = [relationship.to_entry() for relationship in self.relationships if relationship.to_entry()]
@@ -10624,16 +10631,16 @@ def get_current_time(time_zone=0):
 
 def calculate_new_offset(old_offset, num_incidents, total_incidents):
     """ This calculates the new offset based on the response
-    
+
     :type old_offset: ``int``
     :param old_offset: The offset from the previous run
 
     :type num_incidents: ``int``
     :param num_incidents: The number of incidents returned by the API.
-    
+
     :type total_incidents: ``int``
     :param total_incidents: The total number of incidents returned by the API.
-    
+
     :return: The new offset for the next run.
     :rtype: ``int``
     """
@@ -10812,7 +10819,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
-    
+
     :type new_offset: ``int | None``
     :param new_offset: The new offset to set in the last run
 
@@ -10827,13 +10834,13 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         # if we need to update the offset, we need to keep the old time and just update the offset
         new_last_run = {
             'time': last_run.get("time"),
-        } 
+        }
     elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
             'limit': fetch_limit,
         }
-    else:        
+    else:
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
                                                                         increase_last_run_time)
         new_last_run = {
@@ -10843,7 +10850,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         if latest_incident_fetched_time == start_fetch_time:
             # we are still on the same time, no need to remove old incident ids
             remove_incident_ids = False
-    
+
     if new_offset is not None:
         new_last_run['offset'] = new_offset
         new_last_run['limit'] = fetch_limit
@@ -10887,7 +10894,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
-    
+
     :type new_offset: ``int | None``
     :param new_offset: The new offset to set in the last run
 
