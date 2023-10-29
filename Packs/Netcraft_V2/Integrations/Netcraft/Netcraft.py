@@ -844,7 +844,7 @@ def submission_list(args: dict, client: Client) -> CommandResults:
         # this method is used so that the key Netcraft.SubmissionNextToken is overridden on each run
         outputs={
             'Netcraft.Submission(val.uuid && val.uuid == obj.uuid)': submissions,
-            'Netcraft(val.SubmissionNextToken || true)': {'SubmissionNextToken': next_token}
+            'Netcraft(true)': {'SubmissionNextToken': next_token}
         },
         readable_output=response_to_readable(submissions),
     )
