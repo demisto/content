@@ -309,7 +309,8 @@ class TestHelperFunction:
                                                 '_time': '2023-01-01T01:00:20', 'unique_id': '2'}]}
         expected_result = CommandResults(
             raw_response=response_with_two_events,
-            readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT}_events events', t=response_with_two_events['events'], removeNull=True))
+            readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT}_events events', t=response_with_two_events['events'],
+                                            removeNull=True))
         assert events_to_command_results(response_with_two_events)[0].readable_output == expected_result.readable_output
 
     @freeze_time("2023-01-01 01:00:00")
@@ -492,10 +493,10 @@ class TestFetchFlow:
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'}
     )
 
-    @ pytest.mark.parametrize('max_fetch, devices_max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events, next_run', [
-        case_first_fetch, case_second_fetch, case_second_fetch_with_duplicates,
-        case_no_new_event_from_fetch, case_all_events_from_fetch_have_the_same_time
-    ])
+    @ pytest.mark.parametrize('max_fetch, devices_max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events,\
+        next_run', [case_first_fetch, case_second_fetch, case_second_fetch_with_duplicates,
+                    case_no_new_event_from_fetch, case_all_events_from_fetch_have_the_same_time
+                    ])
     def test_fetch_flow_cases(self, mocker, dummy_client, max_fetch, devices_max_fetch, last_run,
                               fetch_start_time, event_types_to_fetch, response, events, next_run):
         """
