@@ -958,9 +958,9 @@ def main():
         CERTIFICATE = params.get('certificate', {}).get('password')
         CERTIFICATE_PASS = params.get('certificate_pass', {}).get('password')
         CERTIFICATE_TYPE = params.get('certificate_type')
-        if CERTIFICATE and not all((CERTIFICATE_PASS, CERTIFICATE_TYPE)):
+        if CERTIFICATE and not CERTIFICATE_TYPE:
             raise DemistoException(
-                "Certificate Password and Certificate Type are required when using a Certificate for authentication.")
+                "Certificate Type are required when using a Certificate for authentication.")
         BASE_URL = urljoin(SERVER, '/REST/1.0/')
         USE_SSL = not params.get('unsecure', False)
         FETCH_PRIORITY = int(params.get('fetch_priority', "0")) - 1
