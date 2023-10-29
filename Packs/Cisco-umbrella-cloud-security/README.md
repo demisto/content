@@ -34,7 +34,7 @@ More information can be found [here](https://docs.umbrella.com/deployment-umbrel
 
 **On XSIAM:**
 
-1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source**.
+1. Navigate to **Settings** > **Data Sources** > **Add Data Source**.
 2. Click **Amazon S3**.
 3. Click **Connect** or **Connect Another Instance**.
 4. Set the following values:
