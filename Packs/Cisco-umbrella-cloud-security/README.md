@@ -11,7 +11,7 @@ Ensure you have the below prerequisites:
 1. A login to Amazon AWS service
 2. A bucket configured in Amazon S3 to be used for storing logs.
 
-See this[doc](https://docs.umbrella.com/deployment-umbrella/docs/setting-up-an-amazon-s3-bucket#prerequisites) for further instructions on how to create a S3 bucket, and how to configure it for your needs.
+See this [doc](https://docs.umbrella.com/deployment-umbrella/docs/setting-up-an-amazon-s3-bucket#prerequisites) for further instructions on how to create a S3 bucket, and how to configure it for your needs.
 
 **On Cisco Umbrella cloud security**
 
