@@ -215,6 +215,7 @@
   - | 
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "install_packs_nightly_bugs" ]]; then
       echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
+      git status
       git reset $LAST_UPLOAD_COMMIT -- ./Packs
       git checkout -- ./Packs
       git clean -fd ./Packs
