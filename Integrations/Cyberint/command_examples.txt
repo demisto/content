@@ -1,4 +1,0 @@
-!cyberint-alerts-fetch page="1" page_size="100" created_date_range="7 days"
-!cyberint-alerts-status-update alert_ref_ids="ADS10-3" status="acknowledged"
-!cyberint-alerts-get-attachment alert_ref_id="ARG-3" attachment_id="18" attachment_name="Compromised Account As Appears On Argos.png"
-!cyberint-alerts-analysis-report alert_ref_id="ARG-4" report_name="Expert Analysis - Active Phishing Website Targeting Company.pdf"

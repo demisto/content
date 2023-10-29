@@ -1,0 +1,572 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "abcd-5678",
+    "mapping": {
+        "Cyberint Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CyberInt Alert ID": {
+                    "complex": null,
+                    "simple": "ref_id"
+                },
+                "CyberInt Attachments": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Closure reason": {
+                    "complex": null,
+                    "simple": "closure_reason"
+                },
+                "CyberInt Confidence": {
+                    "complex": null,
+                    "simple": "confidence"
+                },
+                "CyberInt Created by": {
+                    "complex": null,
+                    "simple": "created_by.email"
+                },
+                "CyberInt Created date": {
+                    "complex": null,
+                    "simple": "created_date"
+                },
+                "CyberInt Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CyberInt Expert Analysis": {
+                    "complex": null,
+                    "simple": "analysis_report.name"
+                },
+                "CyberInt Impact": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "impacts",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "Stringify"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "splitAndTrim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CyberInt Impacts": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impacts",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "splitAndTrim"
+                            }
+                        ]
+                    }
+                },
+                "CyberInt Recommendation": {
+                    "complex": null,
+                    "simple": "recommendation"
+                },
+                "CyberInt Related IOCs": {
+                    "complex": null,
+                    "simple": "iocs"
+                },
+                "CyberInt Related entities": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "related_entities",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Related entity": {
+                    "simple": "related_entities"
+                },
+                "CyberInt Source": {
+                    "complex": null,
+                    "simple": "source"
+                },
+                "CyberInt Source category": {
+                    "complex": null,
+                    "simple": "source_category"
+                },
+                "CyberInt Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "CyberInt Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Descriptors": {
+                    "simple": "tags"
+                },
+                "CyberInt Targeted Brand": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "targeted_brands",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Targeted Brands": {
+                    "complex": {
+                        "filters": [],
+                        "root": "targeted_brands",
+                        "transformers": []
+                    }
+                },
+                "CyberInt Targeted Vector": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "targeted_vectors",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Targeted Vectors": {
+                    "simple": "targeted_vectors"
+                },
+                "CyberInt Threat Actor": {
+                    "complex": null,
+                    "simple": "threat_actor"
+                },
+                "CyberInt Ticket ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ticket_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "CyberInt Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Cyberint Category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "Source Username": {
+                    "complex": null,
+                    "simple": "attachments.content.username"
+                },
+                "Threat Actor": {
+                    "complex": null,
+                    "simple": "threat_actor"
+                },
+                "CyberInt Credentials Exposed CSV": {
+                    "simple": "attachments.content"
+                },
+                "CyberInt File Type": {
+                    "simple": "attachments.mimetype"
+                },
+                "CyberInt Payment Card Exposed CSV": {
+                    "simple": "attachments.content"
+                },
+                "name": {
+                    "simple": "alert_name"
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "created_date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Z"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "source": {
+                    "complex": null,
+                    "simple": "source"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "ref_id"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "CyberInt Alert ID": {
+                    "complex": null,
+                    "simple": "ref_id"
+                },
+                "CyberInt Attachments": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Closure reason": {
+                    "complex": null,
+                    "simple": "closure_reason"
+                },
+                "CyberInt Confidence": {
+                    "complex": null,
+                    "simple": "confidence"
+                },
+                "CyberInt Created by": {
+                    "complex": null,
+                    "simple": "created_by.email"
+                },
+                "CyberInt Created date": {
+                    "complex": null,
+                    "simple": "created_date"
+                },
+                "CyberInt Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CyberInt Expert Analysis": {
+                    "complex": null,
+                    "simple": "analysis_report.name"
+                },
+                "CyberInt Impact": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "impacts",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "Stringify"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "splitAndTrim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "CyberInt Impacts": {
+                    "complex": {
+                        "filters": [],
+                        "root": "impacts",
+                        "transformers": [
+                            {
+                                "operator": "Stringify"
+                            },
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "splitAndTrim"
+                            }
+                        ]
+                    }
+                },
+                "CyberInt Recommendation": {
+                    "complex": null,
+                    "simple": "recommendation"
+                },
+                "CyberInt Related IOCs": {
+                    "complex": null,
+                    "simple": "iocs"
+                },
+                "CyberInt Related entities": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "related_entities",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Related entity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "related_entities",
+                        "transformers": []
+                    }
+                },
+                "CyberInt Source": {
+                    "complex": null,
+                    "simple": "source"
+                },
+                "CyberInt Source category": {
+                    "complex": null,
+                    "simple": "source_category"
+                },
+                "CyberInt Status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "CyberInt Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Descriptors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "CyberInt Targeted Brand": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "targeted_brands",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Targeted Brands": {
+                    "complex": {
+                        "filters": [],
+                        "root": "targeted_brands",
+                        "transformers": [
+                            {
+                                "operator": "ConvertToSingleElementArray"
+                            }
+                        ]
+                    }
+                },
+                "CyberInt Targeted Vector": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "targeted_vectors",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Targeted Vectors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "targeted_vectors",
+                        "transformers": []
+                    }
+                },
+                "CyberInt Threat Actor": {
+                    "complex": null,
+                    "simple": "threat_actor"
+                },
+                "CyberInt Ticket ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "ticket_id",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "CyberInt Title": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "CyberInt Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Cyberint Category": {
+                    "complex": null,
+                    "simple": "category"
+                },
+                "Description": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Event Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Source Username": {
+                    "complex": null,
+                    "simple": "attachments.content.username"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "Sub Category": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Threat Actor": {
+                    "complex": null,
+                    "simple": "threat_actor"
+                },
+                "CyberInt Vulnerable CName Record": {
+                    "complex": null,
+                    "simple": "alert_data.vulnerable_cname_record"
+                },
+                "name": {
+                    "simple": "alert_name"
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "created_date",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Z"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "source": {
+                    "complex": null,
+                    "simple": "source"
+                }
+            }
+        }
+    },
+    "name": "CyberInt (mapper)",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
