@@ -1,7 +1,6 @@
 args:
 - description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
   name: form_type
-  required: true
   auto: PREDEFINED
   default: true
   defaultValue: predefined-options
