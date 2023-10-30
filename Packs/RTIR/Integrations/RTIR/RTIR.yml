@@ -90,7 +90,7 @@ script:
       name: initial-priority
     - description: Ticket final priority, given as number in the range 0-100.
       name: final-priority
-    - description: Attachment to add to the ticket, given as Entry ID. Comma separated values supported, e.g. entryID1,entryID2.
+    - description: Attachment to add to the ticket, given as Entry ID. Comma-separated values supported, e.g., entryID1,entryID2.
       isArray: true
       name: attachment
     - description: 'Ticket custom fields, given in format: field1=value1,field2=value2, e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom fields, these should be created on RTIR.'
@@ -124,7 +124,7 @@ script:
       name: ticket-id
     - description: Ticket subject.
       name: subject
-    - description: Ticket queue (Comma separated values supported, e.g. General,Incident reports,Incidents).
+    - description: Ticket queue (Comma-separated values supported, e.g., General,Incident reports,Incidents).
       name: queue
       required: true
     - description: 'Ticket status.'
@@ -375,7 +375,7 @@ script:
     - description: Comment text.
       name: text
       required: true
-    - description: Attachment to add to the ticket, given as Entry ID. Comma separated values supported, e.g. entryID1,entryID2.
+    - description: Attachment to add to the ticket, given as Entry ID. Comma-separated values supported, e.g., entryID1,entryID2.
       isArray: true
       name: attachment
     description: Add a comment to an existing ticket.
