@@ -93,6 +93,12 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: Gather additional information about the threat model from remote APIs.
+  defaultvalue: 'false'
+  display: Remote API
+  name: remote_api
+  required: false
+  type: 8
 defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
@@ -6416,7 +6422,7 @@ script:
       isArray: true
     description: Remove tags from the indicators.
     name: threatstream-remove-indicator-tag
-  dockerimage: demisto/py3-tools:1.0.0.77497
+  dockerimage: demisto/py3-tools:1.0.0.79743
   runonce: false
   script: '-'
   subtype: python3
