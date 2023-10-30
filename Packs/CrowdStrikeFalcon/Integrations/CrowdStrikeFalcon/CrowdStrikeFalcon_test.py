@@ -2494,7 +2494,7 @@ class TestIncidentFetch:
         assert demisto.setLastRun.mock_calls[0][1][0][1] == expected_last_run
 
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:3', 'ldt:4'],
-                                                                                'pagination': {'meta': {'total': 4}}})
+                                                                                'meta': {'pagination': {'total': 4}}})
 
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[{}, expected_last_run, {}])
