@@ -84,7 +84,7 @@ configuration:
   required: false
   type: 0
   section: Collect - assets
-- defaultvalue: '240'
+- defaultvalue: '1'
   display: Assets Fetch Interval
   name: assetsFetchInterval
   type: 19
