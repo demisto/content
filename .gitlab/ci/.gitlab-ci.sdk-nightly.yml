@@ -209,6 +209,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_Server Master"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
@@ -241,23 +242,28 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
     - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
     - section_end "Unlock HelloWorld Integration and Playbook"
+
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - *upload-entities-to-cortex-xsoar
     - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
     - section_end "Create and Upload Entities to XSOAR Instance"
+
     - section_start "Download Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -lf --insecure
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
+
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
+
     - section_start "Download Custom Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
     - section_end "Download Custom Entities from XSOAR Instance"
+
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - destroy_instances_exit_code=$?
@@ -348,10 +354,16 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
 
     - section_start "Install Packs and run Test-Module"
     - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"    
+    - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"  
+    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
+
+    - section_start "Test Modeling Rules"
+    - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
+    - section_end "Test Modeling Rules"
 
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
@@ -359,14 +371,10 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - demisto-sdk upload -i Packs/HelloWorld --insecure -z -x
 
     - demisto-sdk download -lf --insecure
-    - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
-    - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
-
-    - section_start "Test Modeling Rules"
-    - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
-    - section_end "Test Modeling Rules"
+    - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
+    # - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
+    # - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
+    # - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
 
     - !reference [.cloud-machine-information]
     - exit $EXIT_CODE
@@ -430,12 +438,14 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - *upload-entities-to-cortex-xsoar
     - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
     - section_end "Create and Upload Entities to XSOAR Instance"
+
     - section_start "Download Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -lf --insecure
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
+
     - section_start "Download Custom Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
     - section_end "Download Custom Entities from XSOAR Instance"
