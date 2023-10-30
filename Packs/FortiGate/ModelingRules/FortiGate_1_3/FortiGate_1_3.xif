@@ -1,5 +1,5 @@
-dataset = fortinet_fortigate_raw 
-| alter 
+[MODEL: dataset="fortinet_fortigate_raw"]
+ alter 
     FTNTFGTlevel = lowercase(FTNTFGTlevel)
 | alter
     FTNTFGTlevel = if(FTNTFGTlevel="emergency","8",FTNTFGTlevel="alert","7", FTNTFGTlevel="critical","6",FTNTFGTlevel="error","5",FTNTFGTlevel="warning","4",FTNTFGTlevel="notification","3",FTNTFGTlevel="information","2",FTNTFGTlevel="debug","1",FTNTFGTlevel)
