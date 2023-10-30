@@ -52,7 +52,7 @@ merge-dev-secrets:
   variables:
     master_branch_name: master
   rules:
-    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   stage: unittests-and-validations
   script:
@@ -79,7 +79,7 @@ stop-running-pipelines:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running pipelines on current branch"
-    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
+    - python3 ./Tests/scripts/stop_running_pipeline.py
     - section_end "Stop running pipelines on current branch"
     - job-done
 
@@ -283,6 +283,7 @@ xpanse-prepare-testing-bucket:
     - |
       echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -400,6 +401,7 @@ fan-in-on-push:
   when: always
   stage: fan-in
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   tags:
     - gke
@@ -410,6 +412,7 @@ fan-in-on-push:
 
 jobs-done-check-on-push:
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   extends:
     - .push-rule
@@ -441,6 +444,7 @@ fan-in-on-merge:
   when: always
   stage: fan-in
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   tags:
     - gke
@@ -451,7 +455,8 @@ fan-in-on-merge:
 
 jobs-done-check-on-merge:
   rules:
-      - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   extends:
     - .push-rule
     - .jobs-done-check
@@ -501,7 +506,9 @@ slack-notify-nightly-build:
 
 slack-notify-on-push:
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+      when: always
   extends:
     - .trigger-slack-notification
   variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
@@ -522,7 +529,9 @@ slack-notify-on-push:
 
 slack-notify-on-merge:
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+      when: always
   extends:
     - .trigger-slack-notification
   variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
@@ -550,6 +559,7 @@ slack-notify-on-merge:
     - |
       echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -602,7 +612,7 @@ xsiam_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
+    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ || $NIGHTLY)
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
@@ -614,6 +624,7 @@ xsiam_server_ga:
         CLOUD_MACHINES_TYPE: "nightly"
         CLOUD_MACHINES_COUNT: 1
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
+  timeout: 12 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -654,7 +665,7 @@ xsoar_ng_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
+    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/)
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
@@ -716,7 +727,7 @@ test-upload-flow:
     - section_end "Checks Whether to Trigger a Test Upload"
 
     - section_start "Create Testing Branch"
-    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
+    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-${CI_PIPELINE_ID}"
     - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a "${ARTIFACTS_FOLDER}" -g $GITLAB_PUSH_TOKEN
     - echo "Created test branch:${BRANCH}"
     - section_end "Create Testing Branch"
