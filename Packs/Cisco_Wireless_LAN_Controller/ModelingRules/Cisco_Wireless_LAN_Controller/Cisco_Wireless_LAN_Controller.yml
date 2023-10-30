@@ -1,5 +1,5 @@
 fromversion: 8.3.0
-id: Cisco_WLC_Modeling_Rules
+id: Cisco_WLC_ModelingRule
 name: Cisco WLC Modeling Rules
 rules: ''
 schema: ''

@@ -1,5 +1,5 @@
 name: Cisco WLC Parsing Rule
-id: Cisco_WLC_Parsing_Rule
+id: Cisco_WLC_ParsingRule
 fromversion: 8.3.0
 tags: []
 rules: ''
