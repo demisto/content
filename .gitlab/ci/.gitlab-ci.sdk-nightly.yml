@@ -232,10 +232,15 @@ demisto-sdk-nightly:run-commands-against-instance:
       export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
 
+    - section_start "Copy env results to artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
+      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+    - section_end "Copy env results to artifacts folder"
+
     - section_start "Install Packs and run Test-Module"
-    # - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    # - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"  
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
@@ -356,27 +361,32 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - echo "XSIAM_AUTH_ID $XSIAM_AUTH_ID"
     - echo "Checking infra."
 
-    - section_start "Install Packs and run Test-Module"
-    # - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    # - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"  
+    - section_start "Copy env results to artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
+      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+    - section_end "Copy env results to artifacts folder"
+
+    - section_start "Install Packs and run Test-Module" --collapsed
+    - cat ${ARTIFACTS_FOLDER}/env_results.json"
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
 
-    - section_start "Test Modeling Rules"
+    - section_start "Test Modeling Rules" --collapsed
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
-    - section_start "Create Entities and Upload"
+    - section_start "Create Entities and Upload" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - demisto-sdk upload -i Packs/AzureSentinel -z -x --insecure
     - demisto-sdk upload -i Packs/HelloWorld --insecure -z -x
     - section_end "Create Entities and Upload"
 
-    - section_start "Download Entities"
+    - section_start "Download Entities" --collapsed
     - demisto-sdk download -lf --insecure
     - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
     # - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
@@ -433,10 +443,15 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - echo "Checking infra."
     - echo "Server URL $DEMISTO_BASE_URL"
 
-    - section_start "Install Packs and run Test-Module"
-    # - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - section_start "Copy env results to artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
+      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+    - section_end "Copy env results to artifacts folder"
+
+    - section_start "Install Packs and run Test-Module" --collapsed
     - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    # - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"  
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
@@ -461,6 +476,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_end "Download Custom Entities from XSOAR Instance"
 
     - !reference [.cloud-machine-information]
+    - job-done
     - exit $EXIT_CODE
 
   after_script:
