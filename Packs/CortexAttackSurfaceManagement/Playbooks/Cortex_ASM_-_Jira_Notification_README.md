@@ -4,10 +4,6 @@ This playbook is used to create Jira tickets directed toward service owners to n
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-### Sub-playbooks
-
-Cortex ASM - Remediation Guidance
-
 ### Integrations
 
 This playbook does not use any integrations.
@@ -28,6 +24,7 @@ jira-create-issue
 | --- | --- | --- | --- |
 | OwnerNotificationBody | Body of the notification \(email or ticket\) sent to the potential service owner. |  | Required |
 | JiraProjectKey | The Jira project key to associate with the issue. | XPANSE | Required |
+| RemediationGuidance | Remediation Guidance of the Attack Surface Rule. |  | Required |
 
 ## Playbook Outputs
 
