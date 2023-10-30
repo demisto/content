@@ -13,7 +13,7 @@ Follow these steps on Dell EMC Unisphere to configure syslog messages forwarding
  
 1. Log into the Dell EMC Unisphere management console. 
 2. Go to **Settings** and navigate to **Management** &rarr; **Remote Logging**.
-3. Check the **Enable logging to a remote host** check box.
+3. Check the **Enable logging to a remote host** checkbox.
 4. Fill in the following settings: 
    | Parameter  | Value   
    | :---       | :---        
