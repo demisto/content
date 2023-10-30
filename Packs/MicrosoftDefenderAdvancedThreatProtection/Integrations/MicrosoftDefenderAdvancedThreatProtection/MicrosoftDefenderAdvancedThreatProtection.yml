@@ -1285,7 +1285,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     - name: filters
-      description: String representation of filters.
+      description: String representation of filters (Override every other filters).
     description: |-
       Return the machine's actions. If you set an action ID, it returns the info on the specific action.
       Filtering can be done only on one argument.

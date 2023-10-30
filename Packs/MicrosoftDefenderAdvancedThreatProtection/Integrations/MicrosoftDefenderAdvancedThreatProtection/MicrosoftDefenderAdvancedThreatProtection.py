@@ -2944,7 +2944,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
             'type': type,
             'requestor': requestor
         }
-        filter_req = filters if filters else reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
+        filter_req = filters or reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
         response = client.get_machine_actions(filter_req, limit)
         machine_actions_list = []
         for machine_action in response['value']:
