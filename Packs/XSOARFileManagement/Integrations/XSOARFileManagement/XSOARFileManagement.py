@@ -282,8 +282,11 @@ def delete_attachment_command(client: Client, args: dict) -> CommandResults:
         This command delete file on the disk
     """
     incident_id = args.get('incidentID', demisto.incident()["id"])
-    file_path = args.get('filePath')
+    file_path = args.get('filePath', "")
     field_name = args.get('fieldName', "attachment")
+
+    if not file_path:
+        return_error("Argument file_path is empty.")
     try:
         client.delete_attachment(incident_id, file_path, field_name)
     except DemistoException as error:
@@ -316,7 +319,10 @@ def delete_file_command(client: Client, args: dict) -> CommandResults:
     Note:
         This command delete file on the disk
     """
-    entry_id = args.get('entryID')
+    entry_id = args.get('entryID', "")
+
+    if not entry_id:
+        return_error("Argument entry_id is empty.")
     new_files = delete_file(client, entry_id)
     return CommandResults(readable_output=f"File {entry_id} deleted !", outputs=new_files, outputs_prefix="File")
 
