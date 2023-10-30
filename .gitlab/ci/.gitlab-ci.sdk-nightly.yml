@@ -235,7 +235,6 @@ demisto-sdk-nightly:run-commands-against-instance:
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
       cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
 
@@ -364,7 +363,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
       cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
 
@@ -446,7 +444,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
       cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
 
