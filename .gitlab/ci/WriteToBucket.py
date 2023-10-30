@@ -3,7 +3,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 from google.cloud import storage  # noqa
 import argparse
-import dimutex
+from lock import Client
 
 LOCKS_BUCKET = 'xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
@@ -49,20 +49,10 @@ if __name__ == "__main__":
     storage_client = storage.Client.from_service_account_json(options.service_account)
     storage_bucket = storage_client.bucket(LOCKS_BUCKET)
     blob = storage_bucket.blob(file_name)
-
-    # lock = dimutex.GCS(bucket=LOCKS_BUCKET, name='lock-name')
-    # try:
-    #     lock.acquire()
-    # except dimutex.AlreadyAcquiredError:
-    #     print('already acquired')
-
-    file_already_exist = storage.Blob(bucket=storage_bucket, name=file_name).exists(storage_client)
-    if not file_already_exist:
-        try:
-            blob.upload_from_string(data="nothing", if_generation_match=None)
-            print("this is the first failure, trigger a slack message")
-        except Exception:
-            print("this is not the first failure, trigger a 'reply in thread' slack message")
-    else:
-        print("this is not the first failure, trigger a 'reply in thread' slack message")
-    # lock.release()
+    lock = Client(bucket=LOCKS_BUCKET, lock_file_path=file_name, ttl=30,
+                  lock_id_prefix='lock_cloud_machines', storage_client=storage_client)
+    lock.lock()
+    blob.upload_from_string(data="nothing")
+    print("I am locked")
+    lock.free_lock()
+    print("I am relased")
