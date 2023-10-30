@@ -112,7 +112,7 @@ class GetEvents:
         return stored_events
 
     @staticmethod
-    def get_last_run(events: List[dict]) -> dict:
+    def get_last_run(events: List[dict], last_run_after) -> dict:
         """
         Get the info from the last run, it returns the time to query from and a list of ids to prevent duplications
         """
@@ -148,10 +148,10 @@ def main():  # pragma: no cover
         last_run = demisto.getLastRun()
         last_object_ids = last_run.get('ids')
         if 'after' not in last_run:
-            last_run = after.isoformat()  # type: ignore
+            last_run_after = after.isoformat()  # type: ignore
         else:
-            last_run = last_run['after']
-        demisto_params['params'] = ReqParams(**demisto_params, since=last_run)
+            last_run_after = last_run['after']
+        demisto_params['params'] = ReqParams(**demisto_params, since=last_run_after)
 
         request = Request(**demisto_params)
 
@@ -178,7 +178,7 @@ def main():  # pragma: no cover
         elif command == 'fetch-events':
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
             send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(GetEvents.get_last_run(events))
+            demisto.setLastRun(GetEvents.get_last_run(events, last_run_after))
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
