@@ -84,10 +84,10 @@ def paginate(
 
 
 def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_outputs: Any, page_outputs_key: str = 'Id') -> dict:
-    """Creates a CommandResults object with the next token as the output.
+    """Creates a dict for CommandResults.output with the next token.
     """
     return {
-        f'AWS.Organizations(val.{outputs_prefix}NextToken || true)': {f'{outputs_prefix}NextToken': next_token},
+        'AWS.Organizations(true)': {f'{outputs_prefix}NextToken': next_token},
         (f'AWS.Organizations.{outputs_prefix}(val.{page_outputs_key} && val.{page_outputs_key} == obj.{page_outputs_key})'):
             page_outputs,
     }
@@ -297,8 +297,9 @@ def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
 
 @polling_function(
     'aws-org-account-create',
-    interval=demisto.getArg('interval_in_seconds'),
-    timeout=demisto.getArg('timeout'),
+    interval=arg_to_number(demisto.getArg('interval_in_seconds')),
+    timeout=arg_to_number(demisto.getArg('timeout')),
+    poll_message='Creating account:',
     requires_polling_arg=False
 )
 def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:
@@ -318,24 +319,14 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
             ]
         except ValueError:
             raise DemistoException('"tag_key" and "tag_value" must have the same length.')
-    
-    result = PollResult(
-        None, continue_to_poll=True
-    )
 
-    if (request_id := args.get('request_id')):
-        account = aws_client.describe_create_account_status(
-            CreateAccountRequestId=request_id
-        )
-        result.partial_result = CommandResults(
-            readable_output=tableToMarkdown(
-                'AWS account creation request was sent successfully.',
-                account['CreateAccountStatus'],
-                ['Id', 'State']
-            )
-        )
-        args['request_id'] = account['CreateAccountStatus']['Id']
-    else:
+    # def initial_call(args, aws_client, poll_results):
+    # def polling_call(args, aws_client, poll_results):
+    # def final_call(args, aws_client, poll_results):
+
+    result = PollResult(None, continue_to_poll=True)
+
+    if not (request_id := args.get('request_id')):
         account = aws_client.create_account(
             Email=args['email'],
             AccountName=args['account_name'],
@@ -345,6 +336,12 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
                 args.get('tag_key'),
                 args.get('tag_value')
             )
+        )
+        args['request_id'] = account['CreateAccountStatus']['Id']
+
+    else:
+        account = aws_client.describe_create_account_status(
+            CreateAccountRequestId=request_id
         )
 
     if account['CreateAccountStatus']['State'] == 'SUCCEEDED':
@@ -357,8 +354,33 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
     return result
 
 
-def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    ...
+@polling_function(
+    'aws-org-account-close',
+    interval=arg_to_number(demisto.getArg('interval_in_seconds')),
+    timeout=arg_to_number(demisto.getArg('timeout')),
+    poll_message='Closing account:',
+    requires_polling_arg=False
+)
+def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:
+
+    if not args['is_closed']:
+        aws_client.close_account(
+            AccountId=args['account_id']
+        )
+        args['is_closed'] = True
+
+    account = aws_client.describe_account(
+        AccountId=args['account_id']
+    )
+    return PollResult(
+        response=CommandResults(
+            readable_output=tableToMarkdown(
+                'Account closed',
+                {'AccountId': args['account_id']}
+            )
+        ),
+        continue_to_poll=(account['Account']['Status'] != 'SUSPENDED'),
+    )
 
 
 def organization_unit_create_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
