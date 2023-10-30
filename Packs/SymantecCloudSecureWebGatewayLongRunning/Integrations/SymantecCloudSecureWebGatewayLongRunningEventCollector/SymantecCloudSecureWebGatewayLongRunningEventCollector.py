@@ -15,8 +15,8 @@ import os
 disable_warnings()
 
 VENDOR = "symantec_long_running"
-PRODUCT = "swg"
-FETCH_SLEEP = 120
+PRODUCT = "swg_test"
+FETCH_SLEEP = 1200
 FETCH_SLEEP_UNTIL_BEGINNING_NEXT_HOUR = 180
 REGEX_FOR_STATUS = re.compile(r"X-sync-status: (?P<status>.*?)(?=\\r\\n|$)")
 REGEX_FOR_TOKEN = re.compile(r"X-sync-token: (?P<token>.*?)(?=\\r\\n|$)")
@@ -490,8 +490,14 @@ def get_events_command(
                     time_of_last_fetched_event or last_run_model.time_of_last_fetched_event or "",
                     events_suspected_duplicates or last_run_model.events_suspected_duplicates or [],
                 )
-                # events_suspected_duplicates.extend(parts_events_suspected_duplicates)
-                # a = 2
+                try:
+                    if events:
+                        send_events_to_xsiam(events, VENDOR, PRODUCT, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT // 2)
+                        demisto.debug(f"len of the events is: {len(events)}")
+                except Exception:
+                    demisto.debug(
+                        f"Failed to send events to XSOAR. Error: {traceback.format_exc()}"
+                    )
             except Exception as e:
                 demisto.debug(f"Error organizing events: {e}")
         res.unlink()
@@ -575,13 +581,6 @@ def perform_long_running_loop(
             set_integration_context({"last_run": last_run_obj._asdict()})
             integration_context_for_debug = get_integration_context()
             demisto.debug(f"{integration_context_for_debug=}")
-            # try:
-            #     if logs:
-            #         send_events_to_xsiam(logs[:10000], VENDOR, PRODUCT)
-            # except Exception:
-                # demisto.debug(
-                #     f"Failed to send events to XSOAR. Error: {traceback.format_exc()}"
-                # )
         except Exception as e:
             demisto.debug(f"Failed to fetch logs from API. Error: {e}")
         time.sleep(FETCH_SLEEP)
