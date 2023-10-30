@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Panorama
+  id: Panorama Test
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -221,8 +221,8 @@ configuration:
   section: Connect
   required: false
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS Test
+name: Panorama Test
 script:
   commands:
   - arguments:
@@ -3773,6 +3773,14 @@ script:
       name: device-group
     - description: Return raw XML.
       name: is_xml
+    - description: "Show the data of the fields `after-change-preview`, and `before-change-preview`, or keep them truncated. The full data are under the fields `after-change-detail`, and `before-change-detail.
+      If this argument was set to `no` when retrieving a job ID, then the data of the fields of that job ID will be truncated, and not if set to `yes`."
+      name: show-detail
+      predefined:
+      - 'yes'
+      - 'no'
+      auto: PREDEFINED
+      defaultValue: 'no'
     description: Runs any command supported in the API.
     name: pan-os
   - arguments:
@@ -6001,6 +6009,13 @@ script:
     - description: whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
       deprecated: true
+    - description: Show the data of the fields `after-change-preview`, and `before-change-preview`, or keep them truncated. The full data are under the fields `after-change-detail`, and `before-change-detail. If this argument was set to `no` when retrieving a job ID, then the data of the fields of that job ID will be truncated, and not if set to `yes`.
+      name: show-detail
+      predefined:
+      - yes
+      - no
+      auto: PREDEFINED
+      defaultValue: no
     description: The query logs in Panorama.
     name: pan-os-query-logs
     outputs:

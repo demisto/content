@@ -5290,7 +5290,7 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 @logger
 def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
                         zone_src: str, zone_dst: str, time_generated: str, time_generated_after: str, action: str,
-                        port_dst: str, rule: str, url: str, filedigest: str):
+                        port_dst: str, rule: str, url: str, filedigest: str, show_detail: str):
     params = {
         'type': 'log',
         'log-type': log_type,
@@ -5314,6 +5314,9 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_
     if number_of_logs:
         params['nlogs'] = number_of_logs
 
+    if show_detail:
+        params['show-detail'] = show_detail
+    
     result = http_request(
         URL,
         'GET',
@@ -5350,7 +5353,8 @@ def panorama_query_logs_command(args: dict):
     job_id = args.get('query_log_job_id')
     illegal_chars = {'@', '#'}
     ignored_keys = {'entry'}
-
+    show_detail = args.get('show-detail', 'no')
+    
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
                       or time_generated or time_generated_after or action or port_dst or rule or url or filedigest):
@@ -5360,7 +5364,7 @@ def panorama_query_logs_command(args: dict):
             panorama_query_logs(
                 log_type, number_of_logs, query, address_src, address_dst, ip_,
                 zone_src, zone_dst, time_generated, time_generated_after, action,
-                port_dst, rule, url, filedigest
+                port_dst, rule, url, filedigest, show_detail
             ),
             illegal_chars=illegal_chars,
             ignored_keys=ignored_keys
@@ -5380,6 +5384,7 @@ def panorama_query_logs_command(args: dict):
         }
 
         command_results = CommandResults(
+            raw_response=result.raw,
             outputs_prefix='Panorama.Monitor',
             outputs_key_field='JobID',
             outputs=query_logs_output,
@@ -13961,6 +13966,10 @@ def main():  # pragma: no cover
         initialize_instance(args=args, params=params)
         command = demisto.command()
         LOG(f'Command being called is: {command}')
+
+        # Log the API version
+        demisto.debug('Retrieving the API version')
+        demisto.debug(f'API version: {get_pan_os_version()}')
 
         # Remove proxy if not set to true in params
         handle_proxy()
