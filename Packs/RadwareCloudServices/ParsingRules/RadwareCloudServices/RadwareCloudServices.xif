@@ -13,3 +13,9 @@ filter json_extract_array(_raw_log, "$") = null
 | alter tmp_time = json_extract_scalar(_raw_log, "$.time")
 | alter _time = if(tmp_time != null and tmp_tme != "", parse_timestamp("%d/%b/%Y:%X %z", tmp_time), _insert_time)
 | fields -tmp_time;
+
+[INGEST:vendor="radware", product="appwall", target_dataset="radware_appwall_raw", no_hit=keep]
+filter _raw_log ~= "AppWallAttackSysLogMessage|SystemAttackSysLogMessage" // AppWall WAS/DDoS Events 
+| alter tmp_unix_timestamp = arrayindex(regextract(_raw_log,"(?:appWallTimeStamp|receivedTimeStamp|Timestamp)\=\"?(\d{13})"), 0)
+| alter _time = to_timestamp(to_integer(tmp_unix_timestamp), "MILLIS")
+| fields - tmp_unix_timestamp;
