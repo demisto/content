@@ -25,7 +25,6 @@ ENTITY_TYPE_SECTION_REGEX = re.compile(r'^#### ([\w ]+)$\n([\w\W]*?)(?=^#### )|^
 ENTITY_SECTION_REGEX = re.compile(r'^##### (.+)$\n([\w\W]*?)(?=^##### )|^##### (.+)$\n([\w\W]*)|'
                                   r'^- \*\*(.+)\*\*$\n([\w\W]*)', re.M)
 PACK_GENERAL_NOTES_REGEX = re.compile(r'^## (.+)$\n([\w\W]*?)(?=^#### )|^## ([\w ]+)$\n([\w\W]*)', re.M)
-PACK_GENERAL_NOTES_SECTION_REGEX = re.compile(r'^## (.+)$\n([\w\W]*)|^- \*\*(.+)\*\*$\n([\w\W]*)', re.M)
 
 LAYOUT_TYPE_TO_NAME = {
     "details": "Summary",
@@ -108,7 +107,7 @@ def construct_entities_block(entities_data: dict) -> str:
     Args:
         entities_data (dict): dictionary of the form:
             {
-                Pack: {
+                Packs: {
                     PackName: <description>
                 }
                 Integrations: {
@@ -129,10 +128,10 @@ def construct_entities_block(entities_data: dict) -> str:
     release_notes = ''
 
     # Keep general notes on top.
-    general_notes = entities_data.pop(ContentType.PACK.value, None)
+    general_notes = entities_data.pop('Packs', None)
     if general_notes:
-        for pack_name, general_comments in sorted(general_notes.items()):
-            release_notes += f'## {pack_name}\n{general_comments}'
+        pack_name, general_comments = list(general_notes.items())[0]
+        release_notes += f'## {pack_name}\n{general_comments}'
 
     for entity_type, entities_description in sorted(entities_data.items()):
         pretty_entity_type = re.sub(r'([a-z])([A-Z])', r'\1 \2', entity_type)
@@ -375,14 +374,12 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> t
         if general_note_sections:
             # Assume only one general notes section at the start of the file.
             general_note_components = general_note_sections[0]
-            entity_type = ContentType.PACK.value
+            entity_type = 'Packs'
             entities_data.setdefault(entity_type, {})
             # Extract Pack name
-            entity_name = general_note_components[0] or general_note_components[2] or general_note_components[4]
-            entity_name = entity_name.replace('__', '')
-            # release notes of the entity
-            last_place_entity_comment = general_note_components[5] if len(general_note_components) >= 5 else ''
-            entity_comment = general_note_components[1] or general_note_components[3] or last_place_entity_comment
+            entity_name = general_note_components[0] or general_note_components[2]
+            # General release notes of the pack
+            entity_comment = general_note_components[1] or general_note_components[3]
             entities_data = append_commment_to_data(entities_data, entity_type, entity_name, entity_comment)
 
         version_release_notes = version_release_notes.strip()

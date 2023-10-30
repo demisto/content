@@ -4344,10 +4344,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
-        if content_type == ContentType.PACK.value:
-            res = interface.search(content_type=content_type, marketplace=marketplace, name=display_name)
-        else:
-            res = interface.search(content_type=content_type, marketplace=marketplace, display_name=display_name)
+        res = interface.search(content_type=content_type, marketplace=marketplace, display_name=display_name)
         logging.info(f'Content type for {display_name} is {content_type}, result is {bool(res)}')
         return bool(res)
 
@@ -4369,7 +4366,7 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
 
     if not id_set:
         logging.debug("id_set does not exist, searching in graph")
-        content_type = ContentType.PACK.value if rn_header == ContentType.PACK.value else rn_header.replace(' ', '')[:-1]
+        content_type = rn_header.replace(' ', '')[:-1]
 
         if not is_content_item_in_graph(display_name=display_name,
                                         content_type=content_type,
@@ -4380,8 +4377,6 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
         return True
 
     for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
-        if rn_header == ContentType.PACK.value and list(id_set_entity.values())[0]['name'] == display_name:
-            return True
         if list(id_set_entity.values())[0]['display_name'] == display_name:
             return True
 
