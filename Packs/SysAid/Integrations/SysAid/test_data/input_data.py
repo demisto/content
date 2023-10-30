@@ -139,7 +139,7 @@ service_record_expected_output = [
 service_record_expected_response_output = [
     {'alertID': 'green', 'id': '25', 'impact': 'Low', 'insert_time': '03/07/2022 08:56:35 AM', 'sr_type': 'Incident',
      'status': 'New', 'title': 'Cannot access email - Test ', 'update_time': '03/15/2022 04:53:20 AM',
-     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '25', 'info': [
+     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'info': [
          {'key': 'impact', 'keyCaption': 'Impact', 'value': 4, 'valueCaption': 'Low', 'valueClass': ''},
          {'key': 'alertID', 'keyCaption': 'Alert', 'value': 25, 'valueCaption': 'green', 'valueClass': ''},
          {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
@@ -152,7 +152,7 @@ service_record_expected_response_output = [
          {'key': 'sr_type', 'keyCaption': 'Service Record Type', 'value': 1, 'valueCaption': 'Incident', 'valueClass': ''}]},
     {'description': 'I test this', 'id': '28', 'sr_type': 'Incident', 'status': 'New',
      'title': 'Cannot connect to a Wi-Fi network', 'update_time': '03/07/2022 09:08:01 AM',
-     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'id': '28', 'info': [
+     'canArchive': True, 'canDelete': True, 'canUpdate': True, 'hasChildren': False, 'info': [
          {'key': 'status', 'keyCaption': 'Status', 'value': 1, 'valueCaption': 'New', 'valueClass': 0},
          {'key': 'description', 'keyCaption': 'Description', 'value': 'I test this', 'valueCaption': 'I test this',
              'valueClass': ''},

@@ -1,5 +1,6 @@
-from ArmisEventCollector import Client, datetime, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES
+from ArmisEventCollector import Client, datetime, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES, Any
 import pytest
+from freezegun import freeze_time
 
 
 @pytest.fixture
@@ -13,14 +14,21 @@ def dummy_client(mocker):
 
 class TestClientFunctions:
 
-    def test_fetch_by_aql_query(self, mocker, dummy_client):
+    @freeze_time("2023-01-01T01:00:00")
+    def test_initial_fetch_by_aql_query(self, mocker, dummy_client):
         """
+        Test fetch_by_aql_query function behavior on initial fetch.
+
         Given:
-            - A valid HTTP request parameters.
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
         When:
             - Fetching events.
         Then:
             - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
             - Make sure the pagination logic performs as expected.
         """
         first_response = {'data': {'next': 1, 'results': [{
@@ -40,8 +48,66 @@ class TestClientFunctions:
             'unique_id': '2',
             'time': '2023-01-01T01:00:20.123456+00:00'
         }]
-        mocker.patch.object(Client, '_http_request', side_effect=[first_response, second_response])
+
+        expected_args = {
+            'url_suffix': '/search/', 'method': 'GET',
+            'params': {'aql': 'example_query after:2023-01-01T01:00:00', 'includeTotal':
+                       'true', 'length': 2, 'orderBy': 'time', 'from': 1},
+            'headers': {'Authorization': 'test_access_token', 'Accept': 'application/json'}
+        }
+
+        mocked_http_request = mocker.patch.object(Client, '_http_request', side_effect=[first_response, second_response])
         assert dummy_client.fetch_by_aql_query('example_query', 3) == expected_result
+
+        mocked_http_request.assert_called_with(**expected_args)
+
+    @freeze_time("2022-12-31T01:00:00")
+    def test_continues_fetch_by_aql_query(self, mocker, dummy_client):
+        """
+        Test fetch_by_aql_query function behavior on continues fetch.
+
+        Given:
+            - Valid HTTP request parameters.
+            - An ongoing fetch of the instance is running (not initial fetch).
+            - from argument is set to a datetime value from last fetch.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the given from argument.
+            - Make sure the pagination logic performs as expected.
+        """
+        first_response = {'data': {'next': 1, 'results': [{
+            'unique_id': '1',
+            'time': '2023-01-01T01:00:10.123456+00:00'
+        }]}}
+
+        second_response = {'data': {'next': None, 'results': [{
+            'unique_id': '2',
+            'time': '2023-01-01T01:00:20.123456+00:00'
+        }]}}
+
+        expected_result = [{
+            'unique_id': '1',
+            'time': '2023-01-01T01:00:10.123456+00:00'
+        }, {
+            'unique_id': '2',
+            'time': '2023-01-01T01:00:20.123456+00:00'
+        }]
+
+        expected_args = {
+            'url_suffix': '/search/', 'method': 'GET',
+            'params': {'aql': 'example_query after:2023-01-01T01:00:01',
+                       'includeTotal': 'true', 'length': 2, 'orderBy': 'time', 'from': 1},
+            'headers': {'Authorization': 'test_access_token', 'Accept': 'application/json'}
+        }
+
+        from_arg = arg_to_datetime('2023-01-01T01:00:01')
+        mocked_http_request = mocker.patch.object(Client, '_http_request', side_effect=[first_response, second_response])
+        assert dummy_client.fetch_by_aql_query('example_query', 3, from_arg) == expected_result
+
+        mocked_http_request.assert_called_with(**expected_args)
 
 
 class TestHelperFunction:
@@ -246,6 +312,26 @@ class TestHelperFunction:
             readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT} events', t=response_with_two_events, removeNull=True))
         assert events_to_command_results(response_with_two_events).readable_output == expected_result.readable_output
 
+    @freeze_time("2023-01-01 01:00:00")
+    def test_set_last_run_with_current_time_initial(self, mocker):
+        """
+        Given:
+            - A valid list of fetched events.
+            - An empty last_run dictionary.
+        When:
+            - Initial fetch is running.
+        Then:
+            - Set the last_run dictionary with the current time for each event type key.
+        """
+        from ArmisEventCollector import set_last_run_with_current_time
+
+        last_run: dict[Any, Any] = {}
+        event_types: list[str] = ['Alerts', 'Threat activities']
+
+        set_last_run_with_current_time(last_run, event_types)
+
+        assert last_run['alerts_last_fetch_time'] == last_run['threat_activities_last_fetch_time'] == '2023-01-01T01:00:00'
+
 
 class TestFetchFlow:
 
@@ -313,8 +399,9 @@ class TestFetchFlow:
         }]
 
     case_first_fetch = (  # type: ignore
+        # this case test the actual first fetch that runs after the initial fetch (that only sets the last run)
         1000,
-        {},
+        {'alerts_last_fetch_time': '2023-01-01T01:00:00'},
         fetch_start_time,
         ['Events'],
         events_with_different_time_1,
@@ -322,6 +409,7 @@ class TestFetchFlow:
         {'events_last_fetch_ids': ['3'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'}
     )
+
     case_second_fetch = (  # type: ignore
         1000,
         {'events_last_fetch_ids': ['1', '2', '3'],

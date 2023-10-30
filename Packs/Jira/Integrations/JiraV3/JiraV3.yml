@@ -1245,7 +1245,7 @@ script:
       name: page
     - description: The number of requested results per page. Default value is 50.
       name: page_size
-    description: Get all epics from a specific board
+    description: Get all epics from a specific board.
     name: jira-board-epic-list
     outputs:
     - contextPath: Jira.BoardEpic.boardId
@@ -1467,7 +1467,7 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  dockerimage: demisto/btfl-soup:1.0.1.74341
+  dockerimage: demisto/btfl-soup:1.0.1.78954
   isfetch: true
   ismappable: true
   isremotesyncin: true

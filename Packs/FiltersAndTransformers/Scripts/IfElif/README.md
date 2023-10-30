@@ -7,6 +7,7 @@ In order to prevent injections, context values should be retrieved from the valu
 #### Supported operators for conditions:
 
 **Comparison operators** work like Python operators:
+
 | Operator | Name | Example |
 | --- | --- | --- |
 | == | Equal | x == y |
@@ -20,6 +21,7 @@ In order to prevent injections, context values should be retrieved from the valu
 **Note:** If a comparison is incomparable by nature (e.g., `'a' < 3`), it will evaluate to false.
 
 **Logical operators** also follow the Python syntax:
+
 | Operator | Description | Example |
 | --- | --- | --- |
 | and | Returns True if both statements are true | x < 5 and x < 10 |
@@ -32,6 +34,7 @@ In order to prevent injections, context values should be retrieved from the valu
 **Note:** If the `+` operator is used on distinct types (e.g., `'a' + None`), it will evaluate to `None` (null).
 
 The following flags can be used in the *flags* argument to control the transformer's behavior:
+
 |Flag|Effect|Example|
 |---|---|---|
 | case_insensitive | Comparisons between strings and regex matches are case-insensitive. | `'WoRd' == 'wOrD'` |

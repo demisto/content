@@ -314,9 +314,9 @@ class BucketVerifier:
         expected_rn = 'testing adding new RN'
         self.verify_new_version('ZeroFox', expected_rn)
 
-        # Case 5: Verify modified existing release notes - Box
+        # Case 5: Verify modified existing release notes - BPA
         expected_rn = 'testing modifying existing RN'
-        self.verify_rn('Box', expected_rn)
+        self.verify_rn('BPA', expected_rn)
 
         # Case 6: Verify pack is set to hidden - Microsoft365Defender
         self.verify_hidden('Microsoft365Defender')

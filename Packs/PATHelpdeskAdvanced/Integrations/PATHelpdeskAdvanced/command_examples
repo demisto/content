@@ -1,0 +1,11 @@
+!hda-list-ticket-statuses
+!hda-list-ticket-priorities
+!hda-list-tickets
+!hda-list-groups
+!hda-list-users
+!hda-create-ticket object_type_id=T2 ticket_priority_id=P4 ticket_status_id=S3
+!hda-list-ticket-attachments ticket_id=1111111111C
+!hda-add-ticket-attachment entry_id=757@aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa,824@aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa ticket_id=1111111111C
+!hda-add-ticket-comment comment="here be comment" site_visible=True ticket_id=1111111111C
+!hda-change-ticket-status status_id=S2 ticket_id=1111111111C note=testing debug-mode=true
+!hda-get-ticket-history ticket_id=1111111111C

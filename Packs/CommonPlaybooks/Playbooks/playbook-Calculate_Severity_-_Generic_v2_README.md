@@ -4,7 +4,7 @@ Calculate and assign the incident severity based on the highest returned severit
 - Critical assets
 - Email authenticity
 - Current incident severity
-- Microsoft Headers
+- Microsoft Headers.
 
 ## Dependencies
 

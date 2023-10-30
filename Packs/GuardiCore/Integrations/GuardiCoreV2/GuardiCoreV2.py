@@ -173,13 +173,10 @@ def incident_severity_to_dbot_score(severity: int) -> int:
         return 0
 
     if severity <= 30:
-        return 1
+        return 1  # low
     elif severity >= 50:
-        return 3
-
-    demisto.info(
-        f'GuardiCore Incident severity: {severity} is not known. Setting as unknown (DBotScore of 0).')
-    return 2
+        return 3  # high
+    return 2  # medium
 
 
 def map_guardicore_os(os: int) -> str:
@@ -298,59 +295,68 @@ def get_incidents(client: Client, args: Dict[str, Any]):
 
 
 def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
-        Tuple[List[Dict], int]:
+        Tuple[List[Dict], int, List[str]]:
     last_run = demisto.getLastRun()
     last_fetch = last_run.get("last_fetch")
+    last_ids = last_run.get("last_ids", [])
     first_fetch = args.get('first_fetch', None)
     demisto.debug(
         f'{INTEGRATION_NAME} - Fetch incidents last fetch: {last_fetch}, first fetch: {first_fetch}')
 
-    current_fetch = calculate_fetch_start_time(last_fetch, first_fetch)
+    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
 
     now_time = int(datetime.now().timestamp()) * 1000
     fetch_params = {
-        "from_time": current_fetch,
+        "from_time": fetch_start_time,
         "to_time": now_time,
         "severity": args.get('severity'),
         "source": args.get('source'),
         "destination": args.get('destination'),
         "tag": args.get('tag'),
         "limit": args.get('limit'),
-        "incident_type": args.get('incident_type')
+        "incident_type": args.get('incident_type'),
+        "sort": "start_time",
     }
-    demisto.debug(
-        f'{INTEGRATION_NAME} - Fetch incidents parameters: {fetch_params}')
+    remove_nulls_from_dictionary(fetch_params)
+    demisto.debug(f"{fetch_params=}")
+
     results = client.get_incidents(fetch_params)
-    demisto.debug(
-        f'{INTEGRATION_NAME} - Fetch incidents results count: {len(results)}')
+    raw_incidents = sorted(  # the API's built-in sort isn't perfect
+        results.get("objects") or [],
+        key=lambda x: x.get("start_time") or 0,
+    )
+    demisto.debug(f'Returned {len(raw_incidents)} incidents from API')
 
     incidents = []
-    for inc in results.get('objects'):
+    next_fetch_start_time = fetch_start_time
+    for inc in raw_incidents:
         id = inc.get('_id')
         start_time = inc.get('start_time')
         severity = inc.get('severity')
         if not id or "-" not in id or not start_time:
-            demisto.debug(
-                f'{INTEGRATION_NAME} - Fetch incidents: skipped fetched incident because no start time or id')
+            demisto.debug(f"Skipped fetching incident because no start_time or id. {inc=}")
             continue
-        demisto.debug(
-            f"Fetch incident checking id: {id} with start time of:"
-            f" {start_time}. LastRun time was: {current_fetch}")
-        if current_fetch < start_time:
-            demisto.debug(f"The new lastRun is: {id} with time of {start_time}")
-            current_fetch = start_time
-            incident = {
-                'name': f"{INTEGRATION_CONTEXT_NAME} Incident (INC-{id.split('-')[0].upper()})",
-                'occurred': timestamp_to_datestring(start_time, DATE_FORMAT),
-                'severity': incident_severity_to_dbot_score(severity),
-                'rawJSON': json.dumps(inc)
-            }
-            incidents.append(incident)
-        else:
-            demisto.debug(f"Did not add a new incident {id} time: {start_time}")
-    demisto.debug(
-        f'{INTEGRATION_NAME} - Fetch incidents: fetch time finished at: {current_fetch}')
-    return incidents, current_fetch
+        demisto.debug(f"Current incident: {id=}, {start_time=}")
+        if id in last_ids:
+            demisto.debug(f"Skipping incident with {id=} as it was already fetched.")
+            continue
+        demisto.debug(f"Fetching incident with {id=}")
+        incident = {
+            'name': f"{INTEGRATION_CONTEXT_NAME} Incident (INC-{id.split('-')[0].upper()})",
+            'occurred': timestamp_to_datestring(start_time, DATE_FORMAT),
+            'severity': incident_severity_to_dbot_score(severity),
+            'rawJSON': json.dumps(inc)
+        }
+        incidents.append(incident)
+
+        if next_fetch_start_time == start_time:
+            last_ids.append(id)
+        elif next_fetch_start_time < start_time:
+            next_fetch_start_time = start_time
+            last_ids = [id]
+
+    demisto.debug(f"{next_fetch_start_time=}, {last_ids=}")
+    return incidents, next_fetch_start_time, last_ids
 
 
 def get_indicent(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -486,10 +492,14 @@ def main() -> None:
 
     # fetch incidents params
     severity = params.get('severity', None)
+    if "All" in severity:
+        severity = None
+    elif severity:
+        severity = ",".join(severity)
     source = params.get('source', None)
     destination = params.get('destination', None)
     incident_type = params.get('incident_type', None)
-    if incident_type == 'false' or incident_type == 'All':
+    if "All" in incident_type:
         incident_type = None
     elif incident_type:
         incident_type = ",".join(incident_type).lower()
@@ -504,7 +514,7 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client, demisto.params().get('isFetch')))
         elif command == 'fetch-incidents':
-            incidents, last_fetch = fetch_incidents(client, {
+            incidents, last_fetch, last_ids = fetch_incidents(client, {
                 'severity': severity,
                 'incident_type': incident_type,
                 'first_fetch': first_fetch,
@@ -513,7 +523,7 @@ def main() -> None:
                 'destination': destination,
                 'tag': tag
             })
-            demisto.setLastRun({"last_fetch": last_fetch})
+            demisto.setLastRun({"last_fetch": last_fetch, "last_ids": last_ids})
             demisto.incidents(incidents)
         elif command == 'guardicore-get-incident':
             return_results(get_indicent(client, args))

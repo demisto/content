@@ -1,6 +1,7 @@
 Enrich accounts using one or more integrations.
 Supported integrations:
 - Active Directory
+- Microsoft Graph User
 - SailPoint IdentityNow
 - SailPoint IdentityIQ
 - PingOne
@@ -24,22 +25,22 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IsIntegrationAvailable
 * Set
+* IsIntegrationAvailable
 * SetAndHandleEmpty
 
 ### Commands
 
-* okta-get-user
-* msgraph-user-get
+* iam-get-user
 * identityiq-search-identities
+* msgraph-user-get-manager
+* okta-get-user
+* xdr-list-risky-users
 * aws-iam-get-user
+* msgraph-user-get
+* identitynow-get-accounts
 * ad-get-user
 * pingone-get-user
-* msgraph-user-get-manager
-* iam-get-user
-* xdr-list-risky-users
-* identitynow-get-accounts
 
 ## Playbook Inputs
 
@@ -179,6 +180,28 @@ This playbook does not use any integrations.
 | PaloAltoNetworksXDR.RiskyUser.reasons.severity | The severity of the incident | string |
 | PaloAltoNetworksXDR.RiskyUser.reasons.status | The incident status | string |
 | PaloAltoNetworksXDR.RiskyUser.reasons.points | The score. | string |
+| ActiveDirectory.Users.userAccountControlFields.DONT_EXPIRE_PASSWORD | Whether to never expire the password on the account. | string |
+| ActiveDirectory.Users.userAccountControlFields.PASSWORD_EXPIRED | Whether the user password expired. | string |
+| Account.ManagerEmail | The manager email. | string |
+| AWS.IAM.Users | AWS IAM output. | string |
+| AWS.IAM.Users.UserName | The friendly name identifying the user. | string |
+| AWS.IAM.Users.UserId | The stable and unique string identifying the user. | string |
+| AWS.IAM.Users.Arn | The Amazon Resource Name \(ARN\) that identifies the user. | string |
+| AWS.IAM.Users.CreateDate | The date and time when the user was created. | string |
+| AWS.IAM.Users.Path | The path to the user. | string |
+| AWS.IAM.Users.PasswordLastUsed | The date and time,  when the user's password was last used to sign in to an AWS website. | string |
+| MSGraphUser.MobilePhone | User's mobile phone number. | string |
+| MSGraphUser.OfficeLocation | User's office location. | string |
+| Account.JobTitle | User’s job title. | string |
+| Account.TelephoneNumber | User’s mobile phone number. | string |
+| Account.Office | User’s office location. | string |
+| Account.Type | The account entity type. | string |
+| Account.Email.Address | User’s mail address. | string |
+| MSGraphUserManager.Manager.BusinessPhones | User's business phone numbers. | string |
+| MSGraphUser.BusinessPhones | User's business phone numbers. | string |
+| MSGraphUserManager.Manager.JobTitle | User's job title. | string |
+| MSGraphUserManager.Manager.MobilePhone | User's mobile phone number. | string |
+| MSGraphUserManager.Manager.OfficeLocation | User's office location. | string |
 
 ## Playbook Image
 
