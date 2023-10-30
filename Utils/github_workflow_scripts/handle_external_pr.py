@@ -197,7 +197,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     for pack in packs_in_pr:
         pack_metadata = get_pack_metadata(pack)
-        temp = get_files_in_dir(project_dir=pr_files[0], )
+        temp = get_files_in_dir(project_dir=pr_files[0], file_endings="yml")
         print(f'temp: {temp}')
         for pr_file in pr_files:
             if "yml" in pr_file:
