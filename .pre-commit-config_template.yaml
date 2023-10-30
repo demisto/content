@@ -48,8 +48,8 @@ repos:
   - id: pylint-in-docker
     name: pylint-in-docker
     description: my description
-    docker_image:nightly: all
-    docker_image: all
+    docker_image:nightly: native:ga
+    docker_image: native:ga
     entry: pylint
     files: \.py$
     exclude: _test\.py$
