@@ -17,6 +17,15 @@ configuration:
   name: insecure
   type: 8
   required: false
+- display: XSOAR Version
+  name: xsoarversion
+  defaultvalue: 6.x
+  type: 15
+  required: false
+  options:
+  - 6.x
+  - 8.x
+  additionalinfo: 'The version of XSOAR you are using 6.x or 8.x '
 description: Checks an XSOAR hosted EDL to make sure it's returning a valid response.   Supports PAN-OS (text), CSV, or JSON EDLs.
 display: XSOAR EDL Checker
 name: XSOAR EDL Checker

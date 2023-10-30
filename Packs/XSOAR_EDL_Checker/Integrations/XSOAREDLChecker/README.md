@@ -1,5 +1,5 @@
 Checks an XSOAR EDL to make sure it's returning a valid response.
-This integration was integrated and tested with version 6.8+ of Cortex XSOAR.
+This integration was integrated and tested with version 6.12 and 8.4 of Cortex XSOAR.
 
 ## Configure XSOAR EDL Checker on Cortex XSOAR
 
@@ -12,6 +12,7 @@ This integration was integrated and tested with version 6.8+ of Cortex XSOAR.
     | EDL Name | The name of the edl from the generic indicator export service | True |
     | Username |  | False |
     | Password |  | False |
+    | XSOAR Version | The version of XSOAR you are using, either 6.x or 8.x | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
