@@ -159,7 +159,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "6"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -207,51 +207,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 840
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 4e62c271-85c7-4c81-8738-5d297079e6f3
-    type: regular
-    task:
-      id: 4e62c271-85c7-4c81-8738-5d297079e6f3
-      version: -1
-      name: Block chosen account
-      description: 'This script allows disabling a specified user using one or more of the following integrations: SailPointIdentityIQ, ActiveDirectoryQuery, Okta, MicrosoftGraphUser, and IAM.'
-      scriptName: DisableUserWrapper
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      username:
-        complex:
-          root: Select Account To Block.Answers
-          accessor: "0"
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: Enter Account Name To Block.Answers.0
-                iscontext: true
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 890,
-          "y": 670
         }
       }
     note: false
@@ -322,13 +277,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 890,
+          "x": 870,
           "y": 340
         }
       }
@@ -374,6 +329,61 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 011c057a-1ba9-4640-808f-20df4ff02101
+    type: playbook
+    task:
+      id: 011c057a-1ba9-4640-808f-20df4ff02101
+      version: -1
+      name: Block Account - Generic v2
+      playbookName: Block Account - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Tag:
+        simple: Bad Account
+      UserVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: Select Account To Block.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Enter Account Name To Block.Answers.0
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -383,7 +393,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1025,
-        "width": 820,
+        "width": 800,
         "x": 450,
         "y": -120
       }

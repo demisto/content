@@ -8,7 +8,7 @@
             },
             {
                 "id": "caseinfoid",
-                "name": "Evidance",
+                "name": "Evidence",
                 "sections": [
                     {
                         "h": 2,
@@ -54,6 +54,31 @@
                         "w": 1,
                         "x": 2,
                         "y": 2
+},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-325fd1a0-724e-11ee-b9de-abf403278027",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 22,
+								"id": "4b32a590-724e-11ee-b9de-abf403278027",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Close Investigation Notes",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 6
                     }
                 ],
                 "type": "custom"
@@ -254,7 +279,7 @@
                         "y": 7
                     },
                     {
-                        "description": "",
+                        "description": "This section displays the comparison results between malicious tool patterns and command-line arguments found within the environment.",
                         "displayType": "CARD",
                         "h": 3,
                         "hideName": true,

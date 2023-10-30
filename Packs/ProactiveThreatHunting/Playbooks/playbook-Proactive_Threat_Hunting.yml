@@ -392,7 +392,7 @@ tasks:
     task:
       id: ec471de0-f8bb-4391-8c31-ab18223eabe2
       version: -1
-      name: Hunt for
+      name: Hunting method chosen
       description: Choose hunting method based on the collection task.
       type: condition
       iscommand: false
@@ -535,19 +535,21 @@ inputs:
   value:
     simple: Threat Hunting
   required: false
-  description: ""
+  description: A tag that will be attached to Threat Hunting incidents.
   playbookInputQuery:
 - key: HuntingTimeFrame
   value:
     simple: 7 Days
   required: false
-  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The query execution script default is the last 24 hours.'
   playbookInputQuery:
 - key: StringSimilarityThreshold
   value:
     simple: "0.5"
   required: false
-  description: StringSimilarity automation threshold. A number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.
+  description: |-
+    StringSimilarity automation threshold. StringSimilarity is being used in this playbook to compare between pattern of malicious use in a tool and command-line arguments found in the environment.
+    Please provide number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.
   playbookInputQuery:
 outputs: []
 tests:

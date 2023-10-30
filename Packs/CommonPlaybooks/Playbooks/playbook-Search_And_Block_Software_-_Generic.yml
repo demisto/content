@@ -128,7 +128,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Please provide a software name
+          simple: Please provide a software image file name
         required: true
         gridcolumns: []
         defaultrows: []
@@ -137,7 +137,7 @@ tasks:
         optionsarg: []
         fieldassociated: ""
         placeholder: name.exe
-        tooltip: the software file name
+        tooltip: the software file name. NOTICE - name case is insensitive and it searches every file that contains the given image name
         readonly: false
       - id: "1"
         label: ""
@@ -250,6 +250,7 @@ tasks:
               toReplace:
                 value:
                   simple: ','
+          - operator: uniq
       TimeFrame:
         complex:
           root: inputs.TimeFrame
@@ -396,6 +397,10 @@ tasks:
               toReplace:
                 value:
                   simple: ','
+          - operator: uniq
+      Indicator Expiration:
+        complex:
+          root: inputs.Indicator Expiration
       TimeFrame:
         complex:
           root: inputs.TimeFrame
@@ -519,6 +524,11 @@ inputs:
   value: {}
   required: false
   description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  playbookInputQuery:
+- key: Indicator Expiration
+  value: {}
+  required: false
+  description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
   playbookInputQuery:
 outputs: []
 tests:

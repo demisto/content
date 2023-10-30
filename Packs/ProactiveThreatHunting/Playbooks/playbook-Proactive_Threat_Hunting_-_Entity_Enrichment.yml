@@ -612,32 +612,10 @@ tasks:
       '#none#':
       - "25"
     scriptarguments:
-      Domain:
-        complex:
-          root: Choose entities to enrich.Answers
-          accessor: "1"
-          transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: \
-              fields:
-                value:
-                  simple: "1"
       Username:
         complex:
           root: Choose entities to enrich.Answers
           accessor: "1"
-          transformers:
-          - operator: Cut
-            args:
-              delimiter:
-                value:
-                  simple: \
-              fields:
-                value:
-                  simple: "2"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -712,7 +690,7 @@ tasks:
           {
                   "AND": [
                     {
-                      "SEARCH_FIELD": "actor_effective_username",
+                      "SEARCH_FIELD": "hostname",
                       "SEARCH_TYPE": "CONTAINS",
                       "SEARCH_VALUE": "${Choose endpoint to enrich.Answers.1}"
                     }

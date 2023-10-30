@@ -119,6 +119,11 @@ tasks:
                   simple: domain
               ignorecase: true
           accessor: value
+      EmailToBlock:
+        complex:
+          root: None
+          transformers:
+          - operator: uniq
       FilesToBlock:
         complex:
           root: foundIndicators
@@ -149,10 +154,20 @@ tasks:
           accessor: value
       InputEnrichment:
         simple: "False"
+      MD5:
+        complex:
+          root: None
+          transformers:
+          - operator: uniq
       RuleDirection:
         simple: outbound
       RuleName:
         simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: None
+          transformers:
+          - operator: uniq
       URL:
         complex:
           root: foundIndicators

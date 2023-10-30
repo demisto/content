@@ -191,7 +191,7 @@ tasks:
                   simple: "false"
               defaultValue:
                 value:
-                  simple: inputs.Campaign
+                  simple: inputs.SDOName
                 iscontext: true
       LimitResults:
         simple: "200"
@@ -1394,7 +1394,7 @@ inputs:
 - key: StringSimilarityThreshold
   value: {}
   required: false
-  description: ""
+  description: 'StringSimilarity automation threshold. StringSimilarity is being used in this playbook to compare between pattern of malicious use in a tool and command-line arguments found in the environment. Please provide number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
   playbookInputQuery:
 outputs: []
 tests:

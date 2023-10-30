@@ -233,8 +233,7 @@ tasks:
         simple: hunt
       time_frame:
         complex:
-          root: Provide File Name and Timeframe.Answers
-          accessor: "1"
+          root: inputs.TimeFrame
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -335,13 +334,13 @@ tasks:
     nexttasks:
       '#default#':
       - "6"
+      Yes - All:
+      - "19"
       Yes - Choose specific files:
       - "18"
-      "yes":
-      - "19"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Yes - All
       condition:
       - - operator: isEqualString
           left:
@@ -352,7 +351,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "Yes"
+              simple: Yes - All
           ignorecase: true
     - label: Yes - Choose specific files
       condition:
@@ -496,30 +495,6 @@ tasks:
               item:
                 value:
                   simple: PaloAltoNetworksXQL.GenericQuery.results.procsha256
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXQL.GenericQuery.results.procsha1
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXQL.GenericQuery.results.procmd5
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXQL.GenericQuery.results.filesha1
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXQL.GenericQuery.results.filemd5
                 iscontext: true
     separatecontext: false
     continueonerrortype: ""

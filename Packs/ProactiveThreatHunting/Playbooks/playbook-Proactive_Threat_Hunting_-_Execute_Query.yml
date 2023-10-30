@@ -310,6 +310,15 @@ tasks:
         complex:
           root: PaloAltoNetworksXQL.GenericQuery
           accessor: results
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values:
+                value:
+                  simple: FALSE,null,UNKNOWN,NO
+              remove_keys:
+                value:
+                  simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-

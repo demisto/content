@@ -400,7 +400,7 @@ tasks:
     task:
       id: 4aa1117d-facd-42f5-8534-43753d47464f
       version: -1
-      name: Cortex XDR IR Is Enabled?
+      name: Can processes be searched?
       type: condition
       iscommand: false
       brand: ""
