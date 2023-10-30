@@ -458,12 +458,15 @@ def fetch_incidents(client: Client, *args) -> str:
                            status=status, from_date=last_fetch_time, limit=max_fetch, sort='&sorting=dateAdded%20ASC')
     incidents: list = []
     for incident in response:
-        threatconnect_id = int(incident.get('id'))
-        if threatconnect_id > last_fetch_id:
-            last_fetch_id = threatconnect_id
-            incidents.append(detection_to_incident(incident, incident.get('dateAdded')))
+        try:
+            threatconnect_id = int(incident.get('id'))
+            if threatconnect_id > last_fetch_id:
+                last_fetch_id = threatconnect_id
+                incidents.append(detection_to_incident(incident, incident.get('dateAdded')))
+        except TypeError or ValueError:
+            demisto.debug(f'Failed parsing the incident id received from threat connect; {incident.get("id")=}')
 
-    demisto.debug(incidents)
+    demisto.debug(f'{incidents=}')
     demisto.incidents(incidents)
     set_last_fetch_time = get_last_run_time(response, last_fetch_time)
     demisto.debug(f'Setting last run to: last_time: {set_last_fetch_time}, last_id: {last_fetch_id}')
