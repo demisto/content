@@ -17,7 +17,7 @@ alter // extract message parts
     client_ip = arrayindex(regextract(msg, "ClientIP:\s*([a-fA-F\d\.\:]+[\da-fA-F])"), 0),
     connection_step = arrayindex(regextract(msg, "Step\=\'?([^']+)"), 0),
     dns_server_name = arrayindex(regextract(msg, "name\s+server\s+(\S+)"), 0),
-    dns_connection_failure_reason = arrayindex(regextract(msg, "unable\s+to\s+connect\s+to\s+name\s+server\s+\S+\s*\:\s*(.+)"), 0),
+    dns_connection_failure_reason = trim(arrayindex(regextract(msg, "unable\s+to\s+connect\s+to\s+name\s+server\s+\S+\s*\:\s*(.+)"), 0)),
     domain_controller = arrayindex(regextract(msg, "[\s\W]DC[\s\W]+([\w\-]+)"), 0),
     nas_server = arrayindex(regextract(msg, "NAS[\s\W]+server[\s\W]+([\w\-]+)"), 0),
     replication_host = arrayindex(regextract(msg, "replication[\s\W]+host[\s\W]+([\w\-]+)[\s\W]+is"), 0),
