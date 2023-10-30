@@ -232,12 +232,6 @@ demisto-sdk-nightly:run-commands-against-instance:
       export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
 
-    - section_start "Copy env results to artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
-    - section_end "Copy env results to artifacts folder"
-
     - section_start "Install Packs and run Test-Module"
     - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
@@ -367,7 +361,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - section_end "Copy env results to artifacts folder"
 
     - section_start "Install Packs and run Test-Module" --collapsed
-    - cat ${ARTIFACTS_FOLDER}/env_results.json"
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
@@ -457,6 +450,9 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
+    - demisto-sdk download -lf --insecure
+    - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
+    - demisto-sdk upload -i Packs/HelloWorld --insecure -z
     - *upload-entities-to-cortex-xsoar
     - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
     - section_end "Create and Upload Entities to XSOAR Instance"
@@ -469,6 +465,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_end "Download Entities from XSOAR Instance"
 
     - section_start "Download Custom Entities from XSOAR Instance" --collapsed
+    - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
     - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
     - section_end "Download Custom Entities from XSOAR Instance"
 
