@@ -963,9 +963,7 @@ def main():
             add_reply()
 
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
-        raise
+        return_error(e)
 
 
 if __name__ in ('__builtin__', 'builtins', "__main__"):
