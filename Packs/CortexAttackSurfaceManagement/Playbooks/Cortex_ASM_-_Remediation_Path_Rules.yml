@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: af5b9b79-6e1c-47ee-87a5-a14d72aa7393
+    taskid: f53e0e04-0bde-4421-81c2-3408fbb0ad52
     type: start
     task:
-      id: af5b9b79-6e1c-47ee-87a5-a14d72aa7393
+      id: f53e0e04-0bde-4421-81c2-3408fbb0ad52
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 07e2fd95-eece-4e79-8d09-aee7994dddc3
+    taskid: 0207b014-5eb8-4ef5-8f8c-c614cd144f9a
     type: regular
     task:
-      id: 07e2fd95-eece-4e79-8d09-aee7994dddc3
+      id: 0207b014-5eb8-4ef5-8f8c-c614cd144f9a
       version: -1
       name: List remediation path rules
       description: Returns list of remediation path rules.
@@ -82,10 +82,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 3830cd0d-f379-46a5-85b0-2bdaa0d1cc91
+    taskid: 6665e4f1-2958-4a7e-85f8-95111f0a8024
     type: condition
     task:
-      id: 3830cd0d-f379-46a5-85b0-2bdaa0d1cc91
+      id: 6665e4f1-2958-4a7e-85f8-95111f0a8024
       version: -1
       name: Was there a result?
       description: Determines if there was a result from the previous command to continue.
@@ -125,10 +125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6d3a0638-8a11-4e76-813f-adde68849033
+    taskid: f2a13bb9-2de5-46b3-8b11-f37790e5e7aa
     type: regular
     task:
-      id: 6d3a0638-8a11-4e76-813f-adde68849033
+      id: f2a13bb9-2de5-46b3-8b11-f37790e5e7aa
       version: -1
       name: Evaluate remediation path rules
       description: For a given alert and remediation path rules that are defined for that alert's attack surface rule, this takes each remediation path rule and looks at the rule criteria too see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
@@ -189,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: cb5ababa-3084-45bb-8789-7374934cd0ea
+    taskid: 475baaab-5fc4-404b-83a3-12d3d7ab2fcf
     type: title
     task:
-      id: cb5ababa-3084-45bb-8789-7374934cd0ea
+      id: 475baaab-5fc4-404b-83a3-12d3d7ab2fcf
       version: -1
       name: Complete
       type: title
@@ -217,10 +217,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0888d536-debd-4502-86cc-e3cb3757c556
+    taskid: d46de1a3-299d-4a2b-8a5d-541d684b5183
     type: condition
     task:
-      id: 0888d536-debd-4502-86cc-e3cb3757c556
+      id: d46de1a3-299d-4a2b-8a5d-541d684b5183
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -263,7 +263,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: AWS,GCP,Azure
+              simple: AWS,GCP,Azure,On Prem
       - - operator: isNotEmpty
           left:
             value:
@@ -346,10 +346,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 960047cb-8a2f-4d88-8336-6c92bf6b7d24
+    taskid: ee07dc79-0d84-44b7-855e-c22a0c02245f
     type: condition
     task:
-      id: 960047cb-8a2f-4d88-8336-6c92bf6b7d24
+      id: ee07dc79-0d84-44b7-855e-c22a0c02245f
       version: -1
       name: Is Cortex ASM enabled?
       description: Determines if the "Cortex Attack Surface Management" integration instance is configured to pull Remediation Path Rules.
@@ -407,10 +407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: e4f03664-c6c4-437a-8266-28ee80c11507
+    taskid: dc8ed22e-42a4-4f17-865d-748a6497b01f
     type: condition
     task:
-      id: e4f03664-c6c4-437a-8266-28ee80c11507
+      id: dc8ed22e-42a4-4f17-865d-748a6497b01f
       version: -1
       name: Is ServiceNow v2 enabled?
       description: Determines if the "ServiceNow v2" integration instance is enabled in order to send ServiceNow tickets as notifications.
@@ -468,10 +468,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 836a543a-a6cc-41d9-8e47-89bcdbafe710
+    taskid: 61f1db44-72bc-4ac5-820c-e9cd290ac79c
     type: regular
     task:
-      id: 836a543a-a6cc-41d9-8e47-89bcdbafe710
+      id: 61f1db44-72bc-4ac5-820c-e9cd290ac79c
       version: -1
       name: Set ServiceNowv2Enabled to true
       description: Set a value in context under the key you entered.
@@ -505,10 +505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 76a40965-face-4ed9-86cc-129a42aad45e
+    taskid: e9b92d4e-6ad9-42ad-8664-73071081b9e0
     type: regular
     task:
-      id: 76a40965-face-4ed9-86cc-129a42aad45e
+      id: e9b92d4e-6ad9-42ad-8664-73071081b9e0
       version: -1
       name: Set ServiceNowv2Enabled to false
       description: Set a value in context under the key you entered.
@@ -542,10 +542,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 2555114a-9e49-42ce-82fa-c9fd2763e646
+    taskid: 3c333ac9-103f-4df3-877c-ef08a0b2ce2c
     type: regular
     task:
-      id: 2555114a-9e49-42ce-82fa-c9fd2763e646
+      id: 3c333ac9-103f-4df3-877c-ef08a0b2ce2c
       version: -1
       name: Set AutoRemediationRequirements to true
       description: Set a value in context under the key you entered.
@@ -579,10 +579,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 5068a47f-0c7b-4ae3-844b-6ef5a94a045d
+    taskid: 98f3fdfd-a9a7-43ea-8fc1-d10bf21bb126
     type: regular
     task:
-      id: 5068a47f-0c7b-4ae3-844b-6ef5a94a045d
+      id: 98f3fdfd-a9a7-43ea-8fc1-d10bf21bb126
       version: -1
       name: Set AutoRemediationRequirements to false
       description: Set a value in context under the key you entered.
@@ -616,10 +616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 32bf9ebb-243b-4c6e-83af-cc4bc8db057f
+    taskid: 29f89903-4450-4edb-89a8-4dcb7eefb484
     type: condition
     task:
-      id: 32bf9ebb-243b-4c6e-83af-cc4bc8db057f
+      id: 29f89903-4450-4edb-89a8-4dcb7eefb484
       version: -1
       name: Was there a match?
       description: Determines if a matching remediation path rule was found based on population of the "ASM - Remediation Path Rule" field.
@@ -661,10 +661,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 4a743e3a-5c29-4af9-819c-14ac39639fd5
+    taskid: 1c420f97-4985-4bba-8cee-d8ed51cce2ff
     type: condition
     task:
-      id: 4a743e3a-5c29-4af9-819c-14ac39639fd5
+      id: 1c420f97-4985-4bba-8cee-d8ed51cce2ff
       version: -1
       name: What is the action of the matched rule?
       description: Determines what is returned to the parent playbook based on contents of "ASM - Remediation Path Rule" field and other requirements.
@@ -788,10 +788,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 01529421-34f9-4056-8065-a69d942ffd18
+    taskid: 68e6d8ee-e670-4beb-8dce-9e34b64f585f
     type: regular
     task:
-      id: 01529421-34f9-4056-8065-a69d942ffd18
+      id: 68e6d8ee-e670-4beb-8dce-9e34b64f585f
       version: -1
       name: Return AR
       description: Set a value in context under the key you entered.
@@ -825,10 +825,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 21b279e3-669e-4e1b-8420-da58c3238cc6
+    taskid: 09502b4c-8588-4a1b-8530-f854e6c995e2
     type: regular
     task:
-      id: 21b279e3-669e-4e1b-8420-da58c3238cc6
+      id: 09502b4c-8588-4a1b-8530-f854e6c995e2
       version: -1
       name: Return SNOW
       description: Set a value in context under the key you entered.
@@ -862,10 +862,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 087a98b6-c839-40e1-8e27-56c27418df5e
+    taskid: 3fda1c2d-d726-4835-8540-1c2aa16f474a
     type: regular
     task:
-      id: 087a98b6-c839-40e1-8e27-56c27418df5e
+      id: 3fda1c2d-d726-4835-8540-1c2aa16f474a
       version: -1
       name: Return Email
       description: Set a value in context under the key you entered.
@@ -899,10 +899,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 97aadeaa-3ba1-491e-87a0-17f6b82f70e9
+    taskid: c7a1c4d2-0e40-44ac-8d66-5361aeb0c4ad
     type: regular
     task:
-      id: 97aadeaa-3ba1-491e-87a0-17f6b82f70e9
+      id: c7a1c4d2-0e40-44ac-8d66-5361aeb0c4ad
       version: -1
       name: Return Manual
       description: Set a value in context under the key you entered.
@@ -936,10 +936,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 86321d8c-3eb9-45cd-831d-09691bfce8a7
+    taskid: 2f03729d-b3a7-4a6c-8f85-71b5f6f15ef5
     type: regular
     task:
-      id: 86321d8c-3eb9-45cd-831d-09691bfce8a7
+      id: 2f03729d-b3a7-4a6c-8f85-71b5f6f15ef5
       version: -1
       name: Get current time
       description: |
@@ -969,10 +969,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 35d2826f-a35c-41eb-8d5d-c7bfa0b81626
+    taskid: 26734940-913f-4bd8-8652-a63e5068f0d1
     type: regular
     task:
-      id: 35d2826f-a35c-41eb-8d5d-c7bfa0b81626
+      id: 26734940-913f-4bd8-8652-a63e5068f0d1
       version: -1
       name: Set timestamp
       description: Set a value in context under the key you entered.
@@ -1009,10 +1009,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 097da85c-45fa-4e2b-84e5-368beb16cec2
+    taskid: dabc7f51-0ced-4b11-8b38-165e5b9077b5
     type: title
     task:
-      id: 097da85c-45fa-4e2b-84e5-368beb16cec2
+      id: dabc7f51-0ced-4b11-8b38-165e5b9077b5
       version: -1
       name: Also True
       type: title
@@ -1040,10 +1040,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: b817fe28-0f00-48c0-8d6e-0af03edb8cc0
+    taskid: 717271bd-270f-4db9-86c4-22aa8a9535a0
     type: regular
     task:
-      id: b817fe28-0f00-48c0-8d6e-0af03edb8cc0
+      id: 717271bd-270f-4db9-86c4-22aa8a9535a0
       version: -1
       name: Set remediationoptions context (AR ports)
       description: Set a value in context under the key you entered.
@@ -1079,10 +1079,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: be80b5e7-0b4b-4b85-8486-dafd343855a1
+    taskid: 74551098-9d92-446b-8eb2-30301c0196d4
     type: regular
     task:
-      id: be80b5e7-0b4b-4b85-8486-dafd343855a1
+      id: 74551098-9d92-446b-8eb2-30301c0196d4
       version: -1
       name: Set remediationoptions context (AR S3)
       description: Set a value in context under the key you entered.
@@ -1118,10 +1118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 32a508b4-3cc7-46a6-8e15-b3d9108db013
+    taskid: a78048a8-0b1d-4f50-81d1-ec9a638828fb
     type: title
     task:
-      id: 32a508b4-3cc7-46a6-8e15-b3d9108db013
+      id: a78048a8-0b1d-4f50-81d1-ec9a638828fb
       version: -1
       name: Notification Check
       type: title
@@ -1150,10 +1150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: a7b10b4e-1a4f-4cee-8fc3-aea16a006449
+    taskid: 581af6af-fb23-49b8-84d0-b55c3917143b
     type: regular
     task:
-      id: a7b10b4e-1a4f-4cee-8fc3-aea16a006449
+      id: 581af6af-fb23-49b8-84d0-b55c3917143b
       version: -1
       name: Set remediationoptions context (SNOW)
       description: Set a value in context under the key you entered.
@@ -1189,10 +1189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 5356e643-7a44-4b67-878d-6377595eb6a2
+    taskid: c9fcfadd-d65c-403c-85b7-3fe6c92ebe26
     type: regular
     task:
-      id: 5356e643-7a44-4b67-878d-6377595eb6a2
+      id: c9fcfadd-d65c-403c-85b7-3fe6c92ebe26
       version: -1
       name: Set JiraEnabled to true
       description: Set a value in context under the key you entered.
@@ -1226,10 +1226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: c937dc23-73f0-4964-8325-0004bfbf8ecd
+    taskid: 7805e705-95f5-418c-88fb-84fccde4e45d
     type: regular
     task:
-      id: c937dc23-73f0-4964-8325-0004bfbf8ecd
+      id: 7805e705-95f5-418c-88fb-84fccde4e45d
       version: -1
       name: Set JiraEnabled to false
       description: Set a value in context under the key you entered.
@@ -1263,10 +1263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 392a9211-a605-4c7e-83f8-27f093623cf0
+    taskid: 82db1979-3555-498d-8483-c3c12bc9fec3
     type: regular
     task:
-      id: 392a9211-a605-4c7e-83f8-27f093623cf0
+      id: 82db1979-3555-498d-8483-c3c12bc9fec3
       version: -1
       name: Set remediationoptions context (Jira)
       description: Set a value in context under the key you entered.
@@ -1302,10 +1302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 4f35b4ce-0428-4af4-8d4e-2a8fcb1f9fea
+    taskid: d3342595-7841-4e8d-829c-2b5fb00d8bbd
     type: regular
     task:
-      id: 4f35b4ce-0428-4af4-8d4e-2a8fcb1f9fea
+      id: d3342595-7841-4e8d-829c-2b5fb00d8bbd
       version: -1
       name: Set remediationoptions context (Email)
       description: Set a value in context under the key you entered.
@@ -1341,10 +1341,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 4dcbb616-f83a-4d61-8056-7ba418e8b95a
+    taskid: 8ef9ae63-6742-4910-8cad-82b870a3b035
     type: regular
     task:
-      id: 4dcbb616-f83a-4d61-8056-7ba418e8b95a
+      id: 8ef9ae63-6742-4910-8cad-82b870a3b035
       version: -1
       name: Set remediationoptions context (Manual)
       description: Set a value in context under the key you entered.
@@ -1380,10 +1380,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 227dc293-12ef-4563-82b4-9fa95aa1afdb
+    taskid: 3dae14eb-59a7-478d-85ac-a8ef1de6e844
     type: collection
     task:
-      id: 227dc293-12ef-4563-82b4-9fa95aa1afdb
+      id: 3dae14eb-59a7-478d-85ac-a8ef1de6e844
       version: -1
       name: Select remediation action (dynamic)
       description: Determines the next action (remediation or ticket) based on user input. Options are based on if ServiceNowV2 integration is set up and/or the alert meets the requirement for automated remediation.
@@ -1450,10 +1450,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: fa234e99-d4c6-4001-8f5e-2823223a2967
+    taskid: 6e6043e3-9638-4940-8c37-e862b439ee6a
     type: regular
     task:
-      id: fa234e99-d4c6-4001-8f5e-2823223a2967
+      id: 6e6043e3-9638-4940-8c37-e862b439ee6a
       version: -1
       name: Set data collection grid field
       description: |-
@@ -1505,10 +1505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 1017060a-6021-46dc-8102-3d4f8c928057
+    taskid: e44336e3-305e-4d96-8731-f5aef3c67e7a
     type: regular
     task:
-      id: 1017060a-6021-46dc-8102-3d4f8c928057
+      id: e44336e3-305e-4d96-8731-f5aef3c67e7a
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
@@ -1548,10 +1548,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: ab88b522-132d-437b-8063-1e01d10c6813
+    taskid: c35cce8e-1c8e-4432-831c-65df7e04b004
     type: regular
     task:
-      id: ab88b522-132d-437b-8063-1e01d10c6813
+      id: c35cce8e-1c8e-4432-831c-65df7e04b004
       version: -1
       name: Return Jira
       description: Set a value in context under the key you entered.
@@ -1585,10 +1585,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: f9f0243b-c7ab-4660-8a56-90ba71d2f610
+    taskid: fdfbace2-fb0b-48b1-895f-6d17a21b55a1
     type: condition
     task:
-      id: f9f0243b-c7ab-4660-8a56-90ba71d2f610
+      id: fdfbace2-fb0b-48b1-895f-6d17a21b55a1
       version: -1
       name: Is Atlassian Jira v2 or v3 enabled?
       description: Determines if the "Atlassian Jira v2" or "Atlassian Jira v3" integration instance is enabled in order to send Jira tickets as notifications.
@@ -1654,10 +1654,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 451f8d00-c956-4875-8569-df42207d1b6d
+    taskid: e8c04311-35a4-4a38-832d-b9d29bc149a3
     type: playbook
     task:
-      id: 451f8d00-c956-4875-8569-df42207d1b6d
+      id: e8c04311-35a4-4a38-832d-b9d29bc149a3
       version: -1
       name: Cortex ASM - Remediation Objectives
       description: Playbook that populates remediation objectives field used to display the remediation actions to the end user

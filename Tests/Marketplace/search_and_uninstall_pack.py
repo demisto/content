@@ -20,7 +20,9 @@ from Tests.scripts.utils.log_util import install_logging
 def check_if_pack_still_installed(client: demisto_client,
                                   pack_id: str,
                                   attempts_count: int = 3,
-                                  sleep_interval: int = 30):
+                                  sleep_interval: int = 30,
+                                  request_timeout: int = 300,
+                                  ):
     """
 
     Args:
@@ -28,6 +30,7 @@ def check_if_pack_still_installed(client: demisto_client,
        attempts_count (int): The number of attempts to install the packs.
        sleep_interval (int): The sleep interval, in seconds, between install attempts.
        pack_id: pack id to check id still installed on the machine.
+       request_timeout (int): The timeout per call to the server.
 
     Returns:
         True if the pack is still installed, False otherwise.
@@ -46,7 +49,9 @@ def check_if_pack_still_installed(client: demisto_client,
                                         method='GET',
                                         attempts_count=attempts_count,
                                         sleep_interval=sleep_interval,
-                                        success_handler=success_handler)
+                                        success_handler=success_handler,
+                                        request_timeout=request_timeout,
+                                        )
 
 
 def get_all_installed_packs(client: demisto_client, non_removable_packs: list):

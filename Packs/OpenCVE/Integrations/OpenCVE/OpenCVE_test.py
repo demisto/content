@@ -145,7 +145,7 @@ def test_parse_cpes(nodes, expected):
                           ]
                          )
 def test_cve_to_warroom(response, expected):
-    parsed_cve = parse_cve(OPEN_CVE, response)
+    _, parsed_cve = parse_cve(OPEN_CVE, response)
     warroom_output = cve_to_warroom(parsed_cve)
     assert warroom_output == expected
 
@@ -159,8 +159,8 @@ def test_valid_cve_format(input, expected):
 @pytest.mark.parametrize("response, expected", [(util_load_json('test_data/CVE-2019-0708.json'),
                                                  (util_load_json('test_data/parsed_Cve.json')))])
 def test_parse_cve(response, expected):
-    parsed_cve = parse_cve(OPEN_CVE, response)
-    parsed_cve_relationships = [json.dumps(relationship.to_context()) for relationship in parsed_cve['fields']['relationships']]
+    relationships, parsed_cve = parse_cve(OPEN_CVE, response)
+    parsed_cve_relationships = [json.dumps(relationship.to_context()) for relationship in relationships]
     expected_relationships = [json.dumps(relationship) for relationship in expected['fields']['relationships']]
     assert sorted(parsed_cve_relationships) == sorted(expected_relationships)
     assert parsed_cve['fields']['cvssvector'] == expected['fields']['cvssvector']
@@ -184,8 +184,8 @@ def test_dedupe_cves(input, expected):
 @pytest.mark.parametrize("input, expected", [(util_load_json('test_data/CVE-2019-0708.json'),
                                               util_load_json('test_data/indicator.json'))])
 def test_cve_to_indicator(input, expected):
-    parsed_cve = parse_cve(OPEN_CVE, input)
-    indicator = cve_to_indicator(ocve=OPEN_CVE, cve=parsed_cve)
+    relationships, parsed_cve = parse_cve(OPEN_CVE, input)
+    indicator = cve_to_indicator(ocve=OPEN_CVE, cve=parsed_cve, relationships=relationships)
     assert_nested_dicts_equal(indicator.to_context(), expected)
 
 
@@ -330,3 +330,23 @@ def test_failed_request(mocker):
     mocker.patch.object(demisto, "error")
     with pytest.raises(Exception):
         module_test_command(CLIENT)
+
+
+def test_get_product_cves_command(mocker):
+    args = {'vendor_name': "vendor_name",
+            'product_name': 'product_name'}
+    mocker.patch.object(CLIENT, 'get_cves_by_product_request', return_value=[{
+        "id": "CVE",
+        "summary": "summary",
+        "created_at": "created_at",
+        "updated_at": "updated_at"
+    }])
+    mocker.patch.object(CLIENT, 'get_cve_request', return_value={'id': 'CVE',
+                                                                 'summary': 'summary',
+                                                                 'created_at': 'created_at',
+                                                                 'updated_at': 'updated_at',
+                                                                 'cvss': {'v2': None, 'v3': 8.8},
+                                                                 'vendors': {'vendor': ['vendor']},
+                                                                 'cwes': ['CWE']})
+    results = get_product_cves_command(CLIENT, OPEN_CVE, args)
+    assert results[0].relationships

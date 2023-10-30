@@ -557,10 +557,10 @@ def polling_submit_command(args: Dict[str, Any], client: Client, params: Dict[st
             return PollResult(command_results)
         return PollResult(
             response=None,
-            partial_result=[CommandResults(outputs=res,  # this is what the response will be in case job has finished
-                                           outputs_prefix='Joe.Submission', outputs_key_field='submission_id',
-                                           readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...'),
-                            CommandResults(execution_metrics=exe_metrics.get_metric_list())], continue_to_poll=True,
+            partial_result=CommandResults(outputs=res,  # this is what the response will be in case job has finished
+                                          outputs_prefix='Joe.Submission', outputs_key_field='submission_id',
+                                          readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...'),
+            continue_to_poll=True,
             args_for_next_run={'submission_id': args.get('submission_id'), **args})
     else:
         if file := args.get('entry_id'):

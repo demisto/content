@@ -1793,6 +1793,11 @@ function Main {
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
 
+    if ($integration_params.insecure -eq $true) {
+        # Bypass SSL verification if insecure is true
+        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+    }
+
     try {
         $Demisto.Debug("Command being called is $Command")
 
