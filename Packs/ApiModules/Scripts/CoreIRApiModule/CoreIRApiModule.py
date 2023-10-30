@@ -2474,9 +2474,10 @@ def get_indicators_context(incident):
 
         if file_details:
             file_context.append(file_details)
-            relevant_processes = filter(lambda p: p.get("SHA256") == file_sha, process_context)
-            for process in relevant_processes:
-                process["is_malicious"] = is_malicious
+            if file_sha:
+                relevant_processes = filter(lambda p: p.get("SHA256") == file_sha, process_context)
+                for process in relevant_processes:
+                    process["is_malicious"] = is_malicious
 
     return file_context, process_context, domain_context, ip_context
 
