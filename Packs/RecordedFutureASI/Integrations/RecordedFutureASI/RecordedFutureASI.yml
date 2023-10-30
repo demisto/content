@@ -19,9 +19,7 @@ configuration:
   name: project_id
   type: 4
   required: false
-  additionalinfo: 'The Project ID to fetch issues from '
-  displaypassword: Project ID
-  hiddenusername: true
+  additionalinfo: The Project ID to fetch issues from
   hidden: true
 - display: ''
   name: credential_apikey
