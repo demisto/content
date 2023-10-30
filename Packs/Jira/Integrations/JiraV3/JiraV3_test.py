@@ -2344,7 +2344,7 @@ class TestJiraIssueAssign:
             (None, "cloud_assignee", '{"accountId": "cloud_assignee"}')
         ]
     )
-    def test_update_issue_assignee_command(mocker, assignee, assignee_id, excpected_body_request):
+    def test_update_issue_assignee_command(self, mocker, assignee, assignee_id, excpected_body_request):
         """
         Given:
             - issue id, and assignees for cloud/server jira
@@ -2370,7 +2370,7 @@ class TestJiraIssueAssign:
         assert update_issue_assignee_command(client=client, args=args)
         assert jira_req_mocker.call_args_list[0].args[2] == excpected_body_request
 
-    def test_test_update_issue_assignee_command_no_assignees():
+    def test_update_issue_assignee_command_no_assignees(self):
         """
         Given:
             - issue id, without assignee / assignee_id
