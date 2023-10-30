@@ -458,6 +458,7 @@ tasks:
         complex:
           root: inputs.alert_id
     separatecontext: false
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -523,7 +524,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -940,
           "y": 920
         }
       }
@@ -580,7 +581,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -940,
           "y": 575
         }
       }
@@ -593,10 +594,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 18ea3ba1-78ee-4ce3-844b-44853df600da
+    taskid: d876d66f-ca83-4565-8c73-bfcf47d74473
     type: condition
     task:
-      id: 18ea3ba1-78ee-4ce3-844b-44853df600da
+      id: d876d66f-ca83-4565-8c73-bfcf47d74473
       version: -1
       name: Which XCLOUD alert was found?
       description: Checks which XCLOUD alert was found in the incident.
@@ -608,6 +609,8 @@ tasks:
       - "5"
       Cryptojacking:
       - "10"
+      Data Exfiltration:
+      - "17"
       IAM User Access:
       - "15"
       Token Theft:
@@ -814,11 +817,23 @@ tasks:
             value:
               simple: Remote usage of VM Service Account token
           ignorecase: true
+    - label: Data Exfiltration
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: An identity performed a suspicious download of multiple cloud storage object
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -940,
           "y": 730
         }
       }
@@ -1095,7 +1110,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1430,
+          "x": -430,
           "y": 575
         }
       }
@@ -1160,7 +1175,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -310,
+          "x": -1780,
           "y": 920
         }
       }
@@ -1244,7 +1259,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1140,
+          "x": -1360,
           "y": 920
         }
       }
@@ -1255,12 +1270,63 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: be0cb5ec-08ca-4334-8efd-9c7c004aa362
+    type: playbook
+    task:
+      id: be0cb5ec-08ca-4334-8efd-9c7c004aa362
+      version: -1
+      name: Cortex XDR - Cloud Data Exfiltration Response
+      playbookName: Cortex XDR - Cloud Data Exfiltration Response
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alertID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: An identity performed a suspicious download of multiple cloud storage objects
+          accessor: alert_id
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -2200,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "12_10_Cryptojacking ": 0.64,
-      "12_15_IAM User Access": 0.59,
+      "12_15_IAM User Access": 0.74,
+      "12_16_Token Theft": 0.58,
       "1_11_Cloud": 0.81,
       "1_14_First SSO Access": 0.82,
       "1_7_#default#": 0.63,
@@ -1269,8 +1335,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1095,
-        "width": 3170,
-        "x": -1430,
+        "width": 3940,
+        "x": -2200,
         "y": 70
       }
     }
