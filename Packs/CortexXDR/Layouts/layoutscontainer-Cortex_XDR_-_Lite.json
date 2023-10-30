@@ -1005,7 +1005,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Investigation Verdict",
-                        "query": "68579dfe-0d21-455e-8a47-298e5699910a",
+                        "query": "InvestigationVerdict",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
