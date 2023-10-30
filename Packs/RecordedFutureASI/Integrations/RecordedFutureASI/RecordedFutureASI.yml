@@ -14,8 +14,6 @@ configuration:
   name: apikey
   type: 4
   required: false
-  displaypassword: API Key
-  hiddenusername: true
   hidden: true
 - display: Project ID
   name: project_id
