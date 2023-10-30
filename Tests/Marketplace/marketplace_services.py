@@ -19,7 +19,6 @@ from pathlib import Path
 from typing import Any
 from zipfile import ZipFile, ZIP_DEFLATED
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
-from demisto_sdk.commands.content_graph.common import ContentType
 
 import git
 import google.auth
