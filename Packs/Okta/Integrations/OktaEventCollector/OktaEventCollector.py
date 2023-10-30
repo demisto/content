@@ -119,7 +119,7 @@ class GetEvents:
 
         ids = []
         # gets the last event time
-        last_time = events[-1].get('published')
+        last_time = events[-1].get('published') if events else last_run_after
         for event in reversed(events):
             if event.get('published') != last_time:
                 break
