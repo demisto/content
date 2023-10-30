@@ -1602,6 +1602,7 @@ This is visible
                     'id':
                         {
                             "name": "PackName",
+                            "display_name": "PackName",
                             "marketplaces": []
                         }
                 }
