@@ -17,6 +17,7 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
+        "",
         "RED",
         "AMBER+STRICT",
         "AMBER",
