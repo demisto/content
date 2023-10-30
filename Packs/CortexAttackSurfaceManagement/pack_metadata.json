@@ -2,14 +2,16 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.7.5",
+    "currentVersion": "1.7.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Palo Alto Networks Products"],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [
         "Attack Surface Management",
