@@ -13,7 +13,8 @@ if [ "$#" -lt "1" ]; then
   exit 1
 fi
 _branch="$(git branch  --show-current)"
-_sdk_ref="master"
+_sdk_ref="${SDK_REF:-master}"
+_override_sdk_ref="${DEMISTO_SDK_NIGHTLY:-}"
 
 while [[ "$#" -gt 0 ]]; do
   case $1 in
@@ -30,7 +31,9 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -sr|--sdk-ref) _sdk_ref="$2"
+  -sr|--sdk-ref)
+    _sdk_ref="${2}"
+    _override_sdk_ref="true"
     shift
     shift;;
 
@@ -59,6 +62,7 @@ if [ -n "$_gitlab" ]; then
     --form "${_variables}" \
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
     --form "variables[SDK_REF]=${_sdk_ref}" \
+    --form "variables[OVERRIDE_SDK_REF]=${_override_sdk_ref}" \
     "$BUILD_TRIGGER_URL"
 
 else
