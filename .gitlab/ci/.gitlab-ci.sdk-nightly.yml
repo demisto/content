@@ -332,12 +332,13 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       SERVER_TYPE: "XSIAM"
       MARKETPLACE_NAME: "marketplacev2"
       NON_REMOVABLE_PACKS: "Base"
+      EXTRACT_PRIVATE_TESTDATA: "true"
   needs: ["demisto-sdk-nightly:mpv2-prepare-testing-bucket"]
   stage: run-instances
   script:
     - EXIT_CODE=0
-    - echo "SemperisDSP" >> "${ARTIFACTS_FOLDER}/content_packs_to_install.txt"
-    - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "${ARTIFACTS_FOLDER}/modeling_rules_to_test.txt"
+    - echo "SemperisDSP" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt"
 
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -353,9 +354,9 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - echo "Checking infra."
 
     - section_start "Install Packs and run Test-Module"
-    - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    # - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"  
+    # - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"  
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
@@ -365,16 +366,20 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
+    - section_start "Create Entities and Upload"
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - demisto-sdk upload -i Packs/AzureSentinel -z -x --insecure
     - demisto-sdk upload -i Packs/HelloWorld --insecure -z -x
+    - section_end "Create Entities and Upload"
 
+    - section_start "Download Entities"
     - demisto-sdk download -lf --insecure
     - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
     # - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     # - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     # - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
+    - section_end "Download Entities"
 
     - !reference [.cloud-machine-information]
     - exit $EXIT_CODE
@@ -396,16 +401,17 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
-    INSTANCE_ROLE: "XSIAM"
+    INSTANCE_ROLE: "XSOAR SAAS"
+    SERVER_TYPE: "XSOAR SAAS"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR_SAAS}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR_SAAS}/env_results.json"
-    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
-    SERVER_TYPE: "XSIAM"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_saas"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
   needs: ["demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket"]
@@ -429,7 +435,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    - cp -f "$ARTIFACTS_FOLDER/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
 
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
