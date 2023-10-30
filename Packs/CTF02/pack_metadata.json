@@ -15,7 +15,7 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar_saas"
+        "xsoar"
     ],
     "dependencies": {
         "CTF01": {

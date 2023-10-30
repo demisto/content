@@ -603,7 +603,7 @@
 	},
     "toDate": "0001-01-01T00:00:00Z",
     "version": -1,
-    "fromVersion": "6.9.0",
+    "fromVersion": "8.2.0",
     "description": "",
     "isPredefined": true
 }

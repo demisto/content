@@ -31,5 +31,5 @@
     },
     "type": "classification",
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "8.2.0"
 }

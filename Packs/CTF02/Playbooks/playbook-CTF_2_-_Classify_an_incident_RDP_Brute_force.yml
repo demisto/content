@@ -1052,5 +1052,5 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
+fromversion: 8.2.0
 description: 'Classify an RDP Brute Force Incident - Run this playbook and follow the questions.'
