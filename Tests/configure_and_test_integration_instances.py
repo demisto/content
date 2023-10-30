@@ -343,7 +343,8 @@ class Build(ABC):
 
     def install_packs(self, pack_ids: list | None = None, multithreading=True, production_bucket: bool = True) -> bool:
         """
-        Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER_SERVER_TYPE/content_packs_to_install.txt" file, and their dependencies.
+        Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER_SERVER_TYPE/content_packs_to_install.txt" file,
+        and their dependencies.
         Args:
             pack_ids (list | None, optional): Packs to install on the server.
                 If no packs provided, installs packs that were provided by the previous step of the build.
