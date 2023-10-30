@@ -382,16 +382,17 @@ def delete_datasets(dataset_names, base_url, api_key, auth_id):
     return success
 
 
-def get_dataset_and_packs_from_collected_modeling_rules_to_test(test_data_filenames):
+def get_datasets_to_delete(modeling_rules_file: str):
     """
-    Return dataset names from testdata files.
+    Given a path to a file containing a list of modeling rules paths,
+    returns a list of their corresponding datasets that should be deleted.
     Args:
-        test_data_filenames (str): test data files that collected to test in this build.
+        modeling_rules_file (str): A path to a file holding the list of modeling rules collected for testing in this build.
     Returns:
         Set - datasets to delete.
     """
     datasets_to_delete = set()
-    with open(test_data_filenames) as f:
+    with open(modeling_rules_file) as f:
         for modeling_rule_to_test in f.readlines():
             modeling_rule_path = Path(f'Packs/{modeling_rule_to_test.strip()}')
             test_data_matches = list(modeling_rule_path.glob(TEST_DATA_PATTERN))
@@ -471,8 +472,8 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
     success &= delete_datasets_by_testdata(base_url=base_url,
                                            api_key=api_key,
                                            auth_id=xdr_auth_id,
-                                           dataset_names=get_dataset_and_packs_from_collected_modeling_rules_to_test(
-                                               test_data_filenames=options.modeling_rules_to_test_files)
+                                           dataset_names=get_datasets_to_delete(
+                                               modeling_rules_file=options.modeling_rules_to_test_files)
                                            )
     return success
 
