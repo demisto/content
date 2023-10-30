@@ -27,7 +27,7 @@ configuration:
   required: false
   displaypassword: API Key
   hiddenusername: true
-- display: ''
+- display: Project ID
   name: credential_projectid
   type: 9
   required: false
