@@ -67,10 +67,10 @@ configuration:
   required: true
   type: 0
   section: Collect - events
-- display: Assets
-  name: assets
-  type: 20
-  section: Collect - assets
+#- display: Assets
+#  name: assets
+#  type: 20
+#  section: Collect - assets
 - defaultvalue: 7 days
   display: Assets first fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch_time_assets
@@ -83,6 +83,13 @@ configuration:
   name: max_assets_fetch
   required: false
   type: 0
+  section: Collect - assets
+- defaultvalue: '240'
+  display: Assets Fetch Interval
+  name: assetsFetchInterval
+  type: 19
+  required: false
+  advanced: true
   section: Collect - assets
 description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs, assets and their vulnerabilities from Tenable.
 display: Tenable.io Event Collector Test
