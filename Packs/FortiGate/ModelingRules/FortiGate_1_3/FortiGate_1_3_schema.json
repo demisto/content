@@ -215,6 +215,14 @@
       "ftntfgtsrcfamily": {
         "type": "string",
         "is_array": false
+      },
+      "ftntfgtcrlevel":{
+        "type": "string",
+        "is_array":false
+      },
+      "ftntfgtseverity":{
+        "type": "string",
+        "is_array":false
       }
     }
   }
