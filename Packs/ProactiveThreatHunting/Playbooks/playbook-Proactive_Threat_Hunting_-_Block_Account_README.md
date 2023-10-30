@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-This playbook does not use any sub-playbooks.
+* Block Account - Generic v2
 
 ### Integrations
 
@@ -14,7 +14,6 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* DisableUserWrapper
 * Print
 
 ### Commands

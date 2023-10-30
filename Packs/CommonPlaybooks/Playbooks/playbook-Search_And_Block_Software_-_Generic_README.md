@@ -10,8 +10,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Search And Block Software - XQL Engine
 * MDE - Search And Block Software
+* Cortex XDR - Search And Block Software - XQL Engine
 
 ### Integrations
 
@@ -19,7 +19,7 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* DeleteContext
 
 ### Commands
 
@@ -33,6 +33,7 @@ This playbook does not use any commands.
 | --- | --- | --- | --- |
 | FileName | File name to search |  | Optional |
 | TimeFrame | Time in relative date or range format \(for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 \+02:00 and 2021-02-01 12:34:56 \+02:00"\). The default is the last 24 hours. |  | Optional |
+| Indicator Expiration | DateTime string indicating when the indicator expires. Format: \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). |  | Optional |
 
 ## Playbook Outputs
 

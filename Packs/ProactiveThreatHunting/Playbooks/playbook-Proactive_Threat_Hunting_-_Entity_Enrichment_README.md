@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-Account Enrichment - Generic v2.1
+* Account Enrichment - Generic v2.1
 
 ### Integrations
 
@@ -14,16 +14,16 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* JsonToTable
 * Print
-* DeleteContext
 * Set
+* DeleteContext
+* JsonToTable
 
 ### Commands
 
-* setIncident
 * endpoint
 * xdr-get-alerts
+* setIncident
 
 ## Playbook Inputs
 

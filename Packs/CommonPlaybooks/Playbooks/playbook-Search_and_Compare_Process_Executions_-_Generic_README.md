@@ -14,9 +14,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Search and Compare Process Executions - XDR Alerts
 * MDE - Search and Compare Process Executions
 * Cortex XDR - Search and Compare Process Executions - XQL Engine
+* Cortex XDR - Search and Compare Process Executions - XDR Alerts
 
 ### Integrations
 

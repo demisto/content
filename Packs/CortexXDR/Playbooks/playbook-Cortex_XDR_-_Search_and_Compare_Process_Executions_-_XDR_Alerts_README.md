@@ -18,8 +18,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* Set
 * StringSimilarity
+* Set
 * DeleteContext
 
 ### Commands

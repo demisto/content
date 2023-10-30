@@ -17,9 +17,9 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* DeleteContext
 * JsonToTable
 * Print
+* DeleteContext
 
 ### Commands
 
