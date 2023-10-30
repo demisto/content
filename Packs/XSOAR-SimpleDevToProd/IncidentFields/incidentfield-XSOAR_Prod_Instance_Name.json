@@ -7,7 +7,7 @@
     "cliName": "xsoarprodinstancename",
     "closeForm": false,
     "content": true,
-    "description": "Name of the Prod Demisto REST API Instance in the simple Dev to Prod setup",
+    "description": "Name of the Prod Core or Demisto REST API Instance in the simple Dev to Prod setup",
     "editForm": true,
     "group": 0,
     "hidden": false,
