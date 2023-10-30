@@ -43,6 +43,21 @@ repos:
   - id: autopep8
 - repo: local
   hooks:
+
+
+  - id: pylint-in-docker
+    name: pylint-in-docker
+    description: my description
+    docker_image:nightly: all
+    docker_image: all
+    entry: pylint
+    files: \.py$
+    exclude: _test\.py$
+    args: ['--ignore=demistomock.py,CommonServerPython.py,CommonServerUserPython.py,conftest.py,.venv', '-E', '--disable=bad-option-value,unsubscriptable-object', '-d duplicate-string-formatting-argument', "--msg-template='{path}:{line}:{column}: {msg_id} {obj}: {msg}'", '--generated-members=requests.packages.urllib3,requests.codes.ok']
+    config_file_arg:
+      arg_name: '--rcfile'
+      file_name: '.pylintrc'
+
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.
