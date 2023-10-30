@@ -168,7 +168,7 @@ def get_pack_entities(pack_path):
             entity_type = match.group(1)
         else:
             # General pack comment
-            entity_type = ContentType.PACK.value
+            entity_type = 'Packs'
 
         name, description = get_new_entity_record(entity_path)
         entities_data.setdefault(entity_type, {})[name] = description
