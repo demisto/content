@@ -2040,7 +2040,7 @@ def update_issue_assignee_command(client: JiraBaseClient, args: Dict[str, str]) 
     assignee_name = args.get('assignee', '')  # For Jira OnPrem
     assignee_id = args.get('assignee_id', '')  # For Jira Cloud
     if not (assignee_name or assignee_id):
-         raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud.')
+        raise DemistoException('Please provide assignee for Jira Server or assignee_id for Jira Cloud.')
     if (assignee_name and assignee_id):
         raise DemistoException('Please provide only one, assignee for Jira Server or assignee_id for Jira Cloud.')
     body = {'accountId': assignee_id} if isinstance(client, JiraCloudClient) else {'name': assignee_name}
