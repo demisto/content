@@ -124,7 +124,7 @@ class CollectionResult:
         self.packs_to_upload: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: tuple[Machine, ...] | None = None
-        self.packs_to_reinstall_test: set[str] = set()
+        self.packs_to_reinstall: set[str] = set()
 
         try:
             # raises if invalid
@@ -185,7 +185,7 @@ class CollectionResult:
             logger.info(f'collected {modeling_rule_to_test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack_to_reinstall:
-            self.packs_to_reinstall_test = {pack_to_reinstall}
+            self.packs_to_reinstall = {pack_to_reinstall}
             logger.info(f'collected {pack_to_reinstall=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
@@ -277,7 +277,7 @@ class CollectionResult:
         result.packs_to_install = self.packs_to_install | other.packs_to_install  # type: ignore[operator]
         result.packs_to_upload = self.packs_to_upload | other.packs_to_upload
         result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
-        result.packs_to_reinstall_test = self.packs_to_reinstall_test | other.packs_to_reinstall_test
+        result.packs_to_reinstall = self.packs_to_reinstall | other.packs_to_reinstall
         return result
 
     @staticmethod
@@ -1373,7 +1373,7 @@ def output(result: CollectionResult | None):
     ) if result else ()
     modeling_rules_to_test = (x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test)
     machines = result.machines if result and result.machines else ()
-    packs_to_reinstall_test = sorted(result.packs_to_reinstall_test, key=lambda x: x.lower()) if result else ()
+    packs_to_reinstall_test = sorted(result.packs_to_reinstall, key=lambda x: x.lower()) if result else ()
 
     test_str = '\n'.join(tests)
     packs_to_install_str = '\n'.join(packs_to_install)

@@ -210,12 +210,11 @@ def test_handle_delete_datasets_by_testdata(requests_mock, status_code, expected
         with open(f'{temp_dir}/modeling_rules_to_test.txt', 'w') as mr_to_test:
             mr_to_test.write("MyPack/ModelingRules/MR")
 
-        requests_mock.post(f'{BASE_URL}/public_api/v1/xql/delete_dataset', status_code=status_code)
-        res = script.handle_delete_datasets_by_testdata(
-            base_url=BASE_URL,
-            api_key=API_KEY,
-            auth_id="1",
-            test_data_filenames=f'{temp_dir}/modeling_rules_to_test.txt',
+        dataset_names = script.get_dataset_and_packs_from_collected_modeling_rules_to_test(
+            test_data_filenames=f'{temp_dir}/modeling_rules_to_test.txt'
         )
+        requests_mock.post(f'{BASE_URL}/public_api/v1/xql/delete_dataset', status_code=status_code)
+        res = script.delete_datasets_by_testdata(base_url=BASE_URL, api_key=API_KEY, auth_id="1",
+                                                 dataset_names=dataset_names)
         test_data_file.unlink()
     assert res == expected_res

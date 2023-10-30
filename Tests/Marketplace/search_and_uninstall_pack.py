@@ -405,7 +405,7 @@ def get_dataset_and_packs_from_collected_modeling_rules_to_test(test_data_filena
     return datasets_to_delete
 
 
-def handle_delete_datasets_by_testdata(base_url, api_key, auth_id, test_data_filenames):
+def delete_datasets_by_testdata(base_url, api_key, auth_id, dataset_names):
     """
     Delete all datasets that the build will test in this job.
 
@@ -413,15 +413,12 @@ def handle_delete_datasets_by_testdata(base_url, api_key, auth_id, test_data_fil
         base_url (str): The base url of the machine.
         api_key (str): API key of the machine.
         auth_id (str): authentication parameter for the machine.
-        test_data_filenames (str): test data files that collected to test in this build.
+        dataset_names (set): datasets to delete
 
     Returns:
         Boolean - If the operation succeeded.
     """
     logging.info("Starting to handle delete datasets from cloud instance.")
-    dataset_names = get_dataset_and_packs_from_collected_modeling_rules_to_test(
-        test_data_filenames=test_data_filenames
-    )
     logging.debug(f'Collected datasets to delete {dataset_names=}.')
     success = delete_datasets(dataset_names=dataset_names, base_url=base_url, api_key=api_key, auth_id=auth_id)
     return success
@@ -471,12 +468,12 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
             success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
                 wait_for_uninstallation_to_complete(client, non_removable_packs)
     success &= sync_marketplace(client=client)
-    success &= handle_delete_datasets_by_testdata(
-        base_url=base_url,
-        api_key=api_key,
-        auth_id=xdr_auth_id,
-        test_data_filenames=options.modeling_rules_to_test_files,
-    )
+    success &= delete_datasets_by_testdata(base_url=base_url,
+                                           api_key=api_key,
+                                           auth_id=xdr_auth_id,
+                                           dataset_names=get_dataset_and_packs_from_collected_modeling_rules_to_test(
+                                               test_data_filenames=options.modeling_rules_to_test_files)
+                                           )
     return success
 
 

@@ -30,7 +30,14 @@ def options_handler() -> argparse.Namespace:
 
 def reinstall_packs(options: argparse.Namespace, cloud_machine: str) -> bool:
     """
+    Packs re-installation test. Uninstall and then install packs from options.packs_to_reinstall list.
 
+    Args:
+        options: Script arguments.
+        cloud_machine (str): Cloud machine name to test on.
+
+    Returns:
+        Boolean - If the operation succeeded.
     """
     success = True
     api_key, _, base_url, xdr_auth_id = CloudBuild.get_cloud_configuration(cloud_machine,
