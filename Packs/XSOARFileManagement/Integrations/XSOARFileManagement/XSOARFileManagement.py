@@ -403,7 +403,7 @@ def upload_file_command(client: Client, args: dict) -> CommandResults:
         # file name override by user
         file_name = file_name if file_name else res_name
         if not file_name:
-            return_error("Impossible to detect a filename in the path,"
+            return_error("Impossible to detect a filename in the path, "
                          "use the argument 'fileName' to set one !")
         file_binary = open(res_path, 'rb')
         response = client.upload_file(incident_id,
