@@ -21,7 +21,7 @@ configuration:
   required: false
   additionalinfo: The Project ID to fetch issues from
   hidden: true
-- display: ''
+- display: API Key
   name: credential_apikey
   type: 9
   required: false
