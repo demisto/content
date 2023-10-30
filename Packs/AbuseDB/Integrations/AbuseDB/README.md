@@ -64,6 +64,11 @@
 <td style="width: 532px;">Minimum score from AbuseIPDB to consider the IP malicious (must be greater than 20), default is 80</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 137px;">override_private_lookup</td>
+<td style="width: 532px;">Enrichment of private IP addresses will be conducted even if it has been disabled at the integration level, default is "false"</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
