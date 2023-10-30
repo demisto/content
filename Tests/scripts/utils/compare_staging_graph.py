@@ -185,6 +185,7 @@ def compare(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifacts", help="artifacts of the build")
+    parser.add_argument("--server-type", help="Server type")
     parser.add_argument("--marketplace", "--mp", help="Marketplace to use")
     parser.add_argument("--output-path", help="Output path")
     parser.add_argument("--slack-token", "-s", help="Slack token", required=False)
@@ -194,15 +195,16 @@ def main():
     output_path = Path(args.output_path)
     slack_token = args.slack_token
     marketplace = args.marketplace
+    artifacts_folder_server_type = artifacts / f"server_type_{args.server_type}"
 
-    zip_id_set = artifacts / "uploaded_packs-id_set"
-    zip_graph = artifacts / "uploaded_packs-graph"
+    zip_id_set = artifacts_folder_server_type / "uploaded_packs-id_set"
+    zip_graph = artifacts_folder_server_type / "uploaded_packs-graph"
 
-    index_id_set_path = artifacts / "index.json"
-    index_graph_path = artifacts / "index-graph.json"
+    index_id_set_path = artifacts_folder_server_type / "index.json"
+    index_graph_path = artifacts_folder_server_type / "index-graph.json"
 
-    collected_packs_id_set = artifacts / "content_packs_to_install.txt"
-    collected_packs_graph = artifacts / "content_packs_to_install-graph.txt"
+    collected_packs_id_set = artifacts_folder_server_type / "content_packs_to_install.txt"
+    collected_packs_graph = artifacts_folder_server_type / "content_packs_to_install-graph.txt"
 
     message = [
         f"Diff report for {marketplace}",

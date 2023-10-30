@@ -6,6 +6,7 @@ import os
 import re
 import sys
 from contextlib import contextmanager
+from pathlib import Path
 from queue import Queue
 from typing import Any
 from collections.abc import Generator
@@ -301,8 +302,8 @@ def load_conf_files(conf_path, secret_conf_path):
 
 
 def load_env_results_json():
-    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
-                                                                  'env_results.json'))
+    env_results_path = os.getenv('ENV_RESULTS_PATH',
+                                 (Path(os.getenv("ARTIFACTS_FOLDER_SERVER_TYPE", './artifacts')) / 'env_results.json').as_posix())
 
     if not os.path.isfile(env_results_path):
         logging.warning(f"Did not find {env_results_path} file ")
