@@ -1,4 +1,4 @@
-[INGEST:vendor="Google", product="Workspace Chrome", target_dataset="google_workspace_chrome_raw", no_hit = keep]
+[INGEST:vendor="Google", product="Workspace Chrome", target_dataset="google_workspace_chrometestdata_raw", no_hit = keep]
 // Creating json fields with the value of the events field, organized in a key - value format.
 alter events = events -> []
 | arrayexpand events
