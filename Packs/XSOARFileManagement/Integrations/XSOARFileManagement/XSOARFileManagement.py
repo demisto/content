@@ -4,17 +4,20 @@ import re
 import time
 from typing import Tuple
 import urllib3
+import base64
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    def upload_file(self, incident_id: str, file_content, file_name: str, as_incident_attachment: bool = True):
+    def upload_file(self, incident_id: str,
+                    file_content,
+                    file_name: str,
+                    as_incident_attachment: bool = True):
         """Upload file
         Arguments:
             client: (Client) The client class.
@@ -37,6 +40,14 @@ class Client(BaseClient):
         return response
 
     def delete_context(self, incident_id: str, key_to_delete: str):
+        """Send the command "DeleteContext" to a specific incident
+        Arguments:
+            client: (Client) The client class.
+            incident_id {str} -- incident id to upload the file to
+            key_to_delete {str} -- context data incident key to delete
+        Returns:
+            json -- return of the API
+        """
         body_content = {
             "id": "",
             "version": 0,
@@ -153,18 +164,30 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client, params: Dict[str, Any]) -> str:
+def test_module(client: Client) -> str:
+    """Test module command
+    Arguments:
+        client: (Client) The client class.
+    Returns:
+        str -- ok or the error
+    """
     try:
         client.get_current_user()
         return 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
+    except DemistoException as error:
+        if 'Forbidden' in str(error):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
-            raise e
+            raise error
 
 
 def get_incident_id(entry_id: str) -> str:
+    """Parse the entryID to get the incident id
+    Arguments:
+        entryID {str} -- entry ID of the file
+    Returns:
+        str -- incident id
+    """
     res = re.findall("(\d+)@(\d+)", entry_id)
     if len(res) <= 0:
         return_error("EntryID unknow or malformatted !")
@@ -224,7 +247,7 @@ def check_file_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults -- Readable output
     """
-    entry_id = demisto.args()['entryID']
+    entry_id = args.get('entryID')
     output_content = demisto.context().get('IsFileExists', {})
     if len(output_content) > 0:
         client.delete_context(demisto.incident()["id"], "IsFileExists")
@@ -259,12 +282,12 @@ def delete_attachment_command(client: Client, args: dict) -> CommandResults:
         This command delete file on the disk
     """
     incident_id = args.get('incidentID', demisto.incident()["id"])
-    file_path = demisto.args()['filePath']
+    file_path = args.get('filePath')
     field_name = args.get('fieldName', "attachment")
     try:
         client.delete_attachment(incident_id, file_path, field_name)
-    except DemistoException as e:
-        return_error(f"File already deleted or not found !\n{str(e)}")
+    except DemistoException as error:
+        return_error(f"File already deleted or not found !\n{str(error)}")
     return CommandResults(readable_output=f"Attachment {file_path} deleted !")
 
 
@@ -274,8 +297,8 @@ def delete_file(client: Client, entry_id: str):
     # delete old file
     try:
         client.delete_file(entry_id)
-    except DemistoException as e:
-        return_error(f"File already deleted or not found !\n{str(e)}")
+    except DemistoException as error:
+        return_error(f"File already deleted or not found !\n{str(error)}")
     # output
     incident_id = get_incident_id(entry_id)
     client.delete_context(incident_id, "File")
@@ -293,7 +316,7 @@ def delete_file_command(client: Client, args: dict) -> CommandResults:
     Note:
         This command delete file on the disk
     """
-    entry_id = demisto.args()['entryID']
+    entry_id = args.get('entryID')
     new_files = delete_file(client, entry_id)
     return CommandResults(readable_output=f"File {entry_id} deleted !", outputs=new_files, outputs_prefix="File")
 
@@ -339,32 +362,49 @@ def upload_file_command(client: Client, args: dict) -> CommandResults:
     """
     incident_id = args.get('incidentID', demisto.incident()["id"])
     file_content = args.get('fileContent', '')
+    file_content_b64 = args.get('fileContentB64', '')
     entry_id = args.get('entryID', '')
     file_path = args.get('filePath', '')
     file_name = args.get('fileName', '')
     target = args.get('target', 'war room entry')
 
+    # id can be empty if this command is triggered by a field changed
+    if not incident_id:
+        return_error("Unable to get the incident id of the incident !")
     # check if some content is given and not too many
-    if len(list(filter(None, [file_content, entry_id, file_path]))) != 1:
-        return_error("You have to give either the content of the file using the arg 'fileContent' or an entryID or a file path !")
+    if len(list(filter(None, [file_content, file_content_b64, entry_id, file_path]))) != 1:
+        return_error("You have to give either the content of the file using the arg 'fileContent'"
+                     "or 'fileContentB64' or an entryID or a file path !")
     # if file_name is not set when using content of the file
-    if file_content and not file_name:
+    if (file_content or file_content_b64) and not file_name:
         return_error("You have to choose a name for your file !")
 
     response = {}
     if file_content:
-        response = client.upload_file(incident_id, file_content, file_name, target == 'incident attachment')
+        response = client.upload_file(incident_id,
+                                      file_content,
+                                      file_name,
+                                      target == 'incident attachment')
+    elif file_content_b64:
+        file_content_tmp = base64.b64decode(file_content_b64)
+        response = client.upload_file(incident_id,
+                                      file_content_tmp,
+                                      file_name,
+                                      target == 'incident attachment')
     else:
         arg_path: str = list(filter(None, [entry_id, file_path]))[0]
         res_path, res_name = get_file_path_name(arg_path)
         # file name override by user
         file_name = file_name if file_name else res_name
         if not file_name:
-            return_error("Impossible to detect a filename in the path, use the argument 'fileName' to set one !")
+            return_error("Impossible to detect a filename in the path,"
+                         "use the argument 'fileName' to set one !")
         file_binary = open(res_path, 'rb')
-        response = client.upload_file(incident_id, file_binary, file_name, target == 'incident attachment')
+        response = client.upload_file(incident_id,
+                                      file_binary,
+                                      file_name,
+                                      target == 'incident attachment')
         file_binary.close()
-    demisto.results(response)
     readable = f'File {file_name} uploaded successfully to incident {incident_id}.'
     # in case the file uploaded as war room entry
     if target == 'war room entry':
@@ -402,7 +442,7 @@ def main() -> None:
             proxy=proxy)
 
         if command == 'test-module':
-            result = test_module(client, params)
+            result = test_module(client)
             return_results(result)
         elif command == 'file-management-upload-file-to-incident':
             return_results(upload_file_command(client, args))
@@ -418,11 +458,12 @@ def main() -> None:
             raise NotImplementedError(f'Command {command} is not implemented')
 
     # Log exceptions and return errors
-    except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+    except Exception as error:
+        return_error(f'Failed to execute {command} command.\nError:\n{str(error)}')
 
 
 ''' ENTRY POINT '''
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

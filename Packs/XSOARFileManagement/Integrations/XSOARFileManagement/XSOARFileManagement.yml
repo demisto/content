@@ -30,11 +30,13 @@ script:
   - arguments:
     - description: Incident ID to upload the file. If empty, the current incident ID is taken
       name: incidentID
-    - description: Non binary content of the file (if set let filePath and filePath empty)
+    - description: Content of the file encoded in Base64 (if set let filePath, entrID and fileContent empty)
+      name: fileContentB64
+    - description: Non binary content of the file (if set let filePath, entryID and fileContentB64 empty)
       name: fileContent
-    - description: Entry ID of the file to read (if set let filePath and fileContent empty)
+    - description: Entry ID of the file to read (if set let filePath, fileContent and fileContentB64 empty)
       name: entryID
-    - description: 'Path of the file to read ex: incident.attachment.path (if set let entryID and fileContent empty)'
+    - description: 'Path of the file to read ex: incident.attachment.path (if set let entryID, fileContent and fileContentB64 empty)'
       name: filePath
     - description: Name of the file. Mandatory if used with filePath and fileContent otherwise the name of the file will not change
       name: fileName
@@ -83,7 +85,7 @@ script:
       required: true
     description: 'Rename a file. Warning: use this only if necessary, it''s HEAVY to run, this will delete and recreate the file with another name !'
     name: file-management-rename-file
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.78960
   runonce: false
   script: ''
   subtype: python3
