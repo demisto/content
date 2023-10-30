@@ -79,7 +79,7 @@ stop-running-pipelines:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running pipelines on current branch"
-    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
+    - python3 ./Tests/scripts/stop_running_pipeline.py
     - section_end "Stop running pipelines on current branch"
     - job-done
 
@@ -727,7 +727,7 @@ test-upload-flow:
     - section_end "Checks Whether to Trigger a Test Upload"
 
     - section_start "Create Testing Branch"
-    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
+    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-${CI_PIPELINE_ID}"
     - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a "${ARTIFACTS_FOLDER}" -g $GITLAB_PUSH_TOKEN
     - echo "Created test branch:${BRANCH}"
     - section_end "Create Testing Branch"
