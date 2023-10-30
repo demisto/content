@@ -233,8 +233,10 @@ demisto-sdk-nightly:run-commands-against-instance:
       echo "Server URL: $DEMISTO_BASE_URL"
 
     - section_start "Install Packs and run Test-Module"
-    - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"
+    # - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    # - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"  
+    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
@@ -337,8 +339,9 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
   stage: run-instances
   script:
     - EXIT_CODE=0
-    - echo "SemperisDSP" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - echo -e "\nSemperisDSP" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt"
+    - cat "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt"
 
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -388,7 +391,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - source .gitlab/helper_functions.sh
     - !reference [.unlock-machine]
 
-
 demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
   tags:
     - gce
@@ -432,10 +434,12 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - echo "Server URL $DEMISTO_BASE_URL"
 
     - section_start "Install Packs and run Test-Module"
-    - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"
+    # - echo "HelloWorld" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    # - echo "HelloWorld-Test" >> "$ARTIFACTS_FOLDER/filter_file.txt"  
+    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "$ARTIFACTS_FOLDER/conf.json" Tests/conf.json
+    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
 
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
