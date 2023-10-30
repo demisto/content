@@ -96,3 +96,4 @@ script:
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+defaultmapperin: Recorded Future ASI - Incoming Mapper
