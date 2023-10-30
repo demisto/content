@@ -23,7 +23,7 @@ Follow these steps on Dell EMC Unisphere to configure syslog messages forwarding
    | `Port Type`| Select the requested forwarding transport protocol (*UDP* or *TCP*). 
 5. Click **OK**.
 
-For additional details regarding remote logging configuration on Unisphere, check [Dell EMC Unisphere](https://www.delltechnologies.com/content/dam/uwaem/images/documentation/en/unity-family/unity-p-security-config-guide/unity_p_security_config_guide_en-us.pdf#logging) formal documentation. 
+For additional details regarding remote logging configuration on Unisphere, check the [Dell EMC Unisphere](https://www.delltechnologies.com/content/dam/uwaem/images/documentation/en/unity-family/unity-p-security-config-guide/unity_p_security_config_guide_en-us.pdf#logging) documentation. 
 
 #### Remark:
 - If instead of working with the Unisphere UI, you prefer to configure the remote logging via the the Unisphere CLI (UEMCLI),
