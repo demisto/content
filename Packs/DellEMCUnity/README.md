@@ -27,7 +27,7 @@ For additional details regarding remote logging configuration on Unisphere, chec
 
 #### Remark:
 - If instead of working with the Unisphere UI, you prefer to configure the remote logging via the the Unisphere CLI (UEMCLI),
-  check out the [Create remote logging configuration](https://www.dell.com/support/manuals/en-us/unity-6500/unity_p_cli_user_guide/create-remote-logging-configuration?guid=guid-10561e1f-09d7-40b4-9ffc-1277255ff8e8&lang=en-us) section on the Dell Unisphere CLI user guide.
+ see the [Create remote logging configuration](https://www.dell.com/support/manuals/en-us/unity-6500/unity_p_cli_user_guide/create-remote-logging-configuration?guid=guid-10561e1f-09d7-40b4-9ffc-1277255ff8e8&lang=en-us) section in the Dell Unisphere CLI user guide.
 
 
 ## Collect Events from Vendor
