@@ -249,7 +249,7 @@ class Helper:
 
 class Client(BaseClient):
     REQUESTS_TIMEOUT = 60
-    pack_version = "1.1.0"
+    pack_version = "1.1.1"
 
     def __init__(
         self,
