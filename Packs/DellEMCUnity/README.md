@@ -7,6 +7,8 @@ This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 
+### Dell EMC Unisphere Remote Logging Configuration
+
 Follow these steps on Dell EMC Unisphere to configure syslog messages forwarding from Dell EMC Unity to Cortex XSIAM.
  
 1. Log into the Dell EMC Unisphere management console. 
@@ -15,12 +17,18 @@ Follow these steps on Dell EMC Unisphere to configure syslog messages forwarding
 4. Fill in the following settings: 
    | Parameter  | Value   
    | :---       | :---        
-   | `Address`  | Enter the IP address and port number of the target Cortex XSIAM Broker VM syslog server, separated by a colon: *\<Broker_VM_IP\>:\<Broker_VM_Port\>*.
-   | `Facility` | Select the type of log message that would be used to classify the forwarded syslog messages. Dell EMC recommends using the **User-Level Messages** facility. See [Syslog Facility Values](https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1) for additional details.
+   | `Address`  | Enter the IP address and port number of the target Cortex XSIAM Broker VM syslog server, separated by a colon: *\<Broker_VM_IP\>:\<Broker_VM_Port\>*, for e.g., *192.168.1.123:514.*
+   | `Facility` | Select the type of log messages to forward to Cortex XSIAM. Dell EMC recommends using the **User-Level Messages** facility. See [Syslog Facility Values](https://datatracker.ietf.org/doc/html/rfc5424#section-6.2.1) for additional details.
    | `Severity` | Select the minimum severity level of the events to send to Cortex XSIAM.
    | `Port Type`| Select the requested forwarding transport protocol (*UDP* or *TCP*). 
 5. Click **OK**.
-   
+
+For additional details regarding remote logging configuration on Unisphere, check [Dell EMC Unisphere](https://www.delltechnologies.com/content/dam/uwaem/images/documentation/en/unity-family/unity-p-security-config-guide/unity_p_security_config_guide_en-us.pdf#logging) formal documentation. 
+
+#### Remark:
+- If instead of working with the Unisphere UI, you prefer to configure the remote logging via the the Unisphere CLI (UEMCLI),
+  check out the [Create remote logging configuration](https://www.dell.com/support/manuals/en-us/unity-6500/unity_p_cli_user_guide/create-remote-logging-configuration?guid=guid-10561e1f-09d7-40b4-9ffc-1277255ff8e8&lang=en-us) section on the Dell Unisphere CLI user guide.
+
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
