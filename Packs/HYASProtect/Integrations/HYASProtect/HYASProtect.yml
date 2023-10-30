@@ -21,7 +21,7 @@ name: HYAS Protect
 script:
   commands:
   - arguments:
-    - description: Domain value to query
+    - description: Domain value to query.
       name: domain
       required: true
     description: Returns verdict information for the provided Domain.
