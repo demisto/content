@@ -2183,7 +2183,7 @@ class TestFetch:
         """
         mocker.patch.object(demisto, 'setLastRun')
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
-                                                                            'pagination': {'meta': {'total': 2}}})
+                                                                            'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
                                                 'created_timestamp': '2020-09-04T09:16:11Z',
@@ -2281,7 +2281,7 @@ class TestFetch:
         """
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
-                                                                            'pagination': {'meta': {'total': 4}}})
+                                                                            'meta': {'pagination': {'total': 4}}})
 
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[{'time': '2020-09-04T09:16:10Z',
@@ -2300,7 +2300,7 @@ class TestFetch:
         assert demisto.setLastRun.mock_calls[0][1][0][0] == expected_last_run
 
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:3', 'ldt:4'],
-                                                                            'pagination': {'meta': {'total': 4}}})
+                                                                            'meta': {'pagination': {'total': 4}}})
 
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[expected_last_run, {}, {}])
@@ -2373,7 +2373,7 @@ class TestFetch:
         mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}, {}])
 
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2'],
-                                                                                'pagination': {'meta': {'total': 2}}})
+                                                                                'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
