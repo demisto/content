@@ -78,7 +78,7 @@ filter
     xdm.event.id = json_extract_scalar(DETECTION, "$.QID"),
     xdm.alert.subcategory = json_extract_scalar(DETECTION, "$.TYPE"),
     xdm.alert.severity = json_extract_scalar(DETECTION, "$.SEVERITY"),
-    xdm.source.port = PORT,
+    xdm.source.port = to_integer(json_extract_scalar(DETECTION, "$.PORT")),
     xdm.network.ip_protocol = json_extract_scalar(DETECTION, "$.PROTOCOL"),
     xdm.observer.action = json_extract_scalar(DETECTION, "$.STATUS"),
     xdm.source.application.name = json_extract_scalar(DETECTION, "$.SERVICE"),

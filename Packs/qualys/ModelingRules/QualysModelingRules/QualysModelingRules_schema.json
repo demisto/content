@@ -1,9 +1,5 @@
 {
   "qualys_qualys_raw": {
-      "PORT": {
-      "type": "int",
-      "is_array": false
-    },
     "User_Name": {
       "type": "string",
       "is_array": false
