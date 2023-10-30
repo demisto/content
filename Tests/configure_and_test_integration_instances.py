@@ -40,6 +40,7 @@ from Tests.test_integration import __get_integration_config, test_integration_in
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
 
+TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
 NO_PROXY = ','.join([
@@ -70,10 +71,16 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
     'content.validate.docker.images': 'false'
 }
 ID_SET_PATH = './artifacts/id_set.json'
-XSOAR_BUILD_TYPE = "XSOAR"
-CLOUD_BUILD_TYPE = "XSIAM"
-MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
-MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
+XSOAR_SERVER_TYPE = "XSOAR"
+XSOAR_SASS_SERVER_TYPE = "XSOAR SAAS"
+XSIAM_SERVER_TYPE = "XSIAM"
+SERVER_TYPES = [XSOAR_SERVER_TYPE, XSOAR_SASS_SERVER_TYPE, XSIAM_SERVER_TYPE]
+MARKETPLACE_TEST_BUCKET = (
+    f'{TEST_XDR_PREFIX}marketplace-ci-build/content/builds'
+)
+MARKETPLACE_XSIAM_BUCKETS = (
+    f'{TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam'
+)
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', '/builds/xsoar/content/artifacts/marketplacev2')
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
 SET_SERVER_KEYS = True
@@ -731,7 +738,8 @@ class XSOARBuild(Build):
                             marketplace_buckets=None):
         url_suffix = f'{quote_plus(branch_name)}/{ci_build_number}/xsoar'
         config_path = 'marketplace.bootstrap.bypass.url'
-        config = {config_path: f'https://storage.googleapis.com/marketplace-ci-build/content/builds/{url_suffix}'}
+        config = {config_path:
+                  f'https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/builds/{url_suffix}'}
         for server in servers:
             server.add_server_configuration(config, 'failed to configure marketplace custom url ', True)
         logging.success('Updated marketplace url and restarted servers')
@@ -955,7 +963,8 @@ def options_handler(args=None):
                         default='./artifacts/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./artifacts/content_packs_to_install.txt')
-    parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
+    parser.add_argument('--server-type', help=f'Server type running, choices: {",".join(SERVER_TYPES)}',
+                        default=Build.run_environment)
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
     parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to file with cloud Servers api keys.')
@@ -1772,13 +1781,13 @@ def get_turned_non_hidden_packs(modified_packs_names: set[str], build: Build) ->
 
 def create_build_object() -> Build:
     options = options_handler()
-    logging.info(f'Build type: {options.build_object_type}')
-    if options.build_object_type == XSOAR_BUILD_TYPE:
+    logging.info(f'Server type: {options.server_type}')
+    if options.server_type == XSOAR_SERVER_TYPE:
         return XSOARBuild(options)
-    elif options.build_object_type == CLOUD_BUILD_TYPE:
+    elif options.server_type in [XSIAM_SERVER_TYPE, XSOAR_SASS_SERVER_TYPE]:
         return CloudBuild(options)
     else:
-        raise Exception(f"Wrong Build object type {options.build_object_type}.")
+        raise Exception(f"Wrong Server type {options.server_type}.")
 
 
 def packs_names_to_integrations_names(turned_non_hidden_packs_names: set[str]) -> list[str]:

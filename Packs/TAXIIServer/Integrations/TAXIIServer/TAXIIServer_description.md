@@ -14,16 +14,25 @@ The collections are defined by a JSON object in the following format:
 
 ## How to Access the TAXII Service
 
-To view the available TAXII services, visit the discovery service in one of the following options:
- 
-- **https://*demisto_address*/instance/execute/*instance_name/taxii-discovery-service*** 
-- **http://*demisto_address*:*listen_port/taxii-discovery-service***
+(For Cortex XSOAR 6.x) Use one of the following options:
+
+- **https://*demisto_address*/instance/execute/*instance_name/taxii-discovery-service**
+- **http://*demisto_address*:*listen_port/taxii-discovery-service**
+
+(For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+  When running on an engine: http://xsoar_address:listen_port/{taxii2_api_endpoint}/
+
+
 
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
+2. (For Cortex XSOAR 6.x) In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
+3. You can now trigger the webhook URL:
+
+   - For Cortex XSOAR 6.x: **<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>**. For example, https://my.demisto.live/instance/execute/taxiiserver. Note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
+(For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
 
 ## How to use HTTPS
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
