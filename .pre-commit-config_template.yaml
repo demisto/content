@@ -52,7 +52,7 @@ repos:
     docker_image: native:ga
     entry: pylint
     files: Packs\/.*\.py$
-    exclude: (_test\.py$)|(.vulture_whitelist.py)
+    exclude: (_test\.py)|(.vulture_whitelist\.py)$
     args: ['--ignore=demistomock.py,CommonServerPython.py,CommonServerUserPython.py,conftest.py,.venv', '-E', '--disable=bad-option-value,unsubscriptable-object', '-d duplicate-string-formatting-argument', "--msg-template='{path}:{line}:{column}: {msg_id} {obj}: {msg}'", '--generated-members=requests.packages.urllib3,requests.codes.ok']
     config_file_arg:
       arg_name: '--rcfile'
