@@ -1,0 +1,32 @@
+args:
+- default: true
+  defaultValue: '[]'
+  description: The list to shuffle. Can be `list[Any]`.
+  name: input_list
+  required: true
+comment: 'Takes a list and shuffles the order of the objects inside. '
+commonfields:
+  id: ShuffleList
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.13.78960
+enabled: true
+engineinfo: {}
+name: ShuffleList
+outputs:
+- contextPath: ShuffledList
+  description: The output shuffled `list[Any]`.
+  type: unknown
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+type: python
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
