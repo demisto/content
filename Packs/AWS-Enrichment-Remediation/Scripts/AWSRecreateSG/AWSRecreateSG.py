@@ -92,7 +92,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
             else:
                 new_rule = (str([rule])).replace("'", "\"")
                 recreate_list.append(new_rule)
-        elif rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0":
+        elif rule.get('IpRanges') and rule['IpRanges'][0].get('CidrIp') == "0.0.0.0/0":
             fixed = split_rule(rule, port, protocol)
             change = True
             for rule_fix in fixed:
@@ -278,6 +278,17 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str, region: st
     return mapping_dict, instance_to_use
 
 
+def create_command_results(readable_output: str, output_flag: bool):
+    command_results = CommandResults(
+        outputs_prefix="",
+        outputs_key_field="",
+        outputs={'awssgrecreated': output_flag},
+        raw_response={'awssgrecreated': output_flag},
+        readable_output=readable_output,
+    )
+    return command_results
+
+
 def aws_recreate_sg(args: dict[str, Any]) -> str:
     """
     Main command that determines what interface on an EC2 instance has an over-permissive security group on,
@@ -307,12 +318,13 @@ def aws_recreate_sg(args: dict[str, Any]) -> str:
     # Determine what SGs are overpermissive for particular port.
     replace_list = determine_excessive_access(int_sg_mapping, port, protocol, assume_role, instance_to_use, region)
     if len(replace_list) == 0:
-        raise ValueError('No security groups were found to need to be replaced')
+        readable_output = 'No security groups were found to need to be replaced'
+        return create_command_results(readable_output, False)
     replace_sgs(replace_list, int_sg_mapping, assume_role, instance_to_use, region)
-    display_message = f"For interface {replace_list[0]['int']}: \r\n"
+    readable_output = f"For interface {replace_list[0]['int']}: \r\n"
     for replace in replace_list:
-        display_message += f"replaced SG {replace['old-sg']} with {replace['new-sg']} \r\n"
-    return display_message
+        readable_output += f"replaced SG {replace['old-sg']} with {replace['new-sg']} \r\n"
+    return create_command_results(readable_output, True)
 
 
 ''' MAIN FUNCTION '''
