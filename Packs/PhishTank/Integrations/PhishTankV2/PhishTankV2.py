@@ -48,7 +48,8 @@ class Client(BaseClient):
             method='GET',
             url_suffix=url_suffix,
             resp_type="text",
-            error_handler=handle_error
+            error_handler=handle_error,
+            headers={'User-Agent': 'PANW-XSOAR'}
         )
         return result
 
