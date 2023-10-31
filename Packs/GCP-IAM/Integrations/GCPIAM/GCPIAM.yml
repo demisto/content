@@ -89,6 +89,8 @@ script:
       name: page
     - description: 'A list of roles. Must be given as a comma separated list (Ex: "roles/bigquery.admin, roles/editor, roles/owner").'
       name: roles
+      isArray: true
+      required: false
     description: Retrieves the IAM access control policy for the specified project.
     name: gcp-iam-project-iam-policy-get
     outputs:

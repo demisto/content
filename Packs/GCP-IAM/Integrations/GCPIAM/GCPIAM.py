@@ -1230,6 +1230,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
         readable_header (str): Readable message header for XSOAR war room.
         limit (int): Number of elements to retrieve.
         page (int): Page number.
+        role (list): List of potential GCP IAM roles 
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -1243,7 +1244,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
     if roles and bindings:
         bindings_roles_only = []
         for index, entry in enumerate(bindings):
-            if entry["role"] in roles:
+            if entry.get("role") in roles:
                 bindings_roles_only.append(bindings.pop(index))
 
         bindings = bindings_roles_only
