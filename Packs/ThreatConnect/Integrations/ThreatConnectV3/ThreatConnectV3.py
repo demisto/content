@@ -463,7 +463,7 @@ def fetch_incidents(client: Client, *args) -> str:
             if threatconnect_id > last_fetch_id:
                 last_fetch_id = threatconnect_id
                 incidents.append(detection_to_incident(incident, incident.get('dateAdded')))
-        except TypeError or ValueError:
+        except (TypeError, ValueError):
             demisto.debug(f'Failed parsing the incident id received from threat connect; {incident.get("id")=}')
 
     demisto.debug(f'{incidents=}')
