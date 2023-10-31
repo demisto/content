@@ -11,7 +11,15 @@ from demisto_sdk.utils.utils import retry_http_request
 
 @pytest.fixture()
 def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
+    """
+    Setup:
+        1. Check if there are any indicators in XSOAR-NG.
+        2. if not, create new indicators, if yes, does not do anything.
 
+    Teardown:
+        Removes the newly created indicators in case those were created in setup.
+
+    """
     response = xsoar_ng_client.list_indicators()
     if response.get("total") > 0:
         return
@@ -38,6 +46,16 @@ def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
 
 @pytest.fixture()
 def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGApiClient):
+    """
+    Setup:
+        creates an instance in XSOAR-NG.
+
+    Teardown:
+        removes the instance from XSOAR-NG
+
+    Returns:
+        str: the instance name that was created.
+    """
 
     integration_id = request.cls.integration_id
     is_long_running = getattr(request.cls, "is_long_running", False)
@@ -61,9 +79,21 @@ def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGA
 
 @pytest.fixture()
 def create_incident(request, xsoar_ng_client: XsoarNGApiClient):
+    """
+    Setup:
+        creates an incident in XSOAR-NG
+
+    Teardown:
+        removes the incident from XSOAR-NG
+
+    Returns:
+        dict: the api raw response of the newly created incident
+    """
     integration_id = request.cls.integration_id
     playbook_id = request.cls.playbook_id
-    response = xsoar_ng_client.create_incident(f'end-to-end-{integration_id}-test', should_create_investigation=True, attached_playbook_id=playbook_id)
+    response = xsoar_ng_client.create_incident(
+        f'end-to-end-{integration_id}-test', should_create_investigation=True, attached_playbook_id=playbook_id
+    )
 
     incident_id = response.id
 
@@ -76,7 +106,13 @@ def create_incident(request, xsoar_ng_client: XsoarNGApiClient):
 
 @pytest.fixture()
 def create_playbook(request, xsoar_ng_client: XsoarNGApiClient):
+    """
+    Setup:
+        uploads a custom playbook into XSOAR-NG
 
+    Teardown:
+        removes the custom playbook from XSOAR-NG.
+    """
     playbook_path = request.cls.playbook_path
     xsoar_ng_client.client.import_playbook(playbook_path)
 

@@ -20,6 +20,11 @@ def pytest_addoption(parser):
 
 
 def get_cloud_machine_credentials(request):
+    """
+    Get the cloud machine credentials.
+
+    if those do not exist / were not found, will fall back to the DEMISTO environment variables.
+    """
     cloud_machine = request.config.option.cloud_machine
     cloud_servers_path = request.config.option.cloud_servers_path
     cloud_servers_api_keys = request.config.option.cloud_servers_api_keys
