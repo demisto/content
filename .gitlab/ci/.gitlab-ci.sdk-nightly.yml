@@ -221,23 +221,18 @@ demisto-sdk-nightly:run-commands-against-instance:
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
       echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
-    - section_start "Wait Until Server Ready"
+    - section_start "Wait Until Server Ready" --collapsed
+
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
       python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
     - section_end "Wait Until Server Ready"
+
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - |
       export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
-
-    - section_start "Install Packs and run Test-Module"
-    - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - section_end "Install Packs and run Test-Module"
 
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
     - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
@@ -257,12 +252,18 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
 
-    - *change-file-ids
-    - *upload-entities-to-cortex-xsoar
-
     - section_start "Download Custom Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
     - section_end "Download Custom Entities from XSOAR Instance"
+
+    - section_start "Install Packs and run Test-Module"
+    - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    - section_end "Install Packs and run Test-Module"
+
+    - !reference [.run_tests]
 
     - section_start "Destroy instances"
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
@@ -360,12 +361,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
 
-    - section_start "Install Packs and run Test-Module" --collapsed
-    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - section_end "Install Packs and run Test-Module"
-
     - section_start "Test Modeling Rules" --collapsed
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
@@ -384,6 +379,14 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     # - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     # - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
     - section_end "Download Entities"
+
+    - section_start "Install Packs and run Test-Module" --collapsed
+    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    - section_end "Install Packs and run Test-Module"
+
+    - !reference [.run_tests]
 
     - !reference [.cloud-machine-information]
     - exit $EXIT_CODE
@@ -440,13 +443,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
       cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
 
-    - section_start "Install Packs and run Test-Module" --collapsed
-    - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - section_end "Install Packs and run Test-Module"
-
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
@@ -468,6 +464,15 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
     - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
     - section_end "Download Custom Entities from XSOAR Instance"
+
+    - section_start "Install Packs and run Test-Module" --collapsed
+    - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    - section_end "Install Packs and run Test-Module"
+
+    - !reference [.run_tests]
 
     - !reference [.cloud-machine-information]
     - job-done
