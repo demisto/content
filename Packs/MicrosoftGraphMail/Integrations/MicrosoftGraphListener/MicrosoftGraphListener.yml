@@ -36,7 +36,6 @@ configuration:
   type: 4
   hidden: true
   section: Connect
-  advanced: true
   required: false
 - display: Key or Client Secret - see Detailed Instructions (?)
   name: enc_key
