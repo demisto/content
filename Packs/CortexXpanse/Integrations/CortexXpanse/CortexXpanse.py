@@ -377,7 +377,8 @@ def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
     if tags:
         search_params.append({"field": "tags", "operator": "in", "value": tags})
     if case_id_list:
-        search_params.append({"field": "case_id_list", "operator": "in", "value": case_id_list})
+        case_id_ints = [int(i) for i in case_id_list]
+        search_params.append({"field": "case_id_list", "operator": "in", "value": case_id_ints})  # type: ignore
 
     if sort_by_creation_time:
         request_data = {"request_data": {"filters": search_params, 'search_from': search_from,
