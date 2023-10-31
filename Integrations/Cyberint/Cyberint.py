@@ -366,7 +366,7 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
             alert["alert_data"]["csv"] = extracted_csv_data
         outputs.append(alert)
     total_alerts = result.get("total")
-    table_headers = ["ref_id", "title", "status", "severity", "created_date", "type", "environment"]
+    table_headers = ["ref_id", "title", "status", "severity", "created_date", "update_date" "type", "environment"]
     readable_output = f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}\n'
     readable_output += tableToMarkdown(name="CyberInt alerts:", t=outputs, headers=table_headers, removeNull=True)
     return CommandResults(
