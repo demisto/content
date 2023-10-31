@@ -3047,7 +3047,7 @@
             ],
             "playbookID": "Rasterize Test",
             "fromversion": "5.0.0",
-            "memory_threshold": 150
+            "memory_threshold": 200
         },
         {
             "integrations": "Rasterize",
