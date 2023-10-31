@@ -197,9 +197,6 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     for pack in packs_in_pr:
         pack_metadata = get_pack_metadata(pack)
-        print(f'pack: {pack}')
-        temp = get_files_in_dir(project_dir=pack, file_endings="yml")
-        print(f'temp: {temp}')
         for pr_file in pr_files:
             if "yml" in pr_file:
                 if "feed: true" in pr_file:
@@ -291,6 +288,7 @@ def main():
 
     print(f"Content Reviewers: {','.join(content_reviewers)}")
     print(f"Security Reviewer: {security_reviewer}")
+    print(f"TIM Reviewer: {tim_reviewer}")
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
