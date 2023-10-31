@@ -58,19 +58,6 @@ repos:
       arg_name: '--rcfile'
       file_name: '.pylintrc'
 
-
-  - id: simple-in-docker
-    name: simple-in-docker
-    description: my simple description
-    entry: ruff
-    args:mode1: ['run-all-checks']
-    args:mode2: ['run-all-checks']
-    args: ['run-all-checks']
-    args:nightly: ['--otherargs']
-    files: .+\.py$
-
-
-
   - id: is-circle-changed
     name: is-circle-changed
     description: Checks if circle files are changed, and checkout to current if it is.
