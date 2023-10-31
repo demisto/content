@@ -245,7 +245,7 @@ def create_vm_parameters(args, subscription_id, resource_group):
     return vm
 
 
-def create_nic_parameters(args, subscription_id):
+def create_nic_parameters(resource_group, subscription_id, args):
     """
     Construct the NIC object
 
@@ -261,7 +261,6 @@ def create_nic_parameters(args, subscription_id):
         NIC Object
     """
     # Retrieve relevant command arguments
-    resource_group = args.get('resource_group')
     location = args.get('nic_location')
     address_assignment_method = args.get('address_assignment_method')
     private_ip_address = args.get('private_ip_address')
@@ -475,14 +474,13 @@ class MsGraphClient:
         url_suffix = f"{resource_group}/providers/Microsoft.Network/publicIPAddresses/{address_name}"
         return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=self.default_params)
 
-    def create_nic(self, args):
+    def create_nic(self, resource_group, args):
         # Retrieve relevant command argument
-        resource_group = args.get('resource_group')
         nic_name = args.get('nic_name')
         url_suffix = f"{resource_group}/providers/Microsoft.Network/networkInterfaces/{nic_name}"
 
         # Construct VM object utilizing parameters passed as command arguments
-        payload = create_nic_parameters(args, self.subscription_id)
+        payload = create_nic_parameters(resource_group, self.subscription_id, args)
         return self.ms_client.http_request(method='PUT', url_suffix=url_suffix, params=self.default_params, json_data=payload)
 
 
@@ -627,7 +625,7 @@ def get_vm_command(client: MsGraphClient, args: dict, params: dict):
     """
     resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
     vm_name = args.get('virtual_machine_name')
-    expand = args.get('expand')
+    expand = args.get('expand', '')
     response = client.get_vm(resource_group, vm_name, expand)
     # Retrieve relevant properties to return to context
     vm_name = vm_name.lower()  # type: ignore
@@ -931,7 +929,7 @@ def get_network_interface_command(client: MsGraphClient, args: dict, params: dic
     )
 
 
-def get_public_ip_details_command(client: MsGraphClient, args: dict):
+def get_public_ip_details_command(client: MsGraphClient, args: dict, params: dict):
     """
     Get the properties of a specified Public IP Address
 
@@ -945,7 +943,7 @@ def get_public_ip_details_command(client: MsGraphClient, args: dict):
         Public IP Address Object
     """
     address_name = args.get('address_name')
-    if resource_group := args.get('resource_group'):
+    if resource_group := (args.get('resource_group') or params.get('resource_group')):
         response = client.get_public_ip_details(resource_group, address_name)
         address_id = response.get('id')
     else:
@@ -1058,7 +1056,7 @@ def get_all_public_ip_details_command(client: MsGraphClient):
     )
 
 
-def create_nic_command(client: MsGraphClient, args: dict):
+def create_nic_command(client: MsGraphClient, args: dict, params: dict):
     """
     Create a Network Interface with the specified interface parameters
 
@@ -1092,7 +1090,8 @@ def create_nic_command(client: MsGraphClient, args: dict):
     returns:
         Network Interface Object
     """
-    response = client.create_nic(args)
+    resource_group = get_from_args_or_params(args=args, params=params, key='resource_group')
+    response = client.create_nic(resource_group, args)
 
     # Retrieve relevant properties to return to context
     nic_name = response.get('name').lower()
@@ -1103,7 +1102,6 @@ def create_nic_command(client: MsGraphClient, args: dict):
     provisioning_state = properties.get('provisioningState', "NA")
     ip_configurations = properties.get('ipConfigurations', [])
     dns_suffix = properties.get('dnsSettings', {}).get('internalDomainNameSuffix')
-    resource_group = args.get('resource_group')
 
     ip_configs = []
     for ip_configuration in ip_configurations:
@@ -1179,9 +1177,7 @@ def main():
     }
 
     commands_with_args = {
-        'azure-list-resource-groups': list_resource_groups_command,
-        'azure-vm-get-public-ip-details': get_public_ip_details_command,
-        'azure-vm-create-nic': create_nic_command
+        'azure-list-resource-groups': list_resource_groups_command
     }
 
     commands_with_args_and_params = {
@@ -1191,6 +1187,8 @@ def main():
         'azure-vm-poweroff-instance': poweroff_vm_command,
         'azure-vm-create-instance': create_vm_command,
         'azure-vm-delete-instance': delete_vm_command,
+        'azure-vm-get-public-ip-details': get_public_ip_details_command,
+        'azure-vm-create-nic': create_nic_command,
         'azure-vm-get-nic-details': get_network_interface_command
     }
 

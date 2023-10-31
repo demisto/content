@@ -576,7 +576,8 @@ Gets the properties of a given public IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group | The resource group to which the IP address belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group | The resource group to which the IP address belongs.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.<br/>Note: This argument will override the instance parameter ‘Default Resource Group Name'.<br/>. | Optional |  
 | address_name | The IP address name. | Required | 
 
 #### Context Output
@@ -720,7 +721,8 @@ Creates a virtual machine network interface.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group | The resource group to which the new network interface will belong. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group | The resource group to which the new network interface will belong.<br/>To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.<br/>Note: This argument will override the instance parameter ‘Default Resource Group Name'.<br/>. | Optional | 
 | nic_name | The network interface name. | Required | 
 | nic_location | The location in which to create the network interface. Possible values are: westus2, westus, westindia, westeurope, westcentralus, uksouth, ukwest, southeastasia, northcentralus, northeurope, southcentralus, southindia, francesouth, francecentral, japaneast, japanwest, koreacentral, koreasouth, brazilsouth, canadacentral, canadaeast, centralindia, eastus2, eastasia, westus, centralus, eastus, australiacentral, australiacentral2, australiaeast, australiasoutheast. | Required | 
 | vnet_name | The virtual network name of the interface. | Required | 

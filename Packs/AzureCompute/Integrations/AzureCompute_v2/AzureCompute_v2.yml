@@ -170,12 +170,12 @@ script:
       name: virtual_machine_name
       required: true
     - auto: PREDEFINED
-      defaultValue: 'False'
+      defaultValue: 'false'
       description: Set to True to request non-graceful VM shutdown. Default value is False.
       name: skip_shutdown
       predefined:
-      - 'True'
-      - 'False'
+      - 'true'
+      - 'false'
     description: Powers off a given virtual machine.
     execution: true
     name: azure-vm-poweroff-instance
@@ -465,7 +465,12 @@ script:
       description: The interface ID.
       type: String
   - arguments:
-    - description: The resource group to which the IP address belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the IP address belongs.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
     - description: The IP address name.
       name: address_name
@@ -504,9 +509,13 @@ script:
       description: The address ID.
       type: String
   - arguments:
-    - description: The resource group to which the new network interface will belong. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      name: subscription_id
+    - description: |
+        The resource group to which the new network interface will belong.
+        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
+        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
       name: resource_group
-      required: true
     - description: The network interface name.
       name: nic_name
       required: true
