@@ -1,0 +1,24 @@
+category: Utilities
+commonfields:
+  id: CIAC-8757
+  version: -1
+configuration: []
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: 886d7632-b30f-417a-8ba3-d725ed7a702f
+    packName: CIAC8757Pack
+    prevname: ''
+    propagationLabels:
+    - all
+    toServerVersion: ''
+display: CIAC-8757
+name: CIAC-8757
+script:
+  dockerimage: demisto/python3:3.10.13.78960
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
