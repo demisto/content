@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-
-
 import traceback
 from collections.abc import Mapping
 from typing import Any
@@ -54,7 +52,8 @@ def get_indicators_from_list(observed_list: list, is_indicator_match: Callable, 
                     key = _canonicalize_string(list_entry.get("key", ""))
                     value = _canonicalize_string(list_entry.get("value", ""))
 
-                    if (("env" in key) or (key in ("stage", "function", "lifecycle", "usage", "tier"))) and is_indicator_match(value):
+                    if (("env" in key) or (key in ("stage", "function", "lifecycle", "usage", "tier"))) and \
+                       is_indicator_match(value):
                         indicators.append(list_entry)
         elif comparison_type == "string":
             value = _canonicalize_string(list_entry)
@@ -144,7 +143,7 @@ def determine_reason(external_indicators: list, tags: list, hierarchy: list, pro
         if provider:
             reason_parts.append("infrastructure hierarchy information `" + f"{match}" + "` from " + provider)
         else:
-            reason_parts.append("infrastructure hierarchy information `" + f"{match}" +"`")
+            reason_parts.append("infrastructure hierarchy information `" + f"{match}" + "`")
     reason_final = "match on "
     for reason in reason_parts:
         reason_final += reason + ", "
@@ -155,7 +154,8 @@ def determine_reason(external_indicators: list, tags: list, hierarchy: list, pro
     return reason_final
 
 
-def final_decision(external_indicators: list, dev_tags: list, prod_tags: list, dev_hierarchy: list, prod_hierarchy: list, provider: str) -> dict:
+def final_decision(external_indicators: list, dev_tags: list, prod_tags: list, dev_hierarchy: list,
+                   prod_hierarchy: list, provider: str) -> dict:
     """
     Final decision to be set in gridfield.
 
@@ -241,14 +241,15 @@ def main():
 
         hierarchy_info = argToList(args.get("hierarchy_info", []))
         dev_hierarchy_indicators = get_indicators_from_list(hierarchy_info, is_dev_indicator, "string")
-        print(dev_hierarchy_indicators)
+
         prod_hierarchy_indicators = get_indicators_from_list(hierarchy_info, is_prod_indicator, "string")
 
         external_active_classifications: list[str] = argToList(args.get("active_classifications", []))
         external_indicators = get_indicators_from_external_classification(external_active_classifications)
 
         provider: str = args.get("provider", None)
-        decision_dict = final_decision(external_indicators, dev_kv_indicators, prod_kv_indicators, dev_hierarchy_indicators, prod_hierarchy_indicators, provider)
+        decision_dict = final_decision(external_indicators, dev_kv_indicators, prod_kv_indicators,
+                                       dev_hierarchy_indicators, prod_hierarchy_indicators, provider)
         demisto.executeCommand("setAlert", {"asmdevcheckdetails": [decision_dict]})
 
         output = tableToMarkdown("Dev Check Results", decision_dict, ['result_readable', 'confidence', 'reason'])
@@ -263,4 +264,3 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
