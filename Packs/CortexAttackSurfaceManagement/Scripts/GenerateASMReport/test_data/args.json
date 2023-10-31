@@ -98,5 +98,6 @@
     },
     { "key": "env", "value": "sbx", "source": "AWS" }
   ],
- "report_type": "summary"
+  "remediation_guidance_text": "This is a dummy remediation",
+  "report_type": "summary"
 }
