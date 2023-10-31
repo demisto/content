@@ -59,8 +59,8 @@ def test_module(client: Client) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def assign_command(client: Client, imsi: str):
-    if not imsi:
+def assign_command(client: Client, imsi=""):
+    if imsi == "":
         raise DemistoException('the imsi argument cannot be empty.')
 
     response = client.assignUser(imsi=imsi)
@@ -75,7 +75,7 @@ def assign_command(client: Client, imsi: str):
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
