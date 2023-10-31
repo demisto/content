@@ -2340,8 +2340,8 @@ class TestJiraIssueAssign:
     @pytest.mark.parametrize(
         'assignee, assignee_id, excpected_body_request',
         [
-            ("server_assignee", None, '{"name": "server_assignee"}'),
-            (None, "cloud_assignee", '{"accountId": "cloud_assignee"}')
+            ("server_assignee", None, {"name": "server_assignee"}),
+            (None, "cloud_assignee", {"accountId": "cloud_assignee"})
         ]
     )
     def test_update_issue_assignee_command(self, mocker, assignee, assignee_id, excpected_body_request):
@@ -2354,23 +2354,24 @@ class TestJiraIssueAssign:
             - Ensure the body request is ok for both cloud/server jira
         """
         from JiraV3 import update_issue_assignee_command
-
         get_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
-
-        jira_req_mocker = mocker.patch('JiraV3.jira_req', side_effect=['', get_issue_response])
-
         args = {
             'assignee': assignee,           # For Jira OnPrem
             'assignee_id': assignee_id,     # For Jira Cloud
             'issue_id': 21487,
         }
+        client: JiraBaseClient = jira_base_client_mock()
+        if assignee_id:
+            client = jira_cloud_client_mock()
+        else:
+            client = jira_onprem_client_mock()
 
-        client = jira_base_client_mock()
-
+        jira_req_mocker = mocker.patch.object(client, 'update_assignee', return_value=None)
+        mocker.patch.object(client, 'get_issue', return_value=get_issue_response)
         assert update_issue_assignee_command(client=client, args=args)
-        assert jira_req_mocker.call_args_list[0].args[2] == excpected_body_request
+        assert jira_req_mocker.call_args[1].get('assignee_body') == excpected_body_request
 
-    def test_update_issue_assignee_command_no_assignees(self):
+    def test_test_update_issue_assignee_command_no_assignees(self):
         """
         Given:
             - issue id, without assignee / assignee_id
