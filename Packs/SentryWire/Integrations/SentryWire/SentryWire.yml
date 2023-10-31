@@ -17,47 +17,45 @@ name: SentryWire
 script:
   commands:
   - arguments:
-    - default: false
-      isArray: false
-    - description: Name of the search to run.
-      name: search_name
+    - name: search_name
       required: true
       secret: false
-    - default: false
+      description: Name of the search to run.
+      default: false
       isArray: false
-    - description: KQL Search Filter.
-      name: search_filter
+    - name: search_filter
       required: true
       secret: false
-    - default: false
+      description: KQL Search Filter
+      default: false
       isArray: false
-    - description: The earliest date time a search should target.
-      name: begin_time
+    - name: begin_time
       required: true
       secret: false
-    - default: false
+      description: The earliest date time a search should target.
+      default: false
       isArray: false
-    - description: The latest date time a search should target.
-      name: end_time
+    - name: end_time
       required: true
       secret: false
-    - default: false
+      description: The latest date time a search should target.
+      default: false
       isArray: false
-    - description: Maximum number of packets to retrieve.
-      name: max_packets
+    - name: max_packets
       required: false
       secret: false
-    - default: false
+      description: Maximum number of packets to retrieve.
+      default: false
       isArray: false
-    - description: Controls the list of federated nodes this request is sent to.
-      name: fmgroups
+    - name: fmgroups
       required: false
       secret: false
-    - default: false
+      description: Controls the list of federated nodes this request is sent to.
+      default: false
       isArray: false
-    - description: Output links to search results.
-      name: generate_links
-    - auto: PREDEFINED
+    - name: generate_links
+      description: Output links to search results.
+      auto: PREDEFINED
       defaultValue: 'false'
     deprecated: false
     description: Create a search on SentryWire unit.
@@ -71,18 +69,18 @@ script:
       description: List of the node ID(s) that the search was executed on.
       type: Array
   - arguments:
-    - default: false
-      isArray: false
-    - description: The ID of the search.
-      name: search_id
+    - name: search_id
       required: true
       secret: false
-    - default: false
+      description: The ID of the search.
+      default: false
       isArray: false
-    - description: Target node to download PCAP from.
-      name: node_name
+    - name: node_name
       required: true
       secret: false
+      description: Target node to download PCAP from.
+      default: false
+      isArray: false
     deprecated: false
     description: Download search pcap packaged in a zip file.
     execution: false
@@ -119,18 +117,18 @@ script:
       description: The file extension.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-    - description: The ID of the search.
-      name: search_id
+    - name: search_id
       required: true
       secret: false
-    - default: false
+      description: The ID of the search.
+      default: false
       isArray: false
-    - description: Target node to check search status.
-      name: node_name
+    - name: node_name
       required: true
       secret: false
+      description: Target node to check search status.
+      default: false
+      isArray: false
     deprecated: false
     description: Get the current status of a search.
     execution: false
@@ -179,18 +177,18 @@ script:
       description: Message from the SentryWire unit.
       type: String
   - arguments:
-    - default: false
-      isArray: false
-    - description: ID of search to get metadata from.
-      name: search_id
+    - name: search_id
       required: true
       secret: false
-    - default: false
+      description: ID of search to get metadata from.
+      default: false
       isArray: false
-    - description: Target node to download metadata from.
-      name: node_name
+    - name: node_name
       required: true
       secret: false
+      description: Target node to download metadata from.
+      default: false
+      isArray: false
     deprecated: false
     description: Download the metadata json of a search packaged in a zip file.
     execution: false

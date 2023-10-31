@@ -13,21 +13,14 @@
     "tags": [
       "Incident Handling",
       "Incident Response",
-      "Network Forensics",
-      "NSM",
-      "network",
-      "security",
-      "monitoring",
-      "packet",
-      "capture",
-      "alerts"
+      "Network",
+      "Security",
+      "Alerts"
     ],
     "useCases": [
-      "Incident Handling",
       "Incident Response",
-      "Network Forensics",
-      "Threat Hunting",
-      "Packet Capture"
+      "Network Security",
+      "Hunting"
     ],
     "keywords": [
       "Incident Handling",
@@ -35,11 +28,11 @@
       "Network Forensics",
       "NSM",
       "network",
-      "security",
-      "monitoring",
-      "packet",
-      "capture",
-      "alerts"
+      "Security",
+      "Monitoring",
+      "Packet",
+      "Capture",
+      "Alerts"
     ],
     "dependencies": {
     },

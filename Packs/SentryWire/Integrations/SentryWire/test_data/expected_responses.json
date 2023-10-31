@@ -51,7 +51,7 @@
     "Endtime":"2023-01-01 20:07:25",
     "SearchFilter":"http.status:200",
     "MaxPacketCount":"100",
-    "SearchResult":"Pkts=100 Seconds=3 TotalSize=391KB",
+    "SearchResult":"Packets:100 Size:30086",
     "MaxChunk":"1",
     "NodeName":"exsw1",
     "SearchType":""

@@ -147,31 +147,15 @@ def parse_search_status(response):
         # Default
         readable_output = ""
         try:
-            response, readable_output = bytes_to_readable(response)
+            results = response["SearchResult"]
+            readable_output = f"Search completed: {results}"
+
+            response["SearchStatus"] = "Completed"
+            response["PcapSize"] = response["SearchResult"].split(" ")[-1].split(":")[-1]
         except Exception:
             raise DemistoException(
                 f'Could not get the size of SearchResult, got the following object: {response["SearchResult"]}')
     return response, readable_output
-
-
-def bytes_to_readable(response):
-    try:
-        results = response["SearchResult"]
-        sizestr = response["SearchResult"].split(" ")[-1].split("=")[-1]
-        size, unit = re.match(r"(\d+)(\D+)", sizestr).groups()  # type: ignore[union-attr]
-        if unit == "KB":
-            response["PcapSize"] = int(size) * 1024
-        elif unit == "MB":
-            response["PcapSize"] = int(size) * (1024 ** 2)
-        elif unit == "GB":
-            response["PcapSize"] = int(size) * (1024 ** 3)
-        else:
-            response["PcapSize"] = ">=1TB"
-        readable_output = f"Search completed: {results}"
-        response["SearchStatus"] = "Completed"
-        return response, readable_output
-    except Exception:
-        raise DemistoException(f'Could not parse PCAP size from the following response: {response}')
 
 
 def parse_create_search(response):
@@ -302,8 +286,14 @@ def get_search_status_command(client: Client, args: dict[str, Any]):
 
 def get_server_status_command(client: Client):
     response = client.get_server_status()
-    status = json.loads(response.get("ServerInfo")).get("Status")
-    response["NodeName"] = json.loads(response.get("ServerInfo")).get("NodeName")
+    server_info = {}
+    if response:
+        server_info = json.loads(response.get("ServerInfo"))
+    else:
+        raise DemistoException("Failed to get server status from Sentywire")
+    status = server_info.get("Status")
+    node_name = server_info.get("NodeName")
+    response["NodeName"] = node_name
 
     response = remove_redundant(
         ["UserName",
