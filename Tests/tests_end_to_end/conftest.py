@@ -1,3 +1,5 @@
+import os
+
 import pytest
 
 from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (
@@ -11,9 +13,9 @@ from Tests.tools import get_integration_params
 
 
 def pytest_addoption(parser):
-    parser.addoption("--cloud_machine", action="store")
-    parser.addoption("--cloud_servers_path", action="store")
-    parser.addoption("--cloud_servers_api_keys", action="store")
+    parser.addoption("--cloud_machine", action="store", default=None)
+    parser.addoption("--cloud_servers_path", action="store", default=None)
+    parser.addoption("--cloud_servers_api_keys", action="store", default=None)
     parser.addoption("--integration_secrets_path", action="store", default=None)
 
 
@@ -23,9 +25,19 @@ def get_cloud_machine_credentials(request):
     cloud_servers_api_keys = request.config.option.cloud_servers_api_keys
 
     if not cloud_machine or not cloud_servers_path or not cloud_servers_api_keys:
-        pytest.skip()
+        url = os.getenv("DEMISTO_BASE_URL")
+        api_key = os.getenv("DEMISTO_API_KEY")
+        api_key_id = os.getenv("XSIAM_AUTH_ID")
 
-    api_key, _, url, api_key_id = CloudBuild.get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys)
+        if not url or not api_key or not api_key_id:
+            pytest.skip(
+                'could not find environment configuration, either pass --cloud_machine --cloud_servers_path --cloud_servers_'
+                'api_keys or make sure DEMISTO_BASE_URL/DEMISTO_API_KEY/XSIAM_AUTH_ID environment variables are set'
+            )
+    else:
+        api_key, _, url, api_key_id = CloudBuild.get_cloud_configuration(
+            cloud_machine, cloud_servers_path, cloud_servers_api_keys
+        )
     return url, api_key, api_key_id
 
 

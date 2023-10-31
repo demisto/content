@@ -1,32 +1,35 @@
 # XSOAR-NG End to End Tests
-The purpose of XSOAR-NG end to end tests is to run basic regression tests for specific integrations. The tests run against a real tenant of XSOAR-NG.
+The purpose of XSOAR-NG end-to-end tests is to run basic regression tests for specific integrations. The tests run against a real tenant of XSOAR-NG.
 
 ### Prerequisites
-The tests use XSOAR-NG client. XSIAM authentication requires api key, api url and api key id.
-You need to pass 3 arguments to the tests.
+The tests use XSOAR-NG client. XSOAR-NG authentication requires api key, api url and api key id.
+In order to run the test locally it is required to set up the environment variables for XSOAR-NG machine:
+* DEMISTO_BASE_URL
+* DEMISTO_API_KEY
+* XSIAM_AUTH_ID
 
-**--cloud_machine (string)** - tenant name, for example *test_machine*, a string indicates a specific tenant. should be consistent with other files (cloud_servers_path, cloud_servers_api_keys)
 
-**--cloud_servers_path (file path)** - a path to a json file that contains XSIAM tenant authentication details, like api url. Example:
+### Integration Credentials
+In order to run the e2e XSOAR-NG tests it is required to define the required credentials for these tests.
+You can create the `integration_secrets.json` file under the `Tests/tests_end_to_end/xsoar_ng/integration_secrets.json` path.
+This will be automatically ignored by git, hence **is it extremely important to configure it at the same name**.
+
+The structure of the file should be:
+
 ```json
 {
-    "test_machine": {
-        "demisto_version": "8.3.0",
-        "base_url": "https://api-test-machine.us.test.com",
-        "x-xdr-auth-id": "101"
-    }
+    "integrations": [
+        {"name": "test1", "instance_name": "test1", "params":  {"paramA":  "a"}},
+        {"name": "test2", "instance_name": "test2", "params":  {"paramB":  "b"}}
+    ]
 }
 ```
 
-**--cloud_servers_api_keys (file path)** - a path to a json file that contains XSIAM tenant API Key.
-Example:
-```json
-{
-    "test_machine": "PUT_HERE_A_REAL_API_KEY"
-}
-```
-
-### How to execute
+### How to execute (Working directory should be content-root)
 ```bash
-python -m pytest Tests/tests_end_to_end/xsoar_ng -v --disable-warnings --cloud_machine machine1 --cloud_servers_path Tests/tests_end_to_end/xsoar_ng/test_cloud_server_path.json --cloud_servers_api_keys Tests/tests_end_to_end/xsoar_ng/test_cloud_api_keys.json
+export DEMISTO_BASE_URL=<XSOAR_NG_API_URL>
+export DEMISTO_API_KEY=<XSOAR_NG_API_KEY>
+export XSIAM_AUTH_ID=<DEMISTO_API_KEY_ID>
+touch Tests/tests_end_to_end/xsoar_ng/integration_secrets.json  # fill up the file according to Integration Credentials section.
+python -m pytest Tests/tests_end_to_end/xsoar_ng -v --disable-warnings --integration_secrets_path "Tests/tests_end_to_end/xsoar_ng/integration_secrets.json"
 ```
