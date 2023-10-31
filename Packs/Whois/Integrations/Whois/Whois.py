@@ -7335,7 +7335,7 @@ def whois_request_get_response(domain: str, server: str) -> str:
     """
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-        sock.connect((server, 43))
+        sock.connect((server, 43))  # connect
         sock.send(("%s\r\n" % domain).encode("utf-8"))
         buff = b""
         while True:
