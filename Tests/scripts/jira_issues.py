@@ -34,7 +34,11 @@ def generate_ticket_summary(prefix: str) -> str:
 
 
 def generate_query_by_component_and_issue_type() -> str:
-    jira_labels = " AND ".join({f"labels = \"{label}\"" for label in JIRA_LABELS}) if JIRA_LABELS else ""
+    if JIRA_LABELS:
+        jira_labels_query = " AND ".join({f"labels = \"{label}\"" for label in JIRA_LABELS})
+        jira_labels = f" AND {jira_labels_query}"
+    else:
+        jira_labels = ""
     return (f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" "
             f"AND component = \"{JIRA_COMPONENT}\" {jira_labels}")
 
