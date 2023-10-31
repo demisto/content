@@ -48,8 +48,8 @@ repos:
   - id: pylint-in-docker
     name: pylint-in-docker
     description: my description
-    docker_image:nightly: native:ga
-    docker_image: native:ga
+    docker_image:nightly: from-yml
+    docker_image: native:ga,from-yml,native:dev,native:maintenance
     entry: pylint
     files: Packs\/.*\.py$
     exclude: (_test\.py)|(.vulture_whitelist\.py)$
@@ -57,6 +57,19 @@ repos:
     config_file_arg:
       arg_name: '--rcfile'
       file_name: '.pylintrc'
+
+
+  - id: simple-in-docker
+    name: simple-in-docker
+    description: my simple description
+    entry: ruff
+    args:mode1: ['run-all-checks']
+    args:mode2: ['run-all-checks']
+    args: ['run-all-checks']
+    args:nightly: ['--otherargs']
+    files: .+\.py$
+
+
 
   - id: is-circle-changed
     name: is-circle-changed
