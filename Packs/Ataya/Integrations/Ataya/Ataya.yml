@@ -36,8 +36,8 @@ script:
   - arguments:
     - name: imsi
       required: true
-      description: the client imsi which need to be assigned
-    description: assign user
+      description: the cilient imsi which need to be assigned.
+    description: assign user.
     name: assign-user
   dockerimage: demisto/python3:3.10.13.78960
   runonce: false
