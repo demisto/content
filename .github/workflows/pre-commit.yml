@@ -77,7 +77,7 @@ jobs:
       run: |
         cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY || echo "Missing coverage report"
 
-  pre-commit-community:
+  pre-commit-community-level:
     runs-on: ubuntu-latest
     if: "contains(github.event.pull_request.labels.*.name, 'Community Support Level')"
     permissions:
@@ -109,7 +109,7 @@ jobs:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-pre-commit
 
-    - name: run pre-commit
+    - name: run pre-commit community-level
       run: |
         source .venv/bin/activate
         demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=nightly
