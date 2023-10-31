@@ -898,7 +898,7 @@ def get_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             try:
                 raw_res = json.loads(results.content)
             except ValueError:
-                demisto.error(f"Failed to parse the response content : {results.content}")
+                demisto.error(f'Failed to parse the response content : {str(results.content)}')
 
         return CommandResults(
             raw_response=raw_res,
