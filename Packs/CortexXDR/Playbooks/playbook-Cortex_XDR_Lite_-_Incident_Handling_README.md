@@ -53,9 +53,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | incident_id | Incident ID. | incident.xdrincidentid | Optional |
-| EndpointID | XDR Endpoint ID. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
+| EndpointID | XDR endpoint ID. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
 | Hostname | Hostname. | PaloAltoNetworksXDR.Incident.alerts.host_name | Optional |
-| Username | User name. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
+| Username | Username. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
 | AutoIsolateEndpoint | Whether to isolate the endpoint automatically. | False | Optional |
 | AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | False | Optional |
 | UserVerification | Possible values: True/False.  Default: False.<br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
