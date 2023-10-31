@@ -29,6 +29,8 @@ ARTIFACTS_FOLDER_MPV2 = Path(os.getenv('ARTIFACTS_FOLDER_MPV2', (ROOT_ARTIFACTS_
 ARTIFACTS_FOLDER_MPV2_INSTANCE = Path(os.getenv('ARTIFACTS_FOLDER_INSTANCE',
                                                 (ROOT_ARTIFACTS_FOLDER / 'marketplacev2' / 'instance_xsiam').as_posix()))
 ARTIFACTS_FOLDER_XPANSE = Path(os.getenv('ARTIFACTS_FOLDER_XPANSE', (ROOT_ARTIFACTS_FOLDER / 'xpanse').as_posix()))
+ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE = Path(os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE',
+                                                    (ROOT_ARTIFACTS_FOLDER / "xsoar" / "server_type_XSOAR").as_posix()))
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 CONTENT_CHANNEL = 'dmst-build-test'
@@ -283,7 +285,7 @@ def construct_slack_msg(triggering_workflow: str,
         slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, pipeline_url, title="XSOAR")
         slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
         slack_msg_append += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
-        slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR)
+        slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE)
     if triggering_workflow == CONTENT_NIGHTLY:
         # The coverage Slack message is only relevant for nightly and not for PRs.
         slack_msg_append += construct_coverage_slack_msg()
