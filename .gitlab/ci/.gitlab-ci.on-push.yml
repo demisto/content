@@ -136,6 +136,7 @@ validate-content-conf:
     policy: pull-push
   variables:
     KUBERNETES_CPU_REQUEST: 2000m
+    EXTRACT_PRIVATE_TESTDATA: "true"
   needs: []
   stage: prepare-testing-bucket
   script:
@@ -587,6 +588,14 @@ slack-notify-on-merge:
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
+    - section_start "Packs re-installation test"
+    - |
+      if [[ -z "${NIGHTLY}" && -s $ARTIFACTS_FOLDER/packs_reinstall_to_test.txt ]]; then
+        echo "Running the packs re-installation test."
+        ./Tests/scripts/reinstall_packs_on_cloud_instances.sh || EXIT_CODE=$?
+      fi
+    - section_end "Packs re-installation test"
+
     - !reference [.cloud-machine-information]
     - job-done
     - exit $EXIT_CODE
@@ -594,18 +603,6 @@ slack-notify-on-merge:
     - source .gitlab/helper_functions.sh
     - !reference [.unlock-machine]
 
-#xsiam_server_dev:
-#  extends:
-#    - .test_content_on_xsiam_server_instances_base
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-#    - if: '$NIGHTLY'
-#      when: always
-#  variables:
-#    INSTANCE_ROLE: "XSIAM Master"
-#    PRODUCT_TYPE: "XSIAM"
-#    GCS_QUEUE_FILE: "queue-master"
-#    TEST_MACHINES_LIST: "test-machines-master"
 
 xsiam_server_ga:
   extends:
