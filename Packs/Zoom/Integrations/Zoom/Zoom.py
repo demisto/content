@@ -15,6 +15,8 @@ from uvicorn.logging import AccessFormatter
 from copy import copy
 import hashlib
 import hmac
+from tempfile import NamedTemporaryFile
+
 
 app = FastAPI()
 
@@ -507,6 +509,54 @@ async def check_for_unanswered_messages():
             updated_messages.append(message)
         if updated_messages:
             set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+
+
+def run_long_running(port: int, is_test: bool = False):
+    while True:
+        certificate = demisto.params().get('certificate', '')
+        private_key = demisto.params().get('key', '')
+
+        certificate_path = ''
+        private_key_path = ''
+        try:
+            ssl_args = {}
+
+            if certificate and private_key:
+                certificate_file = NamedTemporaryFile(delete=False)
+                certificate_path = certificate_file.name
+                certificate_file.write(bytes(certificate, 'utf-8'))
+                certificate_file.close()
+                ssl_args['ssl_certfile'] = certificate_path
+
+                private_key_file = NamedTemporaryFile(delete=False)
+                private_key_path = private_key_file.name
+                private_key_file.write(bytes(private_key, 'utf-8'))
+                private_key_file.close()
+                ssl_args['ssl_keyfile'] = private_key_path
+
+                demisto.debug('Starting HTTPS Server')
+            else:
+                demisto.debug('Starting HTTP Server')
+
+            integration_logger = IntegrationLogger()
+            integration_logger.buffering = False
+            log_config = dict(uvicorn.config.LOGGING_CONFIG)
+            log_config['handlers']['default']['stream'] = integration_logger
+            log_config['handlers']['access']['stream'] = integration_logger
+            log_config['formatters']['access'] = {
+                '()': UserAgentFormatter,
+                'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
+            }
+            uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
+        except Exception as e:
+            demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
+            demisto.updateModuleHealth(f'An error occurred: {str(e)}')
+        finally:
+            if certificate_path:
+                os.unlink(certificate_path)
+            if private_key_path:
+                os.unlink(private_key_path)
+            time.sleep(5)
 
 
 def run_log_running(port: int, is_test: bool = False):
@@ -2462,7 +2512,7 @@ bot client id and secret id""")
 
         '''CRUD commands'''
         if command == 'long-running-execution':
-            run_log_running(port)
+            run_long_running(port)
         elif command == 'mirror-investigation':
             results = mirror_investigation(client, **args)
         elif command == 'close-channel':

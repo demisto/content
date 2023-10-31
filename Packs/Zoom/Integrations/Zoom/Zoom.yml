@@ -63,6 +63,20 @@ configuration:
   name: insecure
   type: 8
   required: false
+- display: Certificate (Required for HTTPS)
+  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
+  name: certificate
+  type: 12
+  section: Connect
+  advanced: true
+  required: false
+- display: Private Key (Required for HTTPS)
+  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.
+  name: key
+  type: 14
+  section: Connect
+  advanced: true
+  required: false
 description: Use the Zoom integration to manage your Zoom users and meetings.
 display: Zoom
 name: Zoom
@@ -1267,7 +1281,7 @@ script:
   runonce: false
   longRunning: true
   longRunningPort: true
-  dockerimage: demisto/fastapi:1.0.0.76036
+  dockerimage: demisto/fastapi:1.0.0.79757
   script: "-"
   subtype: python3
   type: python
