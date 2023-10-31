@@ -11025,10 +11025,11 @@ def xsiam_api_call_with_retries(
     num_of_attempts,
     events_error_handler=None,
     error_msg='',
-    is_json_response=False
+    is_json_response=False,
+    data_type=EVENTS
 ):
     """
-    Send the fetched events into the XDR data-collector private api.
+    Send the fetched events or assests into the XDR data-collector private api.
 
     :type client: ``BaseClient``
     :param client: base client containing the XSIAM url.
@@ -11051,6 +11052,9 @@ def xsiam_api_call_with_retries(
     :type events_error_handler: ``callable``
     :param events_error_handler: error handler function
 
+    :type data_type: ``str``
+    :param data_type: events or assets
+
     :return: Response object or DemistoException
     :rtype: ``requests.Response`` or ``DemistoException``
     """
@@ -11060,7 +11064,7 @@ def xsiam_api_call_with_retries(
     response = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending events into xsiam, attempt number {attempt_num}'.format(attempt_num=attempt_num))
+        demisto.debug(f'Sending {data_type} into xsiam, attempt number {attempt_num}')
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
         response = client._http_request(
@@ -11311,6 +11315,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     calling_context = demisto.callingContext.get('context', {})
     instance_name = calling_context.get('IntegrationInstance', '')
     collector_name = calling_context.get('IntegrationBrand', '')
+    items_count = len(data) if isinstance(data, list) else 1
     if data_type not in DATA_TYPES:
         demisto.debug(f"data type must be one of these values: {DATA_TYPES}")
         return
@@ -11325,7 +11330,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     if isinstance(data, list):
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(data[0], dict):
-            events = [json.dumps(item) for item in data]
+            data = [json.dumps(item) for item in data]
             data_format = 'json'
         # Separating each event with a new line
         data = '\n'.join(data)
@@ -11350,7 +11355,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     }
     if data_type == ASSETS:
         headers['snapshot_id'] = str(round(time.time() * 1000))
-        headers['assets_count'] = len(data) if isinstance(data, list) else 1
+        headers['assets_count'] = str(items_count)
 
     header_msg = f'Error sending new {data_type} into XSIAM.\n'
 
