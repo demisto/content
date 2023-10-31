@@ -141,7 +141,6 @@ def fetch_indicators_command(client: Client, args: dict, params: dict=None):
     if not integration_context:
         time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
         set_integration_context({'time_of_last_fetch': time_of_first_fetch})
-        # demisto.debug(f'###integration_context')
         indicator_list = fetch_indicators(client, api_url, params)
     else:
         time_from_last_update = integration_context.get('time_of_last_fetch')
