@@ -11,7 +11,6 @@ import copy
 from packaging.version import Version
 import requests
 from demisto_sdk.commands.common.tools import run_command, get_dict_from_file
-from demisto_sdk.commands.content_graph.common import ContentType
 from Tests.scripts.utils.log_util import install_logging
 
 PACKS_DIR = 'Packs'
