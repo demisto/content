@@ -280,8 +280,6 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str, region: st
 
 def create_command_results(readable_output: str, output_flag: bool):
     command_results = CommandResults(
-        outputs_prefix="",
-        outputs_key_field="",
         outputs={'awssgrecreated': output_flag},
         raw_response={'awssgrecreated': output_flag},
         readable_output=readable_output,
