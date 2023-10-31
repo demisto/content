@@ -4,7 +4,7 @@
 | alter
     FTNTFGTlevel = if(FTNTFGTlevel="emergency","8",FTNTFGTlevel="alert","7", FTNTFGTlevel="critical","6",FTNTFGTlevel="error","5",FTNTFGTlevel="warning","4",FTNTFGTlevel="notification","3",FTNTFGTlevel="information","2",FTNTFGTlevel="debug","1",FTNTFGTlevel)
 | alter
-    level = if(cefSeverity!="" and cefSeverity!=null,cefSeverity,FTNTFGTlevel!="" and FTNTFGTCRlevel!=null,FTNTFGTCRlevel,null)
+    level = if(cefSeverity!="" and cefSeverity!=null,cefSeverity,FTNTFGTlevel!="" and FTNTFGTlevel!=null,FTNTFGTlevel,null)
 | alter
     xdm.network.application_protocol = if(app != "" and app != null, app, ftntfgtmethod != "" and ftntfgtmethod != null, ftntfgtmethod),
 	xdm.network.application_protocol_category = FTNTFGTcat,
