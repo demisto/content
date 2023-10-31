@@ -531,12 +531,12 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], is_by_host: bool,
 
 def main() -> None:
     params = demisto.params()
-    api_key = params.get("credential_apikey", {}).get("password") or params.get("apikey")
-    if not api_key:
-        return_error('Please provide a valid API token')
-    project_id = params.get("credential_projectid", {}).get("password") or params.get("project_id")
+    project_id = params.get("credentials", {}).get("username") or params.get("project_id")
     if not project_id:
         return_error('Please provide a valid Project ID')
+    api_key = params.get("credentials", {}).get("password") or params.get("apikey")
+    if not api_key:
+        return_error('Please provide a valid API token')
     is_by_host = params.get('issue_grouping') == 'By Host'
     expand_issues = params.get('expand_issues', False)
     incident_limit = int(params.get('max_fetch', DEFAULT_HOST_LIMIT))
