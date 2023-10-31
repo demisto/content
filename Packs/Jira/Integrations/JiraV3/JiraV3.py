@@ -2023,12 +2023,12 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     return CommandResults(readable_output='Issue deleted successfully.')
 
 
-def update_issue_assignee_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+def update_issue_assignee_command(client: JiraBaseClient, args: Dict) -> CommandResults:
     """This command is in charge of assigning an assignee to an issue.
 
     Args:
         client (JiraBaseClient): The Jira client.
-        args (Dict[str, str]): The arguments supplied by the user.
+        args (Dict): The arguments supplied by the user.
 
     Raises:
         DemistoException: If neither an assignee nor an assignee id was supplied.
