@@ -243,7 +243,7 @@ def test_service_record_create_command(mocker, sysaid_client):
     http_request = mocker.patch.object(sysaid_client, '_http_request')
     args = {'type': 'request', 'description': 'This is a test', 'title': 'Test SR from API', 'sr_type': '6', 'fields': 'all'}
     service_record_create_command(sysaid_client, args)
-    http_request.assert_called_with('GET', 'sr/template', params={'type': 'request'}, json_data={
+    http_request.assert_called_with('POST', 'sr', params={'type': 'request'}, json_data={
         'info': [{'key': 'description', 'value': 'This is a test'}, {'key': 'sr_type', 'value': '6'},
                  {'key': 'title', 'value': 'Test SR from API'}]}, cookies=COOKIES)
 
@@ -284,6 +284,28 @@ def test_service_record_attach_file_command(mocker, sysaid_client):
     service_record_attach_file_command(sysaid_client, args)
     http_request.assert_called_with('POST', 'sr/37/attachment', files={'file': (file_name, file_data, 'image/png')},
                                     cookies=COOKIES, resp_type='response')
+
+
+def test_service_record_get_file_command(mocker, sysaid_client):
+    """
+    Given:
+        - sr_id = str(args.get('id'))
+        - file_id = str(args.get('file_id'))
+        - file_name = str(args.get('file_name'))
+    When:
+        - sysaid-service-record-get-file command is executed when the user wants to download files from a ticket
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_get_file_command
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    file_name = 'file_name.png'
+    file_data = b'data'
+    mocker.patch('SysAid.read_file', return_value=(file_data, 4, file_name))
+
+    args = {'id': '37', 'file_id': '-80357423_-1872498142'}
+    service_record_get_file_command(sysaid_client, args)
+    http_request.assert_called_with('POST', 'sr/37/attachment/-80357423_-1872498142', cookies=COOKIES, resp_type='response')
 
 
 def test_service_record_delete_file_command(mocker, sysaid_client):
