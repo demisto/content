@@ -2507,7 +2507,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
                 'Contents': {
                     'dbotIncidentClose': True,
                     'closeNotes': ticket.get("close_notes"),
-                    'closeReason': converts_state_close_reason(ticket_state, server_close_custom_state)
+                    'closeReason': converts_state_close_reason(ticket_state, server_close_custom_state, ticket.get('close_code'))
                 },
                 'ContentsFormat': EntryFormat.JSON
             })
@@ -2516,7 +2516,8 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     return [ticket] + entries
 
 
-def converts_state_close_reason(ticket_state: Optional[str], server_close_custom_state: Optional[str]):
+def converts_state_close_reason(ticket_state: Optional[str], server_close_custom_state: Optional[str],
+                                ticket_close_code: str | None):
     """
     determine the XSOAR incident close reason based on the Service Now ticket state.
     if 'Mirrored XSOAR Ticket custom close state code' parameter is set, the function will try to use it to
@@ -2526,6 +2527,7 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
     Args:
         ticket_state: Service now ticket state
         server_close_custom_state: server close custom state parameter
+        ticket_close_code: Service now ticket close resolution
     Returns:
         The XSOAR state
     """
@@ -2545,6 +2547,9 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
     if custom_label:
         demisto.debug(f'incident should be closed using custom state. State Code: {ticket_state}, Label: {custom_label}')
         return custom_label
+    elif ticket_close_code:
+        demisto.debug(f'incident should be closed using close code. State Code: {ticket_state}, Close Code: {ticket_close_code}')
+        return str(ticket_close_code).capitalize()
     elif ticket_state in ['6', '7']:  # default states for closed (6) and resolved (7)
         demisto.debug(f'incident should be closed using default state. State Code: {ticket_state}')
         return 'Resolved'
