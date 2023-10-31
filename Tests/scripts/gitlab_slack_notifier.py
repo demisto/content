@@ -10,9 +10,11 @@ from pathlib import Path
 from typing import Any
 
 import gitlab
+import requests
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
 from junitparser import TestSuite
 from slack_sdk import WebClient
+from slack_sdk.web import SlackResponse
 
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
@@ -35,6 +37,7 @@ GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disabl
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
+SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
 CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
 CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
@@ -364,6 +367,15 @@ def construct_coverage_slack_msg() -> list[dict[str, Any]]:
     }]
 
 
+def build_link_to_message(response: SlackResponse) -> str:
+    if SLACK_WORKSPACE_NAME and response.status_code == requests.codes.ok:
+        data: dict = response.data  # type: ignore[assignment]
+        channel_id: str = data['channel']
+        message_ts: str = data['ts'].replace('.', '')
+        return f"https://{SLACK_WORKSPACE_NAME}.slack.com/archives/{channel_id}/p{message_ts}"
+    return ""
+
+
 def main():
     install_logging('Slack_Notifier.log')
     options = options_handler()
@@ -381,9 +393,7 @@ def main():
                  f"triggering workflow:'{triggering_workflow}' allowing failure:{options.allow_failure} "
                  f"slack channel:{computed_slack_channel}")
     pull_request = None
-    if triggering_workflow in {BUCKET_UPLOAD}:
-        logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
-    elif options.current_branch != DEFAULT_BRANCH:
+    if options.current_branch != DEFAULT_BRANCH:
         try:
             branch = options.current_branch
             if triggering_workflow == BUCKET_UPLOAD and BUCKET_UPLOAD_BRANCH_SUFFIX in branch:
@@ -396,11 +406,15 @@ def main():
                 verify=False,
             )
             author = pull_request.data.get('user', {}).get('login')
-            computed_slack_channel = f"{computed_slack_channel}{author}"
+            if triggering_workflow in {BUCKET_UPLOAD}:
+                logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
+            else:
+                # This feature is only supported for content nightly and content pr workflows.
+                computed_slack_channel = f"{computed_slack_channel}{author}"
             logging.info(f"Sending slack message to channel {computed_slack_channel} for "
                          f"Author:{author} of PR#{pull_request.data.get('number')}")
         except Exception:
-            logging.exception(f'Failed to get pull request data for branch {options.current_branch}')
+            logging.error(f'Failed to get pull request data for branch {options.current_branch}')
     else:
         logging.info("Not a pull request build, skipping PR comment")
 
@@ -415,10 +429,11 @@ def main():
         logging.info(f'Successfully wrote slack message to {output_file}')
 
     try:
-        slack_client.chat_postMessage(
+        response = slack_client.chat_postMessage(
             channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
         )
-        logging.info(f'Successfully sent slack message to channel {computed_slack_channel}')
+        link = build_link_to_message(response)
+        logging.info(f'Successfully sent slack message to channel {computed_slack_channel} link: {link}')
     except Exception:
         if strtobool(options.allow_failure):
             logging.warning(f'Failed to send slack message to channel {computed_slack_channel} not failing build')

@@ -88,6 +88,9 @@ else
 fi
 echo "BUCKET_UPLOAD = $BUCKET_UPLOAD, FORCE_BUCKET_UPLOAD = $FORCE_BUCKET_UPLOAD"
 
+# Workaround for the SDK hard-coded path.
+mv "${ARTIFACTS_FOLDER}/markdown_images.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/markdown_images.json"
+
 UPLOAD_SPECIFIC_PACKS=false
 if [ -z "${BUCKET_UPLOAD}" ] && [ -z "${FORCE_BUCKET_UPLOAD}" ]; then
   echo "Updating the following content packs: ${CONTENT_PACKS_TO_UPLOAD} ..."
