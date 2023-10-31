@@ -1,0 +1,55 @@
+args:
+- defaultValue: ${File}
+  description: Files.
+  isArray: true
+  name: files
+- defaultValue: ${incident.attachment}
+  description: Attachment.
+  isArray: true
+  name: attachment
+- description: The mailbox from which emails are sent from the 3rd party integration.
+  name: service_mail
+- description: Name of the mail sender instance name for transmitting emails.
+  name: mail_sender_instance
+- auto: PREDEFINED
+  defaultValue: n/a
+  description: Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only.
+  name: new_thread
+  predefined:
+  - "true"
+  - "false"
+  - n/a
+- defaultValue: "false"
+  description: Include the Incident ID within the email subject.
+  name: subject_include_incident_id
+- auto: PREDEFINED
+  defaultValue: "false"
+  description: Specify whether to calculate the reputation in an asynchronous way.
+  name: reputation_calc_async
+  predefined:
+  - "true"
+  - "false"
+comment: |-
+  Send email reply
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+commonfields:
+  id: SendEmailReplyUpdated
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.78960
+enabled: true
+name: SendEmailReplyUpdated
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
