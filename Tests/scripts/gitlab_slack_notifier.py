@@ -256,7 +256,7 @@ def construct_slack_msg(triggering_workflow: str,
     if failed_jobs_names:
         content_fields.append({
             "title": f'Failed Jobs - ({len(failed_jobs_names)})',
-            "value": '\n'.join(failed_jobs_names),
+            "value": '\n'.join(sorted(failed_jobs_names)),
             "short": False
         })
 
@@ -375,11 +375,13 @@ def main():
     slack_token = options.slack_token
     slack_client = WebClient(token=slack_token)
 
-    logging.info(f'Sending Slack message for pipeline {pipeline_id} in project {project_id} on server {server_url} '
-                 f'triggering workflow:{triggering_workflow} allowing failure:{options.allow_failure} '
-                 f'slack channel:{computed_slack_channel}')
+    logging.info(f"Sending Slack message for pipeline {pipeline_id} in project {project_id} on server {server_url} "
+                 f"triggering workflow:'{triggering_workflow}' allowing failure:{options.allow_failure} "
+                 f"slack channel:{computed_slack_channel}")
     pull_request = None
-    if options.current_branch != DEFAULT_BRANCH:
+    if triggering_workflow in {BUCKET_UPLOAD}:
+        logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
+    elif options.current_branch != DEFAULT_BRANCH:
         try:
             branch = options.current_branch
             if triggering_workflow == BUCKET_UPLOAD and BUCKET_UPLOAD_BRANCH_SUFFIX in branch:
