@@ -7,7 +7,7 @@ description: |-
   This playbook adds email details to the relevant context entities and handles original email attachments.
 
   The v2 playbook enables parsing email artifacts more efficiently, including:
-  - Using incident fields and not incident labels.
+  - Using alert fields and not alert labels.
   - Providing separate paths to "Phishing Alerts".
   - Using the new "Get Original Email - Generic v2" playbook to retrieve original emails as EML files from the following integrations:
     * EWS v2
@@ -16,7 +16,7 @@ description: |-
     * FireEye EX and FireEye CM
     * Proofpoint Protection Server
     * Agari Phishing Defense (EWS v2, MSGraph Mail, Gmail)
-    * Mimecast
+    * Mimecast.
 starttaskid: '0'
 tasks:
   '0':
@@ -57,7 +57,7 @@ tasks:
       id: aa7ddce2-5a85-46fe-8e35-6c4ebbe62059
       version: -1
       name: Do we have original emails attached?
-      description: Identifies whether the incident includes an email message attached as an EML or MSG file and returns the answer to playbook. Also saves the identified entry ID to context for use for later. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
+      description: Identifies whether the alert includes an email message attached as an EML or MSG file and returns the answer to playbook. Also saves the identified entry ID to context for use for later. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
@@ -97,7 +97,7 @@ tasks:
       id: 5802b254-fac3-4c94-8b2d-89038b4239e5
       version: -1
       name: Extract email artifacts and attachments
-      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The alert labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
       scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
@@ -156,24 +156,10 @@ tasks:
                 root: Email
                 accessor: HTML
             iscontext: true
-          right:
-            value: {}
-        - operator: isExists
-          left:
-            value:
-              complex:
-                root: Email
-                accessor: Text
-            iscontext: true
       - - operator: isNotEmpty
           left:
             value:
               simple: Email.HTML
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: Email.Text
             iscontext: true
       - - operator: isExists
           left:
@@ -236,13 +222,6 @@ tasks:
         complex:
           root: Email
           accessor: HTML
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: ${Email.Text="<html><body>"+val +"</body></html>"}
       offline:
         simple: 'true'
     reputationcalc: 1
@@ -358,7 +337,7 @@ tasks:
           left:
             value:
               complex:
-                root: incident
+                root: alert
                 accessor: phishingreporteremailheaders
             iscontext: true
     - label: Yes-Alerts
@@ -437,7 +416,7 @@ tasks:
       id: 22392e6a-e7ba-455a-81c5-6b6a188812c1
       version: -1
       name: Keep backward-compatibility?
-      description: Whether to keep this sub-playbook backward-compatible in terms of the incident fields being set. Opting out will result in the Rendered HTML and Email Body HTML not being set, and the Email HTML field will be used instead.
+      description: Whether to keep this sub-playbook backward-compatible in terms of the alert fields being set. Opting out will result in the Rendered HTML and Email Body HTML not being set, and the Email HTML field will be used instead.
       type: condition
       iscommand: false
       brand: Builtin
@@ -483,7 +462,7 @@ tasks:
       id: 293d898d-dc20-44ff-81bd-81ebb1056023
       version: -1
       name: Display email headers in layout - Email.Headers
-      description: Fills the "Email Headers" field in the incident layout with the retrieved email headers.
+      description: Fills the "Email Headers" field in the alert layout with the retrieved email headers.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -581,7 +560,7 @@ tasks:
     task:
       id: 6bb8388f-977a-4fd5-83c0-c62843fc8857
       version: -1
-      name: Incident Layout Display
+      name: Alert Layout Display
       type: title
       iscommand: false
       brand: ''
@@ -613,8 +592,8 @@ tasks:
     task:
       id: 8398a7c0-fb88-4a69-83fc-3493ea024fa3
       version: -1
-      name: Are there any files in the incident?
-      description: Checks whether the incident contains any kind of file.
+      name: Are there any files in the alert?
+      description: Checks whether the alert contains any kind of file.
       type: condition
       iscommand: false
       brand: ''
@@ -658,8 +637,8 @@ tasks:
     task:
       id: 73335578-482c-4f91-8d4c-dde807dbd8cf
       version: -1
-      name: Save incident files separately from email attachments
-      description: Saves the files that were initially involved with the incident in a separate context key so they are available separate from email attachment files.
+      name: Save alert files separately from email attachments
+      description: Saves the files that were initially involved with the alert in a separate context key so they are available separate from email attachment files.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1153,7 +1132,7 @@ tasks:
         simple: headers
       value:
         complex:
-          root: incident
+          root: alert
           accessor: phishingreporteremailheaders
     separatecontext: false
     view: |-
@@ -1241,7 +1220,7 @@ tasks:
       id: efef13c9-b8f6-49e4-8fd8-a51c5c664481
       version: -1
       name: Do we have original emails attached?
-      description: Identifies whether the incident includes an email message attached as an EML or MSG file and returns the answer to playbook. Also saves the identified entry ID to context for later use. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
+      description: Identifies whether the alert includes an email message attached as an EML or MSG file and returns the answer to playbook. Also saves the identified entry ID to context for later use. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
       scriptName: IdentifyAttachedEmail
       type: condition
       iscommand: false
@@ -1281,7 +1260,7 @@ tasks:
       id: 5ce226b3-dafb-4503-867a-453e0326b7d4
       version: -1
       name: Display email headers in layout - Email.HeadersMap
-      description: Fills the "Email Headers" field in the incident layout with the retrieved email headers.
+      description: Fills the "Email Headers" field in the alert layout with the retrieved email headers.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -1351,16 +1330,16 @@ tasks:
     scriptarguments:
       EmailBrand:
         complex:
-          root: incident
+          root: alert
           accessor: sourceBrand
       EmailSubject:
         complex:
-          root: incident.phishingreporteremailheaders
+          root: alert.phishingreporteremailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.phishingreporteremailheaders.headername
+                  simple: alert.phishingreporteremailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -1368,12 +1347,12 @@ tasks:
           accessor: headervalue
       MessageID:
         complex:
-          root: incident.phishingreporteremailheaders
+          root: alert.phishingreporteremailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.phishingreporteremailheaders.headername
+                  simple: alert.phishingreporteremailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -1734,8 +1713,8 @@ tasks:
       id: 4df560a8-e403-4170-84d5-e56a1a92b871
       version: -1
       name: Set reported email origin (none)
-      description: Set "reportedemailorigin" incident field value to "None".
-      script: Builtin|||setIncident
+      description: Set "reportedemailorigin" alert field value to "None".
+      script: Builtin|||setAlert
       type: regular
       iscommand: true
       brand: Builtin
@@ -1930,17 +1909,17 @@ tasks:
     continueonerrortype: ""
   '55':
     id: '55'
-    taskid: d92b905f-b6f6-408c-896b-6910ed0f9251
+    taskid: dc5539b4-462b-4d3d-89a4-71563922b895
     type: regular
     task:
-      id: d92b905f-b6f6-408c-896b-6910ed0f9251
+      id: dc5539b4-462b-4d3d-89a4-71563922b895
       version: -1
-      name: Set incident attachments
-      description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
-      scriptName: UploadFile
+      name: Upload email attachments to layout
+      description: Uploads file attachments of the email to the alert layout.
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ''
+      script: '|||core-api-multipart'
     nexttasks:
       '#none#':
       - '6'
@@ -1966,12 +1945,8 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-      incID:
-        complex:
-          root: incident
-          accessor: id
-      target:
-        simple: incident attachment
+      uri:
+        simple: incident/upload/${incident.id}
     separatecontext: false
     view: |-
       {
@@ -1990,13 +1965,13 @@ tasks:
     continueonerrortype: ""
   '56':
     id: '56'
-    taskid: 6ed6697b-5d7a-4700-8b04-41bf375be00f
+    taskid: 1d299c0a-43e9-44cb-88ec-b0056fc5c1d7
     type: condition
     task:
-      id: 6ed6697b-5d7a-4700-8b04-41bf375be00f
+      id: 1d299c0a-43e9-44cb-88ec-b0056fc5c1d7
       version: -1
-      name: Check Whether to add attachments
-      description: ""
+      name: Can email attachments be uploaded?
+      description: "Checks whether the Core REST API integration is enabled, and whether any file attachments were extracted from the email."
       type: condition
       iscommand: false
       brand: ''
@@ -2262,7 +2237,7 @@ tasks:
       id: 2b2898ad-5e86-4522-8c82-9563ea1c68ad
       version: -1
       name: Keep backward-compatibility?
-      description: Whether to keep this sub-playbook backward-compatible in terms of the incident fields being set. Opting out will result in the Rendered HTML and Email Body HTML not being set, and the Email HTML field will be used instead.
+      description: Whether to keep this sub-playbook backward-compatible in terms of the alert fields being set. Opting out will result in the Rendered HTML and Email Body HTML not being set, and the Email HTML field will be used instead.
       type: condition
       iscommand: false
       brand: ""
@@ -2308,8 +2283,8 @@ tasks:
       id: d7d180f3-26e2-4e14-8843-9ea46c71764e
       version: -1
       name: Display email information in layout
-      description: Updates Cortex XSOAR incident fields using data from the email object.
-      script: Builtin|||setIncident
+      description: Updates Cortex XSIAM alert fields using data from the email object.
+      script: Builtin|||setAlert
       type: regular
       iscommand: true
       brand: Builtin
@@ -2415,12 +2390,12 @@ tasks:
           accessor: Keywords
       emailmessageid:
         complex:
-          root: incident.emailheaders
+          root: alert.emailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.emailheaders.headername
+                  simple: alert.emailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -2442,12 +2417,12 @@ tasks:
           - operator: count
       emailreplyto:
         complex:
-          root: incident.emailheaders
+          root: alert.emailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.emailheaders.headername
+                  simple: alert.emailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -2457,12 +2432,12 @@ tasks:
           - operator: uniq
       emailreturnpath:
         complex:
-          root: incident.emailheaders
+          root: alert.emailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.emailheaders.headername
+                  simple: alert.emailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -2536,12 +2511,12 @@ tasks:
           - operator: Stringify
       reportedemailmessageid:
         complex:
-          root: incident.emailheaders
+          root: alert.emailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.emailheaders.headername
+                  simple: alert.emailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -2625,8 +2600,8 @@ tasks:
       id: 62df369f-0409-4abd-820f-66fba1520ded
       version: -1
       name: Display email information in layout
-      description: Updates Cortex XSOAR incident fields using data from the email object.
-      script: Builtin|||setIncident
+      description: Updates Cortex XSIAM alert fields using data from the email object.
+      script: Builtin|||setAlert
       type: regular
       iscommand: true
       brand: Builtin
@@ -2730,12 +2705,12 @@ tasks:
           accessor: Keywords
       emailmessageid:
         complex:
-          root: incident.emailheaders
+          root: alert.emailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.emailheaders.headername
+                  simple: alert.emailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -2757,12 +2732,12 @@ tasks:
           - operator: count
       emailreplyto:
         complex:
-          root: incident.emailheaders
+          root: alert.emailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.emailheaders.headername
+                  simple: alert.emailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -2772,12 +2747,12 @@ tasks:
           - operator: uniq
       emailreturnpath:
         complex:
-          root: incident.emailheaders
+          root: alert.emailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.emailheaders.headername
+                  simple: alert.emailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -2863,12 +2838,12 @@ tasks:
           - operator: Stringify
       reportedemailmessageid:
         complex:
-          root: incident.emailheaders
+          root: alert.emailheaders
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: incident.emailheaders.headername
+                  simple: alert.emailheaders.headername
                 iscontext: true
               right:
                 value:
@@ -2958,8 +2933,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "57"
       - "11"
+      - "57"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3011,7 +2986,7 @@ inputs:
 - key: Email
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailto
   required: false
   description: The receiver email address.
@@ -3019,7 +2994,7 @@ inputs:
 - key: EmailCC
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailcc
   required: false
   description: The email CC addresses.
@@ -3027,7 +3002,7 @@ inputs:
 - key: EmailFrom
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailfrom
   required: false
   description: The sender email address.
@@ -3035,7 +3010,7 @@ inputs:
 - key: EmailSubject
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailsubject
   required: false
   description: The email subject.
@@ -3043,7 +3018,7 @@ inputs:
 - key: EmailText
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailbody
   required: false
   description: The email text.
@@ -3051,7 +3026,7 @@ inputs:
 - key: EmailHtml
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailhtml
   required: false
   description: The email HTML.
@@ -3059,7 +3034,7 @@ inputs:
 - key: EmailHeaders
   value:
     complex:
-      root: incident
+      root: alert
       accessor: phishingreporteremailheaders
   required: false
   description: The email headers.
@@ -3067,7 +3042,7 @@ inputs:
 - key: EmailFormat
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailformat
   required: false
   description: The email format.
@@ -3088,7 +3063,7 @@ inputs:
 - key: MessageID
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailmessageid
   required: false
   description: The original email message ID to retrieve. Holds the value of the "Message-ID" header of the original email. This value is passed as an input to the "Get Original Email - Generic v2" playbook.
@@ -3096,7 +3071,7 @@ inputs:
 - key: UserID
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailto
       transformers:
       - operator: replaceMatch
@@ -3113,7 +3088,7 @@ inputs:
 - key: Thread-Topic
   value:
     complex:
-      root: incident
+      root: alert
       accessor: emailsubject
   required: false
   description: The value of the "Thread-Topic" header which holds the original email subject, needed for forwarded email scenarios. It is passed as an input to the "Get Original Email - Generic v2" playbook to use in the relevant sub-playbooks.
