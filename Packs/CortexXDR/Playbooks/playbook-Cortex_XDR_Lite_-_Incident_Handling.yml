@@ -9,17 +9,17 @@ description: |-
   The **Cortex XDR Lite - Incident Handling** playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident and executes the following:
 
   **Analysis:**
-  - Enriches all the indicators in the incidents.
+  - Enriches all the indicators from XDR incidents and alerts, providing additional context and information about these indicators.
 
   **Investigation:**
-  - Checks for related XDR alerts to the user and the endpoint by Mitre tactics.
+  - Checks for related XDR alerts to the user and the endpoint by Mitre tactics to identify malicious activity.
   - Checks for specific arguments for malicious usage from the command line.
 
   **Verdict:**
-  - Determines the appropriate verdict based on the analysis and the investigation findings.
+  - Determines the incident's verdict by considering indicator enrichment results, user and host risk levels, command line analysis, and the number of related XDR alerts (medium severity or higher) to the user and the endpoint by Mitre tactics.
 
   **Verdict Handling:**
-  - Handles malicious incidents by initiating appropriate response actions.
+  - Handles malicious incidents by initiating appropriate response actions, including blocking malicious indicators, isolating endpoints, and disabling user accounts.
 
   ---.
 starttaskid: "0"
@@ -2157,7 +2157,8 @@ inputs:
     The default value is '5'.
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    simple: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
   required: false
   description: |-
     This input is used in the "Entity Enrichment - Generic v3" playbook.

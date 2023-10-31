@@ -2728,8 +2728,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
-      - 'true'
-      - 'false'
+        - 'true'
+        - 'false'
     description: Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
     outputs:
