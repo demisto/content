@@ -28,7 +28,7 @@ configuration:
   required: false
   section: Connect
   type: 8
-description: Creating an integration.
+description: Use the Ataya Harmony integration to assign client which has not yet under assigned status by client imsi.
 display: Ataya Harmony
 name: Ataya Harmony
 script:
@@ -38,7 +38,7 @@ script:
       required: true
       description: the cilient imsi which need to be assigned.
     description: assign user.
-    name: assign-user
+    name: ataya-assign-user
   dockerimage: demisto/python3:3.10.13.78960
   runonce: false
   script: ''

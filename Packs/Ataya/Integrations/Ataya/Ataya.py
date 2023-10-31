@@ -21,12 +21,11 @@ class Client(BaseClient):
         }
 
     def getNode(self):
-        return self._http_request(method='GET', url_suffix='api/v1/mgmt/5gc/networks/default/nodes',
-                                  resp_type='json', ok_codes=(200,))
+        return self._http_request(method='GET', url_suffix='api/v1/mgmt/5gc/networks/default/nodes')
 
     def assignUser(self, imsi):
         return self._http_request(method='PUT', url_suffix='api/v1/mgmt/5gc/clientAction/setstatus',
-                                  json_data={"status": "assigned", "resources": [imsi]}, resp_type='json', ok_codes=(200,))
+                                  json_data={"status": "assigned", "resources": [imsi]})
 
 
 ''' HELPER FUNCTIONS '''
@@ -42,7 +41,7 @@ def test_module(client: Client) -> str:
     try:
         response = client.getNode()
 
-        success = demisto.get(response, 'count')  # Safe access to response['success']['total']
+        success = demisto.get(response, 'count')  # Safe access to response['count']
         if success < 1:
             return f'Unexpected result from the service: success={success} (expected success > 1)'
 
@@ -81,7 +80,7 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
 
     base_url = params.get('url')
-    api_key = params.get('apiToken').get('password')
+    api_key = params.get('apiToken', {}).get('password')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -92,7 +91,7 @@ def main() -> None:  # pragma: no cover
             # This is the call made when clicking the integration Test button.
             return_results(test_module(client))
 
-        elif command == 'assign-user':
+        elif command == 'ataya-assign-user':
             return_results(assign_command(client, **args))
 
         else:

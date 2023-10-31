@@ -19,13 +19,13 @@ Use the Ataya Harmony integration, we can achieve the security access control wh
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, or in a playbook.
 
-### assign-user
+### ataya-assign-user
 ***
 After assign the user on ataya harmony, user can successfully register to harmony
 
 #### Base Command
 
-`assign-user`
+`ataya-assign-user`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -33,4 +33,4 @@ After assign the user on ataya harmony, user can successfully register to harmon
 | imsi | A user imsi which need to be assigned | Required | 
 
 #### Command Example
-```!assign-user imsi="001010000000001"```
+```!ataya-assign-user imsi="001010000000001"```
