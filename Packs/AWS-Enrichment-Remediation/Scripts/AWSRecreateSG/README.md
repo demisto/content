@@ -47,4 +47,4 @@ This script is used in the following playbooks and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| awssgrecreated | Sets the value to True or false if the security group is created | boolean |
+| awssgrecreated | Sets the value to true or false if the security group is created. | boolean |
