@@ -113,6 +113,7 @@ script:
     - name: limit
       description: Number of indicators to bring in using gh-maltrail-get-indicators.
     name: gh-maltrail-get-indicators
+    description: Get all indicators from the feed. 
   dockerimage: demisto/pyjwt3:1.0.0.76168
   feed: true
   runonce: false
