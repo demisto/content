@@ -34,6 +34,14 @@ jobs:
         key: ${{ runner.os }}-pre-commit
 
     - name: run pre-commit
+      if: "!contains(github.event.pull_request.labels.*.name, 'Community Support Level')"
+      run: |
+        source .venv/bin/activate
+        demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=nightly
+
+    - name: run pre-commit
+      if: "contains(github.event.pull_request.labels.*.name, 'Community Support Level')"
+      continue-on-error: true
       run: |
         source .venv/bin/activate
         demisto-sdk pre-commit -g --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=nightly

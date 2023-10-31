@@ -1964,7 +1964,7 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
-    command = demisto.command()
+    command = demisto.command()                       
 
     demisto.debug(f'Command being called is {command}')
     try:
