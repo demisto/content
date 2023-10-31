@@ -19,8 +19,8 @@ The structure of the file should be:
 ```json
 {
     "integrations": [
-        {"name": "test1", "instance_name": "test1", "params":  {"paramA":  "a"}},
-        {"name": "test2", "instance_name": "test2", "params":  {"paramB":  "b"}}
+        {"name": "test1", "instance_name": "test1", "params": {"paramA":  "a"}},
+        {"name": "test2", "instance_name": "test2", "params": {"paramB":  "b"}}
     ]
 }
 ```

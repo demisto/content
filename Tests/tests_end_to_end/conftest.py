@@ -48,6 +48,9 @@ def get_cloud_machine_credentials(request):
 
 @pytest.fixture()
 def integration_params(request) -> dict:
+    """
+    Get the integration params by instance name.
+    """
     instance_name = request.cls.instance_name_gsm
     integration_secrets_path = request.config.option.integration_secrets_path
     return get_integration_params(integration_secrets_path, instance_name=instance_name)

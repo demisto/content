@@ -1,6 +1,6 @@
 import json
 from functools import wraps
-from typing import Callable
+from collections.abc import Callable
 
 from demisto_sdk.commands.test_content.mock_server import MITMProxy
 
