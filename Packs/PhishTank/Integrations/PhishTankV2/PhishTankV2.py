@@ -49,7 +49,7 @@ class Client(BaseClient):
             url_suffix=url_suffix,
             resp_type="text",
             error_handler=handle_error,
-            headers={'User-Agent': 'PANW-XSOAR'}
+            headers={'User-Agent': 'phishtank/PANW-XSOAR'}
         )
         return result
 
