@@ -1245,7 +1245,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
         bindings_roles_only = []
         for index, entry in enumerate(bindings):
             if entry.get("role") in roles:
-                bindings_roles_only.append(bindings.pop(index))
+                bindings_roles_only.append(bindings[index])
 
         bindings = bindings_roles_only
 
@@ -1253,7 +1253,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
         start = (page - 1) * limit
         end = start + limit
         outputs["bindings"] = bindings[start:end]
-        if len(bindings) < 50:
+        if len(bindings) < limit:
             readable_header = f'Project {resource_name} IAM Policy List:\n Current page size: {len(bindings)}'
 
     readable_output = tableToMarkdown(
