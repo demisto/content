@@ -5,8 +5,8 @@ args:
 - description: TCP/UDP port to be restricted.
   name: port
   required: true
-- auto: PREDEFINED
-  description: Protocol of the port to be restricted.
+- description: Protocol of the port to be restricted.
+  auto: PREDEFINED
   name: protocol
   predefined:
   - tcp
@@ -17,9 +17,9 @@ args:
   required: true
 - description: Name of an AWS role to assume (should be the same for all organizations).
   name: assume_role
-- auto: PREDEFINED
-  description: Region where EC2 instance is present.
+- description: Region where EC2 instance is present.
   name: region
+  auto: PREDEFINED
   predefined:
   - us-east-1
   - us-east-2
@@ -51,20 +51,21 @@ dependson:
   - AWS - EC2|||aws-ec2-authorize-security-group-egress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-egress-rule
-dockerimage: demisto/python3:3.10.13.75921
+dockerimage: demisto/python3:3.10.13.78960
 enabled: true
-engineinfo: {}
-mainengineinfo: {}
 name: AWSRecreateSG
-outputs:
-- contextPath: awssgrecreated
-  description: Sets the value to True or false if the security group is created
-  type: boolean
-pswd: ""
 runas: DBotWeakRole
-runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
 tags: []
 type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+engineinfo: {}
+runonce: false
+outputs:
+- contextPath: awssgrecreated
+  description: Sets the value to True or false if the security group is created.
+  type: boolean
