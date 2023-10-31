@@ -791,7 +791,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
             success &= search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
 
     else:
-        with ThreadPoolExecutor(max_workers=130) as pool:
+        with ThreadPoolExecutor(max_workers=15) as pool:
             futures = [
                 pool.submit(
                     search_pack_and_its_dependencies, pack_id=pack_id, **kwargs
