@@ -578,6 +578,14 @@ def get_modified_remote_data(client: Client, args: Dict[str, Any]) -> GetModifie
         page_size=50,
         update_date_from=update_date_from,
         update_date_to=update_date_to,
+        created_date_from=None,
+        created_date_to=None,
+        modification_date_from=None,
+        modification_date_to=None,
+        environments=None,
+        statuses=None,
+        severities=None,
+        types=None,
     )
 
     for ticket in response["alerts"]:
