@@ -163,9 +163,9 @@ script:
       name: updated_date_to
     - description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. updated_date_range will overwrite updated_date.
       name: updated_date_range
-    - description: ISO-Formatted modification date. Get alerts modified since this date (YYYY-MM-DDTHH:MM:SSZ).
+    - description: ISO-Formatted modification date. Get alerts content modified since this date (YYYY-MM-DDTHH:MM:SSZ).
       name: modification_date_from
-    - description: ISO-Formatted modification date. Get alerts modified before this date (YYYY-MM-DDTHH:MM:SSZ).
+    - description: ISO-Formatted modification date. Get alerts content modified before this date (YYYY-MM-DDTHH:MM:SSZ).
       name: modification_date_to
     - description: You can specify a date range to search for from the current time. (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time. modified_date_range will overwrite modified_date.
       name: modified_date_range
