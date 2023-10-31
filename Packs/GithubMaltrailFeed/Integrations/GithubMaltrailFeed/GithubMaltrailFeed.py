@@ -75,10 +75,6 @@ def fetch_indicators(client: Client, url: str, params: dict=None):
         for line in lines:
             if '#' not in line and line != '':
                 type_ = auto_detect_indicator_type(line)
-                raw_data = {
-                    'value': line,
-                    'type': type_,
-                }
                 if regex.search(REGEX_IP, line):
                     if line.startswith('http://'):
                         line = line.removeprefix('http://')
@@ -88,8 +84,12 @@ def fetch_indicators(client: Client, url: str, params: dict=None):
                         line = line.split(':')[0]
                     type_ = "IP"
                 elif type_ == "URL":
-                    if not line.startswith('http://'):
+                    if not line.startswith('http://') and not line.startswith('https://'):
                         line = 'http://' + line
+                raw_data = {
+                    'value': line,
+                    'type': type_,
+                }
                 indicator_obj = {
                     'value': line,
                     'type': type_,
