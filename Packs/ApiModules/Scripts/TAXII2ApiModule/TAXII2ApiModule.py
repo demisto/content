@@ -271,7 +271,7 @@ class Taxii2FeedClient:
         self.default_api_root = default_api_root
         self.update_custom_fields = update_custom_fields
 
-    def init_server(self, version=TAXII_VER_2_0):
+    def init_server(self, version=TAXII_VER_2_1):
         """
         Initializes a server in the requested version
         :param version: taxii version key (either 2.0 or 2.1)
@@ -300,7 +300,7 @@ class Taxii2FeedClient:
         Initializes the api roots (used to get taxii server objects)
         """
         if not self.server:
-            self.init_server(version=TAXII_VER_2_1)
+            self.init_server()
         try:
             # disable logging as we might receive client error and try 2.0
             logging.disable(logging.ERROR)
