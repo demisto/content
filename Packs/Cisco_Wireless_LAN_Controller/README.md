@@ -16,7 +16,7 @@ Open your Cisco WLC GUI, and follow these instructions:
 3. Optional, to set the severity level for filtering syslog messages to the syslog servers, choose one of the options under **Syslog Level**.
 4. Optional, to set the facility for outgoing syslog messages to the syslog servers, choose one of the options under **Syslog Facility**.
 5. Click **Apply**.
-6. Optional, to set the severity level for logging messages to the controller buffer and console, choose one of the options from either the **Buffered Log Level** and **Console Log Level** drop-down lists.
+6. Optional, to set the severity level for logging messages to the controller buffer and console, choose one of the options from either the **Buffered Log Level** and **Console Log Level** dropdown lists.
 7. Select the **File Info** check box if you want the message logs to include information about the source file. The default value is enabled.
 8. Select the **Trace Info** check box if you want the message logs to include traceback information. The default is disabled.
 9. Click **Apply**.
