@@ -82,7 +82,6 @@ def test_fetch_incidents_not_first_run(mocker, groups_fixture):
     demisto.setLastRun.assert_called_with({'last_time': '2022-09-06T12:36:33', 'last_id': 4})
 
 
-
 def test_create_context():  # type: ignore # noqa
     indicators = [{
         "id": 40435508,
