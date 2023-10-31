@@ -409,15 +409,13 @@ script:
     - contextPath: Cyberint.Alert.attachments
       description: Attachments related to the alert.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
     - description: Reference IDs for the alert(s).
       isArray: true
       name: alert_ref_ids
       required: true
     - auto: PREDEFINED
-      description: Desired status to update for the alert(s).
+      description: Desired status to update for the alert(s). Note that if the chosen status is 'closed', the closure_reason argument is required.
       name: status
       predefined:
       - open
@@ -452,8 +450,6 @@ script:
     - contextPath: Cyberint.Alert.closure_reason
       description: Reason for updating the alert to closed if closed.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
     - description: Reference ID of the alert.
       name: alert_ref_id
@@ -497,8 +493,6 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-    deprecated: false
-    execution: false
   - arguments:
     - description: Reference ID of the alert.
       name: alert_ref_id
@@ -539,8 +533,6 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-    deprecated: false
-    execution: false
   - arguments: []
     description: Returns the list of fields for an incident type.
     name: get-mapping-fields
