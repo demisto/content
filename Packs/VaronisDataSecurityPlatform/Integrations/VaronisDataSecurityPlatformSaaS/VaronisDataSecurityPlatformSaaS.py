@@ -741,7 +741,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f'/app/dataquery/api/search/{url}',
             headers=self.headers,
-            status_list_to_retry=[304],
+            status_list_to_retry=[304, 405, 206],
             retries=10
         )
 
@@ -830,7 +830,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f'/app/dataquery/api/search/{url}',
             headers=self.headers,
-            status_list_to_retry=[304],
+            status_list_to_retry=[304, 405, 206],
             retries=10
         )
 
@@ -1474,8 +1474,8 @@ def main() -> None:
     args = demisto.args()
 
     if not is_xsoar_env():
-        url = 'https://int0bf5b.varonis-preprod.com'
-        apiKey = 'vkey1_9e9575aa2665457c88a08bd496f5b87f_+vFM0cQ/XVzMF8+uYMWJPVNc3OF69cXtX77LOg+EeUY='
+        url = 'https://devc275a.varonis-preprod.com'
+        apiKey = 'vkey1_0b706936df8d471fb36b1cac63b1dc04_Mv9UZtoihlqGQYWRIsXQXilD73vsbvr7t4ZAUvio7eA='
         command = 'varonis-get-alerts'  # 'test-module'|
         # 'varonis-get-alerts'|
         # 'varonis-get-alerted-events'|
