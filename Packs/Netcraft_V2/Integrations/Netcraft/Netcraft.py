@@ -231,7 +231,7 @@ def int_to_bool(val: str | int | None) -> Any:
 
 
 def convert_binary_keys_to_bool(d: dict, *keys):
-    '''Converts values of specified keys in a dictionary to booleans.
+    '''Converts values of specified keys in a dictionary to booleans in place.
 
     This takes a dictionary and list of keys, and converts the values of those keys
     in the dictionary to True/False based on their string or int values of "0", "1", 0 or 1.
@@ -249,16 +249,16 @@ def convert_binary_keys_to_bool(d: dict, *keys):
         >>> print(d)
         {'a': True, 'b': False}
     '''
-    d |= {
+    d.update({
         key: int_to_bool(d.get(key))
         for key in keys
-    }
+    })
 
 
 def read_base64encoded_file(filepath: str) -> str:
     '''Returns a base64 encoded string of the file'''
     with open(filepath, 'rb') as f:
-        return base64.b64encode(f.read()).decode('ascii')
+        return base64.b64encode(f.read()).decode()
 
 
 def get_file_path(entry_id: str) -> dict:
@@ -267,7 +267,8 @@ def get_file_path(entry_id: str) -> dict:
     '''
     try:
         return demisto.getFilePath(entry_id)
-    except ValueError:
+    except ValueError as e:
+        demisto.debug(str(e))
         raise DemistoException(f'Could not find file: {entry_id!r}')
 
 
@@ -759,11 +760,11 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
             that differ in name only.
         3. converts 1 or 0 values into their corresponding boolean values.
         '''
-        response |= {
+        response.update({
             'uuid': uuid,
             'source_name': response.get('source', {}).pop('name', None),
             'submitter_email': response.pop('submitter', {}).get('email'),
-        }
+        })
         convert_binary_keys_to_bool(
             response,
             'has_cryptocurrency_addresses', 'has_files', 'has_issues', 'has_mail',
@@ -891,7 +892,7 @@ def file_report_submit_command(args: dict, client: Client) -> CommandResults:
             files = [
                 {
                     'content': read_base64encoded_file(file['path']),
-                    'filename': file['name'],
+                    'filename': file['name'].removesuffix('}'),  # remove the XSOAR added suffix
                 }
                 for file in map(get_file_path, entry_ids)
             ]
