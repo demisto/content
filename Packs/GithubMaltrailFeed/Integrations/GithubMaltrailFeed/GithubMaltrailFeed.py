@@ -123,7 +123,6 @@ def get_last_commit_date(client):
             response = client.http_request(api_url, params={'page': page})
         for commit in commits:
             if 'qakbot' in commit['commit']['message']:
-                #print(commit)
                 commit_date = date_to_timestamp(parse_date_string(commit['commit']['author']['date'], DATE_FORMAT))
                 if not last_commit_date:
                     last_commit_date = commit_date
