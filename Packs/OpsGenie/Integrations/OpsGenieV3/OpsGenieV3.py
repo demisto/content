@@ -892,8 +892,15 @@ def get_request_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if results.status_code == 404:
         ScheduledCommand.raise_error_if_not_supported()
         request_id = args.get('request_id')
+
+        raw_res = {}
+        try:
+            raw_res = json.loads(results.content)
+        except ValueError as e:
+            demisto.error(f'Failed to parse the response content : {results.content}')
+
         return CommandResults(
-            raw_response=results,
+            raw_response=raw_res,
             readable_output=None if args.get('polled_once') else f"Waiting for request_id={request_id}",
             outputs_prefix=args.get("output_prefix", "OpsGenie.Request"),
             outputs=None if args.get('polled_once') else {"requestId": request_id},
