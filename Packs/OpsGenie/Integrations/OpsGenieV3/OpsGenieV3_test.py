@@ -1022,8 +1022,8 @@ def test_get_request_command_valid_raw_response(requests_mock, mocker):
     args = {'request_id': 1, 'request_type': 'alert'}
     response = OpsGenieV3.get_request_command(OpsGenieV3.Client(base_url="http://example.com"), args)
     assert response.raw_response == {'data': {}}
-    
-    
+
+
 def test_invite_user(mocker):
     """
     Given:
