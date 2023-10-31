@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
+
     indicator = demisto.args().get("indicator")
     indicatorType = demisto.args().get("indicatorType")
     score = int(demisto.args().get("score"))
