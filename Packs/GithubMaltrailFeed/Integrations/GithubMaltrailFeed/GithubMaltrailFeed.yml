@@ -119,17 +119,6 @@ configuration:
   - WHITE
   required: false
   type: 15
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 5912aac4-5532-43c3-847a-15715eb97422
-    packName: Github Maltrail Feed
-    prevname: ""
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: Fetches Indicators from Github Repo https://github.com/stamparm/maltrail
 display: Github Maltrail Feed
 name: Github Maltrail Feed
