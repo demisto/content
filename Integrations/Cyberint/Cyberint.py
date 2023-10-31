@@ -703,10 +703,6 @@ def get_remote_data_command(
 
     demisto.debug(f"******** Alert {incident_id} - {ticket_last_update=} {last_update=}")
 
-    if last_update < ticket_last_update:
-        mirrored_ticket = {}
-
-    demisto.debug(f"******** Alert {incident_id} - {mirrored_ticket=}")
     entries = []
 
     if mirrored_ticket.get("status") == "closed" and params.get("close_incident"):
