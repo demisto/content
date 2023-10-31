@@ -1054,7 +1054,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-mail-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.78196
+  dockerimage: demisto/crypto:1.0.0.79610
   isfetch: true
   runonce: false
   script: '-'
