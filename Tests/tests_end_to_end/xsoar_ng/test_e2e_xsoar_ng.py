@@ -1,12 +1,20 @@
+import time
+from datetime import timedelta
+from datetime import datetime
 
 import pytest
 import requests
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
 from demisto_client.demisto_api.rest import ApiException
+from demisto_sdk.utils.utils import retry_http_request
 
 
 @pytest.fixture()
 def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
+
+    response = xsoar_ng_client.list_indicators()
+    if response.get("total") > 0:
+        return
 
     indicators = getattr(request.cls, "indicators", [])
     indicators_to_remove = []
@@ -26,13 +34,6 @@ def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
 
     if indicators_to_remove:
         request.addfinalizer(delete_indicators)
-        return
-
-    response = xsoar_ng_client.list_indicators()
-    if response.get("total") > 0:
-        return
-
-    raise ValueError(f'There are no indicators in {xsoar_ng_client.base_api_url} server')
 
 
 @pytest.fixture()
@@ -219,3 +220,72 @@ class TestSlack:
         context = xsoar_ng_client.get_investigation_context(investigation_id)
         # make sure the context is populated with thread id(s) from slack ask
         assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
+
+
+class TestQradar:
+    instance_name_gsm = "qradar-e2e-instance"
+    integration_id = "QRadar v3"
+    is_long_running = True
+
+    @pytest.fixture()
+    def qradar_incident(self, request, xsoar_ng_client: XsoarNGApiClient, integration_params: dict) -> dict:
+        thirthy_seconds_ago = (datetime.utcnow() - timedelta(seconds=30)).strftime("%Y-%m-%dT%H:%M:%S")
+        qradar_incident_type = integration_params["incident_type"]
+
+        @retry_http_request(times=20, delay=3)
+        def get_fetched_offense():
+            _found_incidents = xsoar_ng_client.search_incidents(from_date=thirthy_seconds_ago, incident_types=qradar_incident_type, size=1)
+            if data := _found_incidents.get("data"):
+                return data
+            raise Exception(f"Could not get qradar offense with filters: {thirthy_seconds_ago=}, {qradar_incident_type}, got {_found_incidents}")
+
+        def remove_qradar_fetched_incidents():
+            incidents_to_remove = xsoar_ng_client.search_incidents(from_date=thirthy_seconds_ago, incident_types=qradar_incident_type)
+            if incident_ids_to_remove := [_incident.get("id") for _incident in incidents_to_remove.get("data", [])]:
+                xsoar_ng_client.delete_incidents(incident_ids_to_remove)
+
+        request.addfinalizer(remove_qradar_fetched_incidents)
+
+        found_incidents = get_fetched_offense()
+        amount_of_found_incidents = len(found_incidents)
+
+        assert amount_of_found_incidents == 1, f'Found {amount_of_found_incidents} incidents'
+        _qradar_incident = found_incidents[0]
+        assert _qradar_incident["type"] == qradar_incident_type, f'Found wrong incident {_qradar_incident}'
+
+        start_investigation_response = xsoar_ng_client.start_incident_investigation(_qradar_incident.get("id") or "")
+        _qradar_incident["investigationId"] = start_investigation_response.get("response", {}).get("id")
+
+        return _qradar_incident
+
+    def test_qradar_mirroring(self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, qradar_incident: dict):
+        """
+        Given:
+            - a QRadar offense that is fetched through the integration that is in "OPENED" state.
+            - QRadar V3 integration
+        When:
+            - closing the offense in Qradar
+        Then:
+            - make sure that the QRadar offense was closed successfully when trying to close it via QRadar api.
+            - make sure that the XSOAR incident that represent the offense is closed after it by mirroring.
+        """
+        offense_id = qradar_incident.get("CustomFields", {}).get("idoffense")
+        incident_id = qradar_incident.get("id")
+        investigation_id = qradar_incident.get("investigationId")
+
+        # TODO - check how to get rid of the sleep to make it work
+        time.sleep(180)
+        _, context = xsoar_ng_client.run_cli_command(
+            f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED", investigation_id=investigation_id
+        )
+        assert context.get("QRadar", {}).get("Offense", {}).get("Status") == "CLOSED"
+
+        # wait maximum 5 minutes that the qradar incident will be closed.
+        @retry_http_request(times=60, delay=5)
+        def validate_offense_is_closed():
+            closed_offense = xsoar_ng_client.search_incidents(incident_ids=incident_id)
+            # status 2 means the incident is closed.
+            incident_status = closed_offense["data"][0].get("status")
+            assert incident_status == 2, f'incident {closed_offense} status is {incident_status} and is not closed'
+
+        validate_offense_is_closed()
