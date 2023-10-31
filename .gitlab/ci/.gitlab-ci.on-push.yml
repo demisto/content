@@ -795,7 +795,7 @@ xsoar-test_playbooks_results:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
-    JIRA_LABELS: '["XSOAR"]'
+    JIRA_LABELS: '["XSOAR", "nightly"]'
   extends: .server_test_playbooks_results
   needs:
     - job: tests_xsoar_server
@@ -812,7 +812,7 @@ xsiam-test_playbooks_results:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
-    JIRA_LABELS: '["XSIAM"]'
+    JIRA_LABELS: '["XSIAM", "nightly"]'
   extends: .server_test_playbooks_results
   needs:
     - xsiam_server_ga
@@ -826,7 +826,7 @@ xsiam-test_modeling_rule_results:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     JIRA_COMPONENT: "Test Modeling Failure"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
-    JIRA_LABELS: '["XSIAM"]'
+    JIRA_LABELS: '["XSIAM", "nightly"]'
   extends: .test_modeling_rule_results
   needs:
     - xsiam_server_ga
