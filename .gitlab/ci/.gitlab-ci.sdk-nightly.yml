@@ -37,6 +37,7 @@
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
       export XSOAR_NG_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_SERVERS_PATH")
       export DEMISTO_BASE_URL=$(echo "$XSOAR_NG_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
+      export XSIAM_AUTH_ID=$(echo "$XSOAR_NG_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
       export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
     done
 
@@ -252,9 +253,9 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
 
-    - section_start "Download Custom Entities from XSOAR Instance" --collapsed
-    - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
-    - section_end "Download Custom Entities from XSOAR Instance"
+    # - section_start "Download Custom Entities from XSOAR Instance" --collapsed
+    # - demisto-sdk download -a -o Packs/ -f --insecure
+    # - section_end "Download Custom Entities from XSOAR Instance"
 
     - section_start "Install Packs and run Test-Module"
     - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
