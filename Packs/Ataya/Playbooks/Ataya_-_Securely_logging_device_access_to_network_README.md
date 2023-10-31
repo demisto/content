@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 
 * pan-os
 * closeInvestigation
-* assign-user
+* ataya-assign-user
 
 ## Playbook Inputs
 

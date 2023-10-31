@@ -433,7 +433,7 @@ tasks:
       version: -1
       name: Assign New Device
       description: assign user
-      script: '|||assign-user'
+      script: '|||ataya-assign-user'
       type: regular
       iscommand: true
       brand: ""
