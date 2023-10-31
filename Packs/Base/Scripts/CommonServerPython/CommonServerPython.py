@@ -10773,7 +10773,8 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
     current_time = int(time.time())
 
     for incident in incidents:
-        found_incidents[incident[id_field]] = current_time
+        if incident[id_field] not in found_incidents:
+            found_incidents[incident[id_field]] = current_time
     if remove_incident_ids:
         found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
 
@@ -10854,7 +10855,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
+                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False,
+                           incidents_before_filter=None, new_offset=None):
     """
     Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
 
