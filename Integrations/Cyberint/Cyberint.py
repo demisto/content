@@ -4,7 +4,7 @@
 import copy
 import json
 from contextlib import closing
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import dateparser
 from CommonServerPython import *
@@ -548,9 +548,7 @@ def convert_date_time_args(date_time: str) -> str:
     Returns:
         str: The updated datetime.
     """
-    datetime_arg = arg_to_datetime(date_time)
-
-    if isinstance(datetime_arg, datetime):
+    if datetime_arg := arg_to_datetime(date_time, required=False):
         return datetime_arg.strftime(DATE_FORMAT)
     return ""
 
@@ -576,18 +574,10 @@ def get_modified_remote_data(client: Client, args: Dict[str, Any]) -> GetModifie
     modified_tickets = []
 
     response = client.list_alerts(
-        "1",
-        50,
-        None,
-        None,
-        None,
-        None,
-        update_date_from,
-        update_date_to,
-        None,
-        None,
-        None,
-        None,
+        page="1",
+        page_size=50,
+        update_date_from=update_date_from,
+        update_date_to=update_date_to,
     )
 
     for ticket in response["alerts"]:
@@ -608,9 +598,9 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     demisto.debug("******** Get Cyberint mapping fields")
     mapping_response = GetMappingFieldsResponse()
 
-    incident_type_scheme = SchemeTypeMapping(type_name="Cyberint Incident")  # ???
-    outgoing_fields = MIRRORING_FIELDS
-    for field in outgoing_fields:
+    incident_type_scheme = SchemeTypeMapping(type_name="Cyberint Incident")
+
+    for field in MIRRORING_FIELDS:
         incident_type_scheme.add_field(field)
 
     mapping_response.add_scheme_type(incident_type_scheme)
@@ -644,14 +634,12 @@ def update_remote_system(
     )
 
     try:
-        demisto.debug(f"******** Sending incident with remote ID [{incident_id}] to remote system\n")
-
         if parsed_args.incident_changed:
             demisto.debug(f"******** Incident changed: {parsed_args.incident_changed}, {parsed_args.delta=}")
 
             update_args = parsed_args.delta
-
             demisto.debug(f"******** Sending incident with remote ID [{incident_id}] to Cyberint\n")
+
             updated_arguments = {}
             if updated_status := update_args.get("cyberintstatus"):
                 if updated_status != "closed":
@@ -661,7 +649,7 @@ def update_remote_system(
                         if key in MIRRORING_FIELDS:
                             updated_arguments[MIRRORING_FIELDS_MAPPER[key]] = value
 
-            updated_arguments.update({"alerts": [incident_id]})
+            updated_arguments["alerts"] = [incident_id]
 
             demisto.debug(f"******** Remote ID [{incident_id}] to Cyberint. {updated_arguments=}|| {update_args=}")
 
@@ -693,27 +681,27 @@ def get_remote_data_command(
         List[Dict[str, Any]]: first entry is the incident (which can be completely empty) and the new entries.
     """
     parsed_args = GetRemoteDataArgs(args)
-    close_incident = params.get("close_incident")
-    entries = []
-
     incident_id = parsed_args.remote_incident_id
-
     last_update = date_to_epoch_for_fetch(arg_to_datetime(parsed_args.last_update))
     demisto.debug(f"******** Check {incident_id} update from {last_update}")
-    response = client.get_alert(alert_ref_id=incident_id)
 
+    response = client.get_alert(alert_ref_id=incident_id)
     mirrored_ticket: Dict[str, Any] = response["alert"]
     ticket_last_update = date_to_epoch_for_fetch(arg_to_datetime(mirrored_ticket.get("update_date")))
-    demisto.debug(f"******** Alert {incident_id} - {ticket_last_update=} {last_update=}")
-    if last_update > ticket_last_update:
-        mirrored_ticket = {}
-    demisto.debug(f"******** Alert {incident_id} - {mirrored_ticket=}")
 
     mirrored_ticket["cyberintstatus"] = mirrored_ticket["status"]
     mirrored_ticket["cyberintclosurereason"] = mirrored_ticket["closure_reason"]
     mirrored_ticket["cyberintclosurereasondescription"] = mirrored_ticket["closure_reason_description"]
 
-    if mirrored_ticket.get("status") == "closed" and close_incident:
+    demisto.debug(f"******** Alert {incident_id} - {ticket_last_update=} {last_update=}")
+
+    if last_update < ticket_last_update:
+        mirrored_ticket = {}
+
+    demisto.debug(f"******** Alert {incident_id} - {mirrored_ticket=}")
+    entries = []
+
+    if mirrored_ticket.get("status") == "closed" and params.get("close_incident"):
         entries.append(
             {
                 "Type": EntryType.NOTE,
@@ -872,7 +860,6 @@ def fetch_incidents(
 
     if incidents:
         #  Update the time for the next fetch so that there won't be duplicates.
-        last_incident_time = incidents[0].get("occurred", "")
         last_incident_time = max(incidents, key=lambda item: item["occurred"])
         next_run = datetime.strptime(str(last_incident_time["occurred"]), DATE_FORMAT)
     next_run += timedelta(seconds=1)

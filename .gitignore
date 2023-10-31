@@ -1,0 +1,4 @@
+neo4j-data
+demisto_sdk_debug.log
+__pycache__
+.pytest_cache
