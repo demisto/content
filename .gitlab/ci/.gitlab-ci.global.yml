@@ -160,8 +160,8 @@
       echo "Using SDK from pyproject.toml" | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
     fi
   - |
-      python3 --version | tee -a "${ARTIFACTS_FOLDER}/installed_python_libraries.txt"
-      python3 -m pip list | tee -a "${ARTIFACTS_FOLDER}/installed_python_libraries.txt"
+      python3 --version | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
+      python3 -m pip list | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
   - section_end "Installing Virtualenv"
 
 .ssh-config-setup:
@@ -192,8 +192,8 @@
 .get_last_upload_commit: &get_last_upload_commit
   - section_start "Getting last bucket upload commit" --collapsed
   - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-  - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER}/previous_index.json"
-  - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER}/previous_index.json" | jq -r ".\"commit\"")
+  - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
+  - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json" | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
 
 .neo4j-setup: &neo4j-setup

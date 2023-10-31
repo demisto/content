@@ -39,7 +39,7 @@ trigger-private-build:
 .create-release-notes-and-common-docs:
   - section_start "Create Release Notes and Common Server Documentation" --collapsed
   - echo "Creating Release Notes and Content Descriptor"
-  - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output "${ARTIFACTS_FOLDER}/packs-release-notes.md" --github-token $GITHUB_TOKEN
+  - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs-release-notes.md" --github-token $GITHUB_TOKEN
   - cp content-descriptor.json "${ARTIFACTS_FOLDER}"
   - ./Documentation/commonServerDocs.sh
   - section_end "Create Release Notes and Common Server Documentation"
@@ -163,7 +163,7 @@ validate-content-conf:
         python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs" --dependencies-output "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --packs-output "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs.json" --no-zip --bucket-upload "$BUCKET_UPLOAD"
       fi
 
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/gcloud_auth.log" 2>&1
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/gcloud_auth.log" 2>&1
     - section_end "Create Content Artifacts and Update Conf"
 
     - section_start "Copy conf.json To Server Type Artifacts Folder"
@@ -340,7 +340,7 @@ xpanse-prepare-testing-bucket:
     - !reference [.install_ssh_keys]
     - !reference [.ssh-config-setup]
     - section_start "Destroy Instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ARTIFACTS_FOLDER}/env_results.json" --instance-role "${INSTANCE_ROLE}"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ENV_RESULTS_PATH}" --instance-role "${INSTANCE_ROLE}"
     - destroy_instances_exit_code=$?
     - |
       if [ "${destroy_instances_exit_code}" -ne 0 ]; then
@@ -583,7 +583,7 @@ slack-notify-on-merge:
         exit $EXIT_CODE
       fi
     # workaround for the hard-coded value in the sdk
-    - cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+    - cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Are there tests to run?"
 
     - !reference [.lock-machine]

@@ -38,6 +38,8 @@ BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
 BUILD_NUM = os.environ.get('CI_BUILD_ID')
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
 
 
 class SettingsTester:
@@ -302,14 +304,11 @@ def load_conf_files(conf_path, secret_conf_path):
 
 
 def load_env_results_json():
-    env_results_path = os.getenv('ENV_RESULTS_PATH',
-                                 (Path(os.getenv("ARTIFACTS_FOLDER_SERVER_TYPE", './artifacts')) / 'env_results.json').as_posix())
-
-    if not os.path.isfile(env_results_path):
-        logging.warning(f"Did not find {env_results_path} file ")
+    if not os.path.isfile(ENV_RESULTS_PATH):
+        logging.warning(f"Did not find {ENV_RESULTS_PATH} file ")
         return {}
 
-    with open(env_results_path) as json_file:
+    with open(ENV_RESULTS_PATH) as json_file:
         return json.load(json_file)
 
 

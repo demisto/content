@@ -186,6 +186,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -198,7 +199,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - |
-      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
+      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
     - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
@@ -226,7 +227,7 @@ demisto-sdk-nightly:run-commands-against-instance:
     - *change-file-ids
     - *upload-entities-to-cortex-xsoar
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file "${ENV_RESULTS_PATH}" --instance-role "$INSTANCE_ROLE"
     - destroy_instances_exit_code=$?
     - |
       if [ "${destroy_instances_exit_code}" -ne 0 ]; then
@@ -254,6 +255,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -261,8 +263,8 @@ demisto-sdk-nightly:run-end-to-end-tests:
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
       git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
 
-      TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-      export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
+      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
       unset DEMISTO_API_KEY # a temporary fix 
       python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
