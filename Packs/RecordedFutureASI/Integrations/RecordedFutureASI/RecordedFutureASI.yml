@@ -21,18 +21,12 @@ configuration:
   required: false
   additionalinfo: The Project ID to fetch issues from
   hidden: true
-- display: API Key
-  name: credential_apikey
-  type: 9
-  required: false
-  displaypassword: API Key
-  hiddenusername: true
-- display: Project ID
-  name: credential_projectid
+- display: API Credentials
+  name: credentials
   type: 9
   required: false
   displaypassword: Project ID
-  hiddenusername: true
+  displayusername: API Key
 - display: Incident type
   name: incidentType
   type: 13
@@ -89,7 +83,7 @@ script:
     - name: expand_issues
       description: true/false to make an incident per host & per new issue.
     description: Gets the issues for a project from a particular snapshot (defaults to recent).
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   subtype: python3
   runonce: false
