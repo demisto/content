@@ -6,7 +6,6 @@ import os
 import re
 import sys
 from contextlib import contextmanager
-from pathlib import Path
 from queue import Queue
 from typing import Any
 from collections.abc import Generator
