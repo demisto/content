@@ -7,7 +7,7 @@ from enum import Enum
 import urllib3
 from CommonServerUserPython import *
 
-from typing import Any, Optional
+from typing import Any
 from MicrosoftApiModule import *  # noqa: E402
 
 # disable insecure warnings
@@ -70,7 +70,7 @@ class MsGraphClient:
     """
 
     def __init__(self, tenant_id, proxy,
-                 certificate_thumbprint: Optional[str] = None, api_version: str = "", **kwargs):
+                 certificate_thumbprint: str | None = None, api_version: str = "", **kwargs):
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
             proxy=proxy, certificate_thumbprint=certificate_thumbprint,
@@ -1250,7 +1250,7 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):
             fetch_time = params.get('fetch_time', '1 day')
             fetch_providers = params.get('fetch_providers', '')
             fetch_filter = params.get('fetch_filter', '')
-            fetch_service_sources = params.get('service_sources', '')
+            fetch_service_sources = params.get('fetch_service_sources', '')
 
             filter_query = create_filter_query(fetch_filter, fetch_providers, fetch_service_sources)
             timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
