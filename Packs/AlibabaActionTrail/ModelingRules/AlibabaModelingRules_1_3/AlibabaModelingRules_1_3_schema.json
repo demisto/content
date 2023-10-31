@@ -51,7 +51,10 @@
       "event_useridentity_username": {
           "type": "string",
           "is_array": false
+      },
+      "event_useridentity_accesskeyid": {
+          "type": "string",
+          "is_array": false
       }
-      
   }
 }

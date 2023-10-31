@@ -275,6 +275,27 @@ def test_taxii20_get_server_info(mocker, taxii2_server_v20):
     assert result.outputs == integration_context['server_info']
 
 
+def test_taxii20_get_server_info_demisto_version(mocker):
+    """
+        Given
+            TAXII Server v2.0, Integration context.
+        When
+            Calling get-server-info command
+        Then
+            Validate that the correct default URL is returned
+
+    """
+    from TAXII2Server import get_server_info_command
+    integration_context = {}
+    integration_context['server_info'] = {'api_roots': ["https://www.example.com/path/to/resource?query=parameter"],
+                                          'default': "https://www.example.com/path/to/resource?query=parameter"}
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={'version': '8.1.0', 'buildNumber': '12345'})
+
+    results = get_server_info_command(integration_context=integration_context)
+
+    assert results.outputs['default'] == 'https://ext-www.example.com/path/to/resource?query=parameter'
+
+
 def test_taxii21_collection(mocker, taxii2_server_v21):
     """
         Given
@@ -719,3 +740,45 @@ def test_reports_objects_with_relationships(mocker, taxii2_server_v21):
     assert len(object_refs_with_data) == 2
     assert 'relationship--d5b0fcff-2fff-5749-8b5e-b937a9a1e0aa' in object_refs_with_data
     assert 'intrusion-set--97dd61f8-1c42-458a-ad44-818ab9cb1b7b' in object_refs_with_data
+
+
+def test_create_entity_b_stix_objects_with_file_object(mocker, taxii2_server_v21):
+    """
+        Given
+            Reports object with relationships
+        When
+            Calling handle_report_relationships.
+        Then
+            Validate that there is not a None ioc key in the ioc_value_to_id dict.
+
+    """
+    from TAXII2Server import create_entity_b_stix_objects
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    ioc_value_to_id = {'report': 'report--b1d2c45b-50ea-58b1-b543-aaf94afe07b4'}
+    relationships = util_load_json('test_data/relationship_report_file.json')
+    iocs = util_load_json('test_data/ioc_for_report_relationship.json')
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
+
+    assert None not in ioc_value_to_id
+
+
+def test_create_entity_b_stix_objects_with_revoked_relationship(mocker, taxii2_server_v21):
+    """
+        Given
+            Reports object with revoked relationships
+        When
+            Calling handle_report_relationships.
+        Then
+            Validate that the report not contained the revoked relationship in the object_refs.
+
+    """
+    from TAXII2Server import create_entity_b_stix_objects
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    ioc_value_to_id = {'report': 'report--b1d2c45b-50ea-58b1-b543-aaf94afe07b4'}
+    relationships = util_load_json('test_data/relationship_report_file.json')
+    iocs = util_load_json('test_data/ioc_for_report_relationship.json')
+    mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
+    create_entity_b_stix_objects(relationships, ioc_value_to_id, [])
+
+    assert '127.0.0.1' not in ioc_value_to_id

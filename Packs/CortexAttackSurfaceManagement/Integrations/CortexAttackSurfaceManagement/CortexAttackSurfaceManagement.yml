@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+- additionalinfo: For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported.
   display: API Key ID
   displaypassword: API Key
   name: credentials
@@ -16,12 +16,12 @@ configuration:
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 description: Integration to pull assets and other ASM related information.
 display: Cortex Attack Surface Management
 name: Cortex Attack Surface Management
@@ -418,10 +418,35 @@ script:
     - contextPath: ASM.RemediationScan.result
       description: Result of the Remediation Confirmation Scan.
       type: string
-  dockerimage: demisto/python3:3.10.12.63474
+  - arguments:
+    - description: 'A comma-separated list of attack surface rule IDs. For example: RdpServer,InsecureOpenSSH.'
+      name: attack_surface_rule_id
+    - description: 'Get the info about rule IDs with enabled status on or off. Has to be comma separated. For example: on,off.'
+      name: enabled_status
+    - description: 'Get the info about rule IDs with a priority. Has to be comma separated. For example: high,medium.'
+      name: priority
+    - description: Get the info about rule IDs of a category. Has to be comma separated.
+      name: category
+    description: Get information of an attack surface rule ID.
+    name: asm-get-attack-surface-rule
+    outputs:
+    - contextPath: ASM.AttackSurfaceRule.attack_surface_rule_id
+      description: Attack surface rule ID.
+    - contextPath: ASM.AttackSurfaceRule.attack_surface_rule_name
+      description: Attack surface rule name.
+    - contextPath: ASM.AttackSurfaceRule.category
+      description: Attack surface rule category.
+    - contextPath: ASM.AttackSurfaceRule.enabled_status
+      description: Attack surface rule status.
+    - contextPath: ASM.AttackSurfaceRule.priority
+      description: Attack surface rule priority.
+    - contextPath: ASM.AttackSurfaceRule.remediation_guidance
+      description: Remediation guidance of attack surface rule.
+  dockerimage: demisto/python3:3.10.13.78960
+  runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- CortexAttackSurfaceManagement_Test

@@ -3,15 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Create Jira Issue
-description: "Create Jira issue allows you to open new issues.\nWhen creating the\
-  \ issue, you can decide to update based on on the issue's state, which will wait\
-  \ for the issue to resolve or close with StatePolling.\nAlternatively, you can select\
-  \ to mirror the Jira issue and incident fields.  To apply either of these options,\
-  \ set the SyncTicket value in the playbook inputs to one of the following options:\
-  \ \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none\n\nWhen creating Jira\
-  \ issues through XSOAR, using the mirroring function, make sure that you exclude\
-  \ those issues when fetching incidents. To exclude these issues, tag the relevant\
-  \ issues with a dedicated label and exclude that label from the JQL query (Labels!=)."
+description: "Create Jira issue allows you to open new issues.\nWhen creating the issue, you can decide to update based on on the issue's state, which will wait for the issue to resolve or close with StatePolling.\nAlternatively, you can select to mirror the Jira issue and incident fields.  To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: \n1. StatePolling\n2. Mirror\n3. Leave Blank to use none\n\nWhen creating Jira issues through XSOAR, using the mirroring function, make sure that you exclude those issues when fetching incidents. To exclude these issues, tag the relevant issues with a dedicated label and exclude that label from the JQL query (Labels!=)."
 starttaskid: "0"
 tasks:
   "0":
@@ -33,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -430
+          "y": 10
         }
       }
     note: false
@@ -41,6 +33,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: e764c3a4-f26b-47ee-82e9-1e33da961f15
@@ -79,8 +74,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 40
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -88,6 +83,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 50ecfc72-0d3f-4d2e-8f12-d5c7b5627d76
@@ -104,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1170
+          "x": 370,
+          "y": 1245
         }
       }
     note: false
@@ -113,6 +111,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: bcb3872c-e94b-47df-87e0-0104d51ebeeb
@@ -159,8 +160,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 585
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -168,6 +169,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
     taskid: f2d4551f-8dd6-43d3-8850-57a1acf773e1
@@ -176,8 +180,7 @@ tasks:
       id: f2d4551f-8dd6-43d3-8850-57a1acf773e1
       version: -1
       name: Mirror Jira Ticket
-      description: Mirror Jira Ticket is designed to serve as a sub-playbook, which
-        enables ticket mirroring with Jira.
+      description: Mirror Jira Ticket is designed to serve as a sub-playbook, which enables ticket mirroring with Jira.
       playbookName: Mirror Jira Ticket
       type: playbook
       iscommand: false
@@ -217,8 +220,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 770
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -226,6 +229,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
     taskid: d513362a-1605-4e4e-8b90-07c1d82f8310
@@ -270,8 +276,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1190,
-          "y": 770
+          "x": 680,
+          "y": 1070
         }
       }
     note: false
@@ -279,6 +285,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: d1b67f95-6ce5-4ed5-8c45-e51b53567b2d
@@ -306,8 +315,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 320
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -375,23 +384,25 @@ tasks:
           accessor: Key
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a253cb13-345f-4190-892d-6064744317ef
+    taskid: ca2e71b9-1850-4702-8421-4977e9cbc876
     type: condition
     task:
-      id: a253cb13-345f-4190-892d-6064744317ef
+      id: ca2e71b9-1850-4702-8421-4977e9cbc876
       version: -1
-      name: Is Jira integration enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      name: Is Jira V2 integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "no":
-      - "8"
+      - "17"
       "yes":
       - "3"
     scriptarguments:
@@ -404,7 +415,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -240
+          "y": 185
         }
       }
     note: false
@@ -412,19 +423,63 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 7133c080-325b-4a45-85e2-e9fd1a6b38ca
+    type: condition
+    task:
+      id: 7133c080-325b-4a45-85e2-e9fd1a6b38ca
+      version: -1
+      name: Is Jira V3 integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "8"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: Jira V3
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
       "16_3_yes": 0.52,
-      "9_14_State Polling": 0.52
+      "17_8_no": 0.27,
+      "9_14_State Polling": 0.64,
+      "9_8_#default#": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 1665,
-        "width": 1520,
+        "height": 1300,
+        "width": 1010,
         "x": 50,
-        "y": -430
+        "y": 10
       }
     }
   }
@@ -452,13 +507,7 @@ inputs:
 - key: SyncTicket
   value: {}
   required: false
-  description: "Set the value of the desired sync method with Jira Issue. you can\
-    \ choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for none\
-    \ \n\nGenericPolling polls for the state of the ticket and runs until the ticket\
-    \ state is either resolved or closed. \n\nMirror - You can use the Mirror option\
-    \ to perform a full sync with the Jira Ticket. The ticket data is synced automatically\
-    \ between Jira and Cortex xSOAR with the Jira mirror feature.\nIf this option\
-    \ is selected, FieldPolling is true by default. "
+  description: "Set the value of the desired sync method with Jira Issue. you can choose one of three options:\n1. StatePolling\n2. Mirror \n3. Blank for none \n\nGenericPolling polls for the state of the ticket and runs until the ticket state is either resolved or closed. \n\nMirror - You can use the Mirror option to perform a full sync with the Jira Ticket. The ticket data is synced automatically between Jira and Cortex xSOAR with the Jira mirror feature.\nIf this option is selected, FieldPolling is true by default. "
   playbookInputQuery:
 - key: PollingInterval
   value: {}
@@ -477,11 +526,7 @@ inputs:
 - key: AdditionalPollingCommandName
   value: {}
   required: false
-  description: "In this use case, Additional polling commands are relevant when using\
-    \ StatePolling, and there is more than one Jira instance. It will specify the\
-    \ polling command to use a specific instance to run on. \nIf so, please add \"\
-    Using\" to the value. \nThe playbook will then take the instance name as the instance\
-    \ to use. "
+  description: "In this use case, Additional polling commands are relevant when using StatePolling, and there is more than one Jira instance. It will specify the polling command to use a specific instance to run on. \nIf so, please add \"Using\" to the value. \nThe playbook will then take the instance name as the instance to use. "
   playbookInputQuery:
 - key: InstanceName
   value: {}
@@ -493,16 +538,13 @@ inputs:
   value:
     simple: Both
   required: false
-  description: "Set the mirror direction, should be one of the following: \n1. In\n\
-    2. Out\n3. Both"
+  description: "Set the mirror direction, should be one of the following: \n1. In\n2. Out\n3. Both"
   playbookInputQuery:
 - key: MirrorTags
   value:
     simple: comment,attachment
   required: false
-  description: "Set tags for mirror comments and files to Jira.\nAs defined in the\
-    \ instance settings, by default it will be comment for comments mirroring and\
-    \ attachment for attachments mirroring. "
+  description: "Set tags for mirror comments and files to Jira.\nAs defined in the instance settings, by default it will be comment for comments mirroring and attachment for attachments mirroring. "
   playbookInputQuery:
 - key: FieldPolling
   value: {}
@@ -520,5 +562,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Jira-v2-Test
+- No test.
 fromversion: 6.0.0

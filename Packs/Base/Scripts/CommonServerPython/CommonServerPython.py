@@ -6919,7 +6919,10 @@ class CommandResults:
         if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
-                human_readable = tableToMarkdown('Results', self.outputs)
+                if isinstance(self.outputs, dict) or isinstance(self.outputs, list):
+                    human_readable = tableToMarkdown('Results', self.outputs)
+                else:
+                    human_readable = self.outputs   # type: ignore[assignment]
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
@@ -10584,6 +10587,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
+    offset = last_run.get('offset')
     now = get_current_time(timezone)
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
@@ -10592,7 +10596,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    if look_back and look_back > 0:
+    if not offset and look_back and look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
@@ -10618,6 +10622,26 @@ def get_current_time(time_zone=0):
         demisto.debug('pytz is missing, will not return timeaware object.')
         return now
 
+def calculate_new_offset(old_offset, num_incidents, total_incidents):
+    """ This calculates the new offset based on the response
+    
+    :type old_offset: ``int``
+    :param old_offset: The offset from the previous run
+
+    :type num_incidents: ``int``
+    :param num_incidents: The number of incidents returned by the API.
+    
+    :type total_incidents: ``int``
+    :param total_incidents: The total number of incidents returned by the API.
+    
+    :return: The new offset for the next run.
+    :rtype: ``int``
+    """
+    if not num_incidents:
+        return 0
+    if total_incidents and num_incidents + old_offset >= total_incidents:
+        return 0
+    return old_offset + num_incidents
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
@@ -10757,7 +10781,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
 
 
 def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
-                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
     """
     Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
     with the new time and limit.
@@ -10788,18 +10812,26 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
+    
+    :type new_offset: ``int | None``
+    :param new_offset: The new offset to set in the last run
 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
     demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
-                  "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
+                  "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit, new_offset))
     remove_incident_ids = True
     new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
-    if len(incidents) == 0:
+    if new_offset:
+        # if we need to update the offset, we need to keep the old time and just update the offset
+        new_last_run = {
+            'time': last_run.get("time"),
+        } 
+    elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
-            'limit': fetch_limit
+            'limit': fetch_limit,
         }
     else:        
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
@@ -10811,8 +10843,10 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         if latest_incident_fetched_time == start_fetch_time:
             # we are still on the same time, no need to remove old incident ids
             remove_incident_ids = False
-            
-
+    
+    if new_offset is not None:
+        new_last_run['offset'] = new_offset
+        new_last_run['limit'] = fetch_limit
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
                                                                                        remove_incident_ids))
 
@@ -10820,7 +10854,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
     """
     Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
 
@@ -10853,6 +10887,10 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
+    
+    :type new_offset: ``int | None``
+    :param new_offset: The new offset to set in the last run
+
 
     :return: The updated LastRun object
     :rtype: ``Dict``
@@ -10869,6 +10907,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
                                                                            created_time_field,
                                                                            date_format,
                                                                            increase_last_run_time,
+                                                                           new_offset
                                                                            )
 
     found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)

@@ -890,7 +890,7 @@ script:
     - description: The description of the group policy.
       name: description
       required: true
-    - description: "List of constraints of the policy.\n\nEach policy constraint is an object that includes the following fields:\n* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.\n* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).\n* os_version: The value of the OS version for the os_version type.\n* firmware_version: The value of the firmware version for the firmware_version type.\n* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample for list of policy constraints: [{ \"type\": \"os_version\", \"operator\": \"contains\", \"os_version\": \"Windows\" }]. "
+    - description: "List of constraints of the policy.\n\nEach policy constraint is an object that includes the following fields:\n* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.\n* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).\n* os_version: The value of the OS version for the os_version type.\n* firmware_version: The value of the firmware version for the firmware_version type.\n* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: \"10, 20-30\".\n\nExample for list of policy constraints: [{ \"type\": \"os_version\", \"operator\": \"contains\", \"os_version\": \"Windows\" }]."
       isArray: true
       name: constraints
       required: true
@@ -1113,7 +1113,7 @@ script:
     - contextPath: ForescoutEyeInspect.HostChangeLog.host_mac_addresses
       description: The MAC addresses associated to the host.
       type: String
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   isfetch: true
   runonce: false
   script: "-"

@@ -15,5 +15,5 @@ for i in "${IGNORED_FILES[@]}"; do
     DIFF_FILES_LIST=${DIFF_FILES_LIST[*]/$i} 
 done
 
-echo "${DIFF_FILES_LIST[*]}" | grep "Tests/\|Utils/"
+echo "${DIFF_FILES_LIST[*]}" | grep -E "Tests/|Utils/|.gitlab/|poetry.lock|poetry.toml|pyproject.toml|package.json|package-lock.json|tox.ini|.pylintrc"
 exit 0

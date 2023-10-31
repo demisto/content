@@ -55,20 +55,20 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
+description: IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes.
 display: IBM X-Force Exchange v2
 name: XFE_v2
 script:
   commands:
   - arguments:
     - default: true
-      description: IP to check
+      description: IP to check.
       isArray: true
       name: ip
       required: true
     - description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
       name: threshold
-    description: IP to check
+    description: IP to check.
     name: ip
     outputs:
     - contextPath: IP.Address
@@ -108,11 +108,11 @@ script:
     - description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
       name: threshold
     - default: true
-      description: The URL to check
+      description: The URL to check.
       isArray: true
       name: url
       required: true
-    description: Check the given URL reputation
+    description: Check the given URL reputation.
     name: url
     outputs:
     - contextPath: URL.Data
@@ -135,11 +135,11 @@ script:
       type: number
   - arguments:
     - default: true
-      description: The file hash md5/sha1/sha256 to check
+      description: The file hash md5/sha1/sha256 to check.
       isArray: true
       name: file
       required: true
-    description: Check file reputation
+    description: Check file reputation.
     name: file
     outputs:
     - contextPath: File.MD5
@@ -201,7 +201,7 @@ script:
       type: Unknown
   - arguments:
     - default: true
-      description: The domain to check
+      description: The domain to check.
       isArray: true
       name: domain
       predefined:
@@ -209,7 +209,7 @@ script:
       required: true
     - description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
       name: threshold
-    description: Check domain reputation
+    description: Check domain reputation.
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -232,11 +232,11 @@ script:
       type: number
   - arguments:
     - default: true
-      description: The cve to search for
+      description: The cve to search for.
       isArray: true
       name: cve_id
       required: true
-    description: Search for details about the given CVE
+    description: Search for details about the given CVE.
     name: cve-search
     outputs:
     - contextPath: CVE.ID
@@ -279,7 +279,7 @@ script:
       description: The exploitability of the CVE.
       type: String
   - arguments:
-    - description: The number of results to return
+    - description: The number of results to return.
       name: limit
     - description: |-
         The start of the date range for searching.
@@ -289,7 +289,7 @@ script:
         The end of the date range for searching.
         The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
       name: end_date
-    description: Return the latest vulnerabilities found
+    description: Return the latest vulnerabilities found.
     name: cve-latest
     outputs:
     - contextPath: CVE.ID
@@ -333,10 +333,10 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The host or address to search inside X-Force Exchange (e.g. google.com)
+      description: The host or address to search inside X-Force Exchange (e.g. google.com).
       name: host
       required: true
-    description: Gets information about the given host address
+    description: Gets information about the given host address.
     name: xfe-whois
     outputs:
     - contextPath: XFE.Whois.Host
@@ -406,7 +406,7 @@ script:
     - default: true
       description: |-
         The query for the search.
-        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext).
       name: q
       required: true
     - description: |-
@@ -419,7 +419,7 @@ script:
       name: end_date
     - description: |-
         Bookmark used to page through results.
-        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext)
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext).
       name: bookmark
     description: Gets list of all vulnerabilities associated with the search term.
     name: xfe-search-cves
@@ -469,7 +469,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3

@@ -238,7 +238,7 @@ script:
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
   - name: iam-get-group
-    description: Retrieves a group
+    description: Retrieves a group.
     execution: true
     arguments:
     - name: scim
@@ -285,9 +285,9 @@ script:
       description: Error code if there is a failure.
       type: Number
     - contextPath: CreateGroup.errorMessage
-      description: Error details if there is a failure
+      description: Error details if there is a failure.
       type: Unknown
-    description: Creates an empty group
+    description: Creates an empty group.
     execution: true
   - name: iam-update-group
     arguments:
@@ -298,13 +298,13 @@ script:
       auto: PREDEFINED
       predefined:
       - Comma-separated optional values.
-      description: List of members IDs. A maximum of 100 users per call can be modified using this command
+      description: List of members IDs. A maximum of 100 users per call can be modified using this command.
       isArray: true
     - name: memberIdsToDelete
       auto: PREDEFINED
       predefined:
       - Comma-separated optional values.
-      description: List of members ids to be deleted from the group. A maximum of 100 users per call can be modified using this command
+      description: List of members ids to be deleted from the group. A maximum of 100 users per call can be modified using this command.
       isArray: true
     outputs:
     - contextPath: UpdateGroup.id
@@ -347,7 +347,7 @@ script:
       type: Unknown
     description: Permanently removes a group.
     execution: true
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3

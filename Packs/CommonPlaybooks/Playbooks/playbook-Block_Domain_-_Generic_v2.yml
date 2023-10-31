@@ -223,6 +223,9 @@ tasks:
       Domain:
         complex:
           root: inputs.Domain
+      Expiration:
+        complex:
+          root: inputs.Expiration
     separatecontext: true
     loop:
       iscommand: false
@@ -268,6 +271,9 @@ tasks:
       DomainBlackListID:
         complex:
           root: inputs.DomainBlackListID
+      Expiration:
+        complex:
+          root: inputs.Expiration
     separatecontext: true
     loop:
       iscommand: false
@@ -408,6 +414,11 @@ inputs:
   description: |-
     Tag to assign Domain to the External Dynamic List.
     sub-playbook: Block Domain - External Dynamic List
+  playbookInputQuery:
+- key: Expiration
+  value: {}
+  required: false
+  description: "The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z.\nProducts: \nTrend Micro Apex One\nProofpoint Threat Response"
   playbookInputQuery:
 outputs: []
 tests:

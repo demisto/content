@@ -18,6 +18,7 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def __init__(self, url, api_token, verify, proxy):
         super().__init__(base_url=url, proxy=proxy, verify=verify)
         self.api_token = api_token

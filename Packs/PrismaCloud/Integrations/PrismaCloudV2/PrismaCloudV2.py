@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from copy import deepcopy
 
 import urllib3
+import json
 
 
 ''' CONSTANTS '''
@@ -90,7 +91,7 @@ SOURCE_TYPES_OPTIONS = ['Github', 'Bitbucket', 'Gitlab', 'AzureRepos', 'cli', 'A
 STATUSES_OPTIONS = ['Errors', 'Suppressed', 'Passed', 'Fixed']
 
 TIME_FIELDS = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdated', 'insertTs', 'createdTs', 'lastModifiedTs',
-               'addedOn', 'eventTs', 'createdOn', 'updatedOn', 'rlUpdatedOn']
+               'addedOn', 'eventTs', 'createdOn', 'updatedOn', 'rlUpdatedOn', 'lastLoginTs']
 
 ''' CLIENT CLASS '''
 
@@ -237,6 +238,20 @@ class Client(BaseClient):
 
         return self._http_request('POST', 'resource', json_data=data)
 
+    def resource_list_request(self, list_type: Optional[str]):
+        params = assign_params(listType=list_type)
+
+        return self._http_request('GET', 'v1/resource_list', params=params)
+
+    def user_roles_list_request(self, role_id: str):
+        return self._http_request('GET', f'user/role/{role_id}')
+
+    def all_user_roles_list_request(self):
+        return self._http_request('GET', 'user/role')
+
+    def users_list_request(self):
+        return self._http_request('GET', 'v3/user')
+
     def account_list_request(self, exclude_account_group_details: str):
         data = remove_empty_values({'excludeAccountGroupDetails': exclude_account_group_details})
 
@@ -345,7 +360,8 @@ def change_timestamp_to_datestring_in_dict(readable_response: dict) -> None:
     """
     for field in TIME_FIELDS:
         if epoch_value := readable_response.get(field):
-            readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT)
+            # a value of -1 means that it never happened, so we leave the field empty
+            readable_response[field] = timestamp_to_datestring(epoch_value, DATE_FORMAT) if epoch_value != -1 else None
 
 
 def convert_date_to_unix(date_str: str) -> int:
@@ -494,6 +510,17 @@ def calculate_offset(page_size: int, page_number: int) -> tuple[int, int]:
         raise DemistoException(f'Maximum "page_size" value is {PAGE_SIZE_MAX_VALUE} (got {page_size}).')
 
     return page_size, page_size * (page_number - 1)
+
+
+def extract_namespace(response_items: List[Dict[str, Any]]):
+    """
+    Extract namespaces from resource list items.
+    """
+    for item in response_items:
+        for member in item.get('members', []):  # members is a list of dicts
+            if item_namespace := member.get('namespaces', []):
+                item['namespaces'] = item_namespace
+                break
 
 
 ''' FETCH AND MIRRORING HELPER FUNCTIONS '''
@@ -1371,13 +1398,11 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
     except DemistoException as de:
         if not (hasattr(de, 'res') and hasattr(de.res, 'status_code')):
             raise
-        if de.res.status_code == 405:
-            raise DemistoException(
-                f'Remediation unavailable {" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.',
-                exception=de) from de
-        elif de.res.status_code == 400:
-            raise DemistoException('Policy type disallowed using this remediation api.', exception=de) from de
-        raise
+        if de.res.status_code == 400:
+            return CommandResults(
+                readable_output='Policy type disallowed using this remediation api. Cannot remediate multiple policy alerts.')
+        return CommandResults(
+            readable_output=f'Remediation unavailable{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.')
 
     command_results = CommandResults(
         outputs_prefix='PrismaCloud.AlertRemediation',
@@ -1398,18 +1423,36 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     try:
         client.alert_remediate_request(str(alert_id))
+        readable_response = {'alertId': alert_id, 'successful': True}  # context output that states the remediation was successful
+        readable_output = f'Alert {alert_id} remediated successfully.'
 
     except DemistoException as de:
         if not (hasattr(de, 'res') and hasattr(de.res, 'status_code')):
             raise
-        if de.res.status_code == 405:
-            raise DemistoException(f'Remediation unavailable for alert {alert_id}.', exception=de) from de
-        elif de.res.status_code == 404:
-            raise DemistoException(f'Alert {alert_id} is not found.', exception=de) from de
-        raise
+
+        status = json.loads(get_response_status_header(de.res))
+        status = status if isinstance(status, dict) else status[0]
+
+        error_value = status.get('subject', '')
+        failure_reason = str(status.get('i18nKey', '')).replace('_', ' ')
+
+        readable_response = {'alertId': alert_id, 'successful': False, 'failureReason': failure_reason, 'errorValue': error_value}
+        readable_output = tableToMarkdown(f'Remediation Failed For Alert {alert_id}:',
+                                          readable_response,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace)
+        if de.res.status_code == 406:
+            return_error(message=f'Remediation Failed For Alert {alert_id}.\n'
+                                 f'Failure reason: {failure_reason}.\nError value: {error_value}',
+                         error=de,
+                         outputs={'PrismaCloud.AlertRemediation(val.alertId === obj.alertId)': readable_response})
 
     command_results = CommandResults(
-        readable_output=f'Alert {alert_id} remediated successfully.',
+        outputs_prefix='PrismaCloud.AlertRemediation',
+        outputs_key_field='alertId',
+        readable_output=readable_output,
+        outputs=readable_response,
+        raw_response=readable_response
     )
     return command_results
 
@@ -1609,6 +1652,121 @@ def resource_get_command(client: Client, args: Dict[str, Any]) -> CommandResults
                                         headerTransform=pascalToSpace),
         outputs=response,
         raw_response=response
+    )
+    return command_results
+
+
+def resource_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    list_type = args.get('list_type')
+    namespace = args.get('namespace')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
+
+    response_items = client.resource_list_request(list_type)
+    extract_namespace(response_items)
+    if namespace and response_items:
+        response_items = [item for item in response_items if namespace in item.get('namespaces', [])]
+
+    total_response_amount = len(response_items)
+    if not all_results and limit and response_items:
+        demisto.debug(f'Returning results only up to {limit=}, from {len(response_items)} results returned.')
+        response_items = response_items[:limit]
+
+    for response_item in response_items:
+        change_timestamp_to_datestring_in_dict(response_item)
+
+    headers = ['name', 'id', 'resourceListType', 'description', 'lastModifiedBy']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.ResourceList',
+        outputs_key_field='id',
+        readable_output=f'Showing {len(response_items)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('Resources Details:',
+                                          response_items,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
+        outputs=response_items,
+        raw_response=response_items
+    )
+    return command_results
+
+
+def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    role_id = args.get('role_id')
+    resource_list_name = args.get('resource_list_name')
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
+
+    if role_id:
+        response_items = client.user_roles_list_request(str(role_id))
+        response_items = [response_items] if response_items else []
+    else:
+        response_items = client.all_user_roles_list_request()
+
+    # reduce response to hold only items that are associated with resource_list_name
+    if resource_list_name and response_items:
+        response_items = [item for item in response_items
+                          if resource_list_name in
+                          [resource.get('name') for resource in item.get('resourceLists', [])]]
+
+    total_response_amount = len(response_items)
+    if not all_results and limit and response_items:
+        demisto.debug(f'Returning results only up to {limit=}, from {len(response_items)} results returned.')
+        response_items = response_items[:limit]
+
+    for response_item in response_items:
+        change_timestamp_to_datestring_in_dict(response_item)
+
+    headers = ['name', 'id', 'roleType', 'description']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.UserRoles',
+        outputs_key_field='id',
+        readable_output=f'Showing {len(response_items)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('User Roles Details:',
+                                          response_items,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
+        outputs=response_items,
+        raw_response=response_items
+    )
+    return command_results
+
+
+def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    usernames = argToList(args.get('usernames'))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
+    all_results = argToBoolean(args.get('all_results', 'false'))
+
+    response_items = client.users_list_request()
+    # reduce response to hold only items that are associated with the provided usernames
+    if usernames and response_items:
+        response_items = [item for item in response_items if item.get('username') in usernames]
+
+    total_response_amount = len(response_items)
+    if not all_results and limit and response_items:
+        demisto.debug(f'Returning results only up to {limit=}, from {len(response_items)} results returned.')
+        response_items = response_items[:limit]
+
+    for response_item in response_items:
+        change_timestamp_to_datestring_in_dict(response_item)
+        roles = []
+        for role in response_item.get('roles', []):
+            roles.append(role.get('name'))
+        response_item['roles names'] = roles
+
+    headers = ['displayName', 'email', 'enabled', 'username', 'type', 'roles names']
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloud.Users',
+        outputs_key_field='username',
+        readable_output=f'Showing {len(response_items)} of {total_response_amount} results:\n'
+                        + tableToMarkdown('Users Details:',
+                                          response_items,
+                                          headers=headers,
+                                          removeNull=True,
+                                          headerTransform=pascalToSpace),
+        outputs=response_items,
+        raw_response=response_items
     )
     return command_results
 
@@ -2025,12 +2183,16 @@ def main() -> None:
             'prisma-cloud-error-file-list': error_file_list_command,
 
             'prisma-cloud-resource-get': resource_get_command,
+            'prisma-cloud-resource-list': resource_list_command,
+            'prisma-cloud-user-roles-list': user_roles_list_command,
+            'prisma-cloud-users-list': users_list_command,
             'prisma-cloud-account-list': account_list_command,
             'prisma-cloud-account-status-get': account_status_get_command,
             'prisma-cloud-account-owner-list': account_owner_list_command,
 
             'prisma-cloud-host-finding-list': host_finding_list_command,
             'prisma-cloud-permission-list': permission_list_command,
+
             'get-remote-data': get_remote_data_command,
             'update-remote-system': update_remote_system_command,
         }

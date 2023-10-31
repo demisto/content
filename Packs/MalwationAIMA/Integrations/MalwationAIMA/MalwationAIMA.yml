@@ -27,8 +27,8 @@ configuration:
   name: cap_apikey
   type: 4
   required: false
-description: Malwation AIMA malware analysis sandboxing.
-display: Malwation AIMA
+description: Deprecated. Use ThreatZone instead.
+display: Malwation AIMA (Deprecated)
 name: MalwationAIMA
 script:
   commands:
@@ -41,6 +41,7 @@ script:
       - win7x64
       - win10x64
       required: true
+      deprecated: true
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Privacy of the submission.
@@ -72,7 +73,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Malware Config Extractor
+      description: Malware Config Extractor.
       name: config_extractor
       predefined:
       - 'true'
@@ -93,7 +94,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Enable Internet Connection
+      description: Enable Internet Connection.
       name: enable_net
       predefined:
       - 'true'
@@ -131,7 +132,7 @@ script:
       description: The status of the submission scanning process.
       type: String
     - contextPath: AIMA.Result.LEVEL
-      description: Threat Level of the scanned file. (malicious, suspicious or informative)
+      description: Threat Level of the scanned file. (malicious, suspicious or informative).
       type: String
     - contextPath: AIMA.Result.URL
       description: The result page url of the submission.
@@ -149,8 +150,9 @@ script:
       description: The sha256 hash of the submission.
       type: String
     - contextPath: AIMA.Result.ID
-      description: The ID of the submission
+      description: The ID of the submission.
       type: String
+    deprecated: true
   - arguments:
     - description: The entry id of the file.
       name: entry_id
@@ -161,6 +163,7 @@ script:
     - contextPath: CAP.Static.UUID
       description: The uuid value of the submission.
       type: String
+    deprecated: true
   - arguments:
     - description: The Entry id of the file.
       name: entry_id
@@ -171,6 +174,7 @@ script:
     - contextPath: CAP.Mav.UUID
       description: The uuid value of the submission.
       type: String
+    deprecated: true
   - arguments:
     - description: The uuid of the file.
       name: uuid
@@ -179,7 +183,7 @@ script:
     name: aima-cap-static-get-submission
     outputs:
     - contextPath: CAP.Static.SCORE
-      description: Thread level of the scanned file. (malicious, suspicious or informative)
+      description: Thread level of the scanned file. (malicious, suspicious or informative).
       type: String
     - contextPath: CAP.Static.WEIGHT
       description: The weight score of detection.
@@ -193,8 +197,9 @@ script:
     - contextPath: CAP.Static.ENTROPY
       description: The entropy value of sample.
       type: Number
+    deprecated: true
   - arguments:
-    - description: The uuid value of submission
+    - description: The uuid value of submission.
       name: uuid
       required: true
     description: Retrive mav analysis result from Malwation CAP.
@@ -204,7 +209,7 @@ script:
       description: The count of the detection by engines.
       type: Number
     - contextPath: CAP.Mav.SCORE
-      description: Threat Level of the scanned file (malicious, suspicious or informative)
+      description: Threat Level of the scanned file (malicious, suspicious or informative).
       type: String
     - contextPath: CAP.Mav.DETECTIONS
       description: The results of detections by engines.
@@ -212,7 +217,8 @@ script:
     - contextPath: CAP.Mav.STATUS
       description: The status of the submission scanning process.
       type: String
-  dockerimage: demisto/python3:3.10.12.68714
+    deprecated: true
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3
@@ -220,3 +226,4 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+deprecated: true

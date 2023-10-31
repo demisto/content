@@ -25,7 +25,7 @@ to learn about configuring SlackV3 using the app manifest.
     | `incidentType` | Type of incidents created in Slack. | False |
     | `allow_incidents` | Allow external users to create incidents via direct messages. | False |
     | `proxy` | Use system proxy settings. | False |
-    | `unsecure` | Trust any certificate (not secure). | False |
+    | `unsecure` | Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context. | False |
     | `longRunning` | Long running instance. Required for investigation mirroring and direct messages. | False |
     | `bot_name` | Bot display name in Slack (Cortex XSOAR by default). | False |
     | `bot_icon` | Bot icon in Slack - Image URL (Cortex XSOAR icon by default). | False |
@@ -728,3 +728,10 @@ Retrieves replies to specific messages, regardless of whether it's from a public
 #### Context Output
 
 There is no context output for this command.
+```
+
+## Troubleshooting
+---
+**Issue**: The survey sent from SlackBlockBuilder is sent to Slack and submitted successfully, but the response does not show up in context data in Cortex XSOAR.
+
+**Resolution**: The most likely cause is that there is no API key entered into the Slack v3 integration instance settings, or the API key was not created by the default admin user. Ensure that an API key created by a default admin user is entered into the Slack v3 integration instance settings. Also, make sure to mark the **Trust any certificate (not secure)** integration parameter.

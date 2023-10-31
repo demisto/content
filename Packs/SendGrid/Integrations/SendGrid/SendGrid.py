@@ -6,7 +6,7 @@ import time
 
 import dateutil.parser
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import *
+from sendgrid.helpers.mail import *  # nopycln: import
 
 # IMPORTS
 
@@ -36,7 +36,7 @@ def process_attachments(message, attachIDs="", attachNames=""):
         try:
             res = demisto.getFilePath(entry_id)
         except Exception as ex:
-            raise Exception("entry {} does not contain a file: {}".format(entry_id, str(ex)))
+            raise Exception(f"entry {entry_id} does not contain a file: {str(ex)}")
         file_path = res["path"]
         with open(file_path, 'rb') as f:
             f_data = f.read()
@@ -79,9 +79,8 @@ def get_email_activity_list(args: dict, sg):
         rBody = response.body
         body = json.loads(rBody.decode("utf-8"))
         ec = {'Sendgrid.EmailList': body['messages']}
-        if headers:
-            if isinstance(headers, str):
-                headers = headers.split(",")
+        if headers and isinstance(headers, str):
+            headers = headers.split(",")
         md = tableToMarkdown('Email List: ', body['messages'], headers)
         return {
             'ContentsFormat': formats['json'],
@@ -267,9 +266,8 @@ def get_global_email_stats(args: dict, sg):
             res['unsubscribes'] = metrics['unsubscribes']
             mail_stats.append(res)
 
-        if headers:
-            if isinstance(headers, str):
-                headers = headers.split(",")
+        if headers and isinstance(headers, str):
+            headers = headers.split(",")
         md = tableToMarkdown("Global Email Statistics", mail_stats, headers)
         ec = {'Sendgrid.GlobalEmailStats': mail_stats}
         return {
@@ -337,9 +335,8 @@ def get_category_stats(args: dict, sg):
             res['unsubscribes'] = metrics['unsubscribes']
             cat_stats.append(res)
 
-        if headers:
-            if isinstance(headers, str):
-                headers = headers.split(",")
+        if headers and isinstance(headers, str):
+            headers = headers.split(",")
         md = tableToMarkdown("Statistics for the Category: " + res['category'], cat_stats, headers)
         ec = {'Sendgrid.CategoryStats': cat_stats}
         return {
@@ -413,9 +410,8 @@ def get_all_categories_stats(args: dict, sg):
                 res['unsubscribes'] = metrics['unsubscribes']
                 cat_stats.append(res)
 
-            if headers:
-                if isinstance(headers, str):
-                    headers = headers.split(",")
+            if headers and isinstance(headers, str):
+                headers = headers.split(",")
             md = tableToMarkdown("Sum of All Categories Statistics from " + body['date'], cat_stats, headers)
             ec = {'Sendgrid.AllCategoriesStats': body}
             return {
@@ -511,14 +507,14 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     click_tracking = args.get('ClickTracking')
     if click_tracking:
         click_tracking = click_tracking if type(click_tracking) is dict else json.loads(click_tracking)
-        is_enable = False if click_tracking["enable"] == 'False' else True
+        is_enable = click_tracking["enable"] != "False"
         tracking_settings.click_tracking = ClickTracking(is_enable,  # type: ignore[name-defined]
                                                          click_tracking["enable_text"])
 
     open_tracking = args.get('OpenTracking')
     if open_tracking:
         open_tracking = open_tracking if type(open_tracking) is dict else json.loads(open_tracking)
-        is_enable = False if open_tracking["enable"] == 'False' else True
+        is_enable = open_tracking["enable"] != "False"
         tracking_settings.open_tracking = OpenTracking(  # type: ignore[name-defined]
             is_enable,
             OpenTrackingSubstitutionTag(open_tracking["substitution_tag"]))  # type: ignore[name-defined]
@@ -526,7 +522,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     sub_tracking = args.get('SubscriptionTracking')
     if sub_tracking:
         sub_tracking = sub_tracking if type(sub_tracking) is dict else json.loads(sub_tracking)
-        is_enable = False if sub_tracking["enable"] == 'False' else True
+        is_enable = sub_tracking["enable"] != "False"
         tracking_settings.subscription_tracking = SubscriptionTracking(  # type: ignore[name-defined]
             is_enable,
             SubscriptionText(sub_tracking["text"]),  # type: ignore[name-defined]
@@ -536,7 +532,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     ganalytics = args.get('GAnalytics')
     if ganalytics:
         ganalytics = ganalytics if type(ganalytics) is dict else json.loads(ganalytics)
-        is_enable = False if ganalytics["enable"] == 'False' else True
+        is_enable = ganalytics["enable"] != "False"
         tracking_settings.ganalytics = Ganalytics(  # type: ignore[name-defined]
             is_enable,
             UtmSource(ganalytics["utm_source"]),  # type: ignore[name-defined]
@@ -552,7 +548,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     bcc_mail_set = args.get('BccSettings')
     if bcc_mail_set:
         bcc_mail_set = bcc_mail_set if type(bcc_mail_set) is dict else json.loads(bcc_mail_set)
-        is_enable = False if bcc_mail_set["enable"] == 'False' else True
+        is_enable = bcc_mail_set["enable"] != "False"
         mail_settings.bcc_settings = BccSettings(  # type: ignore[name-defined]
             is_enable,
             BccSettingsEmail(bcc_mail_set["email"]))  # type: ignore[name-defined]
@@ -560,7 +556,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     footer = args.get('Footer')
     if footer:
         footer = footer if type(footer) is dict else json.loads(footer)
-        is_enable = False if footer["enable"] == 'False' else True
+        is_enable = footer["enable"] != "False"
         mail_settings.footer_settings = FooterSettings(  # type: ignore[name-defined]
             is_enable,
             FooterText(footer["text"]),  # type: ignore[name-defined]
@@ -569,7 +565,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     spam_check = args.get('SpamCheck')
     if spam_check:
         spam_check = spam_check if type(spam_check) is dict else json.loads(spam_check)
-        is_enable = False if spam_check["enable"] == 'False' else True
+        is_enable = spam_check["enable"] != "False"
         mail_settings.spam_check = SpamCheck(  # type: ignore[name-defined]
             is_enable,
             SpamThreshold(spam_check["threshold"]),  # type: ignore[name-defined]
@@ -577,12 +573,12 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
 
     sandbox_mode = args.get('SandboxMode')
     if sandbox_mode:
-        sandbox_mode = False if sandbox_mode == 'False' else True
+        sandbox_mode = sandbox_mode != "False"
         mail_settings.sandbox_mode = SandBoxMode(sandbox_mode)  # type: ignore[name-defined]
 
     bypass_list_management = args.get('BypassListManagement')
     if bypass_list_management:
-        bypass_list_management = False if bypass_list_management == 'False' else True
+        bypass_list_management = bypass_list_management != "False"
         mail_settings.bypass_list_management = BypassListManagement(bypass_list_management)  # type: ignore[name-defined]
 
     message.mail_settings = mail_settings
@@ -653,9 +649,8 @@ def get_all_lists(args: dict, sg):
         rBody = response.body
         body = json.loads(rBody.decode("utf-8"))
         ec = {'Sendgrid.Lists.Result': body['result'], 'Sendgrid.Lists.Metadata': body['_metadata']}
-        if headers:
-            if isinstance(headers, str):
-                headers = headers.split(",")
+        if headers and isinstance(headers, str):
+            headers = headers.split(",")
         md = tableToMarkdown('Lists information was fetched successfully: ', body['result'], headers)
         return {
             'ContentsFormat': formats['json'],
@@ -673,7 +668,7 @@ def get_list_by_id(args: dict, sg):
     params = {}
     contactSample = args.get('contact_sample')
     if contactSample:
-        params['contact_sample'] = False if contactSample == 'False' else True
+        params['contact_sample'] = contactSample != "False"
 
     response = sg.client.marketing.lists._(listID).get(query_params=params)
     if response.status_code == 200:
@@ -759,7 +754,7 @@ def delete_list(args: dict, sg):
     params = {}
     deleteContacts = args.get('delete_contacts')
     if deleteContacts:
-        params['delete_contacts'] = False if deleteContacts == 'False' else True
+        params['delete_contacts'] = deleteContacts != "False"
 
     response = sg.client.marketing.lists._(listID).delete(query_params=params)
     if response.status_code == 200:

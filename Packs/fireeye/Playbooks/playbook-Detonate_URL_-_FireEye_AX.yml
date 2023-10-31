@@ -35,12 +35,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '1':
     id: '1'
-    taskid: b553e4e7-adfb-4d47-822f-23c2baa6c75a
+    taskid: d19b6d0f-7bce-4fb6-85ad-10899a219703
     type: condition
     task:
-      id: b553e4e7-adfb-4d47-822f-23c2baa6c75a
+      id: d19b6d0f-7bce-4fb6-85ad-10899a219703
       version: -1
       name: Is there an active FireEye AX instance?
       description: Check for an active instance.
@@ -69,7 +70,8 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: FireEye (AX Series)
+                        simple: fireeye
+                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
@@ -78,6 +80,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
                 accessor: brand
             iscontext: true
           right:
@@ -96,6 +99,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '2':
     id: '2'
     taskid: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
@@ -138,6 +142,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '3':
     id: '3'
     taskid: 70b2a5ea-ad97-4dcf-89ea-36eade5e0a59
@@ -186,12 +191,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '4':
     id: '4'
-    taskid: d2a9dd93-a95a-4910-821f-4cffe8b019b8
+    taskid: 415427e9-78ce-4dd0-8d95-da55b9c6908a
     type: playbook
     task:
-      id: d2a9dd93-a95a-4910-821f-4cffe8b019b8
+      id: 415427e9-78ce-4dd0-8d95-da55b9c6908a
       version: -1
       name: GenericPolling
       description: |-
@@ -211,17 +217,17 @@ tasks:
       - '7'
     scriptarguments:
       Ids:
-        simple: ${FireEyeAX.Submissions.Key}
+        simple: ${FireEyeAX.Submissions.URL.Key}
       Interval:
         simple: ${inputs.interval}
       PollingCommandArgName:
-        simple: submissionID
+        simple: submission_Key
       PollingCommandName:
-        simple: fe-submit-status
+        simple: fe-submit-url-status
       Timeout:
         simple: ${inputs.timeout}
       dt:
-        simple: FireEyeAX.Submissions(val.Status == 'finished')
+        simple: FireEyeAX.Submissions.URL(val.Status == 'In Progress').Key
     separatecontext: true
     loop:
       iscommand: false
@@ -242,6 +248,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '6':
     id: '6'
     taskid: bee9857d-c4a9-4e9f-8939-822514c68078
@@ -259,7 +266,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1415
         }
       }
     note: false
@@ -269,6 +276,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '7':
     id: '7'
     taskid: 922099fa-9796-48f4-8b19-090d46bda6ac
@@ -287,7 +295,7 @@ tasks:
       - '6'
     scriptarguments:
       submission_Key:
-        simple: ${FireEyeAX.Submissions.Key}
+        simple: ${FireEyeAX.Submissions.URL.Key}
     separatecontext: false
     view: |-
       {
@@ -303,12 +311,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '8':
     id: '8'
-    taskid: 26314852-2b16-4e29-84f7-47fa57ecfe90
+    taskid: d1c216d8-d4c1-4394-8b75-94867431a9a8
     type: regular
     task:
-      id: 26314852-2b16-4e29-84f7-47fa57ecfe90
+      id: d1c216d8-d4c1-4394-8b75-94867431a9a8
       version: -1
       name: Sleep (let the sandbox create the task)
       description: sleep
@@ -332,30 +341,31 @@ tasks:
       }
     note: false
     timertriggers: []
-    ignoreworker: false
+    ignoreworker: true
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '9':
     id: '9'
-    taskid: 43aabf88-212c-42eb-840b-09571fc1e200
+    taskid: 482cc724-9e91-4603-8910-2fda3c9f3520
     type: regular
     task:
-      id: 43aabf88-212c-42eb-840b-09571fc1e200
+      id: 482cc724-9e91-4603-8910-2fda3c9f3520
       version: -1
       name: View task
-      description: commands.server.feSubmitStatus.description
-      script: fireeye|||fe-submit-status
+      description: Get a status for a url submitted to FireEye analysis
+      script: '|||fe-submit-url-status'
       type: regular
       iscommand: true
-      brand: fireeye
+      brand: ""
     nexttasks:
       '#none#':
       - '4'
     scriptarguments:
       submission_Key:
-        simple: ${FireEyeAX.Submissions.Key}
+        simple: ${FireEyeAX.Submissions.URL.Key}
     separatecontext: false
     view: |-
       {
@@ -371,12 +381,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1430,
         "width": 605,
         "x": 50,
         "y": 50
@@ -400,12 +411,12 @@ inputs:
   playbookInputQuery:
 - key: timeout
   value:
-    simple: '10'
+    simple: '30'
   required: false
   description: How long to wait before giving up waiting for results.
   playbookInputQuery:
 outputs:
-- contextPath: FireEyeAX.Submissions.Key
+- contextPath: FireEyeAX.Submissions.URL.Key
   description: The submission key.
 - contextPath: FireEyeAX.Submissions.Severity
   description: The severity level of the file.

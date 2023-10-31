@@ -87,7 +87,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Provides data enrichment for domains.
+    description: Provides data enrichment for domains using free resources. Availability of those services may be limited.
     name: whois
     outputs:
     - contextPath: DBotScore.Score
@@ -160,10 +160,10 @@ script:
       description: The organization of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.postalcode
-      description: The postal code of the domain administrator
+      description: The postal code of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.street
-      description: The street of the domain admin
+      description: The street of the domain admin.
       type: string
     - contextPath: Domain.Whois.Administrator.phone
       description: The phone number of the domain administrator.
@@ -313,10 +313,10 @@ script:
       description: The organization of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.postalcode
-      description: The postal code of the domain administrator
+      description: The postal code of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.street
-      description: The street of the domain admin
+      description: The street of the domain admin.
       type: string
     - contextPath: Domain.Whois.Administrator.phone
       description: The phone number of the domain administrator.
@@ -484,7 +484,7 @@ script:
       description: ASN allocation date in ISO 8601 format.
       type: Date
     - contextPath: Whois.IP.asn_description
-      description: The ASN description
+      description: The ASN description.
       type: string
     - contextPath: Whois.IP.asn_registry
       description: ASN assigned regional internet registry.
@@ -547,10 +547,10 @@ script:
       description: The RIR classification of a registered network.
       type: string
     - contextPath: Whois.IP.query
-      description: The IP address
+      description: The IP address.
       type: string
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
@@ -565,7 +565,7 @@ script:
       description: Indicators that are associated with the IP.
       type: string
     - contextPath: IP.feed_related_indicators.type
-      description: The type of the indicators that are associated with the IP
+      description: The type of the indicators that are associated with the IP.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -582,7 +582,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.72626
+  dockerimage: demisto/ippysocks-py3:1.0.0.75529
   runonce: false
   script: '-'
   subtype: python3

@@ -1,7 +1,8 @@
 import demistomock as demisto
 import json
 import pytest
-from CommonServerPython import entryTypes
+from CommonServerPython import *  # noqa: F401
+from requests import Response
 
 entryTypes['warning'] = 11
 
@@ -1459,8 +1460,8 @@ def test_direct_message_handler(mocker, requests_mock):
 
     assert response['type'] == "message"
     assert response['text'] == \
-           "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. " \
-           "You're not allowed to run any command"
+        "I\'m sorry but I was unable to find you as a Cortex XSOAR user for bwillis@email.com. " \
+        "You're not allowed to run any command"
 
     # verify create incident successfully
     mocker.patch.object(demisto, 'findUser', return_value={'id': 'nice-demisto-id'})
@@ -2281,3 +2282,38 @@ def test_is_bot_in_chat_parameters(mocker, requests_mock):
     is_bot_in_chat(GROUP_CHAT_ID)
     filters = request_mock.last_request.qs.get('$filter')[0]
     assert f"eq '{bot_id}'" in filters
+
+
+@pytest.mark.parametrize('error_content, status_code, expected_response', [
+    (b'{"error": "invalid_grant", "error_description": "AADSTS700082: The refresh token has expired due to inactivity.'
+     b'\\u00a0The token was issued on 2023-02-06T12:26:14.6448497Z and was inactive for 90.00:00:00.'
+     b'\\r\\nTrace ID: test\\r\\nCorrelation ID: test\\r\\nTimestamp: 2023-07-02 06:40:26Z", '
+     b'"error_codes": [700082], "timestamp": "2023-07-02 06:40:26Z", "trace_id": "test", "correlation_id": "test",'
+     b' "error_uri": "https://login.microsoftonline.com/error?code=700082"}', 400,
+     'The refresh token has expired due to inactivity. Please regenerate the '
+     "'Authorization code' parameter and then run !microsoft-teams-auth-test to "
+     're-authenticate')])
+def test_error_parser_with_exception(mocker, error_content, status_code, expected_response):
+    """
+    Given:
+        - The error_content, status_code, and expected_response for testing the error_parser function.
+    When:
+        - The error_parser function is called with the given error_content and status_code.
+    Then:
+        - Assert that the error_parser function raises a DemistoException with the expected_response.
+    """
+    from MicrosoftTeams import error_parser
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext')
+    mocker.patch.object(demisto, 'error')
+    err = Response()
+    err.status_code = status_code
+    err._content = error_content
+
+    with pytest.raises(DemistoException) as ex:
+        error_parser(err)
+
+    assert demisto.getIntegrationContext.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
+
+    assert str(ex.value) == expected_response

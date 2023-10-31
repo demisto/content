@@ -535,7 +535,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The MD5 hash of the file to check.
+      description: The hash of the file to check.
       isArray: true
       name: file
       required: true
@@ -550,6 +550,27 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: Unknown
+    - contextPath: File.sha1
+      description: The SHA-1 hash of the file.
+      type: String
+    - contextPath: File.sha256
+      description: The SHA-256 hash of the file.
+      type: String
+    - contextPath: File.sha512
+      description: The SHA-512 hash of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.Hashes.type
+      description: The hash type.
+      type: String
+    - contextPath: File.Hashes.value
+      description: The hash value.
+      type: String
     - contextPath: File.Malicious.Description
       description: A description explaining why the file was determined to be malicious.
       type: Unknown
@@ -681,6 +702,9 @@ script:
       type: String
     - contextPath: CofenseIntelligence.File.Threats.executableSet.type
       description: Description of the purpose this file serves within the malware infection.
+      type: String
+    - contextPath: CofenseIntelligence.File.Threats.executableSet.ssdeep
+      description: The ssdeep hash of the file.
       type: String
     - contextPath: CofenseIntelligence.File.Threats.executableSet.dateEntered
       description: Date when this file was analyzed by Malcovery.
@@ -1467,7 +1491,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.72123
   runonce: false
   script: '-'
   subtype: python3

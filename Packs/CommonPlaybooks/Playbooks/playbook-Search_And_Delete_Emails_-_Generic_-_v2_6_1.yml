@@ -171,7 +171,7 @@ tasks:
       {
         "position": {
           "x": -380,
-          "y": 1320
+          "y": 1325
         }
       }
     note: false
@@ -226,6 +226,7 @@ tasks:
                     right:
                       value:
                         simple: EWS v2
+                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
@@ -234,7 +235,10 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -249,6 +253,16 @@ tasks:
                     right:
                       value:
                         simple: SecurityAndCompliance
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndComplianceV2
+                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
@@ -257,6 +271,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
             iscontext: true
       - - operator: isEqualString
           left:
@@ -267,6 +282,7 @@ tasks:
           right:
             value:
               simple: O365
+          ignorecase: true
     - label: Only O365 Enabled
       condition:
       - - operator: isNotEmpty
@@ -283,6 +299,16 @@ tasks:
                     right:
                       value:
                         simple: SecurityAndCompliance
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndComplianceV2
+                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
@@ -291,6 +317,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
             iscontext: true
       - - operator: isEmpty
           left:
@@ -306,6 +333,7 @@ tasks:
                     right:
                       value:
                         simple: EWS v2
+                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
@@ -314,6 +342,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
             iscontext: true
       - - operator: isEqualString
           left:
@@ -324,6 +353,7 @@ tasks:
           right:
             value:
               simple: O365
+          ignorecase: true
     - label: Both Enabled, input is EWS
       condition:
       - - operator: isNotEmpty
@@ -340,6 +370,7 @@ tasks:
                     right:
                       value:
                         simple: EWS v2
+                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
@@ -348,6 +379,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -363,6 +395,16 @@ tasks:
                     right:
                       value:
                         simple: SecurityAndCompliance
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndComplianceV2
+                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
@@ -381,6 +423,7 @@ tasks:
           right:
             value:
               simple: EWS
+          ignorecase: true
     - label: Only EWS enabled
       condition:
       - - operator: isNotEmpty
@@ -397,6 +440,7 @@ tasks:
                     right:
                       value:
                         simple: EWS v2
+                    ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
@@ -405,6 +449,7 @@ tasks:
                     right:
                       value:
                         simple: active
+                    ignorecase: true
             iscontext: true
       - - operator: isEmpty
           left:
@@ -412,22 +457,33 @@ tasks:
               complex:
                 root: modules
                 filters:
-                  - - operator: isEqualString
-                      left:
-                        value:
-                          simple: modules.brand
-                        iscontext: true
-                      right:
-                        value:
-                          simple: SecurityAndCompliance
-                  - - operator: isEqualString
-                      left:
-                        value:
-                          simple: modules.state
-                        iscontext: true
-                      right:
-                        value:
-                          simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndCompliance
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SecurityAndComplianceV2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
             iscontext: true
       - - operator: isEqualString
           left:
@@ -438,9 +494,10 @@ tasks:
           right:
             value:
               simple: EWS
+          ignorecase: true
     - label: Gmail
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -477,7 +534,7 @@ tasks:
           ignorecase: true
     - label: Agari Phishing Defense
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -511,6 +568,8 @@ tasks:
           right:
             value:
               simple: Agari Phishing Defense
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1031,7 +1090,7 @@ inputs:
   required: false
   description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL).
   playbookInputQuery:
-- key:  O365AllowNotFoundExchangeLocations
+- key: O365AllowNotFoundExchangeLocations
   value:
     simple: "False"
   required: false

@@ -7,3 +7,5 @@ ignore=MR108
 [file:LinuxEventsCollectionParsingRules.yml]
 ignore=PR101
 
+[known_words]
+sshd

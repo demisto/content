@@ -283,7 +283,7 @@ def main():
         i = i + 1
 
         try:
-            assert(TaskIDsInLogic[i])
+            assert (TaskIDsInLogic[i])
 
         except Exception:
             break

@@ -357,9 +357,9 @@ def test_object_search_success(client, requests_mock):
 
     assert response.raw_response == object_search_response.get('raw_response')
     assert response.outputs.get(f'{OUTPUT_PREFIX["GLOBAL_SEARCH"]}(val.id == obj.id)') \
-           == remove_empty_elements(object_search_response.get('outputs'))
+        == remove_empty_elements(object_search_response.get('outputs'))
     assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_GLOBAL_SEARCH"]}(val.name == obj.name)') \
-           == remove_empty_elements(object_search_response.get('page_token'))
+        == remove_empty_elements(object_search_response.get('page_token'))
     assert response.readable_output == object_search_response_hr
 
 
@@ -392,9 +392,9 @@ def test_object_search_with_token_hr_success(client, requests_mock):
 
     assert response.raw_response == object_search_response.get('raw_response')
     assert response.outputs.get(f'{OUTPUT_PREFIX["GLOBAL_SEARCH"]}(val.id == obj.id)') \
-           == remove_empty_elements(object_search_response.get('outputs'))
+        == remove_empty_elements(object_search_response.get('outputs'))
     assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_GLOBAL_SEARCH"]}(val.name == obj.name)') \
-           == remove_empty_elements(object_search_response.get('page_token'))
+        == remove_empty_elements(object_search_response.get('page_token'))
     assert response.readable_output == object_search_response_hr
 
 
@@ -561,9 +561,9 @@ def test_vm_objects_list_success(client, requests_mock):
 
     assert response.raw_response == objects_list_response.get('raw_response')
     assert response.outputs.get(f'{OUTPUT_PREFIX["VM_OBJECT"]}(val.id == obj.id)') \
-           == remove_empty_elements(objects_list_response.get('outputs'))
+        == remove_empty_elements(objects_list_response.get('outputs'))
     assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_VM_OBJECT"]}(val.name == obj.name)') \
-           == remove_empty_elements(objects_list_response.get('page_token'))
+        == remove_empty_elements(objects_list_response.get('page_token'))
     assert response.readable_output == objects_list_response_hr
 
 
@@ -1475,7 +1475,7 @@ def test_gps_vm_host_list_success(client, requests_mock, empty_response):
 
         assert response.raw_response == vm_host_list_response.get('raw_response')
         assert response.outputs.get(f'{OUTPUT_PREFIX["GPS_VM_HOSTS"]}(val.id == obj.id)') == \
-               remove_empty_elements(vm_host_list_response.get('outputs'))
+            remove_empty_elements(vm_host_list_response.get('outputs'))
         assert response.readable_output == vm_host_list_response_hr
 
 
@@ -1522,9 +1522,9 @@ def test_gps_vm_datastore_list_success(client, requests_mock, empty_response):
 
         assert response.raw_response == vm_datastore_list_response.get('raw_response')
         assert response.outputs.get(f'{OUTPUT_PREFIX["GPS_VM_HOSTS"]}(val.id == obj.id)') == \
-               remove_empty_elements(vm_datastore_list_response.get('outputs'))
+            remove_empty_elements(vm_datastore_list_response.get('outputs'))
         assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_VM_HOSTS"]}(val.name == obj.name)') == \
-               {"Datastore": remove_empty_elements(vm_datastore_list_response.get('page_token'))}
+            {"Datastore": remove_empty_elements(vm_datastore_list_response.get('page_token'))}
         assert response.readable_output == vm_datastore_list_response_hr
 
 
@@ -1708,9 +1708,9 @@ def test_event_list_success(client, requests_mock, empty_response):
 
         assert response.raw_response == event_list_response.get('raw_response')
         assert response.outputs.get(f'{OUTPUT_PREFIX["EVENT"]}(val.id == obj.id)') == \
-               remove_empty_elements(event_list_response.get('outputs'))
+            remove_empty_elements(event_list_response.get('outputs'))
         assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_EVENT"]}(val.name == obj.name)') == \
-               remove_empty_elements(event_list_response.get('page_token'))
+            remove_empty_elements(event_list_response.get('page_token'))
         assert response.readable_output == event_list_response_hr
 
 
@@ -1843,9 +1843,9 @@ def test_object_list_success(client, requests_mock, empty_response):
 
         assert response.raw_response == object_list_response.get('raw_response')
         assert response.outputs.get(f'{OUTPUT_PREFIX["OBJECT"]}(val.id == obj.id)') == \
-               remove_empty_elements(object_list_response.get('outputs'))
+            remove_empty_elements(object_list_response.get('outputs'))
         assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_OBJECT"]}(val.name == obj.name)') == \
-               remove_empty_elements(object_list_response.get('page_token'))
+            remove_empty_elements(object_list_response.get('page_token'))
         assert response.readable_output == object_list_response_hr
 
 
@@ -1911,9 +1911,9 @@ def test_polaris_object_snapshot_list_success(client, requests_mock, empty_respo
 
         assert response.raw_response == object_snapshot_list_response.get('raw_response')
         assert response.outputs.get(f'{OUTPUT_PREFIX["OBJECT"]}(val.id == obj.id)') == \
-               remove_empty_elements(object_snapshot_list_response.get('outputs'))
+            remove_empty_elements(object_snapshot_list_response.get('outputs'))
         assert response.outputs.get(f'{OUTPUT_PREFIX["PAGE_TOKEN_OBJECT"]}(val.name == obj.name)') == \
-               remove_empty_elements(object_snapshot_list_response.get('page_token'))
+            remove_empty_elements(object_snapshot_list_response.get('page_token'))
         assert response.readable_output == object_snapshot_list_response_hr
 
 

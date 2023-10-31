@@ -151,8 +151,8 @@ EXPECTED_NOTABLE_SESSION_DETAILS = {
                  'Location': 'us',
                  'Email': 'test@.com'}],
             'executiveUserFlags': [
-              {'username1': False},
-              {'username2': False}]}
+            {'username1': False},
+            {'username2': False}]}
 }
 
 EXPECTED_NOTABLE_SEQUENCE_DETAILS = {

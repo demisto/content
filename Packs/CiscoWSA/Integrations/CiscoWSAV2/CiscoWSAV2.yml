@@ -31,7 +31,7 @@ script:
   type: python
   subtype: python3
   script: '-'
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   commands:
   - name: cisco-wsa-access-policy-list
     description: |-
@@ -105,14 +105,14 @@ script:
       - enable
       - disable
     - name: policy_description
-      description: Policy description
+      description: Policy description.
     - name: policy_order
       description: Index of the policies in the collection.
       required: true
     - name: policy_expiry
       description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z.
     - name: identification_profiles
-      description: Comma-separated list of valid identification profile name. (Dependencies - use cisco-wsa-identification-profiles-list command to get all the identification profiles.)
+      description: Comma-separated list of valid identification profile name. (Dependencies - use cisco-wsa-identification-profiles-list command to get all the identification profiles.).
       required: true
       isArray: true
   - name: cisco-wsa-access-policy-update
@@ -191,7 +191,7 @@ script:
       - monitor
       - warn
     - name: predefined_categories
-      description: Comma-separated list of predefined categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+      description: Comma-separated list of predefined categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.).
       isArray: true
     - name: youtube_categories_action
       description: YouTube categories action.
@@ -211,7 +211,7 @@ script:
       - monitor
       - warn
     - name: custom_categories
-      description: Comma-separated list of custom categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+      description: Comma-separated list of custom categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.).
       isArray: true
     - name: uncategorized_url
       description: Uncategorized URL action.
@@ -459,7 +459,7 @@ script:
     - name: ip_addresses
       description: |-
         Comma-separated list of IP addresses to search for.
-        This argument will retrieve the domain map record if one of the IP addresses specified is mapped to the domain. 
+        This argument will retrieve the domain map record if one of the IP addresses specified is mapped to the domain. .
       isArray: true
     - name: page
       description: |-
@@ -605,22 +605,22 @@ script:
         where certain clients have been configured to use a specific connecting port.
         For transparent connections, membership by proxy port applies to the port of the destination URL.
         Leave this field blank if membership by connecting proxy port is not needed.
-        e.g., 22-1000,3331
+        e.g., 22-1000,3331.
       isArray: true
     - name: members_by_subnet
-      description: Comma-separated list of members by Subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
+      description: Comma-separated list of members by Subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5.
       isArray: true
     - name: predefined_url_categories
       description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
-        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.).
       isArray: true
     - name: custom_url_categories
       description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
-        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.).
       isArray: true
   - name: cisco-wsa-identification-profiles-update
     description: Update the identification profile. This command rewrites the profile values (does not append). For example, if the proxy_ports is defined as 4000,5000 and you insert proxy_ports=8000, the proxy_ports will be 8000.
@@ -657,7 +657,7 @@ script:
         where certain clients have been configured to use a specific connecting port.
         For transparent connections, membership by proxy port applies to the port of the destination URL.
         Leave this field blank if membership by connecting proxy port is not needed.
-        e.g.,  22-1000,3331
+        e.g.,  22-1000,3331.
       isArray: true
     - name: members_by_subnet
       description: Comma-separated list of members by subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5.
@@ -666,13 +666,13 @@ script:
       description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
-        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.).
       isArray: true
     - name: custom_url_categories
       description: |-
         Comma-separated list of URL categories to use as membership criteria.
         Leave blank if membership by URL category is not needed.
-        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.).
       isArray: true
   - name: cisco-wsa-identification-profiles-delete
     description: Delete identification profiles.
@@ -699,3 +699,5 @@ script:
     - type: String
       contextPath: CiscoWSA.UrlCategory.custom
       description: Custom URL categories.
+tests:
+- No tests (auto formatted)

@@ -14,6 +14,7 @@ ignore=RN115,RN113
 xsiam
 coreirapimodule
 xdrir
+NGFW
 
 [file:playbook-XCloud_Cryptomining_-_Set_Verdict.yml]
 ignore=BA101

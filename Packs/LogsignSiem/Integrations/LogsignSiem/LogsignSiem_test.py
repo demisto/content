@@ -3,7 +3,8 @@ from unittest.mock import patch
 import pytest
 
 from LogsignSiem import *
-from test_data.sample_data import *
+from test_data.sample_data import DATE_FORMAT, CHECK_ARG_MOCK_DATA, PARAMS, ARGS_Q, MOCK_INCIDENTS, MOCK_INC, RESULT_COUNT_HR, \
+    RESULT_COLUMNS_HR
 
 import demistomock
 

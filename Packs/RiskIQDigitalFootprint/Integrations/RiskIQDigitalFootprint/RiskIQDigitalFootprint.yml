@@ -241,7 +241,7 @@ script:
       description: Count of changed assets from Global Inventory in range of 1, 7, and 30 days from the most recently run date.
       type: Number
     - contextPath: RiskIQDigitalFootprint.AssetSummary.deltas.aggregations.count
-      description: It indicates the number of confirmed assets in inventory
+      description: It indicates the number of confirmed assets in inventory.
       type: Number
     - contextPath: RiskIQDigitalFootprint.AssetSummary.deltas.aggregations.range
       description: The period of time over which the changes were identified. Supported ranges are 1, 7, and 30 days.
@@ -552,7 +552,7 @@ script:
       description: The status of the domain.
       type: String
     - contextPath: Domain.NameServers
-      description: Name servers of the domain
+      description: Name servers of the domain.
       type: String
     - contextPath: Domain.Registrant.Country
       description: The country of the domain registrant.
@@ -633,10 +633,10 @@ script:
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
       type: String
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: CVE-2015-1653'
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: CVE.CVSS
-      description: 'The CVSS of the CVE, for example: 10.0'
+      description: 'The CVSS of the CVE, for example: 10.0.'
       type: String
     - contextPath: URL.Data
       description: The URL.
@@ -1848,7 +1848,7 @@ script:
       description: If the resource observed on the asset is cached.
       type: Boolean
     - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.resources.host
-      description: Host of the resource observed on the asset
+      description: Host of the resource observed on the asset.
       type: String
     - contextPath: RiskIQDigitalFootprint.Asset.assetResourceUrls.firstSeen
       description: Date and time when the Resource URL was first observed.
@@ -2019,7 +2019,7 @@ script:
       description: Asset search ID of the discovery run search.
       type: Number
     - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchName
-      description: Name of the discovery run search
+      description: Name of the discovery run search.
       type: String
     - contextPath: RiskIQDigitalFootprint.Asset.discoveryRunSearchWorkspaceID
       description: Workspace ID fetched from discovery run search details.
@@ -2070,7 +2070,7 @@ script:
       description: Reputation list name observed on the asset.
       type: String
     - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.threatType
-      description: Reputation threat type observed on the asset
+      description: Reputation threat type observed on the asset.
       type: String
     - contextPath: RiskIQDigitalFootprint.Asset.assetReputations.trusted
       description: If the reputation can be trusted.
@@ -3233,7 +3233,7 @@ script:
     - contextPath: RiskIQDigitalFootprint.Task.totalUpdates
       description: Number of total asset(s) that have been updated.
       type: Number
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.78960
   runonce: false
   script: '-'
   subtype: python3
