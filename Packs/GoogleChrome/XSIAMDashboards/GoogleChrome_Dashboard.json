@@ -106,7 +106,7 @@
                                 "type": "Custom XQL",
                                 "width": 25,
                                 "height": 400,
-                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n//| filter xdm.observer.vendor = \"Google\" and xdm.observer.product = \"Workspace Chrome\"\n| filter xdm.source.user.username != \"\"\n| filter xdm.source.user.username != \"-\"\n| comp values(xdm.source.user.username) as `DEVICE_USER` by xdm.source.host.hostname",
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n//| filter xdm.observer.vendor = \"Google\" and xdm.observer.product = \"Workspace Chrome\"\n| filter xdm.source.user.username != \"\"\n| filter xdm.source.user.username != \"-\"\n| comp values(xdm.source.user.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
                                 "time_frame":
                                 {
                                     "relativeTime": 86400000
@@ -1018,7 +1018,7 @@
             "description": "This widget displays device users by their related device names.",
             "data":
             {
-                "phrase": "datamodel dataset = google_workspace_chrome_raw \n//| filter xdm.observer.vendor = \"Google\" and xdm.observer.product = \"Workspace Chrome\"\n| filter xdm.source.user.username != \"\"\n| filter xdm.source.user.username != \"-\"\n| comp values(xdm.source.user.username) as `DEVICE_USER` by xdm.source.host.hostname",
+                "phrase": "datamodel dataset = google_workspace_chrome_raw \n//| filter xdm.observer.vendor = \"Google\" and xdm.observer.product = \"Workspace Chrome\"\n| filter xdm.source.user.username != \"\"\n| filter xdm.source.user.username != \"-\"\n| comp values(xdm.source.user.username) as `DEVICE_USER` by xdm.source.host.hostname\n| filter DEVICE_USER != null",
                 "time_frame":
                 {
                     "relativeTime": 86400000
