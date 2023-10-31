@@ -8,7 +8,7 @@ import regex
 # CONSTANTS
 SOURCE_NAME = "Github Maltrail Feed"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
+COMMIT_LIMIT = 100
 
 # ############################## OVERWRITE REGEX FORMATTING ###############################
 regexFlags = re.M  # Multi line matching
@@ -114,7 +114,7 @@ def get_last_commit_date(client):
     if response.ok:
         commits = []
         page = 1
-        while response.ok and page < 100:
+        while response.ok and page < COMMIT_LIMIT:
             commits.extend(response.json())
             link_header = response.headers.get('Link')
             if not link_header or 'rel="next"' not in link_header:
