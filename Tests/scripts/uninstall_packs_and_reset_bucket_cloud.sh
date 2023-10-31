@@ -15,7 +15,7 @@ else
 fi
 
 if [ -n "${CLOUD_API_KEYS}" ]; then
-  if [ $TEST_XDR_ENV ]; then
+  if [ "${TEST_XDR_ENV}" == "true" ]; then
     cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
   else
     echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
@@ -25,7 +25,7 @@ fi
 if [[ -z "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
   exit_on_error 1 "CLOUD_CHOSEN_MACHINE_IDS is not defined"
 else
-  gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+  gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
   exit_on_error $? "Failed to authenticate with GCS_MARKET_KEY"
 
   IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
