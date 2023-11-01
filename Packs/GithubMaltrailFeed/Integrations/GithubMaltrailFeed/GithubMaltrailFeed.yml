@@ -115,7 +115,7 @@ script:
       defaultValue: "50"
     name: gh-maltrail-get-indicators
     description: Get indicators from the feed. 
-  dockerimage: demisto/pyjwt3:1.0.0.76168
+  dockerimage: demisto/python3:3.10.13.78623
   feed: true
   runonce: false
   script: ''
