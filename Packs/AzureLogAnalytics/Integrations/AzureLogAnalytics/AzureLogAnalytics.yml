@@ -218,7 +218,7 @@ script:
     - description: The query expression for the saved search.
       name: query
       required: true
-    - description: 'The tags attached to the saved search. Value should be in the following format: ''name=value;name=value'''
+    - description: 'The tags attached to the saved search. Value should be in the following format: ''name=value;name=value''.'
       name: tags
     description: Creates or updates a saved search from the Log Analytics workspace.
     name: azure-log-analytics-create-or-update-saved-search
@@ -267,7 +267,7 @@ script:
     name: azure-log-analytics-auth-reset
     arguments: []
   - arguments:
-    - description: the name of the table to add
+    - description: the name of the table to add.
       name: table_name
       required: true
     - description: Maximum number of records in the result set, up to one million records.
@@ -298,7 +298,7 @@ script:
     polling: true
     description: Run a search job to fetch records from large datasets into a new search results table in your workspace.
     name: azure-log-analytics-run-search-job
-  - arguments: 
+  - arguments:
     - description: "The name of the table. Example value: AuditLogs_SRCH."
       name: table_name
     description: Gets a Log Analytics workspace table.
@@ -341,7 +341,7 @@ script:
       description: Table name.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableSubType
-      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any | Classic | DataCollectionRuleBased For more info see in the readme file
+      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any | Classic | DataCollectionRuleBased For more info see in the readme file.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableType
       description: Table's creator.
@@ -362,7 +362,7 @@ script:
       description: Column name.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.type
-      description: Column data type. (bool | datetime | dynamic | guid | int | long | real | string)
+      description: Column data type (bool | datetime | dynamic | guid | int | long | real | string).
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint
       description: Column data type logical hint. (armPath | guid | ip | uri) for more info see in the readme file.
@@ -383,10 +383,10 @@ script:
       description: Table labels.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.source
-      description: Table's creator. (customer | microsoft)
-      type: String 
+      description: Table's creator. (customer | microsoft).
+      type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.solutions
-      description: List of solutions the table is affiliated with
+      description: List of solutions the table is affiliated with.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.provisioningState
       description: Table's current provisioning state. (Deleting | InProgress | Succeeded | Updating) If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
@@ -398,7 +398,7 @@ script:
       description: The table total retention in days, between 4 and 2556. Setting this property to -1 will default to table retention.
       type: Number
     - contextPath: AzureLogAnalytics.SearchJob.properties.archiveRetentionInDays
-      description: The table data archive retention in days. Calculated as (totalRetentionInDays-retentionInDays)
+      description: The table data archive retention in days. Calculated as (totalRetentionInDays-retentionInDays).
       type: Number
     - contextPath: AzureLogAnalytics.SearchJob.properties.retentionInDaysAsDefault
       description: True - Value originates from workspace retention in days, False - Customer specific.
@@ -410,12 +410,12 @@ script:
       description: Instruct the system how to handle and charge the logs ingested to this table.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.id
-      description: Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+      description: Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.name
-      description: The name of the resource
+      description: The name of the resource.
       type: String
-  - arguments: 
+  - arguments:
     - description: "The name of the table. Example value: AuditLogs_SRCH."
       name: table_name
     description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
