@@ -24,6 +24,7 @@ CMD_URL = API_V2_ENDPOINT
 API_VER = API_V2
 PAGE_SIZE_LIMIT_DICT = {API_V2: 2000, API_V1: 1000}
 API_V1_PAGE_LIMIT = 500
+THREAT_ASSESSMENT_URL_PREFIX = 'informationProtection/threatAssessmentRequests'
 
 DataSourceType = {
     'USER': {
@@ -254,7 +255,6 @@ class MsGraphClient:
         return self.ms_client.http_request(method='POST', url_suffix=url, json_data=body, resp_type='response')
 
     def create_mail_assessment_request(self, recipient_email, expected_assessment, category, user_id, message_id):
-        url = 'informationProtection/threatAssessmentRequests'
         body = {
             "@odata.type": "#microsoft.graph.mailAssessmentRequest",
             "recipientEmail": recipient_email,
@@ -262,23 +262,22 @@ class MsGraphClient:
             "category": category,
             "messageUri": f"https://graph.microsoft.com/v1.0/users/{user_id}/messages/{message_id}"
         }
-        return self.ms_client.http_request(method='POST', url_suffix=url, json_data=body)
+        return self.ms_client.http_request(method='POST', url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
     def get_user_id(self, email):
         return self.ms_client.http_request(method='GET', url_suffix='users', params={'$filter': f'mail eq {email}'})
 
     def get_threat_assessment_request(self, request_id):
         return self.ms_client.http_request(method='GET',
-                                           url_suffix=f'informationProtection/threatAssessmentRequests/{request_id}',
+                                           url_suffix=f'{THREAT_ASSESSMENT_URL_PREFIX}/{request_id}',
                                            params={'$expand': 'results'})
 
     def get_threat_assessment_request_status(self, request_id):
         return self.ms_client.http_request(method='GET',
-                                           url_suffix=f'informationProtection/threatAssessmentRequests/{request_id}',
+                                           url_suffix=f'{THREAT_ASSESSMENT_URL_PREFIX}/{request_id}',
                                            params={'$select': 'status'})
 
     def create_email_file_assessment_request(self, recipient_email, expected_assessment, category, content_data):
-        url = 'informationProtection/threatAssessmentRequests'
         body = {
             "@odata.type": "#microsoft.graph.emailFileAssessmentRequest",
             "recipientEmail": recipient_email,
@@ -286,10 +285,9 @@ class MsGraphClient:
             "category": category,
             "contentData": content_data
         }
-        return self.ms_client.http_request(method='POST', url_suffix=url, json_data=body)
+        return self.ms_client.http_request(method='POST', url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
     def create_file_assessment_request(self, expected_assessment, category, file_name, content_data):
-        url = 'informationProtection/threatAssessmentRequests'
         body = {
             "@odata.type": "#microsoft.graph.fileAssessmentRequest",
             "expectedAssessment": expected_assessment,
@@ -297,23 +295,21 @@ class MsGraphClient:
             "fileName": file_name,
             "contentData": content_data
         }
-        return self.ms_client.http_request(method='POST', url_suffix=url, json_data=body)
+        return self.ms_client.http_request(method='POST', url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
     def create_url_assessment_request(self, expected_assessment, category, url):
-        url_suffix = 'informationProtection/threatAssessmentRequests'
         body = {
             "@odata.type": "#microsoft.graph.urlAssessmentRequest",
             "expectedAssessment": expected_assessment,
             "category": category,
             "url": url,
         }
-        return self.ms_client.http_request(method='POST', url_suffix=url_suffix, json_data=body)
+        return self.ms_client.http_request(method='POST', url_suffix=THREAT_ASSESSMENT_URL_PREFIX, json_data=body)
 
     def list_threat_assessment_requests(self, filters=None, order_by=None, sort_order=None, next_token=None):
-        url = 'informationProtection/threatAssessmentRequests'
         params = {}
         if next_token:
-            return self.ms_client.http_request(method='GET', url_suffix=url,
+            return self.ms_client.http_request(method='GET', url_suffix=THREAT_ASSESSMENT_URL_PREFIX,
                                                params={'$skipToken': next_token}, retries=1, status_list_to_retry=[405])
         if filters:
             params['$filter'] = filters
@@ -322,7 +318,7 @@ class MsGraphClient:
             if sort_order:
                 params['$orderby'] = f"{order_by} {sort_order}"
 
-        return self.ms_client.http_request(method='GET', url_suffix=url,
+        return self.ms_client.http_request(method='GET', url_suffix=THREAT_ASSESSMENT_URL_PREFIX,
                                            params=params, retries=1, status_list_to_retry=[405])
 
 
@@ -1519,7 +1515,6 @@ def create_file_assessment_request_command(args, client) -> PollResult | Command
                                                        content_data)
         request_id = result.get('id')
 
-        # request_id = "33e8c68f-9a57-4332-1739-08dbd2e880ba"
     demisto.debug(f"got request id: {request_id}")
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
@@ -1553,7 +1548,7 @@ def create_url_assessment_request_command(args, client: MsGraphClient) -> PollRe
                                                       args.get('category'),
                                                       args.get('url'))
         request_id = result.get('id')
-        # request_id = "9203569d-313e-420e-fb3d-08dbd25dafbe"
+
     result = client.get_threat_assessment_request_status(request_id)
     status = result.get('status')
     demisto.debug(f"status is : {status}")

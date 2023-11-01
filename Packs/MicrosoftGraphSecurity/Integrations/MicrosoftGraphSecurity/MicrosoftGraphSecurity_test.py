@@ -10,7 +10,7 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command, \
     create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command, \
     create_mail_assessment_request_command, create_email_file_request_command, create_file_assessment_request_command, \
-    create_url_assessment_request_command, list_threat_assessment_requests_command
+    create_url_assessment_request_command, list_threat_assessment_requests_command, get_message_user
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -693,3 +693,15 @@ def test_list_threat_assessment_requests_command(mocker):
     assert len(result[0].outputs) == 4
     assert result[1].outputs_prefix == 'MsGraph.AssessmentRequestNextToken'
     assert result[1].outputs == {'next_token': 'test_token'}
+
+
+@pytest.mark.parametrize('user, expected_result',
+                         [
+                             ('testuser@test.com', 'test user id'),
+                             ('test user id', 'test user id')
+                         ])
+def test_get_message_user(mocker, user, expected_result):
+    mocker.patch.object(client_mocker, "get_user_id",
+                        return_value={'value': [{"id": "test user id"}]})
+    message_user = get_message_user(client_mocker, user)
+    assert message_user == expected_result
