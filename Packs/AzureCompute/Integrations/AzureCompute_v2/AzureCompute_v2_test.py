@@ -240,14 +240,14 @@ def test_get_public_ip_details_command(mocker):
     ip_data = load_test_data('./test_data/get_public_ip_details_command.json')
     mocker.patch.object(client, 'get_public_ip_details', return_value=ip_data)
     command_results = get_public_ip_details_command(
-        client, {'resource_group': 'fake-resource-group', 'address_name': 'webserver-ip'})
+        client, {'resource_group': 'fake-resource-group', 'address_name': 'webserver-ip'}, {})
     assert command_results.to_context()['EntryContext'] == PUBLIC_IP_EC
 
 
 def test_get_public_ip_details_command_without_resource_group(mocker):
     ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
     mocker.patch.object(client, 'get_all_public_ip_details', return_value=ip_data)
-    command_results = get_public_ip_details_command(client, {'address_name': '1.1.1.1'})
+    command_results = get_public_ip_details_command(client, {'address_name': '1.1.1.1'}, {})
     assert command_results.to_context()['EntryContext'] == PUBLIC_IP_EC
 
 
@@ -255,7 +255,7 @@ def test_failure_get_public_ip_details_command_without_resource_group(mocker):
     ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
     mocker.patch.object(client, 'get_all_public_ip_details', return_value=ip_data)
     with pytest.raises(ValueError) as err:
-        get_public_ip_details_command(client, {'address_name': 'fake_name'})
+        get_public_ip_details_command(client, {'address_name': 'fake_name'}, {})
     if not err:
         raise AssertionError
     else:
@@ -291,5 +291,5 @@ def test_create_nic_command(mocker):
                                                   'nic_location': 'eastus', 'vnet_name': 'subnet_id',
                                                   'subnet_name': 'subnet_name', 'address_assignment_method': 'Static',
                                                   'private_ip_address': '10.0.0.5', 'ip_config_name': 'ipconfig1',
-                                                  'network_security_group': 'security_group_id'})
+                                                  'network_security_group': 'security_group_id'}, {})
     assert command_results.to_context()['EntryContext'] == CREATE_NIC_EC
