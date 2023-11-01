@@ -51,7 +51,7 @@ dependson:
   - AWS - EC2|||aws-ec2-authorize-security-group-egress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-ingress-rule
   - AWS - EC2|||aws-ec2-revoke-security-group-egress-rule
-dockerimage: demisto/python3:3.10.13.75921
+dockerimage: demisto/python3:3.10.13.78960
 enabled: true
 name: AWSRecreateSG
 runas: DBotWeakRole
@@ -65,3 +65,7 @@ tests:
 - No tests (auto formatted)
 engineinfo: {}
 runonce: false
+outputs:
+- contextPath: awssgrecreated
+  description: Sets the value to true or false if the security group is created.
+  type: boolean
