@@ -4,7 +4,8 @@ import argparse
 from pathlib import Path
 
 from Tests.Marketplace.marketplace_services import init_storage_client
-
+from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
 
 def create_empty_id_set_in_artifacts(private_id_set_path):
     empty_id_set: dict = {
@@ -48,20 +49,20 @@ def download_private_id_set_from_gcp(public_storage_bucket, storage_base_path):
     private_artifacts_server_type_path = '/home/runner/work/content-private/content-private/content/artifacts/server_type_XSOAR'
     private_id_set_path = f'{private_artifacts_server_type_path}/private_id_set.json'
     if os.path.exists(private_artifacts_server_type_path):
-        print(f'Directory: {private_artifacts_server_type_path} already exists.')  # noqa: T201
+        logging.info(f'Directory: {private_artifacts_server_type_path} already exists.')
     else:
-        print(f'Creating directory: {private_artifacts_server_type_path}')  # noqa: T201
+        logging.info(f'Creating directory: {private_artifacts_server_type_path}')
         Path(private_artifacts_server_type_path).mkdir(parents=True, exist_ok=True)
 
     is_private_id_set_file_exist = id_set_file_exists_in_bucket(public_storage_bucket, storage_id_set_path)
 
     if is_private_id_set_file_exist:
-        print(f'Downloading private_id_set from:{storage_id_set_path} to: {private_id_set_path}')  # noqa: T201
+        logging.info(f'Downloading private_id_set from:{storage_id_set_path} to: {private_id_set_path}')
         index_blob = public_storage_bucket.blob(storage_id_set_path)
         index_blob.download_to_filename(private_id_set_path)
 
     else:
-        print(f'Private id set file does not exist in bucket: {public_storage_bucket.name}.')  # noqa: T201
+        logging.info(f'Private id set file does not exist in bucket: {public_storage_bucket.name}.')
         create_empty_id_set_in_artifacts(private_id_set_path)
 
     return private_id_set_path if os.path.exists(private_id_set_path) else ''
@@ -93,6 +94,7 @@ def option_handler():
 
 
 def main():
+    install_logging('download_private_id_set.log', logger=logging)
     options = option_handler()
     service_account = options.service_account
     storage_client = init_storage_client(service_account)
