@@ -254,6 +254,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
 
     - section_start "Install Packs and run test-content" --collapsed
     - demisto-sdk upload -i Packs/Whois --insecure -z
+    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - !reference [.run_tests]
     - section_end "Install Packs and run test-content"
 
@@ -323,7 +324,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - section_end "Copy env results to artifacts folder"
 
     - section_start "Test Modeling Rules" --collapsed
-    - demisto-sdk upload -z -x -i Packs/SemperisDSP
+    - demisto-sdk upload -z -x -i Packs/SemperisDSP --insecure
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
@@ -338,6 +339,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - section_end "Download Entities"
 
     - section_start "Install Packs and run test-content" --collapsed
+    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - demisto-sdk upload -i Packs/Whois --insecure -z
     - !reference [.run_tests]
     - section_end "Install Packs and run test-content"
@@ -402,7 +404,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - demisto-sdk download -lf --insecure
     - demisto-sdk upload -i Packs/AzureSentinel --insecure -z
-    - demisto-sdk upload -i Packs/HelloWorld --insecure --no-zip
     - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
     - demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_IncidentField_Test.json --insecure
     - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
@@ -415,7 +416,14 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - section_end "Download Entities from XSOAR Instance"
 
+    # - section_start "Install Packs and run Test-Module" --collapsed
+    # - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    # - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    # - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    # - section_end "Install Packs and run Test-Module"
+
     - section_start "Install Packs and run test-content" --collapsed
+    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - demisto-sdk upload -i Packs/Whois --insecure -z
     - !reference [.run_tests]
     - section_end "Install Packs and run test-content"
