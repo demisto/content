@@ -64,6 +64,7 @@ class Client(BaseClient):
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
         if client_id and client_secret and auth_code:
+            # This case suggests the user tries to authenticate without using the oproxy
             self.client_id = client_id
             self.client_secret = client_secret
             self.auth_code = auth_code
@@ -85,7 +86,6 @@ class Client(BaseClient):
             None
         """
         integration_context = demisto.getIntegrationContext()
-        print(integration_context)
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
         valid_until = integration_context.get(EXPIRES_IN)
         if access_token and valid_until:
@@ -120,7 +120,7 @@ class Client(BaseClient):
         expires_in = int(response.get(EXPIRES_IN, MINUTES_60) or 0)
         if not self.is_oproxy:
             # Only in this case we do not get those params in the response
-            api_url = "https://api.nl.cdl.paloaltonetworks.com"
+            api_url = DEFAULT_API_URL
             instance_id = self.instance_id
         if not access_token or not api_url or not instance_id:
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
@@ -228,9 +228,6 @@ class Client(BaseClient):
                                                      retries=3,
                                                      backoff_factor=10,
                                                      status_list_to_retry=[400])
-                if not response.get('refresh_token'):
-                    # added to the response the refresh token in case it is not in the response, so later we will update the context with it
-                    response |= {'refresh_token': refresh_token}
             except DemistoException as e:
                 if re.match(BAD_REQUEST_REGEX, str(e)):
                     demisto.error('The request to retrieve the access token has failed with 400 status code.')
