@@ -72,6 +72,12 @@ configuration:
   type: 9
   required: false
   section: Connect
+- display: Default Resource Group Name
+  name: resource_group_name
+  type: 0
+  required: false
+  additionalinfo: This parameter can be overridden by the resource_group argument in any command.
+  section: Connect
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
@@ -111,7 +117,7 @@ name: Azure Security Center v2
 script:
   commands:
   - arguments:
-    - description: The name of the resource group within the user's subscription. The name is case insensitive.
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'"
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
@@ -145,7 +151,7 @@ script:
       description: The alert ID.
       type: string
   - arguments:
-    - description: The name of the resource group within the user's subscription. The name is case insensitive.
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'"
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
@@ -215,7 +221,7 @@ script:
       description: Objects that are related to the alert.
       type: string
   - arguments:
-    - description: The name of the resource group within the user's subscription. The name is case insensitive.
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'"
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
@@ -244,9 +250,8 @@ script:
       description: The alert ID.
       type: string
   - arguments:
-    - description: Resource group name.
+    - description: "Resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'"
       name: resource_group_name
-      required: true
     - default: true
       defaultValue: current
       description: Name of the Advanced Threat Detection setting.
@@ -272,9 +277,8 @@ script:
       description: Indicates whether the Advanced Threat Protection is enabled.
       type: string
   - arguments:
-    - description: Name of the resource group.
+    - description: "Name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'"
       name: resource_group_name
-      required: true
     - defaultValue: current
       description: Name of the Advanced Threat Detection setting. The default setting's name is 'current'.
       name: setting_name
@@ -355,7 +359,7 @@ script:
   - arguments:
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location.
       name: asc_location
-    - description: The name of the resource group within the user's subscription. The name is case insensitive.
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'"
       name: resource_group_name
     - description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
       name: subscription_id
