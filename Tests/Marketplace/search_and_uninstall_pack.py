@@ -1,26 +1,35 @@
 import argparse
 import ast
+import json
 import math
 import os
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
+from pathlib import Path
 from time import sleep
 from typing import Any
 
 import demisto_client
 
-from Tests.Marketplace.common import generic_request_with_retries, wait_until_not_updating, ALREADY_IN_PROGRESS
+from Tests.Marketplace.common import generic_request_with_retries, wait_until_not_updating, ALREADY_IN_PROGRESS, \
+    send_api_request_with_retries
 from Tests.Marketplace.configure_and_install_packs import search_and_install_packs_and_their_dependencies
 from Tests.configure_and_test_integration_instances import CloudBuild, get_custom_user_agent
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
 
+TEST_DATA_PATTERN = '*_testdata.json'
+DATASET_NOT_FOUND_ERROR_CODE = 599
+
+
 def check_if_pack_still_installed(client: demisto_client,
                                   pack_id: str,
                                   attempts_count: int = 3,
-                                  sleep_interval: int = 30):
+                                  sleep_interval: int = 30,
+                                  request_timeout: int = 300,
+                                  ):
     """
 
     Args:
@@ -28,6 +37,7 @@ def check_if_pack_still_installed(client: demisto_client,
        attempts_count (int): The number of attempts to install the packs.
        sleep_interval (int): The sleep interval, in seconds, between install attempts.
        pack_id: pack id to check id still installed on the machine.
+       request_timeout (int): The timeout per call to the server.
 
     Returns:
         True if the pack is still installed, False otherwise.
@@ -46,14 +56,16 @@ def check_if_pack_still_installed(client: demisto_client,
                                         method='GET',
                                         attempts_count=attempts_count,
                                         sleep_interval=sleep_interval,
-                                        success_handler=success_handler)
+                                        success_handler=success_handler,
+                                        request_timeout=request_timeout,
+                                        )
 
 
-def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
+def get_all_installed_packs(client: demisto_client, non_removable_packs: list):
     """
 
     Args:
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
 
     Returns:
@@ -73,7 +85,7 @@ def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
             installed_packs_ids_str = ', '.join(installed_packs_ids)
             logging.debug(
                 f'The following packs are currently installed from a previous build run:\n{installed_packs_ids_str}')
-            for pack in unremovable_packs:
+            for pack in non_removable_packs:
                 if pack in installed_packs_ids:
                     installed_packs_ids.remove(pack)
             return installed_packs_ids
@@ -86,17 +98,17 @@ def get_all_installed_packs(client: demisto_client, unremovable_packs: list):
         return None
 
 
-def uninstall_all_packs_one_by_one(client: demisto_client, hostname, unremovable_packs: list):
+def uninstall_all_packs_one_by_one(client: demisto_client, hostname, non_removable_packs: list):
     """ Lists all installed packs and uninstalling them.
     Args:
         client (demisto_client): The client to connect to.
         hostname (str): cloud hostname
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
 
     Returns (bool):
         A flag that indicates if the operation succeeded or not.
     """
-    packs_to_uninstall = get_all_installed_packs(client, unremovable_packs)
+    packs_to_uninstall = get_all_installed_packs(client, non_removable_packs)
     logging.info(f'Starting to search and uninstall packs in server: {hostname}, packs count to '
                  f'uninstall: {len(packs_to_uninstall)}')
     uninstalled_count = 0
@@ -122,6 +134,7 @@ def uninstall_pack(client: demisto_client,
                    pack_id: str,
                    attempts_count: int = 5,
                    sleep_interval: int = 60,
+                   request_timeout: int = 300,
                    ):
     """
 
@@ -130,6 +143,7 @@ def uninstall_pack(client: demisto_client,
         pack_id: packs id to uninstall
         attempts_count (int): The number of attempts to install the packs.
         sleep_interval (int): The sleep interval, in seconds, between install attempts.
+        request_timeout (int): The timeout per call to the server.
     Returns:
         Boolean - If the operation succeeded.
 
@@ -168,7 +182,9 @@ def uninstall_pack(client: demisto_client,
                                         sleep_interval=sleep_interval,
                                         should_try_handler=should_try_handler,
                                         success_handler=success_handler,
-                                        api_exception_handler=api_exception_handler)
+                                        api_exception_handler=api_exception_handler,
+                                        request_timeout=request_timeout
+                                        )
 
 
 def uninstall_packs(client: demisto_client, pack_ids: list):
@@ -198,10 +214,10 @@ def uninstall_packs(client: demisto_client, pack_ids: list):
     return True
 
 
-def uninstall_all_packs(client: demisto_client, hostname, unremovable_packs: list):
+def uninstall_all_packs(client: demisto_client, hostname, non_removable_packs: list):
     """ Lists all installed packs and uninstalling them.
     Args:
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
         hostname (str): cloud hostname
 
@@ -210,25 +226,25 @@ def uninstall_all_packs(client: demisto_client, hostname, unremovable_packs: lis
     """
     logging.info(f'Starting to search and uninstall packs in server: {hostname}')
 
-    packs_to_uninstall: list = get_all_installed_packs(client, unremovable_packs)
+    packs_to_uninstall: list = get_all_installed_packs(client, non_removable_packs)
     if packs_to_uninstall:
         return uninstall_packs(client, packs_to_uninstall)
     logging.debug('Skipping packs uninstallation - nothing to uninstall')
     return True
 
 
-def reset_core_pack_version(client: demisto_client, unremovable_packs: list):
+def reset_core_pack_version(client: demisto_client, non_removable_packs: list):
     """
     Resets core pack version to prod version.
 
     Args:
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
 
 
     """
     host = client.api_client.configuration.host.replace('https://api-', 'https://')  # disable-secrets-detection
-    _, success = search_and_install_packs_and_their_dependencies(pack_ids=unremovable_packs,
+    _, success = search_and_install_packs_and_their_dependencies(pack_ids=non_removable_packs,
                                                                  client=client,
                                                                  hostname=host,
                                                                  multithreading=False,
@@ -236,11 +252,11 @@ def reset_core_pack_version(client: demisto_client, unremovable_packs: list):
     return success
 
 
-def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_packs: list):
+def wait_for_uninstallation_to_complete(client: demisto_client, non_removable_packs: list):
     """
     Query if there are still installed packs, as it might take time to complete.
     Args:
-        unremovable_packs: list of packs that can't be uninstalled.
+        non_removable_packs: list of packs that can't be uninstalled.
         client (demisto_client): The client to connect to.
 
     Returns: True if all packs were uninstalled successfully
@@ -249,12 +265,12 @@ def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_pack
     retry = 0
     sleep_duration = 150
     try:
-        installed_packs = get_all_installed_packs(client, unremovable_packs)
+        installed_packs = get_all_installed_packs(client, non_removable_packs)
         # Monitoring when uninstall packs don't work
         installed_packs_amount_history, failed_uninstall_attempt_count = len(installed_packs), 0
         # new calculation for num of retries
         retries = math.ceil(len(installed_packs) / 2)
-        while len(installed_packs) > len(unremovable_packs):
+        while len(installed_packs) > len(non_removable_packs):
             if retry > retries:
                 raise Exception('Waiting time for packs to be uninstalled has passed, there are still installed '
                                 'packs. Aborting.')
@@ -263,7 +279,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client, unremovable_pack
             logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
                          f'packs installed. Sleeping for {sleep_duration} seconds.')
             sleep(sleep_duration)
-            installed_packs = get_all_installed_packs(client, unremovable_packs)
+            installed_packs = get_all_installed_packs(client, non_removable_packs)
 
             if len(installed_packs) == installed_packs_amount_history:
                 # did not uninstall any pack
@@ -325,19 +341,105 @@ def sync_marketplace(client: demisto_client,
     return success
 
 
+def delete_datasets(dataset_names, base_url, api_key, auth_id):
+    """
+    Return dataset names from testdata files.
+    Args:
+        dataset_names (set):dataset names to delete
+        base_url (str): The base url of the machine.
+        api_key (str): API key of the machine.
+        auth_id (str): authentication parameter for the machine.
+    Returns:
+        Boolean - If the operation succeeded.
+    """
+    def should_try_handler(response) -> Any:
+        if response is not None and response.status_code == DATASET_NOT_FOUND_ERROR_CODE:
+            logging.info("Failed to delete dataset, probably it is not exist on the machine.")
+            return False
+        return True
+
+    success = True
+    for dataset in dataset_names:
+        headers = {
+            "x-xdr-auth-id": str(auth_id),
+            "Authorization": api_key,
+            "Content-Type": "application/json",
+        }
+        body = {'dataset_name': dataset}
+        success &= send_api_request_with_retries(
+            base_url=base_url,
+            retries_message='Retrying to delete dataset',
+            success_message=f'Successfully deleted dataset: "{dataset}".',
+            exception_message=f'Failed to delete dataset: "{dataset}"',
+            prior_message=f'Trying to delete dataset: "{dataset}"',
+            endpoint='/public_api/v1/xql/delete_dataset',
+            method='POST',
+            headers=headers,
+            accept='application/json',
+            body=json.dumps(body),
+            should_try_handler=should_try_handler,
+        )
+    return success
+
+
+def get_datasets_to_delete(modeling_rules_file: str):
+    """
+    Given a path to a file containing a list of modeling rules paths,
+    returns a list of their corresponding datasets that should be deleted.
+    Args:
+        modeling_rules_file (str): A path to a file holding the list of modeling rules collected for testing in this build.
+    Returns:
+        Set - datasets to delete.
+    """
+    datasets_to_delete = set()
+    if Path(modeling_rules_file).is_file():
+        with open(modeling_rules_file) as f:
+            for modeling_rule_to_test in f.readlines():
+                modeling_rule_path = Path(f'Packs/{modeling_rule_to_test.strip()}')
+                test_data_matches = list(modeling_rule_path.glob(TEST_DATA_PATTERN))
+                if test_data_matches:
+                    modeling_rule_testdata_path = test_data_matches[0]
+                    test_data = json.loads(modeling_rule_testdata_path.read_text())
+                    for data in test_data.get('data', []):
+                        dataset_name = data.get('dataset')
+                        if dataset_name:
+                            datasets_to_delete.add(dataset_name)
+    return datasets_to_delete
+
+
+def delete_datasets_by_testdata(base_url, api_key, auth_id, dataset_names):
+    """
+    Delete all datasets that the build will test in this job.
+
+    Args:
+        base_url (str): The base url of the cloud machine.
+        api_key (str): API key of the machine.
+        auth_id (str): authentication parameter for the machine.
+        dataset_names (set): datasets to delete
+
+    Returns:
+        Boolean - If the operation succeeded.
+    """
+    logging.info("Starting to handle delete datasets from cloud instance.")
+    logging.debug(f'Collected datasets to delete {dataset_names=}.')
+    success = delete_datasets(dataset_names=dataset_names, base_url=base_url, api_key=api_key, auth_id=auth_id)
+    return success
+
+
 def options_handler() -> argparse.Namespace:
     """
 
     Returns: options parsed from input arguments.
 
     """
-    parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
+    parser = argparse.ArgumentParser(description='Utility for cleaning Cloud machines.')
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
     parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
-    parser.add_argument('--unremovable_packs', help='List of packs that cant be removed.')
+    parser.add_argument('--non-removable-packs', help='List of packs that cant be removed.')
     parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
+    parser.add_argument('--modeling_rules_to_test_files', help='List of modeling rules test data to check.', required=True)
 
     options = parser.parse_args()
 
@@ -359,15 +461,21 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
     # We are syncing marketplace since we are copying production bucket to build bucket and if packs were configured
     # in earlier builds they will appear in the bucket as it is cached.
     success = sync_marketplace(client=client)
-    unremovable_packs = options.unremovable_packs.split(',')
-    success &= reset_core_pack_version(client, unremovable_packs)
+    non_removable_packs = options.non_removable_packs.split(',')
+    success &= reset_core_pack_version(client, non_removable_packs)
     if success:
         if options.one_by_one:
-            success = uninstall_all_packs_one_by_one(client, cloud_machine, unremovable_packs)
+            success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
         else:
-            success = uninstall_all_packs(client, cloud_machine, unremovable_packs) and \
-                wait_for_uninstallation_to_complete(client, unremovable_packs)
+            success = uninstall_all_packs(client, cloud_machine, non_removable_packs) and \
+                wait_for_uninstallation_to_complete(client, non_removable_packs)
     success &= sync_marketplace(client=client)
+    success &= delete_datasets_by_testdata(base_url=base_url,
+                                           api_key=api_key,
+                                           auth_id=xdr_auth_id,
+                                           dataset_names=get_datasets_to_delete(
+                                               modeling_rules_file=options.modeling_rules_to_test_files)
+                                           )
     return success
 
 

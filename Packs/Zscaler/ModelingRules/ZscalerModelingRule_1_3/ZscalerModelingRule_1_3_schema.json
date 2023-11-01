@@ -132,14 +132,6 @@
           "type": "string",
           "is_array": false
         },
-        "spriv": {
-          "type": "string",
-          "is_array": false
-        },
-        "spriv": {
-          "type": "string",
-          "is_array": false
-        },
         "in": {
           "type": "string",
           "is_array": false

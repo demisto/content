@@ -1734,10 +1734,15 @@ def user_roles_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def users_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    usernames = argToList(args.get('usernames'))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', 'false'))
 
     response_items = client.users_list_request()
+    # reduce response to hold only items that are associated with the provided usernames
+    if usernames and response_items:
+        response_items = [item for item in response_items if item.get('username') in usernames]
+
     total_response_amount = len(response_items)
     if not all_results and limit and response_items:
         demisto.debug(f'Returning results only up to {limit=}, from {len(response_items)} results returned.')

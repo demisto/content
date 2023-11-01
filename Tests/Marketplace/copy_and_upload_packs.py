@@ -480,7 +480,7 @@ def main():
 
         if marketplace == XSIAM_MP:
             task_status = pack.copy_dynamic_dashboard_images(
-                production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
+                production_bucket, build_bucket, pc_uploaded_images, production_base_path)
             if not task_status:
                 pack.status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
                 pack.cleanup()

@@ -147,7 +147,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.75921
   commands:
   - name: domain
     description: Gets a quick indicator of the risk associated with a domain.
@@ -2863,7 +2863,7 @@ script:
       description: Recorded Future threat actor links by type.
       type: string
   - name: recordedfuture-threat-links
-    description: Search links
+    description: Search links.
     arguments:
     - name: entity_type
       required: false
@@ -3008,7 +3008,7 @@ script:
       description: Recorded Future Detection rules file_name.
       type: String
   - name: recordedfuture-collective-insight
-    description: Post detection to collective insight
+    description: Post detection to collective insight.
     arguments:
     - name: entity_type
       required: true

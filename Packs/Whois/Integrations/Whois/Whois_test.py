@@ -2,6 +2,7 @@ import datetime
 import pickle
 import Whois
 import demistomock as demisto
+import pathlib
 import pytest
 import subprocess
 import time
@@ -340,61 +341,24 @@ def test_whois_with_verbose(args, expected_res, mocker: MockerFixture):
 
 
 def test_parse_nic_contact():
-    data = ["%%\n%% This is the AFNIC Whois server.\n%%\n%% complete date format : YYYY-MM-DDThh:mm:ssZ\n%% short date "
-            "format    : DD/MM\n%% version              : FRNIC-2.5\n%%\n%% Rights restricted by copyright.\n%% See "
-            "https://www.afnic.fr/en/products-and-services/services/whois/whois-special-notice/\n%%\n%% Use '-h' option"
-            "to obtain more information about this service.\n%%\n%% [1111 REQUEST] >> google.fr\n%%\n%% RL "
-            "Net [##########] - RL IP [#########.]\n%%\n\ndomain:      google.fr\nstatus:      ACTIVE\nhold:        "
-            "NO\nholder-c:    GIHU100-FRNIC\nadmin-c:     GIHU101-FRNIC\ntech-c:      MI3669-FRNIC\nzone-c:      "
-            "NFC1-FRNIC\nnsl-id:      NSL4386-FRNIC\nregistrar:   MARKMONITOR Inc.\nExpiry Date: 2022-12-30T17:16"
-            ":48Z\ncreated:     2000-07-26T22:00:00Z\nlast-update: 2022-08-17T16:39:47Z\nsource:      FRNIC\n\nns-list:"
-            "    NSL4386-FRNIC\nnserver:     ns1.google.com\nnserver:     ns2.google.com\nnserver:     ns3.google.com\n"
-            "nserver:   ns4.google.com\nsource:      FRNIC\n\nregistrar:   MARKMONITOR Inc.\ntype:        Isp Option "
-            "\naddress:     2150 S. Bonito Way, Suite 150\naddress:     ID 83642 MERIDIAN\ncountry:     US\n"
-            "phone:       +1 208 389 5740\nfax-no:      +1 208 389 5771\ne-mail:      registry.admin@markmonitor.com\n"
-            "website:    http://www.markmonitor.com\nanonymous:   NO\nregistered:  2002-01-10T12:00:00Z\nsource:      "
-            "FRNIC\n\nnic-hdl:     GIHU100-FRNIC\ntype:        ORGANIZATION\ncontact:     Google Ireland Holdings "
-            "Unlimited Company\naddress:     Google Ireland Holdings Unlimited Company\naddress:     70 Sir John "
-            "Rogerson's Quay\naddress:     2 Dublin\naddress:     Dublin\ncountry:     IE\nphone:       "
-            "+353.14361000\ne-mail:      dns-admin@google.com\nregistrar:   MARKMONITOR Inc.\nchanged:    "
-            " 2018-03-02T18:03:31Z nic.fr\nanonymous:   NO\nobsoleted:   NO\neligstatus:  not identified\n"
-            "reachstatus: not identified\nsource:      FRNIC\n\nnic-hdl:     GIHU101-FRNIC\ntype:        ORGANIZATION"
-            "\ncontact:     Google Ireland Holdings Unlimited Company\naddress:     70 Sir John Rogerson's Quay\n"
-            "address:     2 Dublin\ncountry:     IE\nphone:       +353.14361000\ne-mail:      dns-admin@google.com\n"
-            "registrar:   MARKMONITOR Inc.\nchanged:     2018-03-02T17:52:06Z nic.fr\nanonymous:   NO\nobsoleted:  "
-            " NO\neligstatus:  not identified\nreachmedia:  email\nreachstatus: ok\nreachsource: REGISTRAR\nreachdate: "
-            "2018-03-02T17:52:06Z\nsource:      FRNIC\n\nnic-hdl:     MI3669-FRNIC\ntype:        ORGANIZATION\ncontact:"
-            "MarkMonitor Inc.\naddress:     2150 S. Bonito Way, Suite 150\naddress:     83642 Meridian\naddress:     "
-            "ID\ncountry:     US\nphone:       +1.2083895740\nfax-no:      +1.2083895771\ne-mail:      "
-            "ccops@markmonitor"
-            ".com\nregistrar:   MARKMONITOR Inc.\nchanged:     2021-10-05T15:17:57Z nic.fr\nanonymous:   NO\n"
-            "obsoleted:   NO\neligstatus:  ok\neligsource:  REGISTRAR\neligdate:    2021-10-05T15:17:56Z\nreachmedia: "
-            "email\nreachstatus: ok\nreachsource: REGISTRAR\nreachdate:   2021-10-05T15:17:56Z\nsource:      FRNIC\n\n"]
+    with open('./test_data/whois_response.txt') as f:
+        data = [f.read()]
 
     res = Whois.parse_nic_contact(data)
 
     expected = [{'handle': 'GIHU100-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
                  'street1': 'Google Ireland Holdings Unlimited Company', 'street2': "70 Sir John Rogerson's Quay",
-                 'street3': '2 Dublin', 'phone': None, 'fax': None, 'email': None,
-                 'changedate': '2018-03-02T18:03:31Z nic.fr'},
-                {'handle': 'GIHU101-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
-                 'street1': "70 Sir John Rogerson's Quay", 'street2': '2 Dublin', 'street3': None, 'phone': None,
-                 'fax': None, 'email': None, 'changedate': '2018-03-02T17:52:06Z nic.fr'},
+                 'street3': '2 Dublin', 'country': 'IE', 'phone': '+353.14361000', 'fax': None, 'email': 'email@google.com',
+                 'changedate': '2022-10-15T05:41:14.918179Z', 'registrar': 'MARKMONITOR Inc.', 'street4': None, },
                 {'handle': 'MI3669-FRNIC', 'type': 'ORGANIZATION', 'name': 'MarkMonitor Inc.',
-                 'street1': '2150 S. Bonito Way, Suite 150', 'street2': '83642 Meridian', 'street3': 'ID',
-                 'phone': None, 'fax': None, 'email': None, 'changedate': '2021-10-05T15:17:57Z nic.fr'},
-                {'handle': 'GIHU100-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
-                 'street1': 'Google Ireland Holdings Unlimited Company', 'street2': "70 Sir John Rogerson's Quay",
-                 'street3': '2 Dublin', 'street4': 'Dublin', 'country': 'IE', 'phone': '+353.14361000', 'fax': None,
-                 'email': 'dns-admin@google.com', 'changedate': '2018-03-02T18:03:31Z nic.fr'},
+                 'street1': '2150 S. Bonito Way, Suite 150', 'street2': '83642 Meridian', 'street3': None, 'street4': None,
+                 'phone': '+1.2083895740', 'fax': '+1.2083895771', 'email': 'email@markmonitor.com',
+                 'changedate': '2023-09-07T07:32:23.899353Z', 'country': 'US', 'registrar': 'MARKMONITOR Inc.'},
                 {'handle': 'GIHU101-FRNIC', 'type': 'ORGANIZATION', 'name': 'Google Ireland Holdings Unlimited Company',
                  'street1': "70 Sir John Rogerson's Quay", 'street2': '2 Dublin', 'street3': None, 'street4': None,
-                 'country': 'IE', 'phone': '+353.14361000', 'fax': None, 'email': 'dns-admin@google.com',
-                 'changedate': '2018-03-02T17:52:06Z nic.fr'},
-                {'handle': 'MI3669-FRNIC', 'type': 'ORGANIZATION', 'name': 'MarkMonitor Inc.',
-                 'street1': '2150 S. Bonito Way, Suite 150', 'street2': '83642 Meridian', 'street3': 'ID',
-                 'street4': None, 'country': 'US', 'phone': '+1.2083895740', 'fax': '+1.2083895771',
-                 'email': 'ccops@markmonitor.com', 'changedate': '2021-10-05T15:17:57Z nic.fr'}]
+                 'phone': '+353.14361000', 'fax': None, 'email': 'email@google.com', 'changedate': None, 'country': 'IE',
+                 'registrar': 'MARKMONITOR Inc.'}]
+
     assert res == expected
 
 
@@ -669,3 +633,20 @@ def test_domain_command(args: dict[str, Any], expected_res, mocker: MockerFixtur
         reliability='B - Usually reliable'
     )
     assert len(result) == expected_res
+
+
+def test_parse_nic_contact_new_regex():
+    """
+    Given:
+        - Data fetched from the API.
+    When:
+        - calling the whois/domain command.
+    Then:
+        - validate that the data extracted without timeout.
+    """
+    from Whois import parse_nic_contact
+    data = pathlib.Path('test_data/whois_response_text.txt').read_text()
+    res = parse_nic_contact([data])
+    assert len(res) == 2
+    assert any(entry.get('email') == 'test@test.net' for entry in res)
+    assert any(entry.get('country') == 'TEST' for entry in res)

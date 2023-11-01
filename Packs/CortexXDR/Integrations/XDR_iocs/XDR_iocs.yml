@@ -168,7 +168,7 @@ script:
       defaultValue: 'false'
       description: |-
         For first sync, set to true.
-        (do NOT run this twice!)
+        (do NOT run this twice!).
       name: firstTime
       predefined:
       - 'true'
@@ -176,7 +176,7 @@ script:
     description: Sync your IOC with Cortex XDR and delete the old.
     name: xdr-iocs-sync
   - arguments:
-    - description: IOCs to push. leave empty to push all recently modified IOCs.the indicators
+    - description: IOCs to push. leave empty to push all recently modified IOCs.the indicators.
       isArray: true
       name: indicator
     description: Push modified IOCs to Cortex XDR.
@@ -203,7 +203,7 @@ script:
       required: true
     description: Disables IOCs in the XDR server.
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.75921
   feed: true
   runonce: false
   script: '-'

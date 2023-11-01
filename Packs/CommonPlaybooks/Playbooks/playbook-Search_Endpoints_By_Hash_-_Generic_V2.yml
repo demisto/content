@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 0
+          "x": 410,
+          "y": 10
         }
       }
     note: false
@@ -210,7 +210,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -361,14 +361,18 @@ tasks:
       id: 54f36ae2-15fa-42cb-8b77-62e48c8e50c4
       version: -1
       name: Search Endpoints By Hash - Carbon Black Response V2
+      description: Hunt for malicious indicators using Carbon Black
       playbookName: Search Endpoints By Hash - Carbon Black Response V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "12"
+    scriptarguments:
+      Hash:
+        complex:
+          root: inputs.MD5Hash
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -442,10 +446,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 875,
+        "height": 865,
         "width": 1970,
         "x": -460,
-        "y": 0
+        "y": 10
       }
     }
   }
