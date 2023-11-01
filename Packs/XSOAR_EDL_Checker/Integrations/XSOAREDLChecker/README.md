@@ -1,5 +1,6 @@
-Checks an XSOAR hosted EDL to make sure it's returning a valid response.   Supports PAN-OS (text), CSV, or JSON EDLs.
-This integration was integrated and tested with version xx of XSOAR EDL Checker.
+Checks an XSOAR hosted EDL to make sure it's returning a valid response. Supports PAN-OS (text), CSV, or JSON EDLs.
+
+This integration was integrated and tested with version 6.12 and 8.4 of Cortex XSOAR, and version 3.2.12 of the Generic Export Indicator Service.
 
 ## Configure XSOAR EDL Checker on Cortex XSOAR
 
