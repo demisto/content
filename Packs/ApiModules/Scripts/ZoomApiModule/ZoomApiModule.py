@@ -81,7 +81,7 @@ class Zoom_Client(BaseClient):
                                        auth=(self.bot_client_id, self.bot_client_secret))
         return token_res.get('access_token')
 
-    def get_oauth_token(self, bot_client=False, client=False, force_gen_new_token=False):
+    def get_oauth_token(self, force_gen_new_token=False):
         """
             Retrieves the token from the server if it's expired and updates the global HEADERS to include it
 

@@ -64,7 +64,7 @@ configuration:
   type: 8
   required: false
 - display: Certificate (Required for HTTPS)
-  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
+  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are supported only using engine.
   name: certificate
   type: 12
   section: Connect
