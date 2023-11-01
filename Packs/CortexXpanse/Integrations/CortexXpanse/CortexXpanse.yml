@@ -423,7 +423,7 @@ script:
       name: lte_creation_time
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
       name: gte_creation_time
-    - description: Comma-separated list of integers of the case (Incident) ID.
+    - description: Comma-separated list of case (incident) IDs.
       name: case_id_list
     - description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
       name: sort_by_creation_time
