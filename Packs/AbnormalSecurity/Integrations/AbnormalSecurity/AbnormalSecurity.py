@@ -89,7 +89,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_details_of_a_threat_request(self, threat_id, subtenant):
+    def get_details_of_a_threat_request(self, threat_id, subtenant=None):
         headers = self._headers
         params = assign_params(subtenant=subtenant)
 
@@ -97,7 +97,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_details_of_an_abnormal_case_request(self, case_id, subtenant):
+    def get_details_of_an_abnormal_case_request(self, case_id, subtenant=None):
         headers = self._headers
         params = assign_params(subtenant=subtenant)
 
@@ -730,29 +730,52 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
     return command_results
 
 
-def generate_threat_incidents(threats, current_iso_format_time):
+def generate_threat_incidents(client, threats, current_iso_format_time):
     incidents = []
     for threat in threats:
-        incident = {"dbotMirrorId": str(threat["threatId"]), "name": "Threat", "occurred": current_iso_format_time,
-                    'details': "Threat", "rawJSON": json.dumps(threat)}
+        threat_details = None
+        try:
+            threat_details = client.get_details_of_a_threat_request(threat["threatId"])
+        except Exception as e:
+            logging.error(f"Failed to fetch details for threat {threat}: {e}")
+
+        incident = {
+            "dbotMirrorId": str(threat["threatId"]),
+            "name": "Threat",
+            "occurred": current_iso_format_time,
+            "rawJSON": json.dumps(threat_details.get('messages', [])) if threat_details else {}
+        }
         incidents.append(incident)
+
     return incidents
 
 
-def generate_abuse_campaign_incidents(campaigns, current_iso_format_time):
+def generate_abuse_campaign_incidents(client, campaigns, current_iso_format_time):
     incidents = []
     for campaign in campaigns:
+        campaign_details = None
+        try:
+            campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignID"])
+        except Exception as e:
+            logging.error(f"Failed to fetch details for campaign {campaign}: {e}")
+
         incident = {"dbotMirrorId": str(campaign["campaignId"]), "name": "Abuse Campaign", "occurred": current_iso_format_time,
-                    'details': "Abuse Campaign", "rawJSON": json.dumps(campaign)}
+                    'details': "Abuse Campaign", "rawJSON": json.dumps(campaign_details) if campaign_details else {}}
         incidents.append(incident)
     return incidents
 
 
-def generate_account_takeover_cases_incidents(cases, current_iso_format_time):
+def generate_account_takeover_cases_incidents(client, cases, current_iso_format_time):
     incidents = []
     for case in cases:
+        case_details = None
+        try:
+            case_details = client.get_details_of_an_abnormal_case_request(case["caseId"])
+        except Exception as e:
+            logging.error(f"Failed to fetch details for case {case}: {e}")
+
         incident = {"dbotMirrorId": str(case["caseId"]), "name": "Account Takeover Case", "occurred": current_iso_format_time,
-                    'details': case['description'], "rawJSON": json.dumps(case)}
+                    'details': case['description'], "rawJSON": json.dumps(case_details) if case_details else {}}
         incidents.append(incident)
     return incidents
 
@@ -783,29 +806,30 @@ def fetch_incidents(
         last_fetch = last_run.get("last_fetch", first_fetch_time)
         last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
         last_fetch = last_fetch_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        last_fetch = "2023-05-11T01:01:01Z"
 
         current_datetime = datetime.utcnow().astimezone(timezone.utc)
         current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
         all_incidents = []
 
         if fetch_threats:
-            threats_filter = f"receivedTime gte {last_fetch}"
+            threats_filter = f"receivedTime gte {last_fetch} lte 2023-06-30T01:01:01Z"
             threats_response = client.get_a_list_of_threats_request(filter_=threats_filter, page_size=100)
-            all_incidents += generate_threat_incidents(threats_response.get('threats', []), current_iso_format_time)
+            all_incidents += generate_threat_incidents(client, threats_response.get('threats', []), current_iso_format_time)
 
         if fetch_abuse_campaigns:
-            abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
+            abuse_campaigns_filter = f"lastReportedTime gte {last_fetch} lte 2023-06-30T01:01:01Z"
             abuse_campaigns_response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
                 filter_=abuse_campaigns_filter, page_size=100)
             all_incidents += generate_abuse_campaign_incidents(abuse_campaigns_response.get('campaigns', []),
                                                                current_iso_format_time)
 
         if fetch_account_takeover_cases:
-            account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
+            account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch} lte 2023-06-30T01:01:01Z"
             account_takeover_cases_response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
                 filter_=account_takeover_cases_filter, page_size=100)
             all_incidents += generate_account_takeover_cases_incidents(
-                account_takeover_cases_response.get('cases', []), current_iso_format_time)
+                client, account_takeover_cases_response.get('cases', []), current_iso_format_time)
 
     except Exception as e:
         logging.error(f"Failed fetching incidents: {e}")
