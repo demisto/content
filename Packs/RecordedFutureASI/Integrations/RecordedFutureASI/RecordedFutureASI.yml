@@ -25,8 +25,8 @@ configuration:
   name: credentials
   type: 9
   required: false
-  displaypassword: Project ID
-  displayusername: API Key
+  displayusername: Project ID
+  displaypassword: API Key
 - display: Incident type
   name: incidentType
   type: 13
