@@ -568,7 +568,7 @@ script:
       description: IP address.
       type: String
     - contextPath: IP.Geo.Country
-      description: The country in which the IP address is located.
+      description: 'The country in which the IP address is located.'
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -2730,8 +2730,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     description: Returns information about each alert ID.
     name: xdr-get-cloud-original-alerts
     outputs:
@@ -3465,7 +3465,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.13.77674
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   script: ''
   subtype: python3
