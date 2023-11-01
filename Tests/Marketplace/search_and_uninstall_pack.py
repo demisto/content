@@ -412,7 +412,7 @@ def delete_datasets_by_testdata(base_url, api_key, auth_id, dataset_names):
     Delete all datasets that the build will test in this job.
 
     Args:
-        base_url (str): The base url of the machine.
+        base_url (str): The base url of the cloud machine.
         api_key (str): API key of the machine.
         auth_id (str): authentication parameter for the machine.
         dataset_names (set): datasets to delete
