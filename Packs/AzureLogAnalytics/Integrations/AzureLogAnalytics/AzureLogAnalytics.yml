@@ -276,11 +276,19 @@ script:
     - description: Log query written in KQL to retrieve data.
       name: query
       required: true
-    - description: Start of the time range to search.
+    - description: Start of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". default is 1 day ago.
       name: start_search_time
-    - description: End of the time range to search.
+      defaultValue: 1 day ago
+    - description: End of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". default is now.
       name: end_search_time
-    - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution.
+      defaultValue: now
+    - description: The timeout in seconds until polling ends.
+      name: timeout
+      defaultValue: '600'
+    - description: The interval in seconds between each poll.
+      name: interval
+      defaultValue: '60'
+    - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. This argument is for the dev, not for the user.
       name: first_run
       defaultValue: true
       hidden: true
@@ -290,6 +298,128 @@ script:
     polling: true
     description: Run a search job to fetch records from large datasets into a new search results table in your workspace.
     name: azure-log-analytics-run-search-job
+  - arguments: 
+    - description: "The name of the table. Example value: AuditLogs_SRCH."
+      name: table_name
+    description: Gets a Log Analytics workspace table.
+    name: azure-log-analytics-get-search-job
+    outputs:
+    - contextPath: AzureLogAnalytics.SearchJob.systemData.createdBy
+      description: The identity that created the resource.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.systemData.createdAt
+      description: The timestamp of resource creation (UTC).
+      type: Date
+    - contextPath: AzureLogAnalytics.SearchJob.properties.resultStatistics.progress
+      description: Search job completion percentage.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.resultStatistics.ingestedRecords
+      description: The number of rows that were returned by the search job.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.resultStatistics.scannedGb
+      description: 'Search job: Amount of scanned data.'
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.query
+      description: Search job query.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.description
+      description: Search job Description.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.limit
+      description: Limit the search job to return up to specified number of rows.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.startSearchTime
+      description: The timestamp to start the search from (UTC).
+      type: Date
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.endSearchTime
+      description: The timestamp to end the search by (UTC).
+      type: Date
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.sourceTable
+      description: The table used in the search job.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.name
+      description: Table name.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableSubType
+      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any | Classic | DataCollectionRuleBased For more info see in the readme file
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableType
+      description: Table's creator.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.displayName
+      description: Table display name.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.description
+      description: Table description.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.columns
+      description: A list of table custom columns.
+      type: List
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isHidden
+      description: Is column hidden.
+      type: Boolean
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.name
+      description: Column name.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.type
+      description: Column data type. (bool | datetime | dynamic | guid | int | long | real | string)
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint
+      description: Column data type logical hint. (armPath | guid | ip | uri) for more info see in the readme file.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.displayName
+      description: Column display name.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.description
+      description: Column description.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isDefaultDisplay
+      description: Is displayed by default.
+      type: Boolean
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.categories
+      description: Table category.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.labels
+      description: Table labels.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.source
+      description: Table's creator. (customer | microsoft)
+      type: String 
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.solutions
+      description: List of solutions the table is affiliated with
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.provisioningState
+      description: Table's current provisioning state. (Deleting | InProgress | Succeeded | Updating) If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.retentionInDays
+      description: The table retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.totalRetentionInDays
+      description: The table total retention in days, between 4 and 2556. Setting this property to -1 will default to table retention.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.archiveRetentionInDays
+      description: The table data archive retention in days. Calculated as (totalRetentionInDays-retentionInDays)
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.retentionInDaysAsDefault
+      description: True - Value originates from workspace retention in days, False - Customer specific.
+      type: Boolean
+    - contextPath: AzureLogAnalytics.SearchJob.properties.totalRetentionInDaysAsDefault
+      description: True - Value originates from retention in days, False - Customer specific.
+      type: Boolean
+    - contextPath: AzureLogAnalytics.SearchJob.properties.plan
+      description: Instruct the system how to handle and charge the logs ingested to this table.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.id
+      description: Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.name
+      description: The name of the resource
+      type: String
+  - arguments: 
+    - description: "The name of the table. Example value: AuditLogs_SRCH."
+      name: table_name
+    description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
+    name: azure-log-analytics-delete-search-job
   dockerimage: demisto/crypto:1.0.0.79610
   runonce: false
   script: '-'

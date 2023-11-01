@@ -3,13 +3,13 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from MicrosoftApiModule import *  # noqa: E402
-from json import JSONDecodeError
 
 ''' CONSTANTS '''
 
 APP_NAME = 'ms-azure-log-analytics'
-
-API_VERSION = "2021-12-01-preview"  # '2021-06-01'
+API_VERSION = "2022-10-01"
+ISO_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+TABLE_NAME_SUFFIX = "_SRCH"
 
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
@@ -17,7 +17,6 @@ AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access t
 SAVED_SEARCH_HEADERS = [
     'etag', 'id', 'category', 'displayName', 'functionAlias', 'functionParameters', 'query', 'tags', 'version', 'type'
 ]
-PARAMS = demisto.params()
 LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
 AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
 AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation'
@@ -73,7 +72,7 @@ class Client:
                                           resource=resource,
                                           timeout=timeout)
 
-        if res.status_code in (200, 204) and not res.text:
+        if res.status_code in (200, 202, 204) and not res.text:
             return res
 
         res_json = res.json()
@@ -91,6 +90,20 @@ class Client:
 ''' INTEGRATION HELPER METHODS '''
 
 
+def validate_params(refresh_token, managed_identities_client_id, client_credentials, enc_key, self_deployed,
+                    certificate_thumbprint, private_key):
+    if not refresh_token:
+        raise DemistoException('Token / Tenant ID must be provided.')
+    if not managed_identities_client_id:
+        if client_credentials and not enc_key:
+            raise DemistoException("Client Secret must be provided for client credentials flow.")
+        elif not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+
+
 def format_query_table(table: dict[str, Any]):
     name = table.get('name')
     columns = [column.get('name') for column in table.get('columns', [])]
@@ -100,16 +113,6 @@ def format_query_table(table: dict[str, Any]):
     ]
 
     return name, columns, data
-
-
-def query_output_to_readable(tables):  # TODO no use
-    tables_markdown = [tableToMarkdown(name=name,
-                                       t=data,
-                                       headers=columns,
-                                       headerTransform=pascalToSpace,
-                                       removeNull=True) for name, columns, data in tables]
-    readable_output = '## Query Results\n' + '\n'.join(tables_markdown)
-    return readable_output
 
 
 def flatten_saved_search_object(saved_search_obj: dict[str, Any]) -> dict[str, Any]:
@@ -242,7 +245,6 @@ def list_saved_searches_command(client: Client, args: dict[str, Any]) -> Command
 def get_saved_search_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
     saved_search_id = args['saved_search_id']
     url_suffix = f'/savedSearches/{saved_search_id}'
-
     response = client.http_request('GET', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
     output = flatten_saved_search_object(response)
 
@@ -315,39 +317,72 @@ def delete_saved_search_command(client: Client, args: dict[str, Any]) -> str:
     return f'Successfully deleted the saved search {saved_search_id}.'
 
 
-def get_search_job_status(client: Client, table_name: str) -> str:
-    url_suffix = f"/tables/{table_name}_SRCH"
+def get_search_job(client: Client, table_name: str) -> dict:
+    url_suffix = f"/tables/{table_name}"
     response = client.http_request(
         'GET',
         url_suffix,
-        resource=AZURE_MANAGEMENT_RESOURCE,
-        timeout=60
+        resource=AZURE_MANAGEMENT_RESOURCE
     )
 
-    return response["properties"]["provisioningState"]
+    return response
 
 
 @polling_function(
     name="azure-log-analytics-run-search-job",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", 60),),
+    interval=arg_to_number(demisto.args().get("interval", 60)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     requires_polling_arg=False,  # means it will always default to poll
 )
 def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
-    table_name = args['table_name']
+    """
+    Run a search job command in Azure Log Analytics and handle polling for the job's status.
+    Note: The argument `first_run` is `hidden: true` in the yml file,
+            and is used to determine if this is the first time the function runs.
+
+    Args:
+        args (dict): A dictionary containing the command arguments, including 'table_name', 'query',
+                     'limit', 'start_search_time', 'end_search_time', and 'first_run'.
+        client (Client): An instance of the Azure Log Analytics client.
+
+    Returns:
+        PollResult: A PollResult object indicating whether the polling should continue and the response
+                    to return.
+
+    This function handles the execution of a search job command in Azure Log Analytics. It supports polling
+    to check the status of the job. The behavior depends on whether it's the first run or a subsequent run:
+
+    - First Run:
+        - Validates the 'table_name' to ensure it ends with the appropriate suffix.
+        - Sends a 'PUT' request to create the search job using the provided parameters.
+        - Handles exceptions related to job existence.
+        - Returns a PollResult indicating to continue polling for job status.
+
+    - Subsequent Runs:
+        - Checks the status of the previously created search job.
+        - If the job is successful ('Succeeded'), it returns a PollResult to stop polling and provides
+          a readable output for success.
+        - If the job is still in progress, it returns a PollResult to continue polling.
+
+    The polling interval and timeout are determined based on the command arguments.
+    """
+    table_name: str = args['table_name']
+    if not table_name.endswith(TABLE_NAME_SUFFIX):
+        return_warning(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix", exit=True)
+
     if argToBoolean(args["first_run"]):
-        query = args['query']
-        limit = arg_to_number(args['limit'])
-        start_search_time = args.get('start_search_time')
-        end_search_time = args.get('end_search_time')
-        url_suffix = f"/tables/{table_name}_SRCH"
+        if start_search_time_datetime := arg_to_datetime(args.get('start_search_time', '1 day ago'), "start_search_time"):
+            start_search_time_iso = start_search_time_datetime.isoformat()
+        if end_search_time_datetime := arg_to_datetime(args.get('end_search_time', '1 day ago'), "end_search_time"):
+            end_search_time_iso = end_search_time_datetime.isoformat()
+        url_suffix = f"/tables/{table_name}"
         data = {
             "properties": {
                 "searchResults": {
-                    "query": query,
-                    "limit": limit,
-                    "startSearchTime": start_search_time,
-                    "endSearchTime": end_search_time
+                    "query": args['query'],
+                    "limit": arg_to_number(args.get('limit')),
+                    "startSearchTime": start_search_time_iso,
+                    "endSearchTime": end_search_time_iso
                 }
             }
         }
@@ -356,14 +391,11 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
                 'PUT',
                 url_suffix,
                 resource=AZURE_MANAGEMENT_RESOURCE,
-                data=data,
-                timeout=60
-            )
-        except JSONDecodeError as e:
-            print(e)
+                data=data
+            )  # the response contain only the status code [202]
         except Exception as e:
             if "[InvalidParameter 400] This operation is not permitted as properties.searchResult is immutable." in e.args[0]:
-                return_warning(f"Search job {table_name}_SRCH already exists - please choose another name", exit=True)
+                return_warning(f"Search job {table_name} already exists - please choose another name", exit=True)
             raise e
         args["first_run"] = False
         return PollResult(
@@ -373,33 +405,71 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
             continue_to_poll=True
         )
     else:
-        if get_search_job_status(client, table_name) not in ["Succeeded"]:
+        status = get_search_job(client, table_name)["properties"]["provisioningState"]
+        if status != "Succeeded":
             return PollResult(
                 continue_to_poll=True,
                 args_for_next_run=args,
                 response=None,
             )
-        else:
-            args["workspaces"] = demisto.params()['workspaceName'] # TODO chack if nedded
-            args["query"] = f'{table_name}_SRCH'
 
-            return PollResult(
-                continue_to_poll=False,
-                response=execute_query_command(client, args)
-            )
+        return PollResult(
+            continue_to_poll=False,
+            response=CommandResults(
+                readable_output=f"The {table_name} table created successfully, "
+                "to run query on the table, use the azure-log-analytics-execute-query command with the query argument "
+                f"query={table_name}"
+            )  # TODO ADD TABLE name to context
+        )
 
 
-def validate_params(refresh_token, managed_identities_client_id, client_credentials, enc_key, self_deployed, certificate_thumbprint, private_key):
-    if not refresh_token:
-        raise DemistoException('Token / Tenant ID must be provided.')
-    if not managed_identities_client_id:
-        if client_credentials and not enc_key:
-            raise DemistoException("Client Secret must be provided for client credentials flow.")
-        elif not self_deployed and not enc_key:
-            raise DemistoException('Key must be provided. For further information see '
-                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
-        elif not enc_key and not (certificate_thumbprint and private_key):
-            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+def get_search_job_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about a search job in Azure Log Analytics.
+
+    Args:
+        client (Client): An instance of the Azure Log Analytics client.
+        args (dict): A dictionary containing the command arguments, including 'table_name'.
+
+    Returns:
+        CommandResults: A CommandResults object containing the retrieved search job information.
+    """
+    response = get_search_job(client, args['table_name'])
+
+    properties: dict = response["properties"]
+    schema: dict = properties["schema"]
+
+    # Extract search results from schema or properties, the response sometimes returns it in schema sometimes in properties
+    # https://github.com/MicrosoftDocs/azure-docs/issues/116671
+    searchResults: dict = schema.get("searchResults", {}) or properties.get("searchResults", {})
+
+    readable_output = {
+        "Name": schema["name"],
+        "Create Date": properties["createDate"],
+        "Plan": properties["plan"],
+        "Query": searchResults["query"],
+        "Description": searchResults["description"],
+        "startSearchTime": searchResults["startSearchTime"],
+        "endSearchTime": searchResults["endSearchTime"],
+        "provisioningState": properties["provisioningState"]
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown("Search Job", readable_output),
+        outputs=response,
+        outputs_prefix="AzureLogAnalytics.SearchJob",
+        outputs_key_field=response['id']
+    )
+
+
+def delete_search_job_command(client: Client, args: dict[str, str]) -> CommandResults:
+    table_name = args['table_name']
+    if not table_name.endswith(TABLE_NAME_SUFFIX):
+        return_warning(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix", exit=True)
+    url_suffix = f"/tables/{table_name}"
+
+    client.http_request('DELETE', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
+
+    return CommandResults(readable_output=f"Search job {table_name} deleted successfully.")
 
 
 def main():
@@ -438,9 +508,9 @@ def main():
             enc_key=enc_key,  # client_secret or enc_key
             redirect_uri=params.get('redirect_uri', ''),
             auth_code=auth_code if not client_credentials else '',
-            subscription_id=params['subscriptionID'],
-            resource_group_name=params['resourceGroupName'],
-            workspace_name=params['workspaceName'],
+            subscription_id=params.get('subscriptionID'),  # TODO del get
+            resource_group_name=params.get('resourceGroupName'),
+            workspace_name=params.get('workspaceName'),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             certificate_thumbprint=certificate_thumbprint,
@@ -455,6 +525,8 @@ def main():
             'azure-log-analytics-get-saved-search-by-id': get_saved_search_by_id_command,
             'azure-log-analytics-create-or-update-saved-search': create_or_update_saved_search_command,
             'azure-log-analytics-delete-saved-search': delete_saved_search_command,
+            'azure-log-analytics-get-search-job': get_search_job_command,
+            'azure-log-analytics-delete-search-job': delete_search_job_command
         }
 
         if command == 'test-module':
