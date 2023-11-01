@@ -531,6 +531,7 @@
     "id": "Netcraft Takedown",
     "name": "Netcraft Takedown",
     "system": false,
+    "marketplaces": ["xsoar"],
     "version": -1,
     "fromVersion": "6.10.0",
     "description": ""
