@@ -197,18 +197,9 @@ def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient')
     )
 
 
-def account_list(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-
-
-def account_get(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-
-
 def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
-    def JoinedTimestamp_to_str(account):
-        account['JoinedTimestamp'] = str(account['JoinedTimestamp'])
-
-    def response_to_readable(account) -> str:
+    def response_to_readable(accounts) -> str:
         return tableToMarkdown(
             'AWS Organization Accounts',
             accounts,
@@ -217,23 +208,27 @@ def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
                 'JoinedMethod', 'JoinedTimestamp', 'Status',
             ],
             removeNull=True,
+            json_transform_mapping={
+                'JoinedTimestamp': JsonTransformer(func=str)
+            }
         )
 
-    if (account_id := args.get('account_id')):
-        account = aws_client.describe_account(
-            AccountId=account_id
-        )['Account']
+    def account_get() -> CommandResults:
 
-        JoinedTimestamp_to_str(account)
+        account = aws_client.describe_account(
+            AccountId=args['account_id']
+        )
+        del account['Account']['JoinedTimestamp']
 
         return CommandResults(
             outputs_key_field='Id',
             outputs_prefix='AWS.Organizations.Account',
-            outputs=account,
-            readable_output=response_to_readable(account)
+            outputs=account['Account'],
+            readable_output=response_to_readable(account['Account'])
         )
 
-    else:
+    def account_list() -> CommandResults:
+
         accounts, next_token = paginate(
             aws_client.get_paginator('list_accounts'),
             'Accounts',
@@ -242,15 +237,17 @@ def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
             page_size=args.get('page_size'),
         )
 
-        for account in accounts:
-            JoinedTimestamp_to_str(account)
-
         return CommandResults(
             outputs=next_token_output_dict(
                 'Account', next_token, accounts, 'Id',
             ),
             readable_output=response_to_readable(accounts)
         )
+
+    if args.get('account_id'):
+        return account_get()
+    else:
+        return account_list()
 
 
 def organization_get_command(aws_client: 'OrganizationsClient') -> CommandResults:
