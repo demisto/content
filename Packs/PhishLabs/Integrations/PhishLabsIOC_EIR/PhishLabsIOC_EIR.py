@@ -375,7 +375,7 @@ def fetch_incidents_command(
                 'rawJSON': json.dumps(incident_raw)
             })
 
-        new_last_run = incidents_report[-1].get('occurred')
+        new_last_run = incidents_raw[-1].get('created')
     else:
         new_last_run = datetime_new_last_run
     # Return results

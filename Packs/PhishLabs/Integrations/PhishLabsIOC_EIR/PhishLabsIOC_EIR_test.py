@@ -433,7 +433,7 @@ def test_get_incidents_with_subcategory(mocker):
             if i < total_res / 2:
                 incidents.append({'id': i, 'created': 'test', 'details': {'subClassification': "No Threat Detected"}})
             else:
-                incidents.append({'id': i, 'created': 'test', 'details': {'subClassification': "Test"}})
+                incidents.append({'id': i, 'created': 'test2', 'details': {'subClassification': "Test"}})
 
         return {'metadata': {'count': total_res - offset}, 'incidents': incidents}
 
@@ -444,12 +444,13 @@ def test_get_incidents_with_subcategory(mocker):
     )
 
     mocker.patch.object(Client, 'get_incidents', side_effect=mock_get_incident)
-    incident_report, _ = fetch_incidents_command(
+    incident_report, new_last_run = fetch_incidents_command(
         client=client,
         last_run='2023-09-20T03:44:55Z',
         fetch_time='3 days',
         limit='4',
-        subcategories=['Test', 'Test2']
+        subcategories=['No Threat Detected']
     )
 
     assert len(incident_report) == 2
+    assert new_last_run.get('lastRun') == 'test2'
