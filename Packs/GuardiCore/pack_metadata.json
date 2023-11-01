@@ -1,5 +1,5 @@
 {
-    "name": "GuardiCore",
+    "name": "Akamai Guardicore",
     "description": "Data center breach detection",
     "support": "xsoar",
     "currentVersion": "2.0.12",
