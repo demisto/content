@@ -47,15 +47,15 @@ def main():
         install_logging('convert_test_modeling_result_to_jira_issues.log', logger=logging)
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
-        logging.info(f'Artifacts path: {options.artifacts_path}\n'
-                     f'Jira server url: {JIRA_SERVER_URL}\n'
-                     f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
-                     f'Jira project id: {JIRA_PROJECT_ID}\n'
-                     f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
-                     f'Jira component: {JIRA_COMPONENT}\n'
-                     f'Jira labels: {JIRA_LABELS}\n'
-                     f'Jira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}\n'
-                     f'Max days to reopen: {options.max_days_to_reopen}\n')
+        logging.info(f"Artifacts path: {options.artifacts_path}\n"
+                     f"Jira server url: {JIRA_SERVER_URL}\n"
+                     f"Jira verify SSL: {JIRA_VERIFY_SSL}\n"
+                     f"Jira project id: {JIRA_PROJECT_ID}\n"
+                     f"Jira issue type: {JIRA_ISSUE_TYPE}\n"
+                     f"Jira component: {JIRA_COMPONENT}\n"
+                     f"Jira labels: {', '.join(JIRA_LABELS)}\n"
+                     f"Jira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}\n"
+                     f"Max days to reopen: {options.max_days_to_reopen}\n")
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
