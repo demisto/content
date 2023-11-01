@@ -1005,6 +1005,9 @@ def fetch_incidents(client: Client, fetch_closed: bool = False):
     params = demisto.params()
     last_run = demisto.getLastRun()
     last_timestamp = int(last_run.get('timestamp', 0))
+    if last_timestamp:
+        # migrate to isoformat
+        last_run['time'] = datetime.fromtimestamp(last_timestamp / 1000).strftime(DATE_FORMAT)
     look_back = int(params.get('look_back', 0))
     first_fetch = params.get('first_fetch')
 
@@ -1012,7 +1015,9 @@ def fetch_incidents(client: Client, fetch_closed: bool = False):
     max_fetch = last_run.get('limit') or max_fetch_param
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
                                                                 look_back=look_back, date_format=DATE_FORMAT)
-
+    start_fetch_datetime = dateparser.parse(start_fetch_time)
+    assert start_fetch_datetime
+    start_fetch_time = int(start_fetch_datetime.timestamp() * 1000)
     res = client.get_cases(limit=max_fetch, start_time=start_fetch_time)
     if not fetch_closed:
         res = list(filter(lambda case: case['status'] == 'Open', res))
