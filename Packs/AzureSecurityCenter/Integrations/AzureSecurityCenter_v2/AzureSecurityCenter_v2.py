@@ -1377,7 +1377,7 @@ def main():
         proxy = params.get('proxy', False)
         subscription_id = args.get("subscription_id") or params.get(
             'credentials_default_sub_id', {}).get('password') or params.get("default_sub_id")
-        resource_group_name = args.get("resource_group_name") or params.get('resource_group_name', {}).get('password')
+        resource_group_name = args.get("resource_group_name") or params.get('resource_group_name')
         ok_codes = (200, 201, 202, 204)
         certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
             'password') or params.get('certificate_thumbprint')

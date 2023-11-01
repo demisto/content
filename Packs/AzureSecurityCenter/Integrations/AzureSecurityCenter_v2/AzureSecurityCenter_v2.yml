@@ -76,7 +76,7 @@ configuration:
   name: resource_group_name
   type: 0
   required: false
-  additionalinfo: This parameter can be overridden by the resource_group argument in any command.
+  additionalinfo: This parameter can be overridden by the resource_group_name argument in any command.
   section: Connect
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
