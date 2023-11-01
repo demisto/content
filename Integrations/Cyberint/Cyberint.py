@@ -21,7 +21,7 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
-MIRRORING_FIELDS = [
+MIRRORING_FIELDS_1 = [
     "cyberintstatus",
     "cyberintclosurereason",
     "cyberintclosurereasondescription",
@@ -31,6 +31,11 @@ MIRRORING_FIELDS_MAPPER = {
     "cyberintclosurereason": "closure_reason",
     "cyberintclosurereasondescription": "closure_reason_description",
 }
+MIRRORING_FIELDS = [
+    "status",
+    "closure_reason",
+    "closure_reason_description",
+]
 
 
 class Client(BaseClient):
@@ -649,13 +654,14 @@ def update_remote_system(
             demisto.debug(f"******** Sending incident with remote ID [{incident_id}] to Cyberint\n")
 
             updated_arguments = {}
-            if updated_status := update_args.get("cyberintstatus"):
+            if updated_status := update_args.get("status"):
                 if updated_status != "closed":
                     updated_arguments["status"] = updated_status
                 else:
                     for key, value in update_args.items():
                         if key in MIRRORING_FIELDS:
-                            updated_arguments[MIRRORING_FIELDS_MAPPER[key]] = value
+                            # updated_arguments[MIRRORING_FIELDS_MAPPER[key]] = value
+                            updated_arguments[key] = value
 
             updated_arguments["alerts"] = [incident_id]
 
@@ -697,9 +703,9 @@ def get_remote_data_command(
     mirrored_ticket: Dict[str, Any] = response["alert"]
     ticket_last_update = date_to_epoch_for_fetch(arg_to_datetime(mirrored_ticket.get("update_date")))
 
-    mirrored_ticket["cyberintstatus"] = mirrored_ticket["status"]
-    mirrored_ticket["cyberintclosurereason"] = mirrored_ticket["closure_reason"]
-    mirrored_ticket["cyberintclosurereasondescription"] = mirrored_ticket["closure_reason_description"]
+    # mirrored_ticket["cyberintstatus"] = mirrored_ticket["status"]
+    # mirrored_ticket["cyberintclosurereason"] = mirrored_ticket["closure_reason"]
+    # mirrored_ticket["cyberintclosurereasondescription"] = mirrored_ticket["closure_reason_description"]
 
     demisto.debug(f"******** Alert {incident_id} - {ticket_last_update=} {last_update=}")
 
