@@ -14,17 +14,16 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       '#none#':
       - "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 70,
-          "y": -1400
+          "y": -1610
         }
       }
     note: false
@@ -34,6 +33,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: d8b21011-93d6-4b5c-82fa-bfa5b7bad044
@@ -45,9 +45,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -62,6 +61,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 9c94a65b-ec31-4f84-8e53-238c0ba400e5
@@ -70,20 +70,19 @@ tasks:
       id: 9c94a65b-ec31-4f84-8e53-238c0ba400e5
       version: -1
       name: Triage and Qualifier Stage
+      description: ''
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "171"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 70,
-          "y": -1270
+          "y": -1480
         }
       }
     note: false
@@ -93,6 +92,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 0d81d9c5-0219-481c-8528-92313b69ea7f
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": -790
+          "y": -1000
         }
       }
     note: false
@@ -169,7 +169,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "158"
+      - "179"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -194,10 +194,10 @@ tasks:
       id: fb2870a4-dd48-414b-8ac2-78bba34fac94
       version: -1
       name: Validation Stage
-      description: Send an email
       type: title
       iscommand: false
       brand: ""
+      description: 'Send an email.'
     nexttasks:
       '#none#':
       - "86"
@@ -262,7 +262,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "93"
+      - "177"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -423,14 +423,14 @@ tasks:
       - "88"
       Automated remediation:
       - "12"
-      Jira ticket:
-      - "156"
       Manual remediation:
       - "63"
       Notification email:
       - "60"
       ServiceNow ticket:
       - "10"
+      Jira ticket:
+      - "156"
     separatecontext: false
     conditions:
     - label: Automated remediation
@@ -440,7 +440,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -462,7 +462,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -474,7 +474,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -486,7 +486,7 @@ tasks:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -599,7 +599,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "159"
+      - "176"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -717,14 +717,14 @@ tasks:
       - "69"
     separatecontext: false
     conditions:
-    - label: manual from data collection
+    - label: "manual from data collection"
       condition:
       - - operator: isEqualString
           left:
             value:
               complex:
                 root: alert.asmdatacollection
-                accessor: selected
+                accessor: "selected"
             iscontext: true
           right:
             value:
@@ -1004,113 +1004,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "93":
-    id: "93"
-    taskid: 0a9a40fd-49de-4c82-8dd8-0a06843aecdd
-    type: regular
-    task:
-      id: 0a9a40fd-49de-4c82-8dd8-0a06843aecdd
-      version: -1
-      name: GenerateSummaryReport - Summary
-      description: Generate an ASM Alert Summary report.
-      scriptName: GenerateASMReport
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "81"
-    scriptarguments:
-      alert_details:
-        complex:
-          root: alert
-          accessor: details
-      alert_id:
-        complex:
-          root: alert
-          accessor: id
-      alert_name:
-        complex:
-          root: alert
-          accessor: name
-      alert_severityStr:
-        complex:
-          root: alert
-          accessor: severityStr
-      asm_asset_id:
-        complex:
-          root: alert
-          accessor: asmassetid
-      asm_cloud:
-        complex:
-          root: alert
-          accessor: asmcloud
-      asm_data_collection:
-        complex:
-          root: alert
-          accessor: asmdatacollection
-      asm_notification:
-        complex:
-          root: alert
-          accessor: asmnotification
-      asm_private_ip:
-        complex:
-          root: alert
-          accessor: asmprivateip
-      asm_related:
-        complex:
-          root: alert
-          accessor: asmrelated
-      asm_remediation:
-        complex:
-          root: alert
-          accessor: asmremediation
-      asm_remediation_path_rule:
-        complex:
-          root: alert
-          accessor: asmremediationpathrule
-      asm_service_detection:
-        complex:
-          root: alert
-          accessor: asmservicedetection
-      asm_service_id:
-        complex:
-          root: alert
-          accessor: asmserviceid
-      asm_service_owner:
-        complex:
-          root: alert
-          accessor: asmserviceowner
-      asm_system_ids:
-        complex:
-          root: alert
-          accessor: asmsystemids
-      asm_tags:
-        complex:
-          root: alert
-          accessor: asmtags
-      report_type:
-        simple: summary
-      retry-count:
-        simple: "1"
-      retry-interval:
-        simple: "30"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 3980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "97":
     id: "97"
     taskid: a77560dd-fd29-4480-8067-e1e6bd9faa5e
@@ -1133,7 +1026,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": -660
+          "y": -870
         }
       }
     note: false
@@ -1522,121 +1415,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "123"
+      - "175"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 70,
-          "y": -335
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "123":
-    id: "123"
-    taskid: f0961cac-382a-4132-826c-221a31f9c399
-    type: regular
-    task:
-      id: f0961cac-382a-4132-826c-221a31f9c399
-      version: -1
-      name: GenerateSummaryReport - Analysis
-      description: Generate an ASM Alert Summary report.
-      scriptName: GenerateASMReport
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "126"
-    scriptarguments:
-      alert_details:
-        complex:
-          root: alert
-          accessor: details
-      alert_id:
-        complex:
-          root: alert
-          accessor: id
-      alert_name:
-        complex:
-          root: alert
-          accessor: name
-      alert_severityStr:
-        complex:
-          root: alert
-          accessor: severityStr
-      asm_asset_id:
-        complex:
-          root: alert
-          accessor: asmassetid
-      asm_cloud:
-        complex:
-          root: alert
-          accessor: asmcloud
-      asm_data_collection:
-        complex:
-          root: alert
-          accessor: asmdatacollection
-      asm_notification:
-        complex:
-          root: alert
-          accessor: asmnotification
-      asm_private_ip:
-        complex:
-          root: alert
-          accessor: asmprivateip
-      asm_related:
-        complex:
-          root: alert
-          accessor: asmrelated
-      asm_remediation:
-        complex:
-          root: alert
-          accessor: asmremediation
-      asm_remediation_path_rule:
-        complex:
-          root: alert
-          accessor: asmremediationpathrule
-      asm_service_detection:
-        complex:
-          root: alert
-          accessor: asmservicedetection
-      asm_service_id:
-        complex:
-          root: alert
-          accessor: asmserviceid
-      asm_service_owner:
-        complex:
-          root: alert
-          accessor: asmserviceowner
-      asm_system_ids:
-        complex:
-          root: alert
-          accessor: asmsystemids
-      asm_tags:
-        complex:
-          root: alert
-          accessor: asmtags
-      report_type:
-        simple: analysis
-      retry-count:
-        simple: "1"
-      retry-interval:
-        simple: "30"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": -200
+          "y": -535
         }
       }
     note: false
@@ -1679,7 +1465,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": -960
+          "y": -1170
         }
       }
     note: false
@@ -1722,7 +1508,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": -495
+          "y": -705
         }
       }
     note: false
@@ -2487,50 +2273,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "154":
-    id: "154"
-    taskid: 01661a90-d299-4a94-8545-2c29245b3aaa
-    type: playbook
-    task:
-      id: 01661a90-d299-4a94-8545-2c29245b3aaa
-      version: -1
-      name: Cortex ASM - Jira Notification
-      description: This playbook is used to direct Jira tickets to service owners to notify them of their internet exposures.
-      playbookName: Cortex ASM - Jira Notification
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "134"
-    scriptarguments:
-      JiraProjectKey:
-        complex:
-          root: inputs.JiraProjectKey
-      OwnerNotificationBody:
-        complex:
-          root: inputs.OwnerNotificationBody
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 370,
-          "y": 1760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "156":
     id: "156"
     taskid: e6407346-0b25-49ef-808c-210070e356c3
@@ -2545,7 +2287,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "154"
+      - "178"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2596,91 +2338,6 @@ tasks:
         "position": {
           "x": 370,
           "y": 1175
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "158":
-    id: "158"
-    taskid: 945cf396-8f46-4b7a-8c7f-3a90dbfd1af1
-    type: playbook
-    task:
-      id: 945cf396-8f46-4b7a-8c7f-3a90dbfd1af1
-      version: -1
-      name: Cortex ASM - ServiceNow Notification
-      description: This playbook is used to direct ServiceNow tickets to service owners to notify them of their internet exposures.
-      playbookName: Cortex ASM - ServiceNow Notification
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "134"
-    scriptarguments:
-      OwnerNotificationBody:
-        complex:
-          root: inputs.OwnerNotificationBody
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 1700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "159":
-    id: "159"
-    taskid: a0fd44d7-b931-452b-83d2-4894b2cae813
-    type: playbook
-    task:
-      id: a0fd44d7-b931-452b-83d2-4894b2cae813
-      version: -1
-      name: Cortex ASM - Email Notification
-      description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
-      playbookName: Cortex ASM - Email Notification
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "134"
-    scriptarguments:
-      OwnerNotificationBody:
-        complex:
-          root: inputs.OwnerNotificationBody
-      OwnerNotificationSubject:
-        complex:
-          root: inputs.OwnerNotificationSubject
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1220,
-          "y": 1635
         }
       }
     note: false
@@ -3109,7 +2766,393 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": -1130
+          "y": -1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "172":
+    id: "172"
+    taskid: 836d5e27-3145-43b4-8152-e383909d77aa
+    type: regular
+    task:
+      id: 836d5e27-3145-43b4-8152-e383909d77aa
+      version: -1
+      name: GenerateSummaryReport - Analysis
+      description: Generate an ASM Alert Summary report.
+      scriptName: GenerateASMReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "126"
+    scriptarguments:
+      alert_details:
+        complex:
+          root: alert
+          accessor: details
+      alert_id:
+        complex:
+          root: alert
+          accessor: id
+      alert_name:
+        complex:
+          root: alert
+          accessor: name
+      alert_severityStr:
+        complex:
+          root: alert
+          accessor: severityStr
+      asm_asset_id:
+        complex:
+          root: alert
+          accessor: asmassetid
+      asm_cloud:
+        complex:
+          root: alert
+          accessor: asmcloud
+      asm_data_collection:
+        complex:
+          root: alert
+          accessor: asmdatacollection
+      asm_notification:
+        complex:
+          root: alert
+          accessor: asmnotification
+      asm_private_ip:
+        complex:
+          root: alert
+          accessor: asmprivateip
+      asm_related:
+        complex:
+          root: alert
+          accessor: asmrelated
+      asm_remediation:
+        complex:
+          root: alert
+          accessor: asmremediation
+      asm_remediation_guidance:
+        complex:
+          root: RemediationGuidance
+      asm_remediation_path_rule:
+        complex:
+          root: alert
+          accessor: asmremediationpathrule
+      asm_service_detection:
+        complex:
+          root: alert
+          accessor: asmservicedetection
+      asm_service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+      asm_service_owner:
+        complex:
+          root: alert
+          accessor: asmserviceowner
+      asm_system_ids:
+        complex:
+          root: alert
+          accessor: asmsystemids
+      asm_tags:
+        complex:
+          root: alert
+          accessor: asmtags
+      report_type:
+        simple: analysis
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: dbc5a290-0942-4bfa-84e4-db94ad445321
+    type: playbook
+    task:
+      id: dbc5a290-0942-4bfa-84e4-db94ad445321
+      version: -1
+      name: Cortex ASM - Remediation Guidance
+      playbookName: Cortex ASM - Remediation Guidance
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "172"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: 98dc0f0e-8622-4526-872d-8479d141dee9
+    type: playbook
+    task:
+      id: 98dc0f0e-8622-4526-872d-8479d141dee9
+      version: -1
+      name: Cortex ASM - Email Notification
+      description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
+      playbookName: Cortex ASM - Email Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      OwnerNotificationBody:
+        complex:
+          root: inputs.OwnerNotificationBody
+      OwnerNotificationSubject:
+        complex:
+          root: inputs.OwnerNotificationSubject
+      RemediationGuidance:
+        complex:
+          root: RemediationGuidance
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: 41b3d853-7d6d-4096-8f20-b468c97d2d91
+    type: regular
+    task:
+      id: 41b3d853-7d6d-4096-8f20-b468c97d2d91
+      version: -1
+      name: GenerateSummaryReport - Summary
+      description: Generate an ASM Alert Summary report.
+      scriptName: GenerateASMReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      alert_details:
+        complex:
+          root: alert
+          accessor: details
+      alert_id:
+        complex:
+          root: alert
+          accessor: id
+      alert_name:
+        complex:
+          root: alert
+          accessor: name
+      alert_severityStr:
+        complex:
+          root: alert
+          accessor: severityStr
+      asm_asset_id:
+        complex:
+          root: alert
+          accessor: asmassetid
+      asm_cloud:
+        complex:
+          root: alert
+          accessor: asmcloud
+      asm_data_collection:
+        complex:
+          root: alert
+          accessor: asmdatacollection
+      asm_notification:
+        complex:
+          root: alert
+          accessor: asmnotification
+      asm_private_ip:
+        complex:
+          root: alert
+          accessor: asmprivateip
+      asm_related:
+        complex:
+          root: alert
+          accessor: asmrelated
+      asm_remediation:
+        complex:
+          root: alert
+          accessor: asmremediation
+      asm_remediation_guidance:
+        complex:
+          root: RemediationGuidance
+      asm_remediation_path_rule:
+        complex:
+          root: alert
+          accessor: asmremediationpathrule
+      asm_service_detection:
+        complex:
+          root: alert
+          accessor: asmservicedetection
+      asm_service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+      asm_service_owner:
+        complex:
+          root: alert
+          accessor: asmserviceowner
+      asm_system_ids:
+        complex:
+          root: alert
+          accessor: asmsystemids
+      asm_tags:
+        complex:
+          root: alert
+          accessor: asmtags
+      report_type:
+        simple: summary
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 3980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: 921f62a1-eefa-4486-8b60-5a9df9b9b465
+    type: playbook
+    task:
+      id: 921f62a1-eefa-4486-8b60-5a9df9b9b465
+      version: -1
+      name: Cortex ASM - Jira Notification
+      playbookName: Cortex ASM - Jira Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      JiraProjectKey:
+        complex:
+          root: inputs.JiraProjectKey
+      OwnerNotificationBody:
+        complex:
+          root: inputs.OwnerNotificationBody
+      RemediationGuidance:
+        complex:
+          root: RemediationGuidance
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "179":
+    id: "179"
+    taskid: 79151ecc-d877-4abf-8939-742787825ba1
+    type: playbook
+    task:
+      id: 79151ecc-d877-4abf-8939-742787825ba1
+      version: -1
+      name: Cortex ASM - ServiceNow Notification
+      playbookName: Cortex ASM - ServiceNow Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      OwnerNotificationBody:
+        complex:
+          root: inputs.OwnerNotificationBody
+      RemediationGuidance:
+        complex:
+          root: RemediationGuidance
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1755
         }
       }
     note: false
@@ -3134,19 +3177,19 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6725,
+        "height": 6935,
         "width": 2710,
         "x": -1110,
-        "y": -1400
+        "y": -1610
       }
     }
   }
 inputs:
 - key: OwnerNotificationSubject
   value:
-    simple: A new security risk was identified on an external service owned by your team
+    simple: "A new security risk was identified on an external service owned by your team"
   required: true
-  description: Subject of the notification (email or ticket) sent to potential service owner.
+  description: 'Subject of the notification (email or ticket) sent to potential service owner.'
   playbookInputQuery:
 - key: OwnerNotificationBody
   value:
@@ -3161,7 +3204,8 @@ inputs:
   playbookInputQuery:
 - key: RemediationNotificationSubject
   value:
-    simple: A new security risk was addressed on an external service owned by your team
+    simple: |-
+      A new security risk was addressed on an external service owned by your team
   required: true
   description: Subject of the notification (email or ticket) sent to the service owner after remediation.
   playbookInputQuery:
@@ -3183,7 +3227,7 @@ inputs:
       </body>
       </html>
   required: true
-  description: Body of the notification (email or ticket) sent to the service owner after remediation.
+  description: 'Body of the notification (email or ticket) sent to the service owner after remediation.'
   playbookInputQuery:
 - key: BypassDevCheck
   value:
@@ -3219,3 +3263,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0
+contentitemexportablefields:
+  contentitemfields: {}
