@@ -519,9 +519,10 @@ script:
     - description: The network interface name.
       name: nic_name
       required: true
-    - auto: PREDEFINED
-      description: The location in which to create the network interface.
+    - description: The location in which to create the network interface.
       name: nic_location
+      required: true
+      auto: PREDEFINED
       predefined:
       - westus2
       - westus
@@ -554,17 +555,16 @@ script:
       - australiacentral2
       - australiaeast
       - australiasoutheast
-      required: true
     - description: The virtual network name of the interface.
       name: vnet_name
       required: true
     - description: The subnet name of the interface.
       name: subnet_name
       required: true
-    - auto: PREDEFINED
-      defaultValue: Dynamic
-      description: The address assignment method.
+    - description: The address assignment method.
       name: address_assignment_method
+      auto: PREDEFINED
+      defaultValue: Dynamic
       predefined:
       - Static
       - Dynamic
@@ -645,7 +645,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-vm-auth-reset
-  dockerimage: demisto/crypto:1.0.0.79207
+  dockerimage: demisto/crypto:1.0.0.79610
   runonce: false
   script: '-'
   subtype: python3
