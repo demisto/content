@@ -91,7 +91,14 @@ def test_gcp_iam_project_get_command(client):
     assert result[0].readable_output == get_error_message(project_name)
 
 
-def test_gcp_iam_project_iam_policy_get_command(client):
+@pytest.mark.parametrize(
+    "project_name, roles, expected_bindings_length, expected_role, expected_readable_output",
+    [
+        ("projects/project-name-1", "roles/browser", 1, "roles/browser", "Current page size: 1"),
+        ("projects/project-name-1", None, 2, "roles/anthosidentityservice.serviceAgent", "Current page size: 2")
+    ],
+)
+def test_gcp_iam_project_iam_policy_get_command(client, project_name, roles, expected_bindings_length, expected_role, expected_readable_output):
     """
     Scenario: Retrieve the IAM access control policy for the specified project.
     Given:
@@ -105,13 +112,13 @@ def test_gcp_iam_project_iam_policy_get_command(client):
     """
     mock_response = load_mock_response('project/project_iam_policy_get.json')
     client.gcp_iam_project_iam_policy_get_request = Mock(return_value=mock_response)
-    project_name = "projects/project-name-1"
-    result = GCP_IAM.gcp_iam_project_iam_policy_get_command(client, {"project_name": project_name})
+    result = GCP_IAM.gcp_iam_project_iam_policy_get_command(client, {"project_name": project_name, "roles": roles})
 
-    assert len(result.outputs.get('bindings')) == 2
+    assert len(result.outputs.get('bindings')) == expected_bindings_length
     assert result.outputs_prefix == 'GCPIAM.Policy'
     assert result.outputs.get('name') == project_name
-    assert result.outputs.get('bindings')[0].get('role') == 'roles/anthosidentityservice.serviceAgent'
+    assert result.outputs.get('bindings')[0].get('role') == expected_role
+    assert expected_readable_output in result.readable_output
 
 
 def test_gcp_iam_project_iam_test_permission_command(client):
