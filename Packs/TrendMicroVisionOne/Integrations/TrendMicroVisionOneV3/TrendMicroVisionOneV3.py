@@ -305,7 +305,7 @@ class Client(BaseClient):
         v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
 
         # Make rest call
-        resp = v1_client.get_base_task_result(task_id, poll, poll_time_sec)
+        resp = v1_client.get_base_task_result(task_id, poll, poll_time_sec)  # type: ignore
         # Check if error response is returned
         if _is_pytmv1_error(resp.result_code):
             return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
@@ -317,7 +317,7 @@ class Client(BaseClient):
             class_=_get_task_type(action),
             task_id=task_id,
             poll=poll,
-            poll_time_sec=poll_time_sec,
+            poll_time_sec=poll_time_sec,  # type: ignore
         )
         # Assign values on a successful call
         message = unwrap(task_resp.response).dict()
@@ -1815,7 +1815,7 @@ def get_file_analysis_result(
     resp = v1_client.get_sandbox_analysis_result(
         submit_id=report_id,
         poll=poll,
-        poll_time_sec=poll_time_sec,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
@@ -1952,7 +1952,7 @@ def download_information_collected_file(
         task_id=task_id,
         class_=CollectFileTaskResp,
         poll=poll,
-        poll_time_sec=poll_time_sec,
+        poll_time_sec=poll_time_sec,  # type: ignore
     )
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
@@ -1999,7 +1999,7 @@ def download_analysis_report(
 
     # Make rest call
     resp = v1_client.download_sandbox_analysis_result(
-        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec
+        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
     )
 
     # Check if an error occurred
@@ -2060,7 +2060,7 @@ def download_investigation_package(
 
     # Make rest call
     resp = v1_client.download_sandbox_investigation_package(
-        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec
+        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
     )
 
     # Check if an error occurred
@@ -2118,7 +2118,7 @@ def download_suspicious_object_list(
     v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_sandbox_suspicious_list(
-        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec
+        submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
     )
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
