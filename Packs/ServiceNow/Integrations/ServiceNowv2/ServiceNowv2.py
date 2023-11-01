@@ -627,6 +627,8 @@ class Client(BaseClient):
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
                                                                   use_oauth=self.use_oauth,
+                                                                  oauth_endpoint=oauth_params.get('oauth_endpoint',
+                                                                                                  '/oauth_token.do'),
                                                                   client_id=oauth_params.get('client_id', ''),
                                                                   client_secret=oauth_params.get('client_secret', ''),
                                                                   url=oauth_params.get('url', ''),
@@ -2950,6 +2952,7 @@ def main():
     params = demisto.params()
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
+    oauth_endpoint = params.get('oath_endpoint', '/oauth_token.do')
     oauth_params = {}
 
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
@@ -2971,7 +2974,8 @@ def main():
             },
             'verify': verify,
             'proxy': params.get('proxy'),
-            'use_oauth': use_oauth
+            'use_oauth': use_oauth,
+            'oauth_endpoint': oauth_endpoint,
         }
     else:  # use basic authentication
         username = params.get('credentials', {}).get('identifier')

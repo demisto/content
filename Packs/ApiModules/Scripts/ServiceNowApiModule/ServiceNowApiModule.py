@@ -2,13 +2,10 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-OAUTH_URL = '/oauth_token.do'
-
-
 class ServiceNowClient(BaseClient):
 
-    def __init__(self, credentials: dict, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
-                 url: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
+    def __init__(self, credentials: dict, use_oauth: bool = False, oauth_endpoint: str = '/oauth_token.do', client_id: str = '',
+                 client_secret: str = '', url: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
@@ -19,11 +16,12 @@ class ServiceNowClient(BaseClient):
                    NOTE - url should be given without an API specific suffix as it is also used for the OAuth process.
             - verify: Whether the request should verify the SSL certificate.
             - proxy: Whether to run the integration using the system proxy.
-            - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
+            - headers: The request headers, for example: {'Accept': 'application/json'}. Can be None.
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
         """
         self.auth = None
         self.use_oauth = use_oauth
+        self.oauth_endpoint = oauth_endpoint
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
             self.client_secret = client_secret
@@ -50,10 +48,10 @@ class ServiceNowClient(BaseClient):
                 self._headers.update({
                     'Authorization': 'Bearer ' + access_token
                 })
-            res = super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, resp_type='response',
-                                        headers=headers, json_data=json_data, params=params, data=data, files=files,
-                                        ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
-                                        timeout=timeout)
+            res = self._http_request(method=method, url_suffix=url_suffix, full_url=full_url, resp_type='response',
+                                     headers=headers, json_data=json_data, params=params, data=data, files=files,
+                                     ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
+                                     timeout=timeout)
             if res.status_code in [200, 201]:
                 try:
                     return res.json()
@@ -99,8 +97,8 @@ class ServiceNowClient(BaseClient):
             headers = {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
-            res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
-                                        data=data)
+            res = self._http_request(method='POST', url_suffix=self.oauth_endpoint,
+                                     resp_type='response', headers=headers, data=data)
             try:
                 res = res.json()
             except ValueError as exception:
@@ -145,8 +143,8 @@ class ServiceNowClient(BaseClient):
                 headers = {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-                res = super()._http_request(method='POST', url_suffix=OAUTH_URL, resp_type='response', headers=headers,
-                                            data=data, ok_codes=ok_codes)
+                res = self._http_request(method='POST', url_suffix=self.oauth_endpoint, resp_type='response', headers=headers,
+                                         data=data, ok_codes=ok_codes)
                 try:
                     res = res.json()
                 except ValueError as exception:

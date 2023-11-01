@@ -16,6 +16,11 @@ configuration:
   name: use_oauth
   type: 8
   required: false
+- display: OAuth Authentication Endpoint
+  name: oath_endpoint
+  defaultvalue: /oauth_token.do
+  required: true
+  type: 0
 - additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item.'
   defaultvalue: incident
   display: Default ticket type for running ticket commands and fetching incidents
