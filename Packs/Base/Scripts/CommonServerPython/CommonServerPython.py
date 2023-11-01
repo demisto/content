@@ -10773,7 +10773,8 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
     current_time = int(time.time())
 
     for incident in incidents:
-        found_incidents[incident[id_field]] = current_time
+        if incident[id_field] not in found_incidents:
+            found_incidents[incident[id_field]] = current_time
     if remove_incident_ids:
         found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
 
