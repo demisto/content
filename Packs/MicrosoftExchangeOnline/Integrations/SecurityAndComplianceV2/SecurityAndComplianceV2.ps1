@@ -178,6 +178,7 @@ function ParseSearchToEntryContext([psobject]$search, [int]$limit = -1, [bool]$a
         "PublicFolderLocationExclusion" = $search.PublicFolderLocationExclusion
         "RunBy" = $search.RunBy
         "RunspaceId" = $search_action.RunspaceId
+        "SearchStatus" = "Success"
         "SharePointLocation" = $search.SharePointLocation
         "SharePointLocationExclusion" = $search.SharePointLocationExclusion
         "Size" = $search.Size
@@ -1561,6 +1562,19 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $export = ConvertTo-Boolean $kwargs.export
     # Raw response
     $raw_response = $client.GetSearch($kwargs.search_name)
+    # Check if raw_response is null
+    if ($null -eq $raw_response) {
+        # Handle the scenerio if a search is not found:
+        $human_readable = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        $entry_context = @{
+            $script:SEARCH_ENTRY_CONTEXT = @{
+                "SearchStatus" = "NotFound"
+                "Name" = $kwargs.search_name
+            }
+        }
+        $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        return $human_readable, $entry_context, $raw_response
+    }
     # Entry context
     $entry_context = @{
         $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext -search $raw_response -limit $kwargs.limit -all_results $all_results
@@ -1792,6 +1806,11 @@ function Main {
     $command = $Demisto.GetCommand()
     $command_arguments = $Demisto.Args()
     $integration_params = $Demisto.Params()
+
+    if ($integration_params.insecure -eq $true) {
+        # Bypass SSL verification if insecure is true
+        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+    }
 
     try {
         $Demisto.Debug("Command being called is $Command")

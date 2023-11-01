@@ -61,5 +61,5 @@ script:
       description: Status of the screenshot.
       type: string
     description: Creates a screenshot of the specified URL.
-  dockerimage: demisto/cloaken:1.0.0.44754
+  dockerimage: demisto/vendors-sdk:1.0.0.74116
 fromversion: 5.0.0

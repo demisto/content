@@ -13,7 +13,7 @@ STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
 
-__version__ = '2.5.0'
+__version__ = '2.5.1'
 
 
 # === === === === === === === === === === === === === === ===

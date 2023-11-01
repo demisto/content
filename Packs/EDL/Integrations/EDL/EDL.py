@@ -698,6 +698,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
         1) if drop_invalids, drop invalids (has invalid chars)
         2) if port_stripping, strip ports
     """
+    enforce_ascii = argToBoolean(demisto.params().get('enforce_ascii', False))
     ipv4_formatted_indicators = set()
     ipv6_formatted_indicators = set()
     iocs.seek(0)
@@ -708,6 +709,11 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
         indicator = ioc.get('value')
         if not indicator:
             continue
+        if enforce_ascii:
+            try:
+                indicator.encode('ascii')
+            except UnicodeEncodeError:
+                continue
         ioc_type = ioc.get('indicator_type')
 
         if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,

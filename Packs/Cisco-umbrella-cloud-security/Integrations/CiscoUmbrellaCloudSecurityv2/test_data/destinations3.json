@@ -1,0 +1,12 @@
+{
+    "status": {
+        "code": 200,
+        "text": "OK"
+    },
+    "meta": {
+        "page": 3,
+        "limit": 100,
+        "total": 0
+    },
+    "data": []
+}

@@ -4,9 +4,11 @@ This integration provides TAXII2 Services for system indicators (outbound feed).
 You can choose to use TAXII v2.0 or TAXII v2.1.
 
 ## Configure Collections
+
 Each TAXII collection in the integration is represented by a Cortex XSOAR indicator query.
 
 The collections are defined by a JSON object in the following format:
+
 ```json
 {
   "collection1_name":{
@@ -16,24 +18,34 @@ The collections are defined by a JSON object in the following format:
   "collection2_name": "<Cortex XSOAR indicator query>"
 }
 ```
+
 You can add a collection description as is done in *collection1_name*, or enter only a collection query, as in *collection2_name*.
 
 ## How to Access the TAXII2 Server
 
-Use one of the following options:
-- **https://*demisto_address*/instance/execute/*instance_name*/{taxii2_api_endpoint}/**
-- **http://*demisto_address*:*listen_port*/{taxii2_api_endpoint}/**
+(For Cortex XSOAR 6.x) Use one of the following options:
+
+- `https://<xsoar_address>/instance/execute/<instance_name>/<taxii2_api_endpoint>/`
+- `http://<xsoar_address>:<listen_port>/<taxii2_api_endpoint>/`
+
+(For Cortex XSOAR 8 or Cortex XSIAM):
+
+- `https://ext-<tenant>/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
+
 
 ## Access the TAXII Service by Instance Name
+
 To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration**, add the *instance.execute.external* and set the value to *true*.
 
 ### How to use HTTPS
+
 To use HTTPS, a certificate and private key have to be supplied in the integration configuration. 
 
 ### How to use authentication
+
 The integration allows the use of basic authentication in the requests.
 To enable basic authentication, a user and password must be supplied in the *Credentials* parameters in the integration configuration.
 
@@ -66,6 +78,7 @@ For more information, visit [TAXII2 Documentation](http://docs.oasis-open.org/ct
 For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/cti/taxii/v2.1/taxii-v2.1.html).
 
 ## Known limitations
+
 - GET objects by ID is not allowed.
 - Filtering objects by ID or version not allowed.
 - POST and DELETE objects are not allowed. Cannot add or delete indicators using TAXII2 Server. 
@@ -74,11 +87,14 @@ For more information, visit [TAXII2 Documentation](https://docs.oasis-open.org/c
 ## How UUIDs work in TAXII2 XSOAR
 
 ---
+
 ### STIX Cyber Objects (SCO)
+
 All STIX SCOs UUIDs follow [STIX 2.1 guidelines](https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html#_64yvzeku5a5c) and use UUID5 with STIX unique namespace 
 (*00abedb4-aa42-466c-9c01-fed23315a9b7*). This is used so all SCOs created have persistent UUID across all producers.
 
 ### STIX Domain Objects (SDO)
+
 Unlike SCOs, STIX 2.1 specs for SDOs require a UUID4. While this solution works if the UUID is part of the database,
 it is not the case in Cortex XSOAR. If the SDO already has a unique UUID stored it will use it, if not it will generate a unique and *persistent* UUID using the following method.
 
@@ -98,6 +114,7 @@ we create unique and persistent UUIDs per customer.
 ---
 When selected in the integration settings (Cortex XSOAR Extension Fields) the TAXII2 integration will generate an extension object and an extension attribute that holds Cortex XSOAR additional
 TIM fields (system generated and custom). An example of these two related objects:
+
 ```JSON
 {
   "id": "extension-definition--<UUID>",
@@ -153,10 +170,19 @@ TIM fields (system generated and custom). An example of these two related object
 
 #### Find the information required for the Sentinel TAXII connector
 
-  1. All your server info can be found by running `!taxii-server-info`, the default API root for you server will usually be - https://&lt;xsoar-server&gt;/instance/execute/&lt;instance_name&gt;/threatintel/
-  2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their ids. You can also do it manually by running `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
- 
+**For Cortex XSOAR 6.x:**
+
+  1. All your server info can be found by running `!taxii-server-info`, the default API root for you server will usually be - `https://<xsoar-server>/instance/execute/<instance_name>/threatintel/`
+  2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their IDs. You can also do it manually by running `curl https://<xsoar-server>/instance/execute/<instance_name>/threatintel/collections/ | jq .` to get a list  of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest. 
+
+**For Cortex XSOAR 8 or Cortex XSIAM**
+
+  1. All your server info can be found by running `!taxii-server-info`, the default API root for you server will usually be - `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/threatintel/`
+  2. You can use the `!taxii-server-list-collections` command in order to get a list of your server's collections and their IDs. You can also do it manually by running `curl https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>/threatintel/collections/ | jq .` to get a list of the collections available and on your TAXII server. From the list, copy the correct ID of the collection you want to ingest.
+
+
  Response Example:
+
   ```JSON
   {
     "collections": [
@@ -197,9 +223,12 @@ Example:
 
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### taxii-server-list-collections
+
 ***
 Returns all the collections.
 
@@ -207,6 +236,7 @@ Returns all the collections.
 #### Base Command
 
 `taxii-server-list-collections`
+
 #### Input
 
 There are no input arguments for this command.
@@ -221,8 +251,11 @@ There are no input arguments for this command.
 | TAXIIServer.Collection.description | String | The collection description. | 
 
 #### Command example
+
 ```!taxii-server-list-collections```
+
 #### Context Example
+
 ```json
 {
     "TAXIIServer": {
@@ -244,12 +277,14 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Collections
+
 >|id|title|query|description|
 >|---|---|---|---|
 >| 2eb7bfae-7739-5863-9b00-1681309c3d8c | ALL |  |  |
 
 
 ### taxii-server-info
+
 ***
 Returns the TAXII server info, default URL, title, etc.
 
@@ -257,6 +292,7 @@ Returns the TAXII server info, default URL, title, etc.
 #### Base Command
 
 `taxii-server-info`
+
 #### Input
 
 There are no input arguments for this command.
@@ -271,8 +307,11 @@ There are no input arguments for this command.
 | TAXIIServer.ServerInfo.description | String | The server description | 
 
 #### Command example
+
 ```!taxii-server-info```
+
 #### Context Example
+
 ```json
 {
     "TAXIIServer": {
@@ -293,6 +332,7 @@ There are no input arguments for this command.
 >**In case the default URL is incorrect, you can override it by setting the "TAXII2 Service URL Address" field in the integration configuration**
 >
 >### Server Info
+
 >|api_roots|default|description|title|
 >|---|---|---|---|
 >| https:<span>//</span>foo.cooo.com/inc/threatintel/ | https:<span>//</span>foo.cooo.com/inc/threatintel/ | This integration provides TAXII Services for system indicators (Outbound feed). | Cortex XSOAR TAXII2 Server |

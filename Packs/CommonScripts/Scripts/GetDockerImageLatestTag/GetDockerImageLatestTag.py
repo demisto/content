@@ -5,7 +5,6 @@ import requests
 import re
 from pkg_resources import parse_version
 
-requests.packages.urllib3.disable_warnings()
 
 ACCEPT_HEADER = {
     'Accept': "application/json, "

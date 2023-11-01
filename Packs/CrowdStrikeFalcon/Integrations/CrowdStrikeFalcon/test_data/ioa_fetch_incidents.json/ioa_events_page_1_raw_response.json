@@ -1,0 +1,24 @@
+{
+    "meta": {
+        "query_time": 1.366029357,
+        "powered_by": "cspm-registration",
+        "trace_id": "dummy",
+        "pagination": {
+            "offset": 0,
+            "limit": 2,
+            "total": 61,
+            "next_token": "next_token_1"
+        }
+    },
+    "errors": [],
+    "resources": {
+        "events": [
+            {
+                "event_id": "event_1"
+            },
+            {
+                "event_id": "event_2"
+            }
+        ]
+    }
+}

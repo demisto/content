@@ -26,6 +26,9 @@
                 },
                 "occurred": {
                     "simple": "triggered"
+                },
+                "Recorded Future AI Insights": {
+                    "simple": "ai_insights"
                 }
             }
         },

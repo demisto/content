@@ -1,5 +1,6 @@
-from ArmisEventCollector import Client, datetime, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES
+from ArmisEventCollector import Client, datetime, timedelta, DemistoException, arg_to_datetime, EVENT_TYPE, EVENT_TYPES, Any
 import pytest
+from freezegun import freeze_time
 
 
 @pytest.fixture
@@ -13,14 +14,21 @@ def dummy_client(mocker):
 
 class TestClientFunctions:
 
-    def test_fetch_by_aql_query(self, mocker, dummy_client):
+    @freeze_time("2023-01-01T01:00:00")
+    def test_initial_fetch_by_aql_query(self, mocker, dummy_client):
         """
+        Test fetch_by_aql_query function behavior on initial fetch.
+
         Given:
-            - A valid HTTP request parameters.
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
         When:
             - Fetching events.
         Then:
             - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
             - Make sure the pagination logic performs as expected.
         """
         first_response = {'data': {'next': 1, 'results': [{
@@ -40,8 +48,66 @@ class TestClientFunctions:
             'unique_id': '2',
             'time': '2023-01-01T01:00:20.123456+00:00'
         }]
-        mocker.patch.object(Client, '_http_request', side_effect=[first_response, second_response])
+
+        expected_args = {
+            'url_suffix': '/search/', 'method': 'GET',
+            'params': {'aql': 'example_query after:2023-01-01T01:00:00', 'includeTotal':
+                       'true', 'length': 2, 'orderBy': 'time', 'from': 1},
+            'headers': {'Authorization': 'test_access_token', 'Accept': 'application/json'}
+        }
+
+        mocked_http_request = mocker.patch.object(Client, '_http_request', side_effect=[first_response, second_response])
         assert dummy_client.fetch_by_aql_query('example_query', 3) == expected_result
+
+        mocked_http_request.assert_called_with(**expected_args)
+
+    @freeze_time("2022-12-31T01:00:00")
+    def test_continues_fetch_by_aql_query(self, mocker, dummy_client):
+        """
+        Test fetch_by_aql_query function behavior on continues fetch.
+
+        Given:
+            - Valid HTTP request parameters.
+            - An ongoing fetch of the instance is running (not initial fetch).
+            - from argument is set to a datetime value from last fetch.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the given from argument.
+            - Make sure the pagination logic performs as expected.
+        """
+        first_response = {'data': {'next': 1, 'results': [{
+            'unique_id': '1',
+            'time': '2023-01-01T01:00:10.123456+00:00'
+        }]}}
+
+        second_response = {'data': {'next': None, 'results': [{
+            'unique_id': '2',
+            'time': '2023-01-01T01:00:20.123456+00:00'
+        }]}}
+
+        expected_result = [{
+            'unique_id': '1',
+            'time': '2023-01-01T01:00:10.123456+00:00'
+        }, {
+            'unique_id': '2',
+            'time': '2023-01-01T01:00:20.123456+00:00'
+        }]
+
+        expected_args = {
+            'url_suffix': '/search/', 'method': 'GET',
+            'params': {'aql': 'example_query after:2023-01-01T01:00:01',
+                       'includeTotal': 'true', 'length': 2, 'orderBy': 'time', 'from': 1},
+            'headers': {'Authorization': 'test_access_token', 'Accept': 'application/json'}
+        }
+
+        from_arg = arg_to_datetime('2023-01-01T01:00:01')
+        mocked_http_request = mocker.patch.object(Client, '_http_request', side_effect=[first_response, second_response])
+        assert dummy_client.fetch_by_aql_query('example_query', 3, from_arg) == expected_result
+
+        mocked_http_request.assert_called_with(**expected_args)
 
 
 class TestHelperFunction:
@@ -164,8 +230,8 @@ class TestHelperFunction:
               last run dictionary for next fetch cycle.
         """
         from ArmisEventCollector import fetch_by_event_type
-        event_type = EVENT_TYPE('unique_id', 'example:query', 'events')
-        events: list[dict] = []
+        event_type = EVENT_TYPE('unique_id', 'example:query', 'events', 'time')
+        events: dict[str, list[dict]] = {}
         next_run: dict = {}
         last_run = {'events_last_fetch_time': '2023-01-01T01:00:20', 'events_last_fetch_ids': ['1', '2']}
         fetch_start_time_param = datetime.now()
@@ -187,7 +253,7 @@ class TestHelperFunction:
 
         fetch_by_event_type(event_type, events, next_run, dummy_client, 1, last_run, fetch_start_time_param)
 
-        assert events == [{'unique_id': '3', 'time': '2023-01-01T01:00:30.123456+00:00'}]
+        assert events['events'] == [{'unique_id': '3', 'time': '2023-01-01T01:00:30.123456+00:00'}]
         assert next_run == {'events_last_fetch_ids': ['3'], 'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00'}
 
     # test_add_time_to_events parametrize arguments
@@ -236,15 +302,59 @@ class TestHelperFunction:
             - A command result with readable output will be printed to the war-room.
         """
         from ArmisEventCollector import CommandResults, VENDOR, PRODUCT, events_to_command_results, tableToMarkdown
-        response_with_two_events = [{'time': '2023-01-01T01:00:10.123456+00:00',
-                                     '_time': '2023-01-01T01:00:10',
-                                     'unique_id': '1'},
-                                    {'time': '2023-01-01T01:00:20.123456+00:00',
-                                     '_time': '2023-01-01T01:00:20', 'unique_id': '2'}]
+        response_with_two_events = {'events': [{'time': '2023-01-01T01:00:10.123456+00:00',
+                                                '_time': '2023-01-01T01:00:10',
+                                                'unique_id': '1'},
+                                               {'time': '2023-01-01T01:00:20.123456+00:00',
+                                                '_time': '2023-01-01T01:00:20', 'unique_id': '2'}]}
         expected_result = CommandResults(
             raw_response=response_with_two_events,
-            readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT} events', t=response_with_two_events, removeNull=True))
-        assert events_to_command_results(response_with_two_events).readable_output == expected_result.readable_output
+            readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT}_events events', t=response_with_two_events['events'],
+                                            removeNull=True))
+        assert events_to_command_results(response_with_two_events)[0].readable_output == expected_result.readable_output
+
+    @freeze_time("2023-01-01 01:00:00")
+    def test_set_last_run_with_current_time_initial(self, mocker):
+        """
+        Given:
+            - A valid list of fetched events.
+            - An empty last_run dictionary.
+        When:
+            - Initial fetch is running.
+        Then:
+            - Set the last_run dictionary with the current time for each event type key.
+        """
+        from ArmisEventCollector import set_last_run_with_current_time
+
+        last_run: dict[Any, Any] = {}
+        event_types: list[str] = ['Alerts', 'Activities']
+
+        set_last_run_with_current_time(last_run, event_types)
+
+        assert last_run['alerts_last_fetch_time'] == last_run['activity_last_fetch_time'] == '2023-01-01T01:00:00'
+
+    @pytest.mark.parametrize('time_delta_since_last_fetch, expected_result', [
+        (2, True),
+        (-0.5, False)
+    ])
+    def test_should_run_device_fetch(self, time_delta_since_last_fetch, expected_result):
+        """
+            Fetch devices interval in this test is 1 hour.
+        Given:
+            - Case 1: Two hours since fetch for devices has been called.
+            - Case 2: Half an hour since fetch for devices has been called.
+        When:
+            - Calling should_run_device_fetch method
+        Then:
+            - True as last run time is more than the device fetch interval
+            - False as last run time was less than the device fetch interval of 1 hour
+
+        """
+        from ArmisEventCollector import should_run_device_fetch
+        addition_to_fetch_interval = timedelta(hours=time_delta_since_last_fetch)
+        time_in_last_fetch = datetime.now() - addition_to_fetch_interval
+        last_run: dict = {'devices_last_fetch_time': time_in_last_fetch.strftime('%Y-%m-%dT%H:%M:%S')}
+        assert should_run_device_fetch(last_run, timedelta(hours=1), datetime.now()) is expected_result
 
 
 class TestFetchFlow:
@@ -313,74 +423,81 @@ class TestFetchFlow:
         }]
 
     case_first_fetch = (  # type: ignore
+        # this case test the actual first fetch that runs after the initial fetch (that only sets the last run)
         1000,
-        {},
+        1000,
+        {'alerts_last_fetch_time': '2023-01-01T01:00:00'},
         fetch_start_time,
         ['Events'],
         events_with_different_time_1,
-        events_with_different_time_1,
+        {'events': events_with_different_time_1},
         {'events_last_fetch_ids': ['3'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'}
     )
+
     case_second_fetch = (  # type: ignore
+        1000,
         1000,
         {'events_last_fetch_ids': ['1', '2', '3'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'},
         fetch_start_time,
         ['Events'],
         events_with_different_time_2,
-        events_with_different_time_2,
+        {'events': events_with_different_time_2},
         {'events_last_fetch_ids': ['7', '6'],
             'events_last_fetch_time': '2023-01-01T01:01:00.123456+00:00', 'access_token': 'test_access_token'}
     )
     case_second_fetch_with_duplicates = (  # type: ignore
+        1000,
         1000,
         {'events_last_fetch_ids': ['1', '2', '3'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'},
         fetch_start_time,
         ['Events'],
         events_with_duplicated_from_1,
-        [{
+        {'events': [{
             'unique_id': '6',
             'time': '2023-01-01T01:01:00.123456+00:00'
         },
             {
             'unique_id': '7',
             'time': '2023-01-01T01:01:00.123456+00:00'
-        }],
+        }]},
         {'events_last_fetch_ids': ['7', '6'],
             'events_last_fetch_time': '2023-01-01T01:01:00.123456+00:00', 'access_token': 'test_access_token'}
     )
 
     case_no_new_event_from_fetch = (  # type: ignore
         1000,
+        1000,
         {'events_last_fetch_ids': ['1', '2', '3'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'},
         fetch_start_time,
         ['Events'],
-        [],
-        [],
+        {},
+        {},
         {'events_last_fetch_ids': ['1', '2', '3'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'}
     )
 
     case_all_events_from_fetch_have_the_same_time = (  # type: ignore
         1000,
+        1000,
         {'events_last_fetch_ids': ['1', '2', '3'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'},
         fetch_start_time,
         ['Events'],
         events_with_same_time,
-        events_with_same_time,
+        {'events': events_with_same_time},
         {'events_last_fetch_ids': ['1', '2', '3', '4', '5', '6'],
             'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00', 'access_token': 'test_access_token'}
     )
 
-    @ pytest.mark.parametrize('max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events, next_run', [
-        case_first_fetch, case_second_fetch, case_second_fetch_with_duplicates,
-        case_no_new_event_from_fetch, case_all_events_from_fetch_have_the_same_time
-    ])
-    def test_fetch_flow_cases(self, mocker, dummy_client, max_fetch, last_run,
+    @ pytest.mark.parametrize('max_fetch, devices_max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events,\
+        next_run', [case_first_fetch, case_second_fetch, case_second_fetch_with_duplicates,
+                    case_no_new_event_from_fetch, case_all_events_from_fetch_have_the_same_time
+                    ])
+    def test_fetch_flow_cases(self, mocker, dummy_client, max_fetch, devices_max_fetch, last_run,
                               fetch_start_time, event_types_to_fetch, response, events, next_run):
         """
         Given:
@@ -401,9 +518,9 @@ class TestFetchFlow:
         """
         from ArmisEventCollector import fetch_events
         mocker.patch.object(Client, 'fetch_by_aql_query', return_value=response)
-        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events')})
-        assert fetch_events(dummy_client, max_fetch, last_run,
-                            fetch_start_time, event_types_to_fetch) == (events, next_run)
+        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events', 'time')})
+        assert fetch_events(dummy_client, max_fetch, devices_max_fetch, last_run,
+                            fetch_start_time, event_types_to_fetch, None) == (events, next_run)
 
     case_access_token_expires_in_runtime = ()
 
@@ -434,11 +551,11 @@ class TestFetchFlow:
         fetch_start_time = arg_to_datetime('2023-01-01T01:00:00')
         mocker.patch.object(Client, 'fetch_by_aql_query', side_effect=[DemistoException(
             message='Invalid access token'), events_with_different_time])
-        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events')})
+        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events', 'time')})
         mocker.patch.object(Client, 'update_access_token')
         if fetch_start_time:
             last_run = {'events_last_fetch_ids': ['3'],
                         'events_last_fetch_time': '2023-01-01T01:00:30.123456+00:00',
                         'access_token': 'test_access_token'}
-            assert fetch_events(dummy_client, 1000, {}, fetch_start_time, [
-                'Events']) == (events_with_different_time, last_run)
+            assert fetch_events(dummy_client, 1000, 1000, {}, fetch_start_time, [
+                'Events'], None) == ({'events': events_with_different_time}, last_run)

@@ -1,4 +1,4 @@
-Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.0 format.
+Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.1 format.
 
 ## Script Data
 
