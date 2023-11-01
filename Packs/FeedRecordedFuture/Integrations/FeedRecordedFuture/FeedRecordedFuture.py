@@ -508,6 +508,7 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
 def main():  # pragma: no cover
     params = demisto.params()
 
+
     api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
 
     if not api_token:
