@@ -67,6 +67,7 @@ class Client:
             raise DemistoException(msg, res=response) from exc
 
     def set_next_run_filter(self, after: str):
+        demisto.debug(f'setting next run since value to: {after}')
         self.request.params.set_since_value(after)  # type: ignore
 
 
@@ -94,9 +95,13 @@ class GetEvents:
         stored_events: list = []
         max_events_to_fetch = int(self.client.request.params.limit)  # type: ignore
         demisto.debug(f'max_events_to_fetch={max_events_to_fetch}')
+
         while len(stored_events) < max_events_to_fetch:  # type: ignore
+            demisto.debug(f'stored_events={len(stored_events)}')
+
             try:
                 events: list = self.make_api_call()  # type: ignore
+                demisto.debug(f'received {len(events)} number of events.')
             except DemistoException as e:
                 if e.res is not None:
                     if e.res.status_code == 429:
@@ -112,7 +117,6 @@ class GetEvents:
 
             if len(events) == 0:  # type: ignore
                 # stop the loop the moment returned 0 events from the API
-                demisto.debug('#### No more events found')
                 break
 
             if last_object_ids:
