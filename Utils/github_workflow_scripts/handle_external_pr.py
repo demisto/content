@@ -10,6 +10,8 @@ from github.Repository import Repository
 from demisto_sdk.commands.common.tools import get_pack_metadata
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.pack import Pack
+from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
+
 
 from utils import (
     get_env_var,
@@ -197,7 +199,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     for pack in packs_in_pr:
-        pack_object = BaseContent.from_path(Path(pack).absolute())
+        pack_object = BaseContent.from_path(CONTENT_PATH / pack)
         assert isinstance(pack_object, Pack)
         for integration in pack_object.content_items.integration:
             print(f'pack_name: {pack}')
