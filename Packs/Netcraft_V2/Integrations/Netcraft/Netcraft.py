@@ -409,8 +409,9 @@ def paginate_with_page_num_and_size(
 def test_module(client: Client) -> str:
     if PARAMS.get('isFetch') and not arg_to_datetime(PARAMS['first_fetch']):
         raise ValueError(f'{PARAMS["first_fetch"]!r} is not a valid time.')
+
+    service = 'Takedown'
     try:
-        service = 'Takedown'
         client.get_takedowns({'page_size': 1})  # test takedown service
         service = 'Submission'
         client.submission_list({'max_results': 1})  # test submission service
@@ -809,11 +810,11 @@ def submission_list(args: dict, client: Client) -> CommandResults:
         ) | {
             'date_start':
                 str(date.date())
-                if (date := arg_to_datetime(args.get('date_start')))
+                if (date := arg_to_datetime(args.get('date_start')))  # pylint: disable=E0601
                 else None,
             'date_end':
                 str(date.date())
-                if (date := arg_to_datetime(args.get('date_end')))
+                if (date := arg_to_datetime(args.get('date_end')))  # pylint: disable=E0601
                 else None,
             'state': args.get('state', '').lower()
         }
