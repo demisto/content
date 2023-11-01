@@ -1,3 +1,24 @@
+function levenshtein(s1, s2) {
+    const l1 = s1.length;
+    const l2 = s2.length;
+
+    // Initialize the matrix
+    const matrix = Array.from({ length: l2 + 1 }, (_, i) => Array.from({ length: l1 + 1 }, (_, j) => (i === 0) ? j : i));
+
+    // Populate the matrix
+    for (let zz = 0; zz < l2; zz++) {
+        for (let sz = 0; sz < l1; sz++) {
+            if (s1[sz] === s2[zz]) {
+                matrix[zz + 1][sz + 1] = Math.min(matrix[zz + 1][sz] + 1, matrix[zz][sz + 1] + 1, matrix[zz][sz]);
+            } else {
+                matrix[zz + 1][sz + 1] = Math.min(matrix[zz + 1][sz] + 1, matrix[zz][sz + 1] + 1, matrix[zz][sz] + 1);
+            }
+        }
+    }
+
+    // Return the result
+    return matrix[l2][l1];
+}
 
 var email = args.email;
 var domains = argToList(args.domain);
@@ -20,24 +41,16 @@ var emailObj = {
 };
 
 domains.forEach(function(domain){
-  if(domain) {
-      var resp = executeCommand("GetStringsDistance", {inputString: emailObj.Domain, compareString: domain.toLowerCase()});
-
-      if(isError(resp[0])){
-          return resp;
-      }
-
-      data = [dq(resp[0], "Contents.Distances")];
-      data.forEach(function(entry)
-      {
-          emailObj.Distance.push(
-              {
-                  Domain  : dq(entry,"StringB"),
-                  Value   : dq(entry,"LevenshteinDistance")
-              });
-      });
-  }
+    if(domain) {
+        let levenshteinForDomain = levenshtein(emailObj.Domain, domain.toLowerCase());
+        emailObj.Distance.push(
+            {
+                Domain  : domain,
+                Value   : levenshteinForDomain
+            });
+    }
 });
+
 var ec = {};
 var suspicious = dq(emailObj,"Distance(val.Value > 0 && val.Value < {0}).Value".format(threshold));
 var dbotScore = 0;
