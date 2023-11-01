@@ -65,7 +65,7 @@ def fetch_indicators(client: Client, url: str, limit: int=None, params: dict=Non
         feed_tags = argToList(params.get('feedTags', []))
         tlp_color = params.get('tlp_color')
     response = client.http_request(url)
-    indicator_list = []
+    indicators_list = []
     demisto.debug('Fetch of indicators started ###')
 
     if response.ok:
@@ -101,14 +101,14 @@ def fetch_indicators(client: Client, url: str, limit: int=None, params: dict=Non
                     indicator_obj['fields']['tags'] = feed_tags
                 if tlp_color:
                     indicator_obj['fields']['trafficlightprotocol'] = tlp_color
-                indicator_list.append(indicator_obj)
+                indicators_list.append(indicator_obj)
                 # If limit is reached, break loop
                 if limit and isinstance(limit, int):
-                    if len(indicator_list)>=limit:
+                    if len(indicators_list)>=limit:
                         break
     else:
         demisto.error(f"Error: {response.status_code} - {response.json()['message']}")
-    return indicator_list
+    return indicators_list
 
 
 def get_last_commit_date(client):
