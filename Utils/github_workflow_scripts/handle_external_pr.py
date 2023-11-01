@@ -197,7 +197,11 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
+def is_tim_content(packs_in_pr: set[str]) -> bool:
+    """
+    :param packs_in_pr: packs that are part of the PR
+    :return: returns True or False if tim reviewer needed
+    """
     for pack in packs_in_pr:
         pack_object = BaseContent.from_path(CONTENT_PATH / pack)
         try:
@@ -207,16 +211,7 @@ def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
                         return True
         except Exception as error:
             print(f'Received error: {error}\nwhen trying to find pack {pack}')
-        print("tim in yml")
-        #assert isinstance(pack_object, Pack)
-        #for integration in pack_object.content_items.integration:
-        #    print(f'pack_name: {pack}')
-        #    print(f'is it a feed: {integration.is_feed}')
         pack_metadata = get_pack_metadata(pack)
-        # for pr_file in pr_files:
-        #    if "yml" in pr_file:
-        #        if "feed: true" in pr_file:
-        #            return True
         tags = pack_metadata.get("tags")
         categories = pack_metadata.get("categories")
         print("tim in categories")
@@ -225,9 +220,16 @@ def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_reviewer_needed(packs_in_pr: set[str], pr_files: list[str], support_labels: set[str]) -> bool:
-    if support_labels in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
-        return is_tim_content(packs_in_pr, pr_files)
+def is_tim_reviewer_needed(packs_in_pr: set[str], support_label:str) -> bool:
+    """
+    :param packs_in_pr: the packs that are part of this PR (there can be more then 1)
+    :param support_label: the support label of the PR - the highest one.
+
+    It calls the is_tim_content to check if tim_reviewer is needed
+    :return: True or false if tim reviewer needed
+    """
+    if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
+        return is_tim_content(packs_in_pr)
     return False
 
 
@@ -319,7 +321,7 @@ def main():
 
     # adding TIM reviewer
     packs_in_pr = packs_to_check_in_pr(pr_files)
-    if is_tim_reviewer_needed(packs_in_pr, pr_files, support_label):
+    if is_tim_reviewer_needed(packs_in_pr, support_label):
         reviewers.append(tim_reviewer)
         pr.add_to_labels(TIM_LABEL)
 
