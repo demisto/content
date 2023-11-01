@@ -63,6 +63,40 @@ def test_build_template(mocker):
         },
     }
 
+    # Check for the presence of the "Remediation Guidance" section in the output
+    remediation_guidance_header = {
+        "type": "header",
+        "data": "Remediation Guidance",
+        "layout": {
+            "rowPos": 12,
+            "columnPos": 1,
+            "style": {
+                "textAlign": "left",
+                "fontSize": 16,
+                "color": "black",
+                "background-color": "white",
+                "border-bottom": "5px solid #00cc66ff",
+            },
+        },
+    }
+    remediation_guidance_text = {
+        "type": "text",
+        "data": args.get('asm_remediation_guidance'),
+        "layout": {
+            "rowPos": 13,
+            "columnPos": 1,
+            "style": {
+                "textAlign": "left",
+                "display": "flex",
+                "alignItems": "center",
+                "padding": "5px",
+                "fontSize": 12,
+            },
+        },
+    }
+    assert remediation_guidance_header in result
+    assert remediation_guidance_text in result
+
 
 @pytest.mark.parametrize(
     "alert_id, report_type",
