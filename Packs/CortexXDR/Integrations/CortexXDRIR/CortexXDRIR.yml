@@ -563,7 +563,7 @@ script:
       type: String
     - contextPath: Process.is_malicious
       description: Whether the artifact is malicious, as decided by the Wildfire verdict.
-      type: String
+      type: boolean
     - contextPath: IP.Address
       description: IP address.
       type: String
