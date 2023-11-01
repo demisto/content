@@ -392,17 +392,18 @@ def get_datasets_to_delete(modeling_rules_file: str):
         Set - datasets to delete.
     """
     datasets_to_delete = set()
-    with open(modeling_rules_file) as f:
-        for modeling_rule_to_test in f.readlines():
-            modeling_rule_path = Path(f'Packs/{modeling_rule_to_test.strip()}')
-            test_data_matches = list(modeling_rule_path.glob(TEST_DATA_PATTERN))
-            if test_data_matches:
-                modeling_rule_testdata_path = test_data_matches[0]
-                test_data = json.loads(modeling_rule_testdata_path.read_text())
-                for data in test_data.get('data', []):
-                    dataset_name = data.get('dataset')
-                    if dataset_name:
-                        datasets_to_delete.add(dataset_name)
+    if Path(modeling_rules_file).is_file():
+        with open(modeling_rules_file) as f:
+            for modeling_rule_to_test in f.readlines():
+                modeling_rule_path = Path(f'Packs/{modeling_rule_to_test.strip()}')
+                test_data_matches = list(modeling_rule_path.glob(TEST_DATA_PATTERN))
+                if test_data_matches:
+                    modeling_rule_testdata_path = test_data_matches[0]
+                    test_data = json.loads(modeling_rule_testdata_path.read_text())
+                    for data in test_data.get('data', []):
+                        dataset_name = data.get('dataset')
+                        if dataset_name:
+                            datasets_to_delete.add(dataset_name)
     return datasets_to_delete
 
 
