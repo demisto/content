@@ -16,7 +16,8 @@ from Tests.scripts.collect_tests.constants import (
     DEFAULT_MARKETPLACE_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
-    ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES)
+    ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES,
+    TEST_DATA_PATTERN)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -89,6 +90,7 @@ class CollectionResult:
             skip_support_level_compatibility: bool = False,
             only_to_install: bool = False,
             only_to_upload: bool = False,
+            pack_to_reinstall: str | None = None,
     ):
         """
         Collected test playbook, and/or a pack to install.
@@ -113,6 +115,7 @@ class CollectionResult:
                 This is used when collecting a pack containing a content item, when their marketplace values differ.
         :param only_to_install: whether to collect the pack only to install it without upload to the bucket.
         :param only_to_upload: whether to collect the pack only to upload it to the bucket without install.
+        :param pack_to_reinstall: pack name to collect for reinstall test
         """
         self.tests: set[str] = set()
         self.modeling_rules_to_test: set[str | Path] = set()
@@ -120,6 +123,7 @@ class CollectionResult:
         self.packs_to_upload: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: tuple[Machine, ...] | None = None
+        self.packs_to_reinstall: set[str] = set()
 
         try:
             # raises if invalid
@@ -178,6 +182,10 @@ class CollectionResult:
         if modeling_rule_to_test:
             self.modeling_rules_to_test = {modeling_rule_to_test}
             logger.info(f'collected {modeling_rule_to_test=}, {reason} ({reason_description}, {version_range=})')
+
+        if pack_to_reinstall:
+            self.packs_to_reinstall = {pack_to_reinstall}
+            logger.info(f'collected {pack_to_reinstall=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
     def _validate_collection(
@@ -268,6 +276,7 @@ class CollectionResult:
         result.packs_to_install = self.packs_to_install | other.packs_to_install  # type: ignore[operator]
         result.packs_to_upload = self.packs_to_upload | other.packs_to_upload
         result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
+        result.packs_to_reinstall = self.packs_to_reinstall | other.packs_to_reinstall
         return result
 
     @staticmethod
@@ -602,6 +611,7 @@ class TestCollector(ABC):
             raise NothingToCollectException(changed_file_path, 'packs for Modeling Rules are only collected for XSIAM')
 
         pack = PACK_MANAGER.get_pack_metadata(pack_id)
+        pack_to_reinstall = None
 
         version_range = content_item_range \
             if pack.version_range.is_default \
@@ -622,6 +632,10 @@ class TestCollector(ABC):
         # the modeling rule to test will be the containing directory of the modeling rule's component files
         relative_path_of_mr = PACK_MANAGER.relative_to_packs(changed_file_path)
         modeling_rule_to_test = relative_path_of_mr.parent
+        test_data_file_for_mr = list(changed_file_path.parent.glob(TEST_DATA_PATTERN))
+        if test_data_file_for_mr:
+            pack_to_reinstall = pack_id
+
         return CollectionResult(
             test=None,
             modeling_rule_to_test=modeling_rule_to_test,
@@ -631,7 +645,8 @@ class TestCollector(ABC):
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
-            is_nightly=is_nightly
+            is_nightly=is_nightly,
+            pack_to_reinstall=pack_to_reinstall,
         )
 
     def _collect_pack_for_xsiam_component(
@@ -1357,12 +1372,14 @@ def output(result: CollectionResult | None):
     ) if result else ()
     modeling_rules_to_test = (x.as_posix() if isinstance(x, Path) else str(x) for x in modeling_rules_to_test)
     machines = result.machines if result and result.machines else ()
+    packs_to_reinstall_test = sorted(result.packs_to_reinstall, key=lambda x: x.lower()) if result else ()
 
     test_str = '\n'.join(tests)
     packs_to_install_str = '\n'.join(packs_to_install)
     packs_to_upload_str = '\n'.join(packs_to_upload)
     modeling_rules_to_test_str = '\n'.join(modeling_rules_to_test)
     machine_str = ', '.join(sorted(map(str, machines)))
+    packs_to_reinstall_test_str = '\n'.join(packs_to_reinstall_test)
 
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
@@ -1370,12 +1387,14 @@ def output(result: CollectionResult | None):
     num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
     logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
+    logger.info(f'collected {len(packs_to_reinstall_test)} packs to reinstall to test:\n{packs_to_reinstall_test_str}')
 
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(packs_to_install_str)
     PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
     PATHS.output_modeling_rules_to_test_file.write_text(modeling_rules_to_test_str)
     PATHS.output_machines_file.write_text(json.dumps({str(machine): (machine in machines) for machine in Machine}))
+    PATHS.output_packs_to_reinstall_test_file.write_text(packs_to_reinstall_test_str)
 
 
 class XPANSENightlyTestCollector(NightlyTestCollector):
