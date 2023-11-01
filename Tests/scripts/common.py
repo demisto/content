@@ -4,7 +4,6 @@ from typing import Any
 
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
-from tqdm import tqdm
 
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -110,8 +109,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
     total_row: list[Any] = ([NOT_AVAILABLE] * fixed_headers_length + [TestSuiteStatistics()
                                                                       for _ in range(len(server_versions_list))])
     total_errors = 0
-    for result, result_test_suites in tqdm(results.items(), desc="Generating summary table", unit="result",
-                                           leave=True, colour='green', miniters=10, mininterval=5.0):
+    for result, result_test_suites in results.items():
         row: list[Any] = []
         if not without_jira:
             if jira_ticket := jira_tickets_for_result.get(result):
