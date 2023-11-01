@@ -5,7 +5,7 @@ alert_fields: {}
 alert_name: Chrome - Chrome Extension Install Event
 crontab: null
 dataset: alerts
-description: This rule alerts on any installation of a browser extension
+description: This rule alerts on any installation of a browser extension.
 drilldown_query_timeframe: ALERT
 execution_mode: REAL_TIME
 global_rule_id: f70c2608-e4e4-44fa-a1f2-59703698c773
