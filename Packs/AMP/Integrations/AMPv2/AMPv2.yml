@@ -706,6 +706,10 @@ script:
       name: page_size
     - description: Number of total results to return.
       name: limit
+    - description: Create relationships between indicators as part of Enrichment.
+      defaultvalue: 'false'
+      name: create_relationships
+      required: false
     description: Fetch a list of events that can be filtered by a variety of criteria. Each criteria type is logically ANDed with the other criteria, and each selection of a criteria is logically ORed. This is analogous to the Events view on the FireAMP Console.
     name: cisco-amp-event-list
     outputs:

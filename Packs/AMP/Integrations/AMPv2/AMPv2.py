@@ -14,6 +14,7 @@ from CommonServerUserPython import *  # pylint: disable=wildcard-import
 """ GLOBAL/PARAMS """  # pylint: disable=pointless-string-statement
 
 
+INTEGRATION_NAME = "Cisco AMP v2"
 DEFAULT_INTERVAL = 30
 DEFAULT_TIMEOUT = 600
 FETCH_LIMIT = 200
@@ -187,6 +188,7 @@ class Client(BaseClient):
         reliability: str,
         verify: bool = False,
         proxy: bool = False,
+        should_create_relationships: bool = False,
     ):
         """
         Build URL with authorization arguments to provide the required Basic Authentication.
@@ -207,6 +209,7 @@ class Client(BaseClient):
         )
 
         self.reliability = reliability
+        self.should_create_relationships = should_create_relationships
 
     def computer_list_request(
         self,
@@ -2034,6 +2037,31 @@ def computer_isolation_polling_command(
     )
 
 
+def create_relationships(client: Client, indicator: str, relationship: dict):
+    if not relationship:
+        return None
+
+    identity: dict
+    if not (identity := relationship.get("identity")):
+        return None
+
+    relationships = [
+        EntityRelationship(
+            name=EntityRelationship.Relationships.RELATED_TO,
+            entity_a=indicator,
+            entity_a_type=FeedIndicatorType.File,
+            entity_b=entity_b,
+            entity_b_type=FeedIndicatorType.File,
+            brand=INTEGRATION_NAME,
+            source_reliability=client.reliability,
+        )
+        for _, entity_b in identity.items()
+        if auto_detect_indicator_type(entity_b) == FeedIndicatorType.File
+    ]
+
+    return relationships if relationships else None
+
+
 def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     Get information about events with the option to filter them.
@@ -2112,6 +2140,15 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
             disposition = dict_safe_get(context_output, ["file", "disposition"])
 
             dbot_score = get_dbotscore(client.reliability, sha256, disposition)
+            relationships = (
+                create_relationships(
+                    client=client,
+                    indicator=sha256,
+                    relationship=dict_safe_get(context_output, ["file", "parent"]),
+                )
+                if argToBoolean(args.get("create_relationships", False))
+                else None
+            )
 
             file_indicator = Common.File(
                 md5=dict_safe_get(context_output, ["file", "identity", "md5"]),
@@ -2120,7 +2157,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
                 path=dict_safe_get(context_output, ["file", "file_path"]),
                 name=dict_safe_get(context_output, ["file", "file_name"]),
                 hostname=dict_safe_get(context_output, ["computer", "hostname"]),
-                relationships=dict_safe_get(context_output, ["file", "parent"]),
+                relationships=relationships,
                 dbot_score=dbot_score,
             )
 
