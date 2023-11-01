@@ -1517,7 +1517,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "docker_precommit_post_rebase"
-resolved_reference = "a8ac2860f3acf9d52b51a3e15ba7a390a4f2ac34"
+resolved_reference = "d656336d50d6cfe0f98a1851712824ad0609c9eb"
 
 [[package]]
 name = "deprecated"
