@@ -9,7 +9,7 @@ from tabulate import tabulate
 
 from Tests.scripts.common import calculate_results_table, TEST_MODELING_RULES_REPORT_FILE_NAME, get_test_results_files
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
-    JIRA_API_KEY, jira_server_information
+    JIRA_API_KEY, jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, JIRA_LABELS
 from Tests.scripts.test_modeling_rule_report import TEST_MODELING_RULES_BASE_HEADERS, calculate_test_modeling_rule_results
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
@@ -35,19 +35,22 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
 
     if without_jira:
         logging.info("Printing test modeling rule summary without Jira tickets")
-        jira_server = None
+        issues = None
     else:
         logging.info("Searching for Jira tickets for test modeling rule with the following settings:\n"
-                     f'Jira server url: {JIRA_SERVER_URL}\n'
-                     f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
-                     f'Jira project id: {JIRA_PROJECT_ID}\n'
-                     f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
-                     f'Jira component: {JIRA_COMPONENT}\n')
+                     f"Jira server url: {JIRA_SERVER_URL}\n"
+                     f"Jira verify SSL: {JIRA_VERIFY_SSL}\n"
+                     f"Jira project id: {JIRA_PROJECT_ID}\n"
+                     f"Jira issue type: {JIRA_ISSUE_TYPE}\n"
+                     f"Jira component: {JIRA_COMPONENT}\n"
+                     f"Jira labels: {', '.join(JIRA_LABELS)}\n")
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
+        issues = jira_search_all_by_query(jira_server, generate_query_by_component_and_issue_type())
+
     modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions = (
-        calculate_test_modeling_rule_results(test_modeling_rules_results_files, jira_server)
+        calculate_test_modeling_rule_results(test_modeling_rules_results_files, issues)
     )
 
     if modeling_rules_to_test_suite:
