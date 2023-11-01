@@ -568,3 +568,31 @@ Returns the mail folder list directly under the root folder.
 | MSGraphMail.Folders.ParentFolderID | string | Parent folder ID. | 
 | MSGraphMail.Folders.TotalItemCount | number | The total number of email messages in the folder. | 
 | MSGraphMail.Folders.UnreadItemCount | number | The number of unread emails in the folder. | 
+
+### msgraph-mail-list-child-folders
+
+***
+Returns the folder list under the specified folder.
+
+#### Base Command
+
+`msgraph-mail-list-child-folders`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| parent_folder_id | The ID of the parent folder. | Required | 
+| limit | The maximum number of mail folder lists to return. Default is 20. Default is 20. | Optional | 
+| ran_once_flag | Flag for the rate limit retry. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Folders.ChildFolderCount | Number | The number of child folders. | 
+| MSGraphMail.Folders.DisplayName | String | The folder display name. | 
+| MSGraphMail.Folders.ID | String | The folder ID. | 
+| MSGraphMail.Folders.ParentFolderID | String | The parent folder ID. | 
+| MSGraphMail.Folders.TotalItemCount | Number | The total number of email messages in the folder. | 
+| MSGraphMail.Folders.UnreadItemCount | Number | The number of unread email messages in the folder. | 
