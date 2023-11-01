@@ -1,6 +1,6 @@
 alert_category: PERSISTENCE
 alert_description: The extension $xdm.target.resource.name was installed on $xdm.source.host.hostname
-  by $xdm.intermediate.user.username
+  by $xdm.intermediate.user.username.
 alert_fields: {}
 alert_name: Chrome - Chrome Extension Install Event
 crontab: null
