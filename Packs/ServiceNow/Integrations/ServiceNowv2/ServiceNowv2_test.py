@@ -15,8 +15,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
-    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason, \
-    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
+    converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -1894,7 +1894,7 @@ def test_get_closure_case(params, expected):
                           ('corrupt_state', 'custom_state=Test', 'Other'),
                           ('6', 'custom_state=Test', 'Resolved'),
                           ])
-def test_converts_state_close_reason(ticket_state, server_close_custom_state, expected_res):
+def test_converts_close_code_or_state_to_close_reason(ticket_state, server_close_custom_state, expected_res):
     """
     Given:
         - ticket_state: The state for the closed service now ticket
@@ -1904,7 +1904,7 @@ def test_converts_state_close_reason(ticket_state, server_close_custom_state, ex
     Then:
         - return the matching XSOAR incident state.
     """
-    assert converts_state_close_reason(ticket_state, server_close_custom_state) == expected_res
+    assert converts_close_code_or_state_to_close_reason(ticket_state, server_close_custom_state) == expected_res
 
 
 def ticket_fields_mocker(*args, **kwargs):
