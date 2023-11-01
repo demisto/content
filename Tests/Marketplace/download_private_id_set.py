@@ -7,6 +7,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
+
 def create_empty_id_set_in_artifacts(private_id_set_path):
     empty_id_set: dict = {
         "scripts": [],
