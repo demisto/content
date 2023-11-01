@@ -60,7 +60,7 @@ class Client(BaseClient):
         return res
 
 
-def fetch_indicators(client: Client, url: str, params: dict=None):
+def fetch_indicators(client: Client, url: str, limit: int=None, params: dict=None):
     if params:
         feed_tags = argToList(params.get('feedTags', []))
         tlp_color = params.get('tlp_color')
@@ -102,6 +102,10 @@ def fetch_indicators(client: Client, url: str, params: dict=None):
                 if tlp_color:
                     indicator_obj['fields']['trafficlightprotocol'] = tlp_color
                 indicator_list.append(indicator_obj)
+                # If limit is reached, break loop
+                if limit and isinstance(limit, int):
+                    if len(indicator_list)>=limit:
+                        break
     else:
         demisto.error(f"Error: {response.status_code} - {response.json()['message']}")
     return indicator_list
@@ -132,38 +136,40 @@ def get_last_commit_date(client):
     return last_commit_date
 
 
-def fetch_indicators_command(client: Client, args: dict, params: dict=None):
+def fetch_indicators_command(client: Client, params: dict=None):
     integration_context = get_integration_context()
     api_url = "/contents/trails/static/malware/qakbot.txt"
-    indicator_list = []
 
     #First Fetch
     if not integration_context:
         time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
         set_integration_context({'time_of_last_fetch': time_of_first_fetch})
-        indicator_list = fetch_indicators(client, api_url, params)
+        indicators_list = fetch_indicators(client, api_url, params)
     else:
         time_from_last_update = integration_context.get('time_of_last_fetch')
         now = date_to_timestamp(datetime.now(), DATE_FORMAT)
         last_commit_date = get_last_commit_date(client)
         if last_commit_date > time_from_last_update:
-            indicator_list = fetch_indicators(client, api_url, params)
+            indicators_list = fetch_indicators(client, api_url, params)
             set_integration_context({'time_of_last_fetch': now})
         else:
             demisto.debug(f'### Nothing to fetch')
 
-    return indicator_list
+    return indicators_list
 
 
 def get_indicators_command(client: Client, params: dict, args: dict):
-    limit = args.get('limit')
-    if limit:
-        limit = int(limit)
-    indicator_list = fetch_indicators_command(client=client, args=limit)
-    human_readable = tableToMarkdown("Indicators from Github Maltrail:", indicator_list,
+    try:
+        limit = int(args.get('limit', 50))
+    except ValueError:
+        raise ValueError('The limit argument must be a number.')
+    api_url = "/contents/trails/static/malware/qakbot.txt"
+    indicators_list = fetch_indicators(client, api_url, limit, params)
+    entry_result = indicators_list[:limit]
+    human_readable = tableToMarkdown("Indicators from Github Maltrail:", entry_result,
                                      headers=['value', 'type', 'firstseenbysource', 'lastseenbysource', 'name'],
                                      removeNull=True)
-    return human_readable, {}, indicator_list
+    return human_readable, {}, entry_result
 
 
 def test_module_command(client: Client, params: dict, args: dict):
@@ -181,13 +187,13 @@ def main():
     # Switch case
     commands = {
         'test-module': test_module_command,
-        'get-indicators': get_indicators_command
+        'gh-maltrail-get-indicators': get_indicators_command
     }
 
     try:
         client = Client(params)
         if command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, args, params)
+            indicators = fetch_indicators_command(client, params)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
