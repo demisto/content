@@ -197,7 +197,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     for pack in packs_in_pr:
-        pack_object = BaseContent.from_path(Path(pack))
+        pack_object = BaseContent.from_path(Path(pack).absolute())
         assert isinstance(pack_object, Pack)
         for integration in pack_object.content_items.integration:
             print(f'pack_name: {pack}')
