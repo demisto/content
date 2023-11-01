@@ -286,7 +286,7 @@ class Client(BaseClient):
             siteIds=site_ids,
             rank=int(rank) if rank else None,
             keys_to_ignore=keys_to_ignore,
-            incidentStatuses=incident_statuses.lower() if incident_statuses is not None else None
+            incidentStatuses=incident_statuses.lower() if incident_statuses else None
         )
         response = self._http_request(method='GET', url_suffix='threats', params=params, ok_codes=[200])
         return response.get('data', {})
