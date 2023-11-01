@@ -139,7 +139,7 @@ def get_last_commit_date(client):
 def fetch_indicators_command(client: Client, params: dict=None):
     integration_context = get_integration_context()
     api_url = "/contents/trails/static/malware/qakbot.txt"
-
+    indicators_list = []
     #First Fetch
     if not integration_context:
         time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
