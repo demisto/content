@@ -7,8 +7,9 @@ from blessings import Terminal
 from github import Github
 from git import Repo
 from github.Repository import Repository
-from demisto_sdk.commands.common.tools import get_pack_metadata, get_yml_paths_in_dir
-
+from demisto_sdk.commands.common.tools import get_pack_metadata
+from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
+from demisto_sdk.commands.content_graph.objects.pack import Pack
 
 from utils import (
     get_env_var,
@@ -196,10 +197,11 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 
 def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     for pack in packs_in_pr:
-        temp_pack = get_yml_paths_in_dir(pack)
-        temp_pr_file = get_yml_paths_in_dir(pr_files[0])
-        print(f'temp_pack: {temp_pack}')
-        print(f'temp_pr_file: {temp_pr_file}')
+        pack_object = BaseContent.from_path(Path(pack))
+        assert isinstance(pack_object, Pack)
+        for integration in pack_object.content_items.integration:
+            print(f'pack_name: {pack}')
+            print(f'is it a feed: {integration.is_feed}')
         pack_metadata = get_pack_metadata(pack)
         for pr_file in pr_files:
             if "yml" in pr_file:
