@@ -268,7 +268,7 @@ def main():  # pragma: no cover
         elif command == 'fetch-events':
             events = aggregated_results(client, events_limit, since=last_run_after, last_object_ids=last_object_ids)
             send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(GetEvents.get_last_run(events, last_run_after))
+            demisto.setLastRun(get_last_run(events, last_run_after))
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
