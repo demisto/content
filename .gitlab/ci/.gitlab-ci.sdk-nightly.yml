@@ -250,7 +250,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - demisto-sdk download -lf --insecure
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
 
     - section_start "Install Packs and run test-content" --collapsed
@@ -414,7 +413,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - demisto-sdk download -o Packs/HelloWorld -i HelloWorld --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
-    - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
 
     - section_start "Install Packs and run test-content" --collapsed
