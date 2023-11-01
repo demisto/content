@@ -11,8 +11,8 @@ In order to run the test locally it is required to set up the environment variab
 
 ### Integration Credentials
 In order to run the e2e XSOAR-NG tests it is required to define the required credentials for these tests.
-You can create the `integration_secrets.json` file under the `Tests/tests_end_to_end/xsoar_ng/integration_secrets.json` path.
-This will be automatically ignored by git, hence **is it extremely important to configure it at the same name**.
+You can create the `integration_secrets.json` file **outside** the content repo.
+
 
 The structure of the file should be:
 
@@ -31,5 +31,5 @@ export DEMISTO_BASE_URL=<XSOAR_NG_API_URL>
 export DEMISTO_API_KEY=<XSOAR_NG_API_KEY>
 export XSIAM_AUTH_ID=<DEMISTO_API_KEY_ID>
 touch Tests/tests_end_to_end/xsoar_ng/integration_secrets.json  # fill up the file according to Integration Credentials section.
-python -m pytest Tests/tests_end_to_end/xsoar_ng -v --disable-warnings --integration_secrets_path "Tests/tests_end_to_end/xsoar_ng/integration_secrets.json"
+python -m pytest Tests/tests_end_to_end/xsoar_ng -v --disable-warnings --integration_secrets_path <path>
 ```

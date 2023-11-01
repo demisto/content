@@ -1,344 +1,346 @@
 import time
 from datetime import timedelta
 from datetime import datetime
+from contextlib import contextmanager
 
 import pytest
 import requests
+from typing import Tuple, List, Dict, Set
 from demisto_client.demisto_api import IncidentWrapper
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.utils.utils import retry_http_request
+from Tests.tools import get_integration_params
 
 
-@pytest.fixture()
-def create_indicators(request, xsoar_ng_client: XsoarNGApiClient):
-    """
-    Setup:
-        1. Check if there are any indicators in XSOAR-NG.
-        2. if not, create new indicators, if yes, does not do anything.
-
-    Teardown:
-        Removes the newly created indicators in case those were created in setup.
-
-    """
-    response = xsoar_ng_client.list_indicators()
-    if response.get("total") > 0:
-        return
-
-    indicators = getattr(request.cls, "indicators", [])
+@contextmanager
+def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: List[Tuple[str, str, int]]):
     indicators_to_remove = []
-    for indicator, indicator_type, score in indicators:
-        try:
-            response = xsoar_ng_client.create_indicator(indicator, indicator_type=indicator_type, score=score)
-            if created_indicator_id := response.get("id"):
-                indicators_to_remove.append(created_indicator_id)
-        except ApiException as e:
-            if "it is in the exclusion list" not in e.reason:
-                raise
-
-    def delete_indicators():
+    try:
+        for indicator, indicator_type, score in indicators:
+            try:
+                response = xsoar_ng_client.create_indicator(indicator, indicator_type=indicator_type, score=score)
+                if created_indicator_id := response.get("id"):
+                    indicators_to_remove.append(created_indicator_id)
+            except ApiException as e:
+                if "it is in the exclusion list" not in e.reason:
+                    raise
+        yield
+    finally:
         _response = xsoar_ng_client.delete_indicators(indicators_to_remove)
         successful_removed_ids = set(_response.get("updatedIds") or [])
         assert set(indicators_to_remove).issubset(successful_removed_ids)
 
-    if indicators_to_remove:
-        request.addfinalizer(delete_indicators)
-
 
 @pytest.fixture()
-def create_instance(request, integration_params: dict, xsoar_ng_client: XsoarNGApiClient):
-    """
-    Setup:
-        creates an instance in XSOAR-NG.
-
-    Teardown:
-        removes the instance from XSOAR-NG
-
-    Returns:
-        str: the instance name that was created.
-    """
-
-    integration_id = request.cls.integration_id
-    is_long_running = getattr(request.cls, "is_long_running", False)
-    instance_name = integration_params.pop(
-        "integrationInstanceName", f'e2e-test-{integration_params.get("name", integration_id)}')
-    response = xsoar_ng_client.create_integration_instance(
-        _id=integration_id,
-        name=instance_name,
-        integration_instance_config=integration_params,
-        integration_log_level="Verbose",
-        is_long_running=is_long_running
-    )
-    assert response
-    created_instance_id = response.get("id")
-
-    def delete_instance():
-        xsoar_ng_client.delete_integration_instance(created_instance_id)
-
-    request.addfinalizer(delete_instance)
-    return instance_name
+def available_indicators(xsoar_ng_client: XsoarNGApiClient) -> List[str]:
+    return [indicator.get("value") for indicator in xsoar_ng_client.list_indicators().get("iocObjects")]
 
 
-@pytest.fixture()
-def create_incident(request, xsoar_ng_client: XsoarNGApiClient) -> IncidentWrapper:
-    """
-    Setup:
-        creates an incident in XSOAR-NG
-
-    Teardown:
-        removes the incident from XSOAR-NG
-
-    Returns:
-        dict: the api raw response of the newly created incident
-    """
-    integration_id = request.cls.integration_id
-    playbook_id = request.cls.playbook_id
-    response = xsoar_ng_client.create_incident(
-        f'end-to-end-{integration_id}-test', should_create_investigation=True, attached_playbook_id=playbook_id
-    )
-
-    incident_id = response.id
-
-    def delete_incident():
-        xsoar_ng_client.delete_incidents(incident_id)
-
-    request.addfinalizer(delete_incident)
-    return response
+@contextmanager
+def create_integration_instance(xsoar_ng_client: XsoarNGApiClient, integration_params: Dict, integration_id: str, is_long_running: bool = False, instance_name: str | None = None):
+    created_instance_uuid = ""
+    try:
+        response = xsoar_ng_client.create_integration_instance(
+            _id=integration_id,
+            name=instance_name,
+            integration_instance_config=integration_params,
+            integration_log_level="Verbose",
+            is_long_running=is_long_running
+        )
+        created_instance_uuid = response.get("id")
+        yield response
+    finally:
+        if created_instance_uuid:
+            xsoar_ng_client.delete_integration_instance(created_instance_uuid)
 
 
-@pytest.fixture()
-def create_playbook(request, xsoar_ng_client: XsoarNGApiClient):
-    """
-    Setup:
-        uploads a custom playbook into XSOAR-NG
+@contextmanager
+def create_incident(
+    xsoar_ng_client: XsoarNGApiClient, name: str | None = None, playbook_id: str | None = None
+) -> IncidentWrapper:
+    incident_id = None
+    try:
+        response = xsoar_ng_client.create_incident(
+            name or f'end-to-end-{playbook_id}-incident', should_create_investigation=True, attached_playbook_id=playbook_id
+        )
+        incident_id = response.id
+        yield response
+    finally:
+        if incident_id:
+            xsoar_ng_client.delete_incidents(incident_id)
 
-    Teardown:
-        removes the custom playbook from XSOAR-NG.
-    """
-    playbook_path = request.cls.playbook_path
-    xsoar_ng_client.client.import_playbook(playbook_path)
 
-    playbook_id = request.cls.playbook_id
-    playbook_name = request.cls.playbook_name
-
-    def delete_playbook():
+@contextmanager
+def create_playbook(xsoar_ng_client: XsoarNGApiClient, playbook_path: str, playbook_id: str, playbook_name: str):
+    try:
+        xsoar_ng_client.client.import_playbook(playbook_path)
+        yield
+    finally:
         xsoar_ng_client.delete_playbook(playbook_name, playbook_id)
 
-    request.addfinalizer(delete_playbook)
+
+@retry_http_request(times=30, delay=5)
+def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_states: Set[str]):
+    playbook_status_raw_response = xsoar_ng_client.get_playbook_state(incident_id)
+    _playbook_status = playbook_status_raw_response.get("state", "").lower()
+    if _playbook_status in expected_states:
+        return True
+    raise Exception(f'the status of the playbook {playbook_status_raw_response} is {_playbook_status}')
 
 
-class TestEDL:
-    """
-    Tests EDL on xsoar-ng
-    """
-    indicators = [
-        ("1.1.1.1", "IP", 0),
-        ("2.2.2.2", "IP", 0),
-        ("3.3.3.3", "IP", 0)
-    ]
-    instance_name_gsm = "edl_e2e_instance"
-    integration_id = "EDL"
-    is_long_running = True
+@retry_http_request(times=30, delay=5)
+def is_incident_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_state: str = "closed"):
 
-    def test_edl(self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: dict):
-        """
-        Given:
-            - indicators in xsoar-ng
-            - long-running EDL instance
-        When:
-            - Trying to query the URL of edl
-        Then:
-            - make sure that indicators are returned in the response of edl instance
-        """
-        instance_name = create_instance
-        username = integration_params["credentials"]["identifier"]
-        password = integration_params["credentials"]["password"]
+    incident_status = {
+        0: "new",  # pending
+        1: "in_progress",  # active
+        2: "closed",  # done
+        3: "acknowledged"  # archived
+    }
 
-        response = xsoar_ng_client.do_long_running_instance_request(instance_name, username=username, password=password)
-        assert response.text, f'could not get indicators from url={response.request.url} from instance {instance_name}' \
-                              f' with available ' \
-                              f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
-                              f'status code={response.status_code}, response={response.text}'
+    incident_response = xsoar_ng_client.search_incidents(incident_ids=incident_id)
+    # status 2 means the incident is closed.
+    incident_status = incident_status.get(incident_response["data"][0].get("status"))
+    if incident_status == expected_state:
+        return True
+    raise Exception(f'incident {incident_response} status is {incident_status} and is not in state {expected_state}')
 
 
-class TestTaxii2Server:
-    """
-    Tests taxii2-server on xsoar-ng
-    """
-    indicators = [
-        ("1.1.1.1", "IP", 0),
-        ("2.2.2.2", "IP", 0),
-        ("3.3.3.3", "IP", 0)
-    ]
-    instance_name_gsm = "taxii2server-e2e"
-    integration_id = "TAXII2 Server"
-    is_long_running = True
-
-    def test_taxii2_server(
-        self, xsoar_ng_client: XsoarNGApiClient, create_indicators, create_instance: str, integration_params: dict
-    ):
-        """
-        Given:
-            - indicators in xsoar-ng
-            - long-running taxii2 server instance
-        When:
-            - Trying to query the URL(s) of taxii2 server
-        Then:
-            - make sure that indicators are returned in the response of taxii2 server instance
-        """
-        instance_name = create_instance
-        username = integration_params["credentials"]["identifier"]
-        password = integration_params["credentials"]["password"]
-        headers = {"Accept": "application/taxii+json;version=2.1"}
-
-        def get_json_response(_response: requests.Response) -> dict:
-            try:
-                return _response.json()
-            except ValueError as e:
-                raise ValueError(f'Could not parse {_response.text}, error: {e}')
-
-        response = xsoar_ng_client.do_long_running_instance_request(
-            instance_name, url_suffix="/threatintel/collections", headers=headers, username=username, password=password
+@contextmanager
+def get_fetched_incident(
+    xsoar_ng_client: XsoarNGApiClient,
+    incident_ids: List | str | None = None,
+    from_date: str | None = None,
+    incident_types: List | str | None = None,
+    should_start_investigation: bool = True,
+    should_remove_fetched_incidents: bool = True
+):
+    @retry_http_request(times=30, delay=3)
+    def _get_fetched_incident():
+        _found_incidents = xsoar_ng_client.search_incidents(
+            incident_ids, from_date=from_date, incident_types=incident_types, size=1
+        )
+        if data := _found_incidents.get("data"):
+            return data
+        raise Exception(
+            f'Could not get incident with filters: {incident_ids=}, {from_date=}, {incident_types=}'
         )
 
-        # get the collections available
-        collections = get_json_response(response).get("collections")
-        assert collections, f'could not get collections from url={response.request.url}, ' \
-                            f'status_code={response.status_code}, response={collections}'
+    try:
+        found_incidents = _get_fetched_incident()
+        amount_of_found_incidents = len(found_incidents)
 
-        collection_id = collections[0]["id"]
+        assert amount_of_found_incidents == 1, f'Found {amount_of_found_incidents} incidents'
+        incident = found_incidents[0]
+        if incident_types:
+            assert incident["type"] == incident_types, f'Found wrong incident {incident} type'
 
-        # get the actual indicators from the collection
-        response = xsoar_ng_client.do_long_running_instance_request(
-            instance_name,
-            url_suffix=f"/threatintel/collections/{collection_id}/objects",
-            headers=headers,
-            username=username,
-            password=password
-        )
+        if should_start_investigation:
+            start_investigation_response = xsoar_ng_client.start_incident_investigation(incident.get("id") or "")
+            incident["investigationId"] = start_investigation_response.get("response", {}).get("id")
 
-        indicators = get_json_response(response).get("objects")
-        assert indicators, f'could not get indicators from url={response.request.url} with available ' \
-                           f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
-                           f'status code={response.status_code}, response={indicators}'
+        yield incident
 
-
-class TestSlack:
-
-    instance_name_gsm = "slack-e2e-instance"
-    integration_id = "SlackV3"
-    is_long_running = True
-    playbook_path = "Tests/tests_end_to_end/xsoar_ng/TestSlackAskE2E.yml"
-    # playbook_path = "TestSlackAskE2E.yml"
-    playbook_id = "TestSlackAskE2E"
-    playbook_name = "TestSlackAskE2E"
-
-    def test_slack_ask(
-        self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, create_playbook, create_incident: IncidentWrapper
-    ):
-        """
-        Given:
-            - playbook that runs slack-ask (runs SlackAskV2 and then answers the slack ask with the slack V3 integration)
-            - slack V3 integration
-        When:
-            - running slack ask flow with slack V3
-        Then:
-            - make sure that the slack ask flow worked properly
-            - make sure that the playbook finishes.
-            - make sure that the context is populated with thread ID(s) from the slack-ask and slack-response.
-        """
-        investigation_id = create_incident.investigation_id
-        incident_id = create_incident.id
-
-        @retry_http_request(times=30, delay=5)
-        def get_playbook_status():
-            _playbook_status = xsoar_ng_client.get_playbook_state(incident_id).get("state", "").lower()
-            if _playbook_status in {"completed", "failed"}:
-                return playbook_state
-            raise Exception(f'the status of the {self.playbook_id} is {_playbook_status}')
-
-        playbook_state = get_playbook_status()
-        # make sure the playbook finished successfully.
-        assert playbook_state == "completed", f"playbook {self.playbook_id} state ended with status '{playbook_state}'"
-
-        context = xsoar_ng_client.get_investigation_context(investigation_id)
-        # make sure the context is populated with thread id(s) from slack ask
-        assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
-
-
-class TestQradar:
-    instance_name_gsm = "qradar-e2e-instance"
-    integration_id = "QRadar v3"
-    is_long_running = True
-
-    @pytest.fixture()
-    def qradar_incident(self, request, xsoar_ng_client: XsoarNGApiClient, integration_params: dict) -> dict:
-        thirty_seconds_ago = (datetime.utcnow() - timedelta(seconds=30)).strftime("%Y-%m-%dT%H:%M:%S")
-        qradar_incident_type = integration_params["incident_type"]
-
-        @retry_http_request(times=20, delay=3)
-        def get_fetched_offense():
-            _found_incidents = xsoar_ng_client.search_incidents(
-                from_date=thirty_seconds_ago, incident_types=qradar_incident_type, size=1
-            )
-            if data := _found_incidents.get("data"):
-                return data
-            raise Exception(
-                f"Could not get qradar offense with filters: "
-                f"{thirty_seconds_ago=}, {qradar_incident_type}, got {_found_incidents}"
-            )
-
-        def remove_qradar_fetched_incidents():
-            # remove any incidents that were fetched from the qradar integration during the execution time of this test
+    finally:
+        if should_remove_fetched_incidents:
             incidents_to_remove = xsoar_ng_client.search_incidents(
-                from_date=thirty_seconds_ago, incident_types=qradar_incident_type
+                incident_ids, from_date=from_date, incident_types=incident_types
             )
             if incident_ids_to_remove := [_incident.get("id") for _incident in incidents_to_remove.get("data", [])]:
                 xsoar_ng_client.delete_incidents(incident_ids_to_remove)
 
-        request.addfinalizer(remove_qradar_fetched_incidents)
 
-        found_incidents = get_fetched_offense()
-        amount_of_found_incidents = len(found_incidents)
+def test_edl(request, xsoar_ng_client: XsoarNGApiClient, available_indicators: List[str]):
+    """
+    Given:
+        - indicators in xsoar-ng
+        - long-running EDL instance
+    When:
+        - Trying to query the URL of edl
+    Then:
+        - make sure that indicators are returned in the response of edl instance
+    """
+    integration_params = get_integration_params(
+        request.config.option.integration_secrets_path, instance_name="edl_e2e_instance"
+    )
+    username = integration_params["credentials"]["identifier"]
+    password = integration_params["credentials"]["password"]
 
-        assert amount_of_found_incidents == 1, f'Found {amount_of_found_incidents} incidents'
-        _qradar_incident = found_incidents[0]
-        assert _qradar_incident["type"] == qradar_incident_type, f'Found wrong incident {_qradar_incident}'
+    with create_indicators(xsoar_ng_client, [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]):
+        with create_integration_instance(
+            xsoar_ng_client,
+            integration_params=integration_params,
+            integration_id="EDL",
+            is_long_running=True,
+            instance_name=integration_params.pop(
+                "integrationInstanceName", f'e2e-test-{integration_params.get("name", "EDL")}'
+            )
+        ) as edl_instance_response:
+            instance_name = edl_instance_response.get("name")
 
-        start_investigation_response = xsoar_ng_client.start_incident_investigation(_qradar_incident.get("id") or "")
-        _qradar_incident["investigationId"] = start_investigation_response.get("response", {}).get("id")
+            edl_response = xsoar_ng_client.do_long_running_instance_request(
+                instance_name, username=username, password=password
+            )
+            assert edl_response.text, f'could not get indicators from url={edl_response.request.url} from ' \
+                                      f'instance {instance_name} with available indicators={available_indicators},' \
+                                      f' status code={edl_response.status_code}, response={edl_response.text}'
 
-        return _qradar_incident
 
-    def test_qradar_mirroring(self, xsoar_ng_client: XsoarNGApiClient, create_instance: str, qradar_incident: dict):
-        """
-        Given:
-            - a QRadar offense that is fetched through the integration that is in "OPENED" state.
-            - QRadar V3 integration
-        When:
-            - closing the offense in Qradar
-        Then:
-            - make sure that the QRadar offense was closed successfully when trying to close it via QRadar api.
-            - make sure that the XSOAR incident that represent the offense is closed after it by mirroring.
-        """
-        offense_id = qradar_incident.get("CustomFields", {}).get("idoffense")
-        incident_id = qradar_incident.get("id")
-        investigation_id = qradar_incident.get("investigationId")
+def test_taxii2_server(
+    request, xsoar_ng_client: XsoarNGApiClient, available_indicators: List[str]
+):
+    """
+    Given:
+        - indicators in xsoar-ng
+        - long-running taxii2 server instance
+    When:
+        - Trying to query the URL(s) of taxii2 server
+    Then:
+        - make sure that indicators are returned in the response of taxii2 server instance
+    """
 
-        # TODO - check how to get rid of the sleep to make it work
-        time.sleep(180)
-        _, context = xsoar_ng_client.run_cli_command(
-            f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED",
-            investigation_id=investigation_id
+    def get_json_response(_response: requests.Response) -> dict:
+        try:
+            return _response.json()
+        except ValueError as e:
+            raise ValueError(f'Could not parse {_response.text}, error: {e}')
+
+    integration_params = get_integration_params(
+        request.config.option.integration_secrets_path, instance_name="taxii2server-e2e"
+    )
+    username = integration_params["credentials"]["identifier"]
+    password = integration_params["credentials"]["password"]
+    headers = {"Accept": "application/taxii+json;version=2.1"}
+
+    with create_indicators(xsoar_ng_client, [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]):
+        with create_integration_instance(
+            xsoar_ng_client,
+            integration_params=integration_params,
+            integration_id="TAXII2 Server",
+            is_long_running=True,
+            instance_name=integration_params.pop(
+                "integrationInstanceName", f'e2e-test-{integration_params.get("name", "TAXII2-Server")}'
+            )
+        ) as taxii2_instance_response:
+            instance_name = taxii2_instance_response.get("name")
+            response = xsoar_ng_client.do_long_running_instance_request(
+                instance_name,
+                url_suffix="/threatintel/collections",
+                headers=headers,
+                username=username,
+                password=password
+            )
+
+            # get the collections available
+            collections = get_json_response(response).get("collections")
+            assert collections, f'could not get collections from url={response.request.url}, ' \
+                                f'status_code={response.status_code}, response={collections}'
+
+            collection_id = collections[0]["id"]
+
+            # get the actual indicators from the collection
+            response = xsoar_ng_client.do_long_running_instance_request(
+                instance_name,
+                url_suffix=f"/threatintel/collections/{collection_id}/objects",
+                headers=headers,
+                username=username,
+                password=password
+            )
+
+            indicators = get_json_response(response).get("objects")
+            assert indicators, f'could not get indicators from url={response.request.url} with available ' \
+                               f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
+                               f'status code={response.status_code}, response={indicators}'
+
+
+def test_slack_ask(request, xsoar_ng_client: XsoarNGApiClient):
+    """
+    Given:
+        - playbook that runs slack-ask (runs SlackAskV2 and then answers the slack ask with the slack V3 integration)
+        - slack V3 integration
+    When:
+        - running slack ask flow with slack V3
+    Then:
+        - make sure that the slack ask flow worked properly
+        - make sure that the playbook finishes.
+        - make sure that the context is populated with thread ID(s) from the slack-ask and slack-response.
+    """
+    integration_params = get_integration_params(
+        request.config.option.integration_secrets_path, instance_name="slack-e2e-instance"
+    )
+
+    with create_integration_instance(
+        xsoar_ng_client,
+        integration_params=integration_params,
+        integration_id="SlackV3",
+        is_long_running=True,
+        instance_name=integration_params.pop(
+            "integrationInstanceName", f'e2e-test-{integration_params.get("name", "SlackV3")}'
         )
-        assert context.get("QRadar", {}).get("Offense", {}).get("Status") == "CLOSED"
+    ):
+        playbook_id_name = "TestSlackAskE2E"
+        with create_playbook(
+            xsoar_ng_client,
+            playbook_path="TestSlackAskE2E.yml",
+            playbook_id=playbook_id_name,
+            playbook_name=playbook_id_name
+        ):
+            with create_incident(xsoar_ng_client, playbook_id=playbook_id_name) as incident_response:
+                # make sure the playbook finished successfully
+                assert is_playbook_state_as_expected(
+                    xsoar_ng_client, incident_id=incident_response.id, expected_states={"completed"}
+                )
 
-        # wait maximum 5 minutes that the qradar incident will be closed.
-        @retry_http_request(times=60, delay=5)
-        def validate_offense_is_closed():
-            closed_offense = xsoar_ng_client.search_incidents(incident_ids=incident_id)
-            # status 2 means the incident is closed.
-            incident_status = closed_offense["data"][0].get("status")
-            assert incident_status == 2, f'incident {closed_offense} status is {incident_status} and is not closed'
+                context = xsoar_ng_client.get_investigation_context(incident_response.investigation_id)
+                # make sure the context is populated with thread id(s) from slack ask
+                assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
 
-        validate_offense_is_closed()
+
+def test_qradar_mirroring(request, xsoar_ng_client: XsoarNGApiClient):
+    """
+    Given:
+        - a QRadar offense that is fetched through the integration that is in "OPENED" state.
+        - QRadar V3 integration
+    When:
+        - closing the offense in Qradar
+    Then:
+        - make sure that the QRadar offense was closed successfully when trying to close it via QRadar api.
+        - make sure that the XSOAR incident that represent the offense is closed after it by mirroring.
+    """
+    integration_params = get_integration_params(
+        request.config.option.integration_secrets_path, instance_name="qradar-e2e-instance"
+    )
+
+    with create_integration_instance(
+        xsoar_ng_client,
+        integration_params=integration_params,
+        integration_id="QRadar v3",
+        is_long_running=True,
+        instance_name=integration_params.pop(
+            "integrationInstanceName", f'e2e-test-{integration_params.get("name", "Qradar-v3")}'
+        )
+    ):
+        with get_fetched_incident(
+            xsoar_ng_client,
+            from_date=(datetime.utcnow() - timedelta(seconds=30)).strftime("%Y-%m-%dT%H:%M:%S"),  # get the incident created in the last 30 seconds
+            incident_types=integration_params["incident_type"]
+        ) as qradar_incident_response:
+            offense_id = qradar_incident_response.get("CustomFields", {}).get("idoffense")
+            assert offense_id, f'offense ID is empty in {qradar_incident_response}'
+            incident_id = qradar_incident_response.get("id")
+            investigation_id = qradar_incident_response.get("investigationId")
+            assert incident_id, f'investigation ID is empty in {qradar_incident_response}'
+
+            # TODO - check how to get rid of the sleep to make it work
+            time.sleep(180)
+            # close the qradar offense
+            _, context = xsoar_ng_client.run_cli_command(
+                f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED",
+                investigation_id=investigation_id
+            )
+            assert context.get("QRadar", {}).get("Offense", {}).get("Status") == "CLOSED"
+
+            # make sure the incident gets closed after closing it in Qradar
+            assert is_incident_state_as_expected(xsoar_ng_client, incident_id, expected_state="closed")
+
