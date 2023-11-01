@@ -1,0 +1,123 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Prisma SASE-Sentinelone Integration Playbook
+inputs: []
+name: Prisma SASE-Sentinelone Integration Playbook
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b14e8212-8160-4243-8273-ba45c9ac8dd5
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: b14e8212-8160-4243-8273-ba45c9ac8dd5
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SentinelOne V2
+      description: Returns all agents that match the specified criteria.
+      id: 0d376e15-dd24-4495-833b-346a02a90e24
+      iscommand: true
+      name: SentinelOne List Agents
+      script: SentinelOne V2|||sentinelone-list-agents
+      type: regular
+      version: -1
+    taskid: 0d376e15-dd24-4495-833b-346a02a90e24
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 205
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 2
+    scriptarguments:
+      key:
+        simple: AgentIDList
+      value:
+        simple: ${SentinelOne.Agents.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: fa5ce00b-e469-483f-8000-eec70961a4d2
+      iscommand: false
+      name: Set Agent List
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: fa5ce00b-e469-483f-8000-eec70961a4d2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

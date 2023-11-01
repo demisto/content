@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 import urllib3
 
@@ -798,7 +798,7 @@ class Client(BaseClient):
         return headers
 
     def quarantine_host(self, host_id: str, tsg_id: str | None) -> dict:  # pragma: no cover
-        """Quarantine a given host
+        """Creating a new tag
         Args:
             host_id: Host ID that needs to be added to quarantine List
             tsg_id: Target Prisma SASE tenant ID
@@ -946,17 +946,20 @@ def validate_url_is_type_compatible(args: dict,
     dynamic_list_type = args.get('type') or original_dynamic_list_type
     if dynamic_list_type in ('ip', 'domain', 'url'):
         url = args.get('source_url', '')
-        if not url and type_changed:
-            raise DemistoException('Please provide the source_url argument when using IP, URL or Domain types')
+        if not url:
+            if type_changed:
+                raise DemistoException('Please provide the source_url argument when using IP, URL or Domain types')
 
     elif dynamic_list_type == 'predefined_url':
         url = args.get('predefined_url_list', '')
-        if not url and type_changed:
-            raise DemistoException('Please provide the predefined_url_list argument when using predefined_url type')
+        if not url:
+            if type_changed:
+                raise DemistoException('Please provide the predefined_url_list argument when using predefined_url type')
     else:  # dynamic_list_type == 'predefined_ip':
         url = args.get('predefined_ip_list', '')
-        if not url and type_changed:
-            raise DemistoException('Please provide the predefined_ip_list argument when using predefined_ip')
+        if not url:
+            if type_changed:
+                raise DemistoException('Please provide the predefined_ip_list argument when using predefined_ip')
     url = url if url else original_dynamic_list_url
     return url
 
@@ -1893,14 +1896,15 @@ def update_external_dynamic_list_command(client: Client, args: Dict[str, Any]) -
     original_frequency_object = original_dynamic_list_type_object[original_dynamic_list_type].get('recurring',
                                                                                                   {'recurring': {}})
     type_changed = False
-    if (dynamic_list_type := args.get('type')) and original_dynamic_list_type != dynamic_list_type:
-        # changing the key that indicates the type
-        original_dynamic_list['type'][dynamic_list_type] = original_dynamic_list_type_object[
-            original_dynamic_list_type]
-        demisto.info(f"setting overwrite parameter to True as the type of the dynamic list has changed."
-                     f"overwrite original value: {overwrite}")
-        type_changed = True
-        overwrite = True
+    if dynamic_list_type := args.get('type'):
+        if original_dynamic_list_type != dynamic_list_type:
+            # changing the key that indicates the type
+            original_dynamic_list['type'][dynamic_list_type] = original_dynamic_list_type_object[
+                original_dynamic_list_type]
+            demisto.info(f"setting overwrite parameter to True as the type of the dynamic list has changed."
+                         f"overwrite original value: {overwrite}")
+            type_changed = True
+            overwrite = True
 
     dynamic_list_type = dynamic_list_type if dynamic_list_type else original_dynamic_list_type
     if exception_list := argToList(args.get('exception_list')):
@@ -1992,15 +1996,18 @@ def quarantine_host_command(client: Client, args: Dict[str, Any]) -> CommandResu
     """
     Command quarantine a given host
     """
-    host_id = args.get('host_id', '')
+
+    tag = args.get('host_id'),
     tsg_id = args.get('tsg_id')
+    host_id = tag[0]
 
     raw_response = client.quarantine_host(host_id=host_id, tsg_id=tsg_id)
 
     outputs = raw_response
 
     return CommandResults(
-        readable_output=tableToMarkdown('Host Quarantined', outputs),
+        readable_output=tableToMarkdown('Host Quarantined',
+                                        outputs),
         raw_response=raw_response
     )
 

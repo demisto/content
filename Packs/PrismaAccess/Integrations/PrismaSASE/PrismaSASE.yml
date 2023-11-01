@@ -8,9 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-  section: Connect
 - display: API Client ID
-  section: Connect
   name: credentials
   required: true
   type: 9
@@ -20,20 +18,15 @@ configuration:
   name: tsg_id
   required: true
   type: 0
-  section: Connect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  section: Connect
-  advanced: true
   required: false
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
-  section: Connect
-  advanced: true
   required: false
 description: Provides commands for interaction with Prisma SASE API.
 display: Palo Alto Networks - Prisma SASE
@@ -370,7 +363,7 @@ script:
       name: to
     - description: Whether the rule is disabled.
       name: disabled
-    - description: Negate source.
+    - description: Negate source
       name: negate_source
     - description: Negate the destination.
       name: negate_destination
@@ -456,7 +449,7 @@ script:
       - ip_range
       - ip_wildcard
       - fqdn
-    - description: The address value (should match the type).
+    - description: The address value (should match the type)
       name: address_value
       required: true
     - description: A comma-separated list of address object tags.
@@ -579,7 +572,7 @@ script:
     - description: A comma-separated list of address object tags.
       isArray: true
       name: tag
-    - description: The address value (should match the type).
+    - description: The address value (should match the type)
       name: address_value
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
@@ -609,6 +602,8 @@ script:
       description: Address name.
       type: String
   - arguments:
+    - description: The name of the object to use as a filter.
+      name: name
     - description: ID of the address object to delete.
       name: object_id
       required: true
@@ -617,14 +612,12 @@ script:
     description: Delete a specific address object.
     name: prisma-sase-address-object-delete
   - arguments:
-    - description: The name of the object to use as a filter.
-      name: name
     - description: The specific address object to return. If not specified, all addresses will be returned.
       name: object_id
-    - auto: PREDEFINED
-      defaultValue: Shared
-      description: The configuration folder group setting.
+    - description: The configuration folder group setting.
       name: folder
+      auto: PREDEFINED
+      defaultValue: Shared
       predefined:
       - Shared
       - Mobile Users
@@ -632,16 +625,15 @@ script:
       - Service Connections
       - Mobile Users Container
       - Mobile Users Explicit Proxy
-    - auto: PREDEFINED
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of results to return.
       name: limit
-    - name: page
-      description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+    - description: Page number you would like to view. Each page contains page_size values. Must be used along with page_size.
+      name: page
     - name: page_size
       description: Number of results per page to display.
-    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
-      name: tsg_id
+    - name: tsg_id
+      description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
     description: Lists all addresses objects.
     name: prisma-sase-address-object-list
     outputs:
@@ -871,7 +863,7 @@ script:
       description: The tag comments.
       type: String
   - arguments:
-    - description: The specific tag to delete.
+    - description: The specific tag to delete
       name: tag_id
       required: true
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
@@ -1462,21 +1454,17 @@ script:
     description: Get all predefined URL categories.
     name: prisma-sase-url-category-list
   - arguments:
-    - description: The host ID.
+    - description: The host ID
       name: host_id
-      required: true
-    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
+    - description: The TSG ID
       name: tsg_id
-    description: Quarantine a host.
+    description: 'Quarantine a host '
     name: prisma-sase-quarantine-host
   dockerimage: demisto/python3:3.10.13.78960
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
 - PrismaSASE Test
-sectionOrder:
-- Connect
-- Collect
 fromversion: 6.5.0

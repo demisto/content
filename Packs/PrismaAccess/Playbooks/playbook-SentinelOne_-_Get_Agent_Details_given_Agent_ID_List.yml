@@ -1,0 +1,128 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: SentinelOne - Get Agent Details given Agent ID List
+inputs:
+- description: ""
+  key: AgentIDList
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${AgentIDList}
+name: SentinelOne - Get Agent Details given Agent ID List
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c08fd4cb-636b-49af-89ee-a6a30a6ba553
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: c08fd4cb-636b-49af-89ee-a6a30a6ba553
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 30
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.AgentIDList}
+      extend-context:
+        simple: AgentDetail=page.result.data
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SentinelOne V2
+      description: Returns the details of an agent according to the agent ID.
+      id: c4d7a5cf-e737-4b70-8074-7171e535f5e4
+      iscommand: true
+      name: Get Agent details from SentinelOne
+      script: SentinelOne V2|||sentinelone-get-agent
+      type: regular
+      version: -1
+    taskid: c4d7a5cf-e737-4b70-8074-7171e535f5e4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 223e0c96-ba2e-44dc-886a-0443a0a6f2fa
+      iscommand: false
+      name: End Of Agent Details
+      type: title
+      version: -1
+      description: ''
+    taskid: 223e0c96-ba2e-44dc-886a-0443a0a6f2fa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 50,
+        "y": 30
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

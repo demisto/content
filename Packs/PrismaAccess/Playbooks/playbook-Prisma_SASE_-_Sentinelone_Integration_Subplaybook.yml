@@ -1,0 +1,361 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Prisma SASE - Sentinelone Integration Subplaybook
+inputs:
+- description: ""
+  key: gplogs
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${gplogs}
+- description: ""
+  key: HostName
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${HostName}
+- description: ""
+  key: threatCount
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${threatCount}
+- description: ""
+  key: agentDecommissioned
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${agentDecommissioned}
+name: Prisma SASE - Sentinelone Integration Subplaybook
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4951453c-0592-4a7d-8eda-3195fb03281c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4951453c-0592-4a7d-8eda-3195fb03281c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      key:
+        simple: hoststoblock
+      value:
+        simple: ${inputs.gplogs.host_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Data Lake
+      description: Set a value in context under the key you entered.
+      id: dc87496d-b463-4810-8656-eca6876abd9f
+      iscommand: false
+      name: fetch hostid
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: dc87496d-b463-4810-8656-eca6876abd9f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 700
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0f055190-8db1-4e3f-83fe-6732434406ca
+      iscommand: false
+      name: Quarantine Host Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 0f055190-8db1-4e3f-83fe-6732434406ca
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1225
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${inputs.threatCount}
+          operator: isEqualString
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: ${inputs.agentDecommissioned}
+          operator: isEqualString
+          right:
+            value:
+              simple: "false"
+      label: AgentQuarantine
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      AgentQuarantine:
+      - "7"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      id: 1b8ccba2-f264-405b-8cf1-5d2edf2c5346
+      iscommand: false
+      name: Check Agent Status
+      type: condition
+      version: -1
+    taskid: 1b8ccba2-f264-405b-8cf1-5d2edf2c5346
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 875
+        }
+      }
+  "4":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      key:
+        simple: hoststoblock
+      value:
+        complex:
+          accessor: host_id}
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ${inputs.gplogs.endpoint_device_name}
+              operator: isEqualString
+              right:
+                value:
+                  simple: ${inputs.HostName}
+          root: ${inputs.gplogs
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 41505ea9-a24a-4c25-898a-bcd9685a7c5e
+      iscommand: false
+      name: Extract Host ID
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 41505ea9-a24a-4c25-898a-bcd9685a7c5e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: hoststoblock
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: Quarantine
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      Quarantine:
+      - "1"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 18dcd0d0-88ef-4483-8b6b-15efa3aef43a
+      iscommand: false
+      name: Check hosts to block is not empty
+      type: condition
+      version: -1
+    taskid: 18dcd0d0-88ef-4483-8b6b-15efa3aef43a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 525
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      value:
+        simple: ${inputs.gplogs}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: ce1d5d9b-3d29-4015-87ff-87e724517a06
+      iscommand: false
+      name: print gplogs - TO BE DELETED
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: ce1d5d9b-3d29-4015-87ff-87e724517a06
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 175
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      host_id:
+        simple: ${hoststoblock}
+      tsg_id:
+        simple: "1264272156"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto Networks - Prisma SASE V2
+      description: 'Quarantine a host '
+      id: 97498b36-7d10-4b59-8476-a57daa77a855
+      iscommand: true
+      name: Quarantine host
+      script: Palo Alto Networks - Prisma SASE V2|||prisma-sase-quarantine-host
+      type: regular
+      version: -1
+    taskid: 97498b36-7d10-4b59-8476-a57daa77a855
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 675,
+          "y": 1050
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1240,
+        "width": 605,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
