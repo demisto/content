@@ -44,9 +44,7 @@ repos:
 - repo: local
   hooks:
 
-
   - id: pylint-in-docker
-    xsoar_type: docker
     name: pylint-in-docker
     description: my description
     docker_image:nightly: from-yml
@@ -58,27 +56,6 @@ repos:
     config_file_arg:
       arg_name: '--rcfile'
       file_name: '.pylintrc'
-
-  - id: pylint-in-docker
-    xsoar_type: docker
-    name: pylint-in-docker
-    description: my description
-    docker_image:nightly: from-yml
-    docker_image: native:ga,from-yml,native:dev,native:maintenance
-    entry: pylint
-    files: Packs\/.*\.py$
-    exclude: (_test\.py)|(.vulture_whitelist\.py)$
-    args: ['--ignore=demistomock.py,CommonServerPython.py,CommonServerUserPython.py,conftest.py,.venv', '-E', '--disable=bad-option-value,unsubscriptable-object', '-d duplicate-string-formatting-argument', "--msg-template='{path}:{line}:{column}: {msg_id} {obj}: {msg}'", '--generated-members=requests.packages.urllib3,requests.codes.ok']
-    config_file_arg:
-      arg_name: '--rcfile'
-      file_name: '.pylintrc'
-
-  id: pytest-indocker
-  name: myname
-  entry: pytest
-  args: []
-
-
 
   - id: is-circle-changed
     name: is-circle-changed
