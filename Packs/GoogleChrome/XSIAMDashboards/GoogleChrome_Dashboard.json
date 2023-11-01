@@ -205,51 +205,6 @@
                             }
                         },
                         {
-                            "key": "xql_1687774186800",
-                            "data":
-                            {
-                                "type": "Custom XQL",
-                                "width": 25,
-                                "height": 400,
-                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n//| filter xdm.observer.vendor = \"Google\" and xdm.observer.product = \"Workspace Chrome\"\n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.user.username) as distinct_count\n| view graph type = single subtype = standard header = \"Unique Users with Security Events\" yaxis = distinct_count ",
-                                "time_frame":
-                                {
-                                    "relativeTime": 86400000
-                                },
-                                "viewOptions":
-                                {
-                                    "type": "single",
-                                    "commands":
-                                    [
-                                        {
-                                            "command":
-                                            {
-                                                "op": "=",
-                                                "name": "subtype",
-                                                "value": "standard"
-                                            }
-                                        },
-                                        {
-                                            "command":
-                                            {
-                                                "op": "=",
-                                                "name": "header",
-                                                "value": "\"Unique Users with Security Events\""
-                                            }
-                                        },
-                                        {
-                                            "command":
-                                            {
-                                                "op": "=",
-                                                "name": "yaxis",
-                                                "value": "distinct_count"
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
-                        },
-                        {
                             "key": "xql_1687769524281",
                             "data":
                             {
@@ -557,6 +512,51 @@
                     "id": "row-1514",
                     "data":
                     [
+                        {
+                            "key": "xql_1687774186800",
+                            "data":
+                            {
+                                "type": "Custom XQL",
+                                "width": 25,
+                                "height": 400,
+                                "phrase": "datamodel dataset = google_workspace_chrome_raw \n//| filter xdm.observer.vendor = \"Google\" and xdm.observer.product = \"Workspace Chrome\"\n| filter xdm.event.type != \"\"\n| comp count_distinct(xdm.source.user.username) as distinct_count\n| view graph type = single subtype = standard header = \"Unique Users with Security Events\" yaxis = distinct_count ",
+                                "time_frame":
+                                {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions":
+                                {
+                                    "type": "single",
+                                    "commands":
+                                    [
+                                        {
+                                            "command":
+                                            {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "standard"
+                                            }
+                                        },
+                                        {
+                                            "command":
+                                            {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Unique Users with Security Events\""
+                                            }
+                                        },
+                                        {
+                                            "command":
+                                            {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "distinct_count"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        },
                         {
                             "key": "xql_1687778986988",
                             "data":
