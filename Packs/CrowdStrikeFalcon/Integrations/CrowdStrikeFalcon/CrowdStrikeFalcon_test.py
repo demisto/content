@@ -2315,7 +2315,65 @@ class TestFetch:
         # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
         assert demisto.setLastRun.mock_calls[1][1][0][0] == {
             'time': '2020-09-04T09:16:13Z', 'limit': 2, 'offset': 0, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
-                                                                                            'Detection ID: ldt:2': 1599210970}}
+
+                                  @ freeze_time("2020-09-04T09:16:10Z")
+    def test_fetch_with_offset_duplicates(self, set_up_mocks, mocker, requests_mock):
+        """
+        Tests the correct flow of fetch with offset
+        Given:
+            `getLastRun` which holds  `first_behavior_time` and `offset`
+        When:
+            2 result is returned (which is less than the total which is 4)
+        Then:
+            - The offset increases to 2 in the next run, and the last time remains
+            - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
+
+        """
+        # mock the total number of detections to be 4, so offset will be set
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
+                                                                            'meta': {'pagination': {'total': 4}}})
+
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value=[{'time': '2020-09-04T09:16:10Z',
+                                          'offset': 0}, {}, {}])
+        # Override post to have 1 results so FETCH_LIMIT won't be reached
+        requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+                           json={'resources': [{'detection_id': 'ldt:1',
+                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'max_severity_displayname': 'Low'},
+                                               {'detection_id': 'ldt:1',
+                                                'created_timestamp': '2020-09-04T09:16:12Z',
+                                                'max_severity_displayname': 'Low'}],
+                                 })
+        from CrowdStrikeFalcon import fetch_incidents
+        fetch_incidents()
+        # the offset should be increased to 2, and the time should be stay the same
+        expected_last_run = {
+            'time': '2020-09-04T09:16:10Z', 'limit': 2, 'offset': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970},
+            {'Detection ID: ldt:2': 1599210970}}
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == expected_last_run
+
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
+                                                                            'meta': {'pagination': {'total': 6}}})
+        # now two new detections were added, but because they are not sorted we again get the old results
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value=[expected_last_run, {}, {}])
+
+        # requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+        #                    json={'resources': [{'detection_id': 'ldt:1',
+        #                                         'created_timestamp': '2020-09-04T09:16:13Z',
+        #                                         'max_severity_displayname': 'Low'}],
+        #                          })
+
+        fetch_incidents()
+        # the offset should be 4 because we need to continue to the next page, and the last run should be unchanged
+        expected_last_run = {{
+            'time': '2020-09-04T09:16:10Z', 'limit': 2, 'offset': 4, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
+                                                              'Detection ID: ldt:2': 1599210970}}
+                             }
+        assert demisto.setLastRun.mock_calls[1][1][0][0] == {
+            'time': '2020-09-04T09:16:10Z', 'limit': 2, 'offset': 4, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
+                                                              'Detection ID: ldt:2': 1599210970}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
@@ -2336,7 +2394,7 @@ class TestFetch:
         for incident in incidents:
             assert "\"incident_type\": \"detection\"" in incident.get('rawJSON', '')
 
-    @pytest.mark.parametrize(
+    @ pytest.mark.parametrize(
         "expected_name, fetch_incidents_or_detections,incidents_len",
         [
             ('Incident ID:', ['Incidents'], 2),
@@ -2412,7 +2470,7 @@ class TestIncidentFetch:
 
     """
 
-    @pytest.fixture()
+    @ pytest.fixture()
     def set_up_mocks(self, requests_mock, mocker):
         """ Sets up the mocks for the fetch.
         """
@@ -2446,7 +2504,7 @@ class TestIncidentFetch:
         assert demisto.setLastRun.mock_calls[0][1][0] == [{'time': '2020-09-04T09:16:10Z'},
                                                           {'time': '2020-09-04T09:22:10Z'}]
 
-    @freeze_time("2020-08-26 17:22:13 UTC")
+    @ freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
         mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
                                                                       'offset': 2}, {}])
@@ -2460,7 +2518,7 @@ class TestIncidentFetch:
                                                              'offset': 0,
                                                              'found_incident_ids': {'Incident ID: ldt:1': 1598462533}}
 
-    @freeze_time("2020-09-04T09:16:10Z")
+    @ freeze_time("2020-09-04T09:16:10Z")
     def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
         """
         Tests the correct flow of fetch with offset
@@ -3637,7 +3695,7 @@ def test_update_hostgroup_invalid(requests_mock):
             assignment_rule="device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7']")
 
 
-@pytest.mark.parametrize('status, expected_status_api', [('New', "20"),
+@ pytest.mark.parametrize('status, expected_status_api', [('New', "20"),
                                                          ('Reopened', "25"),
                                                          ('In Progress', "30"),
                                                          ('Closed', "40")])
@@ -3659,7 +3717,7 @@ def test_resolve_incidents(requests_mock, status, expected_status_api):
     assert m.last_request.json()['action_parameters'][0]['value'] == expected_status_api
 
 
-@pytest.mark.parametrize('status', ['', 'new', 'BAD ARG'])
+@ pytest.mark.parametrize('status', ['', 'new', 'BAD ARG'])
 def test_resolve_incident_invalid(status):
     """
     Test Create resolve incidents with invalid status code
@@ -3763,7 +3821,7 @@ def test_upload_batch_custom_ioc_command(requests_mock):
     assert results[1]["EntryContext"]["CrowdStrike.IOC(val.ID === obj.ID)"][0]["Value"] == '4.5.8.6'
 
 
-@pytest.mark.parametrize('endpoint_status, status, is_isolated',
+@ pytest.mark.parametrize('endpoint_status, status, is_isolated',
                          [('Normal', 'Online', ''),
                           ('normal', 'Online', ''),
                           ('containment_pending', '', 'Pending isolation'),
@@ -3935,7 +3993,7 @@ def test_parse_rtr_stdout_response(mocker):
     assert parsed_result[1][0].get('File') == "netstat-1"
 
 
-@pytest.mark.parametrize('failed_devices, all_requested_devices, expected_result', [
+@ pytest.mark.parametrize('failed_devices, all_requested_devices, expected_result', [
     ({}, ["id1", "id2"], ""),
     ({'id1': "some error"}, ["id1", "id2"], "Note: you don't see the following IDs in the results as the request was"
                                             " failed for them. \nID id1 failed as it was not found. \n"),
@@ -3945,7 +4003,7 @@ def test_add_error_message(failed_devices, all_requested_devices, expected_resul
     assert add_error_message(failed_devices, all_requested_devices) == expected_result
 
 
-@pytest.mark.parametrize('failed_devices, all_requested_devices', [
+@ pytest.mark.parametrize('failed_devices, all_requested_devices', [
     ({'id1': "some error", 'id2': "some error"}, ["id1", "id2"]),
     ({'id1': "some error1", 'id2': "some error2"}, ["id1", "id2"]),
 ])
@@ -3967,7 +4025,7 @@ def test_rtr_kill_process_command(mocker):
         assert res.get('Error') == "Success"
 
 
-@pytest.mark.parametrize('operating_system, expected_result', [
+@ pytest.mark.parametrize('operating_system, expected_result', [
     ("Windows", "rm 'test.txt' --force"),
     ("Linux", "rm 'test.txt' -r -d"),
     ("Mac", "rm 'test.txt' -r -d"),
@@ -4042,7 +4100,7 @@ DETECTION_FOR_INCIDENT_CASES = [
 ]
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'detections, resources, expected_outputs, expected_raw, expected_prefix, expected_md',
     DETECTION_FOR_INCIDENT_CASES)
 def test_get_detection_for_incident_command(mocker, detections, resources, expected_outputs, expected_raw,
@@ -4070,7 +4128,7 @@ def test_get_detection_for_incident_command(mocker, detections, resources, expec
     assert res.outputs_prefix == expected_prefix
 
 
-@pytest.mark.parametrize('remote_id, close_incident, incident_status, detection_status, mirrored_object, entries',
+@ pytest.mark.parametrize('remote_id, close_incident, incident_status, detection_status, mirrored_object, entries',
                          input_data.get_remote_data_command_args)
 def test_get_remote_data_command(mocker, remote_id, close_incident, incident_status, detection_status, mirrored_object,
                                  entries):
@@ -4155,7 +4213,7 @@ def test_get_remote_detection_data(mocker):
                               'incident_type': 'detection'}
 
 
-@pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
+@ pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
 def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close_incident):
     """
     Given
@@ -4176,7 +4234,7 @@ def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close
         assert entries == []
 
 
-@pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_detection_entries_args)
+@ pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_detection_entries_args)
 def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, close_incident):
     """
     Given
@@ -4197,7 +4255,7 @@ def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, clos
         assert entries == []
 
 
-@pytest.mark.parametrize('updated_object, mirrored_data, mirroring_fields, output', input_data.set_updated_object_args)
+@ pytest.mark.parametrize('updated_object, mirrored_data, mirroring_fields, output', input_data.set_updated_object_args)
 def test_set_updated_object(updated_object, mirrored_data, mirroring_fields, output):
     """
     Given
@@ -4241,7 +4299,7 @@ def test_get_modified_remote_data_command(mocker):
                                             input_data.remote_idp_detection_id]
 
 
-@pytest.mark.parametrize('status',
+@ pytest.mark.parametrize('status',
                          ['new', 'in_progress', 'true_positive', 'false_positive', 'ignored', 'closed', 'reopened'])
 def test_update_detection_request_good(mocker, status):
     """
@@ -4260,7 +4318,7 @@ def test_update_detection_request_good(mocker, status):
     assert mock_resolve_detection.call_args[1]['status'] == status
 
 
-@pytest.mark.parametrize('status', ['other', ''])
+@ pytest.mark.parametrize('status', ['other', ''])
 def test_update_detection_request_bad(status):
     """
     Given
@@ -4277,7 +4335,7 @@ def test_update_detection_request_bad(status):
     assert 'CrowdStrike Falcon Error' in str(de.value)
 
 
-@pytest.mark.parametrize('args, to_mock, call_args, remote_id, prev_tags, close_in_cs_falcon_param',
+@ pytest.mark.parametrize('args, to_mock, call_args, remote_id, prev_tags, close_in_cs_falcon_param',
                          input_data.update_remote_system_command_args)
 def test_update_remote_system_command(mocker, args, to_mock, call_args, remote_id, prev_tags, close_in_cs_falcon_param):
     """
@@ -4299,7 +4357,7 @@ def test_update_remote_system_command(mocker, args, to_mock, call_args, remote_i
         assert mock_call.call_args_list[i][0] == call
 
 
-@pytest.mark.parametrize('delta, close_in_cs_falcon_param, to_close', input_data.close_in_cs_falcon_args)
+@ pytest.mark.parametrize('delta, close_in_cs_falcon_param, to_close', input_data.close_in_cs_falcon_args)
 def test_close_in_cs_falcon(mocker, delta, close_in_cs_falcon_param, to_close):
     """
     Given
@@ -4315,7 +4373,7 @@ def test_close_in_cs_falcon(mocker, delta, close_in_cs_falcon_param, to_close):
     assert close_in_cs_falcon(delta) == to_close
 
 
-@pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, detection_request_status',
+@ pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, detection_request_status',
                          input_data.update_remote_detection_args)
 def test_update_remote_detection(mocker, delta, inc_status, close_in_cs_falcon, detection_request_status):
     """
@@ -4355,7 +4413,7 @@ def test_update_remote_incident(mocker):
     assert mock_update_status.called
 
 
-@pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, resolve_incident_status',
+@ pytest.mark.parametrize('delta, inc_status, close_in_cs_falcon, resolve_incident_status',
                          input_data.update_remote_incident_status_args)
 def test_update_remote_incident_status(mocker, delta, inc_status, close_in_cs_falcon, resolve_incident_status):
     """
@@ -4417,7 +4475,7 @@ def test_get_previous_tags(mocker):
     assert mock_get_incidents_entities.call_args[0][0] == [input_data.remote_incident_id]
 
 
-@pytest.mark.parametrize('tags, action_name', input_data.remote_incident_handle_tags_args)
+@ pytest.mark.parametrize('tags, action_name', input_data.remote_incident_handle_tags_args)
 def test_remote_incident_handle_tags(mocker, tags, action_name):
     """
     Given
@@ -4533,7 +4591,7 @@ ARGS_vulnerability = [
 ]
 
 
-@pytest.mark.parametrize('args, is_valid, result_key_json, expected_hr', ARGS_vulnerability)
+@ pytest.mark.parametrize('args, is_valid, result_key_json, expected_hr', ARGS_vulnerability)
 def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid, result_key_json, expected_hr):
     """
     Test cs_falcon_spotlight_search_vulnerability_command,
@@ -4895,7 +4953,7 @@ filter_args = {'key1': 'val1,val2', 'key2': 'val3', 'key3': None}
 custom_filter = 'key1:"val1"+key2:["val3","val4"]'
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'filter_args, custom_filter, output_filter',
     (
         (filter_args, custom_filter, 'key1:"val1"%2Bkey2:["val3","val4"]%2Bkey1:[\'val1\', \'val2\']%2Bkey2:[\'val3\']'),
@@ -4923,7 +4981,7 @@ def test_build_cs_falcon_filter(filter_args, custom_filter, output_filter):
     assert output_filter == result
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'command_args, query_result, entites_result, readable_output',
     (
         ({'wait_for_result': False}, [], {}, 'No scans match the arguments/filter.'),
@@ -4960,7 +5018,7 @@ def test_cs_falcon_ODS_query_scans_command(mocker, command_args, query_result, e
     assert result.readable_output == readable_output
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'input_params, call_params',
     (
         ({'key1': 'val1', 'key2': None}, 'key1=val1'),
@@ -5116,7 +5174,7 @@ def test_map_scan_resource_to_UI(mocker):
     assert output == mapped_resource
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'input_params, call_params',
     (
         ({'key1': 'val1', 'key2': None}, 'key1=val1'),
@@ -5240,7 +5298,7 @@ def test_map_scheduled_scan_resource_to_UI(mocker):
     assert output == mapped_resource
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'input_params, call_params',
     (
         ({'key1': 'val1', 'key2': None}, 'key1=val1'),
@@ -5348,7 +5406,7 @@ def test_map_scan_host_resource_to_UI(mocker):
     assert output == mapped_resource
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'input_params, call_params',
     (
         ({'key1': 'val1', 'key2': None}, 'key1=val1'),
@@ -5444,7 +5502,7 @@ def test_map_malicious_file_resource_to_UI(mocker):
     assert output == mapped_resource
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'args, is_scheduled, expected_result',
     (
         ({'quarantine': 'false', 'schedule_interval': 'every other week',
@@ -5481,7 +5539,7 @@ def test_make_create_scan_request_body(args, is_scheduled, expected_result):
         assert output[key] == value
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'args, is_error, expected_error_info',
     (
         ({}, True, 'MUST set either hosts OR host_groups.'),
@@ -5563,7 +5621,7 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
     assert result.readable_output == 'Successfully created scheduled scan with ID: random_id'
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'args, is_scheduled, body',
     (
         ({'quarantine': 'false', 'schedule_interval': 'every other week',
@@ -5572,7 +5630,7 @@ def test_cs_falcon_ods_create_scheduled_scan_command(mocker):
         ({'cpu_priority': 'Low'}, False, {'cpu_priority': 2}),
     )
 )
-@freeze_time("2020-09-26 17:22:13 UTC")
+@ freeze_time("2020-09-26 17:22:13 UTC")
 def test_ODS_create_scan_request(mocker, args, is_scheduled, body):
     """
     Test ODS_create_scan_request.
@@ -5594,7 +5652,7 @@ def test_ODS_create_scan_request(mocker, args, is_scheduled, body):
     http_request.assert_called_with('POST', f'/ods/entities/{"scheduled-scans" if is_scheduled else "scans"}/v1', json=body)
 
 
-@pytest.mark.parametrize(
+@ pytest.mark.parametrize(
     'ids, scans_filter, url_params',
     (
         (['id1', 'id2'], None, 'ids=id1&ids=id2'),
@@ -5637,7 +5695,7 @@ class mocker_gql_client:
         return None
 
 
-@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
+@ pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
 def test_list_identity_entities_command(mocker, test_case):
     """
         Given:
@@ -5669,7 +5727,7 @@ def test_list_identity_entities_command(mocker, test_case):
     assert test_data.get('expected_res_len') == len(command_results.raw_response)
 
 
-@pytest.mark.parametrize("timeout, expected_timeout", [(60, 60), (None, 30)])
+@ pytest.mark.parametrize("timeout, expected_timeout", [(60, 60), (None, 30)])
 def test_run_batch_write_cmd_timeout_argument(mocker, timeout, expected_timeout):
     """
     Given
@@ -5930,7 +5988,7 @@ class TestCSFalconResolveIdentityDetectionCommand:
 class TestIOAFetch:
     # Since this integration fetches multiple incidents, the last run object contains a list of
     # last run objects for each incident type, for IOA, that is the 5th position
-    @pytest.mark.parametrize('fetch_query, error_message',
+    @ pytest.mark.parametrize('fetch_query, error_message',
                              [('account_id=1', 'A cloud provider is required as part of the IOA fetch query'),
                               ("cloud_provider!='aws'", 'An unsupported parameter has been entered'),
                               ("cloud_provider='aws'&weird_param=val",
@@ -6024,7 +6082,7 @@ class TestIOAFetch:
         assert fetch_query in http_request_mocker.call_args_list[0][1].get('url_suffix')
         assert f'date_time_since={last_date_time_since}' in http_request_mocker.call_args_list[0][1].get('url_suffix')
 
-    @pytest.mark.parametrize('next_toke_object, expected_next_token', [({'next_token': 'dummy_token'}, 'dummy_token'),
+    @ pytest.mark.parametrize('next_toke_object, expected_next_token', [({'next_token': 'dummy_token'}, 'dummy_token'),
                                                                        ({}, None)])
     def test_return_values_get_ioa_events(self, mocker: MockerFixture, next_toke_object, expected_next_token):
         """
@@ -6302,7 +6360,7 @@ class TestIOMFetch:
         assert f"scan_time: >'{last_scan_time}'+{fetch_filter}" == \
             http_request_mocker.call_args_list[0][1].get('params').get('filter')
 
-    @freeze_time("2023-01-04T00:00:00Z")
+    @ freeze_time("2023-01-04T00:00:00Z")
     def test_fetch_query_without_pagination_and_first_run(self, mocker: MockerFixture):
         """
         Given:
@@ -6328,7 +6386,7 @@ class TestIOMFetch:
         assert f"scan_time: >='{last_scan_time}'+{fetch_filter}" == \
             http_request_mocker.call_args_list[0][1].get('params').get('filter')
 
-    @pytest.mark.parametrize('next_toke_object, expected_next_token', [({'next_token': 'dummy_token'}, 'dummy_token'),
+    @ pytest.mark.parametrize('next_toke_object, expected_next_token', [({'next_token': 'dummy_token'}, 'dummy_token'),
                                                                        ({}, None)])
     def test_return_values_get_iom_resource_ids(self, mocker: MockerFixture, next_toke_object, expected_next_token):
         """

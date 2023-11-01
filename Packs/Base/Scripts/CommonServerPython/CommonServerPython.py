@@ -10855,8 +10855,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False,
-                           incidents_before_filter=None, new_offset=None):
+                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
     """
     Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
 
