@@ -3,6 +3,7 @@ import os
 import sys
 import traceback
 from datetime import datetime, timezone
+from pathlib import Path
 
 import urllib3
 from jira import JIRA
@@ -13,9 +14,10 @@ from Tests.scripts.common import get_all_failed_results, calculate_results_table
     get_test_results_files
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
-    jira_server_information
+    jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type
 from Tests.scripts.test_modeling_rule_report import (create_jira_issue_for_test_modeling_rule,
-                                                     TEST_MODELING_RULES_BASE_HEADERS, calculate_test_modeling_rule_results)
+                                                     TEST_MODELING_RULES_BASE_HEADERS,
+                                                     calculate_test_modeling_rule_results)
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -45,28 +47,29 @@ def main():
         install_logging('convert_test_modeling_result_to_jira_issues.log', logger=logging)
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
-        logging.info(f'Artifacts path: {options.artifacts_path}\n'
-                     f'Jira server url: {JIRA_SERVER_URL}\n'
-                     f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
-                     f'Jira project id: {JIRA_PROJECT_ID}\n'
-                     f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
-                     f'Jira component: {JIRA_COMPONENT}\n'
-                     f'Jira labels: {JIRA_LABELS}\n'
-                     f'Jira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}\n'
-                     f'Max days to reopen: {options.max_days_to_reopen}\n')
+        logging.info(f"Artifacts path: {options.artifacts_path}\n"
+                     f"Jira server url: {JIRA_SERVER_URL}\n"
+                     f"Jira verify SSL: {JIRA_VERIFY_SSL}\n"
+                     f"Jira project id: {JIRA_PROJECT_ID}\n"
+                     f"Jira issue type: {JIRA_ISSUE_TYPE}\n"
+                     f"Jira component: {JIRA_COMPONENT}\n"
+                     f"Jira labels: {', '.join(JIRA_LABELS)}\n"
+                     f"Jira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}\n"
+                     f"Max days to reopen: {options.max_days_to_reopen}\n")
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
-
-        if not (test_modeling_rules_results_files := get_test_results_files(options.artifacts_path,
+        if not (test_modeling_rules_results_files := get_test_results_files(Path(options.artifacts_path),
                                                                             TEST_MODELING_RULES_REPORT_FILE_NAME)):
             logging.critical(f"Could not find any test modeling rules result files in {options.artifacts_path}")
             sys.exit(1)
 
         logging.info(f"Found {len(test_modeling_rules_results_files)} test modeling rules files")
 
+        issues = jira_search_all_by_query(jira_server, generate_query_by_component_and_issue_type())
+
         modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions = (
-            calculate_test_modeling_rule_results(test_modeling_rules_results_files, jira_server)
+            calculate_test_modeling_rule_results(test_modeling_rules_results_files, issues)
         )
 
         logging.info(f"Found {len(jira_tickets_for_modeling_rule)} Jira tickets out "
