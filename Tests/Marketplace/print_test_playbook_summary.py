@@ -10,7 +10,7 @@ from tabulate import tabulate
 
 from Tests.scripts.common import calculate_results_table, TEST_PLAYBOOKS_REPORT_FILE_NAME, get_test_results_files
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
-    JIRA_API_KEY, jira_server_information, generate_query_by_component_and_issue_type, jira_search_all_by_query
+    JIRA_API_KEY, jira_server_information, generate_query_by_component_and_issue_type, jira_search_all_by_query, JIRA_LABELS
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
     TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks
 from Tests.scripts.utils import logging_wrapper as logging
@@ -110,11 +110,12 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
         jira_tickets_for_playbooks = {}
     else:
         logging.info("Searching for Jira tickets for playbooks with the following settings:\n"
-                     f'Jira server url: {JIRA_SERVER_URL}\n'
-                     f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
-                     f'Jira project id: {JIRA_PROJECT_ID}\n'
-                     f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
-                     f'Jira component: {JIRA_COMPONENT}\n')
+                     f"Jira server url: {JIRA_SERVER_URL}\n"
+                     f"Jira verify SSL: {JIRA_VERIFY_SSL}\n"
+                     f"Jira project id: {JIRA_PROJECT_ID}\n"
+                     f"Jira issue type: {JIRA_ISSUE_TYPE}\n"
+                     f"Jira component: {JIRA_COMPONENT}\n"
+                     f"Jira labels: {', '.join(JIRA_LABELS)}\n")
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
