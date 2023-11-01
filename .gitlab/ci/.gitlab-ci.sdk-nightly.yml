@@ -342,12 +342,17 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
 
+    - section_start "Wait Until Server Ready"
+    - echo Going to sleep for 15 minutes to allow server finish indexing
+    - sleep-with-progress 900 30 "Sleeping... " 150
+    - echo "Done sleeping!"
+    - section_end "Wait Until Server Ready"
+
     - !reference [.run_tests]
 
-    # - section_start "Download Entities" --collapsed
-    # - demisto-sdk download -lf --insecure
-    # - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
-    # - section_end "Download Entities"
+    - section_start "Download Entities" --collapsed
+    - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
+    - section_end "Download Entities"
 
     - !reference [.cloud-machine-information]
     - exit $EXIT_CODE
@@ -414,7 +419,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
 
     - section_start "Download Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -lf --insecure
-    - demisto-sdk download -o Packs/HelloWorld -i HelloWorld --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - section_end "Download Entities from XSOAR Instance"
@@ -424,6 +428,12 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
+
+    - section_start "Wait Until Server Ready"
+    - echo Going to sleep for 15 minutes to allow server finish indexing
+    - sleep-with-progress 900 30 "Sleeping... " 150
+    - echo "Done sleeping!"
+    - section_end "Wait Until Server Ready"
 
     - !reference [.run_tests]
 
