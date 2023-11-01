@@ -35,7 +35,7 @@ class Client(BaseClient):
                 },
                 {
                     "_name": "filter",
-                    "_gt": {
+                    "_gte": {
                         "_field": "_createdAt",
                         "_value": start_time
                     },
@@ -60,8 +60,7 @@ class Client(BaseClient):
             case["id"] = case["_id"]
             case["createdAt"] = case["_createdAt"]
             case["type"] = case["_type"]
-            case["updatedBy"] = case["_updatedBy"]
-            case["updatedAt"] = case["_updatedAt"]
+            case["updatedAt"] = case.get("_updatedAt")
             case['tasks'] = self.get_tasks(case['_id'])
             case['observables'] = self.list_observables(case['_id'])
             case['instance'] = instance
@@ -1004,7 +1003,7 @@ def test_module(client: Client):
 def fetch_incidents(client: Client, fetch_closed: bool = False):
     params = demisto.params()
     last_run = demisto.getLastRun()
-    last_timestamp = int(last_run.get('timestamp', 0))
+    last_timestamp = int(last_run.pop('timestamp', 0))
     if last_timestamp:
         # migrate to isoformat
         last_run['time'] = datetime.fromtimestamp(last_timestamp / 1000).strftime(DATE_FORMAT)
@@ -1030,7 +1029,7 @@ def fetch_incidents(client: Client, fetch_closed: bool = False):
         case['dbotMirrorDirection'] = mirror_direction
         case['dbotMirrorInstance'] = instance_name
         incident = {
-            'name': case['title'],
+            'name': f"TheHiveProject - {case['id']}: {case['title']}",
             'occurred': timestamp_to_datestring(case['createdAt'], date_format=DATE_FORMAT),
             'severity': case['severity'],
             'rawJSON': json.dumps(case)
