@@ -200,15 +200,22 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
 def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     for pack in packs_in_pr:
         pack_object = BaseContent.from_path(CONTENT_PATH / pack)
-        assert isinstance(pack_object, Pack)
-        for integration in pack_object.content_items.integration:
-            print(f'pack_name: {pack}')
-            print(f'is it a feed: {integration.is_feed}')
+        try:
+            if isinstance(pack_object, Pack):
+                for integration in pack_object.content_items.integration:
+                    if integration.is_feed:
+                        return True
+        except Exception as error:
+            print(f'Received error: {error}\nwhen trying to find pack {pack}')
+        #assert isinstance(pack_object, Pack)
+        #for integration in pack_object.content_items.integration:
+        #    print(f'pack_name: {pack}')
+        #    print(f'is it a feed: {integration.is_feed}')
         pack_metadata = get_pack_metadata(pack)
-        for pr_file in pr_files:
-            if "yml" in pr_file:
-                if "feed: true" in pr_file:
-                    return True
+        # for pr_file in pr_files:
+        #    if "yml" in pr_file:
+        #        if "feed: true" in pr_file:
+        #            return True
         tags = pack_metadata.get("tags")
         categories = pack_metadata.get("categories")
         if TIM_TAGS in tags or TIM_CATEGORIES in categories:
