@@ -27,9 +27,6 @@ jobs:
       run: poetry install
 
     - name: Cache Pre commit
-      env:
-        DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
-        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       id: cache-pre-commit
       uses: actions/cache@v3
       with:
@@ -37,6 +34,9 @@ jobs:
         key: ${{ runner.os }}-pre-commit
 
     - name: run pre-commit
+      env:
+        DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       run: |
         source .venv/bin/activate
         docker pull demisto/boto3py3:1.0.0.79776
