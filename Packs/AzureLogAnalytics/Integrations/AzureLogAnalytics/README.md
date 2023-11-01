@@ -355,3 +355,207 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### azure-log-analytics-run-search-job
+
+***
+Run a search job to fetch records from large datasets into a new search results table in your workspace.
+
+#### Base Command
+
+`azure-log-analytics-run-search-job`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| table_name | the name of the table to add. | Required | 
+| limit | Maximum number of records in the result set, up to one million records. Default is 50. | Optional | 
+| query | Log query written in KQL to retrieve data. | Required | 
+| start_search_time | Start of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is 1 day ago. | Optional | 
+| end_search_time | End of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is now. | Optional | 
+| timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| interval | The interval in seconds between each poll. Default is 60. | Optional | 
+| first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. This argument is for the dev, not for the user. Default is True. | Optional | 
+| hide_polling_output | Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!azure-log-analytics-run-search-job table_name=test_SRCH query=AuditLogs limit=10```
+#### Human Readable Output
+
+>Command was sent successfully.
+
+>The test_SRCH table created successfully, to run query on the table, use the `azure-log-analytics-execute-query` command with the `query` argument `query=test_SRCH`
+
+### azure-log-analytics-get-search-job
+
+***
+Gets a Log Analytics workspace table.
+
+#### Base Command
+
+`azure-log-analytics-get-search-job`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| table_name | The name of the table. Example value: AuditLogs_SRCH. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureLogAnalytics.SearchJob.systemData.createdBy | String | The identity that created the resource. | 
+| AzureLogAnalytics.SearchJob.systemData.createdAt | Date | The timestamp of resource creation \(UTC\). | 
+| AzureLogAnalytics.SearchJob.properties.resultStatistics.progress | Number | Search job completion percentage. | 
+| AzureLogAnalytics.SearchJob.properties.resultStatistics.ingestedRecords | Number | The number of rows that were returned by the search job. | 
+| AzureLogAnalytics.SearchJob.properties.resultStatistics.scannedGb | Number | Search job: Amount of scanned data. | 
+| AzureLogAnalytics.SearchJob.properties.searchResults.query | String | Search job query. | 
+| AzureLogAnalytics.SearchJob.properties.searchResults.description | String | Search job Description. | 
+| AzureLogAnalytics.SearchJob.properties.searchResults.limit | Number | Limit the search job to return up to specified number of rows. | 
+| AzureLogAnalytics.SearchJob.properties.searchResults.startSearchTime | Date | The timestamp to start the search from \(UTC\). | 
+| AzureLogAnalytics.SearchJob.properties.searchResults.endSearchTime | Date | The timestamp to end the search by \(UTC\). | 
+| AzureLogAnalytics.SearchJob.properties.searchResults.sourceTable | String | The table used in the search job. | 
+| AzureLogAnalytics.SearchJob.properties.schema.name | String | Table name. | 
+| AzureLogAnalytics.SearchJob.properties.schema.tableSubType | String | The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any | Classic | DataCollectionRuleBased For more info see in the readme file. | 
+| AzureLogAnalytics.SearchJob.properties.schema.tableType | String | Table's creator. | 
+| AzureLogAnalytics.SearchJob.properties.schema.displayName | String | Table display name. | 
+| AzureLogAnalytics.SearchJob.properties.schema.description | String | Table description. | 
+| AzureLogAnalytics.SearchJob.properties.schema.columns | List | A list of table custom columns. | 
+| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isHidden | Boolean | Is column hidden. | 
+| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.name | String | Column name. | 
+| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.type | String | Column data type \(bool | datetime | dynamic | guid | int | long | real | string\). | 
+| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint | String | Column data type logical hint. \(armPath | guid | ip | uri\) for more info see in the readme file. | 
+| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.displayName | String | Column display name. | 
+| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.description | String | Column description. | 
+| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isDefaultDisplay | Boolean | Is displayed by default. | 
+| AzureLogAnalytics.SearchJob.properties.schema.categories | String | Table category. | 
+| AzureLogAnalytics.SearchJob.properties.schema.labels | String | Table labels. | 
+| AzureLogAnalytics.SearchJob.properties.schema.source | String | Table's creator. \(customer | microsoft\). | 
+| AzureLogAnalytics.SearchJob.properties.schema.solutions | String | List of solutions the table is affiliated with. | 
+| AzureLogAnalytics.SearchJob.properties.provisioningState | String | Table's current provisioning state. \(Deleting | InProgress | Succeeded | Updating\) If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded. | 
+| AzureLogAnalytics.SearchJob.properties.retentionInDays | Number | The table retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention. | 
+| AzureLogAnalytics.SearchJob.properties.totalRetentionInDays | Number | The table total retention in days, between 4 and 2556. Setting this property to -1 will default to table retention. | 
+| AzureLogAnalytics.SearchJob.properties.archiveRetentionInDays | Number | The table data archive retention in days. Calculated as \(totalRetentionInDays-retentionInDays\). | 
+| AzureLogAnalytics.SearchJob.properties.retentionInDaysAsDefault | Boolean | True - Value originates from workspace retention in days, False - Customer specific. | 
+| AzureLogAnalytics.SearchJob.properties.totalRetentionInDaysAsDefault | Boolean | True - Value originates from retention in days, False - Customer specific. | 
+| AzureLogAnalytics.SearchJob.properties.plan | String | Instruct the system how to handle and charge the logs ingested to this table. | 
+| AzureLogAnalytics.SearchJob.id | String | Fully qualified resource ID for the resource. Ex - /subscriptions/\{subscriptionId\}/resourceGroups/\{resourceGroupName\}/providers/\{resourceProviderNamespace\}/\{resourceType\}/\{resourceName\}. | 
+| AzureLogAnalytics.SearchJob.name | String | The name of the resource. | 
+
+#### Command example
+```!azure-log-analytics-get-search-job table_name=test_SRCH```
+#### Context Example
+```json
+{
+    "AzureLogAnalytics": {
+        "SearchJob": {
+            "id": "/tables/test_SRCH",
+            "name": "test_SRCH",
+            "properties": {
+                "archiveRetentionInDays": 0,
+                "createDate": "2023-11-01T21:27:50.3032268Z",
+                "createdBy": "TEST",
+                "lastPlanModifiedDate": "2023-11-01T21:27:50.3031023Z",
+                "plan": "Analytics",
+                "provisioningState": "InProgress",
+                "resultStatistics": {
+                    "ingestedRecords": 0,
+                    "progress": 0,
+                    "scannedGb": 0
+                },
+                "retentionInDays": 30,
+                "retentionInDaysAsDefault": true,
+                "schema": {
+                    "columns": [
+                        {
+                            "isDefaultDisplay": false,
+                            "isHidden": false,
+                            "name": "_OriginalTenantId",
+                            "type": "string"
+                        },
+                        {
+                            "isDefaultDisplay": false,
+                            "isHidden": false,
+                            "name": "SourceSystem",
+                            "type": "string"
+                        }
+                    ],
+                    "isTroubleshootingAllowed": false,
+                    "name": "test_SRCH",
+                    "solutions": [
+                        "LogManagement"
+                    ],
+                    "standardColumns": [
+                        {
+                            "isDefaultDisplay": false,
+                            "isHidden": false,
+                            "name": "TenantId",
+                            "type": "guid"
+                        }
+                    ],
+                    "tableSubType": "DataCollectionRuleBased",
+                    "tableType": "SearchResults"
+                },
+                "searchResults": {
+                    "azureAsyncOperationId": "TEST",
+                    "description": "This table was created using a Search Job with the following query: 'AuditLogs'.",
+                    "endSearchTime": "2023-11-01T21:27:43.744Z",
+                    "limit": 10,
+                    "query": "AuditLogs",
+                    "sourceTable": "AuditLogs",
+                    "startSearchTime": "2023-10-31T21:27:43.735Z"
+                },
+                "totalRetentionInDays": 30,
+                "totalRetentionInDaysAsDefault": true
+            },
+            "systemData": {
+                "createdAt": "2023-11-01T21:27:50.3032268Z",
+                "createdBy": "TEST",
+                "createdByType": null,
+                "lastModifiedAt": null,
+                "lastModifiedBy": null,
+                "lastModifiedByType": null
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Search Job
+>|Create Date|Description|Name|Plan|Query|endSearchTime|provisioningState|startSearchTime|
+>|---|---|---|---|---|---|---|---|
+>| 2023-11-01T21:27:50.3032268Z | This table was created using a Search Job with the following query: 'AuditLogs'. | test_SRCH | Analytics | AuditLogs | 2023-11-01T21:27:43.744Z | InProgress | 2023-10-31T21:27:43.735Z |
+
+
+### azure-log-analytics-delete-search-job
+
+***
+Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
+
+#### Base Command
+
+`azure-log-analytics-delete-search-job`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| table_name | The name of the table. Example value: AuditLogs_SRCH. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!azure-log-analytics-delete-search-job table_name=test_SRCH```
+
+#### Human Readable Output
+
+>Search job test_SRCH deleted successfully.
