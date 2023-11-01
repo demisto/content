@@ -1,4 +1,4 @@
-This widget displays the Verdict.
+This script displays the Verdict.
 
 ## Script Data
 
