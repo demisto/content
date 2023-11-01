@@ -7,7 +7,6 @@ import ansible_runner  # pylint: disable=E0401
 import json
 from typing import Dict, cast, List, Union, Any
 
-
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
 
 
@@ -229,6 +228,19 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
     return inventory, sshkey
 
 
+def clean_ansi_codes(input_str: str) -> str:
+    """
+    Remove ANSI escape codes from the provided string.
+
+    Parameters:
+    - input_str (str): The input string containing ANSI escape codes.
+
+    Returns:
+    - str: The cleaned string without ANSI escape codes.
+    """
+    return re.sub(r'\x1b\[.*?m', '', input_str)
+
+
 def generic_ansible(integration_name: str, command: str,
                     args: Dict[str, Any], int_params: Dict[str, Any], host_type: str,
                     creds_mapping: Dict[str, str] = None) -> CommandResults:
@@ -302,7 +314,8 @@ def generic_ansible(integration_name: str, command: str,
         if each_host_event['event'] in ["runner_on_ok", "runner_on_unreachable", "runner_on_failed"]:
 
             # parse results
-            str_to_parse = '{' + each_host_event['stdout'].split('{', 1)[1]
+            raw_str_to_parse = '{' + each_host_event['stdout'].split('{', 1)[1]
+            str_to_parse = clean_ansi_codes(input_str=raw_str_to_parse)
             try:
                 result = json.loads(str_to_parse)
             except JSONDecodeError as e:  # pragma: no cover
@@ -339,7 +352,7 @@ def generic_ansible(integration_name: str, command: str,
                     result['host'] = host
                     outputs_key_field = 'host'  # updates previous outputs that share this key, neat!
 
-                if (type(result) == dict):
+                if type(result) == dict:
                     result['status'] = status.strip()
 
                 results.append(result)

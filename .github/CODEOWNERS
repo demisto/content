@@ -76,11 +76,11 @@
 
 
 # Build related
-.circleci/config.yml @yucohen
-.gitlab/ci/* @yucohen
-.gitlab/* @yucohen
-.gitlab-ci.yml @yucohen
-.gitlab/ci/.gitlab-ci.on-push.yml @daryakoval
+.circleci/config.yml @yucohen @michal-dagan
+.gitlab/ci/* @yucohen @michal-dagan
+.gitlab/* @yucohen @michal-dagan
+.gitlab-ci.yml @yucohen @michal-dagan
+/Tests/* @michal-dagan
 /Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
 .gitlab/ci/.gitlab-ci.staging.yml @ilaner
 /Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
