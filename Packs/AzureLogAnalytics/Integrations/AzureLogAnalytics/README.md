@@ -21,9 +21,11 @@ To add the role, see the [Microsoft article](https://docs.microsoft.com/en-us/az
 You will receive your ID, token, and key. You need to enter these when you configure the Azure Log Analytics integration instance in Cortex XSOAR.
 
 ## Authorize Cortex XSOAR for Azure Log Analytics (Self-Deployed Configuration)
+
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, see the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 
 ### Required permissions
+
 - Azure Service Management - permission `user_impersonation` of type `Delegated`
 - Log Analytics API - permission `Data.Read` of type `Delegated`
 
@@ -35,12 +37,14 @@ In the self-deployed mode you can authenticate, by using one of the following fl
 ### Authentication Code flow
 
 ---
+
 1. Enter your client ID in the **ID\Client ID** parameter (credentials username). 
 2. Enter your client secret in the **password** parameter (credentials password).
 3. Enter your tenant ID in the **Token** parameter.
 4. Enter your redirect URI in the **Redirect URI** parameter.
 5. Save the integration settings.
 6. Run the `!azure-log-analytics-generate-login-url` command in the War Room and follow the instruction.
+
 ### Authorize Cortex XSOAR for Azure Log Analytics (Client-Credentials Configuration)
 
 ---
@@ -84,10 +88,14 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
 | proxy | Use system proxy settings | False |
 
 1. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-log-analytics-execute-query
+
 ***
 Executes an Analytics query for data.
 
@@ -95,6 +103,7 @@ Executes an Analytics query for data.
 #### Base Command
 
 `azure-log-analytics-execute-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -113,20 +122,25 @@ Executes an Analytics query for data.
 
 
 #### Command Example
+
 ```!azure-log-analytics-execute-query query="Usage | take 10" workspace_id=WORKSPACE_ID```
 
 #### Human Readable Output
+
 ## Query Results
+
 ### PrimaryResult
+
 |Tenant Id|Computer|Time Generated|Source System|Start Time|End Time|Resource Uri|Data Type|Solution|Batches Within Sla|Batches Outside Sla|Batches Capped|Total Batches|Avg Latency In Seconds|Quantity|Quantity Unit|Is Billable|Meter Id|Linked Meter Id|Type|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| TENANT_ID | Deprecated field: see http://aka.ms/LA-Usage | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | Operation | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.00714 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
-| TENANT_ID | Deprecated field: see http://aka.ms/LA-Usage | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.012602 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
-| TENANT_ID | Deprecated field: see http://aka.ms/LA-Usage | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | OfficeActivity | Office365/SecurityInsights | 0 | 0 | 0 | 0 | 0 | 0.00201499908978072 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
-| TENANT_ID | Deprecated field: see http://aka.ms/LA-Usage | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.009107 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | Operation | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.00714 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T04:00:00Z | OMS | 2020-07-30T03:00:00Z | 2020-07-30T04:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.012602 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | OfficeActivity | Office365/SecurityInsights | 0 | 0 | 0 | 0 | 0 | 0.00201499908978072 | MBytes | false | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
+| TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.009107 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
 
 
 ### azure-log-analytics-list-saved-searches
+
 ***
 Gets the saved searches of the Log Analytics workspace.
 
@@ -134,6 +148,7 @@ Gets the saved searches of the Log Analytics workspace.
 #### Base Command
 
 `azure-log-analytics-list-saved-searches`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -151,7 +166,7 @@ Gets the saved searches of the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.category | String | The category of the saved search. This helps users quickly find a saved search. | 
 | AzureLogAnalytics.SavedSearch.displayName | String | Display name of the saved search. | 
 | AzureLogAnalytics.SavedSearch.functionAlias | String | The function alias if the query serves as a function. | 
-| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions | 
+| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions> | 
 | AzureLogAnalytics.SavedSearch.query | String | The query expression for the saved search. | 
 | AzureLogAnalytics.SavedSearch.tags | String | The tags attached to the saved search. | 
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. | 
@@ -159,10 +174,13 @@ Gets the saved searches of the Log Analytics workspace.
 
 
 #### Command Example
+
 ```!azure-log-analytics-list-saved-searches limit=3```
 
 #### Human Readable Output
+
 ### Saved searches
+
 |Etag|Id|Category|Display Name|Function Alias|Function Parameters|Query|Tags|Version|Type|
 |---|---|---|---|---|---|---|---|---|---|
 | W/"datetime'2020-07-05T13%3A38%3A41.053438Z'" | test2 | category1 | test2 | heartbeat_func | a:int=1 | Heartbeat \| summarize Count() by Computer \| take a | {'name': 'Group', 'value': 'Computer'} | 2 | Microsoft.OperationalInsights/savedSearches |
@@ -171,6 +189,7 @@ Gets the saved searches of the Log Analytics workspace.
 
 
 ### azure-log-analytics-get-saved-search-by-id
+
 ***
 Gets the specified saved search from the Log Analytics workspace.
 
@@ -178,6 +197,7 @@ Gets the specified saved search from the Log Analytics workspace.
 #### Base Command
 
 `azure-log-analytics-get-saved-search-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -194,7 +214,7 @@ Gets the specified saved search from the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.category | String | The category of the saved search. This helps users quickly find a saved search. | 
 | AzureLogAnalytics.SavedSearch.displayName | String | The display name of the saved search. | 
 | AzureLogAnalytics.SavedSearch.functionAlias | String | The function alias if the query serves as a function. | 
-| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax see the Microsoft documention, https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions | 
+| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax see the Microsoft documention, <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions> | 
 | AzureLogAnalytics.SavedSearch.query | String | The query expression for the saved search. | 
 | AzureLogAnalytics.SavedSearch.tags | String | The tags attached to the saved search. | 
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. | 
@@ -202,16 +222,20 @@ Gets the specified saved search from the Log Analytics workspace.
 
 
 #### Command Example
+
 ```!azure-log-analytics-get-saved-search-by-id saved_search_id=test1234```
 
 #### Human Readable Output
+
 ### Saved search `test1234` properties
+
 |Etag|Id|Category|Display Name|Query|Version|
 |---|---|---|---|---|---|
 | W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
 
 
 ### azure-log-analytics-create-or-update-saved-search
+
 ***
 Creates or updates a saved search from the Log Analytics workspace.
 
@@ -219,6 +243,7 @@ Creates or updates a saved search from the Log Analytics workspace.
 #### Base Command
 
 `azure-log-analytics-create-or-update-saved-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -228,7 +253,7 @@ Creates or updates a saved search from the Log Analytics workspace.
 | category | The category of the saved search. This helps users quickly find a saved search. | Required | 
 | display_name | The display name of the saved search. | Required | 
 | function_alias | The function alias if the query serves as a function. | Optional | 
-| function_parameters | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions. | Optional | 
+| function_parameters | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions>. | Optional | 
 | query | The query expression for the saved search. | Required | 
 | tags | The tags attached to the saved search. Value should be in the following format: 'name=value;name=value' | Optional | 
 
@@ -242,7 +267,7 @@ Creates or updates a saved search from the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.category | String | The category of the saved search. This helps users quickly find a saved search. | 
 | AzureLogAnalytics.SavedSearch.displayName | String | The display name of the saved search. | 
 | AzureLogAnalytics.SavedSearch.functionAlias | String | The function alias if the query serves as a function. | 
-| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions | 
+| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions> | 
 | AzureLogAnalytics.SavedSearch.query | String | The query expression for the saved search. | 
 | AzureLogAnalytics.SavedSearch.tags | String | The tags attached to the saved search. | 
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. | 
@@ -250,6 +275,7 @@ Creates or updates a saved search from the Log Analytics workspace.
 
 
 #### Command Example
+
 ```
 !azure-log-analytics-create-or-update-saved-search saved_search_id="test1234" category="test" display_name="new display name test" query=`SecurityAlert
 | summarize arg_max(TimeGenerated, *) by SystemAlertId
@@ -257,13 +283,16 @@ Creates or updates a saved search from the Log Analytics workspace.
 ```
 
 #### Human Readable Output
+
 ### Saved search `test1234` properties
+
 |Etag|Id|Category|Display Name|Query|Version|
 |---|---|---|---|---|---|
 | W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | new display name test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
 
 
 ### azure-log-analytics-delete-saved-search
+
 ***
 Deletes a specified saved search in the Log Analytics workspace.
 
@@ -271,6 +300,7 @@ Deletes a specified saved search in the Log Analytics workspace.
 #### Base Command
 
 `azure-log-analytics-delete-saved-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -283,19 +313,23 @@ Deletes a specified saved search in the Log Analytics workspace.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-log-analytics-delete-saved-search saved_search_id=test1234```
 
 #### Human Readable Output
+
 Successfully deleted the saved search test1234.
 
 
 ### azure-log-analytics-test
+
 ***
 Tests connectivity to Azure Log Analytics.
 
 #### Base Command
 
 `azure-log-analytics-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -305,19 +339,23 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-log-analytics-test```
 
 #### Human Readable Output
+
 ```✅ Success!```
 
 
 ### azure-log-analytics-generate-login-url
+
 ***
 Generate the login url used for Authorization code flow.
 
 #### Base Command
 
 `azure-log-analytics-generate-login-url`
+
 #### Input
 
 There are no input arguments for this command.
@@ -327,11 +365,13 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```azure-log-analytics-generate-login-url```
 
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -382,8 +422,11 @@ Run a search job to fetch records from large datasets into a new search results 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!azure-log-analytics-run-search-job table_name=test_SRCH query=AuditLogs limit=10```
+
 #### Human Readable Output
 
 >Command was sent successfully.
@@ -448,8 +491,11 @@ Gets a Log Analytics workspace table.
 | AzureLogAnalytics.SearchJob.name | String | The name of the resource. | 
 
 #### Command example
+
 ```!azure-log-analytics-get-search-job table_name=test_SRCH```
+
 #### Context Example
+
 ```json
 {
     "AzureLogAnalytics": {
@@ -529,6 +575,7 @@ Gets a Log Analytics workspace table.
 #### Human Readable Output
 
 >### Search Job
+
 >|Create Date|Description|Name|Plan|Query|endSearchTime|provisioningState|startSearchTime|
 >|---|---|---|---|---|---|---|---|
 >| 2023-11-01T21:27:50.3032268Z | This table was created using a Search Job with the following query: 'AuditLogs'. | test_SRCH | Analytics | AuditLogs | 2023-11-01T21:27:43.744Z | InProgress | 2023-10-31T21:27:43.735Z |
@@ -554,6 +601,7 @@ Delete a Log Analytics workspace table. We recommend you delete the search job w
 There is no context output for this command.
 
 #### Command example
+
 ```!azure-log-analytics-delete-search-job table_name=test_SRCH```
 
 #### Human Readable Output

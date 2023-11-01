@@ -1,6 +1,5 @@
-id: 73ffda70-c194-49dd-8f27-150c85e256b1
-version: 10
-vcShouldKeepItemLegacyProdMachine: false
+id: playbook-AzureLogAnalytics-test
+version: -1
 name: playbook-AzureLogAnalytics-test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -418,8 +418,7 @@ tasks:
       id: 4d8293ff-85c5-4034-848d-7619dff3fcbe
       version: -1
       name: Run Search Job
-      description: Run a search job to fetch records from large datasets into a new
-        search results table in your workspace.
+      description: Run a search job to fetch records from large datasets into a new search results table in your workspace.
       script: '|||azure-log-analytics-run-search-job'
       type: regular
       iscommand: true
@@ -626,9 +625,7 @@ tasks:
       id: c13eafea-82cd-481f-809f-826ddafade7c
       version: -1
       name: Delete Search Job Table
-      description: Delete a Log Analytics workspace table. We recommend you delete
-        the search job when you're done querying the table. This reduces workspace
-        clutter and extra charges for data retention.
+      description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
       script: '|||azure-log-analytics-delete-search-job'
       type: regular
       iscommand: true
@@ -666,6 +663,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -697,3 +695,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 6.10.0
+description: ''
