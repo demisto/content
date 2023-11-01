@@ -11,3 +11,7 @@
      API Key | See [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis).  **Only standard API key type is supported**. | True 
     
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-attack-surface-management)
