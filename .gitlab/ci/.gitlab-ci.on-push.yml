@@ -462,6 +462,7 @@ jobs-done-check-on-merge:
     - .push-rule
     - .jobs-done-check
   needs:
+    - merge-dev-secrets
     - run-unittests-and-lint
     - run-validations
     - test-upload-flow

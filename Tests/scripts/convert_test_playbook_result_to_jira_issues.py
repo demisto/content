@@ -22,7 +22,7 @@ from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
     jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
-    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks
+    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -169,7 +169,7 @@ def main():
                                                                                     playbook_id: test_suites
                                                                                 },
                                                                                 server_versions,
-                                                                                TEST_PLAYBOOKS_BASE_HEADERS,
+                                                                                TEST_PLAYBOOKS_JIRA_BASE_HEADERS,
                                                                                 add_total_row=False,
                                                                                 no_color=True,
                                                                                 without_jira=True,

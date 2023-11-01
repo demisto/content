@@ -109,12 +109,13 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
         logging.info("Printing test playbook summary without Jira tickets")
         jira_tickets_for_playbooks = {}
     else:
-        logging.info("Searching for Jira tickets for playbooks with the following settings:\n"
-                     f'Jira server url: {JIRA_SERVER_URL}\n'
-                     f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
-                     f'Jira project id: {JIRA_PROJECT_ID}\n'
-                     f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
-                     f'Jira component: {JIRA_COMPONENT}\n')
+        logging.info("Searching for Jira tickets for playbooks with the following settings:\n")
+        logging.info(f'\tJira server url: {JIRA_SERVER_URL}\n')
+        logging.info(f'\tJira verify SSL: {JIRA_VERIFY_SSL}\n')
+        logging.info(f'\tJira project id: {JIRA_PROJECT_ID}\n')
+        logging.info(f'\tJira issue type: {JIRA_ISSUE_TYPE}\n')
+        logging.info(f'\tJira component: {JIRA_COMPONENT}\n')
+        logging.info(f'\tJira labels: {JIRA_COMPONENT}\n')
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
