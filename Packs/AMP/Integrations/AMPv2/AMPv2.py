@@ -2037,7 +2037,7 @@ def computer_isolation_polling_command(
     )
 
 
-def create_relationships(client: Client, indicator: str, relationship: dict):
+def create_relationships(client: Client, indicator: str, relationship: dict[str, str | int]):
     if not relationship:
         return None
 
