@@ -241,7 +241,6 @@ def main():
 
         hierarchy_info = argToList(args.get("hierarchy_info", []))
         dev_hierarchy_indicators = get_indicators_from_list(hierarchy_info, is_dev_indicator, "string")
-
         prod_hierarchy_indicators = get_indicators_from_list(hierarchy_info, is_prod_indicator, "string")
 
         external_active_classifications: list[str] = argToList(args.get("active_classifications", []))
