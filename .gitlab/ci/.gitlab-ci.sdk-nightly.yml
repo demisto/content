@@ -242,8 +242,9 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
-    - *upload-entities-to-cortex-xsoar
+    - demisto-sdk upload -i Packs/HelloWorld --insecure --no-zip
     - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
+    - *upload-entities-to-cortex-xsoar
     - section_end "Create and Upload Entities to XSOAR Instance"
 
     - section_start "Download Entities from XSOAR Instance" --collapsed
@@ -252,10 +253,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
-
-    # - section_start "Download Custom Entities from XSOAR Instance" --collapsed
-    # - demisto-sdk download -a -o Packs/ -f --insecure
-    # - section_end "Download Custom Entities from XSOAR Instance"
 
     - section_start "Install Packs and run Test-Module"
     - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
@@ -337,17 +334,12 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
 
     - section_start "Create Entities and Upload" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
-    - demisto-sdk upload -i Packs/AzureSentinel -z -x --insecure
     - demisto-sdk upload -i Packs/HelloWorld --insecure -z -x
     - section_end "Create Entities and Upload"
 
     - section_start "Download Entities" --collapsed
     - demisto-sdk download -lf --insecure
     - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
-    # - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
-    # - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
-    # - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
     - section_end "Download Entities"
 
     - section_start "Install Packs and run Test-Module" --collapsed
@@ -417,22 +409,20 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - demisto-sdk download -lf --insecure
-    - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
-    - demisto-sdk upload -i Packs/HelloWorld --insecure -z
-    # - *upload-entities-to-cortex-xsoar
+    - demisto-sdk upload -i Packs/AzureSentinel --insecure -z
+    - demisto-sdk upload -i Packs/HelloWorld --insecure --no-zip
+    - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
+    - demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_IncidentField_Test.json --insecure
+    - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
     - section_end "Create and Upload Entities to XSOAR Instance"
 
     - section_start "Download Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -lf --insecure
-    - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
+    - demisto-sdk download -o Packs/HelloWorld -i HelloWorld --insecure -f
+    - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World IncidentField Test" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
-
-    - section_start "Download Custom Entities from XSOAR Instance" --collapsed
-    - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
-    # - demisto-sdk download -a -o Packs/HelloWorld/ -f --insecure
-    - section_end "Download Custom Entities from XSOAR Instance"
 
     - section_start "Install Packs and run Test-Module" --collapsed
     - cat "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
