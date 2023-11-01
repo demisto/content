@@ -1,4 +1,4 @@
-comment: This widget displays the incident verdict  based on the 'Verdict' field.
+comment: This widget displays the incident verdict based on the 'Verdict' field.
 commonfields:
   id: CortexXDRInvestigationVerdict
   version: -1
