@@ -42,6 +42,15 @@ def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_bl
         ) in response[0].get('error_string')
 
 
+def thread_target():
+    from UrlScan import format_results, Client
+    client = Client()
+    try:
+        format_results(client, 'uuid', '')
+    except Exception:
+        pass
+
+
 def test_endless_loop_on_failed_response(requests_mock, mocker):
     """
     Given
@@ -51,14 +60,12 @@ def test_endless_loop_on_failed_response(requests_mock, mocker):
     Then
     - Assert it does not enter an endless loop
     """
-    from UrlScan import format_results, Client
     mocker.patch(RETURN_ERROR_TARGET)
-    client = Client()
 
-    with open('./test_data/capitalne.json', 'r') as f:
+    with open('./test_data/capitalne.json') as f:
         response_data = json.loads(f.read())
     requests_mock.get(RESULT_URL + 'uuid', status_code=200, json=response_data)
-    thread = Thread(target=format_results, args=(client, 'uuid', ))
+    thread = Thread(target=thread_target)
     thread.start()
     time.sleep(10)
     assert not thread.is_alive(), 'format_results method have probably entered an endless loop'

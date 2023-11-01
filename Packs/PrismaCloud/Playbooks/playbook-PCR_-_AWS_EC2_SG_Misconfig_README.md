@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PCR_AWS_EC2_SG_Misconfig](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PCR_AWS_EC2_SG_Misconfig.png)
+![PCR_AWS_EC2_SG_Misconfig](../doc_files/Prisma_Cloud_Remediation_-_AWS_EC2_Security_Group_Misconfiguration.png)

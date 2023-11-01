@@ -1179,6 +1179,199 @@ LIST_INCIDENTS_RESULTS = [{
     "xpanse_risk_score": 75
 }]
 
+INCIDENT_GET_RESULTS = {
+    "aggregated_score": 825,
+    "alert_categories": null,
+    "alert_count": 2,
+    "alerts": [
+        {
+            "alert_id": "113716",
+            "description": "This issue flags on-premises Microsoft Exchange Servers that are known to be below the current up-to-date secured versions suggested by Microsoft.",
+            "name": "Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443",
+            "resolution_status": "STATUS_020_UNDER_INVESTIGATION"
+        },
+        {
+            "alert_id": "89896",
+            "description": "The X-XSS-Protection header is used to reduce the risk of cross-site scripting attacks. Not including it could make your website less secure.",
+            "name": "Missing X-Xss-Protection at 1.1.1.1:443",
+            "resolution_status": "STATUS_010_NEW"
+        }
+    ],
+    "alerts_grouping_status": "Disabled",
+    "assigned_user_mail": "cs@acme.com",
+    "assigned_user_pretty_name": "User One",
+    "creation_time": 1671912678672,
+    "critical_severity_alert_count": 0,
+    "description": "'Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443' along with 1 other alerts",
+    "detection_time": null,
+    "high_severity_alert_count": 1,
+    "host_count": 1,
+    "hosts": [
+        "1.1.1.1:null"
+    ],
+    "incident_id": "71",
+    "incident_name": null,
+    "incident_sources": [
+        "ASM"
+    ],
+    "is_blocked": false,
+    "low_severity_alert_count": 0,
+    "manual_description": null,
+    "manual_score": null,
+    "manual_severity": null,
+    "med_severity_alert_count": 1,
+    "modification_time": 1696275576460,
+    "notes": null,
+    "original_tags": [
+        "BU:Xpanse VanDelay Demo 3"
+    ],
+    "resolve_comment": null,
+    "resolved_timestamp": null,
+    "rule_based_score": 825,
+    "severity": "high",
+    "starred": True,
+    "status": "under_investigation",
+    "tags": [
+        "AR:Registered to You"
+    ],
+    "user_count": 0,
+    "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=71",
+    "xpanse_risk_explainer": {
+        "cves": [
+            {
+                "confidence": "High",
+                "cveId": "CVE-2021-26855",
+                "cvssScore": 9.800000190734863,
+                "epssScore": 0.9749900102615356,
+                "exploitMaturity": "Weaponized",
+                "matchType": "ExactVersionMatch",
+                "mostRecentReportedExploitDate": "2023-10-12",
+                "reportedExploitInTheWild": True
+            },
+            {
+                "confidence": "High",
+                "cveId": "CVE-2021-34473",
+                "cvssScore": 9.800000190734863,
+                "epssScore": 0.9732999801635742,
+                "exploitMaturity": "Weaponized",
+                "matchType": "ExactVersionMatch",
+                "mostRecentReportedExploitDate": "2023-10-12",
+                "reportedExploitInTheWild": True
+            },
+            {
+                "confidence": "High",
+                "cveId": "CVE-2021-34523",
+                "cvssScore": 9.800000190734863,
+                "epssScore": 0.9726300239562988,
+                "exploitMaturity": "Weaponized",
+                "matchType": "ExactVersionMatch",
+                "mostRecentReportedExploitDate": "2023-10-12",
+                "reportedExploitInTheWild": True
+            }
+        ],
+        "riskFactors": [
+            {
+                "attributeId": "misconfiguration",
+                "attributeName": "Misconfiguration",
+                "issueTypes": [
+                    {
+                        "displayName": "Insecure Microsoft Exchange Server",
+                        "issueTypeId": "InsecureMicrosoftExchangeServer"
+                    },
+                    {
+                        "displayName": "Missing X-XSS-Protection Header",
+                        "issueTypeId": "MissingXXssProtectionHeader"
+                    }
+                ]
+            },
+            {
+                "attributeId": "critical_system",
+                "attributeName": "Critical System",
+                "issueTypes": [
+                    {
+                        "displayName": "Insecure Microsoft Exchange Server",
+                        "issueTypeId": "InsecureMicrosoftExchangeServer"
+                    }
+                ]
+            },
+            {
+                "attributeId": "potential_data_loss",
+                "attributeName": "Potential Data Loss",
+                "issueTypes": [
+                    {
+                        "displayName": "Insecure Microsoft Exchange Server",
+                        "issueTypeId": "InsecureMicrosoftExchangeServer"
+                    }
+                ]
+            }
+        ],
+        "versionMatched": True
+    },
+    "xpanse_risk_score": 825
+}
+
 INCIDENT_UPDATE_RESULTS = "Update operation successful: True"
 
 ALERT_UPDATE_RESULTS = "Updated alerts: [602]"
+
+IP_RESULTS = [{
+    "asm_ids": [
+        "4b1f3765-de40-3a1a-8535-667420408fd9"
+    ],
+    "ip": "1.1.1.1",
+    "asset_explainers": [],
+    "asset_type": "DOMAIN",
+    "domain": "*.acme.com",
+    "domain_details": {
+        "admin": {},
+        "alignedRegistrar": "MarkMonitor",
+        "collectionTime": 1695942091000,
+        "creationDate": 785376000000,
+        "dnssec": null,
+        "domainName": "acme.com",
+        "domainStatuses": [
+            "clientUpdateProhibited",
+            "clientTransferProhibited",
+            "clientDeleteProhibited"
+        ],
+        "dropped": false,
+        "nameServers": [],
+        "registrant": {},
+        "registrar": {},
+        "registryDomainId": null,
+        "registryExpiryDate": 1732060800000,
+        "reseller": null,
+        "retrievedDate": 1696075229360,
+        "tech": {},
+        "updatedDate": 1666137600000
+    },
+    "first_observed": 1679457579382,
+    "last_observed": 1697361335282,
+    "name": "*.acme.com",
+            "recent_ips": [
+                {
+                    "firstObserved": 1692418207732,
+                    "id": "218b3cc9-2d26-3a17-aadd-9eac08cc30ec",
+                    "ip": "1.1.1.1",
+                    "ipv6": null,
+                    "lastObserved": 1697361335282,
+                    "provider": {
+                        "additionalProviderInfo": null,
+                        "cdn": false,
+                        "displayName": "Amazon Web Services",
+                        "isCdn": false,
+                        "legacyName": "AWS",
+                        "name": "AWS"
+                    },
+                    "source": {
+                        "name": "DOMAIN_RESOLUTION"
+                    }
+                }
+    ],
+    "service_type": [
+                "HttpServer"
+    ],
+    "tags": [
+                "BU:Xpanse VanDelay Demo 3"
+    ]
+}]

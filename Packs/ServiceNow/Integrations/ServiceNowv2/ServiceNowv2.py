@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
 import shutil
-from typing import Callable, Dict, Iterable, List, Tuple
+from collections.abc import Callable, Iterable
 
 
 import mimetypes
@@ -20,6 +20,7 @@ DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 DATE_FORMAT_OPTIONS = {
     'MM-dd-yyyy': '%m-%d-%Y %H:%M:%S',
+    'MM/dd/yyyy': '%m/%d/%Y %H:%M:%S',
     'dd/MM/yyyy': '%d/%m/%Y %H:%M:%S',
     'dd-MM-yyyy': '%d-%m-%Y %H:%M:%S',
     'dd.MM.yyyy': '%d.%m.%Y %H:%M:%S',
@@ -171,9 +172,8 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
         returns ``None`` if arg is ``None`` and required is set to ``False``
         otherwise throws an Exception
     """
-    if arg is None:
-        if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
+    if arg is None and required is True:
+        raise ValueError(f'Missing "{arg_name}"')
 
     if isinstance(arg, str) and arg.isdigit():
         # timestamp is a str containing digits - we just convert it to int
@@ -188,7 +188,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         # Convert to int if the input is a float
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
@@ -424,7 +424,7 @@ def get_ticket_fields(args: dict, template_name: dict = {}, ticket_type: str = '
         args.get('clear_fields', []))  # This argument will contain fields to allow their value empty
 
     # This is for updating null fields for update_remote_system function for example: assigned_to.
-    for arg in args.keys():
+    for arg in args:
         if not args[arg]:
             fields_to_clear.append(arg)
     demisto.debug(f'Fields to clear {fields_to_clear}')
@@ -512,11 +512,11 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
 
 
 def split_notes(raw_notes, note_type, time_info):
-    notes: List = []
+    notes: list = []
     # The notes should be in this form:
     # '16/05/2023 15:49:56 - John Doe (Additional comments)\nsecond note first line\n\nsecond line\n\nthird
     # line\n\n2023-05-10 15:41:38 - פלוני אלמוני (Additional comments)\nfirst note first line\n\nsecond line\n\n
-    delimiter = '([0-9]{1,4}(?:\/|-)[0-9]{1,2}(?:\/|-)[0-9]{1,4}.*\((?:Additional comments|Work notes)\))'
+    delimiter = r'([0-9]{1,4}(?:\/|-)[0-9]{1,2}(?:\/|-)[0-9]{1,4}.*\((?:Additional comments|Work notes)\))'
     notes_split = list(filter(None, re.split(delimiter, raw_notes)))
     for note_info, note_value in zip(notes_split[::2], notes_split[1::2]):
         created_on, _, created_by = note_info.partition(" - ")
@@ -608,7 +608,7 @@ class Client(BaseClient):
         self._username = username
         self._password = password
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-        self.use_oauth = True if oauth_params else False
+        self.use_oauth = bool(oauth_params)
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
@@ -636,8 +636,8 @@ class Client(BaseClient):
         else:
             self._auth = (self._username, self._password)
 
-    def generic_request(self, method: str, path: str, body: Optional[Dict] = None, headers: Optional[Dict] = None,
-                        sc_api: bool = False, cr_api: bool = False):
+    def generic_request(self, method: str, path: str, body: Optional[dict] = None, headers: Optional[dict] = None,
+                        sc_api: bool = False, cr_api: bool = False, custom_api: str = ""):
         """Generic request to ServiceNow api.
 
         Args:
@@ -649,15 +649,16 @@ class Client(BaseClient):
             header (dict): requests headers. Default is None.
             sc_api: Whether to send the request to the Service Catalog API
             cr_api: Whether to send the request to the Change Request REST API
+            custom_api: the custom api root to use
 
         Returns:
-            Resposne object or Exception
+            Response object or Exception
         """
-        return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api)
+        return self.send_request(path, method, body, headers=headers, sc_api=sc_api, cr_api=cr_api, custom_api=custom_api)
 
     def send_request(self, path: str, method: str = 'GET', body: dict | None = None, params: dict | None = None,
                      headers: dict | None = None, file=None, sc_api: bool = False, cr_api: bool = False,
-                     get_attachments: bool = False, no_record_found_res: dict = {'result': []}):
+                     get_attachments: bool = False, no_record_found_res: dict = {'result': []}, custom_api: str = ''):
         """Generic request to ServiceNow.
 
         Args:
@@ -670,6 +671,7 @@ class Client(BaseClient):
             sc_api: Whether to send the request to the Service Catalog API
             cr_api: Whether to send the request to the Change Request REST API
             get_attachments: if to get attachments or not.
+            custom_api: the custom api root to use
 
         Returns:
             response from API
@@ -677,7 +679,12 @@ class Client(BaseClient):
         body = body if body is not None else {}
         params = params if params is not None else {}
 
-        if sc_api:
+        if custom_api:
+            if not custom_api.startswith("/"):
+                return_error("Argument custom_api must start with a leading forward slash '/'")
+            server_url = demisto.params().get('url')
+            url = f'{get_server_url(server_url)}{custom_api}{path}'
+        elif sc_api:
             url = f'{self._sc_server_url}{path}'
         elif cr_api:
             url = f'{self._cr_server_url}{path}'
@@ -851,7 +858,7 @@ class Client(BaseClient):
             Array of attachments entries.
         """
         entries = []
-        links = []  # type: List[Tuple[str, str]]
+        links = []  # type: List[tuple[str, str]]
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -1175,7 +1182,7 @@ def get_ticket_command(client: Client, args: dict):
     return entries
 
 
-def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, bool]:
+def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, bool]:
     """Update a ticket.
 
     Args:
@@ -1215,7 +1222,7 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     return human_readable, entry_context, result, True
 
 
-def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Create a ticket.
 
     Args:
@@ -1271,7 +1278,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     return human_readable, entry_context, result, True
 
 
-def delete_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def delete_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Delete a ticket.
 
     Args:
@@ -1289,7 +1296,7 @@ def delete_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     return f'Ticket with ID {ticket_id} was successfully deleted.', {}, result, True
 
 
-def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def query_tickets_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Query tickets.
 
     Args:
@@ -1329,7 +1336,7 @@ def query_tickets_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     return human_readable, entry_context, result, True
 
 
-def add_link_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def add_link_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Add a link.
 
     Args:
@@ -1361,7 +1368,7 @@ def add_link_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]
     return human_readable, {}, result, True
 
 
-def add_comment_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def add_comment_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Add a comment.
 
     Args:
@@ -1392,7 +1399,7 @@ def add_comment_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     return human_readable, {}, result, True
 
 
-def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Upload a file.
 
     Args:
@@ -1439,7 +1446,7 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     return human_readable, entry_context, result, True
 
 
-def add_tag_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Add tag to a ticket.
 
     Args:
@@ -1476,7 +1483,7 @@ def add_tag_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
     return human_readable, entry_context, result, True
 
 
-def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def get_ticket_notes_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Get the ticket's note.
 
     Args:
@@ -1531,7 +1538,7 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
     return human_readable, entry_context, result, True
 
 
-def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def get_record_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Get a record.
 
     Args:
@@ -1579,7 +1586,7 @@ def get_record_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, boo
     return human_readable, entry_context, result, True
 
 
-def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Any, bool]:
+def create_record_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], Any, bool]:
     """Create a record.
 
     Args:
@@ -1616,7 +1623,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     return human_readable, entry_context, result, True
 
 
-def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def update_record_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """Update a record.
 
     Args:
@@ -1655,7 +1662,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     return human_readable, entry_context, result, True
 
 
-def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, Any], Dict, bool]:
+def delete_record_command(client: Client, args: dict) -> tuple[str, dict[Any, Any], dict, bool]:
     """Delete a record.
 
     Args:
@@ -1673,7 +1680,7 @@ def delete_record_command(client: Client, args: dict) -> Tuple[str, Dict[Any, An
     return f'ServiceNow record with ID {record_id} was successfully deleted.', {}, result, True
 
 
-def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bool]:
+def query_table_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Query a table.
 
     Args:
@@ -1719,7 +1726,7 @@ def query_table_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     return human_readable, entry_context, result, False
 
 
-def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def query_computers_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """Query computers.
 
     Args:
@@ -1791,7 +1798,7 @@ def query_computers_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, 
     return human_readable, entry_context, result, False
 
 
-def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def query_groups_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """Query groups.
 
     Args:
@@ -1844,7 +1851,7 @@ def query_groups_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any
     return human_readable, entry_context, result, False
 
 
-def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def query_users_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """Query users.
 
     Args:
@@ -1895,7 +1902,7 @@ def query_users_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any]
     return human_readable, entry_context, result, False
 
 
-def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def list_table_fields_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """List table fields.
 
     Args:
@@ -1923,7 +1930,7 @@ def list_table_fields_command(client: Client, args: dict) -> Tuple[Any, Dict[Any
     return human_readable, entry_context, result, False
 
 
-def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def get_table_name_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """List table fields.
 
     Args:
@@ -1961,7 +1968,7 @@ def get_table_name_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, A
     return human_readable, entry_context, result, False
 
 
-def query_items_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def query_items_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """Query items.
 
     Args:
@@ -2000,7 +2007,7 @@ def query_items_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any]
     return human_readable, entry_context, result, True
 
 
-def get_item_details_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def get_item_details_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """Get item details.
 
     Args:
@@ -2027,7 +2034,7 @@ def get_item_details_command(client: Client, args: dict) -> Tuple[Any, Dict[Any,
     return human_readable, entry_context, result, True
 
 
-def create_order_item_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def create_order_item_command(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """Create item order.
 
     Args:
@@ -2057,7 +2064,7 @@ def create_order_item_command(client: Client, args: dict) -> Tuple[Any, Dict[Any
     return human_readable, entry_context, result, True
 
 
-def document_route_to_table(client: Client, args: dict) -> Tuple[Any, Dict[Any, Any], Dict[Any, Any], bool]:
+def document_route_to_table(client: Client, args: dict) -> tuple[Any, dict[Any, Any], dict[Any, Any], bool]:
     """Document routes to table.
 
     Args:
@@ -2249,7 +2256,7 @@ def test_instance(client: Client):
             raise ValueError(f"The field [{client.incident_name}] does not exist in the ticket.")
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any], bool]:
     """
     Test the instance configurations when using basic authorization.
     """
@@ -2265,7 +2272,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]
     return 'ok', {}, {}, True
 
 
-def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+def oauth_test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any], bool]:
     """
     Test the instance configurations when using OAuth authentication.
     """
@@ -2279,7 +2286,7 @@ def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any
     return hr, {}, {}, True
 
 
-def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]:
+def login_command(client: Client, args: dict[str, Any]) -> tuple[str, dict[Any, Any], dict[Any, Any], bool]:
     """
     Login the user using OAuth authorization
     Args:
@@ -2366,7 +2373,7 @@ def get_timezone_offset(full_response, display_date_format):
     return offset
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
+def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) -> Union[list[dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -2531,10 +2538,10 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
             received state code: {ticket_state}')
         # parse custom state parameter into a dictionary of custom state codes and their names (label)
         server_close_custom_state_dict = dict(item.split("=") for item in server_close_custom_state.split(","))
-        if ticket_state in server_close_custom_state_dict:
+        if ticket_state in server_close_custom_state_dict and (
+                custom_state_label := server_close_custom_state_dict.get(ticket_state)):
             # check if state code is in the parsed dictionary
-            if custom_state_label := server_close_custom_state_dict.get(ticket_state):
-                custom_label = custom_state_label
+            custom_label = custom_state_label
 
     if custom_label:
         demisto.debug(f'incident should be closed using custom state. State Code: {ticket_state}, Label: {custom_label}')
@@ -2546,7 +2553,7 @@ def converts_state_close_reason(ticket_state: Optional[str], server_close_custom
     return 'Other'
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> str:
     """
     This command pushes local changes to the remote system.
     Args:
@@ -2639,7 +2646,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     return ticket_id
 
 
-def get_closure_case(params: Dict[str, Any]):
+def get_closure_case(params: dict[str, Any]):
     """
     return the right incident closing states according to old and new close_ticket integration param.
     Args:
@@ -2647,7 +2654,7 @@ def get_closure_case(params: Dict[str, Any]):
 
     Returns: None if no closure method is specified. otherwise returns (str) The right closure method.
     """
-    if not params.get('close_ticket_multiple_options') == 'None':
+    if params.get('close_ticket_multiple_options') != 'None':
         return params.get('close_ticket_multiple_options')
     elif params.get('close_ticket'):
         return 'closed'
@@ -2693,7 +2700,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
 
 def get_modified_remote_data_command(
         client: Client,
-        args: Dict[str, str],
+        args: dict[str, str],
         update_timestamp_field: str = 'sys_updated_on',
         mirror_limit: str = '100',
 ) -> GetModifiedRemoteDataResponse:
@@ -2842,7 +2849,7 @@ def create_co_from_template_command(client: Client, args: dict) -> CommandResult
     )
 
 
-def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Iterable = tuple()) -> dict:
+def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Iterable = ()) -> dict:
     """Get co human readable.
 
     Args:
@@ -2888,7 +2895,7 @@ def get_co_human_readable(ticket: dict, ticket_type: str, additional_fields: Ite
     return item
 
 
-def generic_api_call_command(client: Client, args: Dict) -> Union[str, CommandResults]:
+def generic_api_call_command(client: Client, args: dict) -> Union[str, CommandResults]:
     """make a call to ServiceNow api
     Args:
         (Required Arguments)
@@ -2897,6 +2904,7 @@ def generic_api_call_command(client: Client, args: Dict) -> Union[str, CommandRe
         (Optional Arguments)
         body (dict): The body to send in a 'POST' request. Default is None.
         header (dict): requests headers. Default is None.
+        custom_api (str): custom API root. Default is None.
 
     Return:
         Generic Api Response.
@@ -2905,8 +2913,9 @@ def generic_api_call_command(client: Client, args: Dict) -> Union[str, CommandRe
     method = str(args.get("method"))
     path = str(args.get("path"))
     headers = json.loads(str(args.get("headers", {})))
+    custom_api = args.get('custom_api', '')
     try:
-        body: Dict = json.loads(str(args.get("body", {})))
+        body: dict = json.loads(str(args.get("body", {})))
     except ValueError:
         body = args.get("body", "")
     sc_api: bool = argToBoolean(args.get("sc_api", False))
@@ -2916,7 +2925,8 @@ def generic_api_call_command(client: Client, args: Dict) -> Union[str, CommandRe
         return f"{method} method not supported.\nTry something from {', '.join(methods)}"
 
     response = None
-    response = client.generic_request(method=method, path=path, body=body, headers=headers, sc_api=sc_api, cr_api=cr_api)
+    response = client.generic_request(method=method, path=path, body=body, headers=headers,
+                                      sc_api=sc_api, cr_api=cr_api, custom_api=custom_api)
 
     if response is not None:
         resp = response
@@ -3033,7 +3043,7 @@ def main():
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
                         incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back,
                         use_display_value=use_display_value, display_date_format=display_date_format)
-        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
+        commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-oauth-test': oauth_test_module,
             'servicenow-oauth-login': login_command,
