@@ -207,6 +207,7 @@ def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
                         return True
         except Exception as error:
             print(f'Received error: {error}\nwhen trying to find pack {pack}')
+        print("tim in yml")
         #assert isinstance(pack_object, Pack)
         #for integration in pack_object.content_items.integration:
         #    print(f'pack_name: {pack}')
@@ -218,6 +219,7 @@ def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
         #            return True
         tags = pack_metadata.get("tags")
         categories = pack_metadata.get("categories")
+        print("tim in categories")
         if TIM_TAGS in tags or TIM_CATEGORIES in categories:
             return True
     return False
