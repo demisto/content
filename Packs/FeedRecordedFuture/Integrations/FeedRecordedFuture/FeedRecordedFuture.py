@@ -509,6 +509,7 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
+
     if not api_token:
         raise DemistoException('API Token must be provided.')
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),
