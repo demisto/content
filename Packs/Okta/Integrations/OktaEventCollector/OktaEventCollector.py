@@ -51,14 +51,20 @@ class Client:
         self.request = request
 
     def call(self, requests=requests) -> requests.Response:  # pragma: no cover
+        response = None
         try:
             response = requests.request(**self.request.dict())
+            if 'x-rate-limit-remaining' in response.headers:
+                demisto.debug(f'okta rate limit headers:\n \
+                                x-rate-limit-remaining: {response.headers["x-rate-limit-remaining"]}\n \
+                                x-rate-limit-limit: {response.headers["x-rate-limit-limit"]}\n \
+                                x-rate-limit-reset: {response.headers["x-rate-limit-reset"]}\n')
             response.raise_for_status()
             return response
         except Exception as exc:
             msg = f'something went wrong with the http call {exc}'
             LOG(msg)
-            raise DemistoException(msg) from exc
+            raise DemistoException(msg, res=response) from exc
 
     def set_next_run_filter(self, after: str):
         self.request.params.set_since_value(after)  # type: ignore
@@ -81,34 +87,42 @@ class GetEvents:
         self.client.request.params.limit = str(limit_tmp - len(events))  # type: ignore
         return events
 
-    def _iter_events(self, last_object_ids: list) -> None:  # type: ignore  # pragma: no cover
-        """
-        Function that responsible for the iteration over the events returned from the Okta api
-        """
-
-        events: list = self.make_api_call()  # type: ignore
-        if last_object_ids:
-            events = GetEvents.remove_duplicates(events, last_object_ids)
-        while True:
-            yield events
-            last = events[-1]
-            self.client.set_next_run_filter(last['published'])
-            events: list = self.make_api_call()  # type: ignore
-            try:
-                assert events
-            except (IndexError, AssertionError):
-                LOG('empty list, breaking')
-                break
-
     def aggregated_results(self, last_object_ids: List[str] = None) -> List[dict]:  # pragma: no cover
         """
         Function to group the events returned from the api
         """
-        stored_events = []
-        for events in self._iter_events(last_object_ids):  # type: ignore
-            stored_events.extend(events)
-            if int(self.client.request.params.limit) == 0 or len(events) == 0:  # type: ignore
+        stored_events: list = []
+        max_events_to_fetch = int(self.client.request.params.limit)  # type: ignore
+        demisto.debug(f'max_events_to_fetch={max_events_to_fetch}')
+        while len(stored_events) < max_events_to_fetch:  # type: ignore
+            try:
+                events: list = self.make_api_call()  # type: ignore
+            except DemistoException as e:
+                if e.res is not None:
+                    if e.res.status_code == 429:
+                        demisto.debug('Got 429 status code, rate limit 0')
+                    else:
+                        demisto.error(f'Got {e.res.status_code} status code. Reason: {e.res.text}')
+                elif len(stored_events) == 0:
+                    raise
+                else:
+                    demisto.error(f'Unexpected error.\n{traceback.format_exc()}')
+
+                return stored_events
+
+            if len(events) == 0:  # type: ignore
+                # stop the loop the moment returned 0 events from the API
+                demisto.debug('#### No more events found')
                 break
+
+            if last_object_ids:
+                events = GetEvents.remove_duplicates(events, last_object_ids)
+
+            stored_events.extend(events)
+
+            last = events[-1]
+            self.client.set_next_run_filter(last['published'])
+
         return stored_events
 
     @staticmethod
@@ -137,6 +151,7 @@ class GetEvents:
 
 def main():  # pragma: no cover
     try:
+        demisto.debug(f'Okta Event Collector, running command: {demisto.command()}')
         demisto_params = demisto.params() | demisto.args()
         events_limit = int(demisto_params.get('limit', 2000))
         should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
@@ -163,7 +178,7 @@ def main():  # pragma: no cover
         if command == 'test-module':
             get_events.aggregated_results()
             demisto.results('ok')
-
+        datetime.now()
         if command == 'okta-get-events':
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
             command_results = CommandResults(
@@ -177,8 +192,11 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-events':
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
-            send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(GetEvents.get_last_run(events))
+            if len(events) > 0:
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                demisto.setLastRun(GetEvents.get_last_run(events))
+
+            demisto.debug('Finished fetch-events')
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
