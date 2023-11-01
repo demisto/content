@@ -21,7 +21,7 @@ description: |-
   **Verdict Handling:**
   - Handles malicious incidents by initiating appropriate response actions, including blocking malicious indicators, isolating endpoints, and disabling user accounts.
 
-  ---.
+  ---
 starttaskid: "0"
 tasks:
   "0":

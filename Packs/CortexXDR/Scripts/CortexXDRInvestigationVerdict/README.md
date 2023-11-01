@@ -1,4 +1,4 @@
-This script displays the Verdict.
+This script displays the incident verdict based on the 'Verdict' field.
 
 ## Script Data
 
