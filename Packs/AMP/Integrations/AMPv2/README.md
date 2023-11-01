@@ -1305,6 +1305,7 @@ Fetch a list of events that can be filtered by a variety of criteria. Each crite
 | page | Page number to return. | Optional | 
 | page_size | Number of results in a page. Maximum is 500. | Optional | 
 | limit | Number of total results to return. | Optional | 
+| create_relationships | Create relationships between indicators as part of Enrichment (default false) | Optional |
 
 
 #### Context Output
