@@ -2548,7 +2548,7 @@ def fetch_incidents():
         else:
             response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=detections_offset)
         detections_ids: list[dict] = demisto.get(response, "resources", [])
-        total_detections = demisto.get(response, "pagination.meta.total")
+        total_detections = demisto.get(response, "meta.pagination.total")
         detections_offset = calculate_new_offset(detections_offset, len(detections_ids), total_detections)
         if detections_offset:
             demisto.debug(f"CrowdStrikeFalconMsg: The new detections offset is {detections_offset}")
@@ -2607,7 +2607,7 @@ def fetch_incidents():
         else:
             response = get_incidents_ids(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=incidents_offset)
         incidents_ids: list[dict] = demisto.get(response, "resources", [])
-        total_incidents = demisto.get(response, "pagination.meta.total")
+        total_incidents = demisto.get(response, "meta.pagination.total")
         incidents_offset = calculate_new_offset(incidents_offset, len(incidents_ids), total_incidents)
         if incidents_offset:
             demisto.debug(f"CrowdStrikeFalconMsg: The new incidents offset is {incidents_offset}")
@@ -2653,7 +2653,7 @@ def fetch_incidents():
             filter += f"+{fetch_query}"
         response = get_idp_detections_ids(filter_arg=filter, limit=fetch_limit, offset=idp_detections_offset)
         idp_detections_ids: list[dict] = demisto.get(response, "resources", [])
-        total_idp_detections = demisto.get(response, "pagination.meta.total")
+        total_idp_detections = demisto.get(response, "meta.pagination.total")
         idp_detections_offset = calculate_new_offset(idp_detections_offset, len(idp_detections_ids), total_idp_detections)
         if idp_detections_offset:
             demisto.debug(f"CrowdStrikeFalconMsg: The new idp detections offset is {idp_detections_offset}")
