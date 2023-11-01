@@ -36,10 +36,10 @@ configuration:
   section: Collect
 - display: The maximum number of events per fetch for each event type
   additionalinfo: Each fetch will bring the `limit` number of events for each type (audits, groups and projects) and each group/project ID.
-                  For example, if `limit` is set to 1000 and groups/projects IDs are given as well, then the fetch will bring 1000 audit events and 1000 group/project events for each group/project ID.
+                  For example, if `limit` is set to 500 and groups/projects IDs are given as well, then the fetch will bring 500 audit events and 500 group/project events for each group/project ID.
   name: limit
   type: 0
-  defaultvalue: 1000
+  defaultvalue: 500
   required: false
   section: Collect
 - display: Trust any certificate (not secure)

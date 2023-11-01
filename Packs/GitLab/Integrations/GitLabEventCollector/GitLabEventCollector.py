@@ -7,7 +7,7 @@ from CommonServerPython import *
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = "gitlab"
 PRODUCT = "gitlab"
-DEFAULT_LIMIT = 1000
+DEFAULT_LIMIT = 500
 
 
 ''' HELPER FUNCTIONS '''
