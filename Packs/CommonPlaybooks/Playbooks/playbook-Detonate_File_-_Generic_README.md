@@ -1,4 +1,19 @@
-Detonate file through active integrations that support file detonation
+Detonate files through one or more active integrations that support file detonation.
+Supported integrations:
+- SecneurX Analysis
+- ANY.RUN
+- McAfee Advanced Threat Defense
+- WildFire
+- Lastline
+- Cuckoo Sandbox
+- Cisco Secure Malware Analytics (ThreatGrid)
+- JoeSecurity
+- CrowdStrike Falcon Sandbox
+- FireEye AX
+- VMRay Analyzer
+- Polygon
+- CrowdStrike Falcon Intelligence Sandbox
+- OPSWAT Filescan
 
 ## Dependencies
 
@@ -6,23 +21,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Detonate File - JoeSecurity V2
+* Detonate File - SecneurX Analysis
 * Detonate File - Lastline v2
-* WildFire - Detonate file
-* Detonate File - VMRay
-* Detonate File - Group-IB TDS Polygon
-* CrowdStrike Falcon Sandbox - Detonate file
+* Detonate File - Cuckoo
+* Detonate File - JoeSecurity V2
+* Detonate File - ThreatGrid v2
+* Detonate File - ANYRUN
 * Detonate File - CrowdStrike Falcon Intelligence Sandbox
 * Detonate file - CrowdStrike Falcon Sandbox v2
-* Detonate File - ThreatGrid
+* Detonate File - Group-IB TDS Polygon
 * Detonate File - FireEye AX
+* WildFire - Detonate file
 * ATD - Detonate File
-* Detonate File - ANYRUN
-* Detonate File - JoeSecurity
-* Detonate File - Cuckoo
-* Detonate File - SecneurX Analysis
-* Detonate File - ThreatGrid v2
-* Detonate File - HybridAnalysis
+* Detonate File - VMRay
 
 ### Integrations
 
@@ -52,7 +63,6 @@ This playbook does not use any scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Joe.Analysis.Status | Analysis Status | string |
-| Joe.Analysis.WebID | Web ID | string |
 | File.Name | The file's name \(only in case of report type=json\) | string |
 | File.SHA1 | SHA1 hash of the file | string |
 | File.SHA256 | SHA256 hash of the file | string |
@@ -70,8 +80,6 @@ This playbook does not use any scripts.
 | DBotScore.Malicious.Vendor | Vendor used to calculate the score | string |
 | DBotScore.Malicious.Detections | The sub analysis detection statuses | string |
 | DBotScore.Malicious.SHA1 | The SHA1 of the file | string |
-| Sample.State | The sample state | unknown |
-| Sample.ID | The sample ID | unknown |
 | File | The File's object | unknown |
 | File.MD5 | MD5 hash of the file | string |
 | Joe.Analysis.SampleName | Sample Data, could be a file name or URL | string |
@@ -97,45 +105,29 @@ This playbook does not use any scripts.
 | WildFire.Report.MD5 | MD5 of the submission | string |
 | WildFire.Report.FileType | The type of the submission | string |
 | WildFire.Report.Size | The size of the submission | number |
-| Joe.Analysis | The Analysis object | unknown |
-| Cuckoo.Task.Category | Category of task | unknown |
-| Cuckoo.Task.Machine | Machine of task | unknown |
-| Cuckoo.Task.Errors | Errors of task | unknown |
-| Cuckoo.Task.Target | Target of task | unknown |
-| Cuckoo.Task.Package | Package of task | unknown |
-| Cuckoo.Task.SampleID | Sample ID of task | unknown |
-| Cuckoo.Task.Guest | Task guest | unknown |
-| Cuckoo.Task.Custom | Custom values of task | unknown |
-| Cuckoo.Task.Owner | Task owner | unknown |
-| Cuckoo.Task.Priority | Priority of task | unknown |
-| Cuckoo.Task.Platform | Platform of task | unknown |
-| Cuckoo.Task.Options | Task options | unknown |
-| Cuckoo.Task.Status | Task status | unknown |
-| Cuckoo.Task.EnforceTimeout | Is timeout of task enforced | unknown |
-| Cuckoo.Task.Timeout | Task timeout | unknown |
-| Cuckoo.Task.Memory | Task memory | unknown |
-| Cuckoo.Task.Tags | Task tags | unknown |
-| Cuckoo.Task.ID | ID of task | unknown |
-| Cuckoo.Task.AddedOn | Date on which the task was added | unknown |
-| Cuckoo.Task.CompletedOn | Date on which the task was completed | unknown |
-| Cuckoo.Task.Score | Reported score of the the task | unknown |
-| Cuckoo.Task.Monitor | Monitor of the reported task | unknown |
-| SNDBOX.Analysis.ID | Analysis ID | string |
-| SNDBOX.Analysis.SampleName | Sample Data, could be a file name or URL | string |
-| SNDBOX.Analysis.Status | Analysis Status | string |
-| SNDBOX.Analysis.Time | Submitted Time | date |
-| SNDBOX.Analysis.Result | Analysis Results | string |
-| SNDBOX.Analysis.Errors | Raised errors during sampling | unknown |
-| SNDBOX.Analysis.Link | Analysis Link | string |
-| SNDBOX.Analysis.MD5 | MD5 of analysis sample | string |
-| SNDBOX.Analysis.SHA1 | SHA1 of analysis sample | string |
-| SNDBOX.Analysis.SHA256 | SHA256 of analysis sample | string |
-| SNDBOX.Analysis | SNDBOX analysis | unknown |
-| HybridAnalysis.Submit.State | The state of the process | string |
-| HybridAnalysis.Submit.SHA256 | The submission SHA256 | string |
-| HybridAnalysis.Submit.JobID | The JobID of the submission | string |
-| HybridAnalysis.Submit.EnvironmentID | The environmentID of the submission | string |
-| HybridAnalysis.Submit | The HybridAnalysis object | unknown |
+| Joe.Analysis | The Analysis object | string |
+| Cuckoo.Task.Category | Category of task | string |
+| Cuckoo.Task.Machine | Machine of task | string |
+| Cuckoo.Task.Errors | Errors of task | string |
+| Cuckoo.Task.Target | Target of task | string |
+| Cuckoo.Task.Package | Package of task | string |
+| Cuckoo.Task.SampleID | Sample ID of task | string |
+| Cuckoo.Task.Guest | Task guest | string |
+| Cuckoo.Task.Custom | Custom values of task | string |
+| Cuckoo.Task.Owner | Task owner | string |
+| Cuckoo.Task.Priority | Priority of task | string |
+| Cuckoo.Task.Platform | Platform of task | string |
+| Cuckoo.Task.Options | Task options | string |
+| Cuckoo.Task.Status | Task status | string |
+| Cuckoo.Task.EnforceTimeout | Is timeout of task enforced | string |
+| Cuckoo.Task.Timeout | Task timeout | string |
+| Cuckoo.Task.Memory | Task memory | string |
+| Cuckoo.Task.Tags | Task tags | string |
+| Cuckoo.Task.ID | ID of task | string |
+| Cuckoo.Task.AddedOn | Date on which the task was added | string |
+| Cuckoo.Task.CompletedOn | Date on which the task was completed | string |
+| Cuckoo.Task.Score | Reported score of the the task | string |
+| Cuckoo.Task.Monitor | Monitor of the reported task | string |
 | ANYRUN.Task.AnalysisDate | Date and time the analysis was executed. | String |
 | ANYRUN.Task.Behavior.Category | Category of a process behavior. | String |
 | ANYRUN.Task.Behavior.Action | Actions performed by a process. | String |
@@ -270,6 +262,115 @@ This playbook does not use any scripts.
 | SecneurXAnalysis.Report.Tags | More details of the analyzed sample | string |
 | SecneurXAnalysis.Report.IOC | List of IOC's observed in the analyzed sample | string |
 | SecneurXAnalysis.Report.Status | Analysis queued sample state | String |
+| SecneurXAnalysis.Report.DnsRequests | List of DNS data observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.HttpRequests | List of HTTP data observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.JA3Digests | List of JA3 data observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.ProcessCreated | Process behaviour data observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.RegistrySet | List of Registry creations observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.RegistryDeleted | List of Registry deletions observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.FileCreated | List of File creations observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.FileDropped | List of File drops observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.FileDeleted | List of File deletions observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.FileModified | List of File changes observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.Platform | Platform of the analyzed sample | String |
+| ATD.Task.taskId | The task ID of the sample uploaded | string |
+| ATD.Task.jobId | The job ID of the sample uploaded | string |
+| ATD.Task.messageId | The message Id relevant to the sample uploaded | string |
+| ATD.Task.srcIp | Source IPv4 address | string |
+| ATD.Task.destIp | Destination IPv4 address | string |
+| ATD.Task.MD5 | MD5 of the sample uploaded | string |
+| ATD.Task.SHA1 | SHA1 of the sample uploaded | string |
+| ATD.Task.SHA256 | SHA256 of the sample uploaded | string |
+| InfoFile.Extension | The extension of the report file | string |
+| File.EntryID | The Entry ID of the sample | string |
+| URL.Data | List of malicious URLs identified by Lastline analysis | string |
+| URL.Malicious.Vendor | For malicious URLs, the vendor that made the decision | string |
+| URL.Malicious.Description | For malicious URLs, the reason for the vendor to make the decision | string |
+| URL.Malicious.Score | For malicious URLs, the score from the vendor | number |
+| Lastline.Submission.Status | Status of the submission | string |
+| Lastline.Submission.DNSqueries | List of DNS queries done by the analysis subject | string |
+| Lastline.Submission.NetworkConnections | ist of network connections done by the analysis subject | string |
+| Lastline.Submission.DownloadedFiles | List of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element. | string |
+| Lastline.Submission.UUID | Task UUID of submitted sample | number |
+| Lastline.Submission.YaraSignatures.name | Yara signatures name | string |
+| Lastline.Submission.YaraSignatures.score | The score according to the yara signatures. from 0 to 100. | number |
+| Lastline.Submission.YaraSignatures.internal | True if the signature is only for internal usage | boolean |
+| Lastline.Submission.Process.arguments | Argument of the process | string |
+| Lastline.Submission.Process.process_id | The process ID | string |
+| Lastline.Submission.Process.executable.abs_path | Absolute path of the executable of the process | string |
+| Lastline.Submission.Process.executable.filename | Filename of the executable | string |
+| Lastline.Submission.Process.executable.yara_signature_hits | Yara signature of the executable of the process | string |
+| Lastline.Submission.Process.executable.ext_info | Executable info of the process | string |
+| Joe.Analysis.ID | Web ID | string |
+| Domain.Name | The Domain name | string |
+| Domain.DNS | A list of IP objects resolved by DNS. | string |
+| RegistryKey.Path | The path to the registry key | string |
+| RegistryKey.Value | The value at the given RegistryKey. | string |
+| Process.Name | Process name | string |
+| Process.PID | Process PID | number |
+| Process.CommandLine | Process Command Line | string |
+| Process.Path | Process path | string |
+| Process.StartTime | Process start time | date |
+| Process.EndTime | Process end time | date |
+| Polygon.Analysis.ID | Analysis ID in THF | number |
+| Polygon.Analysis.Name | File Name | string |
+| Polygon.Analysis.Size | File Size | number |
+| Polygon.Analysis.Started | Analysis start timestamp | date |
+| Polygon.Analysis.Analyzed | Analysis finish timestamp | date |
+| Polygon.Analysis.MD5 | Analyzed file MD5 hash | string |
+| Polygon.Analysis.SHA1 | Analyzed file SHA1 hash | string |
+| Polygon.Analysis.SHA256 | Analyzed file SHA256 | string |
+| Polygon.Analysis.Result | Analysis verdict | string |
+| Polygon.Analysis.Status | The analysis status | string |
+| Polygon.Analysis.Verdict | Analysis verdict | boolean |
+| Polygon.Analysis.Probability | Verdict probability | string |
+| Polygon.Analysis.Families | Malware families | string |
+| Polygon.Analysis.Score | Polygon score | number |
+| Polygon.Analysis.Internet-connection | Internet availability | string |
+| Polygon.Analysis.Type | File type | string |
+| Polygon.Analysis.DumpExists | Network activity dump exists | boolean |
+| Polygon.Analysis.File | The information about files in analysis | string |
+| Polygon.Analysis.URL | The information about URL indicators | string |
+| Polygon.Analysis.IP | The information about IP indicators | string |
+| Polygon.Analysis.Domain | The information about Domain indicators | string |
+| Polygon.Analysis.RegistryKey | The information about registry keys which were modified during the analysis | string |
+| Polygon.Analysis.Process | The information about processes started during the analysis | string |
+| csfalconx.resource.id | Analysis ID. | String |
+| csfalconx.resource.verdict | Analysis verdict. | String |
+| csfalconx.resource.created_timestamp | Analysis start time. | String |
+| csfalconx.resource.environment_id | Environment ID. | String |
+| csfalconx.resource.threat_score | Score of the threat. | Int |
+| csfalconx.resource.submit_url | URL submitted for analysis. | String |
+| csfalconx.resource.submission_type | Type of submitted artifact, for example file, URL, etc. | String |
+| csfalconx.resource.filetype | File type. | String |
+| csfalconx.resource.filesize | File size. | Int |
+| csfalconx.resource.sha256 | SHA256 hash of the submitted file. | String |
+| csfalconx.resource.ioc_report_strict_csv_artifact_id | ID of the IOC pack to download \(CSV\). | String |
+| csfalconx.resource.ioc_report_broad_csv_artifact_id | ID of the IOC pack to download \(CSV\). | String |
+| csfalconx.resource.ioc_report_strict_json_artifact_id | ID of the IOC pack to download \(JSON\). | Int |
+| csfalconx.resource.ioc_report_broad_json_artifact_id | ID of the IOC pack to download \(JSON\). | String |
+| csfalconx.resource.ioc_report_strict_stix_artifact_id | ID of the IOC pack to download \(STIX\). | String |
+| csfalconx.resource.ioc_report_broad_stix_artifact_id | ID of the IOC pack to download \(STIX\). | Int |
+| csfalconx.resource.ioc_report_strict_maec_artifact_id | ID of the IOC pack to download \(MAEC\). | String |
+| csfalconx.resource.ioc_report_broad_maec_artifact_id | ID of the IOC pack to download \(MAEC\). | String |
+| csfalconx.resource.snadbox.environment_description | Environment description. | String |
+| OPSWAT.Filescan.Submission.flow_id | The flow ID. | string |
+| OPSWAT.Filescan.Analysis.finalVerdict.verdict | The final verdict | string |
+| OPSWAT.Filescan.Analysis.allTags | All tags | string |
+| OPSWAT.Filescan.Analysis.overallState | Overall state of the scan | string |
+| OPSWAT.Filescan.Analysis.subtaskReferences | Status of scan subtasks | string |
+| OPSWAT.Filescan.Analysis.allSignalGroups | All signal groups | string |
+| OPSWAT.Filescan.Analysis.resources | Resources | string |
+| OPSWAT.Filescan.Analysis.taskReference.name | Name of the main scan task | string |
+| OPSWAT.Filescan.Analysis.taskReference.additionalInfo | Additional informations about the main scan task | string |
+| OPSWAT.Filescan.Analysis.taskReference.ID | ID of the main scan task | string |
+| OPSWAT.Filescan.Analysis.taskReference.state | State of the main scan task | string |
+| OPSWAT.Filescan.Analysis.taskReference.resourceReference | Resource reference of the main scan task | string |
+| OPSWAT.Filescan.Analysis.taskReference.opcount | Counter | string |
+| OPSWAT.Filescan.Analysis.taskReference.processTime | processTime | string |
+| OPSWAT.Filescan.Analysis.file.name | The name of the file | unknown |
+| OPSWAT.Filescan.Analysis.file.hash | The SHA256 of the file | unknown |
+| OPSWAT.Filescan.Analysis.file.type | The type of the submission | unknown |
 
 ## Playbook Image
 
