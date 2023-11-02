@@ -737,7 +737,12 @@ xsoar_ng_end_to_end_tests:
     - !reference [.lock-machine]
 
     - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-    - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
+    - |
+      if [[ $TEST_XDR_ENV ]]; then
+        cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+      else
+        echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+      fi
 
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
 
