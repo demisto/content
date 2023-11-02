@@ -111,10 +111,6 @@ def get_dbot_score(proximity_score, age, threat_profile_score):
         return 1
 
 
-def should_include_context(include_context):
-    return include_context == "true"
-
-
 def prune_context_data(data_obj):
     """
     Does a deep dive through a data object to prune any null or empty items. Checks for empty lists, dicts, and strs.
@@ -776,7 +772,7 @@ def domain_command():
     domain = demisto.args()['domain']
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
-    include_context = demisto.args().get('include_context')
+    include_context = argToBoolean(demisto.args().get('include_context'))
     command_results_list: List[CommandResults] = []
 
     for chunk in domain_chunks:
@@ -788,29 +784,24 @@ def domain_command():
             if len(missing_domains) > 0:
                 human_readable_output += f"Missing Domains: {','.join(missing_domains)}"
 
-            domain_indicator = indicators.get('domain') if should_include_context(include_context) else None
-            domaintools_context = indicators.get('domaintools') if should_include_context(include_context) else None
+            domain_indicator = indicators.get('domain') if include_context else None
+            domaintools_context = indicators.get('domaintools') if include_context else None
 
-            command_results_list.extend(
-                (
-                    CommandResults(
-                        outputs_prefix='Domain',
-                        outputs_key_field='Name',
-                        indicator=domain_indicator,
-                        outputs=domaintools_context,
-                        readable_output=human_readable_output,
-                        raw_response=result,
-                        ignore_auto_extract=True,
-                    ),
-                    CommandResults(
-                        outputs_prefix='DomainTools',
-                        outputs_key_field='Name',
-                        readable_output='see output for domain indicator',
-                        outputs=domaintools_context,
-                        ignore_auto_extract=True,
-                    ),
+            command_results_list.append(
+                CommandResults(
+                    outputs_prefix='DomainTools',
+                    outputs_key_field='Name',
+                    indicator=domain_indicator,
+                    outputs=domaintools_context,
+                    readable_output=human_readable_output,
+                    raw_response=result,
+                    ignore_auto_extract=True,
                 )
             )
+
+    if not command_results_list:
+        return_warning("No results.", exit=True)
+
     return_results(command_results_list)
 
 
@@ -822,7 +813,7 @@ def domain_enrich_command():
     domain = demisto.args()['domain']
     domain_list = domain.split(",")
     domain_chunks = chunks(domain_list, 100)
-    include_context = demisto.args().get('include_context', False)
+    include_context = argToBoolean(demisto.args().get('include_context'))
     command_results_list: List[CommandResults] = []
 
     for chunk in domain_chunks:
@@ -834,29 +825,23 @@ def domain_enrich_command():
             if len(missing_domains) > 0:
                 human_readable_output += f"Missing Domains: {','.join(missing_domains)}"
 
-            domain_indicator = indicators.get('domain') if should_include_context(include_context) else None
-            domaintools_context = indicators.get('domaintools') if should_include_context(include_context) else None
+            domain_indicator = indicators.get('domain') if include_context else None
+            domaintools_context = indicators.get('domaintools') if include_context else None
 
-            command_results_list.extend(
-                (
-                    CommandResults(
-                        outputs_prefix='Domain',
-                        outputs_key_field='Name',
-                        indicator=domain_indicator,
-                        readable_output=human_readable_output,
-                        raw_response=result,
-                        ignore_auto_extract=True,
-                    ),
-                    CommandResults(
-                        outputs_prefix='DomainTools',
-                        outputs_key_field='Name',
-                        outputs=domaintools_context,
-                        readable_output='see output for domain indicator',
-                        ignore_auto_extract=True,
-                    ),
+            command_results_list.append(
+                CommandResults(
+                    outputs_prefix='DomainTools',
+                    outputs_key_field='Name',
+                    outputs=domaintools_context,
+                    indicator=domain_indicator,
+                    readable_output=human_readable_output,
+                    raw_response=result,
+                    ignore_auto_extract=True,
                 )
             )
 
+    if not command_results_list:
+        return_warning("No results.", exit=True)
 
     return_results(command_results_list)
 
@@ -868,67 +853,58 @@ def domain_analytics_command():
     """
     domain = demisto.args()['domain']
     response = domain_investigate(domain)
-    command_results_list: List[CommandResults] = []
 
-    if response.get('results_count'):
-        domain_result = response.get('results')[0]
-        indicators = create_results(domain_result)
-        domain_indicator = indicators.get('domain')
-        domaintools_context = indicators.get('domaintools')
+    if not response.get('results_count'):
+        return_warning("No analytics for this domain.", exit=True)
 
-        domaintools_analytics_data = domaintools_context.get('Analytics', {})
-        domain_age = 0
-        if first_seen := domaintools_context.get('FirstSeen', ''):
-            first_seen = convert_and_format_date(first_seen)
-            domain_age = utils.get_domain_age(first_seen)
-        human_readable_data = {
-            'Overall Risk Score': domaintools_analytics_data.get('OverallRiskScore', ''),
-            'Proximity Risk Score': domaintools_analytics_data.get('ProximityRiskScore', ''),
-            'Threat Profile Risk Score': domaintools_analytics_data.get('ThreatProfileRiskScore', {}).get('RiskScore',
-                                                                                                          ''),
-            'Domain Age (in days)': domain_age,
-            'Website Response': domaintools_analytics_data.get('WebsiteResponseCode', ''),
-            'Google Adsense': domaintools_analytics_data.get('GoogleAdsenseTrackingCode', ''),
-            'Google Analytics': domaintools_analytics_data.get('GoogleAnalyticsTrackingCode', ''),
-            'Tags': domaintools_analytics_data.get('Tags', ''),
-        }
+    domain_result = response.get('results')[0]
+    indicators = create_results(domain_result)
+    domain_indicator = indicators.get('domain')
+    domaintools_context = indicators.get('domaintools')
 
-        headers = ['Overall Risk Score',
-                   'Proximity Risk Score',
-                   'Domain Age (in days)',
-                   'Website Response',
-                   'Google Adsense',
-                   'Google Analytics',
-                   'Tags']
-        demisto_title = f'DomainTools Domain Analytics for {domain}.'
-        iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
-        human_readable = tableToMarkdown(
-            f'{demisto_title} {iris_title}',
-            human_readable_data,
-            headers=headers,
+    domaintools_analytics_data = domaintools_context.get('Analytics', {})
+    domain_age = 0
+    if first_seen := domaintools_context.get('FirstSeen', ''):
+        first_seen = convert_and_format_date(first_seen)
+        domain_age = utils.get_domain_age(first_seen)
+    human_readable_data = {
+        'Overall Risk Score': domaintools_analytics_data.get('OverallRiskScore', ''),
+        'Proximity Risk Score': domaintools_analytics_data.get('ProximityRiskScore', ''),
+        'Threat Profile Risk Score': domaintools_analytics_data.get('ThreatProfileRiskScore', {}).get('RiskScore',
+                                                                                                      ''),
+        'Domain Age (in days)': domain_age,
+        'Website Response': domaintools_analytics_data.get('WebsiteResponseCode', ''),
+        'Google Adsense': domaintools_analytics_data.get('GoogleAdsenseTrackingCode', ''),
+        'Google Analytics': domaintools_analytics_data.get('GoogleAnalyticsTrackingCode', ''),
+        'Tags': domaintools_analytics_data.get('Tags', ''),
+    }
+
+    headers = ['Overall Risk Score',
+               'Proximity Risk Score',
+               'Domain Age (in days)',
+               'Website Response',
+               'Google Adsense',
+               'Google Analytics',
+               'Tags']
+    demisto_title = f'DomainTools Domain Analytics for {domain}.'
+    iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
+    human_readable = tableToMarkdown(
+        f'{demisto_title} {iris_title}',
+        human_readable_data,
+        headers=headers,
+    )
+
+    return_results(
+        CommandResults(
+            outputs_prefix='DomainTools',
+            outputs_key_field='Name',
+            outputs=domaintools_context,
+            indicator=domain_indicator,
+            readable_output=human_readable,
+            raw_response=domain_result,
+            ignore_auto_extract=True,
         )
-
-        command_results_list.extend(
-            (
-                CommandResults(
-                    outputs_prefix='Domain',
-                    outputs_key_field='Name',
-                    indicator=domain_indicator,
-                    readable_output=human_readable,
-                    raw_response=domain_result,
-                    ignore_auto_extract=True,
-                ),
-                CommandResults(
-                    outputs_prefix='DomainTools',
-                    outputs_key_field='Name',
-                    outputs=domaintools_context,
-                    readable_output='see output for domain indicator',
-                    ignore_auto_extract=True,
-                ),
-            )
-        )
-
-    return_results(command_results_list)
+    )
 
 
 def threat_profile_command():
@@ -938,92 +914,83 @@ def threat_profile_command():
     """
     domain = demisto.args()['domain']
     response = domain_investigate(domain)
-    human_readable = 'No results found.'
-    command_results_list: List[CommandResults] = []
 
-    if response.get('results_count'):
-        domain_result = response.get('results')[0]
-        indicators = create_results(domain_result)
-        domain_indicator = indicators.get('domain')
-        domaintools_context = indicators.get('domaintools')
+    if not response.get('results_count'):
+        return_warning("No threat profile for this domain.", exit=True)
 
-        proximity_risk_score = 0
-        threat_profile_risk_score = 0
-        threat_profile_malware_risk_score = 0
-        threat_profile_phishing_risk_score = 0
-        threat_profile_spam_risk_score = 0
-        threat_profile_threats = ''
-        threat_profile_evidence = ''
+    domain_result = response.get('results')[0]
+    indicators = create_results(domain_result)
+    domain_indicator = indicators.get('domain')
+    domaintools_context = indicators.get('domaintools')
 
-        overall_risk_score = domain_result.get('domain_risk', {}).get('risk_score', 0)
-        risk_components = domain_result.get('domain_risk', {}).get('components', {})
-        if risk_components:
-            proximity_data = utils.get_threat_component(risk_components, 'proximity')
-            blacklist_data = utils.get_threat_component(risk_components, 'blacklist')
-            if proximity_data:
-                proximity_risk_score = proximity_data.get('risk_score', 0)
-            elif blacklist_data:
-                proximity_risk_score = blacklist_data.get('risk_score', 0)
-            threat_profile_data = utils.get_threat_component(risk_components, 'threat_profile')
-            if threat_profile_data:
-                threat_profile_risk_score = threat_profile_data.get('risk_score', 0)
-                threat_profile_threats = ', '.join(threat_profile_data.get('threats', []))
-                threat_profile_evidence = ', '.join(threat_profile_data.get('evidence', []))
-            threat_profile_malware_data = utils.get_threat_component(risk_components, 'threat_profile_malware')
-            if threat_profile_malware_data:
-                threat_profile_malware_risk_score = threat_profile_malware_data.get('risk_score', 0)
-            threat_profile_phshing_data = utils.get_threat_component(risk_components, 'threat_profile_phishing')
-            if threat_profile_phshing_data:
-                threat_profile_phishing_risk_score = threat_profile_phshing_data.get('risk_score', 0)
-            threat_profile_spam_data = utils.get_threat_component(risk_components, 'threat_profile_spam')
-            if threat_profile_spam_data:
-                threat_profile_spam_risk_score = threat_profile_spam_data.get('risk_score', 0)
+    proximity_risk_score = 0
+    threat_profile_risk_score = 0
+    threat_profile_malware_risk_score = 0
+    threat_profile_phishing_risk_score = 0
+    threat_profile_spam_risk_score = 0
+    threat_profile_threats = ''
+    threat_profile_evidence = ''
 
-        human_readable_data = {
-            'Overall Risk Score': overall_risk_score,
-            'Proximity Risk Score': proximity_risk_score,
-            'Threat Profile Risk Score': threat_profile_risk_score,
-            'Threat Profile Threats': threat_profile_threats,
-            'Threat Profile Evidence': threat_profile_evidence,
-            'Threat Profile Malware Risk Score': threat_profile_malware_risk_score,
-            'Threat Profile Phishing Risk Score': threat_profile_phishing_risk_score,
-            'Threat Profile Spam Risk Score': threat_profile_spam_risk_score
-        }
+    overall_risk_score = domain_result.get('domain_risk', {}).get('risk_score', 0)
+    risk_components = domain_result.get('domain_risk', {}).get('components', {})
+    if risk_components:
+        proximity_data = utils.get_threat_component(risk_components, 'proximity')
+        blacklist_data = utils.get_threat_component(risk_components, 'blacklist')
+        if proximity_data:
+            proximity_risk_score = proximity_data.get('risk_score', 0)
+        elif blacklist_data:
+            proximity_risk_score = blacklist_data.get('risk_score', 0)
+        threat_profile_data = utils.get_threat_component(risk_components, 'threat_profile')
+        if threat_profile_data:
+            threat_profile_risk_score = threat_profile_data.get('risk_score', 0)
+            threat_profile_threats = ', '.join(threat_profile_data.get('threats', []))
+            threat_profile_evidence = ', '.join(threat_profile_data.get('evidence', []))
+        threat_profile_malware_data = utils.get_threat_component(risk_components, 'threat_profile_malware')
+        if threat_profile_malware_data:
+            threat_profile_malware_risk_score = threat_profile_malware_data.get('risk_score', 0)
+        threat_profile_phshing_data = utils.get_threat_component(risk_components, 'threat_profile_phishing')
+        if threat_profile_phshing_data:
+            threat_profile_phishing_risk_score = threat_profile_phshing_data.get('risk_score', 0)
+        threat_profile_spam_data = utils.get_threat_component(risk_components, 'threat_profile_spam')
+        if threat_profile_spam_data:
+            threat_profile_spam_risk_score = threat_profile_spam_data.get('risk_score', 0)
 
-        headers = ['Overall Risk Score',
-                   'Proximity Risk Score',
-                   'Threat Profile Risk Score',
-                   'Threat Profile Threats',
-                   'Threat Profile Evidence',
-                   'Threat Profile Malware Risk Score',
-                   'Threat Profile Phishing Risk Score',
-                   'Threat Profile Spam Risk Score']
-        demisto_title = 'DomainTools Threat Profile for {}.'.format(domain)
-        iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
-        human_readable = tableToMarkdown('{} {}'.format(demisto_title, iris_title),
-                                         human_readable_data,
-                                         headers=headers)
-    command_results_list.extend(
-        (
-            CommandResults(
-                outputs_prefix='Domain',
-                outputs_key_field='Name',
-                indicator=domain_indicator,
-                readable_output=human_readable,
-                raw_response=domain_result,
-                ignore_auto_extract=True,
-            ),
-            CommandResults(
-                outputs_prefix='DomainTools',
-                outputs_key_field='Name',
-                outputs=domaintools_context,
-                readable_output='see output for domain indicator',
-                ignore_auto_extract=True,
-            ),
+    human_readable_data = {
+        'Overall Risk Score': overall_risk_score,
+        'Proximity Risk Score': proximity_risk_score,
+        'Threat Profile Risk Score': threat_profile_risk_score,
+        'Threat Profile Threats': threat_profile_threats,
+        'Threat Profile Evidence': threat_profile_evidence,
+        'Threat Profile Malware Risk Score': threat_profile_malware_risk_score,
+        'Threat Profile Phishing Risk Score': threat_profile_phishing_risk_score,
+        'Threat Profile Spam Risk Score': threat_profile_spam_risk_score
+    }
+
+    headers = ['Overall Risk Score',
+               'Proximity Risk Score',
+               'Threat Profile Risk Score',
+               'Threat Profile Threats',
+               'Threat Profile Evidence',
+               'Threat Profile Malware Risk Score',
+               'Threat Profile Phishing Risk Score',
+               'Threat Profile Spam Risk Score']
+    demisto_title = 'DomainTools Threat Profile for {}.'.format(domain)
+    iris_title = 'Investigate [{0}](https://research.domaintools.com/iris/search/?q={0}) in Iris.'.format(domain)
+    human_readable = tableToMarkdown('{} {}'.format(demisto_title, iris_title),
+                                     human_readable_data,
+                                     headers=headers)
+
+    return_results(
+        CommandResults(
+            outputs_prefix='DomainTools',
+            outputs_key_field='Name',
+            outputs=domaintools_context,
+            indicator=domain_indicator,
+            readable_output=human_readable,
+            raw_response=domain_result,
+            ignore_auto_extract=True,
         )
     )
-
-    return_results(command_results_list)
 
 
 def domain_pivot_command():
@@ -1081,48 +1048,46 @@ def domain_pivot_command():
     risk_list = []
     age_list = []
     count = 0
-    pivot_result = {}
-    human_readable = 'No results found.'
-    include_context = demisto.args().get('include_context', False)
+    include_context = argToBoolean(demisto.args().get('include_context'))
 
+    if not response.get('results_count'):
+        return_warning("No pivots for this search.", exit=True)
 
-    if response.get('results_count'):
-        for domain_result in results:
-            risk_score = domain_result.get('domain_risk', {}).get('risk_score')
-            first_seen = domain_result.get('first_seen', {}).get('value') if domain_result.get('first_seen') else ""
-            output.append({'domain': domain_result.get('domain'), 'risk_score': risk_score})
+    for domain_result in results:
+        risk_score = domain_result.get('domain_risk', {}).get('risk_score')
+        first_seen = domain_result.get('first_seen', {}).get('value') if domain_result.get('first_seen') else ""
+        output.append({'domain': domain_result.get('domain'), 'risk_score': risk_score})
 
-            if risk_score is not None:
-                risk_list.append(risk_score)
-            if first_seen:
-                first_seen = convert_and_format_date(first_seen)
-                domain_age = utils.get_domain_age(first_seen)
-                age_list.append(domain_age)
-            if should_include_context(include_context):
-                domain_context = create_results(domain_result)
-                domain_context_list.append(domain_context.get('domaintools'))
+        if risk_score is not None:
+            risk_list.append(risk_score)
+        if first_seen:
+            first_seen = convert_and_format_date(first_seen)
+            domain_age = utils.get_domain_age(first_seen)
+            age_list.append(domain_age)
+        if include_context:
+            domain_context = create_results(domain_result)
+            domain_context_list.append(domain_context.get('domaintools'))
 
-            count += 1
+        count += 1
 
-        average_risk = round(statistics.mean(risk_list), 2) if risk_list else "Unknown"
-        average_age = round(statistics.mean(age_list), 2) if age_list else "Unknown"
+    average_risk = round(statistics.mean(risk_list), 2) if risk_list else "Unknown"
+    average_age = round(statistics.mean(age_list), 2) if age_list else "Unknown"
 
-        pivot_result = {
-            "Value": search_value,
-            "AverageRisk": average_risk,
-            "AverageAge": average_age,
-            "PivotedDomains": domain_context_list
-        }
+    pivot_result = {
+        "Value": search_value,
+        "AverageRisk": average_risk,
+        "AverageAge": average_age,
+        "PivotedDomains": domain_context_list
+    }
 
-        outputs = {f'DomainTools.Pivots.PivotedDomains(val.Name == obj.Name)': domain_context_list}
-        prune_context_data(outputs)
-        headers = ['domain', 'risk_score']
+    outputs = {f'DomainTools.Pivots.PivotedDomains(val.Name == obj.Name)': domain_context_list}
+    prune_context_data(outputs)
+    headers = ['domain', 'risk_score']
 
-        sorted_output = sorted(output, key=lambda x: x['risk_score'] if x['risk_score'] is not None else -1, reverse=True)
-        human_readable = tableToMarkdown(f'Domains for {search_type}: {search_value} ({count} results, {average_risk} average risk, {average_age} average age)',
-                                         sorted_output,
-                                         headers=headers)
-
+    sorted_output = sorted(output, key=lambda x: x['risk_score'] if x['risk_score'] is not None else -1, reverse=True)
+    human_readable = tableToMarkdown(f'Domains for {search_type}: {search_value} ({count} results, {average_risk} average risk, {average_age} average age)',
+                                     sorted_output,
+                                     headers=headers)
 
     results = CommandResults(
         outputs_prefix='DomainTools.Pivots',

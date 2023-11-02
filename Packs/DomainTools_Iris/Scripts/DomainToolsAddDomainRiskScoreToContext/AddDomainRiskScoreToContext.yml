@@ -11,8 +11,8 @@ args:
 - name: domaintools_data
   required: true
 outputs:
-- contextPath: HighRiskPivotedDomains.Name
+- contextPath: AddDomainRiskScoreToContext.HighRiskPivotedDomains.Name
   description: The domain name
-- contextPath: HighRiskPivotedDomains.OverallRiskScore
+- contextPath: AddDomainRiskScoreToContext.HighRiskPivotedDomains.OverallRiskScore
   description: The overall risk score of the domain
 subtype: python3
