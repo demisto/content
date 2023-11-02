@@ -129,7 +129,7 @@ def create_playbook(xsoar_ng_client: XsoarNGApiClient, playbook_path: str, playb
         xsoar_ng_client.delete_playbook(playbook_name, playbook_id)
 
 
-@retry_http_request(times=30, delay=5)
+@retry_http_request(times=60, delay=5)
 def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_states: set[str]):
     """
     Validates whether playbook has reached into an expected state
@@ -427,8 +427,11 @@ def test_qradar_mirroring(request: SubRequest, xsoar_ng_client: XsoarNGApiClient
         investigation_id = qradar_incident_response.get("investigationId")
         assert incident_id, f'investigation ID is empty in {qradar_incident_response}'
 
-        # TODO - check how to get rid of the sleep to make it work
-        time.sleep(180)
+        # make sure that the playbook is finished before closing the qradar incident
+        assert is_playbook_state_as_expected(
+            xsoar_ng_client, incident_id=incident_id, expected_states={"completed", "failed", "waiting"}
+        )
+
         # close the qradar offense
         _, context = xsoar_ng_client.run_cli_command(
             f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED",
