@@ -585,7 +585,7 @@ slack-notify-on-merge:
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - section_end "Install Packs and run Test-Module"
     - |
-      if [[ -n "${NIGHTLY}" &&  "{SERVER_TYPE}" == "XSOAR SAAS"]]; then
+      if [[ -n "${NIGHTLY}" && "{SERVER_TYPE}" == "XSOAR SAAS"]]; then
         if [[ $TEST_XDR_ENV ]]; then
           cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
         else
@@ -596,6 +596,7 @@ slack-notify-on-merge:
         echo "Finished xsoar-ng end to end sanity checks"
       else
         !reference [.run_tests]
+      fi
     - section_start "Test Modeling Rules"
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
@@ -673,7 +674,7 @@ xsoar_ng_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
-    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ || $NIGHTLY)
       when: always
       variables:
@@ -712,7 +713,6 @@ xsoar_ng_server_ga:
       - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
       - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
-
 
 test-upload-flow:
   tags:
