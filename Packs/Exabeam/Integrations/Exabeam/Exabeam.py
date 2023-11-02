@@ -1,6 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 from typing import Any
 import requests
 import dateparser
@@ -36,7 +37,7 @@ class Client(BaseClient):
         else:
             self._login()
 
-    def __del__(self):
+    def shutdown(self):
         if not self.is_token_auth():
             self._logout()
         super().__del__()
@@ -2232,6 +2233,9 @@ def main():
             return_outputs(*commands[command](client, args))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
+
+        # replaces __del__ because it relies on TOKEN_INPUT_IDENTIFIER which may be destroyed first
+        client.shutdown()
 
     except DemistoException as err:
         # some of the API error responses are not so clear, and the reason for the error is because of bad input.
