@@ -88,7 +88,7 @@ configuration:
   name: look_back
   type: 0
   required: false
-  defaultvalue: '1'
+  defaultvalue: 1
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
 - display: Incident type
   name: incidentType
@@ -102,11 +102,6 @@ configuration:
   name: proxy
   type: 8
   required: false
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
 display: Exabeam
 name: Exabeam
@@ -222,7 +217,6 @@ script:
     - contextPath: Exabeam.Watchlist.WatchlistID
       description: The watchlist ID.
       type: String
-    arguments: []
   - description: Returns all watchlist IDs and titles.
     name: exabeam-get-watchlists
     outputs:
@@ -235,7 +229,6 @@ script:
     - contextPath: Exabeam.Watchlist.WatchlistID
       description: The watchlist ID.
       type: String
-    arguments: []
   - deprecated: true
     description: Returns all peer groups.
     name: get-peer-groups
@@ -243,14 +236,12 @@ script:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
-    arguments: []
   - description: Returns all peer groups.
     name: exabeam-get-peer-groups
     outputs:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
-    arguments: []
   - arguments:
     - description: The username of the user to fetch.
       name: username
@@ -351,14 +342,12 @@ script:
     - contextPath: Exabeam.UserLabel.Label
       description: The label of the user.
       type: String
-    arguments: []
   - description: Returns all labels of the user.
     name: exabeam-get-user-labels
     outputs:
     - contextPath: Exabeam.UserLabel.Label
       description: The label of the user.
       type: String
-    arguments: []
   - arguments:
     - description: The username for which to fetch data.
       name: username
@@ -1703,10 +1692,10 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.78623
   isfetch: true
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 tests:

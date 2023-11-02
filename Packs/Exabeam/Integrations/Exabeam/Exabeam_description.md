@@ -1,7 +1,7 @@
 The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics and SOAR.
 
 ### Authentication Methods
- There are 2 authentication methods:
+There are 2 authentication methods:
  - **API Token** - API token should be entered in the “API Token” parameter. In order to use the “Fetch Incident” functionality in this integration, the username must be provided also in the “Username” parameter.
  - **Basic Authentication** - Providing Username and password in the corrsponding parameters in the configuration. This method also allows fetching incidents.
  - ***Deprecated***:
@@ -18,4 +18,3 @@ The Exabeam Security Management Platform provides end-to-end detection, User Eve
 4. Click **ADD TOKEN** to apply the configuration.
 
 For additional information, refer to [Exabeam Administration Guide](https://docs.exabeam.com/en/advanced-analytics/i54/advanced-analytics-administration-guide/113254-configure-advanced-analytics.html#UUID-70a0411c-6ddc-fd2a-138d-fa83c7c59a40).
- 
