@@ -809,9 +809,9 @@ def submission_list(args: dict, client: Client) -> CommandResults:
             'source_name', 'submission_reason', 'submitter_email'
         ) | {
             'date_start':
-                str(date.date()) if (date := arg_to_datetime(args.get('date_start'))) else None,
+                str(date.date()) if (date := arg_to_datetime(args.get('date_start'))) else None,  # noqa
             'date_end':
-                str(date.date()) if (date := arg_to_datetime(args.get('date_end'))) else None,
+                str(date.date()) if (date := arg_to_datetime(args.get('date_end'))) else None,  # noqa
             'state': args.get('state', '').lower()
         }
 
