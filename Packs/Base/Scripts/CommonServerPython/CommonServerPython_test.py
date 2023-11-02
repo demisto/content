@@ -6649,27 +6649,6 @@ class TestIndicatorsSearcher:
         iocs = [{'value': 'mock{}'.format(search_after_value)}]
         return {'searchAfter': search_after_value, 'iocs': iocs, 'total': 4}
 
-    def test_search_indicators_by_page(self, mocker):
-        """
-        Given:
-          - Searching indicators couple of times
-          - Server version in less than 6.1.0
-        When:
-          - Mocking search indicators using paging
-        Then:
-          - The page number is rising
-        """
-        from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators_obj_paging = IndicatorsSearcher()
-        search_indicators_obj_paging._can_use_search_after = False
-
-        for n in range(5):
-            search_indicators_obj_paging.search_indicators_by_version()
-
-        assert search_indicators_obj_paging._page == 5
-
     def test_search_indicators_by_search_after(self, mocker):
         """
         Given:
@@ -6685,7 +6664,6 @@ class TestIndicatorsSearcher:
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
         search_indicators_obj_search_after = IndicatorsSearcher()
-        search_indicators_obj_search_after._can_use_search_after = True
         try:
             for n in range(5):
                 search_indicators_obj_search_after.search_indicators_by_version()
@@ -6711,57 +6689,10 @@ class TestIndicatorsSearcher:
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
         search_indicators_obj_search_after = IndicatorsSearcher()
-        search_indicators_obj_search_after._can_use_search_after = True
         for n in range(7):
             search_indicators_obj_search_after.search_indicators_by_version()
         assert search_indicators_obj_search_after._search_after_param is None
         assert search_indicators_obj_search_after._page == 7
-
-    def test_search_indicators_in_certain_page(self, mocker):
-        """
-        Given:
-          - Searching indicators in a specific page that is not 0
-          - Server version in less than 6.1.0
-        When:
-          - Mocking search indicators in this specific page
-          so search_after is None
-        Then:
-          - The search after param is not None
-          - The page param is 17
-        """
-        from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators_obj_search_after = IndicatorsSearcher(page=17)
-        search_indicators_obj_search_after._can_use_search_after = False
-        search_indicators_obj_search_after.search_indicators_by_version()
-
-        assert search_indicators_obj_search_after._search_after_param is None
-        assert search_indicators_obj_search_after._page == 18
-
-    def test_iterator__pages(self, mocker):
-        """
-        Given:
-          - Searching indicators from page 1
-          - Total available indicators == 6
-        When:
-          - Searching indicators using iterator
-        Then:
-          - Get 6 indicators
-          - Advance page to 7
-          - is_search_done returns True
-        """
-        from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators = IndicatorsSearcher(page=1, size=1)
-        search_indicators._can_use_search_after = False
-        results = []
-        for res in search_indicators:
-            results.append(res)
-        assert len(results) == 6
-        assert search_indicators.page == 7
-        assert search_indicators.is_search_done() is True
 
     def test_iterator__search_after(self, mocker):
         """
@@ -6778,40 +6709,16 @@ class TestIndicatorsSearcher:
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
         search_indicators = IndicatorsSearcher(limit=10)
-        search_indicators._can_use_search_after = True
         results = []
         for res in search_indicators:
             results.append(res)
         assert len(results) == 4
-
-    def test_iterator__empty_page(self, mocker):
-        """
-        Given:
-          - Searching indicators from page 18
-          - Total available indicators from page 10-16 == 7
-          - No available indicators from page 17
-        When:
-          - Searching indicators using iterator (search_after is not supported)
-        Then:
-          - Get 0 indicators
-          - page doesn't advance (set to 18)
-        """
-        from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators = IndicatorsSearcher(page=18)
-        results = []
-        for res in search_indicators:
-            results.append(res)
-        assert len(results) == 7
-        assert search_indicators.page == 25
 
     def test_iterator__research_flow(self, mocker):
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
         # fetch first 3
         search_indicators = IndicatorsSearcher(limit=3)
-        search_indicators._can_use_search_after = True
         results = []
         for res in search_indicators:
             results.append(res)

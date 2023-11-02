@@ -9641,10 +9641,6 @@ class IndicatorsSearcher:
                  limit=None,
                  sort=None,
                  ):
-        # searchAfter is available in searchIndicators from version 6.1.0
-        self._can_use_search_after = True
-        # populateFields merged in https://github.com/demisto/server/pull/18398
-        self._can_use_filter_fields = True
         self._search_after_param = None
         self._page = page
         self._filter_fields = filter_fields
@@ -9712,8 +9708,7 @@ class IndicatorsSearcher:
         else:
             if self.total is None:
                 return False
-            no_more_indicators = (self.total and self._search_after_param is None) if self._can_use_search_after \
-                else self.total <= self.page * self._size
+            no_more_indicators = self.total and self._search_after_param is None
             if no_more_indicators:
                 demisto.debug("IndicatorsSearcher can not fetch anymore indicators")
             return no_more_indicators
@@ -9747,10 +9742,8 @@ class IndicatorsSearcher:
             query=query,
             size=size,
             value=value,
-            searchAfter=self._search_after_param if self._can_use_search_after else None,
-            populateFields=self._filter_fields if self._can_use_filter_fields else None,
-            # use paging as fallback when cannot use search_after
-            page=self.page if not self._can_use_search_after else None,
+            searchAfter=self._search_after_param,
+            populateFields=self._filter_fields,
         )
         demisto.debug('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
         if is_demisto_version_ge('6.6.0'):
