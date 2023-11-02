@@ -91,7 +91,7 @@ script:
     - description: Alert message.
       name: message
       required: true
-    - description: Client-defined identifier of the alert
+    - description: Client-defined identifier of the alert.
       name: alias
     - description: Description field of the alert that is generally used to provide detailed information about the alert.
       name: description
@@ -405,7 +405,7 @@ script:
       description: Action of this request.
       type: String
     - contextPath: OpsGenie.AssignAlert.alertId
-      description: ID of assigned Alert
+      description: ID of assigned Alert.
       type: String
     - contextPath: OpsGenie.AssignAlert.alias
       description: Alias of the assigned alert.
@@ -524,10 +524,10 @@ script:
       type: Boolean
 
   - arguments:
-    - description: E-mail address of the user
+    - description: E-mail address of the user.
       name: username
       required: true
-    - description: Name of the user
+    - description: Name of the user.
       name: fullName
       required: true
     - description: Role of user. It may be one of admin, user or the name of a custom role you've created.
@@ -537,7 +537,7 @@ script:
     name: opsgenie-invite-user
     outputs:
     - contextPath: OpsGenie.User.Id
-      description: User ID
+      description: User ID.
       type: String
     - contextPath: OpsGenie.User.name
       description: Username of the user.
@@ -782,7 +782,7 @@ script:
       name: schedule_id
     - description: Name of the schedule from which to return on-call users.
       name: schedule_name
-    - description: Start date of the timeline in the following format (yyyy-MM-dd'T'HH:mm:ssZ)
+    - description: Start date of the timeline in the following format (yyyy-MM-dd'T'HH:mm:ssZ).
       name: starting_date
     description: Get the on-call users for the provided schedule.
     name: opsgenie-get-on-call
@@ -947,7 +947,7 @@ script:
       description: ID of the integration.
       type: String
     - contextPath: OpsGenie.Incident.integration.name
-      description: Integration name
+      description: Integration name.
       type: String
     - contextPath: OpsGenie.Incident.integration.type
       description: Type of the integration.
@@ -995,7 +995,7 @@ script:
       description: ID of the closed incident.
       type: String
     - contextPath: OpsGenie.ClosedIncident.integrationId
-      description: Integration ID of the closed incident
+      description: Integration ID of the closed incident.
       type: String
     - contextPath: OpsGenie.ClosedIncident.isSuccess
       description: Whether the request was successful.
@@ -1192,15 +1192,15 @@ script:
     arguments:
     - name: output_prefix
       deprecated: true
-      description: The output prefix to use for the results
+      description: The output prefix to use for the results.
     - name: polled_once
       deprecated: true
-      description: 'Whether this is the first time polling'
+      description: 'Whether this is the first time polling.'
     - name: request_id
-      description: The id of the request to get
+      description: The id of the request to get.
       required: true
     - name: request_type
-      description: The type of the request to get
+      description: The type of the request to get.
       required: true
       auto: PREDEFINED
       predefined:
@@ -1291,7 +1291,7 @@ script:
     arguments:
     - name: alert_id
       required: true
-      description: Alert ID
+      description: Alert ID.
     outputs:
     - contextPath: OpsGenie.AlertLogs.createdAt
       description: Time the alert was created.
@@ -1389,7 +1389,7 @@ script:
     - contextPath: OpsGenie.AddAlertDetails.success
       description: Whether the request was successful.
       type: Boolean
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   script: '-'
   type: python
