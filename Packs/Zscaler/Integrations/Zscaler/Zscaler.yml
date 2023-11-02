@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Zscaler
+  id: Zscaler Test
   version: -1
 configuration:
 - display: Cloud Name (i.e., <https://zsapi.zscalertwo.net>)
@@ -80,8 +80,8 @@ configuration:
   advanced: true
   required: false
 description: Zscaler is a cloud security solution built for performance and flexible scalability. This integration enables you to manage URL and IP address allow lists and block lists, manage and update categories, get Sandbox reports, create, manage, and update IP destination groups and manually log in, log out, and activate changes in a Zscaler session.
-display: Zscaler Internet Access
-name: Zscaler
+display: Zscaler Internet Access Test
+name: Zscaler Test
 script:
   commands:
   - arguments:
@@ -245,6 +245,10 @@ script:
       isArray: true
       name: url
       required: true
+    - description: A comma-separated list of URLs to add to the retaining parent sub-category inside the specified category. For example, pandora.com,spotify.com.
+      isArray: true
+      name: retaining-parent-url
+      required: true
     description: Adds URLs to the specified category.
     name: zscaler-category-add-url
     outputs:
@@ -259,6 +263,9 @@ script:
       type: string
     - contextPath: Zscaler.Category.URL
       description: The URL of the category.
+      type: string
+    - contextPath: Zscaler.Category.RetainingParentCategory
+      description: The URL of the category that are in Retaining Parent category.
       type: string
   - arguments:
     - description: The ID of the category to add the specified IP addresses to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command.

@@ -607,15 +607,19 @@ def lookup_request(ioc, multiple=True):
     return response
 
 
-def category_add_url(category_id, url):
+def category_add_url(category_id, url, retaining_parent_url):
+    demisto.debug('##### category_add_url function now running')
     category_data = get_category_by_id(category_id)
+    demisto.debug(f'##### {category_data=}')
     if category_data:  # check if the category exists
         url_list = argToList(url)
         all_urls = url_list[:]
         all_urls.extend(list(map(lambda x: x.strip(), category_data["urls"])))
         category_data["urls"] = all_urls
+        retaining_parent_url_list = argToList(retaining_parent_url)
+        demisto.debug(f'##### {retaining_parent_url_list=}')
         add_or_remove_urls_from_category(
-            ADD, url_list, category_data
+            ADD, url_list, category_data, retaining_parent_url_list
         )  # add the urls to the category
         context = {
             "ID": category_id,
@@ -787,7 +791,7 @@ def category_ioc_update(category_data):
     return response
 
 
-def add_or_remove_urls_from_category(action, urls, category_data):
+def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_url):
     """
     Add or remove urls from a category.
     Args:
@@ -800,16 +804,20 @@ def add_or_remove_urls_from_category(action, urls, category_data):
 
     """
 
+    demisto.debug('##### add_or_remove_urls_from_category function is now running')
     cmd_url = "/urlCategories/" + category_data.get("id") + "?action=" + action
     data = {
         "customCategory": category_data.get("customCategory"),
         "urls": urls,
         "id": category_data.get("id"),
     }
+    if retaining_parent_url:
+        data['dbCategorizedUrls'] = retaining_parent_url
     if "description" in category_data:
         data["description"] = category_data["description"]
     if "configuredName" in category_data:
         data["configuredName"] = category_data["configuredName"]
+    demisto.debug(f'##### {data=}')
     json_data = json.dumps(data)
     http_request(
         "PUT", cmd_url, json_data
@@ -1436,7 +1444,7 @@ def main():  # pragma: no cover
                 return_results(unwhitelist_ip(args.get("ip")))
             elif command == "zscaler-category-add-url":
                 return_results(
-                    category_add_url(args.get("category-id"), args.get("url"))
+                    category_add_url(args.get("category-id"), args.get("url"), args.get('retaining-parent-url'))
                 )
             elif command == "zscaler-category-add-ip":
                 return_results(category_add_ip(args.get("category-id"), args.get("ip")))
