@@ -15,11 +15,18 @@ For more information:
 
 </~XSOAR>
 
+
 <~XSIAM>
 
-This pack includes Cortex XSIAM content.
+## Cortex XSIAM SIEM Content
+
+This pack also includes Cortex XSIAM SIEM content, which is supported by Palo Alto Networks. 
+
+The SIEM content contains parsing and modeling rules for ingesting and mapping events and alerts that are sent from Claroty CTD. 
+
+This section describes the configurations required on Claroty CTD for forwarding events and alerts to Cortex XSIAM and the configurations required on Cortex XSIAM for ingesting and mapping them. 
  
-## Configuration on Server Side
+### Configuration on Claroty CTD
 Follow these steps to configure Claroty CTD to forward Syslog messages to Cortex XSIAM.
  
 1. Login to your account on the Claroty CTD web management console. 
@@ -35,16 +42,16 @@ Follow these steps to configure Claroty CTD to forward Syslog messages to Cortex
    | `Protocol`         | Select the requested forwarding transport protocol (*UDP*, *TCP* or *TLS*). 
 5. Click **Save**.
    
-### Remark
+#### Remark
 Since the syslog forwarding configuration is set for each log type individually, 
 repeat the steps above for each log type (*Alerts*, *Events*, etc.) to monitor on Cortex XSIAM.
 
 
 
-## Collect Events from Vendor
-In order to use the collector, use the [Broker VM](#broker-vm) option.
+### Configuration on Cortex XSIAM
+In order to use the collector for Claroty CTD, use the [Broker VM](#broker-vm) option.
  
-### Broker VM
+#### Broker VM
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
  
 You can configure the specific vendor and product for this instance.
