@@ -1191,7 +1191,7 @@ tasks:
                 iscontext: true
           - operator: uniq
       timeRange:
-        simple: 7 Days
+        simple: 2 hours
     separatecontext: true
     continueonerrortype: ""
     loop:
