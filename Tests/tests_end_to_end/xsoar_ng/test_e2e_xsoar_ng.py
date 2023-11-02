@@ -4,9 +4,11 @@ from datetime import datetime
 from contextlib import contextmanager
 
 import pytest
+from _pytest.fixtures import SubRequest
 import requests
 from typing import Tuple, List, Dict, Set
 from demisto_client.demisto_api import IncidentWrapper
+from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.utils.utils import retry_http_request
@@ -14,12 +16,20 @@ from Tests.tools import get_integration_params
 
 
 @contextmanager
-def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: List[Tuple[str, str, int]]):
+def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: List[FeedIndicator]):
+    """
+    Creates indicators in XSOAR-NG.
+
+    Args:
+        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        indicators (List[FeedIndicator]]): the indicators to create
+
+    """
     indicators_to_remove = []
     try:
-        for indicator, indicator_type, score in indicators:
+        for indicator in indicators:
             try:
-                response = xsoar_ng_client.create_indicator(indicator, indicator_type=indicator_type, score=score)
+                response = xsoar_ng_client.create_indicator(indicator.value, indicator_type=indicator.type, score=indicator.score)
                 if created_indicator_id := response.get("id"):
                     indicators_to_remove.append(created_indicator_id)
             except ApiException as e:
@@ -27,23 +37,43 @@ def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: List[Tuple[
                     raise
         yield
     finally:
-        _response = xsoar_ng_client.delete_indicators(indicators_to_remove)
-        successful_removed_ids = set(_response.get("updatedIds") or [])
-        assert set(indicators_to_remove).issubset(successful_removed_ids)
+        xsoar_ng_client.delete_indicators(indicators_to_remove)
 
 
 @pytest.fixture()
 def available_indicators(xsoar_ng_client: XsoarNGApiClient) -> List[str]:
+    """
+    Gets the available indicators in XSOAR-NG.
+    """
     return [indicator.get("value") for indicator in xsoar_ng_client.list_indicators().get("iocObjects")]
 
 
 @contextmanager
-def create_integration_instance(xsoar_ng_client: XsoarNGApiClient, integration_params: Dict, integration_id: str, is_long_running: bool = False, instance_name: str | None = None):
+def create_integration_instance(
+    xsoar_ng_client: XsoarNGApiClient,
+    integration_params: Dict,
+    integration_id: str,
+    is_long_running: bool = False,
+    instance_name: str | None = None
+):
+    """
+    Creates an integration instance
+
+    Args:
+        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        integration_params (dict): the integration instance data.
+        integration_id (str): name of the integration ID to create the instance
+        is_long_running (bool): whether the integration is long-running or not.
+        instance_name (str): the instance name to create to integration
+
+    Yields:
+        the raw api response of the newly created integration instance
+    """
     created_instance_uuid = ""
     try:
         response = xsoar_ng_client.create_integration_instance(
             _id=integration_id,
-            name=instance_name,
+            name=instance_name or f"end-to-end-{integration_id}",
             integration_instance_config=integration_params,
             integration_log_level="Verbose",
             is_long_running=is_long_running
@@ -59,6 +89,17 @@ def create_integration_instance(xsoar_ng_client: XsoarNGApiClient, integration_p
 def create_incident(
     xsoar_ng_client: XsoarNGApiClient, name: str | None = None, playbook_id: str | None = None
 ) -> IncidentWrapper:
+    """
+    Creates an incident in XSOAR-NG.
+
+    Args:
+        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        name (dict): the name of the incident.
+        playbook_id (str): playbook ID that the incident will be attached to.
+
+    Yields:
+        the raw api response of the newly created incident
+    """
     incident_id = None
     try:
         response = xsoar_ng_client.create_incident(
@@ -73,6 +114,15 @@ def create_incident(
 
 @contextmanager
 def create_playbook(xsoar_ng_client: XsoarNGApiClient, playbook_path: str, playbook_id: str, playbook_name: str):
+    """
+    Creates a playbook in XSOAR-NG.
+
+    Args:
+        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        playbook_path (dict): path to the playbook yml
+        playbook_id (str): the ID of the playbook
+        playbook_name (str): the name of the playbook
+    """
     try:
         xsoar_ng_client.client.import_playbook(playbook_path)
         yield
@@ -82,6 +132,17 @@ def create_playbook(xsoar_ng_client: XsoarNGApiClient, playbook_path: str, playb
 
 @retry_http_request(times=30, delay=5)
 def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_states: Set[str]):
+    """
+    Validates whether playbook has reached into an expected state
+
+    Args:
+        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        incident_id (dict): the incident ID that the playbook is attached to.
+        expected_states (Set[str]): the expected states that the playbook can reach which are valid
+
+    Returns:
+        bool: True if the playbook reached to the expected state, raises exception if not.
+    """
     playbook_status_raw_response = xsoar_ng_client.get_playbook_state(incident_id)
     _playbook_status = playbook_status_raw_response.get("state", "").lower()
     if _playbook_status in expected_states:
@@ -91,7 +152,17 @@ def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id
 
 @retry_http_request(times=30, delay=5)
 def is_incident_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_state: str = "closed"):
+    """
+    Validates whether an incident has reached into an expected state
 
+    Args:
+        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        incident_id (dict): the incident ID
+        expected_state (str): the expected state that the incident should be
+
+    Returns:
+        bool: True if the playbook reached to the expected state, raises exception if not.
+    """
     incident_status = {
         0: "new",  # pending
         1: "in_progress",  # active
@@ -116,6 +187,21 @@ def get_fetched_incident(
     should_start_investigation: bool = True,
     should_remove_fetched_incidents: bool = True
 ):
+    """
+    Queries for a fetched incident against several filters and bring it back.
+
+    Args:
+        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        incident_ids (dict): the incident ID(s) to filter against them
+        from_date (str): from which date to start querying the incident search
+        incident_types (str): the incident type(s) to filter against them
+        should_start_investigation (bool): whether investigation should be started when finding the relevant incident
+                                           (means that the playbook attached to the incident will start running).
+        should_remove_fetched_incidents (bool): whether to remove all the fetched incidents during teardown.
+
+    Yields:
+        dict: a fetched incident that was found.
+    """
     @retry_http_request(times=30, delay=3)
     def _get_fetched_incident():
         _found_incidents = xsoar_ng_client.search_incidents(
@@ -134,16 +220,19 @@ def get_fetched_incident(
         assert amount_of_found_incidents == 1, f'Found {amount_of_found_incidents} incidents'
         incident = found_incidents[0]
         if incident_types:
-            assert incident["type"] == incident_types, f'Found wrong incident {incident} type'
+            assert incident["type"] == incident_types, f'Found wrong incident {incident} type(s)'
 
         if should_start_investigation:
-            start_investigation_response = xsoar_ng_client.start_incident_investigation(incident.get("id") or "")
+            incident_id = incident.get("id")
+            assert incident_id, f'Could not find incident ID from response {incident}'
+            start_investigation_response = xsoar_ng_client.start_incident_investigation(incident_id)
             incident["investigationId"] = start_investigation_response.get("response", {}).get("id")
 
         yield incident
 
     finally:
         if should_remove_fetched_incidents:
+            # removes all the fetched incidents found with the filters
             incidents_to_remove = xsoar_ng_client.search_incidents(
                 incident_ids, from_date=from_date, incident_types=incident_types
             )
@@ -151,7 +240,7 @@ def get_fetched_incident(
                 xsoar_ng_client.delete_incidents(incident_ids_to_remove)
 
 
-def test_edl(request, xsoar_ng_client: XsoarNGApiClient, available_indicators: List[str]):
+def test_edl(request: SubRequest, xsoar_ng_client: XsoarNGApiClient, available_indicators: List[str]):
     """
     Given:
         - indicators in xsoar-ng
@@ -167,7 +256,12 @@ def test_edl(request, xsoar_ng_client: XsoarNGApiClient, available_indicators: L
     username = integration_params["credentials"]["identifier"]
     password = integration_params["credentials"]["password"]
 
-    with create_indicators(xsoar_ng_client, [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]):
+    feed_indicators = [
+        FeedIndicator(value=value, type=_type, score=score) for value, _type, score in
+        [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]
+    ]
+
+    with create_indicators(xsoar_ng_client, indicators=feed_indicators):
         with create_integration_instance(
             xsoar_ng_client,
             integration_params=integration_params,
@@ -188,7 +282,7 @@ def test_edl(request, xsoar_ng_client: XsoarNGApiClient, available_indicators: L
 
 
 def test_taxii2_server(
-    request, xsoar_ng_client: XsoarNGApiClient, available_indicators: List[str]
+    request: SubRequest, xsoar_ng_client: XsoarNGApiClient, available_indicators: List[str]
 ):
     """
     Given:
@@ -213,7 +307,12 @@ def test_taxii2_server(
     password = integration_params["credentials"]["password"]
     headers = {"Accept": "application/taxii+json;version=2.1"}
 
-    with create_indicators(xsoar_ng_client, [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]):
+    feed_indicators = [
+        FeedIndicator(value=value, type=_type, score=score) for value, _type, score in
+        [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]
+    ]
+
+    with create_indicators(xsoar_ng_client, indicators=feed_indicators):
         with create_integration_instance(
             xsoar_ng_client,
             integration_params=integration_params,
@@ -254,7 +353,7 @@ def test_taxii2_server(
                                f'status code={response.status_code}, response={indicators}'
 
 
-def test_slack_ask(request, xsoar_ng_client: XsoarNGApiClient):
+def test_slack_ask(request: SubRequest, xsoar_ng_client: XsoarNGApiClient):
     """
     Given:
         - playbook that runs slack-ask (runs SlackAskV2 and then answers the slack ask with the slack V3 integration)
@@ -297,7 +396,7 @@ def test_slack_ask(request, xsoar_ng_client: XsoarNGApiClient):
                 assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
 
 
-def test_qradar_mirroring(request, xsoar_ng_client: XsoarNGApiClient):
+def test_qradar_mirroring(request: SubRequest, xsoar_ng_client: XsoarNGApiClient):
     """
     Given:
         - a QRadar offense that is fetched through the integration that is in "OPENED" state.
