@@ -8,19 +8,19 @@ commonfields:
   version: -1
 name: DetectAndDecodeBarcode
 outputs:
-- contextPath: DetectAndDecodeBarcode.File.EntryID
+- contextPath: File.EntryID
   description: "The Entry ID of the file."
   type: String
-- contextPath: DetectAndDecodeBarcode.File.Name
+- contextPath: File.Name
   description: "The name of the file including extension."
   type: String
-- contextPath: DetectAndDecodeBarcode.File.Barcode.Type
+- contextPath: File.Barcode.Type
   description: "The type of barcode."
   type: String
-- contextPath: DetectAndDecodeBarcode.File.Barcode.Data
+- contextPath: File.Barcode.Data
   description: "The data in the barcode."
   type: Unknown
-- contextPath: DetectAndDecodeBarcode.File.Image
+- contextPath: File.Image
   description: "Whether file is an image."
   type: Boolean
 script: "-"
@@ -29,7 +29,7 @@ tags:
 timeout: "0"
 type: python
 subtype: python3
-dockerimage: demisto/processing-image-file:1.0.0.78149
+dockerimage: demisto/processing-image-file:1.0.0.78798
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

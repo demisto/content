@@ -1,4 +1,4 @@
-Detect and decode barcodes (including QR codes) in a file.
+Detect and decode 2D barcodes (including QR codes) in a file.
 
 ## Script Data
 
@@ -16,7 +16,7 @@ Detect and decode barcodes (including QR codes) in a file.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| entry_id | The ID for locating a file in War Room |
+| entry_id | The ID for locating a file in War Room. |
 
 ## Outputs
 
@@ -24,8 +24,8 @@ Detect and decode barcodes (including QR codes) in a file.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DetectAndDecodeBarcode.File.EntryID | The Entry ID of the file | String |
-| DetectAndDecodeBarcode.File.Name | The name of the file including extension | String |
-| DetectAndDecodeBarcode.File.Barcode.Type | The type of barcode | String |
-| DetectAndDecodeBarcode.File.Barcode.Data | The data in the barcode | Unknown |
-| DetectAndDecodeBarcode.File.Image | Whether file is an image | Boolean |
+| File.EntryID | The Entry ID of the file. | String |
+| File.Name | The name of the file including extension. | String |
+| File.Barcode.Type | The type of barcode. | String |
+| File.Barcode.Data | The data in the barcode. | Unknown |
+| File.Image | Whether file is an image. | Boolean |

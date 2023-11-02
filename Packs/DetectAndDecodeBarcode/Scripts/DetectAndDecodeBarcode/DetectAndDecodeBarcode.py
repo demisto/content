@@ -33,27 +33,13 @@ def detect_and_decode_barcode(path: str) -> Dict[str, Any]:
     return result
 
 
-def detect_and_decode_barcode_command(args) -> CommandResults:
-    entry_id = args.get("entry_id", None)
-    if not entry_id:
-        raise ValueError("entry_id not specified")
-
-    file_path = demisto.getFilePath(entry_id)["path"]
-    result = detect_and_decode_barcode(file_path)
-    result["File"][-1]["EntryID"] = entry_id
-
-    return CommandResults(
-        outputs_prefix="DetectAndDecodeBarcode.File",
-        outputs_key_field="EntryID",
-        outputs=result,
-    )
-
-
 def main():
-    try:
-        return_results(detect_and_decode_barcode_command(demisto.args()))
-    except Exception as ex:
-        return_error(f"Failed to execute DetectAndDecodeBarcode. Error: {str(ex)}")
+    args = demisto.args()
+    entry_id = args.get("entry_id")
+    file_path = demisto.getFilePath(entry_id)["path"]
+    results = detect_and_decode_barcode(file_path)
+    results["File"][-1]["EntryID"] = entry_id
+    return_results(results)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
