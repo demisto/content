@@ -4,7 +4,6 @@ from typing import Any
 
 from jira import Issue
 from junitparser import TestSuite, JUnitXml
-from tqdm import tqdm
 
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -94,7 +93,8 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
                             add_total_row: bool = True,
                             no_color: bool = False,
                             without_jira: bool = False,
-                            with_skipped: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
+                            with_skipped: bool = False,
+                            transpose: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
     xml = JUnitXml()
     headers = copy.copy(base_headers)
     if not without_jira:
@@ -102,15 +102,14 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
     fixed_headers_length = len(headers)
     server_versions_list: list[str] = sorted(server_versions)
     headers.extend(
-        f"{server_version} ({TEST_SUITE_DATA_CELL_HEADER})"
+        server_version if transpose else f"{server_version} ({TEST_SUITE_DATA_CELL_HEADER})"
         for server_version in server_versions_list
     )
     tabulate_data = []
     total_row: list[Any] = ([NOT_AVAILABLE] * fixed_headers_length + [TestSuiteStatistics()
                                                                       for _ in range(len(server_versions_list))])
     total_errors = 0
-    for result, result_test_suites in tqdm(results.items(), desc="Generating summary table", unit="result",
-                                           leave=True, colour='green', miniters=10, mininterval=5.0):
+    for result, result_test_suites in results.items():
         row: list[Any] = []
         if not without_jira:
             if jira_ticket := jira_tickets_for_result.get(result):
@@ -148,8 +147,9 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         total_errors += errors_count
         # If all the test suites were skipped, don't add the row to the table.
         if skipped_count != len(server_versions_list) or with_skipped:
+            row_result = f"{result} ({TEST_SUITE_DATA_CELL_HEADER})" if transpose else result
             row.insert(0,
-                       (red_text(result) if errors_count else green_text(result) if not no_color else result))
+                       (red_text(row_result) if errors_count else green_text(row_result) if not no_color else row_result))
             tabulate_data.append(row)
 
             # Offset the total row by the number of fixed headers
