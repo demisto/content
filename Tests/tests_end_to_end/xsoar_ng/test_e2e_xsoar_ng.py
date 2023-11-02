@@ -1,3 +1,4 @@
+import logging
 import time
 from datetime import timedelta
 from datetime import datetime
@@ -129,7 +130,7 @@ def create_playbook(xsoar_ng_client: XsoarNGApiClient, playbook_path: str, playb
         xsoar_ng_client.delete_playbook(playbook_name, playbook_id)
 
 
-@retry_http_request(times=60, delay=5)
+@retry_http_request(times=10, delay=30)
 def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_states: set[str]):
     """
     Validates whether playbook has reached into an expected state
@@ -319,6 +320,7 @@ def test_taxii2_server(
             "integrationInstanceName", f'e2e-test-{integration_params.get("name", "TAXII2-Server")}'
         )
     ) as taxii2_instance_response:
+        time.sleep(300)
         instance_name = taxii2_instance_response.get("name")
         response = xsoar_ng_client.do_long_running_instance_request(
             instance_name,
