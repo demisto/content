@@ -1536,6 +1536,13 @@ def create_domain_ti_object():
     return domain_ti
 
 
+def bold_classification(input_list, key, value):
+    for obj in input_list:
+        if obj.get(key) == value:
+            obj[key] = f"**{value}**"
+    return input_list
+
+
 def domain_report_command():
     domain_ti = create_domain_ti_object()
 
@@ -1582,9 +1589,10 @@ def domain_report_output(response_json, domain):
         **TOTAL**: {third_party_statistics.get("total")}
         """
 
+        tp_sources = bold_classification(third_party.get("sources"), "detection", "malicious")
         sources_table = tableToMarkdown(
             name="Third party sources",
-            t=third_party.get("sources"),
+            t=tp_sources,
         )
         markdown = f"{markdown}\n {sources_table}"
 
@@ -1878,9 +1886,10 @@ def ip_report_output(response_json, ip):
          **TOTAL**: {third_party_statistics.get("total")}
         """
 
+        tp_sources = bold_classification(third_party.get("sources"), "detection", "malicious")
         sources_table = tableToMarkdown(
             name="Third party sources",
-            t=third_party.get("sources")
+            t=tp_sources
         )
         markdown = f"{markdown}\n {sources_table}"
 
@@ -1930,6 +1939,7 @@ def ip_downloaded_files_command():
 
 
 def ip_downloaded_files_output(response, ip):
+    response = bold_classification(response, "classification", "MALICIOUS")
     files_table = tableToMarkdown(
         name="Downloaded files",
         t=response
