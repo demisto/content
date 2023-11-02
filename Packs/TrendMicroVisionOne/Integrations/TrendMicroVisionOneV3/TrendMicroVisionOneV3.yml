@@ -1006,8 +1006,8 @@ script:
     - contextPath: VisionOne.Sandbox_Submission_Polling.file_type
       description: File type of this sample.
       type: string
-    - contextPath: VisionOne.Sandbox_Submission_Polling.report_id
-      description: ID used to get the report and suspicious object. Empty means no report.
+    - contextPath: VisionOne.Sandbox_Submission_Polling.type
+      description: Object type.
       type: string
     - contextPath: VisionOne.Sandbox_Submission_Polling.message
       description: Error message for failed call.

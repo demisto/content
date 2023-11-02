@@ -849,24 +849,24 @@ Runs a polling command to retrieve the status of a sandbox analysis submission.
 
 #### Context Output
 
-| **Path**                                                      | **Type** | **Description**                                                         |
-| ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- |
-| VisionOne.Sandbox_Submission_Polling.message                  | string   | Status of the sandbox analysis.                                         |
-| VisionOne.Sandbox_Submission_Polling.status_code              | string   | Status code of the request.                                             |
-| VisionOne.Sandbox_Submission_Polling.status                   | string   | Status of action to analyze file in sandbox.                            |
-| VisionOne.Sandbox_Submission_Polling.report_id                | string   | Report ID of the submission queried.                                    |
-| VisionOne.Sandbox_Submission_Polling.digest                   | string   | The hash values of file analyzed.                                       |
-| VisionOne.Sandbox_Submission_Polling.analysis_completion_time | string   | Sample analysis completed time.                                         |
-| VisionOne.Sandbox_Submission_Polling.risk_level               | string   | Risk Level of the analyzed file.                                        |
-| VisionOne.Sandbox_Submission_Polling.detection_name_list      | string   | Detection name of this sample, if applicable.                           |
-| VisionOne.Sandbox_Submission_Polling.threat_type_list         | string   | Threat type of this sample.                                             |
-| VisionOne.Sandbox_Submission_Polling.file_type                | string   | File type of this sample.                                               |
-| VisionOne.Sandbox_Submission_Polling.report_id                | string   | ID used to get the report and suspicious object. Empty means no report. |
-| VisionOne.Sandbox_Submission_Polling.message                  | string   | Error message for failed call.                                          |
-| VisionOne.Sandbox_Submission_Polling.code                     | string   | Error code for failed call.                                             |
-| VisionOne.Sandbox_Submission_Polling.DBotScore.Score          | number   | The DBot score.                                                         |
-| VisionOne.Sandbox_Submission_Polling.DBotScore.Vendor         | string   | The Vendor name.                                                        |
-| VisionOne.Sandbox_Submission_Polling.DBotScore.Reliability    | string   | The reliability of an intelligence-data source.                         |
+| **Path**                                                      | **Type** | **Description**                                 |
+| ------------------------------------------------------------- | -------- | ----------------------------------------------- |
+| VisionOne.Sandbox_Submission_Polling.message                  | string   | Status of the sandbox analysis.                 |
+| VisionOne.Sandbox_Submission_Polling.status_code              | string   | Status code of the request.                     |
+| VisionOne.Sandbox_Submission_Polling.status                   | string   | Status of action to analyze file in sandbox.    |
+| VisionOne.Sandbox_Submission_Polling.report_id                | string   | Report ID of the submission queried.            |
+| VisionOne.Sandbox_Submission_Polling.digest                   | string   | The hash values of file analyzed.               |
+| VisionOne.Sandbox_Submission_Polling.analysis_completion_time | string   | Sample analysis completed time.                 |
+| VisionOne.Sandbox_Submission_Polling.risk_level               | string   | Risk Level of the analyzed file.                |
+| VisionOne.Sandbox_Submission_Polling.detection_name_list      | string   | Detection name of this sample, if applicable.   |
+| VisionOne.Sandbox_Submission_Polling.threat_type_list         | string   | Threat type of this sample.                     |
+| VisionOne.Sandbox_Submission_Polling.file_type                | string   | File type of this sample.                       |
+| VisionOne.Sandbox_Submission_Polling.type                     | string   | Object type.                                    |
+| VisionOne.Sandbox_Submission_Polling.message                  | string   | Error message for failed call.                  |
+| VisionOne.Sandbox_Submission_Polling.code                     | string   | Error code for failed call.                     |
+| VisionOne.Sandbox_Submission_Polling.DBotScore.Score          | number   | The DBot score.                                 |
+| VisionOne.Sandbox_Submission_Polling.DBotScore.Vendor         | string   | The Vendor name.                                |
+| VisionOne.Sandbox_Submission_Polling.DBotScore.Reliability    | string   | The reliability of an intelligence-data source. |
 
 ### trendmicro-visionone-check-task-status
 
