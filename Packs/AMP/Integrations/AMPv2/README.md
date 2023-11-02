@@ -18,6 +18,7 @@ This integration was integrated and tested with version 1 of CiscoAMP.
     | Incident severity to fetch. |  | False |
     | First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
     | Event types | Comma-separated list of Event Type IDs. | False |
+    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -1305,7 +1306,6 @@ Fetch a list of events that can be filtered by a variety of criteria. Each crite
 | page | Page number to return. | Optional | 
 | page_size | Number of results in a page. Maximum is 500. | Optional | 
 | limit | Number of total results to return. | Optional | 
-| create_relationships | Create relationships between indicators as part of Enrichment (default false) | Optional |
 
 
 #### Context Output

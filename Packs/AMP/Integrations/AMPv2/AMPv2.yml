@@ -76,6 +76,12 @@ configuration:
   name: isFetch
   type: 8
   required: false
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  type: 8
+  required: false
 description: Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
 display: Cisco AMP v2
 name: AMPv2
@@ -706,14 +712,6 @@ script:
       name: page_size
     - description: Number of total results to return.
       name: limit
-    - description: Create relationships between indicators as part of Enrichment (default false).
-      defaultValue: 'false'
-      name: create_relationships
-      auto: PREDEFINED
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
     description: Fetch a list of events that can be filtered by a variety of criteria. Each criteria type is logically ANDed with the other criteria, and each selection of a criteria is logically ORed. This is analogous to the Events view on the FireAMP Console.
     name: cisco-amp-event-list
     outputs:

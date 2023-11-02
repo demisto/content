@@ -833,6 +833,11 @@ def test_event_list_command(requests_mock, mock_client):
             )
             assert response.indicator.path == response.outputs["file"]["file_path"]
             assert response.indicator.name == response.outputs["file"]["file_name"]
+            if "parent" in response.outputs["file"]:
+                assert (
+                    response.indicator.relationships[0].to_context()["EntityB"]
+                    == response.outputs["file"]["parent"]["identity"]["sha256"]
+                )
 
         if computer := response.outputs.get("computer"):
             assert "links" not in computer

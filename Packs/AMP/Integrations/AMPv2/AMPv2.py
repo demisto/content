@@ -188,7 +188,7 @@ class Client(BaseClient):
         reliability: str,
         verify: bool = False,
         proxy: bool = False,
-        should_create_relationships: bool = False,
+        should_create_relationships: bool = True,
     ):
         """
         Build URL with authorization arguments to provide the required Basic Authentication.
@@ -2038,10 +2038,10 @@ def computer_isolation_polling_command(
 
 
 def create_relationships(client: Client, indicator: str, relationship: dict[str, str | int | dict]):
-    if not relationship:
+    if not client.should_create_relationships or not relationship:
         return None
 
-    if not (identity := relationship.get("identity", {})) or not isinstance(identity, dict):
+    if not (entity_b := relationship.get("identity", {}).get("sha256")):
         return None
 
     relationships = [
@@ -2054,8 +2054,6 @@ def create_relationships(client: Client, indicator: str, relationship: dict[str,
             brand=INTEGRATION_NAME,
             source_reliability=client.reliability,
         )
-        for _, entity_b in identity.items()
-        if auto_detect_indicator_type(entity_b) == FeedIndicatorType.File
     ]
 
     return relationships if relationships else None
@@ -2145,8 +2143,6 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
                     indicator=sha256,
                     relationship=dict_safe_get(context_output, ["file", "parent"]),
                 )
-                if argToBoolean(args.get("create_relationships", False))
-                else None
             )
 
             file_indicator = Common.File(
@@ -3735,6 +3731,7 @@ def main() -> None:
             verify=verify_certificate,
             reliability=reliability,
             proxy=proxy,
+            should_create_relationships=argToBoolean(params.get("create_relationships", True))
         )
 
         if command == "test-module":
