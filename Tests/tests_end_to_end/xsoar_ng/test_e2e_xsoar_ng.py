@@ -378,7 +378,7 @@ def test_slack_ask(request: SubRequest, xsoar_ng_client: XsoarNGApiClient):
         playbook_id_name = "TestSlackAskE2E"
         with create_playbook(
             xsoar_ng_client,
-            playbook_path="TestSlackAskE2E.yml",
+            playbook_path="Tests/tests_end_to_end/xsoar_ng/TestSlackAskE2E.yml",
             playbook_id=playbook_id_name,
             playbook_name=playbook_id_name
         ), create_incident(xsoar_ng_client, playbook_id=playbook_id_name) as incident_response:
