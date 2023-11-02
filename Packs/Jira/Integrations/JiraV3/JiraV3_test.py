@@ -2334,3 +2334,61 @@ class TestJiraFetchIncidents:
                 attachment_tag_from_jira='attachment_tag_from_jira'
             )
         assert 'The fetch query configured returned no Jira issues, please update it' in str(e)
+
+
+class TestJiraIssueAssign:
+    @pytest.mark.parametrize(
+        'assignee, assignee_id, excpected_body_request',
+        [
+            ("server_assignee", None, {"name": "server_assignee"}),
+            (None, "cloud_assignee", {"accountId": "cloud_assignee"})
+        ]
+    )
+    def test_update_issue_assignee_command(self, mocker, assignee, assignee_id, excpected_body_request):
+        """
+        Given:
+            - issue id, and assignees for cloud/server jira
+        When
+            - Running the update_issue_assignee_command
+        Then
+            - Ensure the body request is ok for both cloud/server jira
+        """
+        from JiraV3 import update_issue_assignee_command
+        get_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
+        args = {
+            'assignee': assignee,           # For Jira OnPrem
+            'assignee_id': assignee_id,     # For Jira Cloud
+            'issue_id': 21487,
+        }
+        client: JiraBaseClient = jira_base_client_mock()
+        if assignee_id:
+            client = jira_cloud_client_mock()
+        else:
+            client = jira_onprem_client_mock()
+
+        jira_req_mocker = mocker.patch.object(client, 'update_assignee', return_value=None)
+        mocker.patch.object(client, 'get_issue', return_value=get_issue_response)
+        assert update_issue_assignee_command(client=client, args=args)
+        assert jira_req_mocker.call_args[1].get('assignee_body') == excpected_body_request
+
+    def test_test_update_issue_assignee_command_no_assignees(self):
+        """
+        Given:
+            - issue id, without assignee / assignee_id
+        When
+            - Running the update_issue_assignee_command
+        Then
+            - Ensure an exception is raised
+        """
+        from JiraV3 import update_issue_assignee_command
+
+        args = {
+            'assignee': None,       # For Jira OnPrem
+            'assignee_id': None,    # For Jira Cloud
+            'issue_id': 21487,
+        }
+
+        client = jira_base_client_mock()
+
+        with pytest.raises(DemistoException):
+            update_issue_assignee_command(client=client, args=args)
