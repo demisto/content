@@ -11355,7 +11355,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     }
     if data_type == ASSETS:
         headers['snapshot_id'] = str(round(time.time() * 1000))
-        headers['assets_count'] = str(items_count)
+        headers['total_items_count'] = str(items_count)
 
     header_msg = f'Error sending new {data_type} into XSIAM.\n'
 
