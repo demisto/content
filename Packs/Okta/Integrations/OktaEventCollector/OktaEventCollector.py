@@ -4,6 +4,7 @@ from CommonServerPython import *
 
 VENDOR = "okta"
 PRODUCT = "okta"
+MAX_API_LIMIT = 1000
 
 
 class Method(str, Enum):
@@ -24,7 +25,7 @@ class ReqParams(BaseModel):  # pragma: no cover
     """
     since: str
     sortOrder: Optional[str] = 'ASCENDING'
-    limit: str = '1000'
+    limit: str = f'{MAX_API_LIMIT}'
 
     def set_since_value(self, since: str) -> None:  # pragma: no cover
         self.since = since
@@ -81,8 +82,8 @@ class GetEvents:
 
     def make_api_call(self):
         limit_tmp = int(self.client.request.params.limit)  # type: ignore
-        if limit_tmp > 1000:
-            self.client.request.params.limit = '1000'  # type: ignore
+        if limit_tmp > MAX_API_LIMIT:
+            self.client.request.params.limit = f'{MAX_API_LIMIT}'  # type: ignore
         response = self.client.call()
         events: list = response.json()
         self.client.request.params.limit = str(limit_tmp - len(events))  # type: ignore
@@ -95,6 +96,7 @@ class GetEvents:
         stored_events: list = []
         max_events_to_fetch = int(self.client.request.params.limit)  # type: ignore
         demisto.debug(f'max_events_to_fetch={max_events_to_fetch}')
+        stop_fetch = False
 
         while len(stored_events) < max_events_to_fetch:  # type: ignore
             demisto.debug(f'stored_events={len(stored_events)}')
@@ -118,6 +120,11 @@ class GetEvents:
             if len(events) == 0:  # type: ignore
                 # stop the loop the moment returned 0 events from the API
                 break
+                
+            if len(events) < MAX_API_LIMIT:
+                # we got less events than we requested. It means we should stop fetching.
+                # it means no more events there
+                stop_fetch = True
 
             if last_object_ids:
                 events = GetEvents.remove_duplicates(events, last_object_ids)
@@ -126,6 +133,10 @@ class GetEvents:
 
             last = events[-1]
             self.client.set_next_run_filter(last['published'])
+            
+            if stop_fetch:
+                # we break now because we want to update the last run and remove duplicates
+                break
 
         return stored_events
 
