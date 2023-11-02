@@ -17,10 +17,6 @@ BASE_URL = 'https://api.telegram.org/bot{}/'.format(TOKEN)
 ''' HELPER FUNCTIONS '''
 
 
-def test_func():
-    pass
-
-
 def http_request(method, url_suffix, params=None, data=None):
     result = requests.request(
         method,
