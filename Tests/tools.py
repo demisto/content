@@ -1,4 +1,3 @@
-import json
 from functools import wraps
 from collections.abc import Callable
 
@@ -36,4 +35,3 @@ def get_integration_params(integration_secrets_path: str, instance_name: str) ->
             return integration_instance.get("params")
 
     raise ValueError(f'Could not find integration parameters for {instance_name}')
-

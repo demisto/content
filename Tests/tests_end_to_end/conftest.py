@@ -9,7 +9,6 @@ from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClientConfig, XsoarNGApiClient
 
 from Tests.configure_and_test_integration_instances import CloudBuild
-from Tests.tools import get_integration_params
 
 
 def pytest_addoption(parser):
