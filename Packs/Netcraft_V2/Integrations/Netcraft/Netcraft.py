@@ -809,12 +809,12 @@ def submission_list(args: dict, client: Client) -> CommandResults:
             'source_name', 'submission_reason', 'submitter_email'
         ) | {
             'date_start':
-                str(date.date())
-                if (date := arg_to_datetime(args.get('date_start')))  # pylint: disable=E0601
+                str(date.date())  # pylint: disable=E0601
+                if (date := arg_to_datetime(args.get('date_start')))
                 else None,
             'date_end':
-                str(date.date())
-                if (date := arg_to_datetime(args.get('date_end')))  # pylint: disable=E0601
+                str(date.date())  # pylint: disable=E0601
+                if (date := arg_to_datetime(args.get('date_end')))
                 else None,
             'state': args.get('state', '').lower()
         }
