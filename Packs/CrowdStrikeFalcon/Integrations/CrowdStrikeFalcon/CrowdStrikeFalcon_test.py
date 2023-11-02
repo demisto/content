@@ -2182,7 +2182,8 @@ class TestFetch:
         """ Sets up the mocks for the fetch.
         """
         mocker.patch.object(demisto, 'setLastRun')
-        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
+                                                                            'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
                                                 'created_timestamp': '2020-09-04T09:16:11Z',
@@ -2258,11 +2259,63 @@ class TestFetch:
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
                                                 'created_timestamp': '2020-09-04T09:16:11Z',
-                                                'max_severity_displayname': 'Low'}]})
+                                                'max_severity_displayname': 'Low'}],
+                                 })
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][0] == {
-            'time': '2020-09-04T09:16:11Z', 'limit': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
+            'time': '2020-09-04T09:16:11Z', 'limit': 2, 'offset': 0, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
+
+    @freeze_time("2020-09-04T09:16:10Z")
+    def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
+        """
+        Tests the correct flow of fetch with offset
+        Given:
+            `getLastRun` which holds  `first_behavior_time` and `offset`
+        When:
+            2 result is returned (which is less than the total which is 4)
+        Then:
+            - The offset increases to 2 in the next run, and the last time remains
+            - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
+
+        """
+        # mock the total number of detections to be 4, so offset will be set
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
+                                                                            'meta': {'pagination': {'total': 4}}})
+
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value=[{'time': '2020-09-04T09:16:10Z',
+                                          'offset': 0}, {}, {}])
+        # Override post to have 1 results so FETCH_LIMIT won't be reached
+        requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+                           json={'resources': [{'detection_id': 'ldt:1',
+                                                'created_timestamp': '2020-09-04T09:16:11Z',
+                                                'max_severity_displayname': 'Low'}],
+                                 })
+        from CrowdStrikeFalcon import fetch_incidents
+        fetch_incidents()
+        # the offset should be increased to 2, and the time should be stay the same
+        expected_last_run = {
+            'time': '2020-09-04T09:16:10Z', 'limit': 2, 'offset': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
+        assert demisto.setLastRun.mock_calls[0][1][0][0] == expected_last_run
+
+        requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:3', 'ldt:4'],
+                                                                            'meta': {'pagination': {'total': 4}}})
+
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value=[expected_last_run, {}, {}])
+
+        requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
+                           json={'resources': [{'detection_id': 'ldt:2',
+                                                'created_timestamp': '2020-09-04T09:16:13Z',
+                                                'max_severity_displayname': 'Low'}],
+                                 })
+
+        fetch_incidents()
+        # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
+        assert demisto.setLastRun.mock_calls[1][1][0][0] == {
+            'time': '2020-09-04T09:16:13Z', 'limit': 2, 'offset': 0, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
+                                                                                            'Detection ID: ldt:2': 1599210970}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
@@ -2319,7 +2372,8 @@ class TestFetch:
         from CrowdStrikeFalcon import fetch_incidents
         mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}, {}])
 
-        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2'],
+                                                                                'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
@@ -2366,7 +2420,8 @@ class TestIncidentFetch:
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={})
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={})
-        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2']})
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2'],
+                                                                                'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
@@ -2402,7 +2457,59 @@ class TestIncidentFetch:
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][1] == {'time': '2020-09-04T09:16:11Z',
                                                              'limit': 2,
+                                                             'offset': 0,
                                                              'found_incident_ids': {'Incident ID: ldt:1': 1598462533}}
+
+    @freeze_time("2020-09-04T09:16:10Z")
+    def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
+        """
+        Tests the correct flow of fetch with offset
+        Given:
+            `getLastRun` which holds  `first_behavior_time` and `offset`
+        When:
+            2 result is returned (which is less than the total which is 4)
+        Then:
+            - The offset increases to 2 in the next run, and the last time remains
+            - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
+
+        """
+        # mock the total number of detections to be 4, so offset will be set
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2'],
+                                                                                'pagination': {'meta': {'total': 4}}})
+
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value=[{}, {'time': '2020-09-04T09:16:10Z',
+                                          'offset': 0}, {}])
+        # Override post to have 1 results so FETCH_LIMIT won't be reached
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+                           json={'resources': [{'incident_id': 'ldt:1',
+                                                'start': '2020-09-04T09:16:11Z',
+                                                'max_severity_displayname': 'Low'}],
+                                 })
+        from CrowdStrikeFalcon import fetch_incidents
+        fetch_incidents()
+        # the offset should be increased to 2, and the time should be stay the same
+        expected_last_run = {
+            'time': '2020-09-04T09:16:10Z', 'limit': 2, 'offset': 2, "found_incident_ids": {'Incident ID: ldt:1': 1599210970}}
+        assert demisto.setLastRun.mock_calls[0][1][0][1] == expected_last_run
+
+        requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:3', 'ldt:4'],
+                                                                                'meta': {'pagination': {'total': 4}}})
+
+        mocker.patch.object(demisto, 'getLastRun',
+                            return_value=[{}, expected_last_run, {}])
+
+        requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
+                           json={'resources': [{'incident_id': 'ldt:2',
+                                                'start': '2020-09-04T09:16:13Z',
+                                                'max_severity_displayname': 'Low'}],
+                                 })
+
+        fetch_incidents()
+        # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
+        assert demisto.setLastRun.mock_calls[1][1][0][1] == {
+            'time': '2020-09-04T09:16:13Z', 'limit': 2, 'offset': 0, "found_incident_ids": {'Incident ID: ldt:1': 1599210970,
+                                                                                            'Incident ID: ldt:2': 1599210970}}
 
     def test_incident_type_in_fetch(self, set_up_mocks, mocker):
         """Tests the addition of incident_type field to the context

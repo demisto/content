@@ -6,7 +6,7 @@ import pytest
 from pytest_mock import MockerFixture
 from VectraAIEventCollector import (
     VectraClient,
-    test_module,
+    module_test,
     XSIAM_TIME_FORMAT,
     AUDIT_START_TIMESTAMP_FORMAT,
     AUDIT_NEXT_RUN_KEY,
@@ -68,7 +68,7 @@ def test_create_headers(token: str):
     assert actual == expected
 
 
-def test_test_module(mocker: MockerFixture):
+def test_module_test(mocker: MockerFixture):
     """
     Given
     - A dictionary of endpoints
@@ -81,11 +81,11 @@ def test_test_module(mocker: MockerFixture):
     mocker.patch.object(client, "get_audits", return_value=AUDITS)
     mocker.patch.object(client, "get_detections", return_value=DETECTIONS)
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    actual = test_module(client)
+    actual = module_test(client)
     assert "ok" in actual
 
 
-def test_test_module_exception(mocker: MockerFixture):
+def test_module_test_exception(mocker: MockerFixture):
     """
     Given
     - A dictionary of endpoints
@@ -103,7 +103,7 @@ def test_test_module_exception(mocker: MockerFixture):
     mocker.patch.object(demisto, "getLastRun", return_value={})
 
     with pytest.raises(Exception) as e:
-        test_module(client)
+        module_test(client)
 
     assert "test module failed" in str(e.value)
 

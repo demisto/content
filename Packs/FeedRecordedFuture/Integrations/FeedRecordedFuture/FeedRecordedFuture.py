@@ -13,6 +13,8 @@ from typing import Tuple, Optional, List, Dict
 # Disable insecure warnings
 urllib3.disable_warnings()
 BATCH_SIZE = 2000
+CHUNK_SIZE = 1024 * 1024 * 10  # 10 MB
+
 INTEGRATION_NAME = 'Recorded Future'
 
 # taken from recorded future docs
@@ -167,7 +169,9 @@ class Client(BaseClient):
                 f.write(response_content)
         else:
             with open("response.txt", "w") as f:
-                f.write(response.text)
+                for chunk in response.iter_content(CHUNK_SIZE, decode_unicode=True):
+                    if chunk:
+                        f.write(chunk)
         demisto.info('done build_iterator')
 
     def get_batches_from_file(self, limit):

@@ -84,8 +84,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 280
+          "x": 690,
+          "y": 240
         }
       }
     note: false
@@ -117,8 +117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 480
+          "x": 900,
+          "y": 410
         }
       }
     note: false
@@ -143,7 +143,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 670
+          "y": 580
         }
       }
     note: false
@@ -194,12 +194,14 @@ view: |-
   {
     "linkLabelsPosition": {
       "1_2_yes": 0.5,
-      "4_1_yes": 0.63
+      "1_3_#default#": 0.42,
+      "4_1_yes": 0.63,
+      "4_3_#default#": 0.5
     },
     "paper": {
       "dimensions": {
-        "height": 805,
-        "width": 380,
+        "height": 715,
+        "width": 830,
         "x": 450,
         "y": -70
       }
