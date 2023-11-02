@@ -7,7 +7,8 @@ import urllib3
 from jira import JIRA
 from tabulate import tabulate
 
-from Tests.scripts.common import calculate_results_table, TEST_MODELING_RULES_REPORT_FILE_NAME, get_test_results_files
+from Tests.scripts.common import calculate_results_table, TEST_MODELING_RULES_REPORT_FILE_NAME, get_test_results_files, \
+    TEST_SUITE_CELL_EXPLANATION
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
     JIRA_API_KEY, jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, JIRA_LABELS
 from Tests.scripts.test_modeling_rule_report import TEST_MODELING_RULES_BASE_HEADERS, calculate_test_modeling_rule_results
@@ -37,13 +38,14 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
         logging.info("Printing test modeling rule summary without Jira tickets")
         issues = None
     else:
-        logging.info("Searching for Jira tickets for test modeling rule with the following settings:\n"
-                     f"Jira server url: {JIRA_SERVER_URL}\n"
-                     f"Jira verify SSL: {JIRA_VERIFY_SSL}\n"
-                     f"Jira project id: {JIRA_PROJECT_ID}\n"
-                     f"Jira issue type: {JIRA_ISSUE_TYPE}\n"
-                     f"Jira component: {JIRA_COMPONENT}\n"
-                     f"Jira labels: {', '.join(JIRA_LABELS)}\n")
+        logging.info("Searching for Jira tickets for test modeling rule with the following settings:")
+        logging.info(f"\tJira server url: {JIRA_SERVER_URL}")
+        logging.info(f"\tJira verify SSL: {JIRA_VERIFY_SSL}")
+        logging.info(f"\tJira project id: {JIRA_PROJECT_ID}")
+        logging.info(f"\tJira issue type: {JIRA_ISSUE_TYPE}")
+        logging.info(f"\tJira component: {JIRA_COMPONENT}")
+        logging.info(f"\tJira labels: {', '.join(JIRA_LABELS)}")
+
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
@@ -57,14 +59,14 @@ def print_test_modeling_rule_summary(artifacts_path: Path, without_jira: bool) -
         logging.info(f"Found {len(jira_tickets_for_modeling_rule)} Jira tickets out of {len(modeling_rules_to_test_suite)} "
                      "Test modeling rules")
 
-        headers, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_modeling_rule,
-                                                                            modeling_rules_to_test_suite,
-                                                                            server_versions,
-                                                                            TEST_MODELING_RULES_BASE_HEADERS,
-                                                                            without_jira=without_jira)
+        headers, column_align, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_modeling_rule,
+                                                                                          modeling_rules_to_test_suite,
+                                                                                          server_versions,
+                                                                                          TEST_MODELING_RULES_BASE_HEADERS,
+                                                                                          without_jira=without_jira)
 
-        table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
-        logging.info(f"Test Modeling rule Results:\n{table}")
+        table = tabulate(tabulate_data, headers, tablefmt="pretty", colalign=column_align)
+        logging.info(f"Test Modeling rule Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
         return total_errors != 0
 
     logging.info("Test Modeling rule Results - No test modeling rule results found")
