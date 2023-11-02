@@ -51,7 +51,6 @@ def get_client_mock():
         subscription_id=SUBSCRIPTION_ID,
         resource_group=RESOURCE_GROUP_NAME,
         client_id=CLIENT_ID,
-        api_version='2021-03-01',
         verify=False,
         proxy=False)
 
