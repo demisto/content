@@ -54,7 +54,7 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
                                               description=description,
                                               issuetype={'name': JIRA_ISSUE_TYPE},
                                               components=[{'name': JIRA_COMPONENT}],
-                                              labels=['nightly'] + JIRA_LABELS,
+                                              labels=JIRA_LABELS,
                                               **JIRA_ADDITIONAL_FIELDS
                                               )
         # Create a back link to the previous issue, which is resolved.

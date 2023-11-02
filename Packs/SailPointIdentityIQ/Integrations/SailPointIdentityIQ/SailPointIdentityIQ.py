@@ -685,7 +685,7 @@ def main():
     # Other configs
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = handle_proxy()
-    request_timeout = 10
+    request_timeout = 120   # increased timeout to 2 min from 10 sec to fix timeout error.
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
