@@ -144,3 +144,5 @@ XSIAM_COMPONENT_FILES: set[FileType] = {
     FileType.TRIGGER,
     FileType.CORRELATION_RULE,
 }
+
+TEST_DATA_PATTERN = '*_testdata.json'
