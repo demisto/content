@@ -1,0 +1,21 @@
+{
+    "name": "CISO Metrics",
+    "description": "Single dashboard for upper management view of XSOAR status and trends: Incidents, Indicators, SLAs, and XSOAR server resources.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Randy Uhrlaub",
+    "url": "",
+    "email": "",
+    "created": "2023-11-02T16:10:44Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "rurhrlaub"
+    ]
+}
