@@ -185,7 +185,7 @@ script:
       description: The function alias if the query serves as a function.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.functionParameters
-      description: 'The optional function parameters if the query serves as a function. Value should be in the following format: ''param-name1:type1 = default_value1, param-name2:type2 = default_value2''. For more examples and proper syntax see the Microsoft documention, https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions'
+      description: 'The optional function parameters if the query serves as a function. Value should be in the following format: ''param-name1:type1 = default_value1, param-name2:type2 = default_value2''. For more examples and proper syntax see the Microsoft documentation, https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions.'
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.query
       description: The query expression for the saved search.
@@ -276,10 +276,10 @@ script:
     - description: Log query written in KQL to retrieve data.
       name: query
       required: true
-    - description: Start of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". default is 1 day ago.
+    - description: Start of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
       name: start_search_time
       defaultValue: 1 day ago
-    - description: End of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". default is now.
+    - description: End of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
       name: end_search_time
       defaultValue: now
     - description: The timeout in seconds until polling ends.
@@ -298,6 +298,10 @@ script:
     polling: true
     description: Run a search job to fetch records from large datasets into a new search results table in your workspace.
     name: azure-log-analytics-run-search-job
+    outputs:
+    - contextPath: AzureLogAnalytics.RunSearchJob.TableName
+      description: Table name.
+      type: String
   - arguments:
     - description: "The name of the table. Example value: AuditLogs_SRCH."
       name: table_name

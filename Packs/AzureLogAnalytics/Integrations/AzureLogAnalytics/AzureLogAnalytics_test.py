@@ -307,7 +307,12 @@ def test_run_search_job_command(mocker: MockerFixture) -> None:
     """ First run"""
     mocker.patch.object(CLIENT, "http_request", return_value=None)  # first_run, 'PUT'
     response: CommandResults = run_search_job_command(args, CLIENT)
-    assert response.readable_output == "Command was sent successfully."
+    assert response.readable_output == ("The command was sent successfully, to check the status of the command "
+                                        "please run the azure-log-analytics-get-search-job command "
+                                        "if the status of the provisioningState is Succeeded "
+                                        "you can run query on the table, using the azure-log-analytics-execute-query command "
+                                        f"with the query argument query={args['table_name']}."
+                                        )
 
     """Secund run"""
     # 'GET' get status
@@ -325,11 +330,7 @@ def test_run_search_job_command(mocker: MockerFixture) -> None:
         "hide_polling_output": True
     }
     response: CommandResults = run_search_job_command(args_to_next_run, CLIENT)
-    assert response.readable_output == (
-        f'The {args["table_name"]} table created successfully,'
-        ' to run query on the table,'
-        f' use the azure-log-analytics-execute-query command with the query argument query={args["table_name"]}'
-    )
+    assert response.readable_output == f"The {args['table_name']} table created successfully."
 
 
 @pytest.mark.parametrize(

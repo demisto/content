@@ -400,9 +400,15 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
         args["first_run"] = False
         return PollResult(
             response=None,
-            partial_result=CommandResults(readable_output="Command was sent successfully."),
             args_for_next_run=args,
-            continue_to_poll=True
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=(f"The command was sent successfully, to check the status of the command "
+                                 "please run the azure-log-analytics-get-search-job command "
+                                 "if the status of the provisioningState is Succeeded "
+                                 "you can run query on the table, using the azure-log-analytics-execute-query command "
+                                 f"with the query argument query={table_name}."),
+            )
         )
     else:
         status = get_search_job(client, table_name)["properties"]["provisioningState"]
@@ -416,10 +422,11 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
         return PollResult(
             continue_to_poll=False,
             response=CommandResults(
-                readable_output=f"The {table_name} table created successfully, "
-                "to run query on the table, use the azure-log-analytics-execute-query command with the query argument "
-                f"query={table_name}"
-            )  # TODO ADD TABLE name to context
+                outputs_prefix="AzureLogAnalytics.RunSearchJob",
+                outputs_key_field="TableName",
+                outputs={"TableName": table_name},
+                readable_output=f"The {table_name} table created successfully."
+            )
         )
 
 
@@ -457,7 +464,7 @@ def get_search_job_command(client: Client, args: dict[str, Any]) -> CommandResul
         readable_output=tableToMarkdown("Search Job", readable_output),
         outputs=response,
         outputs_prefix="AzureLogAnalytics.SearchJob",
-        outputs_key_field=response['id']
+        outputs_key_field="id"
     )
 
 

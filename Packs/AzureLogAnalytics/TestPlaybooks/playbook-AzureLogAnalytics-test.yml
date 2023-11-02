@@ -451,10 +451,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: fbd1cb15-060f-4248-8ff1-c017bdaab8a6
+    taskid: 996c3c3a-e9cd-4138-8de9-5987e185865b
     type: regular
     task:
-      id: fbd1cb15-060f-4248-8ff1-c017bdaab8a6
+      id: 996c3c3a-e9cd-4138-8de9-5987e185865b
       version: -1
       name: Get Search Job
       description: Gets a Log Analytics workspace table.
@@ -467,7 +467,7 @@ tasks:
       - "12"
     scriptarguments:
       table_name:
-        simple: test_playbook_SRCH
+        simple: ${AzureLogAnalytics.RunSearchJob.TableName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -486,10 +486,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 25b3f68d-99b5-48cc-8e2f-d07a18062566
+    taskid: b43fa168-18ca-45bf-8884-302afd3330e1
     type: condition
     task:
-      id: 25b3f68d-99b5-48cc-8e2f-d07a18062566
+      id: b43fa168-18ca-45bf-8884-302afd3330e1
       version: -1
       name: Verify Outputs, that the search job table is created
       type: condition
@@ -525,7 +525,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: test_playbook_SRCH
+              simple: AzureLogAnalytics.RunSearchJob.TableName
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -543,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 27dfcc63-421b-465a-8595-83b99b10b94c
+    taskid: 9b164f1d-6e94-4725-840e-6c8e1b7a31f7
     type: regular
     task:
-      id: 27dfcc63-421b-465a-8595-83b99b10b94c
+      id: 9b164f1d-6e94-4725-840e-6c8e1b7a31f7
       version: -1
       name: 'Execute Query Command, '
       description: Executes an Analytics query for data.
@@ -559,7 +560,7 @@ tasks:
       - "14"
     scriptarguments:
       query:
-        simple: test_playbook_SRCH
+        simple: ${AzureLogAnalytics.RunSearchJob.TableName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -578,10 +579,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: fb2add33-8da6-46e1-80ec-1e3298737128
+    taskid: 3dae5c91-72f4-4943-8080-fead28cec6c8
     type: condition
     task:
-      id: fb2add33-8da6-46e1-80ec-1e3298737128
+      id: 3dae5c91-72f4-4943-8080-fead28cec6c8
       version: -1
       name: Verify Outputs
       type: condition
@@ -601,7 +602,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: test_playbook_SRCH
+              simple: AzureLogAnalytics.RunSearchJob.TableName
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -619,10 +621,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c13eafea-82cd-481f-809f-826ddafade7c
+    taskid: cd4be2b7-63f6-45e7-8dbb-2b842c08ef6a
     type: regular
     task:
-      id: c13eafea-82cd-481f-809f-826ddafade7c
+      id: cd4be2b7-63f6-45e7-8dbb-2b842c08ef6a
       version: -1
       name: Delete Search Job Table
       description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
@@ -635,7 +637,7 @@ tasks:
       - "16"
     scriptarguments:
       table_name:
-        simple: test_playbook_SRCH
+        simple: ${AzureLogAnalytics.RunSearchJob.TableName}
     separatecontext: false
     continueonerrortype: ""
     view: |-

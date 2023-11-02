@@ -87,7 +87,7 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
-1. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
@@ -99,7 +99,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Executes an Analytics query for data.
 
-
 #### Base Command
 
 `azure-log-analytics-execute-query`
@@ -110,8 +109,7 @@ Executes an Analytics query for data.
 | --- | --- | --- |
 | query | The query to execute. | Required | 
 | timespan | The timespan over which to query data. This is an ISO8601 time period value. This timespan is applied in addition to any timespans specified in the query expression. | Optional | 
-| timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. | Optional | 
-
+| timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. Default is 10. | Optional | 
 
 #### Context Output
 
@@ -144,7 +142,6 @@ Executes an Analytics query for data.
 ***
 Gets the saved searches of the Log Analytics workspace.
 
-
 #### Base Command
 
 `azure-log-analytics-list-saved-searches`
@@ -153,9 +150,8 @@ Gets the saved searches of the Log Analytics workspace.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of saved searches to return. Default is 50. | Optional | 
-| page | The page number from which to start a search. | Optional | 
-
+| limit | The maximum number of saved searches to return. Default is 50. Default is 50. | Optional | 
+| page | The page number from which to start a search. Default is 0. | Optional | 
 
 #### Context Output
 
@@ -191,8 +187,7 @@ Gets the saved searches of the Log Analytics workspace.
 ### azure-log-analytics-get-saved-search-by-id
 
 ***
-Gets the specified saved search from the Log Analytics workspace.
-
+Gets a specified saved search from the Log Analytics workspace.
 
 #### Base Command
 
@@ -204,7 +199,6 @@ Gets the specified saved search from the Log Analytics workspace.
 | --- | --- | --- |
 | saved_search_id | The ID of the saved search. | Required | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -214,7 +208,7 @@ Gets the specified saved search from the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.category | String | The category of the saved search. This helps users quickly find a saved search. | 
 | AzureLogAnalytics.SavedSearch.displayName | String | The display name of the saved search. | 
 | AzureLogAnalytics.SavedSearch.functionAlias | String | The function alias if the query serves as a function. | 
-| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax see the Microsoft documention, <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions> | 
+| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax see the Microsoft documentation, <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions> | 
 | AzureLogAnalytics.SavedSearch.query | String | The query expression for the saved search. | 
 | AzureLogAnalytics.SavedSearch.tags | String | The tags attached to the saved search. | 
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. | 
@@ -239,7 +233,6 @@ Gets the specified saved search from the Log Analytics workspace.
 ***
 Creates or updates a saved search from the Log Analytics workspace.
 
-
 #### Base Command
 
 `azure-log-analytics-create-or-update-saved-search`
@@ -255,8 +248,7 @@ Creates or updates a saved search from the Log Analytics workspace.
 | function_alias | The function alias if the query serves as a function. | Optional | 
 | function_parameters | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions>. | Optional | 
 | query | The query expression for the saved search. | Required | 
-| tags | The tags attached to the saved search. Value should be in the following format: 'name=value;name=value' | Optional | 
-
+| tags | The tags attached to the saved search. Value should be in the following format: 'name=value;name=value'. | Optional | 
 
 #### Context Output
 
@@ -267,7 +259,7 @@ Creates or updates a saved search from the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.category | String | The category of the saved search. This helps users quickly find a saved search. | 
 | AzureLogAnalytics.SavedSearch.displayName | String | The display name of the saved search. | 
 | AzureLogAnalytics.SavedSearch.functionAlias | String | The function alias if the query serves as a function. | 
-| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions> | 
+| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions>. | 
 | AzureLogAnalytics.SavedSearch.query | String | The query expression for the saved search. | 
 | AzureLogAnalytics.SavedSearch.tags | String | The tags attached to the saved search. | 
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. | 
@@ -295,7 +287,6 @@ Creates or updates a saved search from the Log Analytics workspace.
 
 ***
 Deletes a specified saved search in the Log Analytics workspace.
-
 
 #### Base Command
 
@@ -421,7 +412,9 @@ Run a search job to fetch records from large datasets into a new search results 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureLogAnalytics.RunSearchJob.TableName | String | Table name. | 
 
 #### Command example
 
@@ -429,9 +422,10 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Command was sent successfully.
+>The command was sent successfully, to check the status of the command please run the azure-log-analytics-get-search-job command if the status of the provisioningState is Succeeded you can run query on the table, using the azure-log-analytics-execute-query command with the query argument query=test_SRCH.
 
->The test_SRCH table created successfully, to run query on the table, use the `azure-log-analytics-execute-query` command with the `query` argument `query=test_SRCH`
+After polling is ending
+>The test_SRCH table created successfully.
 
 ### azure-log-analytics-get-search-job
 
@@ -578,7 +572,7 @@ Gets a Log Analytics workspace table.
 
 >|Create Date|Description|Name|Plan|Query|endSearchTime|provisioningState|startSearchTime|
 >|---|---|---|---|---|---|---|---|
->| 2023-11-01T21:27:50.3032268Z | This table was created using a Search Job with the following query: 'AuditLogs'. | test_SRCH | Analytics | AuditLogs | 2023-11-01T21:27:43.744Z | InProgress | 2023-10-31T21:27:43.735Z |
+>| 2023-11-02T17:28:22.9374877Z | This table was created using a Search Job with the following query: 'AuditLogs'. | test_SRCH | Analytics | AuditLogs | 2023-11-02T17:28:18.602Z | InProgress | 2023-11-01T17:28:18.592Z |
 
 
 ### azure-log-analytics-delete-search-job
