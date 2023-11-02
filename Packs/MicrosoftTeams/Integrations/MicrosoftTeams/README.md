@@ -171,7 +171,7 @@ Note: in step 5, if you choose **Use existing app registration**, make sure to d
 9. Store the generated secret securely for the next steps.
 
 
-### In order to connect to the Azure Network Security Groups use one of the following methods:
+There are two different authentication methods for a self-deployed configuration:
 
 1. *Client Credentials Flow*
 2. *Authorization Code Flow*
