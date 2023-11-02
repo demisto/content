@@ -211,7 +211,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR"
-    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_Server Master"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -234,10 +234,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - |
       export DEMISTO_BASE_URL="https://$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
-
-    # - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
-    # - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
-    # - section_end "Unlock HelloWorld Integration and Playbook"
 
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
@@ -296,6 +292,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       CLOUD_API_KEYS: $XSIAM_API_KEYS
       CLOUD_API_TOKENS: $XSIAM_TOKENS
       ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+      ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_xsiam"
       GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
       ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
       GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
