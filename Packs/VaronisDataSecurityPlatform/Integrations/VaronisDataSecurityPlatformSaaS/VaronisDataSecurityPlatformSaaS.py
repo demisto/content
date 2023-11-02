@@ -313,40 +313,40 @@ class AlertItem:
 
 class EventItem:
     def __init__(self):
-        self.alert_id: Optional[List[str]] = None
-        self.id: Optional[str] = None
-        self.type: Optional[str] = None
-        self.utc_time: Optional[datetime] = None
-        self.status: Optional[str] = None
-        self.description: Optional[str] = None
-        self.country: Optional[str] = None
-        self.state: Optional[str] = None
-        self.blacklisted_location: Optional[bool] = None
-        self.event_operation: Optional[str] = None
-        self.by_user_account: Optional[str] = None
-        self.by_user_account_type: Optional[str] = None
-        self.by_user_account_domain: Optional[str] = None
-        self.by_sam_account_name: Optional[str] = None
-        self.filer: Optional[str] = None
-        self.platform: Optional[str] = None
-        self.source_ip: Optional[str] = None
-        self.external_ip: Optional[str] = None
-        self.destination_ip: Optional[str] = None
-        self.source_device: Optional[str] = None
-        self.destination_device: Optional[str] = None
-        self.is_disabled_account: Optional[bool] = None
-        self.is_lockout_account: Optional[bool] = None
-        self.is_stale_account: Optional[bool] = None
-        self.is_malicious_ip: Optional[bool] = None
-        self.external_ip_threat_types: Optional[List[str]] = None
-        self.external_ip_reputation: Optional[str] = None
-        self.on_object_name: Optional[str] = None
-        self.on_object_type: Optional[str] = None
-        self.on_sam_account_name: Optional[str] = None
-        self.is_sensitive: Optional[bool] = None
-        self.on_account_is_disabled: Optional[bool] = None
-        self.on_account_is_lockout: Optional[bool] = None
-        self.path: Optional[str] = None
+        self.Id: Optional[str] = None
+        self.AlertId: Optional[List[str]] = None
+        self.Type: Optional[str] = None
+        self.TimeUTC: Optional[datetime] = None
+        self.Status: Optional[str] = None
+        self.Description: Optional[str] = None
+        self.Country: Optional[str] = None
+        self.State: Optional[str] = None
+        self.BlacklistedLocation: Optional[bool] = None
+        self.EventOperation: Optional[str] = None
+        self.ByUserAccount: Optional[str] = None
+        self.ByUserAccountType: Optional[str] = None
+        self.ByUserAccountDomain: Optional[str] = None
+        self.BySamAccountName: Optional[str] = None
+        self.Filer: Optional[str] = None
+        self.Platform: Optional[str] = None
+        self.SourceIP: Optional[str] = None
+        self.ExternalIP: Optional[str] = None
+        self.DestinationIP: Optional[str] = None
+        self.SourceDevice: Optional[str] = None
+        self.DestinationDevice: Optional[str] = None
+        self.IsDisabledAccount: Optional[bool] = None
+        self.IsLockoutAccount: Optional[bool] = None
+        self.IsStaleAccount: Optional[bool] = None
+        self.IsMaliciousIP: Optional[bool] = None
+        self.ExternalIPThreatTypes: Optional[List[str]] = None
+        self.ExternalIPReputation: Optional[str] = None
+        self.OnObjectName: Optional[str] = None
+        self.OnObjectType: Optional[str] = None
+        self.OnSamAccountName: Optional[str] = None
+        self.IsSensitive: Optional[bool] = None
+        self.OnAccountIsDisabled: Optional[bool] = None
+        self.OnAccountIsLockout: Optional[bool] = None
+        self.Path: Optional[str] = None
 
     def __getitem__(self, key: str) -> Any:
         if hasattr(self, key):
@@ -461,41 +461,41 @@ class SearchEventObjectMapper(BaseMapper):
     def map_item(self, row: Dict[str, str]) -> EventItem:
         event_item = EventItem()
 
-        event_item.alert_id = self.multi_value_to_guid_array(row, EventAttributes.EventAlertId)
-        event_item.id = row.get(EventAttributes.EventGuid, '')
-        event_item.type = row.get(EventAttributes.EventTypeName)
-        event_item.utc_time = self.get_date_value(row, EventAttributes.EventTimeUtc)
-        event_item.status = row.get(EventAttributes.EventStatusName)
-        event_item.description = row.get(EventAttributes.EventDescription)
-        event_item.country = row.get(EventAttributes.EventLocationCountryName)
-        event_item.state = row.get(EventAttributes.EventLocationSubdivisionName)
-        event_item.blacklisted_location = self.get_bool_value(row, EventAttributes.EventLocationBlacklistedLocation)
-        event_item.event_operation = row.get(EventAttributes.EventOperationName)
-        event_item.by_user_account = row.get(EventAttributes.EventByAccountIdentityName)
-        event_item.by_user_account_type = row.get(EventAttributes.EventByAccountTypeName)
-        event_item.by_user_account_domain = row.get(EventAttributes.EventByAccountDomainName)
-        event_item.by_sam_account_name = row.get(EventAttributes.EventByAccountSamAccountName)
-        event_item.filer = row.get(EventAttributes.EventFilerName)
-        event_item.platform = row.get(EventAttributes.EventFilerPlatformName)
-        event_item.source_ip = row.get(EventAttributes.EventIp)
-        event_item.external_ip = row.get(EventAttributes.EventDeviceExternalIp)
-        event_item.destination_ip = row.get(EventAttributes.EventDestinationIp)
-        event_item.source_device = row.get(EventAttributes.EventDeviceName)
-        event_item.destination_device = row.get(EventAttributes.EventDestinationDeviceName)
-        event_item.is_disabled_account = self.get_bool_value(row, EventAttributes.EventByAccountIsDisabled)
-        event_item.is_lockout_account = self.get_bool_value(row, EventAttributes.EventByAccountIsLockout)
-        event_item.is_stale_account = self.get_bool_value(row, EventAttributes.EventByAccountIsStale)
-        event_item.is_malicious_ip = self.get_bool_value(row, EventAttributes.EventDeviceExternalIpIsMalicious)
-        event_item.external_ip_threat_types = self.multi_value_to_array(
+        event_item.AlertId = self.multi_value_to_guid_array(row, EventAttributes.EventAlertId)
+        event_item.Id = row.get(EventAttributes.EventGuid, '')
+        event_item.Type = row.get(EventAttributes.EventTypeName)
+        event_item.TimeUTC = self.get_date_value(row, EventAttributes.EventTimeUtc)
+        event_item.Status = row.get(EventAttributes.EventStatusName)
+        event_item.Description = row.get(EventAttributes.EventDescription)
+        event_item.Country = row.get(EventAttributes.EventLocationCountryName)
+        event_item.State = row.get(EventAttributes.EventLocationSubdivisionName)
+        event_item.BlacklistedLocation = self.get_bool_value(row, EventAttributes.EventLocationBlacklistedLocation)
+        event_item.EventOperation = row.get(EventAttributes.EventOperationName)
+        event_item.ByUserAccount = row.get(EventAttributes.EventByAccountIdentityName)
+        event_item.ByUserAccountType = row.get(EventAttributes.EventByAccountTypeName)
+        event_item.ByUserAccountDomain = row.get(EventAttributes.EventByAccountDomainName)
+        event_item.BySamAccountName = row.get(EventAttributes.EventByAccountSamAccountName)
+        event_item.Filer = row.get(EventAttributes.EventFilerName)
+        event_item.Platform = row.get(EventAttributes.EventFilerPlatformName)
+        event_item.SourceIP = row.get(EventAttributes.EventIp)
+        event_item.ExternalIP = row.get(EventAttributes.EventDeviceExternalIp)
+        event_item.DestinationIP = row.get(EventAttributes.EventDestinationIp)
+        event_item.SourceDevice = row.get(EventAttributes.EventDeviceName)
+        event_item.DestinationDevice = row.get(EventAttributes.EventDestinationDeviceName)
+        event_item.IsDisabledAccount = self.get_bool_value(row, EventAttributes.EventByAccountIsDisabled)
+        event_item.IsLockoutAccount = self.get_bool_value(row, EventAttributes.EventByAccountIsLockout)
+        event_item.IsStaleAccount = self.get_bool_value(row, EventAttributes.EventByAccountIsStale)
+        event_item.IsMaliciousIP = self.get_bool_value(row, EventAttributes.EventDeviceExternalIpIsMalicious)
+        event_item.ExternalIPThreatTypes = self.multi_value_to_array(
             row.get(EventAttributes.EventDeviceExternalIpThreatTypesName, ''))
-        event_item.external_ip_reputation = row.get(EventAttributes.EventDeviceExternalIpReputationName)
-        event_item.on_object_name = row.get(EventAttributes.EventOnObjectName)
-        event_item.on_object_type = row.get(EventAttributes.EventOnResourceObjectTypeName)
-        event_item.on_sam_account_name = row.get(EventAttributes.EventOnAccountSamAccountName)
-        event_item.is_sensitive = self.get_bool_value(row, EventAttributes.EventOnResourceIsSensitive)
-        event_item.on_account_is_disabled = self.get_bool_value(row, EventAttributes.EventOnAccountIsDisabled)
-        event_item.on_account_is_lockout = self.get_bool_value(row, EventAttributes.EventOnAccountIsLockout)
-        event_item.path = row.get(EventAttributes.EventOnResourcePath)
+        event_item.ExternalIPReputation = row.get(EventAttributes.EventDeviceExternalIpReputationName)
+        event_item.OnObjectName = row.get(EventAttributes.EventOnObjectName)
+        event_item.OnObjectType = row.get(EventAttributes.EventOnResourceObjectTypeName)
+        event_item.OnSamAccountName = row.get(EventAttributes.EventOnAccountSamAccountName)
+        event_item.IsSensitive = self.get_bool_value(row, EventAttributes.EventOnResourceIsSensitive)
+        event_item.OnAccountIsDisabled = self.get_bool_value(row, EventAttributes.EventOnAccountIsDisabled)
+        event_item.OnAccountIsLockout = self.get_bool_value(row, EventAttributes.EventOnAccountIsLockout)
+        event_item.Path = row.get(EventAttributes.EventOnResourcePath)
 
         return event_item
 
@@ -575,7 +575,7 @@ class Client(BaseClient):
 
     def varonis_get_alerts(self, ruleIds: Optional[List[str]], alertIds: Optional[List[str]], start_time: Optional[datetime],
                            end_time: Optional[datetime], ingest_time_from: Optional[datetime],
-                           ingest_time_to: Optional[datetime], device_names: Optional[List[str]], 
+                           ingest_time_to: Optional[datetime], device_names: Optional[List[str]],
                            user_names: Optional[List[str]],
                            last_days: Optional[int],
                            alert_statuses: Optional[List[str]],
@@ -735,7 +735,7 @@ class Client(BaseClient):
             data=dataJSON,
             headers=self.headers
         )
-        
+
         url = create_search[0]["location"]
         json_data = self._http_request(
             method='GET',
@@ -1339,8 +1339,15 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         for alert in alerts:
             enrich_with_url(alert, client._base_url, alert['ID'])
 
+    # readable_output = tableToMarkdown('Varonis Alerts', alerts)
     readable_output = tableToMarkdown('Varonis Alerts', alerts, headers=[
-                                      'Name', 'Severity', 'Time', 'Category', 'UserName', 'Status'])
+        'Name', 'Severity', 'Time', 'Category', 'UserName', 'Status', 
+        'ID', 'SeverityId', 'Country', 'State', 'StatusId', 'CloseReason', 
+        'BlacklistLocation', 'AbnormalLocation', 'NumOfAlertedEvents', 'SamAccountName', 
+        'PrivilegedAccountType', 'ContainMaliciousExternalIP', 'IPThreatTypes', 'Asset', 
+        'AssetContainsFlaggedData', 'AssetContainsSensitiveData', 'Platform', 
+        'FileServerOrDomain', 'EventUTC', 'DeviceName', 'IngestTime'
+    ])
 
     return CommandResults(
         readable_output=readable_output,
@@ -1394,7 +1401,15 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     outputs = dict()
     outputs['Event'] = events
 
-    readable_output = tableToMarkdown('Varonis Alerted Events', events)
+    readable_output = tableToMarkdown('Varonis Alerted Events', events, headers=[
+                                      "Type", "Description", "Platform", "Filer", "ByUserAccount", "OnObjectName",
+                                      "Id", "AlertId", "TimeUTC", "Status", "Country", "State", "BlacklistedLocation",
+                                      "EventOperation", "ByUserAccountType", "ByUserAccountDomain", "BySamAccountName",
+                                      "SourceIP", "ExternalIP", "DestinationIP", "SourceDevice", "DestinationDevice",
+                                      "IsDisabledAccount", "IsLockoutAccount", "IsStaleAccount", "IsMaliciousIP",
+                                      "ExternalIPThreatTypes", "ExternalIPReputation", "OnObjectType", "OnSamAccountName",
+                                      "IsSensitive", "OnAccountIsDisabled", "OnAccountIsLockout", "Path",
+                                      ])
 
     return CommandResults(
         readable_output=readable_output,
