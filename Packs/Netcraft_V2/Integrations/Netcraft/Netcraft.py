@@ -803,15 +803,19 @@ def get_submission(args: dict, submission_uuid: str, client: Client) -> PollResu
 
 def submission_list(args: dict, client: Client) -> CommandResults:
 
+    def get_date(arg_name: str) -> str | None:
+        if (date := arg_to_datetime(args.get(arg_name))):
+            return str(date.date())
+        else:
+            return ''
+
     def args_to_params(args: dict) -> dict:
         return sub_dict(
             args,
             'source_name', 'submission_reason', 'submitter_email'
         ) | {
-            'date_start':
-                str(date.date()) if (date := arg_to_datetime(args.get('date_start'))) else None,  # noqa
-            'date_end':
-                str(date.date()) if (date := arg_to_datetime(args.get('date_end'))) else None,  # noqa
+            'date_start': get_date('date_start'),
+            'date_end': get_date('date_end'),
             'state': args.get('state', '').lower()
         }
 
