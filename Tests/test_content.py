@@ -358,7 +358,7 @@ def extract_server_numeric_version(instances_ami_name, default_version):
 
     if server_numeric_version == 'master':
         logging.info('Server version: Master')
-        return default_version
+        return "6.99.99"
     else:
         server_numeric_version = server_numeric_version.replace('-', '.')
 
