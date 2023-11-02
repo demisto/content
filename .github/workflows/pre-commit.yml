@@ -41,7 +41,7 @@ jobs:
       run: |
         source .venv/bin/activate
         docker pull demisto/boto3py3:1.0.0.79776
-        demisto-sdk pre-commit -a --unit-test --validate --no-secrets --show-diff-on-failure --verbose --mode=nightly
+        demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=nightly
 
     - name: Publish Test Report
       uses: mikepenz/action-junit-report@v3
