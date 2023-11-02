@@ -95,6 +95,10 @@ class GetEvents:
         """
         stored_events: list = []
         max_events_to_fetch = int(self.client.request.params.limit)  # type: ignore
+        page_size = MAX_API_LIMIT
+        if MAX_API_LIMIT > max_events_to_fetch:
+            page_size = max_events_to_fetch
+        
         demisto.debug(f'max_events_to_fetch={max_events_to_fetch}')
         stop_fetch = False
 
@@ -121,7 +125,7 @@ class GetEvents:
                 # stop the loop the moment returned 0 events from the API
                 break
                 
-            if len(events) < MAX_API_LIMIT:
+            if len(events) < page_size:
                 # we got less events than we requested. It means we should stop fetching.
                 # it means no more events there
                 stop_fetch = True
