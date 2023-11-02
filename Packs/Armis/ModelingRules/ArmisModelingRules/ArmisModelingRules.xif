@@ -25,3 +25,24 @@ filter activityUUID != null
 	xdm.source.host.device_id = arraystring(deviceIds -> [], ";"),
 	xdm.source.zone = json_extract_scalar(site, "$.location"),
 	xdm.network.session_id = arraystring(arraymap(connectionIds -> [], trim("@element", "\"")), ";");
+
+
+[MODEL: dataset=armis_security_devices_raw] 
+alter os = uppercase(operatingSystem)
+| alter
+	xdm.alert.severity = to_string(risklevel), 
+	xdm.event.tags = tags -> [],
+	xdm.observer.name = sensor -> name, 
+	xdm.observer.type = sensor -> type, 
+	xdm.source.host.hostname = coalesce(name, arrayindex(split(names, ","), 0)),
+	xdm.source.host.device_category = type, 
+	xdm.source.host.device_model = model, 
+	xdm.source.host.device_id = to_string(id), 
+	xdm.source.host.manufacturer = manufacturer, 
+	xdm.source.host.mac_addresses = arraycreate(macaddress), 
+	xdm.source.zone = concat(site -> name, " (", site -> location, ")"),
+	xdm.source.ipv4 = ipaddress, 
+	xdm.source.ipv6 = ipv6, 
+	xdm.source.user.identifier = arraystring(userIds -> [], ";"),
+	xdm.source.host.os = concat(operatingSystem, " ", operatingSystemVersion),
+    xdm.source.host.os_family = if(os contains "WINDOWS", XDM_CONST.OS_FAMILY_WINDOWS, os contains "MAC", XDM_CONST.OS_FAMILY_MACOS, os contains "LINUX", XDM_CONST.OS_FAMILY_LINUX, os contains "ANDROID", XDM_CONST.OS_FAMILY_ANDROID, os contains "IOS", XDM_CONST.OS_FAMILY_IOS, os contains "UBUNTU", XDM_CONST.OS_FAMILY_UBUNTU, os contains "DEBIAN", XDM_CONST.OS_FAMILY_DEBIAN, os contains "FEDORA", XDM_CONST.OS_FAMILY_FEDORA, os contains "CENTOS", XDM_CONST.OS_FAMILY_CENTOS, os contains "CHROME", XDM_CONST.OS_FAMILY_CHROMEOS, os contains "SOLARIS", XDM_CONST.OS_FAMILY_SOLARIS, os contains "SCADA", XDM_CONST.OS_FAMILY_SCADA, os);
