@@ -1,0 +1,110 @@
+id: Add Notes In The Layout - Vectra XDR
+version: -1
+name: Add Notes In The Layout - Vectra XDR
+description: This playbook will add notes in the incident layout.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f8ad515e-f2e6-4189-81e5-8554998f306c
+    type: start
+    task:
+      id: f8ad515e-f2e6-4189-81e5-8554998f306c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ae77a1c8-bf48-481e-8443-3ac17cd9ed8d
+    type: regular
+    task:
+      id: ae77a1c8-bf48-481e-8443-3ac17cd9ed8d
+      version: -1
+      name: Add entity notes in the layout
+      description: Add Entity notes in the layout.
+      scriptName: VectraXDRAddNotesInLayout
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: dd0a0a47-a0e2-4c08-893a-b6bc8bc14b1b
+    type: title
+    task:
+      id: dd0a0a47-a0e2-4c08-893a-b6bc8bc14b1b
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

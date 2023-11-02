@@ -1,0 +1,425 @@
+id: Dispatch Incident - Vectra XDR
+version: -1
+name: Dispatch Incident - Vectra XDR
+description: This playbook is called from the Process Incident - Vectra XDR playbook. It will fetch all active detections for the entity under investigation. It will then assign the entity to a user; if an assignment already exists, it will update that assignment and add a note in Vectra.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7cb044af-3878-46b1-820c-9fd95c134f94
+    type: start
+    task:
+      id: 7cb044af-3878-46b1-820c-9fd95c134f94
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9f5f9515-2624-4f7a-83cf-73848f2eaa00
+    type: regular
+    task:
+      id: 9f5f9515-2624-4f7a-83cf-73848f2eaa00
+      version: -1
+      name: Fetch Entity Active Detections
+      description: Returns a list of detections for a specified entity.
+      script: '|||vectra-entity-detection-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: incident.vectraxdrentityid
+      entity_type:
+        complex:
+          root: incident
+          accessor: vectraxdrentitytype
+          transformers:
+          - operator: toLowerCase
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 67e9e790-fb8f-4321-8459-3fedde01c4a9
+    type: regular
+    task:
+      id: 67e9e790-fb8f-4321-8459-3fedde01c4a9
+      version: -1
+      name: Assign Entity in Vectra.
+      description: Add an assignment for the entity.
+      script: '|||vectra-entity-assignment-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: incident.vectraxdrentityid
+      entity_type:
+        complex:
+          root: incident.vectraxdrentitytype
+      user_id:
+        complex:
+          root: inputs.UserID
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '" "'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4e3e32c7-91da-4bbe-89b7-d864472762d3
+    type: regular
+    task:
+      id: 4e3e32c7-91da-4bbe-89b7-d864472762d3
+      version: -1
+      name: Add Note in the Entity.
+      description: Add a note to the entity.
+      script: '|||vectra-entity-note-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      entity_id:
+        simple: ${incident.vectraxdrentityid}
+      entity_type:
+        simple: ${incident.vectraxdrentitytype}
+      note:
+        complex:
+          root: inputs.UserID
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'This entity has been automatically processed by XSOAR. The incident has been assigned to the user with user ID '
+              suffix:
+                value:
+                  simple: ' and the XSOAR incident ID is '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.id
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6ca40956-f82f-478c-821a-4bfbcedf93d7
+    type: condition
+    task:
+      id: 6ca40956-f82f-478c-821a-4bfbcedf93d7
+      version: -1
+      name: Is the assignment already exist?
+      description: Check if the Assignment already exists or not
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.vectraxdrentityassignmentid
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1a7f8509-d94e-4ba8-85fc-b057399f33a5
+    type: regular
+    task:
+      id: 1a7f8509-d94e-4ba8-85fc-b057399f33a5
+      version: -1
+      name: Update Assignment with provided User ID.
+      description: Update an assignment in the entity.
+      script: '|||vectra-entity-assignment-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assignment_id:
+        complex:
+          root: incident.vectraxdrentityassignmentid
+      user_id:
+        complex:
+          root: inputs.UserID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a55a3667-d220-49e5-8d09-34485af8e737
+    type: title
+    task:
+      id: a55a3667-d220-49e5-8d09-34485af8e737
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c1d00eb3-bc38-4bdf-898a-5a55e4baf963
+    type: condition
+    task:
+      id: c1d00eb3-bc38-4bdf-898a-5a55e4baf963
+      version: -1
+      name: Is the assignment already resolved?
+      description: Check if the Assignment is already resolved.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: vectraxdrentityassignmentresolveddate
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 50b0f7f0-dbd5-4267-880f-6890bf282c08
+    type: condition
+    task:
+      id: 50b0f7f0-dbd5-4267-880f-6890bf282c08
+      version: -1
+      name: Is VectraXDR Integration enabled?
+      description: Check if Ingration is enable or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VectraXDR
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: UserID
+  value: {}
+  required: false
+  description: User ID for entity assignment.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
