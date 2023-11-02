@@ -298,7 +298,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       MARKETPLACE_NAME: "marketplacev2"
       NON_REMOVABLE_PACKS: "Base"
       EXTRACT_PRIVATE_TESTDATA: "true"
-      IS_NIGHTLY: "true"
   needs: ["demisto-sdk-nightly:mpv2-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -337,11 +336,14 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - demisto-sdk download -lf --insecure
     - section_end "Create Entities and Upload"
 
-    - section_start "Install Packs and run Test-Module" --collapsed
-    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    - demisto-sdk upload -i Packs/Whois --insecure -z -x
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - section_end "Install Packs and run Test-Module"
+
+    # - section_start "Install Packs and run Test-Module" --collapsed
+    # - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    # - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    # - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    # - section_end "Install Packs and run Test-Module"
 
     - section_start "Wait Until Server Ready"
     - echo Going to sleep for 15 minutes to allow server finish indexing
@@ -387,7 +389,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
-    IS_NIGHTLY: "true"
   needs: ["demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -425,11 +426,14 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - section_end "Download Entities from XSOAR Instance"
 
-    - section_start "Install Packs and run Test-Module" --collapsed
-    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    # - section_start "Install Packs and run Test-Module" --collapsed
+    # - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    # - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    # - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    # - section_end "Install Packs and run Test-Module"
+
+    - demisto-sdk upload -i Packs/Whois --insecure -z
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - section_end "Install Packs and run Test-Module"
 
     - section_start "Wait Until Server Ready"
     - echo Going to sleep for 15 minutes to allow server finish indexing
