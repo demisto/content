@@ -9641,6 +9641,10 @@ class IndicatorsSearcher:
                  limit=None,
                  sort=None,
                  ):
+        # searchAfter is available in searchIndicators from version 6.1.0
+        self._can_use_search_after = True
+        # populateFields merged in https://github.com/demisto/server/pull/18398
+        self._can_use_filter_fields = True
         self._search_after_param = None
         self._page = page
         self._filter_fields = filter_fields
