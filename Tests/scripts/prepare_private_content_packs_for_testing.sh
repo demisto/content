@@ -14,17 +14,16 @@ if [[ -z "$GCS_MARKET_KEY" ]]; then
 fi
 
 echo "Preparing content packs for testing ..."
+echo "ARTIFACTS_FOLDER_SERVER_TYPE: ${ARTIFACTS_FOLDER_SERVER_TYPE}"
 
 KF=$(mktemp)
 echo "$GCS_MARKET_KEY" > "$KF"
-mkdir -p "${ARTIFACTS_FOLDER}/logs/"
-gcloud auth activate-service-account --key-file="$KF" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+mkdir -p "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/" || echo "Directory ${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/ already exists."
+gcloud auth activate-service-account --key-file="$KF" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/gcloud_auth.log" 2>&1
 echo "Auth loaded successfully."
 
 GCS_MARKET_BUCKET="${TEST_XDR_PREFIX}marketplace-dist"
 GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build-private"
-
-
 GCS_PRIVATE_TESTING_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build-private"
 GCS_PRIVATE_PROD_BUCKET="${TEST_XDR_PREFIX}marketplace-dist-private"
 GCS_TESTING_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
@@ -36,12 +35,12 @@ PRIVATE_TARGET_PATH="$PRIVATE_BUILD_BUCKET_PATH/content/packs"
 BUCKET_FULL_TARGET_PATH="$GCS_PRIVATE_TESTING_BUCKET/$PRIVATE_BUILD_BUCKET_PATH"
 
 echo "Copying private master files at: $SOURCE_PATH to target path: gs://$GCS_PRIVATE_TESTING_BUCKET/$PRIVATE_TARGET_PATH ..."
-gsutil -m cp -r "gs://$GCS_PRIVATE_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_PRIVATE_TESTING_BUCKET/$PRIVATE_TARGET_PATH"
+gsutil -m cp -r "gs://$GCS_PRIVATE_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_PRIVATE_TESTING_BUCKET/$PRIVATE_TARGET_PATH" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/prepare_private_content_packs_for_testing.log" 2>&1
 echo "Finished copying private bucket successfully."
 
 
 echo "Copying index.zip at: gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip to target path: gs://marketplace-ci-build/private/dummy_index/index.zip ..."
-gsutil -m cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip" "gs://marketplace-ci-build/private/dummy_index/index.zip"
+gsutil -m cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip" "gs://marketplace-ci-build/private/dummy_index/index.zip" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/prepare_private_content_packs_for_testing.log" 2>&1
 echo "Finished copying private index.zip successfully."
 
 
@@ -50,11 +49,10 @@ PUBLIC_TARGET_PATH="$PUBLIC_BUILD_BUCKET_PATH/content/packs"
 BUCKET_FULL_TARGET_PATH="$GCS_TESTING_BUCKET/$PUBLIC_BUILD_BUCKET_PATH"
 
 echo "Copying public master files at: $SOURCE_PATH to target path: gs://$GCS_TESTING_BUCKET/$PUBLIC_TARGET_PATH ..."
-gsutil -m cp -r "gs://$GCS_PUBLIC_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_TESTING_BUCKET/$PUBLIC_TARGET_PATH"
+gsutil -m cp -r "gs://$GCS_PUBLIC_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_TESTING_BUCKET/$PUBLIC_TARGET_PATH" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/prepare_private_content_packs_for_testing.log" 2>&1
 echo "Finished copying public bucket successfully."
 
 echo "Updating modified content packs in the bucket ..."
-
 
 CONTENT_PACKS_TO_INSTALL_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.txt"
 if [ ! -f "${CONTENT_PACKS_TO_INSTALL_FILE}" ]; then
@@ -63,8 +61,9 @@ else
   CONTENT_PACKS_TO_INSTALL=$(paste -sd, "${CONTENT_PACKS_TO_INSTALL_FILE}")
   if [[ -z "$CONTENT_PACKS_TO_INSTALL" ]]; then
     echo "Did not get content packs to update in the bucket."
+    exit 1
   else
-    echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
+    echo "Updating the following content packs: ${CONTENT_PACKS_TO_INSTALL} ..."
     python3 ./Tests/private_build/upload_packs_private.py -b $GCS_TESTING_BUCKET -pb $GCS_PRIVATE_TESTING_BUCKET -a "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" -e $EXTRACT_FOLDER -s $KF -n $GITHUB_RUN_NUMBER -p $NEW_PACK_NAME -sb $PUBLIC_TARGET_PATH -k $PACK_SIGN_KEY -rt false -nek $PACK_ENCRYPTION_KEY_NEW -bn $GIT_BRANCH -ek $PACK_ENCRYPTION_KEY -inf $IS_INFRA_BUILD -o
     NEW_EXTRACT_FOLDER_FOR_INDEX=$(mktemp -d)
     NEW_EXTRACT_FOLDER_FOR_ARTIFACTS=$(mktemp -d)
