@@ -121,13 +121,13 @@ view: |-
 inputs:
 - key: start_date
   value:
-    simple: "2023-05-30T00:00:00+00:00"
+    simple: "${inputs.start_date}"
   required: true
   description: ""
   playbookInputQuery:
 - key: end_date
   value:
-    simple: "2023-05-31T00:00:00+00:00"
+    simple: "${inputs.end_date}"
   required: true
   description: ""
   playbookInputQuery:
