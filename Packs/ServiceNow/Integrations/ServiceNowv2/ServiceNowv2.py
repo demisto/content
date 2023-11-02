@@ -628,7 +628,7 @@ class Client(BaseClient):
             self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
                                                                   use_oauth=self.use_oauth,
                                                                   oauth_endpoint=oauth_params.get('oauth_endpoint',
-                                                                                                  '/oauth_token.do'),
+                                                                                                  DEFAULT_OAUTH_ENDPOINT),
                                                                   client_id=oauth_params.get('client_id', ''),
                                                                   client_secret=oauth_params.get('client_secret', ''),
                                                                   url=oauth_params.get('url', ''),
@@ -2952,7 +2952,7 @@ def main():
     params = demisto.params()
     verify = not params.get('insecure', False)
     use_oauth = params.get('use_oauth', False)
-    oauth_endpoint = params.get('oath_endpoint', '/oauth_token.do')
+    oauth_endpoint = params.get('oath_endpoint') or DEFAULT_OAUTH_ENDPOINT
     oauth_params = {}
 
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields

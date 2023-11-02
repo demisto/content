@@ -1,11 +1,14 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+DEFAULT_OAUTH_ENDPOINT = '/oauth_token.do'
+
 
 class ServiceNowClient(BaseClient):
 
-    def __init__(self, credentials: dict, use_oauth: bool = False, oauth_endpoint: str = '/oauth_token.do', client_id: str = '',
-                 client_secret: str = '', url: str = '', verify: bool = False, proxy: bool = False, headers: dict = None):
+    def __init__(self, credentials: dict, use_oauth: bool = False, oauth_endpoint: str = DEFAULT_OAUTH_ENDPOINT,
+                 client_id: str = '', client_secret: str = '', url: str = '', verify: bool = False,
+                 proxy: bool = False, headers: dict = None):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
@@ -143,28 +146,29 @@ class ServiceNowClient(BaseClient):
                 headers = {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-                res = self._http_request(method='POST', url_suffix=self.oauth_endpoint, resp_type='response', headers=headers,
-                                         data=data, ok_codes=ok_codes)
+                response = self._http_request(method='POST', url_suffix=self.oauth_endpoint, resp_type='response',
+                                              headers=headers, data=data, ok_codes=ok_codes)
                 try:
-                    res = res.json()
+                    json_data = response.json()
+
                 except ValueError as exception:
-                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
-                                           exception)
-                if 'error' in res:
+                    raise DemistoException(f'Failed to parse JSON data from {response.url}:\n{response.text}', exception)
+
+                if 'error' in json_data:
                     return_error(
                         f'Error occurred while creating an access token. Please check the Client ID, Client Secret '
                         f'and try to run again the login command to generate a new refresh token as it '
-                        f'might have expired.\n{res}')
-                if res.get('access_token'):
+                        f'might have expired.\n{json_data}')
+                if json_data.get('access_token'):
                     expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
-                    expiry_time += res.get('expires_in', 0) * 1000 - 10
+                    expiry_time += json_data.get('expires_in', 0) * 1000 - 10
                     new_token = {
-                        'access_token': res.get('access_token'),
-                        'refresh_token': res.get('refresh_token'),
+                        'access_token': json_data.get('access_token'),
+                        'refresh_token': json_data.get('refresh_token'),
                         'expiry_time': expiry_time
                     }
                     set_integration_context(new_token)
-                    return res.get('access_token')
+                    return json_data.get('access_token')
             except Exception as e:
                 return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
                              f'\n\n{e.args[0]}')
