@@ -937,6 +937,9 @@ def service_record_get_file_command(client: Client, args: Dict[str, Any]):
         attachment_list = []
         attachment_list.append({"file_name": file_name, "data": file_data})
         return_results(str(attachment_list))
+    else:
+        msg = f'Error {response.status_code} occurred while try to download file from service record {sr_id}.'
+        return_error(msg)
 
 
 def service_record_delete_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:

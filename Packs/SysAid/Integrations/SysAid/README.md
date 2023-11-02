@@ -19586,7 +19586,6 @@ Download an attachment to a service record.
 | File.MD5 | String | The MD5 of the file | 
 | File.Extension | String | The extension of the file | 
 
-There is no context output for this command.
 #### Command example
 ```!sysaid-service-record-get-file file_id="-80357423_-1872498142" id=37 file_name="file_name.png"```
 
