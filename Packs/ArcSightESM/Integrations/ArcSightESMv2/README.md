@@ -57,6 +57,7 @@ Cortex XSOAR is designed for an automatic response, so make sure to define condi
     - **Use system proxy settings**: Select whether to communicate via the system proxy server or not.
     - **Fetch incidents**: Mark the Fetch incidents checkbox to automatically create Cortex XSOAR incidents from this integration instance.
     - **Incident type**: Select the incident type to trigger.
+    - **Product Version**: Select the ArcSight ESM version. 7.4 above using the new Swagger detect-api. Note - not all the commands are using the new API at the moment.
     - **Use REST Endpoints**: Mark this checkbox to use REST endpoints for the commands related to 'entries' instead of the default legacy SOAP endpoints.
 4. Click **Test** to validate the URLs, token, and connection.
     If you are experiencing issues with the service configuration, please contact Cortex XSOAR support at support@paloaltonetworks.com.
