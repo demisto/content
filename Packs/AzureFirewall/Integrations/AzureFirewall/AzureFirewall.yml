@@ -1030,10 +1030,66 @@ script:
   - name: azure-firewall-subscriptions-list
     description: List all subscriptions for a tenant.
     outputs:
-    - contextPath: AzureFirewall.Subscription
-      description:
+    - contextPath: AzureFirewall.Subscription.authorizationSource
+      description: The authorization source of the request.
       type: String
-  dockerimage: demisto/crypto:1.0.0.76022
+    - contextPath: AzureFirewall.Subscription.displayName
+      description: The subscription display name.
+      type: String
+    - contextPath: AzureFirewall.Subscription.id
+      description: The fully qualified ID for the subscription. For example, /subscriptions/8d65815f-a5b6-402f-9298-045155da7d74.
+      type: String
+    - contextPath: AzureFirewall.Subscription.managedByTenants
+      description: An array containing the tenants managing the subscription.
+      type: Unknown
+    - contextPath: AzureFirewall.Subscription.state
+      description: The subscription state. Possible values are Enabled, Warned, PastDue, Disabled, and Deleted.
+      type: Unknown
+    - contextPath: AzureFirewall.Subscription.subscriptionId
+      description: The subscription ID.
+      type: String
+    - contextPath: AzureFirewall.Subscription.subscriptionPolicies
+      description: The subscription policies.
+      type: Unknown
+    - contextPath: AzureFirewall.Subscription.tags
+      description: The tags attached to the subscription.
+      type: Object
+    - contextPath: AzureFirewall.Subscription.tenantId
+      description: The subscription tenant ID.
+      type: String
+  - name: azure-firewall-resource-group-list
+    description: List all resource groups for a subscription.
+    arguments:
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: limit
+      description: Limit on the number of resource groups to return.
+      defaultValue: 50
+    - name: tag
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+    outputs:
+    - contextPath: AzureFirewall.ResourceGroup.id
+      description: The ID of the resource group.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.location
+      description: The location of the resource group.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.managedBy
+      description: The ID of the resource that manages this resource group.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.name
+      description: The name of the resource group.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.properties.provisioningState
+      description: The provisioning state.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.tags
+      description: The tags attached to the resource group.
+      type: Object
+    - contextPath: AzureFirewall.ResourceGroup.type
+      description: The type of the resource group.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.79610
   runonce: false
   script: '-'
   subtype: python3

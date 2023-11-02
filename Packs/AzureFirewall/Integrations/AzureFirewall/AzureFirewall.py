@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import copy
 from requests import Response
 from MicrosoftApiModule import *  # noqa: E402
-import urllib3
 
 
 API_VERSION = '2022-09-01'
@@ -513,6 +512,11 @@ class AzureFirewallClient:
     def azure_firewall_subscriptions_list_request(self) -> dict:
         return self.ms_client.http_request('GET', url_suffix='subscriptions', params=self.default_params,
                                            resp_type="json", timeout=100)
+
+    def azure_firewall_resource_group_list_request(self, tag: str, limit: int) -> dict:
+        filter_by_tag = azure_tag_formatter(tag) if tag else None
+        params = {"$filter": filter_by_tag, "$top": limit} | self.default_params
+        return self.ms_client.http_request('GET', url_suffix='resourcegroups', params=params)
 
 
 def generate_polling_readable_message(resource_type_name: str, resource_name: str) -> str:
@@ -2798,8 +2802,62 @@ def azure_firewall_ip_group_delete_command(client: AzureFirewallClient, args: Di
 
 def azure_firewall_subscriptions_list_command(client: AzureFirewallClient):
     response = client.azure_firewall_subscriptions_list_request()
+    value = response.get('value', [])
+
+    subscriptions = []
+    for subscription in value:
+        subscription_context = {
+            'Subscription ID': subscription.get('subscriptionId'),
+            'Tenant ID': subscription.get('tenantId'),
+            'State': subscription.get('state'),
+            'Display Name': subscription.get('displayName')
+        }
+        subscriptions.append(subscription_context)
+
+    human_readable = tableToMarkdown('List of subscriptions', subscriptions, removeNull=True)
+
     return CommandResults(
-        readable_output=f"Subscriptions: {response}",
+        outputs_prefix='AzureFirewall.Subscription',
+        outputs_key_field='id',
+        outputs=value,
+        readable_output=human_readable,
+        raw_response=value
+    )
+
+
+def azure_firewall_resource_group_list_command(client: AzureFirewallClient, args: Dict[str, Any]):
+    """
+    List all resource groups.
+    Args:
+        tag (str): Tag to filter by.
+        limit (int): Maximum number of resource groups to retrieve. Default is 50.
+    Returns:
+        List[dict]: API response from Azure.
+    """
+    tag = args.get('tag', '')
+    limit = arg_to_number(args.get('limit')) or 50
+
+    response = client.azure_firewall_resource_group_list_request(tag=tag, limit=limit)
+    value = response.get('value', [])
+
+    resource_groups = []
+    for resource_group in value:
+        resource_group_context = {
+            'Name': resource_group.get('name'),
+            'Location': resource_group.get('location'),
+            'Tags': resource_group.get('tags'),
+            'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
+        }
+        resource_groups.append(resource_group_context)
+
+    readable_output = tableToMarkdown('Resource Groups List', resource_groups, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='AzureFirewall.ResourceGroup',
+        outputs_key_field='id',
+        outputs=value,
+        raw_response=value,
+        readable_output=readable_output
     )
 
 
@@ -2876,7 +2934,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        urllib3.disable_warnings()
         client: AzureFirewallClient = AzureFirewallClient(
             subscription_id=subscription_id,
             resource_group=resource_group,
@@ -2914,6 +2971,7 @@ def main() -> None:
             'azure-firewall-ip-group-list': azure_firewall_ip_group_list_command,
             'azure-firewall-ip-group-get': azure_firewall_ip_group_get_command,
             'azure-firewall-ip-group-delete': azure_firewall_ip_group_delete_command,
+            'azure-firewall-resource-group-list': azure_firewall_resource_group_list_command,
         }
 
         if command == 'test-module':
