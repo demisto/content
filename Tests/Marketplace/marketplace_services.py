@@ -2460,6 +2460,7 @@ class Pack:
                         continue
                     logging.info(f'for {current_directory}, metadata output: {metadata_output}')
                     content_item_type_and_id = f"{current_directory}_{metadata_output['id']}"
+
                     if self.is_replace_item_in_folder_collected_list(
                             content_item, content_items_id_to_version_map,
                             content_item_type_and_id):
