@@ -38,7 +38,7 @@ Isolate an endpoint
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostname | Hostname of endpoint. | Required |
-| organization_id | Organization ID of the endpoint. Possible values are: 0, 1, 2, 3, 4, 5. | Required |
+| organization_id | Organization ID of the endpoint. For the use of a custom organization ID, you can specify a custom value outside the predefined set. | Required |
 | isolation | To isolate use enable. Possible values are: enable, disable. | Required |
 
 
@@ -65,7 +65,7 @@ Acquire evidence from an endpoint
 | hostname | Hostname of endpoint. | Required |
 | profile | Acquisition profile. Possible values are: compromise-assessment, browsing-history, event-logs, memory-ram-pagefile, quick, full. | Required |
 | case_id | ID for the case,e.g. C-2022-0001. | Required |
-| organization_id | Organization ID of the endpoint. Possible values are: 0, 1, 2. | Required |
+| organization_id | Organization ID of the endpoint. For the use of a custom organization ID, you can specify a custom value outside the predefined set.| Required |
 
 
 #### Context Output

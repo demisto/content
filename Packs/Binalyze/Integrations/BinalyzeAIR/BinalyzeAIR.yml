@@ -40,10 +40,7 @@ script:
       - '0'
       - '1'
       - '2'
-      - '3'
-      - '4'
-      - '5'
-      description: Organization ID of the endpoint.
+      description: Organization ID of the endpoint. For the use of a custom organization ID, you can specify a custom value outside the predefined set.
     - name: isolation
       required: true
       auto: PREDEFINED
@@ -88,10 +85,7 @@ script:
       - '0'
       - '1'
       - '2'
-      - '3'
-      - '4'
-      - '5'
-      description: Organization ID of the endpoint.
+      description: Organization ID of the endpoint. For the use of a custom organization ID, you can specify a custom value outside the predefined set.
     outputs:
     - contextPath: BinalyzeAIR.Acquire.result._id
       description: Acquisition unique task ID.
