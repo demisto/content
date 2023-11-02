@@ -623,6 +623,7 @@ def main() -> None:  # pragma: no cover
                                       should_push_events=argToBoolean(args.get('should_push_events', 'true')))
 
         elif command == 'fetch-events':
+            demisto.debug("meritfetchevents")
             last_run = demisto.getLastRun()
             demisto.debug(f"last run from demisto: {last_run}")
             new_last_run = {"testing": "last_run"}
@@ -637,9 +638,10 @@ def main() -> None:  # pragma: no cover
 
             demisto.debug(f'Setting new last_run to {new_last_run}')
             demisto.setLastRun(new_last_run)
+            demisto.updateModuleHealth({'eventsPulled': 1})
 
         elif command == 'fetch-assets':
-
+            demisto.debug("meritfetchassets")
             assets_last_run = demisto.getAssetsLastRun()
             demisto.debug(f"saved assets lastrun: {assets_last_run}")
 
