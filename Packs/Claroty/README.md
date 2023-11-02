@@ -20,7 +20,7 @@ For more information:
 
 ## Cortex XSIAM SIEM Content
 
-This pack also includes Cortex XSIAM SIEM content, which is supported directly by *Palo Alto Networks*. 
+This pack includes Cortex XSIAM SIEM content, which is supported directly by *Palo Alto Networks*. 
 
 The SIEM content contains parsing and modeling rules for ingesting and mapping events and alerts that are sent from Claroty CTD to Cortex XSIAM. 
 
