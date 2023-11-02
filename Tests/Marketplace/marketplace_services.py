@@ -14,6 +14,7 @@ import warnings
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 
+import demisto_client.demisto_api
 from packaging.version import Version
 from pathlib import Path
 from typing import Any
@@ -2365,6 +2366,18 @@ class Pack:
                             'toversion': metadata_toversion,
                         }
 
+                    elif current_directory == PackFolders.ASSETS_MODELING_RULES.value and pack_file_name.startswith("external-"):
+                        self.add_pack_type_tags(content_item, 'AssetModelingRule')
+                        schema: dict[str, Any] = json.loads(content_item.get('schema') or '{}')
+                        metadata_output = {
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                            'datasets': list(schema.keys()),
+                            'fromversion': self._server_min_version,
+                            'toversion': metadata_toversion,
+                        }
+
                     elif current_directory == PackFolders.CORRELATION_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'CorrelationRule')
                         metadata_output = {
@@ -2445,10 +2458,12 @@ class Pack:
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
                         continue
+                    logging.info(f'for {current_directory}, metadata output: {metadata_output}')
                     content_item_type_and_id = f"{current_directory}_{metadata_output['id']}"
                     if self.is_replace_item_in_folder_collected_list(
                             content_item, content_items_id_to_version_map,
                             content_item_type_and_id):
+                        logging.info("is_replace_item_in_folder_collected_list returned true ")
                         latest_fromversion, latest_toversion = self.get_latest_versions(
                             content_items_id_to_version_map, content_item_type_and_id)
                         metadata_output['fromversion'] = latest_fromversion
@@ -2459,6 +2474,7 @@ class Pack:
                                                   for d in folder_collected_items]
                     elif not content_items_id_to_version_map.get(
                             content_item_type_and_id, {}).get('added_to_metadata_list', ''):
+                        logging.info('in second cond')
                         folder_collected_items.append(metadata_output)
                         content_items_id_to_version_map.get(content_item_type_and_id, {})['added_to_metadata_list'] = True
 
@@ -2467,6 +2483,8 @@ class Pack:
 
                     content_items_result[content_item_key] = \
                         content_items_result.get(content_item_key, []) + folder_collected_items
+
+                    logging.info(f'updated content_items_result[content_item_key] = {content_items_result[content_item_key]}')
 
             logging.success(f"Finished collecting content items for {self._pack_name} pack")
             task_status = True
