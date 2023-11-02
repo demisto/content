@@ -213,7 +213,7 @@
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
   - section_start "Checkout upload commit content nightly"
   - | 
-    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "install_packs_nightly_bugs" ]]; then
+    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
       echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
       git status
       git reset $LAST_UPLOAD_COMMIT -- ./Packs  # resets the state of the "Packs" folder to the last successful upload commit, it discards any changes made to the folder since that commit
