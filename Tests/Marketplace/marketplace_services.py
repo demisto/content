@@ -2075,7 +2075,7 @@ class Pack:
             for root, _pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
                 parent_directory = root.split(os.path.sep)[-2]
-
+                logging.info(f"current_directory: {current_directory}")
                 if parent_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
                     current_directory = parent_directory
                 elif current_directory in [PackFolders.GENERIC_TYPES.value, PackFolders.GENERIC_FIELDS.value]:
@@ -2127,6 +2127,8 @@ class Pack:
 
                     content_item_tags = content_item.get('tags', [])
                     metadata_toversion = to_version or ''
+
+                    logging.info(f"now check the directory: {current_directory}")
 
                     if current_directory == PackFolders.SCRIPTS.value:
                         metadata_output = {
