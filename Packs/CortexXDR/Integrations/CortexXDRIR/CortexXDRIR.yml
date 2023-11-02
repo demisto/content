@@ -17,6 +17,7 @@ configuration:
   type: 13
   section: Connect
   required: false
+  defaultvalue: 'Cortex XDR - Lite'
 - defaultvalue: 'false'
   display: Remove legacy incident fields
   name: dont_format_sublists
@@ -3462,7 +3463,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.13.77674
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   script: ''
   subtype: python3
@@ -3476,6 +3477,5 @@ tests:
 - Test XDR Playbook general commands
 - Test XDR Playbook retrieve file command
 defaultmapperin: Cortex XDR - IR-mapper
-defaultclassifier: Cortex XDR Incident Handler - Classifier
 defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
