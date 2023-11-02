@@ -27,8 +27,10 @@ import socket
 from pytest_mock import MockerFixture
 
 import json
+import os
 
 INTEGRATION_NAME = 'Whois'
+TEST_XDR_ENV = os.getenv('TEST_XDR_ENV')
 
 
 @pytest.fixture(autouse=True)
@@ -84,6 +86,7 @@ def test_socks_proxy_fail(mocker: MockerFixture, capfd: pytest.CaptureFixture):
         assert "Exception thrown calling command" in results[0]['Contents']
 
 
+@pytest.mark.skipif(TEST_XDR_ENV, reason="Test skipped in the specified environment. CIAC-8779")
 def test_socks_proxy(mocker, request):
     mocker.patch.object(demisto, 'params', return_value={'proxy_url': 'socks5h://localhost:9980'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
