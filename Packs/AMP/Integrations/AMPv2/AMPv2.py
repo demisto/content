@@ -2037,11 +2037,22 @@ def computer_isolation_polling_command(
     )
 
 
-def create_relationships(client: Client, indicator: str, relationship: dict[str, str | int | dict]):
+def create_relationships(
+    client: Client, indicator: str, relationship: dict[str, str | int | dict]
+):
+    # 
     if not client.should_create_relationships or not relationship:
         return None
 
-    if not (entity_b := relationship.get("identity", {}).get("sha256")):
+    if not (identity := relationship.get("identity", {})) or not isinstance(
+        identity, dict
+    ):
+        return None
+
+    if (
+        not (entity_b := identity.get("sha256"))
+        or auto_detect_indicator_type(entity_b) != FeedIndicatorType.File
+    ):
         return None
 
     relationships = [
