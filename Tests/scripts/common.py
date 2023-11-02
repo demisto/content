@@ -1,4 +1,3 @@
-import copy
 from pathlib import Path
 from typing import Any
 
@@ -30,8 +29,9 @@ WORKFLOW_TYPES = {
 BUCKET_UPLOAD_BRANCH_SUFFIX = '-upload_test_branch'
 TOTAL_HEADER = "Total"
 NOT_AVAILABLE = "N/A"
-TEST_SUITE_JIRA_HEADERS = ["Jira Ticket", "Jira Ticket Resolution"]
+TEST_SUITE_JIRA_HEADERS: list[str] = ["Jira\nTicket", "Jira Ticket\nResolution"]
 TEST_SUITE_DATA_CELL_HEADER = "S/F/E/T"
+TEST_SUITE_CELL_EXPLANATION = "(Table headers: Skipped/Failures/Errors/Total)"
 NO_COLOR_ESCAPE_CHAR = "\033[0m"
 RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
@@ -72,18 +72,28 @@ def red_text(text: str) -> str:
 
 class TestSuiteStatistics:
 
-    def __init__(self, failures: int = 0, errors: int = 0, skipped: int = 0, tests: int = 0):
+    def __init__(self, no_color, failures: int = 0, errors: int = 0, skipped: int = 0, tests: int = 0):
+        self.no_color = no_color
         self.failures = failures
         self.errors = errors
         self.skipped = skipped
         self.tests = tests
 
     def __add__(self, other):
-        return TestSuiteStatistics(self.failures + other.failures, self.errors + other.errors, self.skipped + other.skipped,
-                                   self.tests + other.tests)
+        return TestSuiteStatistics(self.no_color, self.failures + other.failures, self.errors + other.errors,
+                                   self.skipped + other.skipped, self.tests + other.tests)
+
+    def show_with_color(self, res: int, show_as_error: bool | None = None) -> str:
+        res_str = str(res)
+        if self.no_color or show_as_error is None:
+            return res_str
+        return red_text(res_str) if show_as_error else green_text(res_str)
 
     def __str__(self):
-        return f"{self.skipped}/{self.failures}/{self.errors}/{self.tests}"
+        return (f"{self.show_with_color(self.skipped)} / "
+                f"{self.show_with_color(self.failures, self.failures > 0)} / "
+                f"{self.show_with_color(self.errors, self.errors > 0)} / "
+                f"{self.show_with_color(self.tests, self.errors + self.failures > 0)}")
 
 
 def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
@@ -94,20 +104,24 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
                             no_color: bool = False,
                             without_jira: bool = False,
                             with_skipped: bool = False,
-                            transpose: bool = False) -> tuple[list[str], list[list[Any]], JUnitXml, int]:
+                            multiline_headers: bool = True,
+                            transpose: bool = False) -> tuple[list[str], list[str], list[list[Any]], JUnitXml, int]:
     xml = JUnitXml()
-    headers = copy.copy(base_headers)
+    headers_multiline_char = "\n" if multiline_headers else " "
+    headers = [h.replace("\n", headers_multiline_char) for h in base_headers]
     if not without_jira:
-        headers.extend(TEST_SUITE_JIRA_HEADERS)
+        headers.extend([h.replace("\n", headers_multiline_char) for h in TEST_SUITE_JIRA_HEADERS])
+    column_align = ["left"] * len(headers)
     fixed_headers_length = len(headers)
     server_versions_list: list[str] = sorted(server_versions)
-    headers.extend(
-        server_version if transpose else f"{server_version} ({TEST_SUITE_DATA_CELL_HEADER})"
-        for server_version in server_versions_list
-    )
+    for server_version in server_versions_list:
+        headers.append(
+            server_version if transpose else f"{server_version}{headers_multiline_char}({TEST_SUITE_DATA_CELL_HEADER})"
+        )
+        column_align.append("center")
     tabulate_data = []
-    total_row: list[Any] = ([NOT_AVAILABLE] * fixed_headers_length + [TestSuiteStatistics()
-                                                                      for _ in range(len(server_versions_list))])
+    total_row: list[Any] = ([""] * fixed_headers_length + [TestSuiteStatistics(no_color)
+                                                           for _ in range(len(server_versions_list))])
     total_errors = 0
     for result, result_test_suites in results.items():
         row: list[Any] = []
@@ -132,6 +146,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
                 xml.add_testsuite(test_suite)
                 row.append(
                     TestSuiteStatistics(
+                        no_color,
                         test_suite.failures,
                         test_suite.errors,
                         test_suite.skipped,
@@ -147,9 +162,12 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         total_errors += errors_count
         # If all the test suites were skipped, don't add the row to the table.
         if skipped_count != len(server_versions_list) or with_skipped:
-            row_result = f"{result} ({TEST_SUITE_DATA_CELL_HEADER})" if transpose else result
-            row.insert(0,
-                       (red_text(row_result) if errors_count else green_text(row_result) if not no_color else row_result))
+            row_result = f"{result}{headers_multiline_char}({TEST_SUITE_DATA_CELL_HEADER})" if transpose else result
+            if no_color:
+                row_result_color = row_result
+            else:
+                row_result_color = red_text(row_result) if errors_count else green_text(row_result)
+            row.insert(0, row_result_color)
             tabulate_data.append(row)
 
             # Offset the total row by the number of fixed headers
@@ -162,7 +180,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         total_row[0] = (green_text(TOTAL_HEADER) if total_errors == 0 else red_text(TOTAL_HEADER)) \
             if not no_color else TOTAL_HEADER
         tabulate_data.append(total_row)
-    return headers, tabulate_data, xml, total_errors
+    return headers, column_align, tabulate_data, xml, total_errors
 
 
 def get_all_failed_results(results: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -170,7 +188,7 @@ def get_all_failed_results(results: dict[str, dict[str, Any]]) -> dict[str, dict
     for result, result_test_suites in results.items():
         for test_suite in result_test_suites.values():
             if test_suite.errors or test_suite.failures:
-                failed_results[result] = results
+                failed_results[result] = result_test_suites
                 break
 
     return failed_results
