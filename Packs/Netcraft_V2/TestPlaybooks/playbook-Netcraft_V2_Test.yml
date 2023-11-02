@@ -334,9 +334,9 @@ tasks:
       - "15"
     scriptarguments:
       date_end:
-        simple: 3 days ago
-      date_start:
         simple: 2 days ago
+      date_start:
+        simple: 3 days ago
       limit:
         simple: "20"
       source_name:

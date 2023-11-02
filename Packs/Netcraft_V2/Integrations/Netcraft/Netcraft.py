@@ -807,7 +807,7 @@ def submission_list(args: dict, client: Client) -> CommandResults:
         if (date := arg_to_datetime(args.get(arg_name))):
             return str(date.date())
         else:
-            return ''
+            return None
 
     def args_to_params(args: dict) -> dict:
         return sub_dict(
