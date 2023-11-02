@@ -13,10 +13,10 @@ args:
   secret: false
 comment: Resolves a URL or fully qualified domain name (FQDN) and looks up a complete profile of the domain on the DomainTools Iris Enrich API.
 commonfields:
-  id: domainExtractAndEnrich
+  id: DomainExtractAndEnrich
   version: -1
 enabled: true
-name: domainExtractAndEnrich
+name: DomainExtractAndEnrich
 outputs:
   - contextPath: Domain.Name
     description: The name of the domain.

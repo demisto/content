@@ -191,7 +191,7 @@ def check_pivotable_mx_host_or_domain(
     try:
         for prop in mx:
             prop = prop.get(key, {})
-            count = int(ip.get("count") or 0)
+            count = int(prop.get("count") or 0)
             if max_count >= count > 1:
                 pivotable.append(
                     {"count": count, "value": prop.get("value")})

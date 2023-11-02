@@ -1898,9 +1898,9 @@ script:
     execution: false
     name: whoisHistory
     outputs:
-      - contextPath: Domain.Name
+      - contextPath: DomainTools.History.Value
         description: Name of domain
-      - contextPath: Domain.WhoisHistory
+      - contextPath: DomainTools.History.WhoisHistory
         description: Domain Whois history data
   - arguments:
       - default: true
@@ -1914,13 +1914,13 @@ script:
     execution: false
     name: hostingHistory
     outputs:
-      - contextPath: DomainTools.Name
+      - contextPath: DomainTools.History.Value
         description: Name of domain
-      - contextPath: DomainTools.IPHistory
+      - contextPath: DomainTools.History.IPHistory
         description: Domain IP history data
-      - contextPath: DomainTools.NameserverHistory
+      - contextPath: DomainTools.History.NameserverHistory
         description: Domain Nameserver history data
-      - contextPath: DomainTools.RegistrarHistory
+      - contextPath: DomainTools.History.RegistrarHistory
         description: Domain Registrar history data
   - arguments:
       - default: true
@@ -1942,14 +1942,10 @@ script:
     description: The DomainTools Reverse Whois API provides a list of domain names that share the same Registrant Information. You can enter terms that describe a domain owner, like an email address or a company name, and you’ll get a list of domain names that have your search terms listed in the Whois record.
     name: reverseWhois
     outputs:
-      - contextPath: Domain.Name
-        description: Name of domain
-  - arguments:
-      - description: A domain name to query (e.g. example.com)
-        name: domain
-        required: true
-    description: The DomainTools Domain Profile API provides basic domain name registration details and a preview of additional data available from DomainTools classic products.
-    name: domainProfile
+      - contextPath: DomainTools.ReverseWhois.Value
+        description: Search term to reverse whois lookup on
+      - contextPath: DomainTools.ReverseWhois.Results
+        description: List of results for reverse whois lookup
   - arguments:
       - default: true
         description: A domain name or IP address (e.g. example.com or 192.168.1.1)
@@ -1961,7 +1957,9 @@ script:
       - contextPath: Domain.Name
         description: Requested domain name
       - contextPath: Domain.Whois
-        description: Whois data
+        description: Parsed Whois data
+      - contextPath: Domain.WhoisRecords
+        description: Full Whois record
   - arguments:
     description: Reverse loopkup of an IP address
     name: reverseIP

@@ -1,40 +1,58 @@
 args:
 - name: domaintools_data
   required: true
+  description: DomainTools context data for a domain
 - name: max_registrant_contact_name_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a registrant contact name
 - name: max_registrant_org_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a registrant org name
 - name: max_registrar_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a registrar
 - name: max_ssl_info_organization_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a ssl organization
 - name: max_ssl_info_hash_count
   defaultValue: "350"
+  description: Max threshold count that can be pivoted to a ssl hash
 - name: max_ssl_email_count
   defaultValue: "350"
+  description: Max threshold count that can be pivoted to a ssl email
 - name: max_ssl_subject_count
   defaultValue: "350"
+  description: Max threshold count that can be pivoted to a ssl subject
 - name: max_name_server_host_count
   defaultValue: "250"
+  description: Max threshold count that can be pivoted to a ssl subject
 - name: max_name_server_ip_count
   defaultValue: "250"
+  description: Max threshold count that can be pivoted to a nameserver ip
 - name: max_name_server_domain_count
   defaultValue: "250"
+  description: Max threshold count that can be pivoted to a nameserver domain
 - name: max_soa_email_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a soa email
 - name: max_ip_address_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to an IP address
 - name: max_mx_ip_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a MX IP
 - name: max_mx_host_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a MX Host
 - name: max_mx_domain_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a MX Domain
 - name: max_google_adsense_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a google adsense
 - name: max_google_analytics_count
   defaultValue: "200"
+  description: Max threshold count that can be pivoted to a google analytics
 outputs:
 - contextPath: PivotableDomains.PivotableRegistrantContactName.pivotable
 - contextPath: PivotableDomains.PivotableRegistrantContactName.items.count

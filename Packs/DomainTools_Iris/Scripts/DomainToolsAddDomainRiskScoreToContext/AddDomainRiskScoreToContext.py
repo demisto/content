@@ -17,7 +17,7 @@ def add_domain_riskscore_to_context(args: Dict[str, Any]) -> CommandResults:
     result = {"Name": domain_name, "OverallRiskScore": domain_risk_score}
 
     return CommandResults(
-        outputs_prefix='HighRiskPivotedDomains',
+        outputs_prefix='AddDomainRiskScoreToContext.HighRiskPivotedDomains',
         outputs_key_field='Name',
         outputs=result,
         ignore_auto_extract=True
