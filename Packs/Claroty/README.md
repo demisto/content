@@ -20,9 +20,9 @@ For more information:
 
 ## Cortex XSIAM SIEM Content
 
-This pack also includes Cortex XSIAM SIEM content, which is supported by Palo Alto Networks. 
+This pack also includes Cortex XSIAM SIEM content, which is supported directly by *Palo Alto Networks*. 
 
-The SIEM content contains parsing and modeling rules for ingesting and mapping events and alerts that are sent from Claroty CTD. 
+The SIEM content contains parsing and modeling rules for ingesting and mapping events and alerts that are sent from Claroty CTD to Cortex XSIAM. 
 
 This section describes the configurations required on Claroty CTD for forwarding events and alerts to Cortex XSIAM and the configurations required on Cortex XSIAM for ingesting and mapping them. 
  
@@ -45,7 +45,6 @@ Follow these steps to configure Claroty CTD to forward Syslog messages to Cortex
 #### Remark
 Since the syslog forwarding configuration is set for each log type individually, 
 repeat the steps above for each log type (*Alerts*, *Events*, etc.) to monitor on Cortex XSIAM.
-
 
 
 ### Configuration on Cortex XSIAM
