@@ -478,18 +478,9 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "vectraxdrentitylastmodifiedtimestamp",
+                                "fieldId": "vectraxdrentitylastmodificationtimestamp",
                                 "height": 53,
                                 "id": "95cf3540-26cd-11ee-b788-251b88613edc",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "vectraxdrentityisprioritized",
-                                "height": 53,
-                                "id": "9b455ef0-26cd-11ee-b788-251b88613edc",
                                 "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 2
@@ -980,14 +971,6 @@
                     },
                     {
                         "fieldId": "incident_classification",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdraccountid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_xdrinstanceid",
                         "isVisible": true
                     },
                     {

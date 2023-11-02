@@ -2004,7 +2004,7 @@ script:
       description: Date when the group was last modified.
       type: Date
     - contextPath: Vectra.Group.last_modified_by
-      description: Name of the user who last modified the group
+      description: Name of the user who last modified the group.
       type: String
     - contextPath: Vectra.Group.type
       description: Type of the group.
@@ -2076,7 +2076,7 @@ script:
       description: Date when the group was last modified.
       type: Date
     - contextPath: Vectra.Group.last_modified_by
-      description: Name of the user who last modified the group
+      description: Name of the user who last modified the group.
       type: String
     - contextPath: Vectra.Group.type
       description: Type of the group.
@@ -2142,7 +2142,7 @@ script:
       description: Date when the group was last modified.
       type: Date
     - contextPath: Vectra.Group.last_modified_by
-      description: Name of the user who last modified the group
+      description: Name of the user who last modified the group.
       type: String
     - contextPath: Vectra.Group.type
       description: Type of the group.

@@ -250,13 +250,6 @@
                         "transformers": []
                     }
                 },
-                "Vectra XDR Entity Last Modified Timestamp": {
-                    "complex": {
-                        "filters": [],
-                        "root": "last_modified_timestamp",
-                        "transformers": []
-                    }
-                },
                 "Vectra XDR Entity Name": {
                     "complex": {
                         "filters": [],
@@ -398,13 +391,6 @@
                                 "operator": "MapValuesTransformer"
                             }
                         ]
-                    }
-                },
-                "Vectra XDR Entity isPrioritized": {
-                    "complex": {
-                        "filters": [],
-                        "root": "is_prioritized",
-                        "transformers": []
                     }
                 },
                 "dbotMirrorDirection": {

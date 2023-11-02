@@ -2350,7 +2350,7 @@ Returns a list of all groups.
 | Vectra.Group.name | String | Name of the group. | 
 | Vectra.Group.description | String | Description of the group. | 
 | Vectra.Group.last_modified | Date | Date when the group was last modified. | 
-| Vectra.Group.last_modified_by | String | Name of the user who last modified the group | 
+| Vectra.Group.last_modified_by | String | Name of the user who last modified the group. | 
 | Vectra.Group.type | String | Type of the group. | 
 | Vectra.Group.members | Unknown | Members of the group. | 
 | Vectra.Group.members.id | Number | Entity ID of member. | 
@@ -2502,7 +2502,7 @@ Assign members to the specified group.
 | Vectra.Group.name | String | Name of the group. | 
 | Vectra.Group.description | String | Description of the group. | 
 | Vectra.Group.last_modified | Date | Date when the group was last modified. | 
-| Vectra.Group.last_modified_by | String | Name of the user who last modified the group | 
+| Vectra.Group.last_modified_by | String | Name of the user who last modified the group. | 
 | Vectra.Group.type | String | Type of the group. | 
 | Vectra.Group.members | Unknown | Members of the group. | 
 | Vectra.Group.members.id | Number | Entity ID of member. | 
@@ -2575,7 +2575,7 @@ Unassign members from the specified group.
 | Vectra.Group.name | String | Name of the group. | 
 | Vectra.Group.description | String | Description of the group. | 
 | Vectra.Group.last_modified | Date | Date when the group was last modified. | 
-| Vectra.Group.last_modified_by | String | Name of the user who last modified the group | 
+| Vectra.Group.last_modified_by | String | Name of the user who last modified the group. | 
 | Vectra.Group.type | String | Type of the group. | 
 | Vectra.Group.members | Unknown | Members of the group. | 
 | Vectra.Group.members.id | Number | Entity ID of member. | 
