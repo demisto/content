@@ -2100,12 +2100,23 @@ def network_reputation_command():
 
 
 def network_reputation_output(response_json, network_locations):
-    entries = response_json.get("rl").get("entries")
+    entries = bold_classification(response_json.get("rl").get("entries"), "classification", "malicious")
+
+    for entry in entries:
+        tp_reputations = entry.get("third_party_reputations")
+        if tp_reputations:
+            entry["third_party_reputations_malicious"] = tp_reputations.get("malicious")
+            entry["third_party_reputations_clean"] = tp_reputations.get("clean")
+            entry["third_party_reputations_undetected"] = tp_reputations.get("undetected")
+            entry["third_party_reputations_total"] = tp_reputations.get("total")
+            del entry["third_party_reputations"]
+
     entries_table = tableToMarkdown(
         name="Network locations",
         t=entries
     )
 
+    network_locations = ", ".join(network_locations)
     markdown = f"## ReversingLabs Reputation for the following network locations: {network_locations}\n {entries_table}"
 
     results = CommandResults(
