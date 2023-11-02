@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from VectraXDRSyncEntityAssignment import handle_error, map_and_update_entity_assignments
+from VectraXDRSyncEntityAssignment import main  # Import the main function from the script file
+from VectraXDRSyncEntityAssignment import (handle_error,
+                                           map_and_update_entity_assignments)
 
 
 def test_handle_error_no_error():
@@ -67,3 +69,44 @@ def test_map_and_update_entity_assignments():
     # Check if the result is a CommandResults object with the correct readable_output
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Assignments have been synchronized successfully."
+
+
+def test_main(mocker):
+    """
+    Given:
+    - A mocked incident object.
+
+    When:
+    - Calling the 'main' function of the VectraXDRSyncEntityAssignment script.
+    """
+    mocker.patch.object(demisto, 'incident', return_value={
+        'CustomFields': {
+            'vectraxdrentityid': '1',
+            'vectraxdrentitytype': 'host'
+        }
+    })
+
+    # Mock the demisto.executeCommand() function to return the command result.
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{
+        'Type': 'command',
+        'Contents': [{
+            "id": 212,
+            "assigned_by": {
+                "id": 65,
+                "username": "test.user4@mail.com"
+            },
+            "date_assigned": "2023-08-18T06:29:56Z",
+            "events": [
+            ],
+            "account_id": 108,
+            "assigned_to": {
+                "id": 60,
+                "username": "test.user1@mail.com"
+            },
+            "assignment_id": 212
+        }],
+        'HumanReadable': ""
+    }])
+
+    # Call the main function
+    main()

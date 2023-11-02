@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from VectraXDRSyncEntityDetections import main  # Import the main function from the script file
 from VectraXDRSyncEntityDetections import handle_error, map_and_update_entity_detections
 
 
@@ -45,3 +46,32 @@ def test_map_and_update_entity_detections():
     result = map_and_update_entity_detections(data, mapper, mapper_type)
     assert isinstance(result, CommandResults)
     assert result.readable_output == "Detections have been synchronized successfully."
+
+
+def test_main(mocker):
+    """
+    Given:
+    - A mocked incident object.
+
+    When:
+    - Calling the 'main' function of the VectraXDRSyncEntityDetections script.
+    """
+    # Mock the demisto.incident() function to return an incident with mocked values.
+    mocker.patch.object(demisto, 'incident', return_value={
+        'CustomFields': {
+            'vectraxdrentityid': '1',
+            'vectraxdrentitytype': 'host'
+        }
+    })
+
+    # Mock the demisto.executeCommand() function to return the command result.
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{
+        'Type': 'command',
+        'Contents': {
+            "results": [{}]
+        },
+        'HumanReadable': ""
+    }])
+
+    # Call the main function
+    main()
