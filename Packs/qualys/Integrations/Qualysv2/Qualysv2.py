@@ -1491,8 +1491,8 @@ class Client(BaseClient):
     def error_handler(res):
         err_msg = ""
         if res.status_code == 414 or res.status_code == 520:
-            err_msg += ("If this error was produced by a schedule-scan-create, "
-                        "please execute it again with IP list of less than 5000 characters\n\n")
+            err_msg += "If this error was produced by a schedule-scan-create, 
+            please execute it again with IP list of less than 5000 characters\n\n"
         err_msg += f"Error in API call [{res.status_code}] - {res.reason}"
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(res.text))
