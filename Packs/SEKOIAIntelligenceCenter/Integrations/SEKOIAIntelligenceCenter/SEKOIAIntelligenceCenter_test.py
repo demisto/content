@@ -227,8 +227,14 @@ def test_get_indicator_context_unknown_indicator(client, requests_mock, indicato
     )
 
     args = {"value": indicator_value, "type": indicator_type}
-    command_results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
-    for result in command_results:
+    results = SEKOIAIntelligenceCenter.get_indicator_context_command(client=client, args=args)
+    assert results[0].outputs == {'name': '1.1.1.1', 'x_ic_observable_types': ['ipv4-addr']}
+    assert results[0].outputs_prefix == 'SEKOIAIntelligenceCenter.IP'
+    assert results[0].outputs_key_field == 'name'
+    assert results[0].indicator.dbot_score.score == Common.DBotScore.NONE
+    assert results[0].indicator.dbot_score.indicator_type == DBotScoreType.IP
+    
+    for result in results:
         assert result.outputs != []
         assert result.to_context != []
 

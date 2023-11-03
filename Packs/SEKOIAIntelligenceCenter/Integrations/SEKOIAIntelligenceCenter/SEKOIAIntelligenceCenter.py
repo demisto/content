@@ -229,10 +229,9 @@ def get_stix_object_reputation(stix_bundle: dict, stix_object: dict) -> Optional
     reputation_score: int = get_reputation_score(stix_object.get("indicator_types", []))
     reliability_score: str = get_reliability_score(int(stix_object.get("confidence", -1)))
     tlp: str = get_tlp(stix_object.get("object_marking_refs", []), stix_bundle)
-    indicator_value: str | None = extract_indicator_from_pattern(stix_object.get("pattern", None)) or stix_object.get("name")
 
     if "ipv4-addr" in stix_object["x_ic_observable_types"] or "ipv6-addr" in stix_object["x_ic_observable_types"]:
-        return get_ip_indicator_reputation(indicator_value, stix_object, reputation_score, reliability_score, tlp)
+        return get_ip_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
     if "file" in stix_object["x_ic_observable_types"]:
         return get_file_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
     if "domain-name" in stix_object["x_ic_observable_types"]:
@@ -246,7 +245,6 @@ def get_stix_object_reputation(stix_bundle: dict, stix_object: dict) -> Optional
 
 
 def get_ip_indicator_reputation(
-    indicator_value: str | None,
     stix_object: dict,
     reputation_score: int,
     reliability_score: str,
@@ -263,6 +261,8 @@ def get_ip_indicator_reputation(
         reliability=reliability_score,
     )
 
+    indicator_value: str | None = extract_indicator_from_pattern(stix_object.get("pattern", None)) or stix_object.get("name")
+    
     ip = Common.IP(
         ip=indicator_value,
         dbot_score=dbot_score,
