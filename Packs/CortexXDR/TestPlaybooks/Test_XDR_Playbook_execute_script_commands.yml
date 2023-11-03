@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -131,6 +132,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "25"
       "yes":
       - "4"
     separatecontext: false
@@ -153,6 +156,15 @@ tasks:
           right:
             value:
               simple: IN_PROGRESS
+        - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.ScriptStatus.general_status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETED_SUCCESSFULLY
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -215,6 +227,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "26"
       "yes":
       - "6"
     separatecontext: false
@@ -237,6 +251,15 @@ tasks:
           right:
             value:
               simple: IN_PROGRESS
+        - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.ScriptResult.results.execution_status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETED_SUCCESSFULLY
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -418,6 +441,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "29"
       "yes":
       - "11"
     separatecontext: false
@@ -494,6 +519,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "30"
       "yes":
       - "24"
     separatecontext: false
@@ -683,6 +710,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "27"
       "yes":
       - "22"
     separatecontext: false
@@ -765,6 +794,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "28"
       "yes":
       - "19"
     separatecontext: false
@@ -809,7 +840,199 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3250
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 4306ed3a-691a-43ad-89cb-d0a36c965001
+    type: regular
+    task:
+      id: 4306ed3a-691a-43ad-89cb-d0a36c965001
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The general status of the action was not found.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 17c451cd-4e60-4cb1-80c5-57c83fc4e452
+    type: regular
+    task:
+      id: 17c451cd-4e60-4cb1-80c5-57c83fc4e452
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Execution status was not found.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 2015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 83862ee1-f312-4ea8-810d-a9d0966f86fa
+    type: regular
+    task:
+      id: 83862ee1-f312-4ea8-810d-a9d0966f86fa
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Unique Identifier of the script not found.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: a7ff5291-1b38-4cf3-8b2e-0629d9406d1c
+    type: regular
+    task:
+      id: a7ff5291-1b38-4cf3-8b2e-0629d9406d1c
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The script metadata command result is not found.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 64bc28e2-895e-45f2-815d-14b93d8a2d6e
+    type: regular
+    task:
+      id: 64bc28e2-895e-45f2-815d-14b93d8a2d6e
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed to add the file hash to the block list.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: cb3ca05c-05ee-40de-8911-48f2feae188f
+    type: regular
+    task:
+      id: cb3ca05c-05ee-40de-8911-48f2feae188f
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The endpoint status is not connected or the endpoint status count is not defined.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 3235
         }
       }
     note: false
@@ -824,8 +1047,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3565,
-        "width": 380,
+        "height": 3705,
+        "width": 800,
         "x": 450,
         "y": -250
       }
