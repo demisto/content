@@ -1389,3 +1389,42 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Sensor ID for the machine 'desktop-vg9ke2u' is: 5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_DESKTOP-VG9KE2U_0800273ADC2F
+
+### cybereason-fetch-machine-details
+***
+Get the results related to machines.
+
+
+#### Base Command
+
+`cybereason-fetch-machine-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machineName | The hostname of the machine. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Sensor.MachineID | string | Sensor ID of machine | 
+| Cybereason.Sensor.MachineName | string | Host name of machine | 
+| Cybereason.Sensor.MachineFQDN | string | FQDN of machine | 
+| Cybereason.Sensor.GroupID | string | Group ID of machine | 
+| Cybereason.Sensor.GroupName | string | Group Name of machine | 
+
+#### Command example
+```!cybereason-fetch-machine-details machineName=xyz-1```
+
+#### Context Example
+```json
+{
+    "MachineID": "example-machine-id",
+    "MachineName": "example-machine-name",
+    "MachineFQDN": "example-machine-fqdn",
+    "GroupID": "example-group-id",
+    "GroupName": "example-group-name"
+}
+```

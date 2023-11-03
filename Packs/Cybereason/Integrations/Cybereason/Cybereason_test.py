@@ -72,7 +72,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as mock_file:
         return mock_file.read()
 
 
@@ -990,3 +990,19 @@ def test_get_machine_guid(mocker):
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = get_machine_guid(client, "test_machine")
     assert command_output == "-1826875736.1198775089551518743"
+
+
+def test_fetch_machine_details_command(mocker):
+    from Cybereason import fetch_machine_details_command
+    from Cybereason import Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://integration.cybereason.net:8443",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {"machineName": "empow_2"}
+    raw_response = json.loads(load_mock_response('fetch_machine_details_raw_response.json'))
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
+    command_output = fetch_machine_details_command(client, args)
+    assert command_output.outputs_prefix == "Cybereason.Sensor"
