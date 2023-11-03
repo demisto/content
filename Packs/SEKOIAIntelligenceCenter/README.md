@@ -1,6 +1,6 @@
-# SEKOIA Intelligence Center
+# Sekoia.io CTI
 
-Request observable, indicator and indicator context from SEKOIA.IO Intelligence Center.
+Request observable, indicator and indicator context from Sekoia.io CTI.
 
 ## What does this pack do ?
 - Fetches observables and indicators
