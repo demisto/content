@@ -1,0 +1,195 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Prisma SASE - Sentinelone Integration
+inputs: []
+name: Prisma SASE - Sentinelone Integration
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 78767610-f1cf-4aad-8cc0-86e95729653f
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 78767610-f1cf-4aad-8cc0-86e95729653f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SentinelOne V2
+      description: Returns all agents that match the specified criteria.
+      id: 93a5f140-3421-481f-8774-7f3c670983d8
+      iscommand: true
+      name: SentinelOne List Agents
+      script: SentinelOne V2|||sentinelone-list-agents
+      type: regular
+      version: -1
+    taskid: 93a5f140-3421-481f-8774-7f3c670983d8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 43d30d17-0778-40e2-8677-220fe4ea3cde
+      iscommand: false
+      name: SentinelOne PA Quarantine Integration Complete
+      type: title
+      version: -1
+      description: ''
+    taskid: 43d30d17-0778-40e2-8677-220fe4ea3cde
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      key:
+        simple: AgentIDList
+      value:
+        simple: ${SentinelOne.Agents.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 25ed6c17-aa71-4330-8e44-09a5c3fbca7b
+      iscommand: false
+      name: Set Agent List
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 25ed6c17-aa71-4330-8e44-09a5c3fbca7b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AgentIDList:
+        simple: ${AgentIDList}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2bc321c1-a2ea-4239-89de-042385407c0a
+      iscommand: false
+      name: SentinelOne - Get Agent Details given Agent ID List
+      playbookId: SentinelOne - Get Agent Details given Agent ID List
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 2bc321c1-a2ea-4239-89de-042385407c0a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 750,
+        "width": 380,
+        "x": 50,
+        "y": 65
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

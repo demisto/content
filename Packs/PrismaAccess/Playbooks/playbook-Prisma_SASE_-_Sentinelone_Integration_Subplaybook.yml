@@ -1,0 +1,328 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Prisma SASE - Sentinelone Integration Subplaybook
+inputs:
+- description: ""
+  key: HostName
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${HostName}
+- description: ""
+  key: ThreatCount
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${ThreatCount}
+- description: ""
+  key: AgentDecommissioned
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${AgentDecommissioned}
+name: Prisma SASE - Sentinelone Integration Subplaybook
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4951453c-0592-4a7d-8eda-3195fb03281c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4951453c-0592-4a7d-8eda-3195fb03281c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0f055190-8db1-4e3f-83fe-6732434406ca
+      iscommand: false
+      name: Quarantine Host Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 0f055190-8db1-4e3f-83fe-6732434406ca
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.ThreatCount
+          operator: isNotEqualString
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.AgentDecommissioned
+          operator: isEqualString
+          right:
+            value:
+              simple: "false"
+      label: AgentQuarantine
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      AgentQuarantine:
+      - "7"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      id: 65ffe088-883d-4a07-8d37-5f3aabb484d2
+      iscommand: false
+      name: Check Agent Status
+      type: condition
+      version: -1
+    taskid: 65ffe088-883d-4a07-8d37-5f3aabb484d2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "4":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      key:
+        simple: HostID
+      value:
+        complex:
+          accessor: host_id}
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: ${gplogs.endpoint_device_name}
+              operator: isEqualString
+              right:
+                value:
+                  simple: ${inputs.HostName}
+          root: ${gplogs
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 90797bed-717c-4155-822e-2ac576fa4fa2
+      iscommand: false
+      name: Extract Host ID
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 90797bed-717c-4155-822e-2ac576fa4fa2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${HostID}
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: Quarantine
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      Quarantine:
+      - "3"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b912852f-848f-425b-8692-182396b01736
+      iscommand: false
+      name: Check hosts to block is not empty
+      type: condition
+      version: -1
+    taskid: b912852f-848f-425b-8692-182396b01736
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      host_id:
+        simple: ${HostID}
+      tsg_id:
+        simple: "1264272156"
+      using:
+        simple: Palo Alto Networks - Prisma SASE V2_instance_1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Palo Alto Networks - Prisma SASE V2
+      description: 'Quarantine a host '
+      id: 2e92ff11-1653-45c2-803b-45fecc83701f
+      iscommand: true
+      name: Quarantine host
+      script: Palo Alto Networks - Prisma SASE V2|||prisma-sase-quarantine-host
+      type: regular
+      version: -1
+    taskid: 2e92ff11-1653-45c2-803b-45fecc83701f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      extend-context:
+        simple: gplogs=page.result.data
+      limit:
+        simple: "100000"
+      query:
+        simple: SELECT  DISTINCT host_id,endpoint_device_name FROM `firewall.globalprotect` where event_id.value = 'gateway-connected'  and endpoint_device_name='${inputs.HostName}'
+      transform_results:
+        simple: "false"
+      using:
+        simple: Cortex Data Lake_ Sentinel 3p_integ
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Data Lake
+      description: Runs a query on  any table or field.
+      id: 40c7cc73-b28a-4843-806d-36cd04e6d246
+      iscommand: true
+      name: Get HostID from CDL Logs
+      script: Cortex Data Lake|||cdl-query-logs
+      type: regular
+      version: -1
+    taskid: 40c7cc73-b28a-4843-806d-36cd04e6d246
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

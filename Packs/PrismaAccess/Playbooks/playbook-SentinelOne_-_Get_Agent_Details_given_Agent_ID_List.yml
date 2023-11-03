@@ -1,0 +1,285 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: SentinelOne - Get Agent Details given Agent ID List
+inputs:
+- description: ""
+  key: AgentIDList
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${AgentIDList}
+name: SentinelOne - Get Agent Details given Agent ID List
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c08fd4cb-636b-49af-89ee-a6a30a6ba553
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: c08fd4cb-636b-49af-89ee-a6a30a6ba553
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.AgentIDList}
+      extend-context:
+        simple: AgentDetail=page.result.data
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SentinelOne V2
+      description: Returns the details of an agent according to the agent ID.
+      id: c4d7a5cf-e737-4b70-8074-7171e535f5e4
+      iscommand: true
+      name: Get Agent details from SentinelOne
+      script: SentinelOne V2|||sentinelone-get-agent
+      type: regular
+      version: -1
+    taskid: c4d7a5cf-e737-4b70-8074-7171e535f5e4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 223e0c96-ba2e-44dc-886a-0443a0a6f2fa
+      iscommand: false
+      name: End Of Agent Details
+      type: title
+      version: -1
+      description: ''
+    taskid: 223e0c96-ba2e-44dc-886a-0443a0a6f2fa
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      key:
+        simple: HostName
+      value:
+        simple: ${SentinelOne.Agent.ComputerName}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 09039256-b528-4263-8c2d-ae7d286510a8
+      iscommand: false
+      name: Set HostName
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 09039256-b528-4263-8c2d-ae7d286510a8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      key:
+        simple: ThreatCount
+      value:
+        simple: ${SentinelOne.Agent.ThreatCount}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 4d6ed6d6-9354-465b-8d15-9beaedf8cd41
+      iscommand: false
+      name: ' Set Agent ThreatCount'
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 4d6ed6d6-9354-465b-8d15-9beaedf8cd41
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      key:
+        simple: AgentDecommissioned
+      value:
+        simple: ${SentinelOne.Agent.IsDecommissioned}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: e3538d3b-b655-415d-81b6-c43ca0c14397
+      iscommand: false
+      name: ' Set Agent Decommissioned'
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: e3538d3b-b655-415d-81b6-c43ca0c14397
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      AgentDecommissioned:
+        simple: ${AgentDecommissioned}
+      HostName:
+        simple: ${HostName}
+      ThreatCount:
+        simple: ${ThreatCount}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e1396a3d-ba89-41f3-8b72-2bf7322939a1
+      iscommand: false
+      name: Prisma SASE - Sentinelone Integration Subplaybook
+      playbookId: Prisma SASE - Sentinelone Integration Subplaybook
+      type: playbook
+      version: -1
+      description: ''
+    taskid: e1396a3d-ba89-41f3-8b72-2bf7322939a1
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
