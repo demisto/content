@@ -366,6 +366,7 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
             input_params['end_date'] = datetime.utcnow().astimezone().isoformat()
 
     else:
+        validate_input(args, False)
         initial_interval = demisto.params().get('first_fetch_timestamp', 1)
 
         if 'event_pull_start_date' not in last_run.keys():
