@@ -233,7 +233,7 @@ def test_get_indicator_context_unknown_indicator(client, requests_mock, indicato
     assert results[0].outputs_key_field == 'name'
     assert results[0].indicator.dbot_score.score == Common.DBotScore.NONE
     assert results[0].indicator.dbot_score.indicator_type == DBotScoreType.IP
-    
+
     for result in results:
         assert result.outputs != []
         assert result.to_context != []

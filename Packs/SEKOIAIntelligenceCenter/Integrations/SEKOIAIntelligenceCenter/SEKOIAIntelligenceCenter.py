@@ -262,7 +262,7 @@ def get_ip_indicator_reputation(
     )
 
     indicator_value: str | None = extract_indicator_from_pattern(stix_object.get("pattern", None)) or stix_object.get("name")
-    
+
     ip = Common.IP(
         ip=indicator_value,
         dbot_score=dbot_score,
