@@ -186,7 +186,7 @@ def test_get_offense_enrichment(enrichment, expected):
      - Case b: Ensure True, False is returned.
      - Case c: Ensure True, True is returned.
     """
-    return get_offense_enrichment(enrichment) == expected
+    assert get_offense_enrichment(enrichment) == expected
 
 
 def test_add_iso_entries_to_dict():

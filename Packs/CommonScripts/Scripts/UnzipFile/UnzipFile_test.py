@@ -82,7 +82,7 @@ def test_unzip_with_password(zip_tool: str):
         expected_data = f.read()
     shutil.rmtree(_dir)
     # - ensure that the saved file has expected content data
-    assert expected_data == actual_file_data,\
+    assert expected_data == actual_file_data, \
         'failed unzipping file: ' + zipped_file_path + ' with password: ' + password
 
 
