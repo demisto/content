@@ -561,7 +561,7 @@ script:
       required: true
       default: true
     - name: classification
-      description: Return only files of this classification. Possible values are MALICIOUS, SUSPICIOUS and KNOWN.
+      description: Return only files of this classification.
       auto: PREDEFINED
       predefined:
         - 'MALICIOUS'
@@ -645,7 +645,7 @@ script:
       description: IP address.
       required: true
     - name: classification
-      description: Return only files of this classification. Possible values are MALICIOUS, SUSPICIOUS and KNOWN.
+      description: Return only files of this classification.
       auto: PREDEFINED
       predefined:
         - 'MALICIOUS'

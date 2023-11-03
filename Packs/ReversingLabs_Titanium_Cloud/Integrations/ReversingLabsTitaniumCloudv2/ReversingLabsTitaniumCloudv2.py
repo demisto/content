@@ -1398,7 +1398,7 @@ def url_downloaded_files_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1440,7 +1440,7 @@ def url_latest_analyses_feed_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1493,7 +1493,7 @@ def url_analyses_feed_from_date_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1552,7 +1552,7 @@ def domain_report_command():
         response = domain_ti.get_domain_report(domain=domain)
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1563,15 +1563,15 @@ def domain_report_command():
 
 
 def domain_report_output(response_json, domain):
-    last_dns_records = response_json.get("rl").get("last_dns_records", [])
+    last_dns_records = response_json.get("rl", {}).get("last_dns_records", [])
     dns_records_table = tableToMarkdown(name="Last DNS records", t=last_dns_records)
-    dns_records_time = response_json.get("rl").get("last_dns_records_time")
+    dns_records_time = response_json.get("rl", {}).get("last_dns_records_time")
 
     markdown = f"""## ReversingLabs Domain Report for {domain}\n {dns_records_table}
     \n**Last DNS records time**: {dns_records_time}
     """
 
-    top_threats = response_json.get("rl").get("top_threats", [])
+    top_threats = response_json.get("rl", {}).get("top_threats", [])
     if top_threats:
         threats_table = tableToMarkdown(
             name="Top threats",
@@ -1579,7 +1579,7 @@ def domain_report_output(response_json, domain):
         )
         markdown = f"{markdown}\n {threats_table}"
 
-    third_party = response_json.get("rl").get("third_party_reputations")
+    third_party = response_json.get("rl", {}).get("third_party_reputations")
     if third_party:
         third_party_statistics = third_party.get("statistics")
 
@@ -1596,7 +1596,7 @@ def domain_report_output(response_json, domain):
         )
         markdown = f"{markdown}\n {sources_table}"
 
-    files_statistics = response_json.get("rl").get("downloaded_files_statistics")
+    files_statistics = response_json.get("rl", {}).get("downloaded_files_statistics")
     markdown = f"""{markdown}\n ### Downloaded files statistics\n **KNOWN**: {files_statistics.get("known")}
     **MALICIOUS**: {files_statistics.get("malicious")}
     **SUSPICIOUS**: {files_statistics.get("suspicious")}
@@ -1856,7 +1856,7 @@ def ip_report_command():
         response = ip_ti.get_ip_report(ip_address=ip)
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1866,7 +1866,7 @@ def ip_report_command():
 
 
 def ip_report_output(response_json, ip):
-    files_statistics = response_json.get("rl").get("downloaded_files_statistics")
+    files_statistics = response_json.get("rl", {}).get("downloaded_files_statistics")
 
     markdown = f"""## ReversingLabs IP address report for {ip}\n ### Downloaded files statistics\n **KNOWN**: {
     files_statistics.get("known")}
@@ -1876,7 +1876,7 @@ def ip_report_output(response_json, ip):
     **TOTAL**: {files_statistics.get("total")}
     """
 
-    third_party = response_json.get("rl").get("third_party_reputations")
+    third_party = response_json.get("rl", {}).get("third_party_reputations")
     if third_party:
         third_party_statistics = third_party.get("statistics")
 
@@ -2090,7 +2090,7 @@ def network_reputation_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -2100,7 +2100,7 @@ def network_reputation_command():
 
 
 def network_reputation_output(response_json, network_locations):
-    entries = bold_classification(response_json.get("rl").get("entries"), "classification", "malicious")
+    entries = bold_classification(response_json.get("rl", {}).get("entries"), "classification", "malicious")
 
     for entry in entries:
         tp_reputations = entry.get("third_party_reputations")
@@ -2184,9 +2184,9 @@ def network_reputation_override_command():
 
 
 def network_reputation_override_output(response_json):
-    created_overrides = response_json.get("rl").get("user_override").get("created_overrides")
-    removed_overrides = response_json.get("rl").get("user_override").get("removed_overrides")
-    invalid = response_json.get("rl").get("user_override").get("invalid_network_locations")
+    created_overrides = response_json.get("rl", {}).get("user_override", {}).get("created_overrides")
+    removed_overrides = response_json.get("rl", {}).get("user_override", {}).get("removed_overrides")
+    invalid = response_json.get("rl", {}).get("user_override", {}).get("invalid_network_locations")
 
     markdown = "## ReversingLabs Network reputation user override"
 
