@@ -4,6 +4,7 @@ from CommonServerPython import *
 import requests
 from datetime import datetime, timezone
 import urllib3
+import json
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -223,22 +224,9 @@ def format_incidents(alerts, hide_cvv_expiry):
     try:
         for alert in alerts:
 
-            card_data = {}
-
             if hide_cvv_expiry and alert['service'] == 'compromised_cards':
                 alert['data_message']['data']['bank']['card']['cvv'] = "xxx"
                 alert['data_message']['data']['bank']['card']['expiry'] = "xx/xx/xxxx"
-
-                card_details = alert['data_message']['data']['bank']['card']
-
-                card_data = {
-                    "card_brand": card_details.get('brand'),
-                    "card_no": card_details.get('card_no'),
-                    "card_cvv": card_details.get('cvv'),
-                    "card_expiry": card_details.get('expiry'),
-                    "card_level": card_details.get('level'),
-                    "card_type": card_details.get('type')
-                }
 
             alert_details = {
                 "name": "Cyble Vision Alert on {}".format(alert['service']),
@@ -246,14 +234,40 @@ def format_incidents(alerts, hide_cvv_expiry):
                 "severity": INCIDENT_SEVERITY.get(alert['severity'].lower()),
                 "alert_group_id": "{}".format(alert['alert_group_id']),
                 "event_id": "{}".format(alert['id']),
-                "data_message": "{}".format(alert['data_message']),
+                "data_message": json.dumps(alert['data_message']),
                 "keyword": "{}".format(alert['metadata']['entity']['keyword']['tag_name']),
                 "created_at": "{}".format(alert['created_at']),
                 "mirrorInstance": demisto.integrationInstance()
             }
 
             if alert['service'] == 'compromised_cards':
-                alert_details.update(card_data)
+
+                card_details = alert['data_message']['data']['bank']['card']
+
+                alert_details.update({
+                    "card_brand": card_details.get('brand'),
+                    "card_no": card_details.get('card_no'),
+                    "card_cvv": card_details.get('cvv'),
+                    "card_expiry": card_details.get('expiry'),
+                    "card_level": card_details.get('level'),
+                    "card_type": card_details.get('type')
+                })
+
+            elif alert['service'] == 'stealer_logs':
+
+                content = alert['data_message']['data'].get('content')
+
+                if content:
+                    alert_details.update({
+                        "application": content.get('Application'),
+                        "password": content.get('Password'),
+                        "url": content.get('URL'),
+                        "username": content.get('Username')
+                    })
+
+                alert_details.update({
+                    "filename": alert['data_message']['data']['filename']
+                })
 
             events.append(alert_details)
 
