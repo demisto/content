@@ -468,7 +468,7 @@ Returns a list of malops
 
 >|Name|Malicious|Creation Time|End Time|Command Line|Parent|Owner Machine|User|Image File|SHA1|MD5|Company Name|Product Name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| winrar-x64-602.exe | indifferent | 2022-03-14T00:00:00.000000 | 2022-03-14T00:00:00.000000 | "C:\Users\user\winrar-x64-602.exe" | explorer.exe | machine-name | machine-name\user | winrar-x64-602.exe | 1234sajklfshljjvhlsdfhilh23 | <md5> | Hello World | WinRAR |
+>| winrar-x64-602.exe | indifferent | 2022-03-14T00:00:00.000000 | 2022-03-14T00:00:00.000000 | "C:\Users\user\winrar-x64-602.exe" | explorer.exe | machine-name | machine-name\user | winrar-x64-602.exe | 1234sajklfshljjvhlsdfhilh23 | md5_hash | Hello World | WinRAR |
 
 ### cybereason-add-comment
 
