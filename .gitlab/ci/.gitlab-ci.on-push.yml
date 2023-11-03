@@ -52,13 +52,16 @@ merge-dev-secrets:
   variables:
     master_branch_name: master
   rules:
-    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   stage: unittests-and-validations
   script:
+    - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-    - section_start "Merging and deleting dev secrets" --collapsed
-    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log"
+    - section_start "Merging and deleting dev secrets"
+    - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log" 2>&1 || EXIT_CODE=$?
+    - job-done
+    - exit $EXIT_CODE
     - section_end "Merging and deleting dev secrets"
   allow_failure: true
 
@@ -73,10 +76,10 @@ stop-running-pipelines:
     master_branch_name: master
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running pipelines on current branch"
-    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
+    - python3 ./Tests/scripts/stop_running_pipeline.py
     - section_end "Stop running pipelines on current branch"
     - job-done
 
@@ -133,6 +136,7 @@ validate-content-conf:
     policy: pull-push
   variables:
     KUBERNETES_CPU_REQUEST: 2000m
+    EXTRACT_PRIVATE_TESTDATA: "true"
   needs: []
   stage: prepare-testing-bucket
   script:
@@ -280,6 +284,7 @@ xpanse-prepare-testing-bucket:
     - |
       echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -396,16 +401,20 @@ jobs-done-check-nightly:
 fan-in-on-push:
   when: always
   stage: fan-in
-  extends:
-    - .push-rule
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   tags:
     - gke
   script:
     - echo "fan in on push"
+  variables:
+    master_branch_name: master
 
 jobs-done-check-on-push:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   extends:
     - .push-rule
     - .jobs-done-check
@@ -432,13 +441,28 @@ jobs-done-check-on-push:
     WORKFLOW: 'Content PR'
     master_branch_name: master
 
-jobs-done-check-merge:
+fan-in-on-merge:
+  when: always
+  stage: fan-in
   rules:
-      - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+  tags:
+    - gke
+  script:
+    - echo "fan in on merge"
+  variables:
+    master_branch_name: master
+
+jobs-done-check-on-merge:
+  rules:
+    - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
   extends:
     - .push-rule
     - .jobs-done-check
   needs:
+    - merge-dev-secrets
     - run-unittests-and-lint
     - run-validations
     - test-upload-flow
@@ -482,14 +506,17 @@ slack-notify-nightly-build:
     JIRA_PROJECT_ID: $JIRA_PROJECT_ID
     JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
 
-slack-notify-on-push-build:
-  when: always
+slack-notify-on-push:
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+      when: always
   extends:
-    - .push-rule
     - .trigger-slack-notification
   variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Content PR'
+    master_branch_name: master
     JOB_NAME: 'fan-in-on-push'
     SLACK_CHANNEL: "#dmst-build-private-"
     SLACK_JOB: 'true'
@@ -501,6 +528,22 @@ slack-notify-on-push-build:
     JIRA_API_KEY: $JIRA_API_KEY
     JIRA_PROJECT_ID: $JIRA_PROJECT_ID
     JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
+
+slack-notify-on-merge:
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH == $master_branch_name'
+      when: always
+  extends:
+    - .trigger-slack-notification
+  variables:  # Passes the environment variable from the parent pipeline to the child which can be useful for cases when triggering pipeline with alternate env variable value passed in the API call.
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Content Merge'
+    master_branch_name: master
+    JOB_NAME: 'fan-in-on-merge'
+    SLACK_CHANNEL: "#dmst-build-test"
+    SLACK_JOB: 'true'
+    SLACK_ALLOW_FAILURE: 'false'
 
 .test_content_on_cloud_server_instances_base:
   tags:
@@ -518,6 +561,7 @@ slack-notify-on-push-build:
     - |
       echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -545,6 +589,14 @@ slack-notify-on-push-build:
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
+    - section_start "Packs re-installation test"
+    - |
+      if [[ -z "${NIGHTLY}" && -s $ARTIFACTS_FOLDER/packs_reinstall_to_test.txt ]]; then
+        echo "Running the packs re-installation test."
+        ./Tests/scripts/reinstall_packs_on_cloud_instances.sh || EXIT_CODE=$?
+      fi
+    - section_end "Packs re-installation test"
+
     - !reference [.cloud-machine-information]
     - job-done
     - exit $EXIT_CODE
@@ -552,25 +604,13 @@ slack-notify-on-push-build:
     - source .gitlab/helper_functions.sh
     - !reference [.unlock-machine]
 
-#xsiam_server_dev:
-#  extends:
-#    - .test_content_on_xsiam_server_instances_base
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-#    - if: '$NIGHTLY'
-#      when: always
-#  variables:
-#    INSTANCE_ROLE: "XSIAM Master"
-#    PRODUCT_TYPE: "XSIAM"
-#    GCS_QUEUE_FILE: "queue-master"
-#    TEST_MACHINES_LIST: "test-machines-master"
 
 xsiam_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
+    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ || $NIGHTLY)
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
@@ -582,6 +622,7 @@ xsiam_server_ga:
         CLOUD_MACHINES_TYPE: "nightly"
         CLOUD_MACHINES_COUNT: 1
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
+  timeout: 12 hours
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -622,7 +663,7 @@ xsoar_ng_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == null
+    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/)
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"
@@ -677,13 +718,14 @@ test-upload-flow:
     - SHOULD_SKIP_TEST_UPLOAD=$(./Utils/should_trigger_test_upload.sh)
     - if [ -z "$SHOULD_SKIP_TEST_UPLOAD" ]; then
     -   echo "No upload-flow related files were modified, skipping upload test"
+    -   job-done
     -   exit 0
     - fi
     - echo "Found modified files that should be tested in upload-flow"
     - section_end "Checks Whether to Trigger a Test Upload"
 
     - section_start "Create Testing Branch"
-    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-$(date +%s)"
+    - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-${CI_PIPELINE_ID}"
     - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a "${ARTIFACTS_FOLDER}" -g $GITLAB_PUSH_TOKEN
     - echo "Created test branch:${BRANCH}"
     - section_end "Create Testing Branch"
@@ -754,7 +796,7 @@ xsoar-test_playbooks_results:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
-    JIRA_LABELS: '["XSOAR"]'
+    JIRA_LABELS: '["XSOAR", "nightly"]'
   extends: .server_test_playbooks_results
   needs:
     - job: tests_xsoar_server
@@ -771,7 +813,7 @@ xsiam-test_playbooks_results:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
-    JIRA_LABELS: '["XSIAM"]'
+    JIRA_LABELS: '["XSIAM", "nightly"]'
   extends: .server_test_playbooks_results
   needs:
     - xsiam_server_ga
@@ -785,7 +827,7 @@ xsiam-test_modeling_rule_results:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     JIRA_COMPONENT: "Test Modeling Failure"
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
-    JIRA_LABELS: '["XSIAM"]'
+    JIRA_LABELS: '["XSIAM", "nightly"]'
   extends: .test_modeling_rule_results
   needs:
     - xsiam_server_ga
