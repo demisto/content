@@ -3080,7 +3080,10 @@ def panorama_get_url_category_command(
                 dbot_score=dbot_score,
                 category=url_dbot_score_category
             )
-            readable_output = err_readable_output or tableToMarkdown('URL', url_obj.to_context())
+            readable_output = err_readable_output or tableToMarkdown(
+                'URL', url_obj.to_context(),
+                headerTransform=lambda x: x.partition('(')[0]
+            )
             command_results.append(CommandResults(
                 indicator=url_obj,
                 readable_output=readable_output
