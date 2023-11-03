@@ -246,11 +246,19 @@ xpanse-prepare-testing-bucket:
 .run_tests:
   - section_start "Run Tests"
   - |
-    if [[ -f "${ARTIFACTS_FOLDER}/conf.json" ]]; then	
-      cp "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    if [[ -n "${NIGHTLY}" && "{SERVER_TYPE}" == "XSOAR SAAS"]]; then
+        if [[ $TEST_XDR_ENV ]]; then
+          cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+        else
+          echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+        fi
+        ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?
+    else
+      if [[ -f "${ARTIFACTS_FOLDER}/conf.json" ]]; then	
+        cp "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+      fi
+      ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
     fi
-  - |
-    ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
   - section_end "Run Tests"
 
 .test_content_on_xsoar_server_instances_base:
@@ -584,19 +592,7 @@ slack-notify-on-merge:
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - section_end "Install Packs and run Test-Module"
-    - |
-      if [[ -n "${NIGHTLY}" && "{SERVER_TYPE}" == "XSOAR SAAS"]]; then
-        if [[ $TEST_XDR_ENV ]]; then
-          cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-        else
-          echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-        fi
-        echo "Running xsoar-ng end to end sanity checks"
-        ./Tests/scripts/run_end_to_end_tests.sh || EXIT_CODE=$?
-        echo "Finished xsoar-ng end to end sanity checks"
-      else
-        !reference [.run_tests]
-      fi
+    - !reference [.run_tests]
     - section_start "Test Modeling Rules"
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
