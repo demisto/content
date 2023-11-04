@@ -306,9 +306,18 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
   stage: run-instances
   script:
     - EXIT_CODE=0
+    - section_start "Update packs to install and modeling rules to test." --collapsed
     - echo -e "\nSemperisDSP" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt"
     - cat "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt"
+    - section_end "Update packs to install and modeling rules to test." --collapsed
+
+    - section_start "Create Artifacts instance directory" --collapsed
+    - |
+      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
+      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
+    - section_end "Create Artifacts instance directory"
 
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -339,14 +348,14 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - demisto-sdk download -lf --insecure
     - section_end "Create Entities and Upload"
 
-    - demisto-sdk upload -i Packs/Whois --insecure -z -x
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-
-    # - section_start "Install Packs and run Test-Module" --collapsed
-    # - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
-    # - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    # - demisto-sdk upload -i Packs/Whois --insecure -z -x
     # - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    # - section_end "Install Packs and run Test-Module"
+
+    - section_start "Install Packs and run Test-Module" --collapsed
+    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    - section_end "Install Packs and run Test-Module"
 
     - section_start "Wait Until Server Ready"  --collapsed
     - echo Going to sleep for 15 minutes to allow server finish indexing
@@ -397,6 +406,14 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
   stage: run-instances
   script:
     - EXIT_CODE=0
+
+    - section_start "Create Artifacts instance directory" --collapsed
+    - |
+      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
+      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
+    - section_end "Create Artifacts instance directory"
+
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - !reference [.lock-machine]
