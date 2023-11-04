@@ -1119,10 +1119,11 @@ class BranchTestCollector(TestCollector):
             logger.info('contribution branch found, contrib-diff:\n' + '\n'.join(contrib_diff))
             changed_files.extend(contrib_diff)
 
-        elif os.getenv('EXTRACT_PRIVATE_TESTDATA'):
-            logger.info('considering extracted private test data')
-            private_test_data = tuple(filter(lambda f: f.startswith('Packs/'), repo.untracked_files))
-            changed_files.extend(private_test_data)
+        # comment out us its looks unused and adding unchanged_files to the changed_files
+        # elif os.getenv('EXTRACT_PRIVATE_TESTDATA'):
+        #     logger.info('considering extracted private test data')
+        #     private_test_data = tuple(filter(lambda f: f.startswith('Packs/'), repo.untracked_files))
+        #     changed_files.extend(private_test_data)
 
         diff = repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
         logger.debug(f'raw changed files string:\n{diff}')
