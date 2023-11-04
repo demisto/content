@@ -1,0 +1,64 @@
+category: Messaging and Conferencing
+commonfields:
+  id: OpenAi ChatGPT (All Versions New & Legacy)
+  version: -1
+configuration:
+- defaultvalue: https://api.openai.com/
+  display: 'Server URL: (e.g. https://api.openai.com/)'
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: apikey
+  required: true
+  section: Connect
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: gpt-4
+  display: ChatGPT Version
+  name: apiversion
+  options:
+  - gpt-3.5-turbo
+  - gpt-4
+  - babbage-002
+  - davinci-002
+  - text-davinci-003
+  - text-davinci-002
+  - davinci
+  - curie
+  - babbage
+  - ada
+  required: false
+  type: 15
+description: |-
+  This integration provides access to the OpenAI ChatGPT API, which generates human-like responses to text prompts.
+
+  OpenAI ChatGPT is a revolutionary conversational AI system that is designed to interact with humans just like real people, this cutting-edge system is capable of understanding human language, responding to complex queries, and even mimicking human personality traits. Using advanced natural language processing techniques, OpenAI ChatGPT can simulate human conversation to an unprecedented degree of accuracy and effectiveness, making it an ideal tool for a wide range of applications, including customer service, virtual assistance, and more.
+display: OpenAi ChatGPT (All Versions New & Legacy)
+name: OpenAi ChatGPT (All Versions New & Legacy)
+script:
+  commands:
+  - arguments:
+    - description: Add your question or text
+      name: prompt
+      required: true
+    description: Send Text Message as a prompt to ChatGPT
+    name: chatgpt-send-prompt
+  dockerimage: docker.io/demisto/python3:3.10.13.78960
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
