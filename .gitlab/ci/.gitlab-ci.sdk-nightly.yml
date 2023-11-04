@@ -16,7 +16,6 @@
   - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
   - demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_IncidentField_Test.json --insecure
   - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
-  - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
   - section_end "Upload Entities to Cortex XSOAR"
 
 
@@ -212,7 +211,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
-    NIGHTLY: "true"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -349,6 +347,11 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - demisto-sdk upload -i Packs/HelloWorld --insecure -z -x
     - section_end "Create Entities and Upload"
 
+    - section_start "Download Entities" --collapsed
+    - demisto-sdk download -lf --insecure
+    - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
+    - section_end "Download Entities"
+
     - section_start "Install Packs" --collapsed
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
@@ -362,11 +365,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - section_end "Wait Until Server Ready"
 
     - !reference [.run_tests]
-
-    - section_start "Download Entities" --collapsed
-    - demisto-sdk download -lf --insecure
-    - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
-    - section_end "Download Entities"
 
     - !reference [.cloud-machine-information]
     - exit $EXIT_CODE
@@ -434,7 +432,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
-    - demisto-sdk download -lf --insecure
     - demisto-sdk upload -i Packs/AzureSentinel --insecure -z
     - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
     - section_end "Create and Upload Entities to XSOAR Instance"
