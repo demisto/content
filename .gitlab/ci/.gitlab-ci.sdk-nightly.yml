@@ -212,6 +212,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
+    NIGHTLY: "true"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -248,11 +249,11 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - section_end "Download Entities from XSOAR Instance"
 
-    - section_start "Install Packs and run Test-Module" --collapsed
+    - section_start "Install Packs" --collapsed
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - section_end "Install Packs and run Test-Module"
+    - section_end "Install Packs"
 
     - section_start "Wait Until Server Ready"  --collapsed
     - echo Going to sleep for 15 minutes to allow server finish indexing
@@ -262,7 +263,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
 
     - !reference [.run_tests]
 
-    - section_start "Destroy instances"
+    - section_start "Destroy instances"  --collapsed
     - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
     - destroy_instances_exit_code=$?
     - |
@@ -306,11 +307,12 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
   stage: run-instances
   script:
     - EXIT_CODE=0
+
     - section_start "Update packs to install and modeling rules to test." --collapsed
     - echo -e "\nSemperisDSP" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
     - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt"
     - cat "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt"
-    - section_end "Update packs to install and modeling rules to test." --collapsed
+    - section_end "Update packs to install and modeling rules to test."
 
     - section_start "Create Artifacts instance directory" --collapsed
     - |
@@ -345,17 +347,13 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - section_start "Create Entities and Upload" --collapsed
     - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - demisto-sdk upload -i Packs/HelloWorld --insecure -z -x
-    - demisto-sdk download -lf --insecure
     - section_end "Create Entities and Upload"
 
-    # - demisto-sdk upload -i Packs/Whois --insecure -z -x
-    # - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-
-    - section_start "Install Packs and run Test-Module" --collapsed
+    - section_start "Install Packs" --collapsed
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - section_end "Install Packs and run Test-Module"
+    - section_end "Install Packs"
 
     - section_start "Wait Until Server Ready"  --collapsed
     - echo Going to sleep for 15 minutes to allow server finish indexing
@@ -366,6 +364,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - !reference [.run_tests]
 
     - section_start "Download Entities" --collapsed
+    - demisto-sdk download -lf --insecure
     - demisto-sdk download -o Packs/HelloWorld/ -i CommonServerUserPowerShell --insecure -f
     - section_end "Download Entities"
 
@@ -446,11 +445,11 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
     - section_end "Download Entities from XSOAR Instance"
 
-    - section_start "Install Packs and run Test-Module" --collapsed
+    - section_start "Install Packs" --collapsed
     - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
-    - section_end "Install Packs and run Test-Module"
+    - section_end "Install Packs"
 
     - section_start "Wait Until Server Ready" --collapsed
     - echo Going to sleep for 15 minutes to allow server finish indexing
