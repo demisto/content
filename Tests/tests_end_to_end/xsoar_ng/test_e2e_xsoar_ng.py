@@ -147,7 +147,11 @@ def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id
     _playbook_status = playbook_status_raw_response.get("state", "").lower()
     if _playbook_status in expected_states:
         return True
-    raise Exception(f'the status of the playbook {playbook_status_raw_response} is {_playbook_status}')
+    playbook_id = playbook_status_raw_response.get("playbookId")
+    if _playbook_status == "failed":
+        playbook_failure_reason = xsoar_ng_client.get_playbook_failure_by_incident(incident_id)
+        raise Exception(f'playbook {playbook_id} failed because of {playbook_failure_reason} and its state is {_playbook_status}')
+    raise Exception(f'the status of the playbook {playbook_id} is {_playbook_status}')
 
 
 @retry_http_request(times=30, delay=5)
