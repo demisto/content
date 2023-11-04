@@ -818,10 +818,6 @@ class BranchTestCollector(TestCollector):
         tree = commits_for_file[-1].tree  # gets the first commit tree
         old_conf_json = tree[conf_json_path].data_stream.read().decode()
 
-        print("new conf_json")
-        print(new_conf_json)
-        print("old conf_json")
-        print(old_conf_json)
         # compare
         # collect_changed_tpb
         # get_changed_tpb_paths
