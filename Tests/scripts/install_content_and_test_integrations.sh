@@ -45,7 +45,8 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; 
         -n "${IS_NIGHTLY}" --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY" \
         --server-type "${SERVER_TYPE}" --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "$CLOUD_SERVERS_PATH" \
         --cloud_servers_api_keys "cloud_api_keys.json" --marketplace_name "$MARKETPLACE_NAME" \
-        --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET"
+        --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET" \
+        --test_pack_path "${ARTIFACTS_FOLDER_SERVER_TYPE}" --content_root "."
       if [ $? -ne 0 ]; then
         exit_code=1
         echo "Failed to run configure_and_test_integration_instances.py script on ${CLOUD_CHOSEN_MACHINE_ID}"
@@ -65,7 +66,8 @@ elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
       --is-nightly "${IS_NIGHTLY}" --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY" \
       --server-type "${SERVER_TYPE}"  --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" \
       --cloud_servers_path "$CLOUD_SERVERS_PATH" --cloud_servers_api_keys "cloud_api_keys.json" \
-      --marketplace_name "$MARKETPLACE_NAME" --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET"
+      --marketplace_name "$MARKETPLACE_NAME" --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET" \
+      --test_pack_path "${ARTIFACTS_FOLDER_SERVER_TYPE}" --content_root "."
     exit_on_error $? "Failed to $0 script"
 
     echo "Finished $0 successfully"

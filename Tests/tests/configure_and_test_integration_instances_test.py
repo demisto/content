@@ -33,7 +33,7 @@ def create_build_object_with_mock(mocker, server_type):
             '-g', "$GIT_SHA1", '--ami_env', "$1", '-n', 'false', '--branch', "$CI_COMMIT_BRANCH",
             '--build-number', "$CI_PIPELINE_ID", '-sa', "$GCS_MARKET_KEY", '--server-type', server_type,
             '--cloud_machine', "qa2-test-111111", '--cloud_servers_path', '$XSIAM_SERVERS_PATH',
-            '--marketplace_name', 'marketplacev2']
+            '--marketplace_name', 'marketplacev2', '--test_pack_path', '$ARTIFACTS_FOLDER', '--content_root', '$CONTENT_ROOT']
     options = options_handler(args=args)
     json_data = {
         'tests': [],
