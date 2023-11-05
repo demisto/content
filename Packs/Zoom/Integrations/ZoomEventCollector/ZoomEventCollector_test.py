@@ -3,7 +3,6 @@ from CommonServerPython import DemistoException
 import demistomock as demisto  # noqa: F401
 from datetime import datetime, timezone
 import json
-import io
 from freezegun import freeze_time
 
 BASE_URL = "https://api.zoom.us/v2/"
@@ -11,7 +10,7 @@ MAX_RECORDS_PER_PAGE = 300
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -53,7 +52,7 @@ def test_main(first_fetch_time, expected_result, expect_error, mocker):
 
     mocker.patch.object(demisto, "command", return_value="test-module")
     mocker.patch.object(demisto, 'results')
-    mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value='token')
+    mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value=('token', None))
     mocker.patch('ZoomEventCollector.Client.search_events', return_value={
         "from": "2023-03-31",
         "to": "2023-04-01",
@@ -103,7 +102,7 @@ def test_fetch_events(mocker):
         util_load_json('test_data/fetch_events_activities.json').get('fetch_events'),
     ])
 
-    mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value='token')
+    mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value=('token', None))
     mocker.patch.object(Client, "generate_oauth_token")
 
     client = Client(base_url=BASE_URL)
@@ -164,7 +163,7 @@ def test_fetch_events_with_last_run(mocker):
         util_load_json('test_data/fetch_events_activities.json').get('fetch_events_with_token_next')
     ])
 
-    mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value='token')
+    mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value=('token', None))
     mocker.patch.object(Client, "generate_oauth_token")
 
     client = Client(base_url=BASE_URL)
@@ -210,7 +209,7 @@ def test_get_events_command(mocker):
         util_load_json('test_data/get_events_activities.json')
     ])
 
-    mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value='token')
+    mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value=('token', None))
     mocker.patch.object(Client, "generate_oauth_token")
 
     client = Client(base_url=BASE_URL)
