@@ -40,7 +40,7 @@ script:
       - '0'
       - '1'
       - '2'
-      description: Organization ID of the endpoint. For the use of a custom organization ID, you can specify a custom value outside the predefined set.
+      description: Organization ID of the endpoint. For a custom organization ID, you can specify a custom value outside the predefined set.
     - name: isolation
       required: true
       auto: PREDEFINED
@@ -74,7 +74,7 @@ script:
       - memory-ram-pagefile
       - quick
       - full
-      description: Acquisition profile.
+      description: Acquisition profile. To use a custom acquisition profile, you can specify a custom profile outside the predefined set.
     - name: case_id
       required: true
       description: ID for the case,e.g. C-2022-0001.
@@ -85,7 +85,7 @@ script:
       - '0'
       - '1'
       - '2'
-      description: Organization ID of the endpoint. For the use of a custom organization ID, you can specify a custom value outside the predefined set.
+      description: Organization ID of the endpoint. For a custom organization ID, you can specify a custom value outside the predefined set.
     outputs:
     - contextPath: BinalyzeAIR.Acquire.result._id
       description: Acquisition unique task ID.
