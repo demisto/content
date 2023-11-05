@@ -67,7 +67,7 @@ class Client(BaseClient):
         self.client_secret_param = client_secret_param
         self.use_basic_auth_param = use_basic_auth_param
 
-    # HEADING: """ CLIENT HELPER FUNCTIONS """
+    #  """ CLIENT HELPER FUNCTIONS """
 
     def _create_access_policy_rule_request_body(
         self,
@@ -260,7 +260,7 @@ class Client(BaseClient):
 
         return request_body
 
-    # HEADING: """ REQUEST FUNCTIONS """
+    #  """ REQUEST FUNCTIONS """
 
     def test_organization_name_request(self, organization_name: str):
         try:
@@ -1552,7 +1552,7 @@ class Client(BaseClient):
         return response
 
 
-# HEADING: """ HELPER FUNCTIONS """
+#  """ HELPER FUNCTIONS """
 
 
 def set_offset(page: Optional[int], page_size: Optional[int]):
@@ -1694,7 +1694,8 @@ def create_client_header(
         if username and password:
             credentials = f"{username}:{password}"
             auth_header = f"Basic {b64_encode(credentials)}"
-            return (username, password), {"Authorization": auth_header}
+            return (username, password), {"Authorization": auth_header, 'Accept': 'application/json',
+                                          'Content-Type': 'application/json'}
         else:
             return_error("Basic Authentication method chosen but Username or Password parameters are missing.")
 
@@ -1705,7 +1706,8 @@ def create_client_header(
         case_context = all([client_id, client_secret, access_token])
 
         if case_auth_token or case_context:
-            return None, {"Authorization": f"Bearer {access_token}"}
+            return None, {"Authorization": f"Bearer {access_token}", 'Accept': 'application/json',
+                          'Content-Type': 'application/json'}
 
         else:
             raise DemistoException(
@@ -1840,7 +1842,7 @@ def get_sdwan_policy_rule_args_with_possible_custom_rule_json(args: dict[str, An
     }
 
 
-# HEADING: """ COMMAND FUNCTIONS """
+#  """ COMMAND FUNCTIONS """
 
 
 def handle_auth_token_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3573,7 +3575,7 @@ def test_module(
     return message
 
 
-# HEADING: """ MAIN FUNCTION """
+#  """ MAIN FUNCTION """
 
 
 def main() -> None:
