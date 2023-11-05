@@ -326,7 +326,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
     Returns:
         (str) Server numeric version
     """
-    default_version = '99.99.98'
+    default_version = MAX_ON_PREM_SERVER_VERSION
     if is_local_run:
         logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
