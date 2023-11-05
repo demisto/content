@@ -5572,8 +5572,7 @@
         },
         {
             "integrations": "Netcraft V2",
-            "playbookID": "Test - Netcraft",
-            "is_mockable": false
+            "playbookID": "Test - Netcraft"
         }
     ],
     "skipped_tests": {

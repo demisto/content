@@ -343,8 +343,6 @@ tasks:
         simple: Palo Alto Networks
       state:
         simple: no threats
-      submitter_email:
-        simple: spadan@paloaltonetworks.com
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -434,7 +432,7 @@ tasks:
       reason:
         simple: Test submission.
       reporter_email:
-        simple: spadan@paloaltonetworks.com
+        simple: reporter@demistodev.com
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -555,7 +553,7 @@ tasks:
       polling:
         simple: "true"
       reporter_email:
-        simple: spadan@paloaltonetworks.com
+        simple: reporter@demistodev.com
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -665,7 +663,7 @@ tasks:
       reason:
         simple: 'Test submission with random string: "${RandomString}"'
       reporter_email:
-        simple: spadan@paloaltonetworks.com
+        simple: reporter@demistodev.com
       timeout:
         simple: "900"
       urls:
