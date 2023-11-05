@@ -96,10 +96,11 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
-    IFRA_ENV_TYPE: "Server Master"
-    KUBERNETES_CPU_REQUEST: 2000m
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
+    IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
 
   cache:
     policy: pull-push
@@ -204,7 +205,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}/"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
