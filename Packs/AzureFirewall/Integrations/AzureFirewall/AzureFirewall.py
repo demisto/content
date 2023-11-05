@@ -510,13 +510,15 @@ class AzureFirewallClient:
         return response
 
     def azure_firewall_subscriptions_list_request(self) -> dict:
-        return self.ms_client.http_request('GET', url_suffix='subscriptions', params=self.default_params,
+        full_url = 'https://management.azure.com/subscriptions'
+        return self.ms_client.http_request('GET', full_url=full_url, params=self.default_params,
                                            resp_type="json", timeout=100)
 
     def azure_firewall_resource_group_list_request(self, tag: str, limit: int) -> dict:
         filter_by_tag = azure_tag_formatter(tag) if tag else None
-        params = {"$filter": filter_by_tag, "$top": limit} | self.default_params
-        return self.ms_client.http_request('GET', url_suffix='resourcegroups', params=params)
+        params = {'$filter': filter_by_tag, '$top': limit} | self.default_params
+        full_url = f'https://management.azure.com/subscriptions/{self.subscription_id}/resourcegroups'
+        return self.ms_client.http_request('GET', full_url=full_url, params=params)
 
 
 def generate_polling_readable_message(resource_type_name: str, resource_name: str) -> str:
