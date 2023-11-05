@@ -2217,7 +2217,7 @@ def main():
         'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
         'exabeam-list-incident': list_incidents,
     }
-
+    client = None
     try:
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
                         password=password, proxy=proxy, headers=headers, api_key=api_key, is_fetch=is_fetch)
@@ -2247,7 +2247,8 @@ def main():
         return_error(str(err))
 
     finally:
-        client.shutdown()
+        if client:
+            client.shutdown()
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
