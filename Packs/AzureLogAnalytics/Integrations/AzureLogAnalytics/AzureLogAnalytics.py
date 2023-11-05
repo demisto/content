@@ -373,9 +373,8 @@ def main():
         }
 
         if demisto.command() == 'test-module':
-            if not managed_identities_client_id:
-                # cannot use test module if not using Managed Identities
-                # due to the lack of ability to set refresh token to integration context
+            if not client_credentials and not managed_identities_client_id:
+                # cannot use test module due to the lack of ability to set refresh token to integration context
                 raise Exception("Please use !azure-log-analytics-test instead")
 
             test_connection(client, params)

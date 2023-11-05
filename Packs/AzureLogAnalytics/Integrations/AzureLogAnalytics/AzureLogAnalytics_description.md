@@ -27,7 +27,7 @@ In the self-deployed mode, you can authenticate by using one of the following fl
 ### Authorization Code flow
 
 ---
-1. In the instance configuration, select the **Use Authorization Code flow** checkbox.
+1. In the instance configuration, select the **Use a self-deployed Azure application - Authorization Code flow** checkbox.
 2. Enter your Client ID in the **ID / Client ID** parameter. 
 3. Enter your Client secret in the **Key / Client Secret** parameter.
 4. Enter your tenant ID in the **Tenant ID** parameter.
@@ -41,7 +41,7 @@ In the self-deployed mode, you can authenticate by using one of the following fl
 ---
 Follow these steps for client-credentials configuration.
 
-1. In the instance configuration, select the **Use Client Credentials Authorization Flow** checkbox.
+1. In the instance configuration, select the **Use a self-deployed Azure application - Client Credentials Authorization Flow** checkbox.
 2. Enter your Client ID in the **ID / Client ID** parameter. 
 3. Enter your Client Secret in the **Key / Client Secret** parameter.
 4. Enter your Tenant ID in the **Tenant ID** parameter.
