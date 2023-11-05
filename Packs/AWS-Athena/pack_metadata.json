@@ -1,5 +1,5 @@
 {
-    "name": "AWS - Athena (Beta)",
+    "name": "AWS - Athena",
     "description": "Amazon Web Services Athena",
     "support": "xsoar",
     "currentVersion": "1.0.8",

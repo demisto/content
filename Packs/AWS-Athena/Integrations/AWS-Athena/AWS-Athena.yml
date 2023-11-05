@@ -1,8 +1,8 @@
 commonfields:
-  id: AWS - Athena - Beta
+  id: AWS - Athena
   version: -1
-name: AWS - Athena - Beta
-display: AWS - Athena (Beta)
+name: AWS - Athena
+display: AWS - Athena
 category: IT Services
 description: Amazon Web Services Athena
 configuration:
@@ -131,7 +131,6 @@ script:
     description: Returns the results of a single query execution specified by QueryExecutionId if you have access to the workgroup in which the query ran.
   dockerimage: demisto/boto3py3:1.0.0.38849
   subtype: python3
-beta: true
 tests:
-- Beta-Athena-Test
+- Athena-Test
 fromversion: 5.0.0

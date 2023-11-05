@@ -1,6 +1,6 @@
-id: Beta-Athena-Test
+id: Athena-Test
 version: -1
-name: Beta-Athena-Test
+name: Athena-Test
 starttaskid: "0"
 tasks:
   "0":
