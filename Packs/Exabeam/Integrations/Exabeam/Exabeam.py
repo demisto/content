@@ -1,6 +1,7 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 from typing import Any
 import requests
 import dateparser
@@ -36,7 +37,7 @@ class Client(BaseClient):
         else:
             self._login()
 
-    def __del__(self):
+    def shutdown(self):
         if not self.is_token_auth():
             self._logout()
         super().__del__()
@@ -2244,6 +2245,9 @@ def main():
 
     except Exception as err:
         return_error(str(err))
+
+    finally:
+        client.shutdown()
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
