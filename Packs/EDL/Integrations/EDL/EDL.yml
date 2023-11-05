@@ -17,8 +17,7 @@ configuration:
   display: Indicator Query
   name: indicators_query
   type: 0
-  section: Collect
-  advanced: true
+  advanced: false
   required: false
 - additionalinfo: The format of the exported list.
   defaultvalue: PAN-OS (text)
@@ -62,6 +61,7 @@ configuration:
   type: 0
   section: Connect
   required: false
+  hidden: true
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
@@ -251,8 +251,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'This parameter will be deprecated from September 2023. Make sure to adjust your default queries accordingly..'
-  display: 'Advanced: Use Legacy Queries (Deprecated)'
+- additionalinfo: 'When enabled, the integration queries the server using full queries (overwrites the "Exported Fields" parameter). Advanced configuration to be used only if instructed by Cortex XSOAR Support, or you have encountered log errors in the form of: msgpack: invalid code.'
+  display: 'Advanced: Use Legacy Queries'
   name: use_legacy_query
   type: 8
   section: Collect
