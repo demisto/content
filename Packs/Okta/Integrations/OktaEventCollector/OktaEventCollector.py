@@ -170,7 +170,7 @@ def main():  # pragma: no cover
             else:
                 last_run_after = last_run['after']
             events = fetch_events(client, start_time_epoch, events_limit,
-                                  since=last_run_after, last_object_ids=last_object_ids)
+                                  last_run_after=last_run_after, last_object_ids=last_object_ids)
             demisto.debug(f'sending_events_to_xsiam: {len(events)}')
             send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(get_last_run(events, last_run_after))
