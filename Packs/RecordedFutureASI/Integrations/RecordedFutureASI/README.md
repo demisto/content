@@ -38,7 +38,7 @@
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | False        |
 | Max Fetch                                                                                          | False        |
 
-1. Click **Test** to validate the token and connection.
+4. Click **Test** to validate the token and connection.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
