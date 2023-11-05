@@ -19,6 +19,7 @@ configuration:
   name: credentials
   type: 9
   required: false
+  displaypassword: Key / Client Secret
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint

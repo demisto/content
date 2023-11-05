@@ -29,7 +29,7 @@ In the self-deployed mode, you can authenticate by using one of the following fl
 ---
 1. In the instance configuration, select the **Use Authorization Code flow** checkbox.
 2. Enter your Client ID in the **ID / Client ID** parameter. 
-3. Enter your Client secret in the **password** parameter.
+3. Enter your Client secret in the **Key / Client Secret** parameter.
 4. Enter your tenant ID in the **Tenant ID** parameter.
 5. Enter your redirect URI in the **Redirect URI** parameter.
 6. Save the integration settings.
@@ -43,7 +43,7 @@ Follow these steps for client-credentials configuration.
 
 1. In the instance configuration, select the **Use Client Credentials Authorization Flow** checkbox.
 2. Enter your Client ID in the **ID / Client ID** parameter. 
-3. Enter your Client Secret in the **password** parameter.
+3. Enter your Client Secret in the **Key / Client Secret** parameter.
 4. Enter your Tenant ID in the **Tenant ID** parameter.
 5. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
 
