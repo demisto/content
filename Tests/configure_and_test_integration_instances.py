@@ -639,8 +639,11 @@ class XSOARBuild(Build):
             self: A build object
         """
         # Install all existing packs with latest version
-        success, results = self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
-                                                                     service_account=self.service_account)
+        success, results = self.concurrently_run_function_on_servers(
+            function=install_all_content_packs_for_nightly,
+            service_account=self.service_account,
+            packs_to_install=self.pack_ids_to_install
+        )
         success &= all(results)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_test_pack()
@@ -757,7 +760,9 @@ class XSOARBuild(Build):
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
         return servers, server_numeric_version
 
-    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None) -> tuple[bool, list[Any]]:
+    def concurrently_run_function_on_servers(
+        self, function=None, pack_path=None, service_account=None, packs_to_install=None
+    ) -> tuple[bool, list[Any]]:
         if not function:
             raise Exception('Install method was not provided.')
 
@@ -767,6 +772,8 @@ class XSOARBuild(Build):
                 kwargs['service_account'] = service_account
             if pack_path:
                 kwargs['pack_path'] = pack_path
+            if packs_to_install:
+                kwargs["pack_ids_to_install"] = packs_to_install
 
             futures = [
                 executor.submit(
