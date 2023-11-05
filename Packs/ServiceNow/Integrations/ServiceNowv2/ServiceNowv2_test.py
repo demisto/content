@@ -2023,3 +2023,54 @@ def test_send_request_with_str_error_response(mocker, mock_json, expected_result
     with pytest.raises(Exception) as e:
         client.send_request(path='table')
     assert str(e.value) == expected_results
+
+
+@pytest.mark.parametrize('oauth_endpoint_param, expected_suffix',
+                         [
+                             pytest.param('/oauth_token.do', '/oauth_token.do', id="Default"),
+                             pytest.param('/oauth-custom-test', '/oauth-custom-test', id="Custom"),
+                         ])
+def test_custom_oauth_endpoint(mocker, oauth_endpoint_param: str, expected_suffix: str):
+    """
+    Given:
+     - A client with custom oauth endpoint.
+
+    When:
+     - Running the 'client.get_access_token' function.
+
+    Then:
+     - Verify that the 'requests.post' function's arguments are arguments of a call with the custom oauth endpoint.
+    """
+    oauth_params = {
+            'credentials': {
+                'identifier': 'username',
+                'password': 'password'
+            },
+            'client_id': 'client_id',
+            'client_secret': 'client_secret',
+            'url': 'https://test.service-now.com',
+            'headers': {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            'verify': False,
+            'proxy': None,
+            'use_oauth': True,
+            'oauth_endpoint': oauth_endpoint_param,
+    }
+
+    client = Client(server_url='https://test.service-now.com', sc_server_url='sc_server_url', cr_server_url='cr_server_url',
+                    username='username', password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=1, timestamp_field='timestamp_field', ticket_type='ticket_type',
+                    get_attachments=False, incident_name='incident_name', oauth_params=oauth_params,
+                    display_date_format='yyyy-MM-dd')
+
+    mock_response = requests.models.Response()
+    mock_response._content = b'{}'
+    mock_response.status_code = 200
+
+    client_request_mock = mocker.patch.object(client.snow_client, '_http_request',
+                                              return_value=mock_response)
+    login_command(client=client, args={'username': 'username', 'password': 'password'})
+
+    assert client_request_mock.call_args.kwargs.get('url_suffix') == expected_suffix
