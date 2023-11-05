@@ -198,6 +198,9 @@ def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient')
 
 
 def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+    
+    def JoinedTimestamp_to_str(account):
+        account['JoinedTimestamp'] = str(account['JoinedTimestamp'])
 
     def response_to_readable(accounts) -> str:
         return tableToMarkdown(
@@ -207,24 +210,23 @@ def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
                 'Id', 'Arn', 'Name', 'Email',
                 'JoinedMethod', 'JoinedTimestamp', 'Status',
             ],
-            removeNull=True,
-            json_transform_mapping={
-                'JoinedTimestamp': JsonTransformer(func=str)
-            }
+            removeNull=True
         )
 
     def account_get() -> CommandResults:
 
-        account = aws_client.describe_account(
+        description = aws_client.describe_account(
             AccountId=args['account_id']
         )
-        del account['Account']['JoinedTimestamp']
+
+        account = description.get('Account', {})
+        JoinedTimestamp_to_str(account)
 
         return CommandResults(
+            readable_output=response_to_readable(account),
             outputs_key_field='Id',
             outputs_prefix='AWS.Organizations.Account',
-            outputs=account['Account'],
-            readable_output=response_to_readable(account['Account'])
+            outputs=account,
         )
 
     def account_list() -> CommandResults:
@@ -236,6 +238,8 @@ def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
             next_token=args.get('next_token'),
             page_size=args.get('page_size'),
         )
+
+        accounts = list(map(JoinedTimestamp_to_str, accounts))
 
         return CommandResults(
             outputs=next_token_output_dict(

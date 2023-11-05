@@ -1,0 +1,54 @@
+import pytest
+from test_data.data import *
+from typing import TYPE_CHECKING
+
+# The following imports are used only for type hints and autocomplete.
+# They are not used at runtime, and are not in the docker image.
+if TYPE_CHECKING:
+    from mypy_boto3_organizations import *
+    # from botocore.paginate import Paginator
+
+
+class MockOrganizationsClient:  # (OrganizationsClient):
+
+    def describe_account(self, **kwargs):
+        assert account_list.client_func_kwargs == kwargs
+        return account_list.client_func_return
+    
+    def describe_organizational_unit(self, **kwargs):
+        assert organization_unit_get.client_func_kwargs == kwargs
+        return organization_unit_get.client_func_return
+
+
+client: 'OrganizationsClient' = MockOrganizationsClient()
+
+# @pytest.mark.parametrize('args, expected', [
+#     ({'limit': 10}, {'Accounts': [...], 'NextToken': 'xyz'}),  # example output
+#     ({'next_token': 'abc'}, {'Accounts': [...]}),
+#     ({}, {'Accounts': [...]})
+# ])
+# def test_account_list(args, expected):
+#     client = OrganizationsClient() # mock client
+#     result = account_list_command(args, client)
+
+#     assert result.outputs == expected
+
+
+def test_account_get():
+
+    from AWS_Organizations import account_list_command
+
+    result = account_list_command(account_list.command_args, client)
+
+    assert result.outputs == account_list.context_outputs
+    assert result.readable_output == account_list.readable_output
+
+
+def test_organization_unit_get():
+
+    from AWS_Organizations import organization_unit_get_command
+
+    result = organization_unit_get_command(organization_unit_get.command_args, client)
+
+    assert result.outputs == organization_unit_get.context_outputs
+    assert result.readable_output == organization_unit_get.readable_output
