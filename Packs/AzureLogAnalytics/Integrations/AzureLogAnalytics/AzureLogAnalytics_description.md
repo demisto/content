@@ -45,7 +45,7 @@ Follow these steps for client-credentials configuration.
 2. Enter your Client ID in the **ID / Client ID** parameter. 
 3. Enter your Client Secret in the **Key / Client Secret** parameter.
 4. Enter your Tenant ID in the **Tenant ID** parameter.
-5. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
+5. Click **Test** to validate the URLs, token, and connection.
 
 ### Azure Managed Identities Authentication
 ##### Note: This option is relevant only if the integration is running on Azure VM.
