@@ -1,5 +1,2 @@
-[INGEST:vendor="armis", product="security", target_dataset="armis_security_raw" , no_hit=keep]
-alter _time = time;
-
 [INGEST:vendor="armis", product="security_devices", target_dataset="armis_security_devices_raw" , no_hit=keep]
 alter _time = lastSeen;
