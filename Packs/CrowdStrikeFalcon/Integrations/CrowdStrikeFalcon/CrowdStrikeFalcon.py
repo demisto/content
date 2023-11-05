@@ -40,7 +40,7 @@ HEADERS = {
 TOKEN_LIFE_TIME = 28
 INCIDENTS_PER_FETCH = int(demisto.params().get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-IDP_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DETECTION_DATE_FORMAT = IDP_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
 # Remove proxy if not set to true in params
 handle_proxy()
@@ -2538,7 +2538,7 @@ def fetch_incidents():
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info_detections,
                                                                     first_fetch=FETCH_TIME,
                                                                     look_back=look_back,
-                                                                    date_format=DATE_FORMAT)
+                                                                    date_format=DETECTION_DATE_FORMAT)
         fetch_limit = current_fetch_info_detections.get('limit') or INCIDENTS_PER_FETCH
         incident_type = 'detection'
         fetch_query = demisto.params().get('fetch_query')
@@ -2570,11 +2570,6 @@ def fetch_incidents():
                                                               last_run=current_fetch_info_detections,
                                                               fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
 
-        for detection in detections:
-            occurred = dateparser.parse(detection["occurred"])
-            if occurred:
-                detection["occurred"] = occurred.strftime(DATE_FORMAT)
-                demisto.debug(f"CrowdStrikeFalconMsg: Detection {detection['name']} occurred at {detection['occurred']}")
         current_fetch_info_detections = update_last_run_object(last_run=current_fetch_info_detections,
                                                                incidents=detections,
                                                                fetch_limit=INCIDENTS_PER_FETCH,
@@ -2583,7 +2578,7 @@ def fetch_incidents():
                                                                look_back=look_back,
                                                                created_time_field='occurred',
                                                                id_field='name',
-                                                               date_format=DATE_FORMAT,
+                                                               date_format=DETECTION_DATE_FORMAT,
                                                                new_offset=detections_offset)
         demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(detections) if detections else 0}")
 
