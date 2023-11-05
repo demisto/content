@@ -146,7 +146,7 @@ def main():  # pragma: no cover
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
             from_date = dateparser.parse('1 hour')
-            get_events_command(client, events_limit, since=from_date)
+            get_events_command(client, events_limit, since=from_date.isoformat())
             demisto.results('ok')
 
         if command == 'okta-get-events':
