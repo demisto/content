@@ -31,36 +31,50 @@ class Client(BaseClient):
 
 def get_events_command(client: Client, total_events_to_fetch, since, last_object_ids: List[str] = None) -> (List[dict], int):  # pragma: no cover
     """
-    Function to group the events returned from the api
+    Fetches events from the okta api until the total_events_to_fetch is reached or no more events are available.
+    if 429:TOO_MANY_REQUESTS is returned, will return the stored_events so far and the x-rate-limit-reset
+    from the response headers.
+    Args:
+        client (Client): the okta client
+        total_events_to_fetch: the total number of events to fetch
+        since: start fetch from this timestamp
+        last_object_ids List[str]: list of uuids of the last fetched events.
+    Returns:
+        Tuple (List[dict], x-rate-limit-reset):
+            List[dict]: list of events fetched,
+            x-rate-limit-reset: time in seconds until API can be called again.        
     """
     stored_events: list = []
     demisto.debug(f'max_events_to_fetch={total_events_to_fetch}')
     while len(stored_events) < total_events_to_fetch:
-        demisto.debug(f'stored_events={len(stored_events)}')
         num_of_events_to_fetch = FETCH_LIMIT if total_events_to_fetch > FETCH_LIMIT else total_events_to_fetch
         try:
-            events = client.get_events(since, num_of_events_to_fetch)  # type: ignore            
+            events = client.get_events(since, num_of_events_to_fetch)  # type: ignore
             if events:
                 demisto.debug(f'received {len(events)} number of events.')
                 if last_object_ids:
                     events = remove_duplicates(events, last_object_ids)  # type: ignore
-                last = events[-1]
-                client.next_run_filter = last['published']
-                stored_events.extend(events)
+                if events:
+                    last = events[-1]
+                    client.next_run_filter = last['published']
+                    stored_events.extend(events)
+                else:
+                    break  # after remove duplicates event list is empty. will return stored.
             else:
-                demisto.error('Didnt receive any events from the api.')
-                raise Exception('Didnt receive any events from the api.')
+                demisto.debug('Didnt receive any events from the api.')
+                break
         except Exception as exc:
             msg = f'something went wrong with the http call {exc}'
             demisto.debug(msg)
-            if exc.res is not None:
-                status_code: HTTPStatus = exc.res.status_code
+            if type(exc.res) is requests.models.Response:
+                res: requests.models.Response = exc.res
+                status_code: HTTPStatus = res.status_code
                 if status_code == HTTPStatus.TOO_MANY_REQUESTS:
-                    demisto.debug(f'okta rate limit headers:\n \
-                        x-rate-limit-remaining: {exc.res.headers["x-rate-limit-remaining"]}\n \
-                            x-rate-limit-limit: {exc.res.headers["x-rate-limit-limit"]}\n \
-                                x-rate-limit-reset: {exc.res.headers["x-rate-limit-reset"]}\n')  # type: ignore
-                    return stored_events, int(exc.res.headers['x-rate-limit-reset'])  # type: ignore
+                    demisto.debug(f'fetch-events Got 429. okta rate limit headers:\n \
+                        x-rate-limit-remaining: {res.headers["x-rate-limit-remaining"]}\n \
+                            x-rate-limit-limit: {res.headers["x-rate-limit-limit"]}\n \
+                                x-rate-limit-reset: {res.headers["x-rate-limit-reset"]}\n')
+                    return stored_events, int(res.headers['x-rate-limit-reset'])
                 else:
                     return stored_events, 0
             else:
@@ -127,11 +141,15 @@ def main():  # pragma: no cover
             epoch_time_to_continue_fetch = True
             while epoch_time_to_continue_fetch:
                 events, epoch_time_to_continue_fetch = get_events_command(client, events_limit, since=last_run_after, last_object_ids=last_object_ids)
-                if epoch_time_to_continue_fetch:
-                    if abs(epoch_time_to_continue_fetch - start_time_epoch) < FETCH_TIME_LIMIT:
-                        time.sleep(epoch_time_to_continue_fetch - start_time_epoch)
+                sleep_time = abs(epoch_time_to_continue_fetch - start_time_epoch)
+                if epoch_time_to_continue_fetch and sleep_time:
+                    if sleep_time < FETCH_TIME_LIMIT:
+                        demisto.debug(f'Will try fetch again in: {sleep_time},\
+                            as a result of 429 Too Many Requests HTTP status.')
+                        time.sleep(sleep_time)
                     else:
                         break
+            demisto.debug(f'sending_events_to_xsiam: {len(events)}')
             send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(get_last_run(events, last_run_after))
 
