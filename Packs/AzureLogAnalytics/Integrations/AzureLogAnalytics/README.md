@@ -37,25 +37,25 @@ In the self-deployed mode you can authenticate, by using one of the following fl
 ### Authentication Code flow
 
 ---
+1. In the instance configuration, select the **Use a self-deployed Azure application - Authorization Code flow** checkbox.
+2. Enter your client ID in the **ID \ Client ID** parameter (credentials username). 
+3. Enter your client secret in the **Key / Client Secret** parameter (credentials password).
+4. Enter your tenant ID in the **Token** parameter.
+5. Enter your redirect URI in the **Redirect URI** parameter.
+6. Save the integration settings.
+7. Run the `!azure-log-analytics-generate-login-url` command in the War Room and follow the instruction.
+8. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
 
-1. Enter your client ID in the **ID\Client ID** parameter (credentials username). 
-2. Enter your client secret in the **password** parameter (credentials password).
-3. Enter your tenant ID in the **Token** parameter.
-4. Enter your redirect URI in the **Redirect URI** parameter.
-5. Save the integration settings.
-6. Run the `!azure-log-analytics-generate-login-url` command in the War Room and follow the instruction.
-
-### Authorize Cortex XSOAR for Azure Log Analytics (Client-Credentials Configuration)
+### Client Credentials Flow
 
 ---
 Follow these steps for client-credentials configuration.
 
-1. In the instance configuration, select the **client-credentials** checkbox.
-2. Enter your Client ID in the **ID/Client ID** parameter (credentials username). 
-3. Enter your Client Secret in the **password** parameter (credentials password).
+1. In the instance configuration, select the **Use a self-deployed Azure application - Client Credentials Authorization Flow** checkbox.
+2. Enter your Client ID in the **ID / Client ID** parameter. 
+3. Enter your Client Secret in the **Key / Client Secret** parameter.
 4. Enter your Tenant ID in the **Tenant ID** parameter.
-5. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
-9. Enter your redirect URI in the **Redirect URI** parameter.
+5. Click **Test** to validate the URLs, token, and connection.
 
 ## Get the additional instance parameters
 

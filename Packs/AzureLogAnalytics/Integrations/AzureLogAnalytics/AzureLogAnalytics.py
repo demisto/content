@@ -541,14 +541,15 @@ def main():
         }
 
         if demisto.command() == 'test-module':
-            if not managed_identities_client_id:
-                # cannot use test module due to the lack of ability to set refresh token to integration context
+            if client_credentials or managed_identities_client_id:
+                test_connection(client, params)
+                return_results('ok')
+            else:
+                # In authorization code flow cannot use test module
+                # due to the lack of ability to set refresh token to integration context
                 raise Exception("Please use !azure-log-analytics-test instead")
 
-            test_connection(client, params)
-            return_results('ok')
-
-        elif command == 'azure-log-analytics-generate-login-url':
+        elif demisto.command() == 'azure-log-analytics-generate-login-url':
             return_results(generate_login_url(client.ms_client))
 
         elif command == 'azure-log-analytics-test':
