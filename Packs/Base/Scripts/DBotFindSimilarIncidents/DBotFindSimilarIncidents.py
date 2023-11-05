@@ -682,7 +682,7 @@ def get_similar_incidents_by_indicators(args: Dict):
     :param args: argument for DBotFindSimilarIncidentsByIndicators automation
     :return:  return similars incident from the automation
     """
-    demisto.debug(f'Executing DBotFindSimilarIncidentsByIndicators')
+    demisto.debug('Executing DBotFindSimilarIncidentsByIndicators')
     res = demisto.executeCommand('DBotFindSimilarIncidentsByIndicators', args)
     if is_error(res):
         return_error(get_error(res))
