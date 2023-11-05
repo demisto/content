@@ -205,7 +205,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}/"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
@@ -217,6 +217,12 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
       echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
+
+    - section_start "Copy env results to artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+    - section_end "Copy env results to artifacts folder"
 
     - section_start "Wait Until Server Ready" --collapsed
     - |
