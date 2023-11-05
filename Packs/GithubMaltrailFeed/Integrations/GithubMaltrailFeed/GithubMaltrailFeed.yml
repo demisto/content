@@ -114,10 +114,12 @@ script:
       description: The maximum number of results to return to the output.
       defaultValue: "50"
     name: gh-maltrail-get-indicators
-    description: Get indicators from the feed. 
+    description: Get indicators from the feed.
   dockerimage: demisto/python3:3.10.13.78623
   feed: true
   runonce: false
   script: ''
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)
