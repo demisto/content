@@ -4,10 +4,6 @@ import Whois
 import demistomock as demisto
 import pathlib
 import pytest
-import subprocess
-import time
-import tempfile
-import sys
 from typing import Any
 
 from CommonServerPython import DBotScoreReliability, EntryType, ExecutionMetrics, ErrorTypes
