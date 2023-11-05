@@ -85,7 +85,6 @@ script:
   dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   subtype: python3
-  runonce: false
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
