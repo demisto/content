@@ -22,7 +22,6 @@ class PathManager:
     """
     Used for getting paths of various files and folders during the test collection process.
     """
-    # FIXME! remove ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
     ARTIFACTS_FOLDER_SERVER_TYPE = Path(os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE', './artifacts/server_type_XSOAR'))
 
     def __init__(self, content_path: Path):
