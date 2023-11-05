@@ -22,9 +22,7 @@ from requests import Session
 
 from Tests.Marketplace.common import ALREADY_IN_PROGRESS
 from Tests.Marketplace.common import wait_until_not_updating, generic_request_with_retries
-from Tests.Marketplace.marketplace_constants import (IGNORED_FILES,
-                                                     PACKS_FOLDER,
-                                                     PACKS_FULL_PATH,
+from Tests.Marketplace.marketplace_constants import (PACKS_FOLDER,
                                                      GCPConfig, Metadata)
 from Tests.Marketplace.marketplace_services import (Pack, init_storage_client,
                                                     load_json)
@@ -607,13 +605,16 @@ def get_pack_installation_request_data(pack_id: str, pack_version: str):
     }
 
 
-def install_all_content_packs_for_nightly(client: demisto_client, host: str, service_account: str) -> bool:
+def install_all_content_packs_for_nightly(
+    client: demisto_client, host: str, service_account: str, pack_ids_to_install: list[str]
+) -> bool:
     """ Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
     Retrieving the latest version of each pack from the production bucket.
 
     :param client: Demisto-py client to connect to the server.
     :param host: FQDN of the server.
     :param service_account: The full path to the service account json.
+    :param pack_ids_to_install: List of pack IDs to install specifically to XSOAR marketplace.
     :return: Boolean value indicating whether the installation was successful or not.
     """
     all_packs = []
@@ -623,17 +624,10 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     production_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
     logging.debug(f"Installing all content packs for nightly flow in server {host}")
 
-    # Add deprecated packs to IGNORED_FILES list:
-    for pack_id in os.listdir(PACKS_FULL_PATH):
-        if is_pack_deprecated(pack_id=pack_id, production_bucket=False):
-            logging.debug(f'Skipping installation of hidden pack "{pack_id}"')
-            IGNORED_FILES.append(pack_id)
-
-    for pack_id in os.listdir(PACKS_FULL_PATH):
-        if pack_id not in IGNORED_FILES:
-            pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
-            if pack_version:
-                all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
+    for pack_id in pack_ids_to_install:
+        if pack_version := get_latest_version_from_bucket(pack_id, production_bucket):
+            logging.debug(f'Found the {pack_version=} for {pack_id=}')
+            all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     success, _ = install_packs(client, host, all_packs)
     return success
 
