@@ -1,23 +1,36 @@
-function levenshtein(s1, s2) {
-    const l1 = s1.length;
-    const l2 = s2.length;
-
-    // Initialize the matrix
-    const matrix = Array.from({ length: l2 + 1 }, (_, i) => Array.from({ length: l1 + 1 }, (_, j) => (i === 0) ? j : i));
-
-    // Populate the matrix
-    for (let zz = 0; zz < l2; zz++) {
-        for (let sz = 0; sz < l1; sz++) {
-            if (s1[sz] === s2[zz]) {
-                matrix[zz + 1][sz + 1] = Math.min(matrix[zz + 1][sz] + 1, matrix[zz][sz + 1] + 1, matrix[zz][sz]);
-            } else {
-                matrix[zz + 1][sz + 1] = Math.min(matrix[zz + 1][sz] + 1, matrix[zz][sz + 1] + 1, matrix[zz][sz] + 1);
-            }
-        }
+function levenshtein(str1, str2) {
+    const len1 = str1.length;
+    const len2 = str2.length;
+    
+    // Create a 2D array to store the edit distances
+    const matrix = new Array(len1 + 1);
+    for (let i = 0; i <= len1; i++) {
+      matrix[i] = new Array(len2 + 1);
     }
-
-    // Return the result
-    return matrix[l2][l1];
+  
+    // Initialize the matrix
+    for (let i = 0; i <= len1; i++) {
+      matrix[i][0] = i;
+    }
+  
+    for (let j = 0; j <= len2; j++) {
+      matrix[0][j] = j;
+    }
+  
+    // Fill in the matrix using dynamic programming
+    for (let i = 1; i <= len1; i++) {
+      for (let j = 1; j <= len2; j++) {
+        const cost = (str1[i - 1] === str2[j - 1]) ? 0 : 1;
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j] + 1,       // Deletion
+          matrix[i][j - 1] + 1,       // Insertion
+          matrix[i - 1][j - 1] + cost // Substitution
+        );
+      }
+    }
+  
+    // The final edit distance is in the bottom-right cell of the matrix
+    return matrix[len1][len2];
 }
 
 var email = args.email;
