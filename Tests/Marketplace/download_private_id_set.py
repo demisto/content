@@ -1,7 +1,6 @@
 import os
 import json
 import argparse
-from pathlib import Path
 
 from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.scripts.utils.log_util import install_logging
@@ -34,10 +33,11 @@ def id_set_file_exists_in_bucket(public_storage_bucket, storage_id_set_path):
     return blob.exists()
 
 
-def download_private_id_set_from_gcp(public_storage_bucket, storage_base_path):
+def download_private_id_set_from_gcp(public_storage_bucket, storage_base_path, private_id_set_path):
     """Downloads private ID set file from cloud storage.
 
     Args:
+        private_id_set_path (str): The private id set file path.
         public_storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where private_id_set.json
         is stored.
         storage_base_path (str): The storage base path of the bucket.
@@ -47,13 +47,6 @@ def download_private_id_set_from_gcp(public_storage_bucket, storage_base_path):
 
     storage_id_set_path = os.path.join(storage_base_path, 'content/private_id_set.json') if storage_base_path else \
         'content/private_id_set.json'
-    private_artifacts_server_type_path = '/home/runner/work/content-private/content-private/content/artifacts/server_type_XSOAR'
-    private_id_set_path = f'{private_artifacts_server_type_path}/private_id_set.json'
-    if os.path.exists(private_artifacts_server_type_path):
-        logging.info(f'Directory: {private_artifacts_server_type_path} already exists.')
-    else:
-        logging.info(f'Creating directory: {private_artifacts_server_type_path}')
-        Path(private_artifacts_server_type_path).mkdir(parents=True, exist_ok=True)
 
     is_private_id_set_file_exist = id_set_file_exists_in_bucket(public_storage_bucket, storage_id_set_path)
 
@@ -89,6 +82,7 @@ def option_handler():
                         required=False)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the bucket.",
                         required=False)
+    parser.add_argument('-pis', '--private_id_set_path', help='Private ID set path', required=True)
 
     # disable-secrets-detection-end
     return parser.parse_args()
@@ -102,7 +96,8 @@ def main():
     storage_base_path = options.storage_base_path
     public_bucket_name = options.public_bucket_name
     public_storage_bucket = storage_client.bucket(public_bucket_name)
-    private_id_set = download_private_id_set_from_gcp(public_storage_bucket, storage_base_path)
+    private_id_set_path = options.private_id_set_path
+    private_id_set = download_private_id_set_from_gcp(public_storage_bucket, storage_base_path, private_id_set_path)
     return private_id_set
 
 

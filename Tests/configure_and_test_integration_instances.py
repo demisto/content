@@ -957,15 +957,13 @@ def options_handler(args=None):
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
-    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.',
-                        default='/home/runner/work/content-private/content-private/content/artifacts/server_type_XSOAR/packs')
-    parser.add_argument('--content_root', help='Path to the content root.',
-                        default='/home/runner/work/content-private/content-private/content')
+    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.', required=True)
+    parser.add_argument('--content_root', help='Path to the content root.', required=True)
     parser.add_argument('--id_set_path', help='Path to the ID set.')
     parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
-                        default='./artifacts/server_type_XSOAR/filter_file.txt')
+                        default='./filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
-                        default='./artifacts/server_type_XSOAR/content_packs_to_install.txt')
+                        default='./content_packs_to_install.txt')
     parser.add_argument('--server-type', help=f'Server type running, choices: {",".join(SERVER_TYPES)}',
                         default=Build.run_environment)
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')

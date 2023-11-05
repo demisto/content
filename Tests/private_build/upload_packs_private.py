@@ -1,21 +1,21 @@
-import json
-import os
 import argparse
+import glob
+import json
+import logging
+import os
 import shutil
 import uuid
-import glob
-import logging
-from pathlib import Path
 from typing import Any
+
+from demisto_sdk.commands.common.tools import str2bool
+
+from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
 from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json, \
     get_content_git_client, get_recent_commits_data
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, create_corepacks_config, \
     check_if_index_is_updated, print_packs_summary, get_packs_summary, prepare_index_json
-from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
-from demisto_sdk.commands.common.tools import str2bool
-
 from Tests.scripts.utils.log_util import install_logging
 
 
@@ -234,7 +234,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
 def should_upload_core_packs(storage_bucket_name: str) -> bool:
     """
     Indicates if the core packs should be updated.
-    :param storage_bucket_name: Name of the storage bucket. Typically either marketplace-dist, or
+    :param storage_bucket_name: Name of the storage bucket. Typically, either marketplace-dist, or
                                 marketplace-private-dist.
     :return: Boolean indicating if the core packs need to be updated.
     """
@@ -263,7 +263,12 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
     :param content_repo: The main content repository. demisto/content
     :param current_commit_hash: Current commit hash for the run. Used in the pack metadata file.
     :param remote_previous_commit_hash: Previous commit hash. Used for comparison.
-    :return: Updated pack.status value.
+    :return: Updated `pack.status` value.
+
+    Args:
+        storage_base_path:
+        private_bucket_name:
+        private_bucket_name:
     """
     build_number = upload_config.ci_build_number
     remove_test_playbooks = upload_config.remove_test_playbooks
@@ -448,23 +453,6 @@ def option_handler():
     return parser.parse_args()
 
 
-def prepare_test_directories(pack_artifacts_path):
-    """
-    :param pack_artifacts_path: Path the the artifacts packs directory.
-    Ensures the artifacts directory is present for the private build
-    :return: None
-    """
-
-    packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/server_type_XSOAR/packs'
-    zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
-    if not os.path.exists(packs_dir):
-        logging.info("Packs dir not found. Creating.")
-        Path(packs_dir).mkdir(parents=True, exist_ok=True)
-    if not os.path.exists(zip_path):
-        logging.info("Temp dir not found. Creating.")
-        Path(zip_path).mkdir(parents=True, exist_ok=True)
-
-
 def main():
     install_logging('upload_packs_private.log')
     upload_config = option_handler()
@@ -481,8 +469,6 @@ def main():
     landing_page_sections = StatisticsHandler.get_landing_page_sections()
 
     logging.info(f"Packs artifact path is: {packs_artifacts_path}")
-
-    prepare_test_directories(packs_artifacts_path)
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -529,7 +515,7 @@ def main():
         logging.info("Skipping index update of priced packs")
         private_packs = []
 
-    # clean index and gcs from non existing or invalid packs
+    # clean index and gcs from non-existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket, storage_base_path, [])
     # starting iteration over packs
     for pack in packs_list:

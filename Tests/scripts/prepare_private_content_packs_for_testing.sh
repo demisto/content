@@ -6,6 +6,7 @@ set -e
 GIT_BRANCH=${BRANCH_NAME:-unknown}
 GITHUB_RUN_NUMBER=${GITHUB_RUN_NUMBER:-00000}
 PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
+PACKS_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs"
 EXTRACT_FOLDER=$(mktemp -d)
 
 if [[ -z "$GCS_MARKET_KEY" ]]; then
@@ -15,6 +16,7 @@ fi
 
 echo "Preparing content packs for testing ..."
 echo "ARTIFACTS_FOLDER_SERVER_TYPE: ${ARTIFACTS_FOLDER_SERVER_TYPE}"
+mkdir -p "${PACKS_ARTIFACTS}" || echo "Directory ${PACKS_ARTIFACTS} already exists."
 
 KF=$(mktemp)
 echo "$GCS_MARKET_KEY" > "$KF"
