@@ -201,7 +201,7 @@ def find_zombie_processes():
                                         stderr=subprocess.STDOUT, universal_newlines=True)
     except subprocess.CalledProcessError as exc:
         demisto.info(f"Failed to find zombie proecesses, {exc.returncode=}, {exc.output=}")
-        return None, ps_out
+        return None, None
     lines = ps_out.splitlines()
     pid = str(os.getpid())
     zombies = []
