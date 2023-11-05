@@ -2186,10 +2186,10 @@ class TestFetch:
                                                                             'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
-                                                'created_timestamp': '2020-09-04T09:16:11.0Z',
+                                                'created_timestamp': '2020-09-04T09:16:11.000000Z',
                                                 'max_severity_displayname': 'Low'},
                                                {'detection_id': 'ldt:2',
-                                                'created_timestamp': '2020-09-04T09:20:11.0Z',
+                                                'created_timestamp': '2020-09-04T09:20:11.000000Z',
                                                 'max_severity_displayname': 'Low'}]})
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1', json={})
@@ -2209,15 +2209,15 @@ class TestFetch:
         from CrowdStrikeFalcon import fetch_incidents
         mocker.patch.object(demisto, 'params', return_value={})
         mocker.patch.object(demisto, 'getLastRun',
-                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10.0Z',
+                            return_value={'first_behavior_detection_time': '2020-09-04T09:16:10.000000Z',
                                           'detection_offset': 2,
-                                          'first_behavior_incident_time': '2020-09-04T09:22:10.0Z',
+                                          'first_behavior_incident_time': '2020-09-04T09:22:10.000000Z',
                                           'last_fetched_incident': '3',
                                           'incident_offset': 4,
                                           })
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == [
-            {'time': '2020-09-04T09:16:10.0Z'}, {'time': '2020-09-04T09:22:10.0Z'}, {}, {}, {}]
+            {'time': '2020-09-04T09:16:10'}, {'time': '2020-09-04T09:22:10'}, {}, {}, {}]
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -2231,18 +2231,19 @@ class TestFetch:
             The `first_behavior_time` changes and no `offset` is added.
         """
         mocker.patch.object(demisto, 'getLastRun',
-                            return_value=[{'time': '2020-09-04T09:16:10.0Z',
+                            return_value=[{'time': '2020-09-04T09:16:10.000000Z',
                                           'offset': 2}, {}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
-                                                'created_timestamp': '2020-09-04T09:16:11.0Z',
+                                                'created_timestamp': '2020-09-04T09:16:11.000000Z',
                                                 'max_severity_displayname': 'Low'}],
                                  })
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0][0] == {
-            'time': '2020-09-04T09:16:11.0Z', 'limit': 2, 'offset': 0, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
+            'time': '2020-09-04T09:16:11.000000Z', 'limit': 2, 'offset': 0, "found_incident_ids":
+                {'Detection ID: ldt:1': 1599210970}}
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
@@ -2262,19 +2263,20 @@ class TestFetch:
                                                                             'meta': {'pagination': {'total': 4}}})
 
         mocker.patch.object(demisto, 'getLastRun',
-                            return_value=[{'time': '2020-09-04T09:16:10.0Z',
+                            return_value=[{'time': '2020-09-04T09:16:10.000000Z',
                                           'offset': 0}, {}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
-                                                'created_timestamp': '2020-09-04T09:16:11.0Z',
+                                                'created_timestamp': '2020-09-04T09:16:11.000000Z',
                                                 'max_severity_displayname': 'Low'}],
                                  })
         from CrowdStrikeFalcon import fetch_incidents
         fetch_incidents()
         # the offset should be increased to 2, and the time should be stay the same
         expected_last_run = {
-            'time': '2020-09-04T09:16:10.0Z', 'limit': 2, 'offset': 2, "found_incident_ids": {'Detection ID: ldt:1': 1599210970}}
+            'time': '2020-09-04T09:16:10.000000Z', 'limit': 2, 'offset': 2, "found_incident_ids":
+                {'Detection ID: ldt:1': 1599210970}}
         assert demisto.setLastRun.mock_calls[0][1][0][0] == expected_last_run
 
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:3', 'ldt:4'],
@@ -2285,15 +2287,16 @@ class TestFetch:
 
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:2',
-                                                'created_timestamp': '2020-09-04T09:16:13.0Z',
+                                                'created_timestamp': '2020-09-04T09:16:13.000000Z',
                                                 'max_severity_displayname': 'Low'}],
                                  })
 
         fetch_incidents()
         # the offset should be 0 because all detections were fetched, and the time should update to the latest detection
         assert demisto.setLastRun.mock_calls[1][1][0][0] == {
-            'time': '2020-09-04T09:16:13.0Z', 'limit': 2, 'offset': 0, "found_incident_ids": {'Detection ID: ldt:1': 1599210970,
-                                                                                              'Detection ID: ldt:2': 1599210970}}
+            'time': '2020-09-04T09:16:13.000000Z', 'limit': 2, 'offset': 0, "found_incident_ids":
+                {'Detection ID: ldt:1': 1599210970,
+                 'Detection ID: ldt:2': 1599210970}}
 
     def test_fetch_incident_type(self, set_up_mocks, mocker):
         """
@@ -2438,7 +2441,7 @@ class TestIncidentFetch:
                                                              'offset': 0,
                                                              'found_incident_ids': {'Incident ID: ldt:1': 1598462533}}
 
-    @freeze_time("2020-09-04T09:16:10.0Z")
+    @freeze_time("2020-09-04T09:16:10.000000Z")
     def test_fetch_with_offset(self, set_up_mocks, mocker, requests_mock):
         """
         Tests the correct flow of fetch with offset

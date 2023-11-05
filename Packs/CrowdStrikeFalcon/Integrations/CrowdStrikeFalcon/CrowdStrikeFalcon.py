@@ -2570,6 +2570,11 @@ def fetch_incidents():
                                                               last_run=current_fetch_info_detections,
                                                               fetch_limit=INCIDENTS_PER_FETCH, id_field='name')
 
+        for detection in detections:
+            occurred = dateparser.parse(detection["occurred"])
+            if occurred:
+                detection["occurred"] = occurred.strftime(DETECTION_DATE_FORMAT)
+                demisto.debug(f"CrowdStrikeFalconMsg: Detection {detection['name']} occurred at {detection['occurred']}")
         current_fetch_info_detections = update_last_run_object(last_run=current_fetch_info_detections,
                                                                incidents=detections,
                                                                fetch_limit=INCIDENTS_PER_FETCH,
