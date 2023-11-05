@@ -73,8 +73,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 545
+          "x": 900,
+          "y": 710
         }
       }
     note: false
@@ -123,8 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 1035
+          "x": 900,
+          "y": 1200
         }
       }
     note: false
@@ -152,7 +152,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1210
+          "y": 1370
         }
       }
     note: false
@@ -178,7 +178,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "1"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -196,7 +196,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
+          "x": 510,
           "y": 370
         }
       }
@@ -296,8 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 705
+          "x": 900,
+          "y": 875
         }
       }
     note: false
@@ -335,8 +335,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 870
+          "x": 900,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: ad0b0e84-9dc2-4d90-8200-938bdca36a7f
+    type: condition
+    task:
+      id: ad0b0e84-9dc2-4d90-8200-938bdca36a7f
+      version: -1
+      name: Is the file type supported?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:EXE|DLL|PIF|CMD|BAT|COM|SCR|CPL|PDF|DOCX|DOC|DOCM|XLSX|XLS|XLSM|XLSB|PPT|PPX|PPTM|HWP|JTD|RFT|XPI|CRX|EML|MSG|CHM|JS|JSE|VBS|VBE|LNK|JAR|PS1|ZIP|7Z|RAR|ZLIB|ASPX|APS|PNG|JPEG|GIF|HTML|HTM|XHTML|SHTML)\b
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 540
         }
       }
     note: false
@@ -349,15 +393,15 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "6_1_yes": 0.2,
-      "6_5_#default#": 0.31,
-      "7_5_#default#": 0.12
+      "10_5_#default#": 0.41,
+      "6_5_#default#": 0.23,
+      "7_5_#default#": 0.24
     },
     "paper": {
       "dimensions": {
-        "height": 1225,
-        "width": 815,
-        "x": -160,
+        "height": 1385,
+        "width": 1005,
+        "x": 275,
         "y": 50
       }
     }
