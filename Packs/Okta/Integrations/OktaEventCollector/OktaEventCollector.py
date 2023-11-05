@@ -8,9 +8,6 @@ FETCH_TIME_LIMIT = 60
 
 class Client(BaseClient):
     next_run_filter: str
-    params = {
-        "sortOrder": "ASCENDING",
-    }
 
     def __init__(self, base_url, api_key, verify=True, proxy=False):
         headers = {"Accept": "application/json",
@@ -20,9 +17,12 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
 
     def get_events(self, since: int, limit: int = FETCH_LIMIT):
-        self.params['since'] = since  # type: ignore
-        self.params['limit'] = limit  # type: ignore
-        return self._http_request(url_suffix='/api/v1/logs', method='GET', headers=self._headers, params=self.params)  # type: ignore
+        params = {
+            "sortOrder": "ASCENDING",
+            "since": since,
+            "limit": limit,
+        }
+        return self._http_request(url_suffix='/api/v1/logs', method='GET', headers=self._headers, params=params)
 
     def set_next_run_filter(self, after: str):
         demisto.debug(f'setting next run since value to: {after}')
@@ -63,22 +63,27 @@ def get_events_command(client: Client, total_events_to_fetch, since, last_object
             else:
                 demisto.debug('Didnt receive any events from the api.')
                 break
-        except Exception as exc:
-            msg = f'something went wrong with the http call {exc}'
+        except DemistoException as exc:
+            msg = f'something went wrong: {exc}'
             demisto.debug(msg)
-            if type(exc.res) is requests.models.Response:  # type: ignore
-                res: requests.models.Response = exc.res  # type: ignore
-                status_code: HTTPStatus = res.status_code
-                if status_code == HTTPStatus.TOO_MANY_REQUESTS:
-                    demisto.debug(f'fetch-events Got 429. okta rate limit headers:\n \
-                        x-rate-limit-remaining: {res.headers["x-rate-limit-remaining"]}\n \
-                            x-rate-limit-limit: {res.headers["x-rate-limit-limit"]}\n \
-                                x-rate-limit-reset: {res.headers["x-rate-limit-reset"]}\n')
-                    return stored_events, int(res.headers['x-rate-limit-reset'])
-                else:
-                    return stored_events, 0
-            else:
-                raise Exception(msg)
+            if (not exc.res or type(exc.res) is not requests.models.Response) and len(stored_events) == 0:
+                raise
+            res: requests.models.Response = exc.res
+            status_code: HTTPStatus = res.status_code
+            if status_code == HTTPStatus.TOO_MANY_REQUESTS:
+                demisto.debug(f'fetch-events Got 429. okta rate limit headers:\n \
+                x-rate-limit-remaining: {res.headers["x-rate-limit-remaining"]}\n \
+                    x-rate-limit-limit: {res.headers["x-rate-limit-limit"]}\n \
+                        x-rate-limit-reset: {res.headers["x-rate-limit-reset"]}\n')
+                return stored_events, int(res.headers['x-rate-limit-reset'])
+            if len(stored_events) == 0:
+                raise
+            return stored_events, 0
+        except Exception as exc:
+            demisto.error(f'Unexpected error.\n{traceback.format_exc()}')
+            if len(stored_events) == 0:
+                raise exc
+            return stored_events, 0
     return stored_events, 0
 
 
@@ -104,51 +109,68 @@ def get_last_run(events: List[dict], last_run_after) -> dict:
     return {'after': last_time.isoformat(), 'ids': ids}
 
 
+def fetch_events(client: Client,
+                 start_time_epoch: int,
+                 events_limit: int,
+                 last_run_after,
+                 last_object_ids: List[str] = None) -> List[dict]:
+    epoch_time_to_continue_fetch = True
+    while True:
+        events, epoch_time_to_continue_fetch = get_events_command(client, events_limit,
+                                                                  since=last_run_after,
+                                                                  last_object_ids=last_object_ids)
+        if epoch_time_to_continue_fetch == 0:
+            break
+
+        sleep_time = abs(epoch_time_to_continue_fetch - start_time_epoch)
+        if sleep_time and sleep_time < FETCH_TIME_LIMIT:
+            demisto.debug(f'Will try fetch again in: {sleep_time},\
+                as a result of 429 Too Many Requests HTTP status.')
+            time.sleep(sleep_time)
+        else:
+            break
+    return events
+
+
 def main():  # pragma: no cover
     try:
         start_time_epoch = int(time.time())
-        demisto_params = demisto.params() | demisto.args()
-        events_limit = int(demisto_params.get('limit', 2000))
-        should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
-        after = dateparser.parse(demisto_params['after'].strip())
+        demisto_params = demisto.params()
+        demisto_args = demisto.args()
+        events_limit = int(demisto_params.get('limit', 1000))
         api_key = demisto_params['api_key']['password']
         verify_certificate = not demisto_params.get('insecure', True)
         base_url = demisto_params['url']
-        last_run = demisto.getLastRun()
-        last_object_ids = last_run.get('ids')
-        if 'after' not in last_run:
-            last_run_after = after.isoformat()  # type: ignore
-        else:
-            last_run_after = last_run['after']
         client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate)
         command = demisto.command()
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
-            get_events_command(client, events_limit, since=last_run_after, last_object_ids=last_object_ids)
+            from_date = dateparser.parse('1 hour')
+            get_events_command(client, events_limit, since=from_date)
             demisto.results('ok')
 
         if command == 'okta-get-events':
-            events, epoch_time_to_continue_fetch = get_events_command(client, events_limit, since=last_run_after, last_object_ids=last_object_ids)
+            from_date = dateparser.parse(demisto_args.get('from_date').strip())
+            events, _ = get_events_command(client, events_limit, since=from_date.isoformat())
             command_results = CommandResults(
                 readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
                 raw_response=events,
             )
             return_results(command_results)
-
+            should_push_events = argToBoolean(demisto_args.get('should_push_events', 'false'))
             if should_push_events:
                 send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
+
         elif command == 'fetch-events':
-            epoch_time_to_continue_fetch = True
-            while epoch_time_to_continue_fetch:
-                events, epoch_time_to_continue_fetch = get_events_command(client, events_limit, since=last_run_after, last_object_ids=last_object_ids)
-                sleep_time = abs(epoch_time_to_continue_fetch - start_time_epoch)
-                if epoch_time_to_continue_fetch and sleep_time:
-                    if sleep_time < FETCH_TIME_LIMIT:
-                        demisto.debug(f'Will try fetch again in: {sleep_time},\
-                            as a result of 429 Too Many Requests HTTP status.')
-                        time.sleep(sleep_time)
-                    else:
-                        break
+            after = dateparser.parse(demisto_params['after'].strip())
+            last_run = demisto.getLastRun()
+            last_object_ids = last_run.get('ids')
+            if 'after' not in last_run:
+                last_run_after = after.isoformat()  # type: ignore
+            else:
+                last_run_after = last_run['after']
+            events = fetch_events(client, start_time_epoch, events_limit,
+                                  since=last_run_after, last_object_ids=last_object_ids)
             demisto.debug(f'sending_events_to_xsiam: {len(events)}')
             send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(get_last_run(events, last_run_after))

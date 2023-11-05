@@ -91,6 +91,5 @@ def test_get_events_rate_limit(dummy_client, mocker):
     res.headers['x-rate-limit-reset'] = '3'
     exc = DemistoException(message="test_msg", res=res)
     mocker.patch.object(dummy_client, 'get_events', side_effect=[exc])
-    events, epoch = get_events_command(client=dummy_client, total_events_to_fetch=2, since='2 days')
-    assert len(events) == 0
-    assert epoch == 3
+    with pytest.raises(DemistoException):
+        events, epoch = get_events_command(client=dummy_client, total_events_to_fetch=2, since='2 days')
