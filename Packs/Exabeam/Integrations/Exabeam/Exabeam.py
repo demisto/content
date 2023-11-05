@@ -2234,9 +2234,6 @@ def main():
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
-        # replaces __del__ because it relies on TOKEN_INPUT_IDENTIFIER which may be destroyed first
-        client.shutdown()
-
     except DemistoException as err:
         # some of the API error responses are not so clear, and the reason for the error is because of bad input.
         # we concat here a message to the output to make sure
@@ -2248,6 +2245,9 @@ def main():
 
     except Exception as err:
         return_error(str(err))
+
+    finally:
+        client.shutdown()
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
