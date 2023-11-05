@@ -226,9 +226,9 @@ def test_incident_total_limit(requests_mock, client):
 
 @pytest.mark.parametrize(
     "demisto_params_result, expected_result",
-    [({'credentials': {'password': 'api_key'}, 'apikey': 'old_api_key'}, 'api_key'),
-     ({'credentials': {'password': ''}, 'apikey': 'old_api_key'}, 'old_api_key'),
-     ({'apikey': 'old_api_key'}, 'old_api_key')]
+    [({'credentials': {'password': 'api_key'}, 'apikey': 'old_api_key'}, {'APIKEY': 'api_key'}),
+     ({'credentials': {'password': ''}, 'apikey': 'old_api_key'}, {'APIKEY': 'old_api_key'}),
+     ({'apikey': 'old_api_key'}, {'APIKEY': 'old_api_key'})]
 )
 def test_get_api_key(mocker, demisto_params_result, expected_result):
     """Test get API key.
@@ -243,7 +243,7 @@ def test_get_api_key(mocker, demisto_params_result, expected_result):
     RecordedFutureASI.main()
 
     # Get the client that was instantiated
-    assert mock_client.call_args[1].get('api_key') == expected_result
+    assert mock_client.call_args[1].get('headers') == expected_result
 
 
 def test_get_api_key_invalid_key(mocker):
