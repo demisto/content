@@ -1,7 +1,7 @@
 commonfields:
-  id: Sleep
+  id: Sleepp
   version: -1
-name: Sleep
+name: Sleepp
 script: ''
 type: javascript
 tags:
@@ -13,6 +13,16 @@ args:
   required: true
   default: true
   description: Amount of seconds to sleep
+- name: polling_threshold
+  required: false
+  hidden: true
+  defaultValue: 60
+  description: System threshold to trigger polling instead of blocking sleep (in seconds).
+- name: polling_callback
+  required: false
+  hidden: true
+  description: Hidden argument used for polling callback.
 scripttarget: 0
+polling: true
 timeout: 1h40m0s
 fromversion: 5.0.0
