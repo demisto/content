@@ -76,12 +76,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced. (For Cortex XSOAR 8 and Cortex XSIAM) Optional for engines, otherwise mandatory.
-  display: Username
-  name: credentials
-  type: 9
-  section: Connect
-  required: false
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
