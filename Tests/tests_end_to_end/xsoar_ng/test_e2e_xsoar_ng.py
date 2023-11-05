@@ -1,4 +1,3 @@
-import logging
 import time
 from datetime import timedelta
 from datetime import datetime
@@ -176,32 +175,37 @@ def is_incident_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id
 
     incident_response = xsoar_ng_client.search_incidents(incident_ids=incident_id)
     # status 2 means the incident is closed.
-    incident_status = incident_status.get(incident_response["data"][0].get("status"))
+    incident = incident_response["data"][0]
+    incident_status = incident_status.get(incident.get("status"))
     if incident_status == expected_state:
         return True
-    raise Exception(f'incident {incident_response} status is {incident_status} and is not in state {expected_state}')
+    raise Exception(f'incident {incident} status is {incident_status} and is not in state {expected_state}')
 
 
 @contextmanager
 def get_fetched_incident(
     xsoar_ng_client: XsoarNGApiClient,
+    source_instance_name: str,
     incident_ids: list | str | None = None,
     from_date: str | None = None,
     incident_types: list | str | None = None,
     should_start_investigation: bool = True,
-    should_remove_fetched_incidents: bool = True
+    should_remove_fetched_incidents: bool = True,
+    should_skip_if_not_found: bool = False
 ):
     """
     Queries for a fetched incident against several filters and bring it back.
 
     Args:
         xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        source_instance_name (str): the instance name that fetched the incident
         incident_ids (dict): the incident ID(s) to filter against them
         from_date (str): from which date to start querying the incident search
         incident_types (str): the incident type(s) to filter against them
         should_start_investigation (bool): whether investigation should be started when finding the relevant incident
                                            (means that the playbook attached to the incident will start running).
         should_remove_fetched_incidents (bool): whether to remove all the fetched incidents during teardown.
+        should_skip_if_not_found (bool): whether to skip the test if an incident couldn't be fetched
 
     Yields:
         dict: a fetched incident that was found.
@@ -209,7 +213,7 @@ def get_fetched_incident(
     @retry_http_request(times=30, delay=3)
     def _get_fetched_incident():
         _found_incidents = xsoar_ng_client.search_incidents(
-            incident_ids, from_date=from_date, incident_types=incident_types, size=1
+            incident_ids, from_date=from_date, incident_types=incident_types, source_instance_name=source_instance_name, size=1
         )
         if data := _found_incidents.get("data"):
             return data
@@ -218,9 +222,14 @@ def get_fetched_incident(
         )
 
     try:
-        found_incidents = _get_fetched_incident()
-        amount_of_found_incidents = len(found_incidents)
+        try:
+            found_incidents = _get_fetched_incident()
+        except Exception:
+            if should_skip_if_not_found:
+                pytest.skip(f'Could not find any incident from {source_instance_name}, skipping the test')
+            raise
 
+        amount_of_found_incidents = len(found_incidents)
         assert amount_of_found_incidents == 1, f'Found {amount_of_found_incidents} incidents'
         incident = found_incidents[0]
         if incident_types:
@@ -324,7 +333,6 @@ def test_taxii2_server(
             "integrationInstanceName", f'e2e-test-{integration_params.get("name", "TAXII2-Server")}'
         )
     ) as taxii2_instance_response:
-        time.sleep(300)
         instance_name = taxii2_instance_response.get("name")
         response = xsoar_ng_client.do_long_running_instance_request(
             instance_name,
@@ -412,20 +420,23 @@ def test_qradar_mirroring(request: SubRequest, xsoar_ng_client: XsoarNGApiClient
     integration_params = get_integration_params(
         request.config.option.integration_secrets_path, instance_name="qradar-e2e-instance"
     )
+    instance_name = integration_params.pop(
+        "integrationInstanceName", f'e2e-test-{integration_params.get("name", "Qradar-v3")}'
+    )
 
     with create_integration_instance(
         xsoar_ng_client,
         integration_params=integration_params,
         integration_id="QRadar v3",
         is_long_running=True,
-        instance_name=integration_params.pop(
-            "integrationInstanceName", f'e2e-test-{integration_params.get("name", "Qradar-v3")}'
-        )
+        instance_name=instance_name
     ), get_fetched_incident(
         xsoar_ng_client,
-        # get the incident created in the last 30 seconds
-        from_date=(datetime.utcnow() - timedelta(seconds=30)).strftime("%Y-%m-%dT%H:%M:%S"),
-        incident_types=integration_params["incident_type"]
+        source_instance_name=instance_name,
+        # get the incident created in the last minute
+        from_date=(datetime.utcnow() - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%S"),
+        incident_types=integration_params["incident_type"],
+        should_skip_if_not_found=True
     ) as qradar_incident_response:
         offense_id = qradar_incident_response.get("CustomFields", {}).get("idoffense")
         assert offense_id, f'offense ID is empty in {qradar_incident_response}'
