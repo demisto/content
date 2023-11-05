@@ -154,7 +154,7 @@ def fetch_indicators_command(client: Client, params: dict = None):
             indicators_list = fetch_indicators(client, api_url, None, params)
             set_integration_context({'time_of_last_fetch': now})
         else:
-            demisto.debug(f'### Nothing to fetch')
+            demisto.debug('### Nothing to fetch')
 
     return indicators_list
 
