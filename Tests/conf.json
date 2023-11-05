@@ -21,6 +21,22 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": [
+                "ServiceNow v2",
+                "Cortex XDR - IR",
+                "jira-v2",
+                "Core REST API"
+            ],
+            "instance_names": [
+                "snow_basic_auth",
+                "Cortex XDR - IR",
+                "jira_v2",
+                "Core REST API"
+            ],
+            "playbookID": "Test Playbook - Cortex XDR - True Positive Incident Handling",
+            "fromversion": "6.11.0"
+        },
+        {
             "playbookID": "Test Playbook - NGFW Scan",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
