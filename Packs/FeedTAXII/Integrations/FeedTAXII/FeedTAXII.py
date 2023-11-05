@@ -486,7 +486,6 @@ class Taxii11(object):
 
         return {
             'Content-Type': 'application/xml',
-            'Accept': 'application/xml',
             'X-TAXII-Content-Type': content_type,
             'X-TAXII-Accept': accept,
             'X-TAXII-Services': services,
