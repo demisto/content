@@ -19,7 +19,11 @@
   - section_end "Upload Entities to Cortex XSOAR"
 
 
-.export_xsiam_machine_constants: &export_xsiam_machine_constants
+.export_cloud_machine_constants: &export_cloud_machine_constants
+  - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
+  - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
+  - echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
+
   - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
   - |
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
@@ -28,16 +32,6 @@
       export XSIAM_AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
       export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
       export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_tokens.json")
-    done
-
-.export_xsoar_ng_machine_constants: &export_xsoar_ng_machine_constants
-  - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
-  - |
-    for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
-      export XSOAR_NG_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_SERVERS_PATH")
-      export DEMISTO_BASE_URL=$(echo "$XSOAR_NG_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
-      export XSIAM_AUTH_ID=$(echo "$XSOAR_NG_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
-      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
     done
 
 demisto-sdk-nightly:run-unittests-and-lint:
@@ -210,6 +204,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     INSTANCE_ROLE: "Server Master"
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
@@ -221,8 +216,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
       echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
-    - section_start "Wait Until Server Ready" --collapsed
 
+    - section_start "Wait Until Server Ready" --collapsed
     - |
       [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
       python3 ./Tests/scripts/wait_until_server_ready.py  -n ${IS_NIGHTLY} --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
@@ -261,15 +256,20 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
 
     - !reference [.run_tests]
 
-    - section_start "Destroy instances"  --collapsed
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir $ARTIFACTS_FOLDER --env-file $ARTIFACTS_FOLDER/env_results.json --instance-role "$INSTANCE_ROLE"
+    - job-done
+    - exit $EXIT_CODE
+  after_script:
+    - !reference [.default-after-script]
+    - !reference [.install_ssh_keys]
+    - !reference [.ssh-config-setup]
+    - section_start "Destroy Instances"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ARTIFACTS_FOLDER}/env_results.json" --instance-role "${INSTANCE_ROLE}"
     - destroy_instances_exit_code=$?
     - |
       if [ "${destroy_instances_exit_code}" -ne 0 ]; then
         echo "Failed to destroy instances, exit code: ${destroy_instances_exit_code}"
       fi
-    - section_end "Destroy instances"
-    - job-done
+    - section_end "Destroy Instances"
 
 demisto-sdk-nightly:run-end-to-end-tests-mpv2:
   tags:
@@ -323,11 +323,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - !reference [.secrets-fetch]
     - !reference [.lock-machine]
 
-    - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-    - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
-    - echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
-
-    - !reference [.export_xsiam_machine_constants]
+    - !reference [.export_cloud_machine_constants]
     - echo "Server URL $DEMISTO_BASE_URL"
     - echo "XSIAM_AUTH_ID $XSIAM_AUTH_ID"
 
@@ -415,13 +411,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - !reference [.secrets-fetch]
     - !reference [.lock-machine]
 
-    - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-    - echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
-
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
-    - !reference [.export_xsoar_ng_machine_constants]
-
-    - echo "Server URL $DEMISTO_BASE_URL"
+    - !reference [.export_cloud_machine_constants]
 
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
