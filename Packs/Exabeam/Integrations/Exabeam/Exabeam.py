@@ -2162,7 +2162,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     return incidents, last_run
 
 
-def main():
+def main():  # pragma: no cover
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
