@@ -64,11 +64,6 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- defaultvalue: '1'
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
 script:
   script: '-'
   type: python
