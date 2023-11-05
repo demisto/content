@@ -93,8 +93,13 @@ else
 fi
 
 if [ -n "${ALLOW_FAILURE}" ]; then
-  echo "Finish running server tests iwth errors on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 1"
-  exit 1
+  if [ "${exit_code}" -eq 0 ]; then
+    echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 0"
+    exit 0
+  else
+    echo "Finish running server tests with errors on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - exiting with code 1"
+    exit 1 
+  fi 
 else
   echo "Finish running server tests on instance role: ${INSTANCE_ROLE}, server type:${SERVER_TYPE} - Error handling will be done on the results job, exiting with code 0"
   exit 0
