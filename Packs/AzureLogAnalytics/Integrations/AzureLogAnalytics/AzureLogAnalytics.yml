@@ -273,7 +273,7 @@ script:
     - description: Maximum number of records in the result set, up to one million records.
       name: limit
       defaultValue: 50
-    - description: Log query written in KQL to retrieve data.
+    - description: Log query written in KQL to retrieve data. search job queries must always start with a table name. link to syntax documentation https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator
       name: query
       required: true
     - description: Start of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
@@ -321,7 +321,7 @@ script:
       description: The number of rows that were returned by the search job.
       type: Number
     - contextPath: AzureLogAnalytics.SearchJob.properties.resultStatistics.scannedGb
-      description: 'Search job: Amount of scanned data.'
+      description: Amount of scanned data in the search job.
       type: Number
     - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.query
       description: Search job query.
@@ -345,7 +345,7 @@ script:
       description: Table name.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableSubType
-      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any | Classic | DataCollectionRuleBased For more info see in the readme file.
+      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any, Classic, DataCollectionRuleBased For more info see in the readme file.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableType
       description: Table's creator.
@@ -366,10 +366,10 @@ script:
       description: Column name.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.type
-      description: Column data type (bool | datetime | dynamic | guid | int | long | real | string).
+      description: Column data type (bool, datetime, dynamic, guid, int, long, real, string).
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint
-      description: Column data type logical hint. (armPath | guid | ip | uri) for more info see in the readme file.
+      description: Column data type logical hint. (armPath, guid, ip, uri) for more info see in the readme file.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.displayName
       description: Column display name.
@@ -387,13 +387,13 @@ script:
       description: Table labels.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.source
-      description: Table's creator. (customer | microsoft).
+      description: Table's creator. (customer, microsoft).
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.solutions
       description: List of solutions the table is affiliated with.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.provisioningState
-      description: Table's current provisioning state. (Deleting | InProgress | Succeeded | Updating) If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
+      description: Table's current provisioning state. (Deleting, InProgress, Succeeded, Updating) If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.retentionInDays
       description: The table retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention.
@@ -424,7 +424,7 @@ script:
       name: table_name
     description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
     name: azure-log-analytics-delete-search-job
-  dockerimage: demisto/crypto:1.0.0.79610
+  dockerimage: demisto/crypto:1.0.0.79946
   runonce: false
   script: '-'
   subtype: python3

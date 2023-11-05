@@ -22,7 +22,9 @@
     "tests": [
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
-            "integrations": "Azure Log Analytics"
+            "integrations": "Azure Log Analytics",
+            "instance_name" : "Azure_Log_Analytics_client_cred",
+            "timeout": 800
         },
         {
             "playbookID": "Test Playbook - NGFW Scan",

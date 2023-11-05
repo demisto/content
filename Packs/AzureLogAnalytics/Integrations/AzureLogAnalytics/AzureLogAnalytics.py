@@ -174,7 +174,7 @@ def test_connection(client: Client, params: dict[str, Any]) -> str:
 def execute_query_command(client: Client, args: dict[str, Any]) -> CommandResults:
     query = args['query']
     timeout = arg_to_number(args.get('timeout', 10))
-    workspace_id = demisto.params().get('workspaceID')
+    workspace_id = demisto.params()['workspaceID']
     full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
 
     data = {
@@ -368,7 +368,7 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
     """
     table_name: str = args['table_name']
     if not table_name.endswith(TABLE_NAME_SUFFIX):
-        return_warning(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix", exit=True)
+        raise DemistoException(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix")
 
     if argToBoolean(args["first_run"]):
         if start_search_time_datetime := arg_to_datetime(args.get('start_search_time', '1 day ago'), "start_search_time"):
@@ -395,7 +395,9 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
             )  # the response contain only the status code [202]
         except Exception as e:
             if "[InvalidParameter 400] This operation is not permitted as properties.searchResult is immutable." in e.args[0]:
-                return_warning(f"Search job {table_name} already exists - please choose another name", exit=True)
+                raise DemistoException(
+                    f"Search job {table_name} already exists - please choose another name."
+                ) from e
             raise e
         args["first_run"] = False
         return PollResult(
@@ -403,11 +405,10 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
             args_for_next_run=args,
             continue_to_poll=True,
             partial_result=CommandResults(
-                readable_output=(f"The command was sent successfully, to check the status of the command "
-                                 "please run the azure-log-analytics-get-search-job command "
-                                 "if the status of the provisioningState is Succeeded "
-                                 "you can run query on the table, using the azure-log-analytics-execute-query command "
-                                 f"with the query argument query={table_name}."),
+                readable_output=(
+                    "The command was sent successfully. "
+                    "You can check the status of the command by running !azure-log-analytics-get-search-job command or wait."
+                )
             )
         )
     else:
@@ -425,7 +426,10 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
                 outputs_prefix="AzureLogAnalytics.RunSearchJob",
                 outputs_key_field="TableName",
                 outputs={"TableName": table_name},
-                readable_output=f"The {table_name} table created successfully."
+                readable_output=(
+                    f"The {table_name} table created successfully."
+                    f" In order to run queries on it, run !azure-log-analytics-execute-query query={table_name}"
+                )
             )
         )
 
@@ -471,7 +475,7 @@ def get_search_job_command(client: Client, args: dict[str, Any]) -> CommandResul
 def delete_search_job_command(client: Client, args: dict[str, str]) -> CommandResults:
     table_name = args['table_name']
     if not table_name.endswith(TABLE_NAME_SUFFIX):
-        return_warning(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix", exit=True)
+        DemistoException(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix")
     url_suffix = f"/tables/{table_name}"
 
     client.http_request('DELETE', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
@@ -515,9 +519,9 @@ def main():
             enc_key=enc_key,  # client_secret or enc_key
             redirect_uri=params.get('redirect_uri', ''),
             auth_code=auth_code if not client_credentials else '',
-            subscription_id=params.get('subscriptionID'),  # TODO del get
-            resource_group_name=params.get('resourceGroupName'),
-            workspace_name=params.get('workspaceName'),
+            subscription_id=params['subscriptionID'],
+            resource_group_name=params['resourceGroupName'],
+            workspace_name=params['workspaceName'],
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             certificate_thumbprint=certificate_thumbprint,
@@ -536,10 +540,9 @@ def main():
             'azure-log-analytics-delete-search-job': delete_search_job_command
         }
 
-        if command == 'test-module':
-            if not managed_identities_client_id:
-                # cannot use test module if not using Managed Identities
-                # due to the lack of ability to set refresh token to integration context
+        if demisto.command() == 'test-module':
+            if not client_credentials or not managed_identities_client_id:
+                # cannot use test module due to the lack of ability to set refresh token to integration context
                 raise Exception("Please use !azure-log-analytics-test instead")
 
             test_connection(client, params)

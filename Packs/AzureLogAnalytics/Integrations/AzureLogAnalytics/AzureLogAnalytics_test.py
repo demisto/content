@@ -108,8 +108,8 @@ def test_execute_query_command(mocker: MockerFixture) -> None:
 
     assert "Query Results" in command_result.readable_output
     assert len(command_result.outputs) == 2
-    assert command_result.outputs[0].get("TableName") == "Table 1"
-    assert command_result.outputs[1].get("Data")[1].get("column4") == 4
+    assert command_result.outputs[0]["TableName"] == "Table 1"
+    assert command_result.outputs[1]["Data"][1]["column4"] == 4
 
 
 def test_list_saved_searches_command(mocker: MockerFixture) -> None:
@@ -196,8 +196,8 @@ def test_tags_arg_to_request_format() -> None:
     parsed_tags = tags_arg_to_request_format(tags_arg)
 
     assert len(parsed_tags) == 2
-    assert parsed_tags[0].get("name") == "name1"
-    assert parsed_tags[1].get("value") == "value2"
+    assert parsed_tags[0]["name"] == "name1"
+    assert parsed_tags[1]["value"] == "value2"
 
 
 @pytest.mark.parametrize("client_id", [("test_client_id"), (None)])
@@ -226,6 +226,10 @@ def test_test_module_command_with_managed_identities(
         "subscription_id": {"password": "test"},
         "resource_group": "test_resource_group",
         "credentials_refresh_token": {"password": "test"},
+        "subscriptionID": "subscriptionID",
+        "resourceGroupName": "resourceGroupName",
+        "workspaceName": "workspaceName",
+        "client_credentials": True
     }
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="test-module")
@@ -259,6 +263,9 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
         "self_deployed": "True",
         "refresh_token": tenant_id,
         "credentials": {"identifier": client_id, "password": "client_secret"},
+        "subscriptionID": "subscriptionID",
+        "resourceGroupName": "resourceGroupName",
+        "workspaceName": "workspaceName"
     }
     mocker.patch.object(demisto, "params", return_value=mocked_params)
     mocker.patch.object(
@@ -307,12 +314,10 @@ def test_run_search_job_command(mocker: MockerFixture) -> None:
     """ First run"""
     mocker.patch.object(CLIENT, "http_request", return_value=None)  # first_run, 'PUT'
     response: CommandResults = run_search_job_command(args, CLIENT)
-    assert response.readable_output == ("The command was sent successfully, to check the status of the command "
-                                        "please run the azure-log-analytics-get-search-job command "
-                                        "if the status of the provisioningState is Succeeded "
-                                        "you can run query on the table, using the azure-log-analytics-execute-query command "
-                                        f"with the query argument query={args['table_name']}."
-                                        )
+    assert response.readable_output == (
+        "The command was sent successfully. "
+        "You can check the status of the command by running !azure-log-analytics-get-search-job command or wait."
+    )
 
     """Secund run"""
     # 'GET' get status
@@ -330,7 +335,10 @@ def test_run_search_job_command(mocker: MockerFixture) -> None:
         "hide_polling_output": True
     }
     response: CommandResults = run_search_job_command(args_to_next_run, CLIENT)
-    assert response.readable_output == f"The {args['table_name']} table created successfully."
+    assert response.readable_output == (
+        f"The {args['table_name']} table created successfully."
+        f" In order to run queries on it, run !azure-log-analytics-execute-query query={args['table_name']}"
+    )
 
 
 @pytest.mark.parametrize(
