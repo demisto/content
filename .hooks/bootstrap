@@ -39,7 +39,7 @@ GIT_HOOKS_DIR="${PWD}/.git/hooks"
 if [ -n "${NO_HOOKS}" ]; then
     echo "Skipping hooks setup as environment variable NO_HOOKS is set"
 else
-    if [ -e "${GIT_HOOKS_DIR}/pre-commit" ]; then
+    if ! [ -e "${GIT_HOOKS_DIR}/pre-commit" ]; then
         echo "Hooks are now pre-push hooks, and not pre-commit"
         echo "If you want to uninstall pre-commit hooks: 'rm ${GIT_HOOKS_DIR}/pre-commit'"
     fi
