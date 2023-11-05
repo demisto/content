@@ -526,7 +526,7 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
     mocker.patch('TAXII2Server.SERVER.has_extension', has_extension)
     mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
-    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '7'})
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/'
                                    'objects/?match[type]=file', headers=HEADERS)
