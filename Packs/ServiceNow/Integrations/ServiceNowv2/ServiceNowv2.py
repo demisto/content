@@ -2493,7 +2493,6 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     # Handle closing ticket/incident in XSOAR
     close_incident = params.get('close_incident')
-    demisto.info(f'This is the ticket ##### {ticket} #####')
     if close_incident != 'None':
         server_close_custom_state = params.get('server_close_custom_state', '')
         server_custom_close_code = params.get('server_custom_close_code', '')
