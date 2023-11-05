@@ -12,7 +12,8 @@ COMMIT_LIMIT = 100
 
 # ############################## OVERWRITE REGEX FORMATTING ###############################
 regexFlags = re.M  # Multi line matching
-REGEX_IP = r"\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b"
+RGX_IP = r"\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b"
+
 
 class Client(BaseClient):
 
@@ -60,7 +61,7 @@ class Client(BaseClient):
         return res
 
 
-def fetch_indicators(client: Client, url: str, limit: int=None, params: dict=None):
+def fetch_indicators(client: Client, url: str, limit: int = None, params: dict = None):
     if params:
         feed_tags = argToList(params.get('feedTags', []))
         tlp_color = params.get('tlp_color')
@@ -75,7 +76,7 @@ def fetch_indicators(client: Client, url: str, limit: int=None, params: dict=Non
         for line in lines:
             if '#' not in line and line != '':
                 type_ = auto_detect_indicator_type(line)
-                if regex.search(REGEX_IP, line):
+                if regex.search(RGX_IP, line):
                     if line.startswith('http://'):
                         line = line.removeprefix('http://')
                     elif line.startswith('https://'):
@@ -104,7 +105,7 @@ def fetch_indicators(client: Client, url: str, limit: int=None, params: dict=Non
                 indicators_list.append(indicator_obj)
                 # If limit is reached, break loop
                 if limit and isinstance(limit, int):
-                    if len(indicators_list)>=limit:
+                    if len(indicators_list) >= limit:
                         break
     else:
         demisto.error(f"Error: {response.status_code} - {response.json()['message']}")
@@ -136,11 +137,11 @@ def get_last_commit_date(client):
     return last_commit_date
 
 
-def fetch_indicators_command(client: Client, params: dict=None):
+def fetch_indicators_command(client: Client, params: dict = None):
     integration_context = get_integration_context()
     api_url = "/contents/trails/static/malware/qakbot.txt"
     indicators_list = []
-    #First Fetch
+    # First Fetch
     if not integration_context:
         time_of_first_fetch = date_to_timestamp(datetime.now(), DATE_FORMAT)
         set_integration_context({'time_of_last_fetch': time_of_first_fetch})
@@ -202,7 +203,6 @@ def main():
 
     except Exception as e:
         raise Exception(f'Error in {SOURCE_NAME} Integration [{e}]')
-
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
