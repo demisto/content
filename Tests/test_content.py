@@ -38,6 +38,8 @@ BUILD_NUM = os.environ.get('CI_BUILD_ID')
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
 
+MAX_ON_PREM_SERVER_VERSION = "6.99.99"
+
 
 class SettingsTester:
     def __init__(self, options):
@@ -358,7 +360,7 @@ def extract_server_numeric_version(instances_ami_name, default_version):
 
     if server_numeric_version == 'master':
         logging.info('Server version: Master')
-        return default_version
+        return MAX_ON_PREM_SERVER_VERSION
     else:
         server_numeric_version = server_numeric_version.replace('-', '.')
 
