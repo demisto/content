@@ -1125,6 +1125,7 @@ tasks:
       id: ee795eae-1fc0-4458-864b-91b2f224db89
       version: -1
       name: Tag received from inputs?
+      description: Checks whether a tag for blocked indicators was specified.
       type: condition
       iscommand: false
       brand: ""
