@@ -61,7 +61,8 @@ configuration:
   type: 0
   section: Connect
   required: false
-  hidden: true
+  hidden:
+  - marketplacev2
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
@@ -76,6 +77,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced. (For Cortex XSOAR 8 and Cortex XSIAM) Optional for engines, otherwise mandatory.
+  display: Username
+  name: credentials
+  type: 9
+  section: Connect
+  required: false
+  hidden:
+  - marketplacev2
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
@@ -422,7 +431,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.75066
+  dockerimage: demisto/flask-nginx:1.0.0.79973
   longRunning: true
   longRunningPort: true
   script: '-'
