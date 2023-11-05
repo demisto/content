@@ -240,7 +240,7 @@ tasks:
       retry-count:
         simple: "2"
       hostname:
-        simple: ec2-52-50-45-109.eu-west-1.compute.amazonaws.com
+        simple: ec2.eu.compute-1.amazonaws.com
     separatecontext: false
     view: |-
       {

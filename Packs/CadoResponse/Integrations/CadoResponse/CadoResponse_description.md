@@ -19,7 +19,7 @@ To generate that key you can do the following inside Cado Repsonse:
 #### Cado Response Instance
 Often you'll see in the following tutorials that we are referring to "Cado Response Instance" - which is the IP or Domain of where the platform was deployed, for example:
 ```
-https://ec2example.compute.amazonaws.com
+https://ec2example.compute-1.amazonaws.com
 ```
 
 #### Defaults

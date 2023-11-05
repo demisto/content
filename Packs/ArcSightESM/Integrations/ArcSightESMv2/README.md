@@ -1056,7 +1056,7 @@ Returns the security event details
                         "postalCode": "D02",
                         "regionCode": "L"
                     },
-                    "hostName": "ec2-52-213-8-14.eu-west-1.compute.amazonaws.com",
+                    "hostName": "ec2.eu.compute-1.amazonaws.com",
                     "mutable": true,
                     "zone": {
                         "externalID": "E.I. duPont de Nemours and Co. Inc.",
