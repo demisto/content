@@ -109,18 +109,22 @@ def handle_values_input(values: str) -> list:
 
     # Validate that the user has entered valid values
     if not values or not re.findall("\[(.*?)\]", values):
-        raise ValueError('Wrong format of values entered, please check the documentation')
+        raise ValueError(
+            "Wrong format of values entered, please check the documentation"
+        )
 
     # Converting the values the user entered into an array of arrays
     if isinstance(values_as_array := ast.literal_eval(values), list) and (
-        not values_as_array or not all(isinstance(item, list) for item in values_as_array)):
-            values_as_array = [values_as_array]
+        not values_as_array
+        or not all(isinstance(item, list) for item in values_as_array)
+    ):
+        values_as_array = [values_as_array]
 
     # Handling all values including the `None` value to be string
     res_for_values_req = []
     for element in values_as_array:
         if not element:
-            res_for_values_req.append([''])
+            res_for_values_req.append([""])
             continue
         res_for_values_req.append([str(value) for value in element])
 
