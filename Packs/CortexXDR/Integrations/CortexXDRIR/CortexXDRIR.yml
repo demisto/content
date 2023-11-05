@@ -562,11 +562,14 @@ script:
     - contextPath: Process.CommandLine
       description: The full command line (including arguments).
       type: String
+    - contextPath: Process.is_malicious
+      description: Whether the artifact is malicious, as decided by the Wildfire verdict.
+      type: boolean
     - contextPath: IP.Address
       description: IP address.
       type: String
     - contextPath: IP.Geo.Country
-      description: The country in which the IP address is located.
+      description: 'The country in which the IP address is located.'
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
