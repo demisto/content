@@ -5,7 +5,7 @@ sectionOrder:
 - Collect - events
 - Collect - assests
 commonfields:
-  id: Tenable.io Event Collector Test
+  id: Tenable.io Event Collector
   version: -1
 configuration:
 - additionalinfo: This is the API endpoint for the Tenable.io API.
@@ -92,8 +92,8 @@ configuration:
   advanced: true
   section: Collect - assets
 description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs, assets and their vulnerabilities from Tenable.
-display: Tenable.io Event Collector Test
-name: Tenable.io Event Collector Test
+display: Tenable.io Event Collector
+name: Tenable.io Event Collector
 script:
   commands:
   - arguments:
