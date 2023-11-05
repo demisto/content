@@ -129,7 +129,7 @@ def create_playbook(xsoar_ng_client: XsoarNGApiClient, playbook_path: str, playb
 
 
 @retry(times=10, delay=30)
-def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_states: set[str]):
+def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_states: set[str]) -> bool:
     """
     Validates whether playbook has reached into an expected state
 
@@ -153,7 +153,7 @@ def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id
 
 
 @retry(times=30, delay=5)
-def is_incident_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_state: str = "closed"):
+def is_incident_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_state: str = "closed") -> bool:
     """
     Validates whether an incident has reached into an expected state
 
