@@ -70,7 +70,7 @@ configuration:
   required: true
   type: 15
 - defaultvalue: indicatorType
-  display: ""
+  display: Feed Expiration Policy
   name: feedExpirationPolicy
   options:
   - never
@@ -80,7 +80,7 @@ configuration:
   required: false
   type: 17
 - defaultvalue: "20160"
-  display: ""
+  display: Feed Expiration Interval
   name: feedExpirationInterval
   required: false
   type: 1
