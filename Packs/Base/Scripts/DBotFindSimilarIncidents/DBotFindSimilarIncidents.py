@@ -9,7 +9,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import json
 import pandas as pd
 from scipy.spatial.distance import cdist
-from typing import List, Dict, Union
+from typing import Any, List, Dict, Union
 
 warnings.simplefilter("ignore")
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -529,7 +529,7 @@ def get_incident_by_id(incident_id: str, populate_fields: List[str], from_date: 
     :return: Get incident acording to incident id
     """
     populate_fields_value = ' , '.join(populate_fields)
-    message_of_values = build_message_of_values(incident_id, populate_fields_value, from_date, to_date)
+    message_of_values = build_message_of_values([incident_id, populate_fields_value, from_date, to_date])
     demisto.debug(f'Executing GetIncidentsByQuery, {message_of_values}')
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': "id:(%s)" % incident_id,
@@ -573,7 +573,7 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: List[s
         query += " %s" % query_sup
 
     populate_fields_value = ' , '.join(populate_fields)
-    demisto.debug(f'Executing GetIncidentsByQuery, {build_message_of_values(populate_fields_value, from_date, to_date, limit)}')
+    demisto.debug(f'Executing GetIncidentsByQuery, {build_message_of_values([populate_fields_value, from_date, to_date, limit])}')
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': query,
         'populateFields': populate_fields_value,
@@ -884,8 +884,13 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
     return incident_filter
 
 
-def build_message_of_values(fields: list[ABC]):
-    return ", ".join([f'{current_field=}' for current_field in fields])
+def build_message_of_values(fields: list[Any]):
+    """
+    Prepare a message to be used in logs
+    :param fields: List of fields
+    :return: A text message snippet
+    """
+    return "; ".join([f'{current_field}' for current_field in fields])
 
 
 def main():
