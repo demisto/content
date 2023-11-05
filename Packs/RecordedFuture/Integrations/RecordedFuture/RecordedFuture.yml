@@ -4,7 +4,6 @@ commonfields:
 name: Recorded Future v2
 display: Recorded Future v2
 category: Data Enrichment & Threat Intelligence
-image:
 description: Unique threat intel technology that automatically serves up relevant insights in real time.
 configuration:
 - display: Server URL (e.g., https://api.recordedfuture.com/gw/xsoar/)
@@ -14,9 +13,17 @@ configuration:
   required: true
 - display: API Token
   name: token
-  defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  displaypassword: API Token
+  hiddenusername: true
+  hidden: true
+- display: ''
+  name: token_credential
+  type: 9
+  required: false
+  displaypassword: API Token
+  hiddenusername: true
 - display: File Threshold
   additionalinfo: Minimum risk score from Recorded Future to consider the file malicious.
   name: file_threshold
@@ -48,11 +55,11 @@ configuration:
   type: 0
   required: false
 - display: Vulnerability Threshold
-  additionalinfo: Minimum risk score from Recorded Future to consider the vulnerability critical.
   name: vulnerability_threshold
-  defaultvalue: "65"
+  defaultvalue: '65'
   type: 0
   required: false
+  additionalinfo: Minimum risk score from Recorded Future to consider the vulnerability critical.
 - display: Collective Insights
   name: collective_insights
   defaultvalue: "On"
@@ -60,58 +67,57 @@ configuration:
   required: true
   additionalinfo: The Recorded Future Platform tracks trends and facilitates new insights on detections to better identify threats. See trends and track metrics over time using the Recorded Future Platform. This feature will store XSOAR enrichments based on playbooks. This feature permits additional analytics to track trends and identify new insights with the Recorded Future Intelligence Cloud. Please refer to the Help section for information about fields collected for Collective Insights.
   options:
-  - "On"
-  - "Off"
+  - On
+  - Off
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
   type: 8
+  defaultvalue: "false"
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  defaultvalue: "false"
   required: false
+  defaultvalue: 'false'
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
 - display: Rule names to fetch alerts by
-  additionalinfo: Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched.
   name: rule_names
   type: 12
+  additionalinfo: 'Rule names to fetch alerts by, separated by semicolon. If empty, all alerts will be fetched.'
   required: false
 - display: Alert Statuses to include in the fetch
   name: fetch_statuses
-  type: 0
-  additionalinfo: 'Comma-separated alert statuses (e.g. "unassigned,assigned,pending,actionable,no-action,tuning"). If empty, the default value of "no-action" will be used.'
   defaultvalue: "no-action"
+  type: 0
+  additionalinfo: Comma-separated alert statuses (e.g. "unassigned,assigned,pending,actionable,no-action,tuning"). If empty, the default value of "no-action" will be used.
   required: false
 - display: Update alert status on fetch.
+  additionalinfo: 'If selected, alerts with a status of ''no-action'' will be updated to ''pending'' once fetched by the integration.'
+  defaultvalue: 'true'
   name: update_status
-  defaultvalue: "true"
   type: 8
-  additionalinfo: If selected, alerts with a status of 'no-action' will be updated to 'pending' once fetched by the integration.
   required: false
-- display: First fetch time
-  additionalinfo: 'Format: <number> <time unit>, e.g., "12 hours", "7 days", "3 months", "1 year".'
-  defaultvalue: 24 hours
-  name: first_fetch
+- name: first_fetch
+  display: 'First fetch time'
   type: 0
+  defaultvalue: 24 hours
   required: false
-- name: incidentType
-  display: 'Incident type'
+  additionalinfo: 'Format: <number> <time unit>, e.g., "12 hours", "7 days", "3 months", "1 year".'
+- display: Incident type
+  name: incidentType
+  defaultvalue: "Recorded Future Alert"
   type: 13
-  defaultvalue: Recorded Future Alert
   required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
-  defaultvalue: "50"
+  defaultvalue: '50'
   type: 0
   required: false
-- display: Source Reliability
-  additionalinfo: Reliability of the source providing the intelligence data.
-  name: integrationReliability
+- name: integrationReliability
+  display: 'Source Reliability'
   defaultvalue: B - Usually reliable
   options:
   - A+ - 3rd party enrichment
@@ -123,31 +129,32 @@ configuration:
   - F - Reliability cannot be judged
   type: 15
   required: false
-- name: feedExpirationPolicy
-  display: ''
-  defaultvalue: indicatorType
+  additionalinfo: Reliability of the source providing the intelligence data.
+- display: ''
+  name: feedExpirationPolicy
+  defaultvalue: "indicatorType"
+  type: 17
+  required: false
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  type: 17
-  required: false
 - display: Incidents Fetch Interval
   name: feedExpirationInterval
-  defaultvalue: "20160"
+  defaultvalue: '20160'
   type: 1
   required: false
-- display: Incidents Fetch Interval
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
-  defaultvalue: "1"
-  type: 19
   required: false
+  type: 19
 script:
-  script: '-'
+  script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.78960
   commands:
   - name: domain
     description: Gets a quick indicator of the risk associated with a domain.
@@ -2826,14 +2833,11 @@ script:
     description: Get threat actors map.
     arguments:
     - name: actors_ids
-      required: false
       isArray: true
       description: Actors IDs for which to get the threat map.
     - name: actor_name
-      required: false
       description: Actors name for which to get the threat map.
     - name: include_links
-      required: false
       auto: PREDEFINED
       predefined:
       - "true"
@@ -2866,7 +2870,6 @@ script:
     description: Search links.
     arguments:
     - name: entity_type
-      required: false
       description: Type of the entity to fetch links for. E.g. "domain", "ip", "file", "url", "cve", "malware", "organization, "person". Should be provided along with the entity in entity_name argument.
       auto: PREDEFINED
       predefined:
@@ -2887,23 +2890,18 @@ script:
       - Person
       - Username
     - name: entity_name
-      required: false
       description: Name of the entity to fetch links for.
     - name: entity_id
-      required: false
       description: ID of entity to fetch links for.
     - name: source_type
-      required: false
       description: Source of the links to be fetched. Can be "insikt" or "technical".
       auto: PREDEFINED
       predefined:
       - technical
       - insikt
     - name: timeframe
-      required: false
       description: Time range of the links to be fetched. Eg. "-1d" for last 1 day.
     - name: technical_type
-      required: false
       description: Type of technical source to fetch links from. Can be "type:MalwareAnalysis", "type:InfrastructureAnalysis", "type:NetworkTrafficAnalysis" or "type:TTPAnalysis".
     outputs:
     - contextPath: RecordedFuture.Links.entity.id
@@ -2929,7 +2927,6 @@ script:
     description: Search detection rules.
     arguments:
     - name: entity_type
-      required: false
       description: The type of entity for which to fetch context. Should be provided with its value in entity name argument. Can be "domain", "ip", "file", "url", "cve", or "malware".
       auto: PREDEFINED
       predefined:
@@ -2950,13 +2947,10 @@ script:
       - Person
       - Username
     - name: entity_name
-      required: false
       description: Entity name.
     - name: entity_id
-      required: false
       description: Entity id.
     - name: rule_types
-      required: false
       isArray: true
       description: Rule type.
       auto: PREDEFINED
@@ -2965,7 +2959,6 @@ script:
       - sigma
       - snort
     - name: title
-      required: false
       description: Rule title.
     outputs:
     - contextPath: RecordedFuture.DetectionRules.id
@@ -3024,26 +3017,19 @@ script:
       required: true
       description: Value of the IOC itself.
     - name: entity_field
-      required: false
       description: Used to describe characteristics about the IOC.
     - name: entity_source_type
-      required: false
       description: Used to describe what log source the IOC came from.
     - name: incident_name
-      required: false
       description: Title of the incident related to the IOC.
     - name: incident_id
-      required: false
       description: ID of the incident related to the IOC.
     - name: incident_type
-      required: false
       description: Attack vector associated with the incident (C2, Phishing.. etc).
     - name: mitre_codes
-      required: false
       description: List contains one or more MITRE codes associated with the IOC.
       isArray: true
     - name: malware
-      required: false
       description: List contains all known malware associated with the IOCs.
       isArray: true
     outputs:
@@ -3052,6 +3038,7 @@ script:
       type: String
 
   isfetch: true
+  runonce: false
 tests:
 - No tests
 fromversion: 5.0.0
