@@ -17,4 +17,4 @@ This pack integrates Netcraft's takedown and report service to quickly report an
 - Analyze suspicious URLs, emails, and files and obtain their screenshots.
 
 ### Pack Configuration
-To get up and running with this pack, you must login to Netcraft and get an API key at the [Netcraft Client Portal](https://account.netcraft.com/security).
+To get up and running with this pack, you must login to Netcraft and create an API key at the [Netcraft Client Portal](https://account.netcraft.com/security).
