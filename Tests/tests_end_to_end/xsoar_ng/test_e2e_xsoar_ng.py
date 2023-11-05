@@ -1,4 +1,3 @@
-import time
 from datetime import timedelta
 from datetime import datetime
 from contextlib import contextmanager
@@ -10,7 +9,7 @@ from demisto_client.demisto_api import IncidentWrapper
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
 from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
 from demisto_client.demisto_api.rest import ApiException
-from demisto_sdk.utils.utils import retry_http_request
+from demisto_sdk.utils.utils import retry
 from Tests.tools import get_integration_params
 
 
@@ -129,7 +128,7 @@ def create_playbook(xsoar_ng_client: XsoarNGApiClient, playbook_path: str, playb
         xsoar_ng_client.delete_playbook(playbook_name, playbook_id)
 
 
-@retry_http_request(times=10, delay=30)
+@retry(times=10, delay=30)
 def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_states: set[str]):
     """
     Validates whether playbook has reached into an expected state
@@ -153,7 +152,7 @@ def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id
     raise Exception(f'the status of the playbook {playbook_id} is {_playbook_status}')
 
 
-@retry_http_request(times=30, delay=5)
+@retry(times=30, delay=5)
 def is_incident_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_state: str = "closed"):
     """
     Validates whether an incident has reached into an expected state
@@ -210,7 +209,7 @@ def get_fetched_incident(
     Yields:
         dict: a fetched incident that was found.
     """
-    @retry_http_request(times=30, delay=3)
+    @retry(times=30, delay=3)
     def _get_fetched_incident():
         _found_incidents = xsoar_ng_client.search_incidents(
             incident_ids, from_date=from_date, incident_types=incident_types, source_instance_name=source_instance_name, size=1
