@@ -23,9 +23,9 @@ VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
     connect_timeout=1,
-    retries=dict(
-        max_attempts=5
-    ),
+    retries={
+        'max_attempts': 5
+    },
     proxies=proxies
 )
 
@@ -196,7 +196,7 @@ def get_query_execution_command(args):
     try:
         raw = json.loads(json.dumps(response, cls=DatetimeEncoder))
     except ValueError as e:
-        return_error('Could not decode/encode the raw response - {err_msg}'.format(err_msg=e))
+        return_error(f'Could not decode/encode the raw response - {e}')
     ec = {'AWS.Athena.Query(val.QueryExecutionId === obj.QueryExecutionId)': raw}
     human_readable = tableToMarkdown('AWS Athena Query', raw)
     return_outputs(human_readable, ec)
@@ -216,33 +216,35 @@ def get_query_results_command(args):
     return_outputs(human_readable, ec)
 
 
-"""COMMAND BLOCK"""
-try:
-    LOG('Command being called is {command}'.format(command=demisto.command()))
-    if demisto.command() == 'test-module':
-        client = aws_session()
-        response = client.list_named_queries()
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            demisto.results('ok')
+def main():
+    try:
+        demisto.debug(f'Command being called is {demisto.command()}')
+        if demisto.command() == 'test-module':
+            client = aws_session()
+            response = client.list_named_queries()
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                demisto.results('ok')
 
-    elif demisto.command() == 'aws-athena-start-query':
-        start_query_execution_command(demisto.args())
+        elif demisto.command() == 'aws-athena-start-query':
+            start_query_execution_command(demisto.args())
 
-    elif demisto.command() == 'aws-athena-stop-query':
-        stop_query_command(demisto.args())
+        elif demisto.command() == 'aws-athena-stop-query':
+            stop_query_command(demisto.args())
 
-    elif demisto.command() == 'aws-athena-get-query-execution':
-        get_query_execution_command(demisto.args())
+        elif demisto.command() == 'aws-athena-get-query-execution':
+            get_query_execution_command(demisto.args())
 
-    elif demisto.command() == 'aws-athena-get-query-results':
-        get_query_results_command(demisto.args())
+        elif demisto.command() == 'aws-athena-get-query-results':
+            get_query_results_command(demisto.args())
+
+    except ResponseParserError as e:
+        return_error(f'Could not connect to the AWS endpoint. Please check that the region is valid.\n{e}')
+        demisto.error(str(e))
+
+    except Exception as e:
+        return_error(f'Error: {e}')
+        demisto.error(str(e))
 
 
-except ResponseParserError as e:
-    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-        error=type(e)))
-    LOG(e)
-
-except Exception as e:
-    return_error('Error has occurred in the AWS Athena Integration: {error}\n {message}'.format(
-        error=type(e), message=e))
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
