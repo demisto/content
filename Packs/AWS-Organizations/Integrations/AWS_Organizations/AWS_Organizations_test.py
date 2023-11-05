@@ -14,13 +14,16 @@ class MockOrganizationsClient:  # (OrganizationsClient):
     def describe_account(self, **kwargs):
         assert account_list.client_func_kwargs == kwargs
         return account_list.client_func_return
-    
+
     def describe_organizational_unit(self, **kwargs):
         assert organization_unit_get.client_func_kwargs == kwargs
         return organization_unit_get.client_func_return
 
+    def describe_organization(self):
+        return organization_get.client_func_return
 
-client: 'OrganizationsClient' = MockOrganizationsClient()
+
+client = MockOrganizationsClient()
 
 # @pytest.mark.parametrize('args, expected', [
 #     ({'limit': 10}, {'Accounts': [...], 'NextToken': 'xyz'}),  # example output
@@ -52,3 +55,13 @@ def test_organization_unit_get():
 
     assert result.outputs == organization_unit_get.context_outputs
     assert result.readable_output == organization_unit_get.readable_output
+
+
+def test_organization_get():
+
+    from AWS_Organizations import organization_get_command
+
+    result = organization_get_command(client)
+
+    assert result.outputs == organization_get.context_outputs
+    assert result.readable_output == organization_get.readable_output
