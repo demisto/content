@@ -8,11 +8,12 @@ from jira import JIRA
 from junitparser import JUnitXml, TestSuite
 from tabulate import tabulate
 
-from Tests.scripts.common import calculate_results_table, TEST_PLAYBOOKS_REPORT_FILE_NAME, get_test_results_files
+from Tests.scripts.common import calculate_results_table, TEST_PLAYBOOKS_REPORT_FILE_NAME, get_test_results_files, \
+    TEST_SUITE_CELL_EXPLANATION
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
-    JIRA_API_KEY, jira_server_information
-from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, get_jira_tickets_for_playbooks, \
-    TEST_PLAYBOOKS_BASE_HEADERS
+    JIRA_API_KEY, jira_server_information, generate_query_by_component_and_issue_type, jira_search_all_by_query, JIRA_LABELS
+from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
+    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -109,27 +110,29 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> tu
         logging.info("Printing test playbook summary without Jira tickets")
         jira_tickets_for_playbooks = {}
     else:
-        logging.info("Searching for Jira tickets for playbooks with the following settings:\n"
-                     f'Jira server url: {JIRA_SERVER_URL}\n'
-                     f'Jira verify SSL: {JIRA_VERIFY_SSL}\n'
-                     f'Jira project id: {JIRA_PROJECT_ID}\n'
-                     f'Jira issue type: {JIRA_ISSUE_TYPE}\n'
-                     f'Jira component: {JIRA_COMPONENT}\n')
+        logging.info("Searching for Jira tickets for playbooks with the following settings:")
+        logging.info(f"\tJira server url: {JIRA_SERVER_URL}")
+        logging.info(f"\tJira verify SSL: {JIRA_VERIFY_SSL}")
+        logging.info(f"\tJira project id: {JIRA_PROJECT_ID}")
+        logging.info(f"\tJira issue type: {JIRA_ISSUE_TYPE}")
+        logging.info(f"\tJira component: {JIRA_COMPONENT}")
+        logging.info(f"\tJira labels: {', '.join(JIRA_LABELS)}")
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
 
-        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(jira_server, playbooks_ids)
+        issues = jira_search_all_by_query(jira_server, generate_query_by_component_and_issue_type())
+        jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(playbooks_ids, issues)
         logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_ids)} filtered playbooks")
 
-    headers, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
-                                                                        playbooks_results,
-                                                                        server_versions,
-                                                                        TEST_PLAYBOOKS_BASE_HEADERS,
-                                                                        without_jira=without_jira)
+    headers, column_align, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
+                                                                                      playbooks_results,
+                                                                                      server_versions,
+                                                                                      TEST_PLAYBOOKS_BASE_HEADERS,
+                                                                                      without_jira=without_jira)
     logging.info(f"Writing test playbook report to {test_playbooks_report}")
     xml.write(test_playbooks_report.as_posix(), pretty=True)
-    table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
-    logging.info(f"Test Playbook Results:\n{table}")
+    table = tabulate(tabulate_data, headers, tablefmt="pretty", colalign=column_align)
+    logging.info(f"Test Playbook Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
     return True, total_errors != 0
 
 
