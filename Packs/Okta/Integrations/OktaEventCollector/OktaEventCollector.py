@@ -66,8 +66,8 @@ def get_events_command(client: Client, total_events_to_fetch, since, last_object
         except Exception as exc:
             msg = f'something went wrong with the http call {exc}'
             demisto.debug(msg)
-            if type(exc.res) is requests.models.Response:
-                res: requests.models.Response = exc.res
+            if type(exc.res) is requests.models.Response:  # type: ignore
+                res: requests.models.Response = exc.res  # type: ignore
                 status_code: HTTPStatus = res.status_code
                 if status_code == HTTPStatus.TOO_MANY_REQUESTS:
                     demisto.debug(f'fetch-events Got 429. okta rate limit headers:\n \
