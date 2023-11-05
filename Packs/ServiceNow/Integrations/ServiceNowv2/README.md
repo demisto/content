@@ -2462,16 +2462,16 @@ Generic call to ServiceNow api
 `servicenow-generic-api-call`
 #### Input
 
-| **Argument Name** | **Description**                                                                                | **Required** |
-| --- |------------------------------------------------------------------------------------------------| --- |
-| method | action to be performed on path. Possible values are: GET, POST, PATCH, DELETE. Default is GET. | Required | 
-| path | the API path starting with forward slash (/).                                                  | Required | 
-| json_body | whether or not the request body is json. Possible values are: true, false. Default is false.   | Optional |
-| body | json to send in body.                                                                          | Optional | 
-| headers | json of headers to add.                                                                        | Optional | 
-| sc_api | Service Catalog Call. Possible values are: true, false. Default is false.                      | Optional | 
-| cr_api | Change Request Call. Possible values are: true, false. Default is false.                       | Optional | 
-| custom_api | Define a custom API root (like /api/custom/tasks).                                             | Optional | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| method | action to be performed on path. Possible values are: GET, POST, PATCH, DELETE. Default is 0. | Required | 
+| path | the API path starting with forward slash (/). | Required | 
+| json_body | whether or not the request body is json. Possible values are: true, false. Default is false. | Optional |
+| body | json to send in body. | Optional | 
+| headers | json of headers to add. | Optional | 
+| sc_api | Service Catalog Call. Possible values are: true, false. Default is false. | Optional | 
+| cr_api | Change Request Call. Possible values are: true, false. Default is false. | Optional | 
+| custom_api | Define a custom API root (like /api/custom/tasks). | Optional | 
 
 
 #### Context Output
