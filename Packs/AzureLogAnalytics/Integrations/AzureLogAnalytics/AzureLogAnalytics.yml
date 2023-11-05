@@ -37,12 +37,12 @@ configuration:
   type: 14
   required: false
 - additionalinfo: Check when authenticating using the Authorization Code flow.
-  display: Use Authorization Code flow
+  display: Use a self-deployed Azure application - Authorization Code flow
   name: self_deployed
   type: 8
   required: false
 - additionalinfo: Check when authenticating using the Client Credentials flow.
-  display: Use Client Credentials Flow
+  display: Use a self-deployed Azure application - Client Credentials Flow
   name: client_credentials
   type: 8
   required: false
