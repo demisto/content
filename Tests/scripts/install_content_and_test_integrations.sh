@@ -75,4 +75,3 @@ elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
 else
   exit_on_error 1 "Unknown server type: ${SERVER_TYPE}"
 fi
-
