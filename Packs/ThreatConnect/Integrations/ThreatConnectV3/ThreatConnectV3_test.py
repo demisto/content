@@ -22,9 +22,9 @@ def test_create_or_query():
 
 @pytest.fixture
 def groups_fixture() -> list:
-    return [{'dateAdded': '2022-08-04T12:35:33Z'}, {'dateAdded': '2022-09-06T12:35:33Z'},
-            {'dateAdded': '2022-03-06T12:35:33Z'}, {'dateAdded': '2022-09-06T12:36:33Z'},
-            {'dateAdded': '2022-08-06T11:35:33Z'}]
+    return [{'dateAdded': '2022-08-04T12:35:33Z', 'id': 1}, {'dateAdded': '2022-09-06T12:35:33Z', 'id': 2},
+            {'dateAdded': '2022-03-06T12:35:33Z', 'id': 3}, {'dateAdded': '2022-09-06T12:36:33Z', 'id': 3},
+            {'dateAdded': '2022-08-06T11:35:33Z', 'id': 4}]
 
 
 @pytest.mark.parametrize('last_run, expected_result', [('2022-07-04T12:35:33', '2022-09-06T12:36:33'),
@@ -71,9 +71,15 @@ def test_fetch_incidents_first_run(mocker):
 
 def test_fetch_incidents_not_first_run(mocker, groups_fixture):
     import ThreatConnectV3
-    mocker.patch.object(demisto, 'getLastRun', return_value={'last': '2021-08-04T12:35:33'})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_time': '2021-08-04T12:35:33', 'last_id': 1})
     mocker.patch.object(ThreatConnectV3, 'list_groups', return_value=groups_fixture)
-    assert fetch_incidents(client, {}) == '2022-09-06T12:36:33'
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    fetch_incidents(client, {})
+    incidents = demisto.incidents.call_args[0][0]
+
+    assert len(incidents) == 3
+    demisto.setLastRun.assert_called_with({'last_time': '2022-09-06T12:36:33', 'last_id': 4})
 
 
 def test_create_context():  # type: ignore # noqa
