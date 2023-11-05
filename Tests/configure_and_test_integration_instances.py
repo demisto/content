@@ -1947,7 +1947,6 @@ def main():
     build.configure_servers_and_restart()
     build.disable_instances()
 
-    logging.info(f"{build.is_nightly=}")
     if build.is_nightly:
         success = build.install_nightly_pack()
     else:
