@@ -199,7 +199,7 @@ def find_zombie_processes():
     try:
         demisto.debug('find_zombie_processes, running ps')
         ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
-                                        stderr=subprocess.STDOUT, universal_newlines=True)
+                                         stderr=subprocess.STDOUT, universal_newlines=True)
         demisto.debug('find_zombie_processes, ran ps')
     except subprocess.CalledProcessError as exc:
         demisto.info(f"Failed to find zombie proecesses, {exc.returncode=}, {exc.output=}")
@@ -212,6 +212,7 @@ def find_zombie_processes():
             pinfo = line.split()
             if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
                 zombies.append(pinfo[0])
+    demisto.debug(f'find_zombie_processes, found {len(zombies)} zombie processes')
     return zombies, ps_out
 
 
