@@ -1,0 +1,5 @@
+[file:playbook-CTF_2_-_Classify_an_incident_RDP_Brute_force.yml]
+ignore=PB105
+
+[file:incidentfield-CTF02.json]
+ignore=IF113,IF115
