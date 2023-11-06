@@ -178,7 +178,7 @@ def test_rasterize_url_long_load(r_mode, mocker, http_wait_server):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert 'Timed out' in err_msg
+    assert 'Timeout exception' in err_msg or 'Timed out' in err_msg
     return_error_mock.reset_mock()
     # test that with a higher value we get a response
     assert rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG,
