@@ -56,7 +56,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Secrets Detection"
     - section_start "Update Conf" --collapsed
-    - cp ./Tests/conf.json "${ARTIFACTS_FOLDER}" # workaround for the hard-coded value in the sdk
+    - cp ./Tests/conf.json "${ARTIFACTS_FOLDER_INSTANCE}" # workaround for the hard-coded value in the sdk
     - section_end "Update Conf"
     - !reference [.create-id-set]
     - section_start "Activate GCloud Service Account" --collapsed
@@ -78,16 +78,12 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - ./Documentation/commonServerDocs.sh
     - section_end "Common Server Documentation"
     - section_start "Collect Test List and Content Packs" --collapsed
-    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY
+    - python3 ./Tests/scripts/collect_tests/collect_tests.py -n "${IS_NIGHTLY}"
     - section_end "Collect Test List and Content Packs"
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp "${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json" --output-path "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --all-packs-dependencies
     - section_end "Calculate Packs Dependencies"
     - section_start "Cleanup env results from artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      rm -f "${ARTIFACTS_FOLDER}/conf.json"
-    - section_end "Cleanup env results from artifacts folder"
     - job-done
 
 demisto-sdk-nightly:xsoar-prepare-testing-bucket:

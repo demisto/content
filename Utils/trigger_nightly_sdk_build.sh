@@ -64,7 +64,7 @@ if [ -n "${_gitlab}" ]; then
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
     --form "variables[SDK_REF]=${_sdk_ref}" \
     --form "variables[OVERRIDE_SDK_REF]=${_override_sdk_ref}" \
-    "${BUILD_TRIGGER_URL}"
+    "${BUILD_TRIGGER_URL}" | jq
 
 else
   trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
