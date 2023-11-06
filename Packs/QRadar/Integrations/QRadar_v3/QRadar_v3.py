@@ -3704,13 +3704,17 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
     """
     ctx, ctx_version = get_integration_context_with_version()
+    remote_args = GetModifiedRemoteDataArgs(args)
+
     highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     fetch_mode = params.get('fetch_mode', '')
     range_ = f'items=0-{limit - 1}'
     last_update_modified = ctx.get(LAST_MIRROR_KEY, 0)
+    if not last_update_modified:
+        last_update_modified = get_time_parameter(remote_args.last_update, epoch_format=True)
+        assert isinstance(last_update_modified, int)
     last_update_closed = ctx.get(LAST_MIRROR_CLOSED_KEY, last_update_modified)
-
     assert isinstance(last_update_modified, int)
     assert isinstance(last_update_closed, int)
     filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update_modified}'
