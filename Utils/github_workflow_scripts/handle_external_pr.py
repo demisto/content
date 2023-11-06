@@ -213,16 +213,15 @@ def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     integrations_checked = []
     for file in pr_files:
         print(f'file is: {file}')
-        integration = BaseContent.from_path(Path(file))
+        integration = BaseContent.from_path(CONTENT_PATH / file)
         print(f'Integration is: {integration}')
         if "Integrations" in file and integration not in integrations_checked:
-            try:
-                if isinstance(integration, Integration) and integration.is_feed:
-                    return True
-            except Exception as error:
-                print(f'Received error: {error}\nwhen trying to find pack {integration.path}')
-            integrations_checked.append(integration)
-            print (f'Integration checked are: {integrations_checked}')
+            if not isinstance(integration, Integration):
+                continue
+            if integration.is_feed:
+                return True
+            integrations_checked.append(file)
+            print(f'Integration checked are: {integrations_checked}')
             pack = integration.in_pack
             tags = pack.tags
             categories = pack.categories
