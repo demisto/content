@@ -7,7 +7,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g. https://content.demisto.works:20)
   name: server
   required: true
   type: 0
