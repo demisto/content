@@ -9,7 +9,7 @@ from git import Repo
 from github.Repository import Repository
 from demisto_sdk.commands.common.tools import get_pack_metadata
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
-from demisto_sdk.commands.content_graph.objects.pack import Pack
+from demisto_sdk.commands.content_graph.objects.pack import Pack, Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 
 
@@ -97,8 +97,11 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
 def packs_to_check_in_pr(file_paths: list[str]) -> set:
     """
     The function gets all files in the PR and returns the packs that are part of the PR
-    :param file_paths: the file paths of the PR files
-    :return: set of all packs that are part of the PR
+
+    Arguments:
+        - param file_paths: the file paths of the PR files
+    Returns:
+        - set of all packs that are part of the PR
     """
     pack_dirs_to_check = set()
 
@@ -197,39 +200,78 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_content(packs_in_pr: set[str]) -> bool:
+def is_tim_content(packs_in_pr: set[str],pr_files: list[str]) -> bool:
     """
-    :param packs_in_pr: packs that are part of the PR
-    :return: returns True or False if tim reviewer needed
+    This is where the actual search for feed:True or relevant tags or categories are being searched
+    according to the login in is_tim_reviewer_needed
+
+    Arguments:
+    - packs_in_pr: packs that are part of the PR
+
+    Returns: returns True or False if tim reviewer needed
     """
-    for pack in packs_in_pr:
-        pack_object = BaseContent.from_path(CONTENT_PATH / pack)
-        try:
-            if isinstance(pack_object, Pack):
-                for integration in pack_object.content_items.integration:
-                    if integration.is_feed:
-                        return True
-        except Exception as error:
-            print(f'Received error: {error}\nwhen trying to find pack {pack}')
-        pack_metadata = get_pack_metadata(pack)
-        tags = pack_metadata.get("tags")
-        categories = pack_metadata.get("categories")
-        print("tim in categories")
-        if TIM_TAGS in tags or TIM_CATEGORIES in categories:
-            return True
+    integrations_checked = []
+    for file in pr_files:
+        print(f'file is: {file}')
+        integration = BaseContent.from_path(Path(file))
+        print(f'Integration is: {integration}')
+        if "Integrations" in file and integration not in integrations_checked:
+            try:
+                if isinstance(integration, Integration) and integration.is_feed:
+                    return True
+            except Exception as error:
+                print(f'Received error: {error}\nwhen trying to find pack {integration.path}')
+            integrations_checked.append(integration)
+            print (f'Integration checked are: {integrations_checked}')
+            pack = integration.in_pack
+            tags = pack.tags
+            categories = pack.categories
+            if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+                return True
     return False
 
+    # for file in pr_files:
+    #     if file.endswith("yml"):
+    #         integration = BaseContent.from_path(Path(file))
+    #         try:
+    #             if isinstance(integration, Integration) and integration.is_feed:
+    #                 return True
+    #         except Exception as error:
+    #             print(f'Received error: {error}\nwhen trying to find pack {integration.path}')
+    #         pack = integration.in_pack
+    #         tags = pack.tags
+    #         categories = pack.categories
+    # for pack in packs_in_pr:
+    #     pack_object = BaseContent.from_path(CONTENT_PATH / pack)
+    #     try:
+    #          if isinstance(pack_object, Pack):
+    #              for integration in pack_object.content_items.integration:
+    #                  if integration.is_feed:
+    #                      return True
+    # pack_metadata = get_pack_metadata(pack)
+    # tags = pack_metadata.get("tags")
+    # categories = pack_metadata.get("categories")
+    # if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+    #     return True
+    # return False
 
-def is_tim_reviewer_needed(packs_in_pr: set[str], support_label:str) -> bool:
-    """
-    :param packs_in_pr: the packs that are part of this PR (there can be more then 1)
-    :param support_label: the support label of the PR - the highest one.
 
-    It calls the is_tim_content to check if tim_reviewer is needed
-    :return: True or false if tim reviewer needed
+def is_tim_reviewer_needed(pr_files: list[str], support_label:str) -> bool:
     """
+    Checks whether the PR need to be reviewed by a TIM reviewer.
+    It check the yml file of the integration - if it has the feed: True
+    If not, it will also check if the pack has the TIM tag or the TIM category
+    The pack that will be checked are only XSOAR or Partner support
+
+    Arguments:
+    - pr_files: tThe list of files changed in the Pull Request
+    - support_label: the support label of the PR - the highest one.
+
+    Returns: True or false if tim reviewer needed
+    """
+    packs_in_pr = packs_to_check_in_pr(pr_files)
     if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
-        return is_tim_content(packs_in_pr)
+        return is_tim_content(packs_in_pr, pr_files)
     return False
 
 
@@ -239,8 +281,9 @@ def main():
     Performs the following operations:
     1. If the external PR's base branch is master we create a new branch and set it as the base branch of the PR.
     2. Labels the PR with the "Contribution" label. (Adds the "Hackathon" label where applicable.)
-    3. Assigns a Reviewer.
+    3. Assigns a Reviewer, a Security Reviewer if needed and a TIM Reviewer if needed.
     4. Creates a welcome comment
+    5. Checks if community contributed to Partner or XSOAR packs and asks the contributor to add themselves to contributors.md
 
     Will use the following env vars:
     - CONTENTBOT_GH_ADMIN_TOKEN: token to use to update the PR
@@ -320,8 +363,7 @@ def main():
         pr.add_to_labels(SECURITY_LABEL)
 
     # adding TIM reviewer
-    packs_in_pr = packs_to_check_in_pr(pr_files)
-    if is_tim_reviewer_needed(packs_in_pr, support_label):
+    if is_tim_reviewer_needed(pr_files, support_label ):
         reviewers.append(tim_reviewer)
         pr.add_to_labels(TIM_LABEL)
 
