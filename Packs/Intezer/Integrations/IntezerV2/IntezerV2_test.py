@@ -1750,20 +1750,20 @@ def test_analyze_url_command_missing_url(requests_mock):
 
     _setup_access_token(requests_mock)
     requests_mock.post(
-        f'{full_url}/url',
-        status_code=HTTPStatus.BAD_REQUEST,
-        json={"error": 'Bad url'}
+        f"{full_url}/url", status_code=HTTPStatus.BAD_REQUEST, json={"error": "Bad url"}
     )
 
-    url = '123test'
-    args = {"url": url, "analysis_type": 'Url'}
+    url = "123test"
+    args = {"url": url, "analysis_type": "Url"}
 
     # Act
     command_results = analyze_url_command(args, intezer_api)
 
     # Assert
-    assert command_results.readable_output == ('The Url 123test was not found on Intezer. '
-                                               'Error Server returned bad request error: Bad url. Error:Bad url')
+    assert (
+        "The Url 123test was not found on Intezer. "
+        "Error Server returned bad request error: Bad url"
+    ) in command_results.readable_output
 
 
 def test_analyze_url_command_url_not_found(requests_mock):

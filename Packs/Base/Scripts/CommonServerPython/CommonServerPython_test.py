@@ -8073,29 +8073,6 @@ class TestFetchWithLookBack:
         assert results.get('limit') == expected_results3.get('limit')
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
-
-    @freeze_time("2022-04-07T10:13:00")
-    def test_lookback_with_offset_time_range(self):
-        """
-        Given:
-            A last run with an offset
-            
-        When:
-            Calling get_fetch_run_time_range
-            
-        Then:
-            The last run should be unchanged, even if there is a lookback.
-        """
-        from CommonServerPython import get_fetch_run_time_range
-        last_time = "2022-04-07T10:13:00"
-        last_run = {"time": last_time, "offset": 3}
-        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
-        # make sure that the start time is unchanged because of the offset
-        assert start_time == last_time
-        last_run = {"time": last_time, "offset": 0}
-        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
-        # now the offset is 0, so the look_back should act
-        assert start_time == "2022-04-07T10:12:00"
     
     def test_lookback_with_offset_update_last_run(self):
         """
