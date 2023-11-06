@@ -435,7 +435,7 @@ def handle_finished_status(assets_last_run, assets):
 ''' FETCH COMMANDS '''
 
 
-def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: add a use to max_fetch
+def fetch_assets_command(client: Client, assets_last_run, max_fetch):
     """
     Fetches assets.
     Args:
@@ -459,18 +459,6 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):   # todo: 
         # set params for next run
         if status == 'FINISHED':
             assets, assets_last_run = handle_finished_status(assets_last_run, assets)
-            # last_asset_id = assets_last_run.get('asset_id')
-            # if last_asset_id:
-            #     assets = list(filter(lambda asset: asset.get('id') != last_asset_id, assets))
-            # assets_last_run.update({'export_uuid': None})   # if the polling is over and we can start a new fetch
-            # assets_last_run.pop('nextTrigger', None)
-            # assets_last_run.pop('type', None)
-            # for asset in assets:
-            #     created_at = round(get_timestamp(arg_to_datetime(asset.get('created_at'))))
-            #     if created_at > last_fetch:
-            #         last_fetch = created_at
-            #         assets_last_run.update({"asset_id": asset.get("id")})
-            # assets_last_run.update({'last_fetch': last_fetch})
             assets = assets[:max_fetch]
         elif status in ['CANCELLED', 'ERROR'] and last_fetch:
             export_uuid = client.export_assets_request(chunk_size=2, fetch_from=last_fetch)
