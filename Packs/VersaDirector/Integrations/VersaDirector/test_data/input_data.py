@@ -250,7 +250,8 @@ case_basic_auth = (
     "",
     "",
     "",
-    (("username", "password"), {"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=", 'Accept': 'application/json', 'Content-Type': 'application/json'}),
+    (("username", "password"), {"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+                                'Accept': 'application/json', 'Content-Type': 'application/json'}),
 )
 case_auth_token_only = (
     "",
