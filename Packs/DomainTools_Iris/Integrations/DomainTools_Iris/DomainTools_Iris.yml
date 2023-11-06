@@ -1966,7 +1966,7 @@ script:
   - arguments:
     description: Reverse nameserver lookup
     name: reverseNameServer
-  dockerimage: 793789081071.dkr.ecr.us-west-2.amazonaws.com/domaintools/demisto:1.0
+  dockerimage: demisto/vendors-sdk:1.0.0.79366
   isfetch: true
   longRunning: false
   longRunningPort: false
