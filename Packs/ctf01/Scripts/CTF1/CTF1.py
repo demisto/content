@@ -76,6 +76,7 @@ answers = {
 
 def main():
     try:
+        demisto.info('test')
         args = demisto.args()
         # __Error handeling when there is an empty secret or question id__
         question_id = args.get("question_ID")
