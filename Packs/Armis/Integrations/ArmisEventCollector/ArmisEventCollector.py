@@ -16,6 +16,7 @@ class EVENT_TYPE(NamedTuple):
     aql_query: str
     type: str
     order_by: str
+    dataset_name: str
 
 
 ''' CONSTANTS '''
@@ -28,9 +29,9 @@ API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 5000
 DEVICES_DEFAULT_MAX_FETCH = 10000
 EVENT_TYPES = {
-    'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts', 'time'),
-    'Activities': EVENT_TYPE('activityUUID', 'in:activity', 'activity', 'time'),
-    'Devices': EVENT_TYPE('id', 'in:devices', 'devices', 'firstSeen'),
+    'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts', 'time', 'alerts'),
+    'Activities': EVENT_TYPE('activityUUID', 'in:activity', 'activity', 'time', 'activities'),
+    'Devices': EVENT_TYPE('id', 'in:devices', 'devices', 'lastSeen', 'devices'),
 }
 DEVICES_LAST_FETCH = 'devices_last_fetch_time'
 
@@ -299,9 +300,9 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: dict, next_run: dict, cl
         new_events, next_run[last_fetch_ids] = dedup_events(
             response, last_run.get(last_fetch_ids, []), event_type.unique_id_key)
         next_run[last_fetch_time] = new_events[-1].get('time') if new_events else last_run.get(last_fetch_time)
-        events.setdefault(event_type.type, []).extend(new_events)
-        demisto.debug(f'debug-log: overall {len(new_events)} {event_type.type} (after dedup)')
-        demisto.debug(f'debug-log: last {event_type.type} in list: {new_events[-1] if new_events else {}}')
+        events.setdefault(event_type.dataset_name, []).extend(new_events)
+        demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
+        demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
     else:
         next_run.update(last_run)
 
@@ -391,6 +392,9 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]],
             add_time_to_events(events_list)
             demisto.debug(f'debug-log: {len(events_list)} events are about to be sent to XSIAM.')
             product = f'{PRODUCT}_{event_type}' if event_type != 'alerts' else PRODUCT
+            if event_type == 'devices':
+                for event in events_list:
+                    event['_time'] = event['lastSeen']
             send_events_to_xsiam(
                 events_list,
                 vendor=VENDOR,
