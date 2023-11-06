@@ -19,76 +19,6 @@
   - section_end "Upload Entities to Cortex XSOAR"
 
 
-.export_cloud_machine_constants: &export_cloud_machine_constants
-  - CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-  - |
-    if [[ $TEST_XDR_ENV ]]; then
-      cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-    else
-      echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-    fi
-  - |
-    if [[ $TEST_XDR_ENV ]]; then
-      cat "${CLOUD_API_TOKENS}" > "cloud_api_token.json"
-    else
-      echo "${CLOUD_API_TOKENS}" > "cloud_api_token.json"
-    fi
-
-  - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
-  - |
-    for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
-      export XSIAM_SERVER_CONFIG=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "$CLOUD_SERVERS_PATH")
-      export DEMISTO_BASE_URL=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"base_url\"]")
-      export XSIAM_AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq -r ".[\"x-xdr-auth-id\"]")
-      export DEMISTO_API_KEY=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_keys.json")
-      export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_tokens.json")
-    done
-
-.run_test_content: &run_test_content
-  - CONF_PATH="./Tests/conf.json"
-
-  - |
-   [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-   [ -n "${MEM_CHECK}" ] && MEM_CHECK=true || MEM_CHECK=false
-   [ -z "${NON_AMI_RUN}" ] && IS_AMI_RUN=true || IS_AMI_RUN=false
-
-  - echo "export GOOGLE_APPLICATION_CREDENTIALS=$GCS_ARTIFACTS_KEY" >> "${BASH_ENV}"
-  - source "${BASH_ENV}"
-
-  - echo "Running server tests on Instance role:${INSTANCE_ROLE}, nightly:${IS_NIGHTLY}, AMI run:${IS_AMI_RUN} mem check:${MEM_CHECK} ARTIFACTS_FOLDER:${ARTIFACTS_FOLDER}"
-
-  - exit_code=0
-  - |
-    if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; then
-      if [ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]; then
-        IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
-        for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
-          demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
-            -a "$CIRCLECI_TOKEN" -b "${CI_PIPELINE_ID}" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
-            --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "${SERVER_TYPE}" \
-            --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts-path="${ARTIFACTS_FOLDER_INSTANCE}" --product-type="${PRODUCT_TYPE}"
-          command_exit_code=$?
-          if [ "${command_exit_code}" -ne 0 ]; then
-            exit_code=1
-            echo "Failed to run test content on cloud machine:${CLOUD_CHOSEN_MACHINE_ID} with exit code:${command_exit_code}"
-          fi
-        done
-      else
-        echo "No cloud machines were chosen to run tests on"
-        exit_code=1
-      fi
-
-    elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
-        demisto-sdk test-content -k "$DEMISTO_API_KEY" -c "$CONF_PATH" -e "$SECRET_CONF_PATH" -n "${IS_NIGHTLY}" -t "$SLACK_TOKEN" \
-          -a "$CIRCLECI_TOKEN" -b "${CI_PIPELINE_ID}" -g "$CI_COMMIT_BRANCH" -m "${MEM_CHECK}" --is-ami "${IS_AMI_RUN}" -d "${INSTANCE_ROLE}" \
-          --xsiam-machine "${CLOUD_CHOSEN_MACHINE_ID}" --xsiam-servers-path "$CLOUD_SERVERS_PATH" --server-type "${SERVER_TYPE}" \
-          --use-retries --xsiam-servers-api-keys-path "cloud_api_keys.json" --artifacts-path="${ARTIFACTS_FOLDER_INSTANCE}" --product-type="${PRODUCT_TYPE}"
-        exit_code=$?
-        echo "Failed to run test content with exit code:${exit_code}"
-    else
-      exit_on_error 1 "Unknown server type: ${SERVER_TYPE}"
-    fi
-
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
@@ -419,12 +349,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - section_end "Install Packs"
 
-    - section_start "Wait Until Server Ready"  --collapsed
-    - echo Going to sleep for 15 minutes to allow server finish indexing
-    - sleep-with-progress 900 30 "Sleeping... " 150
-    - echo "Done sleeping!"
-    - section_end "Wait Until Server Ready"
-
     - !reference [.run_tests]
 
     - !reference [.cloud-machine-information]
@@ -512,7 +436,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_end "Wait Until Server Ready"
 
     - !reference [.run_tests]
-    # - !reference [.run_test_content]
 
     - !reference [.cloud-machine-information]
     - job-done
