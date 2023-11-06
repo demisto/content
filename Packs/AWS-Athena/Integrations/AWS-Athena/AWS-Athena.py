@@ -1,36 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import boto3
+
 import json
 from datetime import datetime, date
-from botocore.config import Config
-from botocore.parsers import ResponseParserError
-import urllib3.util
 
-# Disable insecure warnings
-urllib3.disable_warnings()
-
-"""PARAMETERS"""
-AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
-AWS_ROLE_ARN = demisto.params().get('roleArn')
-AWS_ROLE_SESSION_NAME = demisto.params().get('roleSessionName')
-AWS_ROLE_SESSION_DURATION = demisto.params().get('sessionDuration')
-AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
-proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-config = Config(
-    connect_timeout=1,
-    retries={
-        'max_attempts': 5
-    },
-    proxies=proxies
-)
-
-
-"""HELPER FUNCTIONS"""
+AWS_SERVICE_NAME = 'athena'
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -44,207 +19,160 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def aws_session(service='athena', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
-                rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_ROLE_ARN and AWS_ROLE_SESSION_NAME is not None:
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_ROLE_SESSION_DURATION is not None:
-        kwargs.update({'DurationSeconds': int(AWS_ROLE_SESSION_DURATION)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_ROLE_POLICY is not None:
-        kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and not AWS_ACCESS_KEY_ID:
-
-        if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
-                                      region_name=AWS_DEFAULT_REGION)
-            sts_response = sts_client.assume_role(**kwargs)
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=AWS_DEFAULT_REGION,
-                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                    aws_session_token=sts_response['Credentials']['SessionToken'],
-                    verify=VERIFY_CERTIFICATE,
-                    config=config
-                )
-    elif AWS_ACCESS_KEY_ID and AWS_ROLE_ARN:
-        sts_client = boto3.client(
-            service_name='sts',
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-        kwargs.update({
-            'RoleArn': AWS_ROLE_ARN,
-            'RoleSessionName': AWS_ROLE_SESSION_NAME,
-        })
-        sts_response = sts_client.assume_role(**kwargs)
-        client = boto3.client(
-            service_name=service,
-            region_name=AWS_DEFAULT_REGION,
-            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-            aws_session_token=sts_response['Credentials']['SessionToken'],
-            verify=VERIFY_CERTIFICATE,
-            config=config
-        )
-    else:
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=AWS_ACCESS_KEY_ID,
-                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-                verify=VERIFY_CERTIFICATE,
-                config=config
-            )
-
-    return client
-
-
-def start_query_execution_command(args):
-    client = aws_session(
+def start_query_execution_command(args: dict, aws_client: AWSClient):
+    client = aws_client.aws_session(
+        service=AWS_SERVICE_NAME,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
-    kwargs = {'QueryString': args.get('QueryString')}
-    if args.get('ClientRequestToken') is not None:
-        kwargs.update({'ClientRequestToken': args.get('ClientRequestToken')})
-    if args.get('Database') is not None:
-        kwargs.update({'QueryExecutionContext': {'Database': args.get('Database')}})
-    if args.get('OutputLocation') is not None:
-        kwargs.update({'ResultConfiguration': {'OutputLocation': args.get('OutputLocation')}})
-    if args.get('EncryptionOption') is not None:
-        kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'EncryptionOption': args.get('EncryptionOption')}}})
-    if args.get('KmsKey') is not None:
-        kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'KmsKey': args.get('KmsKey')}}})
-    if args.get('WorkGroup') is not None:
-        kwargs.update({'WorkGroup': args.get('WorkGroup')})
+    query_string: str = args['QueryString']
+    kwargs: dict[str, Any] = {'QueryString': query_string}
+
+    if args.get('ClientRequestToken'):
+        kwargs.update({'ClientRequestToken': args['ClientRequestToken']})
+    if args.get('Database'):
+        kwargs.update({'QueryExecutionContext': {'Database': args['Database']}})
+    if args.get('OutputLocation'):
+        kwargs.update({'ResultConfiguration': {'OutputLocation': args['OutputLocation']}})
+    if args.get('EncryptionOption'):
+        kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'EncryptionOption': args['EncryptionOption']}}})
+    if args.get('KmsKey'):
+        kwargs.update({'ResultConfiguration': {'EncryptionConfiguration': {'KmsKey': args['KmsKey']}}})
+    if args.get('WorkGroup'):
+        kwargs.update({'WorkGroup': args['WorkGroup']})
 
     response = client.start_query_execution(**kwargs)
 
     data.append({
-        'QueryString': args.get('QueryString'),
+        'QueryString': query_string,
         'QueryExecutionId': response['QueryExecutionId']
     })
-    ec = {'AWS.Athena.Query': data}
-    human_readable = tableToMarkdown('AWS Athena Query', data)
-    return_outputs(human_readable, ec)
+
+    return_results(CommandResults(
+        outputs_prefix='AWS.Athena.Query',
+        outputs_key_field='QueryExecutionId',
+        outputs=data,
+        raw_response=response,
+        readable_output=tableToMarkdown('AWS Athena Query', data),
+    ))
 
 
-def stop_query_command(args):
-    client = aws_session(
+def stop_query_command(args: dict, aws_client: AWSClient):
+    client = aws_client.aws_session(
+        service=AWS_SERVICE_NAME,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
+    query_execution_id = args['QueryExecutionId']
+    response = client.stop_query_execution(QueryExecutionId=query_execution_id)
 
-    response = client.stop_query_execution(QueryExecutionId=args.get('QueryExecutionId'))
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results("The Query {query} was Deleted ".format(query=args.get('QueryExecutionId')))
+    if response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
+        demisto.results(f"The query {query_execution_id} was Deleted.")
+
+    else:
+        demisto.results(f"Failed to Delete the query {query_execution_id}.")
+        demisto.debug("Response:\n" + str(response))
 
 
-def get_query_execution_command(args):
-    client = aws_session(
+def get_query_execution_command(args: dict, aws_client: AWSClient):
+    client = aws_client.aws_session(
+        service=AWS_SERVICE_NAME,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
-    kwargs = {'QueryExecutionId': args.get('QueryExecutionId')}
+    kwargs = {'QueryExecutionId': args['QueryExecutionId']}
     response = client.get_query_execution(**kwargs)
+
     try:
-        raw = json.loads(json.dumps(response, cls=DatetimeEncoder))
+        data = json.loads(json.dumps(response, cls=DatetimeEncoder))
+
     except ValueError as e:
-        return_error(f'Could not decode/encode the raw response - {e}')
-    ec = {'AWS.Athena.Query(val.QueryExecutionId === obj.QueryExecutionId)': raw}
-    human_readable = tableToMarkdown('AWS Athena Query', raw)
-    return_outputs(human_readable, ec)
+        return_error('Could not parse the received response.')
+        demisto.debug(f'Error:\n{e}\n'
+                      f'Response:\n{response}')
+        return
+
+    return_results(CommandResults(
+        outputs_prefix='AWS.Athena.Query',
+        outputs_key_field='QueryExecutionId',
+        outputs=data,
+        raw_response=response,
+        readable_output=tableToMarkdown('AWS Athena Query', data),
+    ))
 
 
-def get_query_results_command(args):
-    client = aws_session(
+def get_query_results_command(args: dict, aws_client: AWSClient):
+    client = aws_client.aws_session(
+        service=AWS_SERVICE_NAME,
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
-    kwargs = {'QueryExecutionId': args.get('QueryExecutionId')}
+    kwargs = {'QueryExecutionId': args['QueryExecutionId']}
     response = client.get_query_results(**kwargs)
-    ec = {'AWS.Athena.Query(val.QueryExecutionId === obj.QueryExecutionId)': response}
-    human_readable = tableToMarkdown('AWS Athena Query', response)
-    return_outputs(human_readable, ec)
+
+    return_results(CommandResults(
+        outputs_prefix='AWS.Athena.Query',
+        outputs_key_field='QueryExecutionId',
+        outputs=response,
+        raw_response=response,
+        readable_output=tableToMarkdown('AWS Athena Query', response),
+    ))
 
 
 def main():
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
+
+    aws_role_arn = params.get('role_arn')
+    aws_role_session_name = params.get('role_session_name')
+    aws_default_region = params.get('default_region')
+    aws_role_session_duration = params.get('role_session_duration')
+    aws_access_key_id = demisto.get(params, 'credentials.identifier')
+    aws_secret_access_key = demisto.get(params, 'credentials.password')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries', 5)
+
+    aws_client = AWSClient(aws_default_region=aws_default_region, aws_role_arn=aws_role_arn,
+                           aws_role_session_name=aws_role_session_name, aws_role_session_duration=aws_role_session_duration,
+                           aws_role_policy=None, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key,
+                           verify_certificate=verify_certificate, timeout=timeout, retries=retries)
+
     try:
-        demisto.debug(f'Command being called is {demisto.command()}')
+        demisto.debug(f'Command being called is {command}')
         if demisto.command() == 'test-module':
-            client = aws_session()
-            response = client.list_named_queries()
+            response = aws_client.aws_session(service=AWS_SERVICE_NAME).list_named_queries()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 demisto.results('ok')
 
         elif demisto.command() == 'aws-athena-start-query':
-            start_query_execution_command(demisto.args())
+            start_query_execution_command(args=args, aws_client=aws_client)
 
         elif demisto.command() == 'aws-athena-stop-query':
-            stop_query_command(demisto.args())
+            stop_query_command(args=args, aws_client=aws_client)
 
         elif demisto.command() == 'aws-athena-get-query-execution':
-            get_query_execution_command(demisto.args())
+            get_query_execution_command(args=args, aws_client=aws_client)
 
         elif demisto.command() == 'aws-athena-get-query-results':
-            get_query_results_command(demisto.args())
-
-    except ResponseParserError as e:
-        return_error(f'Could not connect to the AWS endpoint. Please check that the region is valid.\n{e}')
-        demisto.error(str(e))
+            get_query_results_command(args=args, aws_client=aws_client)
 
     except Exception as e:
         return_error(f'Error: {e}')
         demisto.error(str(e))
 
+
+from AWSApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
