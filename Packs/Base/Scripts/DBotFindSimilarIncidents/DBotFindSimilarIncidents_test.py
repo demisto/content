@@ -329,3 +329,18 @@ def test_get_get_data_from_indicators_automation():
 
     res = get_data_from_indicators_automation(None, TAG_SCRIPT_INDICATORS)
     assert res is None
+
+
+def test_build_message_of_values():
+    from DBotFindSimilarIncidents import build_message_of_values
+
+    assert build_message_of_values([]) == ''
+
+    foo = 'foo_value'
+    assert build_message_of_values([foo]) == 'foo_value'
+
+    bar = 'bar_value'
+    assert build_message_of_values([foo, bar]) == 'foo_value; bar_value'
+
+    baz = ['baz1', 'baz2']
+    assert build_message_of_values([foo, bar, baz]) == "foo_value; bar_value; ['baz1', 'baz2']"

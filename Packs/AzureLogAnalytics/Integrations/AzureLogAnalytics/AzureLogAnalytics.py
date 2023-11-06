@@ -478,13 +478,13 @@ def main():
         }
 
         if command == 'test-module':
-            if not managed_identities_client_id:
-                # cannot use test module if not using Managed Identities
+            if client_credentials or managed_identities_client_id:
+                test_connection(client, params)
+                return_results('ok')
+            else:
+                # In authorization code flow cannot use test module
                 # due to the lack of ability to set refresh token to integration context
                 raise Exception("Please use !azure-log-analytics-test instead")
-
-            test_connection(client, params)
-            return_results('ok')
 
         elif command == 'azure-log-analytics-subscriptions-list':
             return_results(subscriptions_list_command(client))
