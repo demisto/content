@@ -13,7 +13,7 @@ import demisto_client.demisto_api
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_integration import check_integration
 from demisto_sdk.commands.common.constants import PB_Status
-from demisto_sdk.commands.common.tools import str2bool
+from demisto_sdk.commands.common.tools import str2bool, get_demisto_version
 
 from Tests.test_content import SettingsTester, DataKeeperTester, \
     print_test_summary, update_test_msg, turn_off_telemetry, \
@@ -243,7 +243,6 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
     :return: No object is returned, just updates the tests_data_keep object.
     """
     server = SERVER_URL.format(server_ip)
-    server_numeric_version = tests_settings.serverNumericVersion or ''
     logging.info(f"Executing tests with the server {server} - and the server ip {server_ip}")
     slack = tests_settings.slack
     circle_ci = tests_settings.circleci
@@ -273,6 +272,8 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
         return
     xsoar_client = demisto_client.configure(base_url=server, username=demisto_user,
                                             password=demisto_pass, verify_ssl=False)
+
+    server_numeric_version = get_server_numeric_version(xsoar_client, tests_settings.is_local_run)
 
     # turn off telemetry
     turn_off_telemetry(xsoar_client)
@@ -350,8 +351,6 @@ def manage_tests(tests_settings: SettingsTester):
                                         tests should be ran.
 
     """
-    tests_settings.serverNumericVersion = get_server_numeric_version(tests_settings.serverVersion,
-                                                                     tests_settings.is_local_run)
     instances_ips = get_instances_ips_and_names(tests_settings)
     tests_data_keeper = DataKeeperTester()
 
