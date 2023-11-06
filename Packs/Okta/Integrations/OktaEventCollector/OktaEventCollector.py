@@ -29,7 +29,8 @@ class Client(BaseClient):
         self.next_run_filter = after  # type: ignore
 
 
-def get_events_command(client: Client, total_events_to_fetch, since, last_object_ids: List[str] = None) -> (List[dict], int):  # pragma: no cover
+def get_events_command(client: Client, total_events_to_fetch, since,
+                       last_object_ids: List[str] = None) -> tuple[List[dict], int]:  # pragma: no cover
     """
     Fetches events from the okta api until the total_events_to_fetch is reached or no more events are available.
     if 429:TOO_MANY_REQUESTS is returned, will return the stored_events so far and the x-rate-limit-reset
@@ -42,7 +43,7 @@ def get_events_command(client: Client, total_events_to_fetch, since, last_object
     Returns:
         Tuple (List[dict], x-rate-limit-reset):
             List[dict]: list of events fetched,
-            x-rate-limit-reset: time in seconds until API can be called again.        
+            x-rate-limit-reset: time in seconds until API can be called again.
     """
     stored_events: list = []
     demisto.debug(f'max_events_to_fetch={total_events_to_fetch}')

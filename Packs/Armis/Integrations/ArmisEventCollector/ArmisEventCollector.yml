@@ -80,7 +80,6 @@ script:
     - description: The date from which to fetch events. The format should be '20 minutes', '1 hour' or '2 days'.
       name: from_date
       required: false
-      defaultValue: '1 day'
     description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     name: armis-get-events
   runonce: false
