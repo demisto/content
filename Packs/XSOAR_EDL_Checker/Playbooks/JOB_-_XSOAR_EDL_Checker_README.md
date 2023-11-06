@@ -15,6 +15,8 @@ This playbook does not use any integrations.
 * XSOARAllEDLCheckerAutomation
 
 ### Commands
+
+* closeInvestigation
 * send-mail
 
 ## Playbook Inputs
@@ -27,3 +29,7 @@ This playbook does not use any integrations.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+---
+![JOB - XSOAR EDL Checker](../doc_files/JOB_-_XSOAR_EDL_Checker.png)
