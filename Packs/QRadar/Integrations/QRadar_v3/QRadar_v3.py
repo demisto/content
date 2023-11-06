@@ -3708,11 +3708,8 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     fetch_mode = params.get('fetch_mode', '')
     range_ = f'items=0-{limit - 1}'
-    last_update_time_modified = ctx.get(LAST_MIRROR_KEY, 0)
-    last_update_time_closed = ctx.get(LAST_MIRROR_CLOSED_KEY, last_update_time_modified)
-
-    last_update_modified = get_time_parameter(last_update_time_modified, epoch_format=True)
-    last_update_closed = get_time_parameter(last_update_time_closed, epoch_format=True)
+    last_update_modified = ctx.get(LAST_MIRROR_KEY, 0)
+    last_update_closed = ctx.get(LAST_MIRROR_CLOSED_KEY, last_update_modified)
 
     assert isinstance(last_update_modified, int)
     assert isinstance(last_update_closed, int)
@@ -3741,8 +3738,8 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     new_modified_records_ids = add_modified_remote_offenses(client=client, context_data=ctx, version=ctx_version,
                                                             mirror_options=params.get('mirror_options', ''),
                                                             new_modified_records_ids=new_modified_records_ids,
-                                                            new_last_update_modified=last_update_time_modified,
-                                                            new_last_update_closed=last_update_time_closed,
+                                                            new_last_update_modified=last_update_modified,
+                                                            new_last_update_closed=last_update_closed,
                                                             events_columns=events_columns,
                                                             events_limit=events_limit,
                                                             fetch_mode=fetch_mode,
