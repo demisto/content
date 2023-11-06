@@ -7,20 +7,21 @@ This integration was integrated and tested with version 2.0 of Cortex Expander.
 2. Search for Cortex Xpanse.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
+    | **Parameter** | **Description**                                                                                                                                                                                                                                     | **Required** |
+    | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
     | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-    | API Key ID | For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
-    | API Key |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Incident type |  | False |
-    | Maximum number of alerts per fetch | The maximum number of alerts per fetch. Cannot exceed 100. | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched. | False |
-   
+    | API Key ID | For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.                                                                                              | True |
+    | API Key | **Only standard API key type is supported**.                                                                                                                                                                                                        | True |
+    | Trust any certificate (not secure) |                                                                                                                                                                                                                                                     | False |
+    | Use system proxy settings |                                                                                                                                                                                                                                                     | False |
+    | Fetch incidents |                                                                                                                                                                                                                                                     | False |
+    | Incidents Fetch Interval |                                                                                                                                                                                                                                                     | False |
+    | Incident type |                                                                                                                                                                                                                                                     | False |
+    | Maximum number of alerts per fetch | The maximum number of alerts per fetch. Cannot exceed 100.                                                                                                                                                                                          | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |                                                                                                                                                                                                                                                     | False |
+    | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.            | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. Used for !ip and !domain commands.                                                                                                                                                       | False |
+
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -794,13 +795,14 @@ Get a list of all your internet exposures filtered by ip address, domain, type, 
 `asm-list-asset-internet-exposure`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ip_address | IP address on which to search. | Optional | 
-| name | Name of asset on which to search. | Optional | 
-| type | Type of the external service. Possible values are: certificate, cloud_compute_instance, on_prem, domain, unassociated_responsive_ip. | Optional | 
-| has_active_external_services | Whether the internet exposure has an active external service. Possible values are: yes, no. | Optional | 
-
+| **Argument Name**            | **Description**                                                                                                                      | **Required** |
+|------------------------------|--------------------------------------------------------------------------------------------------------------------------------------| --- |
+| ip_address                   | IP address on which to search.                                                                                                       | Optional | 
+| name                         | Name of asset on which to search.                                                                                                    | Optional | 
+| type                         | Type of the external service. Possible values are: certificate, cloud_compute_instance, on_prem, domain, unassociated_responsive_ip. | Optional | 
+| has_active_external_services | Whether the internet exposure has an active external service. Possible values are: yes, no.                                          | Optional | 
+| search_from                  | Represents the start offset index of results. Default is 0.                                                                          | Optional | 
+| search_to                    | Represents the end offset index of results. Default is 100.                                                                          | Optional | 
 
 #### Context Output
 
@@ -1074,19 +1076,20 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                             | **Required** |
-| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| alert_id_list | Comma-separated list of integers of the alert ID.                                                                                                                                                                                                           | Optional | 
-| severity | Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational).                                                                                                                                            | Optional | 
-| tags | Comma-separated list of strings of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                                                                                             | Optional | 
-| status | Comma separated list of strings of the Alert status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
-| business_units_list | Comma-separated list of strings of the business units.                                                                                                                                                                                                      | Optional | 
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                          | Optional | 
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                                                           | Optional | 
-| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                           | Optional | 
-| sort_by_severity | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                           | Optional | 
-| page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                                                              | Optional | 
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                                                             | Optional | 
+| **Argument Name**     | **Description**                                                                                                                                                                                                                                   | **Required** |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| alert_id_list         | Comma-separated list of alert IDs.                                                                                                                                                                                                 | Optional | 
+| severity              | Comma-separated list of alert severities (valid values are low, medium, high, critical, informational).                                                                                                                                  | Optional | 
+| tags                  | Comma-separated list of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                             | Optional | 
+| status                | Comma-separated list of the alert status. Possible values are: new, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
+| business_units_list   | Comma-separated list business units.                                                                                                                                                                                            | Optional | 
+| case_id_list          | Comma-separated list of case (incident) IDs.                                                                                                                                                                                       | Optional | 
+| lte_creation_time     | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                | Optional | 
+| gte_creation_time     | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                                                 | Optional | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional | 
+| sort_by_severity      | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional | 
+| page                  | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                                                    | Optional | 
+| limit                 | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                                                   | Optional | 
 
 #### Context Output
 
@@ -1746,6 +1749,173 @@ Fetches ASM incidents that match provided filters. Incidents are an aggregation 
 >|---|---|---|---|---|---|---|--------------|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | Enabled | 1688837015292 | 0 | 'Insecure Communication Protocol at example.com:443' | 0 | 1 | 1.1.1.1:null | 5508 | ASM | 0 | 1 | 1688837015292 | medium | false | new | AR:Registered to You,<br>IPR:Test IP | 0 | https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=5508 |
 
+### asm-get-incident
+
+***
+Returns additional details about a specific incident. Note: Incident IDs may also be references as "Case IDs" elsewhere in the API.
+
+#### Base Command
+
+`asm-get-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- |--------------|
+| incident_id | The ID of the incident to be fetched. | Required |
+
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- |----------| --- |
+| ASM.Incident.incident_id | String   | The ID of the incident. | 
+| ASM.Incident.xpanse_risk_score | Number   | The Xpanse risk score of the incident. | 
+| ASM.Incident.alerts | Unknown  | The alerts included in the incident. | 
+| ASM.Incident.tags | Unknown  | Tags assigned to assets included in the incident. | 
+| ASM.Incident.status | String   | The status of the incident. | 
+| ASM.Incident.severity | String   | The severity of the incident. | 
+| ASM.Incident.description | String   | Description of the incident. | 
+| ASM.Incident.notes | String   | User-provided notes related to the incident. | 
+
+#### Command example
+```!asm-get-incident incident_id=71```
+#### Context Example
+```json
+{
+  "aggregated_score": 825,
+  "alert_categories": null,
+  "alert_count": 2,
+  "alerts": [
+    {
+      "alert_id": "113716",
+      "description": "This issue flags on-premises Microsoft Exchange Servers that are known to be below the current up-to-date secured versions suggested by Microsoft.",
+      "name": "Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443",
+      "resolution_status": "STATUS_020_UNDER_INVESTIGATION"
+    },
+    {
+      "alert_id": "89896",
+      "description": "The X-XSS-Protection header is used to reduce the risk of cross-site scripting attacks. Not including it could make your website less secure.",
+      "name": "Missing X-Xss-Protection at 1.1.1.1:443",
+      "resolution_status": "STATUS_010_NEW"
+    }
+  ],
+  "alerts_grouping_status": "Disabled",
+  "assigned_user_mail": "cs@acme.com",
+  "assigned_user_pretty_name": "User One",
+  "creation_time": 1671912678672,
+  "critical_severity_alert_count": 0,
+  "description": "'Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443' along with 1 other alerts",
+  "detection_time": null,
+  "high_severity_alert_count": 4,
+  "host_count": 1,
+  "hosts": [
+    "1.1.1.1:null"
+  ],
+  "incident_id": "71",
+  "incident_name": null,
+  "incident_sources": [
+    "ASM"
+  ],
+  "is_blocked": false,
+  "low_severity_alert_count": 0,
+  "manual_description": null,
+  "manual_score": null,
+  "manual_severity": null,
+  "med_severity_alert_count": 2,
+  "modification_time": 1696275576460,
+  "notes": null,
+  "original_tags": [
+    "BU:Xpanse VanDelay Demo 3"
+  ],
+  "resolve_comment": null,
+  "resolved_timestamp": null,
+  "rule_based_score": 825,
+  "severity": "high",
+  "starred": true,
+  "status": "under_investigation",
+  "tags": [
+    "AR:Registered to You"
+  ],
+  "user_count": 0,
+  "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=71",
+  "xpanse_risk_explainer": {
+    "cves": [
+      {
+        "confidence": "High",
+        "cveId": "CVE-2021-26855",
+        "cvssScore": 9.800000190734863,
+        "epssScore": 0.9749900102615356,
+        "exploitMaturity": "Weaponized",
+        "matchType": "ExactVersionMatch",
+        "mostRecentReportedExploitDate": "2023-10-12",
+        "reportedExploitInTheWild": true
+      },
+      {
+        "confidence": "High",
+        "cveId": "CVE-2021-34473",
+        "cvssScore": 9.800000190734863,
+        "epssScore": 0.9732999801635742,
+        "exploitMaturity": "Weaponized",
+        "matchType": "ExactVersionMatch",
+        "mostRecentReportedExploitDate": "2023-10-12",
+        "reportedExploitInTheWild": true
+      },
+      {
+        "confidence": "High",
+        "cveId": "CVE-2021-34523",
+        "cvssScore": 9.800000190734863,
+        "epssScore": 0.9726300239562988,
+        "exploitMaturity": "Weaponized",
+        "matchType": "ExactVersionMatch",
+        "mostRecentReportedExploitDate": "2023-10-12",
+        "reportedExploitInTheWild": true
+      }
+    ],
+    "riskFactors": [
+      {
+        "attributeId": "misconfiguration",
+        "attributeName": "Misconfiguration",
+        "issueTypes": [
+          {
+            "displayName": "Insecure Microsoft Exchange Server",
+            "issueTypeId": "InsecureMicrosoftExchangeServer"
+          },
+          {
+            "displayName": "Missing X-XSS-Protection Header",
+            "issueTypeId": "MissingXXssProtectionHeader"
+          }
+        ]
+      },
+      {
+        "attributeId": "critical_system",
+        "attributeName": "Critical System",
+        "issueTypes": [
+          {
+            "displayName": "Insecure Microsoft Exchange Server",
+            "issueTypeId": "InsecureMicrosoftExchangeServer"
+          }
+        ]
+      },
+      {
+        "attributeId": "potential_data_loss",
+        "attributeName": "Potential Data Loss",
+        "issueTypes": [
+          {
+            "displayName": "Insecure Microsoft Exchange Server",
+            "issueTypeId": "InsecureMicrosoftExchangeServer"
+          }
+        ]
+      }
+    ],
+    "versionMatched": true
+  },
+  "xpanse_risk_score": 825
+}
+```
+#### Human Readable Output
+>### ASM Incident
+>|Aggregated Score| Alert Count | Alerts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |Alerts Grouping Status|Assigned User Mail| Assigned User Pretty Name |Creation Time|Critical Severity Alert Count| Description                                                                                  |High Severity Alert Count|Host Count| Hosts        |Incident Id|Incident Sources|Is Blocked|Low Severity Alert Count|Med Severity Alert Count|Modification Time|Original Tags|Rule Based Score|Severity|Starred|Status|Tags|User Count|Xdr Url|Xpanse Risk Explainer|Xpanse Risk Score|
+>|---|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---|---|---------------------------|---|---|----------------------------------------------------------------------------------------------|---|---|--------------|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 825 | 2           | {'alert_id': '113716', 'name': 'Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443', 'description': 'This issue flags on-premises Microsoft Exchange Servers that are known to be below the current up-to-date secured versions suggested by Microsoft.' , 'resolution_status': 'STATUS_010_NEW'},<br>{'alert_id': '89896', 'name': 'Missing X-Xss-Protection at 1.1.1.1:443', 'description': 'The X-XSS-Protection header is used to reduce the risk of cross-site scripting attacks. Not including it could make your website less secure.', 'resolution_status': 'STATUS_010_NEW'} | Disabled | cs@acme.com | User One                  | 1671912678672 | 0 | 'Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443' along with 1 other alerts | 4 | 1 | 1.1.1.1:null | 71 | ASM | false | 0 | 2 | 1696275576460 | BU:Xpanse VanDelay Demo 3 | 825 | high | true | under_investigation | AR:Registered to You | 0 | https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=71 | cves: {'cveId': 'CVE-2021-26855', 'cvssScore': 9.800000190734863, 'epssScore': 0.9749900102615356, 'matchType': 'ExactVersionMatch', 'confidence': 'High', 'exploitMaturity': 'Weaponized', 'reportedExploitInTheWild': True, 'mostRecentReportedExploitDate': '2023-10-12'},<br>{'cveId': 'CVE-2021-34473', 'cvssScore': 9.800000190734863, 'epssScore': 0.9732999801635742, 'matchType': 'ExactVersionMatch', 'confidence': 'High', 'exploitMaturity': 'Weaponized', 'reportedExploitInTheWild': True, 'mostRecentReportedExploitDate': '2023-10-12'},<br>{'cveId': 'CVE-2021-34523', 'cvssScore': 9.800000190734863, 'epssScore': 0.9726300239562988, 'matchType': 'ExactVersionMatch', 'confidence': 'High', 'exploitMaturity': 'Weaponized', 'reportedExploitInTheWild': True, 'mostRecentReportedExploitDate': '2023-10-12'}<br>riskFactors: {'attributeId': 'misconfiguration', 'attributeName': 'Misconfiguration', 'issueTypes': [{'displayName': 'Insecure Microsoft Exchange Server', 'issueTypeId': 'InsecureMicrosoftExchangeServer'}, {'displayName': 'Missing X-XSS-Protection Header', 'issueTypeId': 'MissingXXssProtectionHeader'}]},<br>{'attributeId': 'critical_system', 'attributeName': 'Critical System', 'issueTypes': [{'displayName': 'Insecure Microsoft Exchange Server', 'issueTypeId': 'InsecureMicrosoftExchangeServer'}]},<br>{'attributeId': 'potential_data_loss', 'attributeName': 'Potential Data Loss', 'issueTypes': [{'displayName': 'Insecure Microsoft Exchange Server', 'issueTypeId': 'InsecureMicrosoftExchangeServer'}]}<br>versionMatched: true | 825 |
 
 ### asm-update-incident
 
@@ -1758,15 +1928,15 @@ Updates a given incident. Can be used to modify the status, severity, assignee, 
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| incident_id | ID of the incident to modify. | Required | 
-| alert_id | Used for scoping updates such as comments to the alert level. | Optional | 
+| **Argument Name** | **Description**                                                                                      | **Required** |
+| --- |------------------------------------------------------------------------------------------------------| --- |
+| incident_id | ID of the incident to modify.                                                                        | Required | 
+| alert_id | Used for scoping updates such as comments to the alert level.                                        | Optional | 
 | assigned_user_mail | Email address of the user to assign incident to. This user must exist within your Expander instance. | Optional | 
-| manual_severity | Administrator-defined severity for the incident. | Optional | 
-| status | Incident status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
-| resolve_comment | Optional resolution comment when resolving the incident. | Optional | 
-| comment | A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment. | Optional | 
+| manual_severity | Administrator-defined severity for the incident.                                                     | Optional | 
+| status | Incident status. Possible values are: new, under_investigation, resolved.                            | Optional | 
+| resolve_comment | Optional resolution comment when resolving the incident.                                             | Optional | 
+| comment | A comment to add to the incident. If an alert_id is supplied it will be prefixed to the comment.     | Optional | 
 
 #### Context Output
 
@@ -1804,7 +1974,7 @@ Updates the state of one or more alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
-| status | Updated alert status. Possible values are: new, under_investigation, resolved_-_no_longer_observed, resolved_-_no_risk, resolved_-_risk_accepted, resolved_-_contested_asset, resolved_-_remediated_automatically, resolved. | Optional | 
+| status | Updated alert status. Possible values are: new, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
 | severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional | 
 
 #### Context Output
@@ -1826,3 +1996,245 @@ Updates the state of one or more alerts.
 
 #### Human Readable Output
 ```Updated alerts: [602]```
+
+### ip
+
+***
+Returns enrichment for an IP address.
+
+#### Base Command
+
+`ip`
+
+#### Input
+
+| **Argument Name** | **Description**       | **Required** |
+|-------------------|-----------------------|--------------|
+| ip                | IP address to enrich. | Required     | 
+
+#### Context Output
+
+| **Path**                | **Type** | **Description**                                            |
+|-------------------------|----------|------------------------------------------------------------|
+| ASM.IP.ip               | String   | The IP address of the asset.                               |
+| ASM.IP.domain           | String   | The domain affiliated with an asset.                       |
+| ASM.IP.name             | String   | The asset name.                                            |
+| ASM.IP.asset_type       | String   | The asset type.                                            |
+| ASM.IP.first_observed   | unknown  | When the asset was first observed.                         |
+| ASM.IP.last_observed    | unknown  | When the asset was last observed.                          |
+| ASM.IP.asm_ids          | unknown  | The ID of the asset.                                       |
+| ASM.IP.service_type     | unknown  | Affiliated service types for the asset.                    |
+| ASM.IP.tags             | unknown  | A list of tags that have been assigned to the asset.       |
+| ASM.IP.asset_explainers | unknown  | The asset explanation details.                             |
+| ASM.IP.domain_details   | unknown  | Additional domain details.                                 |
+| ASM.IP.recent_ips       | unknown  | Details about the recent IP observations.                  |
+| DBotScore.Vendor        | String   | The vendor reporting the score of the indicator.           |
+| DBotScore.Score         | Number   | An integer regarding the status of the indicator.          |
+| DBotScore.Indicator     | String   | The indicator value.                                       |
+| DBotScore.Type          | String   | The vendor used to calculate the score.                    |
+| DBotScore.Reliability   | String   | Reliability of the source providing the intelligence data. |
+| IP.Address              | String   | IP address.                                                |
+
+
+#### Command example
+```!ip ip=1.1.1.1```
+#### Context Example
+```json
+{
+    "ASM": {
+        "IP": {
+            "asm_ids": [
+                "4b1f3765-de40-3a1a-8535-667420408fd9"
+            ],
+            "asset_explainers": [],
+            "asset_type": "DOMAIN",
+            "domain": "*.acme.com",
+            "domain_details": {
+                "admin": {
+                    "city": "",
+                    "country": "us",
+                    "emailAddress": "",
+                    "faxExtension": null,
+                    "faxNumber": "",
+                    "name": "",
+                    "organization": "Acme, Inc.",
+                    "phoneExtension": null,
+                    "phoneNumber": "",
+                    "postalCode": "",
+                    "province": "AZ",
+                    "registryId": null,
+                    "street": ""
+                },
+                "alignedRegistrar": "MarkMonitor",
+                "collectionTime": 1695942091000,
+                "creationDate": 785376000000,
+                "dnssec": null,
+                "domainName": "acme.com",
+                "domainStatuses": [
+                    "clientUpdateProhibited",
+                    "clientTransferProhibited",
+                    "clientDeleteProhibited"
+                ],
+                "dropped": false,
+                "nameServers": []
+            },
+            "first_observed": 1679457579382,
+            "ip": "1.1.1.1",
+            "last_observed": 1697361335282,
+            "name": "*.acme.com",
+            "recent_ips": [
+                {
+                    "firstObserved": 1692418207732,
+                    "id": "218b3cc9-2d26-3a17-aadd-9eac08cc30ec",
+                    "ip": "1.1.1.1",
+                    "ipv6": null,
+                    "lastObserved": 1697361335282,
+                    "provider": {
+                        "additionalProviderInfo": null,
+                        "cdn": false,
+                        "displayName": "Amazon Web Services",
+                        "isCdn": false,
+                        "legacyName": "AWS",
+                        "name": "AWS"
+                    },
+                    "source": {
+                        "name": "DOMAIN_RESOLUTION"
+                    }
+                }
+            ],
+            "service_type": [
+                "HttpServer"
+            ],
+            "tags": [
+                "BU:Xpanse VanDelay Demo 3"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+>### Xpanse IP List
+>|asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|ip|last_observed|name|recent_ips|service_type|tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1.1.1.1 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+
+### domain
+
+***
+Returns enrichment for a domain.
+
+#### Base Command
+
+`domain`
+
+#### Input
+
+| **Argument Name** | **Description**   | **Required** |
+|-------------------|-------------------|--------------|
+| domain            | Domain to enrich. | Required     | 
+
+#### Context Output
+
+| **Path**                    | **Type** | **Description**                                            |
+|-----------------------------|----------|------------------------------------------------------------|
+| ASM.Domain.domain           | String   | The domain affiliated with an asset.                       |
+| ASM.Domain.name             | String   | The asset name.                                            |
+| ASM.Domain.asset_type       | String   | The asset type.                                            |
+| ASM.Domain.first_observed   | unknown  | When the asset was first observed.                         |
+| ASM.Domain.last_observed    | unknown  | When the asset was last observed.                          |
+| ASM.Domain.asm_ids          | unknown  | The ID of the asset.                                       |
+| ASM.Domain.service_type     | unknown  | Affiliated service types for the asset.                    |
+| ASM.Domain.tags             | unknown  | A list of tags that have been assigned to the asset.       |
+| ASM.Domain.asset_explainers | unknown  | The asset explanation details.                             |
+| ASM.Domain.domain_details   | unknown  | Additional domain details.                                 |
+| ASM.Domain.recent_ips       | unknown  | Details about the recent IP observations.                  |
+| DBotScore.Vendor            | String   | The vendor reporting the score of the indicator.           |
+| DBotScore.Score             | Number   | An integer regarding the status of the indicator.          |
+| DBotScore.Indicator         | String   | The indicator value.                                       |
+| DBotScore.Type              | String   | The vendor used to calculate the score.                    |
+| DBotScore.Reliability       | String   | Reliability of the source providing the intelligence data. |
+| Domain.Name                 | String   | Name of the domain.                                        |
+
+#### Command example
+```!domain domain="*.acme.com"```
+#### Context Example
+```json
+{
+    "ASM": {
+        "Domain": {
+            "asm_ids": [
+                "4b1f3765-de40-3a1a-8535-667420408fd9"
+            ],
+            "asset_explainers": [],
+            "asset_type": "DOMAIN",
+            "domain": "*.acme.com",
+            "domain_details": {
+                "admin": {
+                    "city": "",
+                    "country": "us",
+                    "emailAddress": "",
+                    "faxExtension": null,
+                    "faxNumber": "",
+                    "name": "",
+                    "organization": "Acme, Inc.",
+                    "phoneExtension": null,
+                    "phoneNumber": "",
+                    "postalCode": "",
+                    "province": "AZ",
+                    "registryId": null,
+                    "street": ""
+                },
+                "alignedRegistrar": "MarkMonitor",
+                "collectionTime": 1695942091000,
+                "creationDate": 785376000000,
+                "dnssec": null,
+                "domainName": "acme.com",
+                "domainStatuses": [
+                    "clientUpdateProhibited",
+                    "clientTransferProhibited",
+                    "clientDeleteProhibited"
+                ],
+                "dropped": false,
+                "nameServers": []
+            },
+            "first_observed": 1679457579382,
+            "last_observed": 1697361335282,
+            "name": "*.acme.com",
+            "recent_ips": [
+                {
+                    "firstObserved": 1692418207732,
+                    "id": "218b3cc9-2d26-3a17-aadd-9eac08cc30ec",
+                    "ip": "1.1.1.1",
+                    "ipv6": null,
+                    "lastObserved": 1697361335282,
+                    "provider": {
+                        "additionalProviderInfo": null,
+                        "cdn": false,
+                        "displayName": "Amazon Web Services",
+                        "isCdn": false,
+                        "legacyName": "AWS",
+                        "name": "AWS"
+                    },
+                    "source": {
+                        "name": "DOMAIN_RESOLUTION"
+                    }
+                }
+            ],
+            "service_type": [
+                "HttpServer"
+            ],
+            "tags": [
+                "BU:Xpanse VanDelay Demo 3"
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+>### Xpanse Domain List
+>|asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|last_observed|name|recent_ips|service_type|tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+

@@ -3881,7 +3881,11 @@ To ensure that the application is accessible to all indicators, the 'Ti.ReadWrit
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. Default is 50. | Optional | 
+| limit | The maximum number of indicators to return. Default is 50. | Optional |
+| skip | The number of indicators that are to be skipped and not included in the result. | Optional |
+| indicator_value | The value of the indicator to get. | Optional |
+| indicator_title | The title of the indicator to get. | Optional |
+| indicator_type | The type of the indicator to get. | Optional |
 
 
 #### Context Output

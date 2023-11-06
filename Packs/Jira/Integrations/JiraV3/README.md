@@ -8,16 +8,18 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Atlassian Jira V3.
-3. **Authentication**: OAuth 2.0 is used for both Jira Cloud, and OnPrem. Read the [Authentication](#authentication) process in order to configure your instance
+3. **Authentication**: Basic Authentication and OAuth 2.0 are used for both Jira Cloud, and OnPrem. Read the [Authentication](#authentication) process in order to configure your instance
 4. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL | The base URL. For a Cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain. | True |
     | Cloud ID | This field is used to configure the Jira Cloud. |  |
-    | Callback URL |  | True |
-    | Client ID |  | True |
-    | Client Secret |  | True |
+    | User name | used only for basic authentication method | False |
+    | API key | used only for basic authentication method | False |
+    | Callback URL | used only for OAuth 2.0 method | False |
+    | Client ID | used only for OAuth 2.0 method | False |
+    | Client Secret | used only for OAuth 2.0 method | False |
     | Query (in JQL) for fetching incidents | The field that was selected in the "Issue Field to fetch by" can't be used. in the query. | False |
     | Issue Field to fetch by | This is how the field \(e.g, created date\) is applied to the query: created &amp;gt;= \{created date in last run\} ORDER BY created ASC | False |
     | Issue index to start fetching incidents from | This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query. | False |
@@ -38,40 +40,66 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
 5. Check [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar) in order to authenticate and test the connection.
 
+
+Configure only one of the following fields:
+
+- Cloud ID - Used for Jira Cloud instance.
+- OnPrem - Leave the Cloud ID empty, and fill in the rest of the fields.
+
+##### Cloud ID
+
+1. Go to your [Admin page](https://admin.atlassian.com/).
+2. Click the **Products** tab on the top banner and choose the appropriate site under **Sites and Products** on the left side bar. Your Cloud ID will appear in the URL:
+`https://admin.atlassian.com/s/{cloud_id}/users`
+
 ## Authentication
+### Basic Authentication
+Leave the *Client ID* and *Client Secret* fields empty and fill in the following fields:
+- *User name* -Enter your user email.
+- *API key* - Enter the API token. To generate API token, see [here](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/)
 
-For both instances, it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The oproxy url is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally: if you don't want to use the oproxy url, you may use a localhost url on a port which is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the url address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).
+##### Basic Authentication permissions
+Ensure that you possess the necessary permissions by navigating to **Project Settings** > **Permissions** in the project.
+Locate permissions for the tasks listed below:
+* Browse projects
+* Create issues
+* Edit issues
+* Delete issues
+* Transition issues
+* Create attachments
+* Add comments
+* Link issues
 
-### Cloud authentication
+
+
+### OAuth 2.0
+For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The OProxy URL is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally, if you don't want to use the OProxy URL, you can use a localhost URL on a port that is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the URL address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).
+
+#### Cloud authentication
 
 Go to your [Developer console](https://developer.atlassian.com/console/myapps/) page, and choose the App you want to integrate with your instance. It must be of type OAuth 2.0. For creating a new app with type OAuth 2.0, click **Create** and choose **OAuth 2.0 integration** and follow the steps.
 
-#### Callback URL
+##### Callback URL
 
 1. Go to the **Authorization** tab, and click **Add** on the authorization with type of OAuth 2.0 (3LO).
 2. Insert a **Callback URL**.
 
-#### Client ID, Client Secret
+##### Client ID, Client Secret
 
 1. Go to the **Settings** tab.
 2. Copy the **Client ID** and **Secret** to the Client ID and Client Secret fields, respectively.
 
-#### Cloud ID
-
-Go to your [Admin page](https://admin.atlassian.com/), click the **Products** tab on the top banner and choose the appropriate site under **Sites and Products** on the left side bar. Your Cloud ID will appear in the URL:
-`https://admin.atlassian.com/s/{cloud_id}/users`
-
-#### Cloud Scopes
+##### Cloud Scopes
 
 The integration uses the *offline_access* scope, in order to retrieve refresh tokens.
 
-##### Classic Scopes
+###### Classic Scopes
 
 * read:jira-work
 * read:jira-user
 * write:jira-work
 
-#### Granular Scopes
+##### Granular Scopes
 
 * read:jql:jira
 * read:issue-details:jira
@@ -81,7 +109,7 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 * read:epic:jira-software
 * write:sprint:jira-software
 
-### OnPrem authentication
+#### OnPrem authentication
 
 1. Log in to Jira as a user with `Jira Administrator` permissions.
 2. Click the Jira Administration tab (the gear icon found in the top right corner) and click **Applications**.
@@ -95,7 +123,7 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 
 Write
 
-### Authorization Flow In Cortex XSOAR
+##### Authorization Flow In Cortex XSOAR
 
 1. Create the authentication application as explained in the [Authentication](#authentication) section.
 2. Run the command `!jira-oauth-start`, where you will be presented with a URL to authenticate yourself.
@@ -103,11 +131,11 @@ Write
 4. Insert the retrieved authorization code as an argument to the `!jira-oauth-complete` command.
 5. Run the `!jira-oauth-test` to test the connection of the instance.
 
-#### Authenticating using custom callback URL
+##### Authenticating using custom callback URL
 
 ![Custom callback URL](doc_files/jira-oauth-custom-callback-url.gif)
 
-#### Authenticating using the oproxy callback URL
+##### Authenticating using the oproxy callback URL
 
 ![Oproxy callback URL](doc_files/jira-oauth-oproxy-callback-url.gif)
 
@@ -830,6 +858,104 @@ Scope: `write:jira-work`
 >|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
+
+### jira-issue-assign
+
+***
+Assigns an assignee to an existing issue.
+
+Scope: `write:jira-work`
+
+#### Base Command
+
+`jira-issue-assign`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | The issue ID (Issue ID or key is required). | Optional |
+| issue_key | The issue key (Issue ID or key is required). | Optional |
+| assignee | The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name. | Optional |
+| assignee_id | The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ticket.Id | String | The ticket ID. |
+| Ticket.Key | String | The ticket key. |
+| Ticket.Assignee | String | The user assigned to the ticket. |
+| Ticket.Creator | String | The user who created the ticket. |
+| Ticket.Summary | String | The ticket summary. |
+| Ticket.Description | String | The ticket's project description. |
+| Ticket.Labels | Array | The ticket's project labels. |
+| Ticket.Status | String | The ticket status. |
+| Ticket.Priority | String | The ticket priority. |
+| Ticket.ProjectName | String | The ticket project name. |
+| Ticket.DueDate | Date | The due date. |
+| Ticket.Created | Date | The time the ticket was created. |
+| Ticket.LastSeen | Date | The last time the ticket was viewed. |
+| Ticket.LastUpdate | Date | The last time the ticket was updated. |
+
+#### Command example
+
+```!jira-issue-assign issue_key=PROJECTKEY-35 assignee_id=12345```
+
+#### Context Example
+
+```json
+{
+    "Ticket": {
+        "Assignee": "Example User(example@example.com)",
+        "Attachments": [
+            {
+                "created": "2023-05-07T20:00:59.121+0300",
+                "filename": "dummy_attachment_content.txt",
+                "id": "16504",
+                "size": 13264
+            },
+            {
+                "created": "2023-05-04T21:29:49.246+0300",
+                "filename": "dummy.pdf",
+                "id": "16477",
+                "size": 13264
+            }
+        ],
+        "Components": [
+            "dummy-comp",
+            "Integration"
+        ],
+        "Created": "2023-03-01T11:34:49.730+0200",
+        "Creator": "Example User(example@example.com)",
+        "Description": "Edited subbscription",
+        "DueDate": "2023-01-01",
+        "Id": "21487",
+        "Key": "PROJECTKEY-35",
+        "Labels": [
+            "label1",
+            "label2"
+        ],
+        "LastSeen": "2023-05-08T19:02:34.151+0300",
+        "LastUpdate": "2023-05-08T19:07:44.900+0300",
+        "Priority": "Highest",
+        "ProjectName": "Company Snoozing App",
+        "Status": "Backlog",
+        "Summary": "Edited Summary"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Issue PROJECTKEY-35
+>
+>|Assignee|Created|Creator|Description|Due Date|Id|Issue Type|Key|Labels|Priority|Project Name|Reporter|Status|Summary|Ticket Link|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Example User(<example@example.com>) | 2023-03-01T11:34:49.730+0200 | Example User(<example@example.com>) | Edited subbscription | 2023-01-01 | 21487 | Story | PROJECTKEY-35 | label1,<br/>label2 | Highest | Company Snoozing App | Example User(<example@example.com>) | Backlog | Edited Summary | https:<span>//</span>api.atlassian.com/ex/jira/1234/rest/api/3/issue/21487 |
+
+
+
 
 ### jira-create-issue
 

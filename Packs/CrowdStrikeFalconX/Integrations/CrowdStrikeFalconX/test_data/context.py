@@ -155,13 +155,13 @@ GET_FULL_REPORT_CONTEXT_EXTENDED = {'environment_description': 'Windows 10 64 bi
                                          'host_port': 80, 'method': 'GET', 'url': 'url'},
                                         {'header': 'header', 'host': 'ocsp.pki.goog', 'host_ip': '172.217.7.163',
                                          'host_port': 80, 'method': 'GET', 'url': 'url'}], 'incidents': [
-        {'details': ['Contacts 4 domains and 4 hosts'], 'name': 'Network Behavior'}], 'processes': [
-        {'command_line': 'command_line', 'icon_artifact_id': 'icon_artifact_id', 'name': 'rundll32.exe',
-         'normalized_path': 'normalized_path.exe', 'pid': 6648, 'process_flags': [{'name': 'Reduced Monitoring'}],
-         'sha256': 'sha256', 'uid': '00074182-00006648'}], 'screenshots_artifact_ids': ['screenshots_artifact_ids1',
-                                                                                        'screenshots_artifact_ids2',
-                                                                                        'screenshots_artifact_ids3',
-                                                                                        'screenshots_artifact_ids4'],
+                                        {'details': ['Contacts 4 domains and 4 hosts'], 'name': 'Network Behavior'}], 'processes': [
+                                        {'command_line': 'command_line', 'icon_artifact_id': 'icon_artifact_id', 'name': 'rundll32.exe',
+                                         'normalized_path': 'normalized_path.exe', 'pid': 6648, 'process_flags': [{'name': 'Reduced Monitoring'}],
+                                         'sha256': 'sha256', 'uid': '00074182-00006648'}], 'screenshots_artifact_ids': ['screenshots_artifact_ids1',
+                                                                                                                        'screenshots_artifact_ids2',
+                                                                                                                        'screenshots_artifact_ids3',
+                                                                                                                        'screenshots_artifact_ids4'],
                                     'signatures': [
                                         {'category': 'General', 'description': 'description', 'identifier': 'network-0',
                                          'name': 'Contacts domains', 'origin': 'Network Traffic', 'relevance': 1,
@@ -318,7 +318,7 @@ GET_FULL_REPORT_CONTEXT_EXTENDED = {'environment_description': 'Windows 10 64 bi
                                                      'name': 'rundll32.exe',
                                                      'normalized_path': 'normalized_path.exe',
                                                      'pid': 6648, 'process_flags': [{
-                                                        'name': 'Reduced Monitoring'}],
+                                                         'name': 'Reduced Monitoring'}],
                                                      'sha256': 'sha256',
                                                      'uid': '00074182-00006648'}],
                                                 'screenshots_artifact_ids': [

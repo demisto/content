@@ -3,12 +3,10 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 from typing import (
-    Dict, Any, Optional,
-    Union, List
+    Any
 )
 import traceback
 
-import dns.message
 import dns.resolver
 import dns.rdatatype
 import dns.rdataclass
@@ -22,7 +20,7 @@ QTYPES = ["CNAME", "NS", "A", "AAAA"]
 ''' STANDALONE FUNCTION '''
 
 
-def make_query(resolver: dns.resolver.Resolver, qname: str, qtype: str, use_tcp: bool) -> Dict[str, Any]:
+def make_query(resolver: dns.resolver.Resolver, qname: str, qtype: str, use_tcp: bool) -> dict[str, Any]:
     q_rdtype = dns.rdatatype.from_text(qtype)
     q_rdclass = dns.rdataclass.from_text("IN")
 
@@ -41,7 +39,7 @@ def make_query(resolver: dns.resolver.Resolver, qname: str, qtype: str, use_tcp:
     if ans.rrset is None:
         return {}
 
-    result: Dict[str, List[str]] = {}
+    result: dict[str, list[str]] = {}
 
     result[qtype] = [
         rr.to_text()
@@ -55,9 +53,9 @@ def make_query(resolver: dns.resolver.Resolver, qname: str, qtype: str, use_tcp:
 ''' COMMAND FUNCTION '''
 
 
-def get_domain_dns_details_command(args: Dict[str, Any]) -> CommandResults:
-    outputs: Optional[Dict[str, Dict[str, Any]]]
-    answer: Union[str, Dict[str, Any]]
+def get_domain_dns_details_command(args: dict[str, Any]) -> CommandResults:
+    outputs: dict[str, dict[str, Any]] | None
+    answer: str | dict[str, Any]
 
     server = args.get('server')
     use_tcp = argToBoolean(args.get('use_tcp', 'Yes'))
@@ -88,7 +86,7 @@ def get_domain_dns_details_command(args: Dict[str, Any]) -> CommandResults:
     }
 
     markdown = tableToMarkdown(
-        f' Domain DNS Details for {qname}',
+        f'Domain DNS Details for {qname}',
         answer,
         headers=["domain", "server"] + qtypes
     )

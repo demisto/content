@@ -2,7 +2,7 @@
     "name": "Cyble Events (Deprecated)",
     "description": "Deprecated. Use Cyble Events V2 instead.",
     "support": "partner",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Cyble Infosec",
     "hidden": true,
     "url": "https://cyble.com/",
@@ -16,7 +16,10 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "CommonScripts": {}
+        "CommonScripts": {
+            "mandatory": false,
+            "display_name": "Common Scripts"
+        }
     },
     "marketplaces": [
         "xsoar",

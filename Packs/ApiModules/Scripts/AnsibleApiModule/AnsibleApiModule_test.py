@@ -1,13 +1,15 @@
 import os
+import unittest
 
-from AnsibleApiModule import dict2md, rec_ansible_key_strip, generate_ansible_inventory, generic_ansible
-from TestsInput.markdown import MOCK_SINGLE_LEVEL_LIST, EXPECTED_MD_LIST, MOCK_SINGLE_LEVEL_DICT, EXPECTED_MD_DICT
-from TestsInput.markdown import MOCK_MULTI_LEVEL_DICT, EXPECTED_MD_MULTI_DICT, MOCK_MULTI_LEVEL_LIST
-from TestsInput.markdown import EXPECTED_MD_MULTI_LIST, MOCK_MULTI_LEVEL_LIST_ID_NAMES, EXPECTED_MD_MULTI_LIST_ID_NAMES
-from TestsInput.ansible_keys import MOCK_ANSIBLE_DICT, EXPECTED_ANSIBLE_DICT, MOCK_ANSIBLELESS_DICT, \
+from AnsibleApiModule import dict2md, rec_ansible_key_strip, generate_ansible_inventory, generic_ansible, \
+    clean_ansi_codes
+from test_data.markdown import MOCK_SINGLE_LEVEL_LIST, EXPECTED_MD_LIST, MOCK_SINGLE_LEVEL_DICT, EXPECTED_MD_DICT
+from test_data.markdown import MOCK_MULTI_LEVEL_DICT, EXPECTED_MD_MULTI_DICT, MOCK_MULTI_LEVEL_LIST
+from test_data.markdown import EXPECTED_MD_MULTI_LIST, MOCK_MULTI_LEVEL_LIST_ID_NAMES, EXPECTED_MD_MULTI_LIST_ID_NAMES
+from test_data.ansible_keys import MOCK_ANSIBLE_DICT, EXPECTED_ANSIBLE_DICT, MOCK_ANSIBLELESS_DICT, \
     EXPECTED_ANSIBLELESS_DICT
-from TestsInput.ansible_inventory import ANSIBLE_INVENTORY_HOSTS_LIST, ANSIBLE_INVENTORY_HOSTS_CSV_LIST
-from TestsInput.ansible_inventory import ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS
+from test_data.ansible_inventory import ANSIBLE_INVENTORY_HOSTS_LIST, ANSIBLE_INVENTORY_HOSTS_CSV_LIST
+from test_data.ansible_inventory import ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS
 from unittest.mock import patch
 
 fixture_path = os.path.join(os.path.dirname(__file__), "fixtures", "network")
@@ -250,7 +252,7 @@ def test_generic_ansible_with_problematic_stdout():
     # Mock results from Ansible run
     mock_ansible_results = Object()
 
-    with open(os.path.join(os.path.join("TestsInput", "stdout.txt")), encoding='unicode_escape') as f:
+    with open(os.path.join(os.path.join("test_data", "stdout.txt")), encoding='unicode_escape') as f:
         stdout = f.read()
 
     mock_ansible_results.events = [{'uuid': 'cf26f7c4-6eca-48b2-8294-4bd263cfb2e0', 'counter': 1, 'stdout': '',
@@ -285,3 +287,25 @@ def test_generic_ansible_with_problematic_stdout():
 
         assert CommandResults.readable_output == expected_readable
         assert CommandResults.outputs == expected_outputs
+
+
+class TestCleanAnsiCodes(unittest.TestCase):
+    def test_clean_ansi_codes(self):
+        # Given: A string with ANSI escape codes.
+        input_string = "\x1b[0;32mHello\x1b[0m World\x1b[0;31m!"
+
+        # When: The function is invoked.
+        result = clean_ansi_codes(input_string)
+
+        # Then: The returned string should be cleaned of ANSI codes.
+        self.assertEqual(result, "Hello World!")
+
+    def test_without_ansi_codes(self):
+        # Given: A string without any ANSI escape codes.
+        input_string = "Hello World!"
+
+        # When: The function is invoked.
+        result = clean_ansi_codes(input_string)
+
+        # Then: The returned string should remain unchanged.
+        self.assertEqual(result, "Hello World!")

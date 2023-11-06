@@ -5,7 +5,6 @@ import json
 import glob
 import argparse
 from datetime import datetime
-from typing import Dict, Tuple, Union
 import logging
 
 from packaging.version import Version
@@ -63,7 +62,7 @@ def get_new_packs(git_sha1):
     return pack_paths
 
 
-def get_new_entity_record(entity_path: str) -> Tuple[str, str]:
+def get_new_entity_record(entity_path: str) -> tuple[str, str]:
     data, _ = get_dict_from_file(entity_path)
 
     if 'layouts' in entity_path.lower():
@@ -144,7 +143,7 @@ def get_pack_entities(pack_path):
         glob.glob(f'{pack_path}/*/*/*.yml')], [])
     pack_entities.sort()
 
-    entities_data: Dict = {}
+    entities_data: dict = {}
     for entity_path in pack_entities:
         # ignore test files
         if 'test' in entity_path.lower():
@@ -198,7 +197,7 @@ def get_all_modified_release_note_files(git_sha1):
 
 def get_pack_metadata(pack_path):
     pack_metadata_path = os.path.join(pack_path, PACK_METADATA)
-    with open(pack_metadata_path, 'r') as json_file:
+    with open(pack_metadata_path) as json_file:
         pack_metadata = json.load(json_file)
 
     return pack_metadata
@@ -221,7 +220,7 @@ def get_pack_path_from_release_note(file_path):
     if match:
         return match.group(1)
 
-    raise ValueError('Pack name was not found for file path {}'.format(file_path))
+    raise ValueError(f'Pack name was not found for file path {file_path}')
 
 
 def get_pack_version_from_path(file_path):
@@ -231,7 +230,7 @@ def get_pack_version_from_path(file_path):
 
 
 def read_and_format_release_note(rn_file):
-    with open(rn_file, 'r') as stream:
+    with open(rn_file) as stream:
         release_notes = stream.read()
 
     release_notes = EMPTY_LINES_REGEX.sub('', release_notes)
@@ -262,9 +261,9 @@ def get_release_notes_dict(release_notes_files):
         release_note = read_and_format_release_note(file_path)
         if release_note:
             release_notes_dict.setdefault(pack_name, {})[pack_version] = release_note
-            logging.info('Adding release notes for pack {} {}...'.format(pack_name, pack_version))
+            logging.info(f'Adding release notes for pack {pack_name} {pack_version}...')
         else:
-            logging.info('Ignoring release notes for pack {} {}...'.format(pack_name, pack_version))
+            logging.info(f'Ignoring release notes for pack {pack_name} {pack_version}...')
 
     return release_notes_dict, packs_metadata_dict
 
@@ -307,7 +306,7 @@ def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metad
             f'{pack_release_notes}')
 
 
-def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> Tuple[Union[str, dict], str]:
+def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> tuple[str | dict, str]:
     """
     merge several pack release note versions into a single block.
 
@@ -347,6 +346,14 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> T
                 # release notes of the entity
                 entity_comment = entity[1] or entity[3] or entity[5]
                 if entity_name in entities_data[entity_type]:
+                    exists_comment = entities_data[entity_type][entity_name]
+                    if entity_comment and entity_name != '[special_msg]':
+                        if not exists_comment.startswith('- '):
+                            logging.debug(f'Adding missing "-" to entity comment: {exists_comment}')
+                            entities_data[entity_type][entity_name] = f'- {exists_comment}'
+                        if not entity_comment.strip().startswith('- '):
+                            logging.debug(f'Adding missing "-" to entity comment: {entity_comment}')
+                            entity_comment = f'- {entity_comment.strip()}'
                     entities_data[entity_type][entity_name] += f'{entity_comment.strip()}\n'
                 else:
                     entities_data[entity_type][entity_name] = f'{entity_comment.strip()}\n'
@@ -432,7 +439,7 @@ def get_release_notes_draft(github_token, asset_id):
     try:
         res = requests.get('https://api.github.com/repos/demisto/content/releases',
                            verify=False,  # guardrails-disable-line
-                           headers={'Authorization': 'token {}'.format(github_token)})
+                           headers={'Authorization': f'token {github_token}'})
     except requests.exceptions.ConnectionError as exc:
         logging.warning(f'Unable to get release draft, reason:\n{str(exc)}')
         return ''
@@ -456,11 +463,11 @@ def get_release_notes_draft(github_token, asset_id):
     return ''
 
 
-def create_content_descriptor(release_notes, version, asset_id, github_token):
+def create_content_descriptor(release_notes, version, asset_id, github_token, content_descriptor):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     current_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
 
-    content_descriptor = {
+    content_descriptor_json = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(asset_id),
         "releaseNotes": release_notes,
@@ -474,10 +481,10 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
     draft = get_release_notes_draft(github_token, asset_id)
     if draft:
-        content_descriptor['releaseNotes'] = draft
+        content_descriptor_json['releaseNotes'] = draft
 
-    with open('content-descriptor.json', 'w') as outfile:
-        json.dump(content_descriptor, outfile)
+    with open(content_descriptor, 'w') as outfile:
+        json.dump(content_descriptor_json, outfile)
 
 
 def main():
@@ -486,8 +493,12 @@ def main():
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
     arg_parser.add_argument('asset_id', help='Asset ID')
-    arg_parser.add_argument('--output', help='Output file, default is ./packs-release-notes.md',
+    arg_parser.add_argument('--packs-release-notes',
+                            help='Packs release notes file, default is ./packs-release-notes.md',
                             default='./packs-release-notes.md')
+    arg_parser.add_argument('--content-descriptor',
+                            help='Content Descriptor file, default is ./content-descriptor.json',
+                            default='./content-descriptor.json')
     arg_parser.add_argument('--github-token', help='Github token')
     args = arg_parser.parse_args()
 
@@ -506,8 +517,8 @@ def main():
     packs_metadata_dict.update(new_packs_metadata)
     packs_metadata_dict.update(modified_packs_metadata)
     release_notes = generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict,
-                                                   packs_metadata_dict, args.version, args.asset_id, args.output)
-    create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token)
+                                                   packs_metadata_dict, args.version, args.asset_id, args.packs_release_notes)
+    create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token, args.content_descriptor)
 
 
 if __name__ == "__main__":

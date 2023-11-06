@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3a2af69f-91d2-496a-89b7-53824cdec81e
+    taskid: 2d64b816-89fc-41a2-854f-bb692f819049
     type: start
     task:
-      id: 3a2af69f-91d2-496a-89b7-53824cdec81e
+      id: 2d64b816-89fc-41a2-854f-bb692f819049
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 88a0393a-a424-41c1-883f-c974c81c57e1
+    taskid: 4ecaeaef-26e3-4dea-8d9e-3077b1b74f27
     type: title
     task:
-      id: 88a0393a-a424-41c1-883f-c974c81c57e1
+      id: 4ecaeaef-26e3-4dea-8d9e-3077b1b74f27
       version: -1
       name: Set Fields
       type: title
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ae1677db-e76b-4941-8b98-3cf9f11ae04c
+    taskid: a3f191ac-7170-45ae-8dc5-99bc34dba8aa
     type: condition
     task:
-      id: ae1677db-e76b-4941-8b98-3cf9f11ae04c
+      id: a3f191ac-7170-45ae-8dc5-99bc34dba8aa
       version: -1
       name: Is there IAM information?
       description: Determines if there is IAM information to set in the service owner field.
@@ -120,10 +120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7da0ba37-7770-45f3-86a2-1b8adf301511
+    taskid: bcc6fdaf-5e48-4b16-8b24-09aa970a8e17
     type: condition
     task:
-      id: 7da0ba37-7770-45f3-86a2-1b8adf301511
+      id: bcc6fdaf-5e48-4b16-8b24-09aa970a8e17
       version: -1
       name: Is there Azure compute information?
       description: Determines if there is Azure Compute information to set in the system ID fields.
@@ -133,6 +133,8 @@ tasks:
     nexttasks:
       "yes":
       - "11"
+      '#default#':
+      - '42'
     separatecontext: false
     conditions:
     - label: "yes"
@@ -163,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6ab8d059-5e32-41ff-8d56-eccf5685a2a4
+    taskid: c26383e9-d9ff-438f-808e-ee61a3346087
     type: condition
     task:
-      id: 6ab8d059-5e32-41ff-8d56-eccf5685a2a4
+      id: c26383e9-d9ff-438f-808e-ee61a3346087
       version: -1
       name: Is there Azure network information?
       description: Determines if there is Azure network information to set in the ASM Private IP field.
@@ -208,10 +210,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e2fc76a7-06ef-498c-815b-221ecb7275a4
+    taskid: d9c4bd7b-ef1e-4f4f-8b1a-a385dd06bd5c
     type: regular
     task:
-      id: e2fc76a7-06ef-498c-815b-221ecb7275a4
+      id: d9c4bd7b-ef1e-4f4f-8b1a-a385dd06bd5c
       version: -1
       name: Set service owner grid field
       description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
@@ -287,10 +289,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 8b991abf-0dfe-4ab6-8662-788425e0e741
+    taskid: 504447f8-8014-40c3-8298-47c42263c4b0
     type: title
     task:
-      id: 8b991abf-0dfe-4ab6-8662-788425e0e741
+      id: 504447f8-8014-40c3-8298-47c42263c4b0
       version: -1
       name: Service Owner
       type: title
@@ -318,10 +320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 3cda87b5-aa9f-4a2f-8720-44dd6bbe4582
+    taskid: e5838619-5ed2-4781-87aa-a714059bab56
     type: title
     task:
-      id: 3cda87b5-aa9f-4a2f-8720-44dd6bbe4582
+      id: e5838619-5ed2-4781-87aa-a714059bab56
       version: -1
       name: System IDs
       type: title
@@ -330,8 +332,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "12"
-      - "42"
+      - '49'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -350,10 +351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: e87f35c7-4915-499c-8539-baf0cfb4bec6
+    taskid: 03cce49f-830e-4512-8f0d-b7cb31084bed
     type: regular
     task:
-      id: e87f35c7-4915-499c-8539-baf0cfb4bec6
+      id: 03cce49f-830e-4512-8f0d-b7cb31084bed
       version: -1
       name: Set system IDs grid field (NSG)
       description: Sets Azure NSG information to the grid field for the ASM system IDs object.
@@ -370,7 +371,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: Azure-NSG
+        simple: ASSET-SG
       val2:
         complex:
           root: Azure.Network.Interfaces.NetworkSecurityGroup
@@ -389,7 +390,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 540
+          "y": 750
         }
       }
     note: false
@@ -401,13 +402,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 068e6e38-5d79-4523-889f-ceb8317a3101
+    taskid: 73400d3c-a716-4661-8566-5de1c157fc3c
     type: regular
     task:
-      id: 068e6e38-5d79-4523-889f-ceb8317a3101
+      id: 73400d3c-a716-4661-8566-5de1c157fc3c
       version: -1
       name: Set system IDs grid field (Resource Group)
-      description: Sets Azure resource group information to the grid field for the ASM system IDs object.
+      description: Sets Azure resource group information to the grid field for the ASM system IDs object. The variable name "CLOUD-RG" is chosen because multiple CSPs have a concept of a resource group including Alibaba, IBM Cloud, and Azure.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -421,7 +422,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: Azure-RG
+        simple: ASSET-RG
       val2:
         complex:
           root: Azure.Compute
@@ -434,7 +435,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 705
+          "y": 950
         }
       }
     note: false
@@ -446,13 +447,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 75624219-62de-4757-8990-17dbd85b87f7
+    taskid: a8741572-ed2d-4dc3-8ff9-72fda657bdd9
     type: regular
     task:
-      id: 75624219-62de-4757-8990-17dbd85b87f7
+      id: a8741572-ed2d-4dc3-8ff9-72fda657bdd9
       version: -1
       name: Set system IDs grid field (NIC)
-      description: Sets Azure NIC information to the grid field for the ASM system IDs object.
+      description: Sets Azure NIC information to the grid field for the ASM system IDs object. The variable name "ASSET-NIC" is chosen because it can used for more than just compute resources in all cloud providers.
       scriptName: GridFieldSetup
       type: regular
       iscommand: false
@@ -466,7 +467,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: Azure-NIC
+        simple: ASSET-NIC
       val2:
         complex:
           root: Azure.Compute.NetworkInterfaces
@@ -485,7 +486,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 870
+          "y": 1120
         }
       }
     note: false
@@ -497,10 +498,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 8c3a9556-c518-4b15-8bb4-a1396414e20b
+    taskid: 3bb6875c-a2fe-40e9-8bc4-c50d92f809c8
     type: regular
     task:
-      id: 8c3a9556-c518-4b15-8bb4-a1396414e20b
+      id: 3bb6875c-a2fe-40e9-8bc4-c50d92f809c8
       version: -1
       name: Set system IDs grid field (ID)
       description: Sets the Azure Compute instance ID to the grid field for the ASM system IDs object.
@@ -517,7 +518,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: Azure-Compute-ID
+        simple: ASSET-ID
       val2:
         complex:
           root: Azure.Compute
@@ -530,7 +531,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 1040
+          "y": 1290
         }
       }
     note: false
@@ -542,10 +543,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 32eb3dee-d653-4818-8ecf-c4f833550d5b
+    taskid: 4754cbe8-72a4-4523-80ca-6d3d08b82a6f
     type: regular
     task:
-      id: 32eb3dee-d653-4818-8ecf-c4f833550d5b
+      id: 4754cbe8-72a4-4523-80ca-6d3d08b82a6f
       version: -1
       name: Set private IP grid field
       description: Sets the private IP to the grid field for the ASM private IP object.
@@ -585,10 +586,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b1625ec7-b4e3-48d6-8223-25c928f1f393
+    taskid: 8a224e02-de55-421c-84c6-d2e0d9755745
     type: title
     task:
-      id: b1625ec7-b4e3-48d6-8223-25c928f1f393
+      id: 8a224e02-de55-421c-84c6-d2e0d9755745
       version: -1
       name: Private IP
       type: title
@@ -616,10 +617,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 592e91d6-a81c-4308-8bb6-6fb80df2b5ba
+    taskid: 089d582c-44d7-4ca2-8034-59c15a439316
     type: title
     task:
-      id: 592e91d6-a81c-4308-8bb6-6fb80df2b5ba
+      id: 089d582c-44d7-4ca2-8034-59c15a439316
       version: -1
       name: Cloud
       type: title
@@ -647,10 +648,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: b7c3c772-5d3a-45f8-87dd-b0d4a03c8d1d
+    taskid: 65f0d4d7-46dd-4e48-8f34-864170426cf6
     type: regular
     task:
-      id: b7c3c772-5d3a-45f8-87dd-b0d4a03c8d1d
+      id: 65f0d4d7-46dd-4e48-8f34-864170426cf6
       version: -1
       name: Set cloud grid field
       description: Sets Azure subscription, resource group, and location information to the grid field for the ASM cloud object.
@@ -709,10 +710,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 1d200507-43cc-4f05-88f0-df39bfe1549b
+    taskid: 290b4a5c-825a-4add-89a7-f04291ac94e3
     type: regular
     task:
-      id: 1d200507-43cc-4f05-88f0-df39bfe1549b
+      id: 290b4a5c-825a-4add-89a7-f04291ac94e3
       version: -1
       name: Set system IDs grid field (Compute Name)
       description: Sets the Azure Compute instance name to the grid field for the ASM system IDs object.
@@ -729,7 +730,7 @@ tasks:
       keys:
         simple: type,id,link
       val1:
-        simple: Azure-Compute-Name
+        simple: ASSET-NAME
       val2:
         complex:
           root: Azure.Compute
@@ -742,7 +743,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 1210
+          "y": 1460
         }
       }
     note: false
@@ -754,10 +755,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 919e2134-6f54-48c5-8023-ce126c5088a8
+    taskid: e19d66ed-95d9-449f-88b0-bc6b9bba2ce6
     type: condition
     task:
-      id: 919e2134-6f54-48c5-8023-ce126c5088a8
+      id: e19d66ed-95d9-449f-88b0-bc6b9bba2ce6
       version: -1
       name: Is there Azure compute information?
       description: Determines if there is Azure Compute information to set in the Cloud ASM fields.
@@ -806,10 +807,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 440c698b-24d4-479e-81dd-94d907f6e24a
+    taskid: d6c63bb2-4ecf-4774-8d6b-753900f93014
     type: playbook
     task:
-      id: 440c698b-24d4-479e-81dd-94d907f6e24a
+      id: d6c63bb2-4ecf-4774-8d6b-753900f93014
       version: -1
       name: Azure - Enrichment
       playbookName: Azure - Enrichment
@@ -842,10 +843,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 44bca5f4-fd10-4a33-8109-67ee2607b4d4
+    taskid: da34d968-430d-4aee-86ca-c4e820757418
     type: regular
     task:
-      id: 44bca5f4-fd10-4a33-8109-67ee2607b4d4
+      id: da34d968-430d-4aee-86ca-c4e820757418
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -881,10 +882,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 83dfee20-5135-4f8a-8c38-0a0bb99fe5ec
+    taskid: 37124e52-78a1-464f-8820-b81a150dd5b9
     type: regular
     task:
-      id: 83dfee20-5135-4f8a-8c38-0a0bb99fe5ec
+      id: 37124e52-78a1-464f-8820-b81a150dd5b9
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -920,10 +921,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 8fcedb84-f211-4452-8d8e-d0a97a9828f8
+    taskid: cb8dbbb3-3ab2-4ad9-8a7c-43d1cae20ec7
     type: title
     task:
-      id: 8fcedb84-f211-4452-8d8e-d0a97a9828f8
+      id: cb8dbbb3-3ab2-4ad9-8a7c-43d1cae20ec7
       version: -1
       name: System IDs - End
       type: title
@@ -939,7 +940,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 1580
+          "y": 1830
         }
       }
     note: false
@@ -951,10 +952,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: aea73421-2454-4ab9-855a-b463c2aaf915
+    taskid: 5f867ab1-c5de-4ea9-8bb2-fdcb056576f6
     type: title
     task:
-      id: aea73421-2454-4ab9-855a-b463c2aaf915
+      id: 5f867ab1-c5de-4ea9-8bb2-fdcb056576f6
       version: -1
       name: Private IP - End
       type: title
@@ -982,10 +983,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 1c908b55-8b8a-4c0b-8f36-dac3dd3397cf
+    taskid: df829f18-4e1b-4b2f-8776-a8ab4dcc157b
     type: title
     task:
-      id: 1c908b55-8b8a-4c0b-8f36-dac3dd3397cf
+      id: df829f18-4e1b-4b2f-8776-a8ab4dcc157b
       version: -1
       name: Cloud - End
       type: title
@@ -1013,10 +1014,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: dd4cd7d4-c623-4132-83e9-c05846db9ff2
+    taskid: 8d86a6fd-4dfb-4ca7-8d42-a879a6c1d4a7
     type: regular
     task:
-      id: dd4cd7d4-c623-4132-83e9-c05846db9ff2
+      id: 8d86a6fd-4dfb-4ca7-8d42-a879a6c1d4a7
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1040,7 +1041,7 @@ tasks:
       {
         "position": {
           "x": 240,
-          "y": 1385
+          "y": 1605
         }
       }
     note: false
@@ -1052,10 +1053,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 50a887ef-7e9b-4a57-8f66-6e63beb024c6
+    taskid: 4705690b-b641-46e4-80a6-d7d5bd134012
     type: regular
     task:
-      id: 50a887ef-7e9b-4a57-8f66-6e63beb024c6
+      id: 4705690b-b641-46e4-80a6-d7d5bd134012
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1091,10 +1092,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: c2f3d1f3-8e83-4af3-8c0d-8dd421275048
+    taskid: f5740794-f742-459d-86bc-830a9c6bf575
     type: title
     task:
-      id: c2f3d1f3-8e83-4af3-8c0d-8dd421275048
+      id: f5740794-f742-459d-86bc-830a9c6bf575
       version: -1
       name: Service Owner - End
       type: title
@@ -1110,7 +1111,7 @@ tasks:
       {
         "position": {
           "x": -440,
-          "y": 1145
+          "y": 1425
         }
       }
     note: false
@@ -1122,10 +1123,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: aeb986b1-017c-4bf4-8628-ebd38be449ef
+    taskid: f84d4ab6-ac4a-4f2d-8946-444fae9e20aa
     type: regular
     task:
-      id: aeb986b1-017c-4bf4-8628-ebd38be449ef
+      id: f84d4ab6-ac4a-4f2d-8946-444fae9e20aa
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1162,10 +1163,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 7ec590bf-b879-41e4-8420-f730db4cfd45
+    taskid: 2d832d75-c6f4-4f01-8a45-deaf1dd608c3
     type: regular
     task:
-      id: 7ec590bf-b879-41e4-8420-f730db4cfd45
+      id: 2d832d75-c6f4-4f01-8a45-deaf1dd608c3
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1202,10 +1203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 804d76d1-9a5d-42f1-830f-4ce4f977a0de
+    taskid: 5ba9c0c3-21ed-4591-8506-98b64b7edfdc
     type: title
     task:
-      id: 804d76d1-9a5d-42f1-830f-4ce4f977a0de
+      id: 5ba9c0c3-21ed-4591-8506-98b64b7edfdc
       version: -1
       name: Closing Steps
       type: title
@@ -1221,7 +1222,7 @@ tasks:
       {
         "position": {
           "x": 1197.5,
-          "y": 1860
+          "y": 1990
         }
       }
     note: false
@@ -1233,10 +1234,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: a2a26640-0114-4711-8fd1-f8e519795df7
+    taskid: 8994fe70-4aa3-4add-8795-9817f67c360c
     type: title
     task:
-      id: a2a26640-0114-4711-8fd1-f8e519795df7
+      id: 8994fe70-4aa3-4add-8795-9817f67c360c
       version: -1
       name: Complete
       type: title
@@ -1249,7 +1250,7 @@ tasks:
       {
         "position": {
           "x": 1207.5,
-          "y": 2450
+          "y": 2580
         }
       }
     note: false
@@ -1261,10 +1262,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 978207b0-1a2b-4013-80c6-ee78bd89f330
+    taskid: e64e324a-53bb-4451-8e5a-87127d32bada
     type: regular
     task:
-      id: 978207b0-1a2b-4013-80c6-ee78bd89f330
+      id: e64e324a-53bb-4451-8e5a-87127d32bada
       version: -1
       name: Set ASM enrichment status to true
       description: |-
@@ -1294,7 +1295,7 @@ tasks:
       {
         "position": {
           "x": 1442.5,
-          "y": 2230
+          "y": 2360
         }
       }
     note: false
@@ -1306,10 +1307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: bd3321af-aef8-48b6-8f06-daf0d5770fe0
+    taskid: 24b06f4b-f7b5-4fd5-84f6-3a0d1f954fce
     type: condition
     task:
-      id: bd3321af-aef8-48b6-8f06-daf0d5770fe0
+      id: 24b06f4b-f7b5-4fd5-84f6-3a0d1f954fce
       version: -1
       name: Was enrichment performed?
       description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
@@ -1339,7 +1340,7 @@ tasks:
       {
         "position": {
           "x": 1197.5,
-          "y": 2010
+          "y": 2140
         }
       }
     note: false
@@ -1351,10 +1352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 3482365c-8453-4da0-87c0-a68c621c13ea
+    taskid: 16059233-a236-482c-8950-51ad875e40b8
     type: regular
     task:
-      id: 3482365c-8453-4da0-87c0-a68c621c13ea
+      id: 16059233-a236-482c-8950-51ad875e40b8
       version: -1
       name: Set ASM enrichment status to false
       description: |-
@@ -1384,7 +1385,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 2230
+          "y": 2360
         }
       }
     note: false
@@ -1394,23 +1395,50 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-view: |-
-  {
-    "linkLabelsPosition": {
-      "25_19_yes": 0.6,
-      "3_9_yes": 0.5,
-      "4_11_yes": 0.43,
-      "7_18_yes": 0.5
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2835,
-        "width": 2262.5,
-        "x": -440,
-        "y": -320
+  "49":
+    id: "49"
+    taskid: 04cc55a1-4d5e-4c75-8424-56efa9d1f73e
+    type: regular
+    task:
+      id: 04cc55a1-4d5e-4c75-8424-56efa9d1f73e
+      version: -1
+      name: Set system IDs grid field (type)
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-TYPE
+      val2:
+        simple: Azure Compute
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 580
+        }
       }
-    }
-  }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: "{\n  \"linkLabelsPosition\": {\n    \"25_19_yes\": 0.6,\n    \"3_42_#default#\": 0.32,\n    \"3_9_yes\": 0.5,\n    \"4_11_yes\": 0.43,\n    \"4_42_#default#\": 0.31,\n    \"7_18_yes\": 0.5\n  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2965,\n      \"width\": 2262.5,\n      \"x\": -440,\n      \"y\": -320\n    }\n  }\n}"
 inputs:
 - key: RemoteIP
   value:
@@ -1421,6 +1449,6 @@ inputs:
   description: IP address of the service.
   playbookInputQuery:
 outputs: []
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0

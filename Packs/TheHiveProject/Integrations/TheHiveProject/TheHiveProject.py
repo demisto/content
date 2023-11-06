@@ -22,10 +22,11 @@ class Client(BaseClient):
                 return res.json()['versions']['TheHive']
             else:
                 return "Unknown"
+        return None
 
     def get_cases(self, limit: int = None):
         instance = demisto.integrationInstance()
-        cases = list()
+        cases = []
         res = self._http_request('GET', 'case')
 
         for case in res:
@@ -34,9 +35,8 @@ class Client(BaseClient):
             case['instance'] = instance
             case['mirroring'] = self.mirroring
             cases.append(case)
-        if limit and type(cases) == list:
-            if len(cases) > limit:
-                return cases[0:limit]
+        if limit and type(cases) == list and len(cases) > limit:
+            return cases[0:limit]
         return cases
 
     def get_case(self, case_id):
@@ -162,7 +162,7 @@ class Client(BaseClient):
             )
             if res.status_code != 200:
                 return None
-            tasks = [x for x in res.json()]
+            tasks = list(res.json())
         if tasks:
             for task in tasks:
                 if "id" in task:
@@ -260,9 +260,9 @@ class Client(BaseClient):
         if res.status_code != 200:
             return []
         else:
-            logs = list()
+            logs = []
             for log in res.json():
-                log['has_attachments'] = True if log.get('attachment', None) else False
+                log['has_attachments'] = bool(log.get('attachment', None))
                 logs.append(log)
             return logs
 
@@ -284,7 +284,7 @@ class Client(BaseClient):
         headers = self._headers.update({
             "name": filename
         })
-        data = bytes()
+        data = b''
         with self._http_request('GET', f'datastore/{fileId}', stream=True, headers=headers, resp_type="response") as r:
             r.raise_for_status()
             for chunk in r.iter_content(chunk_size=8192):
@@ -320,7 +320,7 @@ class Client(BaseClient):
 
     def block_user(self, user_id: str = None):
         res = self._http_request('DELETE', f'user/{user_id}', ok_codes=[204, 404], resp_type='response')
-        return True if res.status_code == 204 else False
+        return res.status_code == 204
 
     def list_observables(self, case_id: str = None):
         if self.version[0] == "4":
@@ -490,6 +490,8 @@ def search_cases_command(client: Client, args: dict):
 def update_case_command(client: Client, args: dict):
     case_id = args.get('id')
     args['tags'] = argToList(args.get('tags', []))
+    if args.get('severity'):
+        args['severity'] = arg_to_number(args.get('severity'))
     # Get the case first
     original_case = client.get_case(case_id)
     if not original_case:
@@ -839,7 +841,7 @@ def create_observable_command(client: Client, args: dict):
             "message": args.get('message'),
             "startDate": args.get('startDate', None),
             "tlp": args.get('tlp', None),
-            "ioc": True if args.get('ioc', 'false') == 'true' else False,
+            "ioc": args.get('ioc', 'false') == 'true',
             "status": args.get('status', None)
         }
         data = {k: v for k, v in data.items() if v}
@@ -863,7 +865,7 @@ def update_observable_command(client: Client, args: dict):
     data = {
         "message": args.get('message'),
         "tlp": args.get('tlp', None),
-        "ioc": True if args.get('ioc', 'false') == 'true' else False,
+        "ioc": args.get('ioc', 'false') == 'true',
         "status": args.get('status', None)
     }
     data = {k: v for k, v in data.items() if v}
@@ -893,7 +895,7 @@ def get_mapping_fields_command(client: Client, args: dict) -> Dict[str, Any]:
 
 def update_remote_system_command(client: Client, args: dict) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
-    changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data.keys()}
+    changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data}
     if parsed_args.remote_incident_id:
         # Apply the updates
         client.update_case(case_id=parsed_args.remote_incident_id, updates=changes)
@@ -980,7 +982,7 @@ def fetch_incidents(client: Client, fetch_closed: bool = False):
         res[:] = [x for x in res if x['createdAt'] > last_timestamp and x['status'] == 'Open']
 
     res = sorted(res, key=lambda x: x['createdAt'])
-    incidents = list()
+    incidents = []
     instance_name = demisto.integrationInstance()
     mirror_direction = demisto.params().get('mirror')
     mirror_direction = None if mirror_direction == "Disabled" else mirror_direction

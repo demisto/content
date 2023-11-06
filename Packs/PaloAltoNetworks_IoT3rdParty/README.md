@@ -11,3 +11,7 @@ Wrap around the IoT Security Portal APIs for
  - Coverting an asset to external format.
  - Reporting a status back to Palo Alto Networks IoT cloud.
 
+This content pack is deprecated. To get the latest Palo Alto Networks IoT 3rd Party Integrations content pack, visit https://docs.paloaltonetworks.com/iot/iot-security-integration/get-started-with-iot-security-integrations/third-party-integrations-using-a-full-featured-xsoar-server. 
+
+
+

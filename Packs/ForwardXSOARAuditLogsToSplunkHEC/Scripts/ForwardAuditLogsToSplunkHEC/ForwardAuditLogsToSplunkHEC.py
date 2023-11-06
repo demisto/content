@@ -4,12 +4,36 @@ from datetime import datetime
 
 
 def get_audit_logs(timeframe: int) -> Dict:
+    demisto_version: str = get_demisto_version().get("version")
+    demisto.debug(f'{demisto_version=}')
+    if not demisto_version:
+        raise ValueError('Could not get the version of XSOAR')
+
     timefrom = datetime.now() - timedelta(hours=int(timeframe))
     timestring = timefrom.strftime('%Y-%m-%dT%H:%M:%S')
-    parameters = {"uri": "/settings/audits",
-                  "body": {"size": 1000,
-                           "query": f"modified:>{timestring}"}}
-    results = demisto.executeCommand('demisto-api-post', parameters)
+
+    if demisto_version.startswith("6"):  # xsoar 6
+        uri = "/settings/audits"
+        body = {
+            'size': 1000,
+            "query": f"modified:>{timestring}"
+        }
+    else:  # xsoar 8
+        uri = "/public_api/v1/audits/management_logs"
+        body = {
+            "request_data": {
+                "search_to": 1000,
+                "filters": [
+                    {
+                        'field': 'modification_time',
+                        'operator': 'gte',
+                        'value': date_to_timestamp(timestring)
+                    },
+                ]
+            }
+        }
+
+    results = demisto.executeCommand('demisto-api-post', {"uri": uri, "body": body})
     return results[0]['Contents']['response']
 
 

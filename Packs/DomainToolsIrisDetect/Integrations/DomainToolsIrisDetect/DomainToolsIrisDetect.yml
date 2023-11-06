@@ -222,7 +222,7 @@ script:
       description: The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00").
       type: String
   - arguments:
-    - description: 'ISO 8601 datetime format: default None. Conditionally required if the include_counts parameter is set to True. for example 2022-05-18T12:19:51.685496'
+    - description: 'ISO 8601 datetime format: default None. Conditionally required if the include_counts parameter is set to True. for example 2022-05-18T12:19:51.685496.'
       name: datetime_counts_since
       required: true
     - auto: PREDEFINED
@@ -240,7 +240,7 @@ script:
       - domain_counts_changed
       - domain_counts_discovered
     - auto: PREDEFINED
-      description: Sort order "asc" or "desc"
+      description: Sort order "asc" or "desc".
       name: order
       predefined:
       - asc
@@ -279,7 +279,7 @@ script:
       description: The email address of the person who created the monitor entry.
       type: String
   - arguments:
-    - description: Filter domains by when they were discovered. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496
+    - description: Filter domains by when they were discovered. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.
       name: discovered_since
     - description: |-
         Monitor ID is used when requesting domains for a specific monitor. 
@@ -327,7 +327,7 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: Sort order "asc" or "desc"
+      description: Sort order "asc" or "desc".
       name: order
       predefined:
       - asc
@@ -740,7 +740,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: 'List of risk score ranges to filter domains by. Valid values are:["0-0", "1-39", "40-69", "70-99", "100-100"]'
+      description: 'List of risk score ranges to filter domains by. Valid values are:["0-0", "1-39", "40-69", "70-99", "100-100"].'
       name: risk_score_ranges
       predefined:
       - 0-0
@@ -1044,7 +1044,7 @@ script:
       type: String
   - description: This command will reset your fetch history.
     name: domaintools-iris-detect-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   runonce: false
   script: '-'

@@ -1,30 +1,36 @@
 Detonates a file with VMRay.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * GenericPolling
 
 ### Integrations
+
 * VMRay
 
 ### Scripts
-This playbook does not use any scripts.
+
+* IsIntegrationAvailable
 
 ### Commands
-* vmray-get-submission
+
+* vmray-get-threat-indicators
 * vmray-get-sample
 * vmray-upload-sample
-* vmray-get-iocs
 * vmray-get-analysis-by-sample
-* vmray-get-threat-indicators
+* vmray-get-submission
+* vmray-get-iocs
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- | 
+| --- | --- | --- | --- |
 | File | The file to detonate. | ${File} | Optional |
 | interval | The frequency in which to poll for results \(minutes\). | 1 | Optional |
 | timeout | The amount of time to wait before giving up waiting for results \(minutes\). | 10 | Optional |
@@ -36,6 +42,7 @@ This playbook does not use any scripts.
 | tags | The tags of the file \(comma-separated\). |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -103,5 +110,7 @@ This playbook does not use any scripts.
 | VMRay.ThreatIndicator.Operation | The operation that caused the indicators. | unknown |
 
 ## Playbook Image
+
 ---
-![Detonate File - VMRay](https://raw.githubusercontent.com/demisto/content/b775f79abb03fef141bd8581cc3ada4f0771e71a/docs/images/playbooks/VMRay-Detonate-File.png)
+
+![Detonate File - VMRay](../doc_files/Detonate_File_-_VMRay.png)

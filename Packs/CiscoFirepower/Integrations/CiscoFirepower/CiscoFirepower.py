@@ -110,6 +110,7 @@ def pagination(
         Returns:
             Callable: inner function that handles the pagination request.
         """
+
         def inner(
             self,
             page: Optional[int],

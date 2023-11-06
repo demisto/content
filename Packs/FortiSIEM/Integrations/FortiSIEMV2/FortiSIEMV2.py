@@ -177,6 +177,7 @@ class FortiSIEMClient(BaseClient):
         """
         data = {"descending": False, "filters": {"status": status},
                 "orderBy": "incidentFirstSeen", "size": size, "start": start, "timeFrom": time_from, "timeTo": time_to}
+        demisto.debug(f'Fetch incident request: {str(data)}')
         response = self._http_request('POST', 'pub/incident', json_data=data)
         return response
 
@@ -1014,6 +1015,21 @@ def watchlist_entry_delete_command(client: FortiSIEMClient, args: dict[str, Any]
     return command_results_list
 
 
+def get_incident_name(incident: dict) -> str:
+    """
+    Gets the incident name.
+    Args:
+        incident (dict): FortiSIEM incident.
+    Returns:
+       str: The incident name.
+    """
+    if incident_title := incident.get('incidentTitle'):
+        return incident_title
+    elif incident_id := incident.get('incidentId'):
+        return f"FortiSIEM incident: {incident_id}"
+    return "FortiSIEM incident"
+
+
 def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, status_list: List[str],
                     fetch_with_events: bool, max_events_fetch: int, last_run: dict[str, Any]) -> tuple:
     """
@@ -1047,12 +1063,14 @@ def fetch_incidents(client: FortiSIEMClient, max_fetch: int, first_fetch: str, s
         else:
             events = []
         incident['events'] = events
+
         incidents.append({
-            'name': incident['incidentTitle'],
+            'name': get_incident_name(incident),
             'occurred': timestamp_to_datestring(incident['incidentFirstSeen']),
             'rawJSON': json.dumps(incident)})
     if incidents:
         last_run = update_last_run_obj(last_run, formatted_incidents)
+        demisto.debug(f'Update last run to: {str(last_run)}.')
     return incidents, last_run
 
 
@@ -1528,6 +1546,7 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
     Returns:
         List[dict]: Relevant incidents.
     """
+    demisto.debug(f'Fetch incident from: {str(time_from)} to {str(time_to)}')
     filtered_incidents = []
     start_index = last_run.get('start_index') or 0
     last_incident_create_time = last_run.get('create_time') or time_from
@@ -1537,7 +1556,7 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
     response = client.fetch_incidents_request(status, time_from, time_to, page_size, start_index)
     incidents = response.get('data')
     total = response.get('total')
-
+    demisto.debug(f'Got: {total} total incidents.')
     # filtering & pagination
     while len(filtered_incidents) < max_fetch and start_index < total:
         for incident in incidents:
@@ -1551,6 +1570,7 @@ def fetch_relevant_incidents(client: FortiSIEMClient,
         start_index += page_size
         response = client.fetch_incidents_request(status, time_from, time_to, page_size, start_index)
         incidents = response.get('data')
+    demisto.debug(f'Got: {len(filtered_incidents)} incidents after filtering.')
     return filtered_incidents
 
 

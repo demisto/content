@@ -26,14 +26,14 @@ XSIAM_SERVERS = {
 }
 
 
-def create_build_object_with_mock(mocker, build_object_type):
+def create_build_object_with_mock(mocker, server_type):
     args = ['-u', "$USERNAME", '-p', "$PASSWORD", '-c', "$CONF_PATH", '-s', "$SECRET_CONF_PATH",
-            '--tests_to_run', "$ARTIFACTS_FOLDER/filter_file.txt",
-            '--pack_ids_to_install', "$ARTIFACTS_FOLDER/content_packs_to_install.txt",
+            '--tests_to_run', "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt",
+            '--pack_ids_to_install', "$ARTIFACTS_FOLDER_SERVER_TYPE/content_packs_to_install.txt",
             '-g', "$GIT_SHA1", '--ami_env', "$1", '-n', 'false', '--branch', "$CI_COMMIT_BRANCH",
-            '--build-number', "$CI_PIPELINE_ID", '-sa', "$GCS_MARKET_KEY", '--build_object_type', build_object_type,
+            '--build-number', "$CI_PIPELINE_ID", '-sa', "$GCS_MARKET_KEY", '--server-type', server_type,
             '--cloud_machine', "qa2-test-111111", '--cloud_servers_path', '$XSIAM_SERVERS_PATH',
-            '--marketplace_name', 'marketplacev2']
+            '--marketplace_name', 'marketplacev2', '--test_pack_path', '$ARTIFACTS_FOLDER', '--content_root', '$CONTENT_ROOT']
     options = options_handler(args=args)
     json_data = {
         'tests': [],
@@ -86,8 +86,8 @@ def test_configure_old_and_new_integrations(mocker):
     assert not set(old_modules_instances).intersection(new_modules_instances)
 
 
-@pytest.mark.parametrize('expected_class, build_object_type', [(XSOARBuild, 'XSOAR'), (CloudBuild, 'XSIAM')])
-def test_create_build(mocker, expected_class, build_object_type):
+@pytest.mark.parametrize('expected_class, server_type', [(XSOARBuild, 'XSOAR'), (CloudBuild, 'XSIAM')])
+def test_create_build(mocker, expected_class, server_type):
     """
     Given:
         - server_type of the server we run the build on: XSIAM or XSOAR.
@@ -96,7 +96,7 @@ def test_create_build(mocker, expected_class, build_object_type):
     Then:
         - Assert there the rigth Build object created: CloudBuild or XSOARBuild.
     """
-    build = create_build_object_with_mock(mocker, build_object_type)
+    build = create_build_object_with_mock(mocker, server_type)
     assert isinstance(build, expected_class)
 
 
@@ -263,13 +263,13 @@ def test_first_added_to_marketplace(mocker, diff, build_type, the_expected_resul
     assert the_expected_result == first_added_to_marketplace
 
 
-EXTRACT_SERVER_VERSION = [('projects/xsoar-content-build/global/images/server-image-master-345040-2023-06-04', '99.99.98'),
-                          ('projects/xsoar-content-build/global/images/server-image-ga-6-11-300044-2023-06-04', '6.11.0'),
-                          ('server-image-ga-6-11-300044-2023-06-04', '6.11.0')]
+EXTRACT_SERVER_VERSION = [('projects/xsoar-content-build/global/images/family/xsoar-master', '6.99.99'),
+                          ('projects/xsoar-content-build/global/images/family/xsoar-ga-6-11', '6.11.0'),
+                          ('family/xsoar-ga-6-11', '6.11.0')]
 
 
 @pytest.mark.parametrize('instances_ami_name, res_version', EXTRACT_SERVER_VERSION)
 def test_extract_server_numeric_version(instances_ami_name, res_version):
     from Tests.test_content import extract_server_numeric_version
-    default_version = '99.99.98'
+    default_version = "6.99.99"
     assert extract_server_numeric_version(instances_ami_name, default_version) == res_version

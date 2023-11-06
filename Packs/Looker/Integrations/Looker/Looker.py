@@ -402,7 +402,7 @@ def create_look(query_id, space_id, look_title, look_description=""):
 
 def main():
     LOG('Command being called is %s' % (demisto.command()))
-    if not(CLIENT_ID and CLIENT_SECRET):
+    if not (CLIENT_ID and CLIENT_SECRET):
         raise DemistoException('API3 Client ID and Secret must be provided.')
     try:
         handle_proxy()

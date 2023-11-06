@@ -168,7 +168,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   commands:
   - name: bmc-itsm-user-list
     description: Retrieves a list of user profiles from BMC Helix ITSM. The records are retrieved by the query argument or by the filtering arguments. When using filtering arguments, each one defines a 'LIKE' operation and an 'AND' operator is used between them. To see the entire JSON then you can use the raw_response=true at the end of the command.
@@ -503,7 +503,7 @@ script:
       description: The ticket customer info.
       type: Unknown
     - contextPath: BmcITSM.Ticket.assignee
-      description: "The ticket assignee info. "
+      description: "The ticket assignee info."
       type: Unknown
     - contextPath: BmcITSM.Ticket.Summary
       description: The ticket summary.
@@ -521,7 +521,7 @@ script:
     description: Creates a new service request ticket. A service request ticket is the request record that is generated from the service request definition to manage and track the execution. To create it, you need to provide the srd_instance_id argument, which can be retrieved by by executing the bmc-itsm-service-request-definition-list command and extracting the instanceID field. User and company arguments can be retrieved by executing the bmc-itsm-user-list and bmc-itsm-company-list. To see the entire JSON then you can use the raw_response=true at the end of the command.
     arguments:
     - name: srd_instance_id
-      description: "The instance ID of the service request ticket. It can be retrieved by executing bmc-itsm-service-request-definition-list command. "
+      description: "The instance ID of the service request ticket. It can be retrieved by executing bmc-itsm-service-request-definition-list command."
       required: true
       defaultValue: ""
       predefined:
@@ -532,7 +532,7 @@ script:
       predefined:
       - ""
     - name: last_name
-      description: "The requester last name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together. "
+      description: "The requester last name. By default it is determined by the logged in user. If provided, login_id, first_name, and last_name arguments must be provided together."
       defaultValue: ""
       predefined:
       - ""
@@ -547,7 +547,7 @@ script:
       predefined:
       - ""
     - name: status
-      description: "The service request ticket status. "
+      description: "The service request ticket status."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -606,17 +606,17 @@ script:
       predefined:
       - ""
     - name: customer_first_name
-      description: "The customer first name. By default it is determined by the logged in user. "
+      description: "The customer first name. By default it is determined by the logged in user."
       defaultValue: ""
       predefined:
       - ""
     - name: customer_last_name
-      description: "The customer last name. By default it is determined by the logged in user. "
+      description: "The customer last name. By default it is determined by the logged in user."
       defaultValue: ""
       predefined:
       - ""
     - name: status
-      description: "The service request ticket status. "
+      description: "The service request ticket status."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -651,7 +651,7 @@ script:
       - 3-Moderate/Limited
       - 4-Minor/Localized
     - name: status_reason
-      description: "The reason for updating the status. Required only if status argument is provided. "
+      description: "The reason for updating the status. Required only if status argument is provided."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -699,7 +699,7 @@ script:
       - ""
     outputs: []
   - name: bmc-itsm-incident-update
-    description: "Update incident ticket. "
+    description: "Update incident ticket."
     arguments:
     - name: ticket_request_id
       description: The ID of the incident ticket to update.
@@ -723,7 +723,7 @@ script:
       predefined:
       - ""
     - name: service_type
-      description: "The type of the incident ticket. "
+      description: "The type of the incident ticket."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -763,7 +763,7 @@ script:
       - Closed
       - Cancelled
     - name: reported_source
-      description: "The incident ticket reported source. "
+      description: "The incident ticket reported source."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -885,7 +885,7 @@ script:
       - known error
     outputs: []
   - name: bmc-itsm-incident-create
-    description: "Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service. "
+    description: "Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service."
     arguments:
     - name: first_name
       description: The customer first name the incident ticket is for.
@@ -940,7 +940,7 @@ script:
       - 3-Moderate/Limited
       - 4-Minor/Localized
     - name: status
-      description: Incident status
+      description: Incident status.
       required: true
       defaultValue: ""
       auto: PREDEFINED
@@ -1028,7 +1028,7 @@ script:
       description: The incident ticket request ID.
       type: String
     - contextPath: BmcITSM.Incident.DisplayID
-      description: "The incident ticket display ID. "
+      description: "The incident ticket display ID."
       type: String
     - contextPath: BmcITSM.Incident.CreateDate
       description: "The incident ticket create date time in UTC."
@@ -1049,7 +1049,7 @@ script:
       predefined:
       - ""
     - name: customer_first_name
-      description: "The customer first name. "
+      description: "The customer first name."
       defaultValue: ""
       predefined:
       - ""
@@ -1164,12 +1164,12 @@ script:
       description: The ID of the change request ticket to update.
       required: true
     - name: first_name
-      description: "The customer first name the change request ticket is for. "
+      description: "The customer first name the change request ticket is for."
       defaultValue: ""
       predefined:
       - ""
     - name: last_name
-      description: "The customer last name the change request ticket is for. "
+      description: "The customer last name the change request ticket is for."
       defaultValue: ""
       predefined:
       - ""
@@ -1179,7 +1179,7 @@ script:
       predefined:
       - ""
     - name: change_type
-      description: "The change request ticket type. "
+      description: "The change request ticket type."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1298,7 +1298,7 @@ script:
       predefined:
       - ""
     - name: status_reason
-      description: "The reason for updating the ticket status. Required when status is provided. "
+      description: "The reason for updating the ticket status. Required when status is provided."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1370,18 +1370,18 @@ script:
       - problem investigation
       - known error
     - name: root_request_id
-      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command. "
+      description: "The request ID of the parent ticket. Can be found in the context output of the bmc-itsm-ticket-list command."
       required: true
       defaultValue: ""
       predefined:
       - ""
     - name: root_request_name
-      description: "The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed. "
+      description: "The display name of the parent ticket in the task ticket. If not provided, the parent ticket displayID is displayed."
       defaultValue: ""
       predefined:
       - ""
     - name: root_request_mode
-      description: "The parent ticket request mode. "
+      description: "The parent ticket request mode."
       defaultValue: Real
       auto: PREDEFINED
       predefined:
@@ -1487,7 +1487,7 @@ script:
       description: The task ticket creation date time in UTC.
       type: Date
   - name: bmc-itsm-task-update
-    description: "Updates the task ticket. "
+    description: "Updates the task ticket."
     arguments:
     - name: ticket_request_id
       description: The ID of the task ticket to update.
@@ -1526,7 +1526,7 @@ script:
       - Closed
       - Bypassed
     - name: status_reason
-      description: "The reason for changing the ticket status. Required when the status is changed. "
+      description: "The reason for changing the ticket status. Required when the status is changed."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1572,7 +1572,7 @@ script:
       predefined:
       - ""
     - name: task_type
-      description: "The task ticket type. "
+      description: "The task ticket type."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1595,7 +1595,7 @@ script:
       - ""
     outputs: []
   - name: bmc-itsm-problem-investigation-create
-    description: "Creates a problem investigation ticket. "
+    description: "Creates a problem investigation ticket."
     arguments:
     - name: first_name
       description: The customer first name the ticket request is for.
@@ -1626,7 +1626,7 @@ script:
       - Closed
       - Cancelled
     - name: investigation_driver
-      description: "The problem investigation ticket driver. "
+      description: "The problem investigation ticket driver."
       required: true
       defaultValue: ""
       auto: PREDEFINED
@@ -1786,7 +1786,7 @@ script:
       - Closed
       - Cancelled
     - name: investigation_driver
-      description: "The problem investigation ticket driver. "
+      description: "The problem investigation ticket driver."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -1907,7 +1907,7 @@ script:
       - Not Applicable
     outputs: []
   - name: bmc-itsm-known-error-create
-    description: "Create known error ticket. "
+    description: "Create known error ticket."
     arguments:
     - name: status
       description: The known error ticket status.
@@ -1980,12 +1980,12 @@ script:
       predefined:
       - ""
     - name: assigned_group_pbm_mgr
-      description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure
+      description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure.
       defaultValue: ""
       predefined:
       - ""
     - name: support_company_pbm_mgr
-      description: "the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. "
+      description: "the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it."
       defaultValue: ""
       predefined:
       - ""
@@ -2045,7 +2045,7 @@ script:
       description: KnownError Create time in UTC.
       type: Date
   - name: bmc-itsm-known-error-update
-    description: "Update Known Error ticket type. "
+    description: "Update Known Error ticket type."
     arguments:
     - name: ticket_request_id
       description: The known error ticket request ID.
@@ -2094,7 +2094,7 @@ script:
       - 3-Medium
       - 4-Low
     - name: view_access
-      description: "The known error ticket internal access. "
+      description: "The known error ticket internal access."
       defaultValue: ""
       auto: PREDEFINED
       predefined:
@@ -2116,12 +2116,12 @@ script:
       predefined:
       - ""
     - name: assigned_group_pbm_mgr
-      description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure
+      description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure.
       defaultValue: ""
       predefined:
       - ""
     - name: support_company_pbm_mgr
-      description: "the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. "
+      description: "the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it."
       defaultValue: ""
       predefined:
       - ""
@@ -2151,7 +2151,7 @@ script:
       predefined:
       - ""
     - name: status_reason
-      description: "The reason for changing the status. Required when the status is provided. "
+      description: "The reason for changing the status. Required when the status is provided."
       defaultValue: ""
       auto: PREDEFINED
       predefined:

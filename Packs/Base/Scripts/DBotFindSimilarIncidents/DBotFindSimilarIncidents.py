@@ -9,9 +9,10 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import json
 import pandas as pd
 from scipy.spatial.distance import cdist
-from typing import List, Dict, Union
+from typing import Any, List, Dict, Union
 
 warnings.simplefilter("ignore")
+warnings.filterwarnings('ignore', category=UserWarning)
 
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected  " \
                          " 2) Selected field are empty for this incident  3) Fields are misspelled"
@@ -527,9 +528,12 @@ def get_incident_by_id(incident_id: str, populate_fields: List[str], from_date: 
     :param to_date: to_date
     :return: Get incident acording to incident id
     """
+    populate_fields_value = ' , '.join(populate_fields)
+    message_of_values = build_message_of_values([incident_id, populate_fields_value, from_date, to_date])
+    demisto.debug(f'Executing GetIncidentsByQuery, {message_of_values}')
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': "id:(%s)" % incident_id,
-        'populateFields': ' , '.join(populate_fields),
+        'populateFields': populate_fields_value,
         'fromDate': from_date,
         'toDate': to_date,
     })
@@ -568,9 +572,11 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: List[s
     if query_sup:
         query += " %s" % query_sup
 
+    populate_fields_value = ' , '.join(populate_fields)
+    demisto.debug(f'Executing GetIncidentsByQuery, {build_message_of_values([populate_fields_value, from_date, to_date, limit])}')
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': query,
-        'populateFields': ' , '.join(populate_fields),
+        'populateFields': populate_fields_value,
         'fromDate': from_date,
         'toDate': to_date,
         'limit': limit
@@ -676,6 +682,7 @@ def get_similar_incidents_by_indicators(args: Dict):
     :param args: argument for DBotFindSimilarIncidentsByIndicators automation
     :return:  return similars incident from the automation
     """
+    demisto.debug('Executing DBotFindSimilarIncidentsByIndicators')
     res = demisto.executeCommand('DBotFindSimilarIncidentsByIndicators', args)
     if is_error(res):
         return_error(get_error(res))
@@ -684,9 +691,10 @@ def get_similar_incidents_by_indicators(args: Dict):
 
 
 def get_data_from_indicators_automation(res, TAG_SCRIPT_INDICATORS_VALUE):
-    for entry in res:
-        if entry and entry.get('Tags') and TAG_SCRIPT_INDICATORS_VALUE in entry.get('Tags'):
-            return entry['Contents']
+    if res is not None:
+        for entry in res:
+            if entry and entry.get('Tags') and TAG_SCRIPT_INDICATORS_VALUE in entry.get('Tags'):
+                return entry['Contents']
     return None
 
 
@@ -846,7 +854,7 @@ def enriched_with_indicators_similarity(full_args_indicators_script: Dict, simil
             columns=[SIMILARITY_COLUNM_NAME_INDICATOR, 'Identical indicators', 'id'])
     keep_columns = [x for x in KEEP_COLUMNS_INDICATORS if x not in similar_incidents]
     indicators_similarity_df.index = indicators_similarity_df.id
-    similar_incidents = similar_incidents.join(indicators_similarity_df[keep_columns])
+    similar_incidents.loc[:, keep_columns] = indicators_similarity_df[keep_columns]
     values = {SIMILARITY_COLUNM_NAME_INDICATOR: 0, 'Identical indicators': ""}
     similar_incidents = similar_incidents.fillna(value=values)
     return similar_incidents
@@ -856,7 +864,7 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
                              similar_json_field: List[str], similar_categorical_field: List[str],
                              exact_match_fields: List[str]) -> pd.DataFrame:
     """
-    Prepare current incident for vizualisation
+    Prepare current incident for visualization
     :param incident_df: incident_df
     :param display_fields: display_fields
     :param similar_text_field: similar_text_field
@@ -865,9 +873,10 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
     :param exact_match_fields: exact_match_fields
     :return:
     """
-    incident_filter = incident_df[[x for x in
-                                   display_fields + similar_text_field + similar_categorical_field
-                                   + exact_match_fields if x in incident_df.columns]]
+
+    incident_filter = incident_df.copy()[[x for x in
+                                          display_fields + similar_text_field + similar_categorical_field
+                                          + exact_match_fields if x in incident_df.columns]]
     if COLUMN_TIME in incident_filter.columns.tolist():
         incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if 'id' in incident_filter.columns.tolist():
@@ -875,10 +884,24 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
     return incident_filter
 
 
+def build_message_of_values(fields: list[Any]):
+    """
+    Prepare a message to be used in logs
+    :param fields: List of fields
+    :return: A text message snippet
+    """
+    return "; ".join([f'{current_field}' for current_field in fields])
+
+
 def main():
     similar_text_field, similar_json_field, similar_categorical_field, exact_match_fields, display_fields, from_date, \
         to_date, show_distance, confidence, max_incidents, query, aggregate, limit, show_actual_incident, \
         incident_id, include_indicators_similarity = get_args()
+    fields_values = build_message_of_values([similar_text_field, similar_json_field, similar_categorical_field,
+                                             exact_match_fields, display_fields, from_date, to_date, confidence,
+                                             max_incidents, aggregate, limit, incident_id,
+                                             ])
+    demisto.debug(f"Starting,\n{fields_values=}")
 
     global_msg = ""
 
@@ -891,6 +914,8 @@ def main():
         return_outputs_error(error_msg="%s \n" % MESSAGE_NO_CURRENT_INCIDENT % incident_id)
         return None, global_msg
 
+    demisto.debug(f'{exact_match_fields=}, {populate_high_level_fields=}')
+
     # load the related incidents
     populate_fields.remove('id')
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(exact_match_fields, populate_high_level_fields,
@@ -898,7 +923,10 @@ def main():
                                                                        from_date, to_date, query, limit)
     global_msg += "%s \n" % msg
 
-    if not incidents:
+    if incidents:
+        demisto.debug(f'Found {len(incidents)} incidents for {incident_id=}')
+    else:
+        demisto.debug(f'No incidents found for {incident_id=}')
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return None, global_msg

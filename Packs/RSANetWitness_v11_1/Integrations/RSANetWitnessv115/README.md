@@ -77,6 +77,33 @@ Commands affected by this limitation are:
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+### Configure incident mirroring
+ 
+You can enable incident mirroring between Cortex XSOAR incidents and RSA NetWitness incidents (available from Cortex XSOAR version 6.0.0).
+
+To setup the mirroring follow these instructions:
+
+1. Navigate to **Settings** > **Integrations** > **Instances**.
+2. Search for **RSANetWitness v11.5** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. Under **Incident type**, select NetWitness Incident.
+5. Under **Mapper (incoming)**, select RSA NetWitness v11.5 - incoming mapper.
+6. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Any changes in RSA NetWitness incidents will be reflected in Cortex XSOAR incidents.
+    - Outgoing - Any changes in XSOAR incidents will be reflected in RSA Netwitness incidents (`status`).
+    - Incoming And Outgoing - Changes in Cortex XSOAR incidents and RSA NetWitness incidents will be reflected in both directions.
+    - None - Turns off incident mirroring.
+7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in RSA NetWitness.
+
+Newly fetched incidents will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
+
+**Important Notes**
+
+- When *mirroring in* incidents from RSA NetWitness to Cortex XSOAR, if the *Close Mirrored XSOAR Incident* integration parameter is enabled, the `status` field in RSA NetWitness determines whether the incident was closed.
+- Journal entries, tasks, and assignees are currently not mirrored.
+- Because of the implementation of the RSA API (you can get 1 incident by ID or every incident using a time interval), incidents are mirrored for a maximum of 24 days within a limit of 1500 incidents.
+
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

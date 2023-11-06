@@ -88,6 +88,8 @@ NAME_AND_GROUP_REGEX = re.compile(r'^[\w-]+$')
 ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
+DEFAULT_EVENTS_COLUMNS = """QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime"""  # noqa: E501
+
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
     'credibility': 'Credibility',
@@ -348,6 +350,8 @@ class QueryStatus(str, Enum):
     SUCCESS = 'success'
     PARTIAL = 'partial'
 
+
+FIELDS_MIRRORING = 'id,start_time,event_count,last_persisted_time,close_time'
 
 ''' CLIENT CLASS '''
 
@@ -1728,7 +1732,7 @@ def test_module_command(client: Client, params: dict) -> str:
                 offenses_per_fetch=1,
                 user_query=params.get('query', ''),
                 fetch_mode=params.get('fetch_mode', ''),
-                events_columns=params.get('events_columns', ''),
+                events_columns=params.get('events_columns') or DEFAULT_EVENTS_COLUMNS,
                 events_limit=0,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
@@ -2187,7 +2191,7 @@ def long_running_execution_command(client: Client, params: dict):
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
     offenses_per_fetch = int(params.get('offenses_per_fetch'))  # type: ignore
     user_query = params.get('query', '')
-    events_columns = params.get('events_columns', '')
+    events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     incident_type = params.get('incident_type')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
@@ -2675,7 +2679,7 @@ def qradar_search_create_command(client: Client, params: dict, args: dict) -> Co
         CommandResults.
     """
     offense_id = args.get('offense_id', '')
-    events_columns = args.get('events_columns', params.get('events_columns'))
+    events_columns = args.get('events_columns', params.get('events_columns')) or DEFAULT_EVENTS_COLUMNS
     events_limit = args.get('events_limit', params.get('events_limit'))
     fetch_mode = args.get('fetch_mode', params.get('fetch_mode'))
     start_time = args.get('start_time')
@@ -3480,7 +3484,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
     mirror_options = params.get('mirror_options')
     context_data, context_version = get_integration_context_with_version()
-    events_columns = params.get('events_columns', '')
+    events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     fetch_mode = params.get('fetch_mode', '')
     print_context_data_stats(context_data, f"Starting Get Remote Data For "
@@ -3570,7 +3574,7 @@ def add_modified_remote_offenses(client: Client,
                                  version: str,
                                  mirror_options: str,
                                  new_modified_records_ids: set[str],
-                                 current_last_update: str,
+                                 current_last_update: int,
                                  events_columns: str,
                                  events_limit: int,
                                  fetch_mode: str
@@ -3702,17 +3706,29 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     if not last_update_time:
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
-    filter_ = f'id <= {highest_fetched_id} AND ((status!=closed AND last_persisted_time > {last_update}) OR (status=closed AND close_time > {last_update}))'  # noqa: E501
-    print_debug_msg(f'Filter to get modified offenses is: {filter_}')
+    assert isinstance(last_update, int)
+    filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update}'
+    filter_closed = f'id <= {highest_fetched_id} AND status=closed AND close_time > {last_update}'
+    print_debug_msg(f'Filter to get modified offenses is: {filter_modified}')
+    print_debug_msg(f'Filter to get closed offenses is: {filter_closed}')
     # if this call fails, raise an error and stop command execution
-    offenses = client.offenses_list(range_=range_,
-                                    filter_=filter_,
-                                    sort='+last_persisted_time',
-                                    fields='id,start_time,event_count,last_persisted_time')
-    new_modified_records_ids = {str(offense.get('id')) for offense in offenses if 'id' in offense}
-    current_last_update = last_update if not offenses else int(offenses[-1].get('last_persisted_time'))
+    offenses_modified = client.offenses_list(range_=range_,
+                                             filter_=filter_modified,
+                                             sort='+last_persisted_time',
+                                             fields=FIELDS_MIRRORING)
+    offenses_closed = client.offenses_list(range_=range_,
+                                           filter_=filter_closed,
+                                           sort='+close_time',
+                                           fields=FIELDS_MIRRORING)
+    last_update_modified, last_update_closed = last_update, last_update
+    if offenses_modified:
+        last_update_modified = int(offenses_modified[-1].get('last_persisted_time'))
+    if offenses_closed:
+        last_update_closed = int(offenses_closed[-1].get('close_time'))
+    new_modified_records_ids = {str(offense.get('id')) for offense in offenses_modified + offenses_closed if 'id' in offense}
+    current_last_update = max(last_update_modified, last_update_closed)
     print_debug_msg(f'Last update: {last_update}, current last update: {current_last_update}')
-    events_columns = params.get('events_columns', '')
+    events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
 
     new_modified_records_ids = add_modified_remote_offenses(client=client, context_data=ctx, version=ctx_version,

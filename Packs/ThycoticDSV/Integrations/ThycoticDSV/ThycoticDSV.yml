@@ -23,7 +23,7 @@ configuration:
 - display: Client Secret
   name: client_secret
   required: true
-  type: 0
+  type: 4
 description: Deprecated. Use DelineaDSV instead.
 display: ThycoticDSV (Deprecated)
 name: ThycoticDSV

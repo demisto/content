@@ -3,14 +3,16 @@ import logging
 import os
 import sys
 from argparse import Namespace, ArgumentParser
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
+from collections.abc import Callable
 
 import humanize
 import urllib3
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from paramiko import SSHClient, SSHException
 from scp import SCPClient, SCPException
+from tqdm import tqdm
 
 from Tests.scripts.utils.log_util import install_logging
 
@@ -19,13 +21,15 @@ urllib3.disable_warnings()  # Disable insecure warnings
 DEFAULT_TTL = "300"
 SERVER_LOG_DIRECTORY = "/var/log/demisto"
 SERVER_LOG_FILE_PATH = f"{SERVER_LOG_DIRECTORY}/server.log"
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
 
 
 def options_handler() -> Namespace:
     parser = ArgumentParser(description='Utility for destroying integration test instances')
     parser.add_argument('--artifacts-dir', help='Path to the artifacts directory', required=True)
     parser.add_argument('--instance-role', help='The instance role', required=True)
-    parser.add_argument('--env-file', help='The env_results.json file')
+    parser.add_argument('--env-file', help='The env_results.json file', default=ENV_RESULTS_PATH, required=False)
     return parser.parse_args()
 
 
@@ -67,17 +71,33 @@ def shutdown(ssh: SSHClient, server_ip: str, ttl: int | None = None) -> bool:
     return False
 
 
-def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, role: str) -> bool:
+def tqdm_progress4_update(tqdm_progress: tqdm) -> Callable[[bytes, int, int, tuple[str, int]], None]:
+    # This is a hack to make the variable mutable inside the closure.
+    last_bytes = [0]
+    last_time = [datetime.utcnow()]
 
-    def progress(filename: bytes, size: int, sent: int, peer_name: tuple[str, int]):
-        logging.info(f"Downloading from {peer_name[0]}:{peer_name[1]} {filename!r} "
-                     f"progress: {float(sent) / float(size) * 100:.2f}% "
-                     f"({humanize.naturalsize(sent, binary=True, gnu=True)}/{humanize.naturalsize(size, binary=True, gnu=True)})")
+    def update_to(filename: bytes, size: int, sent: int, peer_name: tuple[str, int]):
+        tqdm_progress.total = size
+        tqdm_progress.desc = f"Downloading {filename!r} ..."
+        tqdm_progress.update(sent - last_bytes[0])
+        last_bytes[0] = sent
+        if datetime.utcnow() - last_time[0] > timedelta(seconds=1) or sent == size:
+            last_time[0] = datetime.utcnow()
+            logging.info(f"Downloading from {peer_name[0]}:{peer_name[1]} {filename!r} "
+                         f"progress: {float(sent) / float(size) * 100:.2f}% "
+                         f"({humanize.naturalsize(sent, binary=True, gnu=True)}/"
+                         f"{humanize.naturalsize(size, binary=True, gnu=True)})")
 
+    return update_to
+
+
+def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, readable_role: str, role: str) -> bool:
     try:
-        download_path = (Path(artifacts_dir) / f"server_{role}_{server_ip}.log").as_posix()
+        download_path = (Path(artifacts_dir) / f"instance_{readable_role}" / f"server_{role}_{server_ip}.log").as_posix()
         logging.info(f'Downloading server logs from server {server_ip} from:{SERVER_LOG_FILE_PATH} to {download_path}')
-        with SCPClient(ssh.get_transport(), progress4=progress) as scp:
+        with (tqdm(unit='B', unit_scale=True, unit_divisor=1024, desc='Downloading server logs', mininterval=1.0, leave=True,
+                   colour='green') as tqdm_progress,
+              SCPClient(ssh.get_transport(), progress4=tqdm_progress4_update(tqdm_progress)) as scp):
             scp.get(SERVER_LOG_FILE_PATH, download_path)
         return True
     except SCPException:
@@ -85,15 +105,14 @@ def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, role: str)
     return False
 
 
-def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip: str, tests_path: Path,
-                   time_to_live: int) -> bool:
+def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip: str, time_to_live: int) -> bool:
     success = True
     with SSHClient() as ssh:
         try:
             ssh.load_system_host_keys()
             ssh.connect(server_ip, username=SSH_USER)
             success &= chmod_logs(ssh, server_ip)
-            success &= download_logs(ssh, server_ip, artifacts_dir, role)
+            success &= download_logs(ssh, server_ip, artifacts_dir, readable_role, role)
 
             if (Path(artifacts_dir) / f'is_build_passed_{role}.txt').exists() and \
                     (Path(artifacts_dir) / f'is_post_update_passed_{role}.txt').exists():
@@ -115,10 +134,9 @@ def main():
     install_logging('Destroy_instances.log')
     options = options_handler()
     time_to_live = int(os.getenv('TIME_TO_LIVE') or DEFAULT_TTL)
-    tests_path = Path('./Tests')
     start_time = datetime.utcnow()
     logging.info(f"Starting destroy instances - environment from {options.env_file}, TTL: {time_to_live} minutes, "
-                 f"Tests Path: {tests_path.absolute()}")
+                 f"Artifacts dir: {options.artifacts_dir}")
 
     with open(options.env_file) as json_file:
         env_results = json.load(json_file)
@@ -132,7 +150,7 @@ def main():
         server_ip = env["InstanceDNS"]
         logging.info(f'{i}/{len(servers_list)} {server_ip} - Downloading server log from {readable_role}, and destroying it')
 
-        success &= destroy_server(options.artifacts_dir, readable_role, role, server_ip, tests_path, time_to_live)
+        success &= destroy_server(options.artifacts_dir, readable_role, role, server_ip, time_to_live)
 
     duration = humanize.naturaldelta(datetime.utcnow() - start_time, minimum_unit="milliseconds")
     logging.info(f"Finished destroying instances - success:{success} took:{duration}")

@@ -1,5 +1,11 @@
+import json
+import tempfile
+from pathlib import Path
+
 import demisto_client
 import pytest
+
+from Tests.Marketplace.common import generic_request_with_retries
 import Tests.Marketplace.search_and_uninstall_pack as script
 from demisto_client.demisto_api.rest import ApiException
 from urllib3.exceptions import HTTPError
@@ -34,7 +40,7 @@ MOCK_PACKS_INSTALLATED_RESULT = """[
 MOCK_PACKS_ID_TO_UNINSTALL = ['HelloWorld', 'TestPack', 'Base']
 
 
-def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None):
+def mocked_generic_request_func(self, path: str, method, body=None, response_type=None, accept=None, _request_timeout=None):
     if path == '/contentpacks/marketplace/Base':
         return MOCK_BASE_SEARCH_RESULTS, 200, None
     elif path == '/contentpacks/metadata/installed':
@@ -153,16 +159,60 @@ def test_generic_retries_request(mocker, path, ret_value, num_of_retries):
         return True, 'success'
 
     success_handler_method = success_handler if ret_value else None
-    res, _ = script.generic_request_with_retries(client,
-                                                 retries_message='test',
-                                                 exception_message='test',
-                                                 prior_message='test',
-                                                 path=path,
-                                                 method='GET',
-                                                 request_timeout=0,
-                                                 sleep_interval=0,
-                                                 attempts_count=3,
-                                                 success_handler=success_handler_method)
+    res, _ = generic_request_with_retries(client,
+                                          retries_message='test',
+                                          exception_message='test',
+                                          prior_message='test',
+                                          path=path,
+                                          method='GET',
+                                          request_timeout=0,
+                                          sleep_interval=0,
+                                          attempts_count=3,
+                                          success_handler=success_handler_method)
 
     assert res == ret_value
     assert request_method.call_count == num_of_retries
+
+
+@pytest.mark.parametrize('status_code, expected_res', [
+    (200, True),
+    (599, True),
+    (400, False),
+])
+def test_handle_delete_datasets_by_testdata(requests_mock, status_code, expected_res):
+    """
+    Given
+        - Modeling rules with test data.
+    When
+        - Cleaning XSIAM machine
+    Then
+        - Verify the dataset deletion was results as expected.
+    """
+    test_data = {"data": [
+        {
+            "test_data_event_id": "some_uuid",
+            "vendor": "vendor",
+            "product": "product",
+            "dataset": "product_vendor_raw",
+            "event_data": {
+                "test": "test"
+            },
+            "expected_values": {
+                "test": "test"
+            }
+        }]
+    }
+    with tempfile.TemporaryDirectory() as temp_dir:
+        test_data_file = Path("Packs/MyPack/ModelingRules/MR/MR_testdata.json")
+        test_data_file.parent.mkdir(parents=True, exist_ok=True)
+        test_data_file.write_text(json.dumps(test_data))
+
+        with open(f'{temp_dir}/modeling_rules_to_test.txt', 'w') as mr_to_test:
+            mr_to_test.write("MyPack/ModelingRules/MR")
+
+        dataset_names = script.get_datasets_to_delete(modeling_rules_file=f'{temp_dir}/modeling_rules_to_test.txt')
+        requests_mock.post(f'{BASE_URL}/public_api/v1/xql/delete_dataset', status_code=status_code)
+        res = script.delete_datasets_by_testdata(base_url=BASE_URL, api_key=API_KEY, auth_id="1",
+                                                 dataset_names=dataset_names)
+        test_data_file.unlink()
+    assert res == expected_res

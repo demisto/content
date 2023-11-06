@@ -32,22 +32,6 @@
       "type": "string",
       "is_array": false
     },
-    "ThreatName": {
-      "type": "string",
-      "is_array": false
-    },
-    "NodeName": {
-      "type": "string",
-      "is_array": false
-    },
-    "ServerID": {
-      "type": "string",
-      "is_array": false
-    },
-    "AnalyzerVersion": {
-      "type": "string",
-      "is_array": false
-    },
     "AnalyzerName": {
       "type": "string",
       "is_array": false

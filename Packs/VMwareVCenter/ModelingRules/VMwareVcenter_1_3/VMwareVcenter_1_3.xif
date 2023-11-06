@@ -17,8 +17,8 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity),
     datastore = arrayindex(regextract(event_payload, "datastore=(\S+)"), 0),
-    duration_ms = to_number(coalesce(arrayindex(regextract(event_payload, "took\s+(\S+)\s+millis"), 0),
-                   arrayindex(regextract(event_payload, "Time taken:\s+(\S+)\s+ms"), 0))),
+    duration_ms = to_integer(coalesce(arrayindex(regextract(event_payload, "took\s+(\d+)\s+millis"), 0),
+                   arrayindex(regextract(event_payload, "Time\s+taken:\s+(\d+)\s+ms"), 0))),
     url = arrayindex(regextract(event_payload, "(https:\S+)"), 0)
 | alter 
     port = to_integer(arrayindex(regextract(url, ":(\d+)"), 0))
@@ -54,7 +54,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     operation_id = arrayindex(regextract(syslog_msg, "opId=([^\]]+)"), 0),
     operation = arrayindex(regextract(syslog_msg, "Operation (\S+) took"), 0), 
     event_payload = arrayindex(regextract(syslog_msg, "opId=\S*\]\s+(.+)"), 0), 
-    duration_ms = to_number(arrayindex(regextract(syslog_msg, "took\s+(\S+)\s+ms"), 0)) 
+    duration_ms = to_integer(arrayindex(regextract(syslog_msg, "took\s+(\d+)\s+ms"), 0)) 
 | alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field 
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 | alter
@@ -211,7 +211,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     uri = arrayindex(regextract(tomcat_access_log_fields, "\"\w+\s+(\S+)"), 0),
     http_response_code = arrayindex(regextract(tomcat_access_log_fields, "\"\s+(\d+)"), 0),
     bytes_sent = to_number(arrayindex(regextract(tomcat_access_log_fields, "\d+\s+(\d+)"), 0)),
-    process_time_ms = to_number(arrayindex(regextract(tomcat_access_log_fields, "time (\d+) msec"), 0)),
+    process_time_ms = to_integer(arrayindex(regextract(_raw_log, "time\s+(\d+)\s+msec"), 0)),
     user_agent = arrayindex(regextract(tomcat_access_log_fields, "\]\s+\"([^\"]+)"), 0),
     // extract the severity from the syslog header priority field   
     severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
@@ -322,7 +322,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
 | alter 
     user = coalesce(arrayindex(regextract(event_payload, "User (\S+)"), 0), arrayindex(regextract(event_payload, "\[value=([^,]+)"), 0)),
     group = regextract(event_payload, "group (\S+)"),
-    ms = to_number(coalesce( arrayindex(regextract(event_payload, "ms=(\S+)"), 0), arrayindex(regextract(event_payload, "(\S+)\s+ms"), 0))),
+    ms = to_integer(coalesce( arrayindex(regextract(event_payload, "(?:ms|Ms|MS)(?:\W+|\s+)(\d+)"), 0), arrayindex(regextract(event_payload, "(\d+)\s+ms"), 0))),
     // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 | alter
@@ -474,7 +474,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
                           arrayindex(regextract(event_payload, "session\s+(\d+)"), 0),
                           arrayindex(regextract(event_payload, "session\s+id:\s*(\d+)"), 0),
                           arrayindex(regextract(event_payload, "sessionId\s*(\d+)"), 0)),
-    ms = to_number(arrayindex(regextract(event_payload, "(\S+)\s+ms"), 0)),
+    ms = to_integer(arrayindex(regextract(event_payload, "(\d+)\s+ms"), 0)),
     application_component = coalesce(arrayindex(regextract(event_payload, "\S+\s+\S+\s+\S+\s+(\w+\.\w+\S+)"), 0),
                                      arrayindex(regextract(event_payload, "(\w+\.\w+\S+)"), 0))
 | alter
@@ -604,7 +604,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     uri = arrayindex(http_request_line, 2),
     bytes = to_number(arrayindex(regextract(event_payload, "(\d+)\s+bytes"), 0)),
     http_response_code = arrayindex(regextract(event_payload, "Response\]\s+(\d+)"), 0),
-    process_duration_ms = to_number(arrayindex(regextract(event_payload, "(\d+)ms"), 0))
+    process_duration_ms = to_integer(arrayindex(regextract(event_payload, "(\d+)ms"), 0))
 | alter
     xdm.alert.severity = severity,
     xdm.event.type = event_type,
@@ -827,7 +827,7 @@ alter event_type = arrayindex(regextract(_raw_log, "^\<\d{1,3}\>\d+\s+\S+\s+\S+\
     app_component = arrayindex(regextract(syslog_msg, "\w+\s+(\S+)\s+opId="), 0),
     operation_id = arrayindex(regextract(syslog_msg, "opId=([^\]]+)"), 0),
     operation = arrayindex(regextract(syslog_msg, "Operation (\S+) took"), 0), 
-    ms = to_number(arrayindex(regextract(syslog_msg, "took\s+(\S+)\s+ms"), 0)) 
+    ms = to_integer(arrayindex(regextract(syslog_msg, "took\s+(\d+)\s+ms"), 0)) 
 | alter // map the msg severity to RFC 5424 standard values, if the log does not include an explicit severity, extract it from the syslog header priority field   
     severity = if(msg_severity = null, to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))), msg_severity ~= "DEBUG|VERBOSE", "7", msg_severity ~= "INFO", "6", msg_severity ~= "NOTICE", "5", msg_severity ~= "WARN", "4", msg_severity ~= "ERROR", "3", msg_severity ~= "CRITICAL", "2", msg_severity ~= "ALERT", "1", msg_severity ~= "EMERGENCY", "0", msg_severity)
 | alter 

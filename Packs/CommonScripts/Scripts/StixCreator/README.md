@@ -1,6 +1,7 @@
-Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.0 format.
+Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.1 format.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Gets a list of indicators from the indicators argument, and generates a JSON fil
 
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Gets a list of indicators from the indicators argument, and generates a JSON fil
 | doubleBackslash | Adds a second backslash to all existing backslashes in the value field.                                                                                                                                                                                                                                                                                            |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

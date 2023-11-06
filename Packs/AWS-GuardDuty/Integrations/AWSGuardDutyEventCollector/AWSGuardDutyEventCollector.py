@@ -2,15 +2,16 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
 
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 from datetime import datetime, date
 
-import urllib3.util
-import boto3
 import json
 
-# Disable insecure warnings
-urllib3.disable_warnings()
+# The following import are used only for type hints and autocomplete.
+# It is not used at runtime, and not exist in the docker image.
+if TYPE_CHECKING:
+    from mypy_boto3_guardduty import GuardDutyClient
+
 
 CLIENT_SERVICE = 'guardduty'
 MAX_IDS_PER_REQ = 50
@@ -27,6 +28,7 @@ VENDOR = 'aws'
 
 class DatetimeEncoder(json.JSONEncoder):
     """Json encoder class for encoding datetime objects. Use with json.dumps method."""
+
     def default(self, obj):
         if isinstance(obj, datetime) or isinstance(obj, date):
             return obj.strftime('%Y-%m-%dT%H:%M:%S.%f')
@@ -51,7 +53,7 @@ def convert_events_with_datetime_to_str(events: list) -> list:
     return output_events
 
 
-def get_events(aws_client: boto3.client, collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
+def get_events(aws_client: "GuardDutyClient", collect_from: dict, collect_from_default: Optional[datetime], last_ids: dict,
                severity: str, limit: int = MAX_RESULTS, detectors_num: int = MAX_RESULTS,
                max_ids_per_req: int = MAX_IDS_PER_REQ) -> Tuple[list, dict, dict]:
     """Get events from AWSGuardDuty.
@@ -90,7 +92,7 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
 
         response = aws_client.list_detectors(**list_detectors_args)
         detector_ids += response.get('DetectorIds', [])
-        next_token = response.get('NextToken')
+        next_token = response.get('NextToken', '')
 
     demisto.debug(f"AWSGuardDutyEventCollector - Found detector ids: {detector_ids}")
 
@@ -123,7 +125,7 @@ def get_events(aws_client: boto3.client, collect_from: dict, collect_from_defaul
                 list_finding_args.update({'NextToken': next_token})
             list_findings = aws_client.list_findings(**list_finding_args)
             finding_ids += list_findings.get('FindingIds', [])
-            next_token = list_findings.get('NextToken')
+            next_token = list_findings.get('NextToken', '')
 
             # Handle duplicates and findings updated at the same time.
             if last_ids.get(detector_id) and last_ids.get(detector_id) in finding_ids:
@@ -188,7 +190,7 @@ def main():  # pragma: no cover
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
                                timeout, retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url)
 
-        client = aws_client.aws_session(service=CLIENT_SERVICE, region=aws_default_region)
+        client: "GuardDutyClient" = aws_client.aws_session(service=CLIENT_SERVICE, region=aws_default_region)
 
         command = demisto.command()
         if command == 'test-module':

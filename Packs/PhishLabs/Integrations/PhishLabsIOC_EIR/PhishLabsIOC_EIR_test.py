@@ -345,3 +345,30 @@ class TestHelperFunctions:
         client = Client(base_url='http://test.com')
         result = raw_response_to_context(client=client, incidents=RAW_RESPONSE_TO_CONTEXT[0])
         assert result == RAW_RESPONSE_TO_CONTEXT[1]
+
+
+def test_fetch__last_run_not_none(mocker):
+    """Tests the fetch-incidents command function.
+
+    Give: last run to request from
+    When: running fetch command and no incidents returned
+    Then: assert new last run is not None
+    """
+    from PhishLabsIOC_EIR import Client, fetch_incidents_command
+
+    client = Client(
+        base_url="https://test.com/api/v1",
+        verify=False,
+        reliability='A'
+    )
+
+    mocker.patch.object(Client, 'get_incidents', return_value={'metadata': {'count': 0}, 'incidents': []})
+
+    incident_report, last_run = fetch_incidents_command(
+        client=client,
+        last_run='2023-09-20T03:44:55Z',
+        fetch_time='3 days',
+        limit='2'
+    )
+
+    assert last_run == {'lastRun': '2023-09-20T03:44:55Z'}

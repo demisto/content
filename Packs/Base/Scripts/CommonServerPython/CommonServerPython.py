@@ -600,7 +600,7 @@ class FeedIndicatorType(object):
         :return:: Indicator type .
         :rtype: ``str``
         """
-        if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
+        if indicator_type.startswith(STIX_PREFIX):
             return indicator_type[len(STIX_PREFIX):]
         return indicator_type
 
@@ -2875,10 +2875,7 @@ class Common(object):
 
         @staticmethod
         def get_context_path():
-            if is_demisto_version_ge('5.5.0'):
-                return Common.DBotScore.CONTEXT_PATH
-            else:
-                return Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
+            return Common.DBotScore.CONTEXT_PATH
 
         def to_context(self):
             dbot_context = {
@@ -6140,16 +6137,15 @@ class ScheduledCommand:
 
     @staticmethod
     def raise_error_if_not_supported():
-        if not is_demisto_version_ge('6.2.0'):
-            raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
+        return True
 
     @staticmethod
     def supports_polling():
         """
-        Check if the integration supports polling.
+        Check if the integration supports polling (if server version is greater than 6.2.0).
         Returns: Boolean
         """
-        return True if is_demisto_version_ge('6.2.0') else False
+        return True
 
     def to_results(self):
         """
@@ -6886,7 +6882,7 @@ class CommandResults:
             human_readable = self.readable_output
         else:
             human_readable = None  # type: ignore[assignment]
-        raw_response = None  # type: ignore[assignment]
+        raw_response = self.raw_response  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
         mark_as_note = False  # type: bool
@@ -6904,9 +6900,6 @@ class CommandResults:
 
                     outputs[key].append(value)
 
-        if self.raw_response:
-            raw_response = self.raw_response
-
         if self.tags:
             tags = self.tags  # type: ignore[assignment]
 
@@ -6922,7 +6915,10 @@ class CommandResults:
         if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
-                human_readable = tableToMarkdown('Results', self.outputs)
+                if isinstance(self.outputs, dict) or isinstance(self.outputs, list):
+                    human_readable = tableToMarkdown('Results', self.outputs)
+                else:
+                    human_readable = self.outputs   # type: ignore[assignment]
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
@@ -8697,7 +8693,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, params_parser=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -8790,6 +8786,11 @@ if 'requests' in sys.modules:
             :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
                 can vary)
 
+            :type params_parser: ``callable``
+            :param params_parser: How to quote the params. By default, spaces are replaced with `+` and `/` to `%2F`.
+            see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
+            Note! supported only in python3.
+
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
@@ -8802,6 +8803,8 @@ if 'requests' in sys.modules:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 if not timeout:
                     timeout = self.timeout
+                if IS_PY3 and params_parser:  # The `quote_via` parameter is supported only in python3.
+                    params = urllib.parse.urlencode(params, quote_via=params_parser)
 
                 # Execute
                 res = self._session.request(
@@ -9639,9 +9642,9 @@ class IndicatorsSearcher:
                  sort=None,
                  ):
         # searchAfter is available in searchIndicators from version 6.1.0
-        self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        self._can_use_search_after = True
         # populateFields merged in https://github.com/demisto/server/pull/18398
-        self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
+        self._can_use_filter_fields = True
         self._search_after_param = None
         self._page = page
         self._filter_fields = filter_fields
@@ -9709,8 +9712,7 @@ class IndicatorsSearcher:
         else:
             if self.total is None:
                 return False
-            no_more_indicators = (self.total and self._search_after_param is None) if self._can_use_search_after \
-                else self.total <= self.page * self._size
+            no_more_indicators = self.total and self._search_after_param is None
             if no_more_indicators:
                 demisto.debug("IndicatorsSearcher can not fetch anymore indicators")
             return no_more_indicators
@@ -9744,10 +9746,8 @@ class IndicatorsSearcher:
             query=query,
             size=size,
             value=value,
-            searchAfter=self._search_after_param if self._can_use_search_after else None,
-            populateFields=self._filter_fields if self._can_use_filter_fields else None,
-            # use paging as fallback when cannot use search_after
-            page=self.page if not self._can_use_search_after else None,
+            searchAfter=self._search_after_param,
+            populateFields=self._filter_fields,
         )
         demisto.debug('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
         if is_demisto_version_ge('6.6.0'):
@@ -9775,8 +9775,6 @@ class AutoFocusKeyRetriever:
     def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
-            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
-                raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
             try:
                 api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
             except ValueError as err:
@@ -9786,37 +9784,29 @@ class AutoFocusKeyRetriever:
 
 def get_feed_last_run():
     """
-    This function gets the feed's last run: from XSOAR version 6.2.0: using `demisto.getLastRun()`.
-    Before XSOAR version 6.2.0: using `demisto.getIntegrationContext()`.
+    This function gets the feed's last run: using `demisto.getLastRun()`.
     :rtype: ``dict``
     :return: All indicators from the feed's last run
     """
-    if is_demisto_version_ge('6.2.0'):
-        feed_last_run = demisto.getLastRun() or {}
-        if not feed_last_run:
-            integration_ctx = demisto.getIntegrationContext()
-            if integration_ctx:
-                feed_last_run = integration_ctx
-                demisto.setLastRun(feed_last_run)
-                demisto.setIntegrationContext({})
-    else:
-        feed_last_run = demisto.getIntegrationContext() or {}
+    feed_last_run = demisto.getLastRun() or {}
+    if not feed_last_run:
+        integration_ctx = demisto.getIntegrationContext()
+        if integration_ctx:
+            feed_last_run = integration_ctx
+            demisto.setLastRun(feed_last_run)
+            demisto.setIntegrationContext({})
     return feed_last_run
 
 
 def set_feed_last_run(last_run_indicators):
     """
-    This function sets the feed's last run: from XSOAR version 6.2.0: using `demisto.setLastRun()`.
-    Before XSOAR version 6.2.0: using `demisto.setIntegrationContext()`.
+    This function sets the feed's last run: using `demisto.setLastRun()`.
     :type last_run_indicators: ``dict``
     :param last_run_indicators: Indicators to save in "lastRun" object.
     :rtype: ``None``
     :return: None
     """
-    if is_demisto_version_ge('6.2.0'):
-        demisto.setLastRun(last_run_indicators)
-    else:
-        demisto.setIntegrationContext(last_run_indicators)
+    demisto.setLastRun(last_run_indicators)
 
 
 def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
@@ -10614,6 +10604,26 @@ def get_current_time(time_zone=0):
         demisto.debug('pytz is missing, will not return timeaware object.')
         return now
 
+def calculate_new_offset(old_offset, num_incidents, total_incidents):
+    """ This calculates the new offset based on the response
+    
+    :type old_offset: ``int``
+    :param old_offset: The offset from the previous run
+
+    :type num_incidents: ``int``
+    :param num_incidents: The number of incidents returned by the API.
+    
+    :type total_incidents: ``int``
+    :param total_incidents: The total number of incidents returned by the API.
+    
+    :return: The new offset for the next run.
+    :rtype: ``int``
+    """
+    if not num_incidents:
+        return 0
+    if total_incidents and num_incidents + old_offset >= total_incidents:
+        return 0
+    return old_offset + num_incidents
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
@@ -10753,7 +10763,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
 
 
 def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
-                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
     """
     Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
     with the new time and limit.
@@ -10784,18 +10794,26 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
+    
+    :type new_offset: ``int | None``
+    :param new_offset: The new offset to set in the last run
 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
     demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
-                  "look_back is {}, fetch_limit is {}".format(len(incidents), look_back, fetch_limit))
+                  "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit, new_offset))
     remove_incident_ids = True
     new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
-    if len(incidents) == 0:
+    if new_offset:
+        # if we need to update the offset, we need to keep the old time and just update the offset
+        new_last_run = {
+            'time': last_run.get("time"),
+        } 
+    elif len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
-            'limit': fetch_limit
+            'limit': fetch_limit,
         }
     else:        
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
@@ -10807,8 +10825,10 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
         if latest_incident_fetched_time == start_fetch_time:
             # we are still on the same time, no need to remove old incident ids
             remove_incident_ids = False
-            
-
+    
+    if new_offset is not None:
+        new_last_run['offset'] = new_offset
+        new_last_run['limit'] = fetch_limit
     demisto.debug("lb: The new_last_run is: {}, the remove_incident_ids is: {}".format(new_last_run,
                                                                                        remove_incident_ids))
 
@@ -10816,7 +10836,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False, new_offset=None):
     """
     Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
 
@@ -10849,6 +10869,10 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
 
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
+    
+    :type new_offset: ``int | None``
+    :param new_offset: The new offset to set in the last run
+
 
     :return: The updated LastRun object
     :rtype: ``Dict``
@@ -10865,6 +10889,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
                                                                            created_time_field,
                                                                            date_format,
                                                                            increase_last_run_time,
+                                                                           new_offset
                                                                            )
 
     found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)

@@ -46,7 +46,7 @@ SEARCH_SAPM_ACCOUNTS_RESPONSE = {
             "secretNotes": None,
             "secretType": "DYNAMIC",
             "username": "account7"
-        }]
+    }]
 }
 
 EMPTY_SEARCH_SAPM_ACCOUNTS_RESPONSE = {

@@ -102,6 +102,7 @@ class netconn_complete(ProcessEventDetail):
     For netconn_complete, the v2 API and newer return an array of JSON objects instead of piped-versioned fields.
     https://developer.carbonblack.com/reference/enterprise-response/5.1/rest-api/#netconn_complete
     """
+
     def __init__(self, fields):
         self.fields = fields
 

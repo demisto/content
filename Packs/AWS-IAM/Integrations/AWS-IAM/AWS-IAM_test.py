@@ -78,6 +78,9 @@ class Boto3Client:
     def get_user(self):
         pass
 
+    def list_attached_role_policies(self):
+        pass
+
     @property
     def exceptions(self):
         raise NoSuchEntityException
@@ -468,3 +471,48 @@ def test_get_user_not_found_user_exception(mocker):
     contents = demisto.results.call_args[0][0]
 
     assert 'User userName was not found.' in contents.get('HumanReadable')
+
+
+@pytest.mark.parametrize("is_truncated,expeted_second_output,expected_marker",
+                         (pytest.param(True, (
+                             "Listed 2 role policies but more are available. "
+                             "Either increase the `maxItems` argument, or use `marker` argument with the value from context."
+                         ), 'some_marker', id="truncated",),
+                             pytest.param(False, "Listed 2 attached policies for role test-role", None, id="not truncated")))
+def test_list_attached_role_policies(mocker, is_truncated: bool, expeted_second_output: str, expected_marker: str | None) -> None:
+    """
+    Given:
+        args = {'roleName': 'test-role'}.
+    When:
+        Calling list_attached_role_policies
+    Then:
+        Ensure outputs_prefix is 'AWS.IAM.AttachedPolicies'.
+        Check readable_output for formatted attached policies.
+        Confirm raw_response matches predefined response.
+    """
+    args = {'roleName': 'test-role'}
+    response = {
+        'AttachedPolicies': [{'PolicyName': 'policy1', 'PolicyArn': 'Arn1'},
+                             {'PolicyName': 'policy2', 'PolicyArn': 'Arn2'}],
+        'IsTruncated': is_truncated,
+    }
+    if is_truncated:
+        response['Marker'] = expected_marker
+
+    client = Boto3Client()
+    mocker.patch.object(client, "list_attached_role_policies", return_value=response)
+
+    result = AWS_IAM.list_attached_role_policies_command(args, client)
+
+    assert len(result) == 2
+
+    assert result[0].outputs == [{'PolicyName': 'policy1', 'PolicyArn': 'Arn1', 'RoleName': 'test-role'},
+                                 {'PolicyName': 'policy2', 'PolicyArn': 'Arn2', 'RoleName': 'test-role'}]
+    assert result[0].readable_output == ('### Attached Policies for Role test-role\n|PolicyArn|PolicyName|RoleName|\n'
+                                         '|---|---|---|\n| Arn1 | policy1 | test-role |\n| Arn2 | policy2 | test-role |\n')
+    assert result[0].raw_response == response
+
+    assert result[1].outputs['IsTruncated'] is is_truncated
+    assert result[1].outputs.get('Marker') == expected_marker
+    assert result[1].raw_response == response
+    assert result[1].readable_output == expeted_second_output

@@ -1010,7 +1010,6 @@ def epo_command_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     if resp_type != 'json':
         response_json = raw_response  # type: ignore
 
-    header_list: List[Any]
     if 'headers' in args:
         headers_list = list(args['headers'].split(','))
         md = tableToMarkdown(f'ePO command *{args["command"]}* results:', response_json, headers=headers_list)

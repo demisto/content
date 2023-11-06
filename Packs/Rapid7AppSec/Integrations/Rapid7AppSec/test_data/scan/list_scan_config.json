@@ -1,0 +1,48 @@
+{
+    "metadata": {
+      "size": 0,
+      "total_data": 0,
+      "page_token": "string",
+      "index": 0,
+      "sort": "string",
+      "total_pages": 0
+    },
+    "data": [
+      {
+        "app": {
+          "id": "1111"
+        },
+        "attack_template": {
+          "id": "1111"
+        },
+        "assignment": {
+          "environment": "CLOUD",
+          "id": "1111",
+          "type": "ENGINE_GROUP"
+        },
+        "name": "string",
+        "description": "string",
+        "links": [
+          {
+            "profile": "string",
+            "rel": "string",
+            "name": "string",
+            "href": "string"
+          }
+        ],
+        "id": "1111",
+        "incremental": true,
+        "errors": [
+          "string"
+        ]
+      }
+    ],
+    "links": [
+      {
+        "profile": "string",
+        "rel": "string",
+        "name": "string",
+        "href": "string"
+      }
+    ]
+  }

@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: DLP Incident Feedback Loop
-description: Collects feedback from the user about blocked files.
+description: This playbook handles Palo Alto Networks Enterprise DLP incidents. It Collects feedback from the user about blocked activities and automates the approval process, if required. Supported communication methods are Slack, Microsoft Teams and Email.
 starttaskid: "0"
 tasks:
   "0":

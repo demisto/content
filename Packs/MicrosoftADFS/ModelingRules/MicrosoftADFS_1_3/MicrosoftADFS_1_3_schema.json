@@ -1,6 +1,10 @@
 {
     "microsoft_adfs_raw": {
-      "event_data": {
+      "_collector_type": {
+        "type": "string",
+        "is_array": false
+      },
+        "event_data": {
           "type": "string",
           "is_array": false
       },

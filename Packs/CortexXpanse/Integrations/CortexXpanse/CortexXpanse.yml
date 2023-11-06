@@ -8,7 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.
+- additionalinfo: For more information, see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis.  Only standard API key type is supported.
   display: API Key ID
   displaypassword: API Key
   name: credentials
@@ -63,11 +63,11 @@ configuration:
   options:
   - new
   - under_investigation
-  - resolved_-_no_longer_observed
-  - resolved_-_no_risk
-  - resolved_-_risk_accepted
-  - resolved_-_contested_asset
-  - resolved_-_remediated_automatically
+  - resolved_no_longer_observed
+  - resolved_no_risk
+  - resolved_risk_accepted
+  - resolved_contested_asset
+  - resolved_remediated_automatically
   - resolved
   additionalinfo: 'The statuses of the alerts that will be fetched. If no status is provided then alerts of all the statuses will be fetched. Note: An alert whose status was changed to a filtered status after its creation time will not be fetched.'
 - display: Fetch alerts with tags (comma separated string)
@@ -75,6 +75,20 @@ configuration:
   type: 0
   required: false
   additionalinfo: 'The tags of the alerts that will be fetched. If no tags are provided then no tag filtering will be applied on fetched alerts. These should include the tag prefix, ex. AT:Asset Tag.'
+- name: integration_reliability
+  display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A+ - 3rd party enrichment
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: false
+  type: 15
 description: Integration to pull assets and other ASM related information.
 display: Cortex Xpanse
 name: Cortex Xpanse
@@ -277,6 +291,10 @@ script:
       predefined:
       - "yes"
       - "no"
+    - description: Represents the start offset index of results. Default is 0.
+      name: search_from
+    - description: Represents the end offset index of results.
+      name: search_to
     description: Get a list of all your internet exposures filtered by IP address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
     name: asm-list-asset-internet-exposure
     outputs:
@@ -393,18 +411,20 @@ script:
       predefined:
       - new
       - under_investigation
-      - resolved_-_no_longer_observed
-      - resolved_-_no_risk
-      - resolved_-_risk_accepted
-      - resolved_-_contested_asset
-      - resolved_-_remediated_automatically
+      - resolved_no_longer_observed
+      - resolved_no_risk
+      - resolved_risk_accepted
+      - resolved_contested_asset
+      - resolved_remediated_automatically
       - resolved
-    - description: Comma-separated list of strings of the business units
+    - description: Comma-separated list of strings of the business units.
       name: business_units_list
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time
     - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
       name: gte_creation_time
+    - description: Comma-separated list of case (incident) IDs.
+      name: case_id_list
     - description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
       name: sort_by_creation_time
       auto: PREDEFINED
@@ -643,11 +663,6 @@ script:
       predefined:
       - new
       - under_investigation
-      - resolved_-_no_longer_observed
-      - resolved_-_no_risk
-      - resolved_-_risk_accepted
-      - resolved_-_contested_asset
-      - resolved_-_remediated_automatically
       - resolved
       description: Incident status.
     - name: resolve_comment
@@ -685,12 +700,150 @@ script:
     - contextPath: ASM.UpdatedAlerts
       description: IDs of the updated alerts.
     description: Updates the state of one or more alerts.
-  dockerimage: demisto/python3:3.10.12.68714
+  - name: ip
+    arguments:
+    - name: ip
+      description: IP address to enrich.
+      required: true
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: ASM.IP.ip
+      description: The IP address of the asset.
+      type: string
+    - contextPath: ASM.IP.domain
+      description: The domain affiliated with an asset.
+      type: string
+    - contextPath: ASM.IP.name
+      description: The asset name.
+      type: string
+    - contextPath: ASM.IP.asset_type
+      description: The asset type.
+      type: string
+    - contextPath: ASM.IP.first_observed
+      description: When the asset was first observed.
+    - contextPath: ASM.IP.last_observed
+      description: When the asset was last observed.
+    - contextPath: ASM.IP.asm_ids
+      description: The ID of the asset.
+    - contextPath: ASM.IP.service_type
+      description: Affiliated service types for the asset.
+    - contextPath: ASM.IP.tags
+      description: A list of tags that have been assigned to the asset.
+    - contextPath: ASM.IP.asset_explainers
+      description: The asset explanation details.
+    - contextPath: ASM.IP.domain_details
+      description: Additional domain details.
+    - contextPath: ASM.IP.recent_ips
+      description: Details about the recent IP observations.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    description: Returns enrichment for an IP address.
+  - name: domain
+    arguments:
+    - name: domain
+      description: Domain to enrich.
+      required: true
+      isArray: true
+      default: true
+    outputs:
+    - contextPath: ASM.Domain.domain
+      description: The domain affiliated with an asset.
+      type: string
+    - contextPath: ASM.Domain.name
+      description: The asset name.
+      type: string
+    - contextPath: ASM.Domain.asset_type
+      description: The asset type.
+      type: string
+    - contextPath: ASM.Domain.first_observed
+      description: When the asset was first observed.
+    - contextPath: ASM.Domain.last_observed
+      description: When the asset was last observed.
+    - contextPath: ASM.Domain.asm_ids
+      description: The ID of the asset.
+    - contextPath: ASM.Domain.service_type
+      description: Affiliated service types for the asset.
+    - contextPath: ASM.Domain.tags
+      description: A list of tags that have been assigned to the asset.
+    - contextPath: ASM.Domain.asset_explainers
+      description: The asset explanation details.
+    - contextPath: ASM.Domain.domain_details
+      description: Additional domain details.
+    - contextPath: ASM.Domain.recent_ips
+      description: Details about the recent IP observations.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    description: Returns enrichment for a domain.
+  - name: asm-get-incident
+    arguments:
+    - name: incident_id
+      required: true
+      description: The ID of the incident to be fetched.
+    outputs:
+    - contextPath: ASM.Incident.incident_id
+      description: The ID of the incident.
+      type: string
+    - contextPath: ASM.Incident.xpanse_risk_score
+      description: The Xpanse risk score of the incident.
+      type: number
+    - contextPath: ASM.Incident.alerts
+      description: The alerts included in the incident.
+    - contextPath: ASM.Incident.tags
+      description: Tags assigned to assets included in the incident.
+    - contextPath: ASM.Incident.status
+      description: The status of the incident.
+      type: string
+    - contextPath: ASM.Incident.severity
+      description: The severity of the incident.
+      type: string
+    - contextPath: ASM.Incident.description
+      description: A brief description of the incident.
+      type: string
+    - contextPath: ASM.Incident.notes
+      description: User-provided notes related to the incident.
+      type: string
+    description: Returns additional details about a specific incident.
+  dockerimage: demisto/python3:3.10.13.78960
   isFetchSamples: true
   isfetch: true
   script: ''
   subtype: python3
   type: python
+defaultmapperin: Xpanse - Incoming Mapper
+defaultclassifier: Xpanse - Classifier
 fromversion: 6.5.0
 tests:
 - CortexXpanse_Test

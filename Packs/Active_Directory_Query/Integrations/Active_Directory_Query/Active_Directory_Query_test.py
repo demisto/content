@@ -93,13 +93,13 @@ def ssl_bad_socket_server(port):
                     raise
                 conn.recv(32)
                 msg = b'THIS IS A TEST SERVER WHICH IGNORES PROTOCOL\n\n'
-                for x in range(10):
+                for _x in range(10):
                     msg += msg
                 conn.send(msg)
                 conn.shutdown(socket.SHUT_RDWR)
                 conn.close()
     except Exception as ex:
-        pytest.fail("Failed starting ssl_bad_socket_server: {}".format(ex))
+        pytest.fail(f"Failed starting ssl_bad_socket_server: {ex}")
         raise
 
 
@@ -237,7 +237,7 @@ def test_update_user_iam__username_change(mocker):
         def modify_dn(self, *args, **kwargs):
             return True
 
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
     args = {"user-profile": json.dumps({"email": "test2@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas",
                                         "olduserdata": {"email": "test@paloaltonetworks.com", "username": "test",
@@ -287,7 +287,7 @@ def test_create_user_iam(mocker):
             add_args, add_kwargs = args, kwargs
             return True
 
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
@@ -331,7 +331,7 @@ def test_unseccsseful_create_user_iam_missing_ou(mocker):
             add_args, add_kwargs = args, kwargs
             return True
 
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
@@ -374,7 +374,7 @@ def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
             add_args, add_kwargs = args, kwargs
             return True
 
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
     args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
                                         "locationregion": "Americas"})}
 
@@ -439,7 +439,6 @@ def test_search_group_members(mocker):
 
         def search(self, *args, **kwargs):
             time.sleep(1)
-            return
 
     expected_entry = {
         'ActiveDirectory.Groups(obj.dn ==dn)': {'dn': 'dn', 'members': [{'dn': 'dn', 'category': 'group'}]},
@@ -458,7 +457,7 @@ def test_search_group_members(mocker):
     mocker.patch.object(demisto, 'args',
                         return_value={'member-type': 'group', 'group-dn': 'dn', 'time_limit': '1'})
 
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
 
     with patch('logging.Logger.info') as mock:
         Active_Directory_Query.search_group_members('dc', 1)
@@ -485,7 +484,7 @@ def test_group_dn_escape_characters():
         entries = [EntryMocker()]
         result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
 
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
 
     with patch('Active_Directory_Query.search', return_value=[EntryMocker()]) as mock:
         group_dn('group(group)', '')
@@ -513,7 +512,7 @@ def test_search__no_control_exist(mocker):
             return
 
     mocker.patch.object(demisto, 'results')
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
     Active_Directory_Query.search_users('dc=test,dc=test_1', page_size=20)
 
     assert '**No entries.**' in demisto.results.call_args[0][0]['HumanReadable']
@@ -540,7 +539,6 @@ def test_search_attributes_to_exclude(mocker):
 
         def search(self, *args, **kwargs):
             time.sleep(1)
-            return
 
     expected_results = {'ContentsFormat': 'json', 'Type': 1,
                         'Contents': [{'dn': 'dn'}],
@@ -560,7 +558,7 @@ def test_search_attributes_to_exclude(mocker):
                                                                "manager,sAMAccountName,userAccountControl",
                                       'page-size': '1'})
 
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
 
     with patch('logging.Logger.info') as mock:
         Active_Directory_Query.search_users('dc', 1)
@@ -648,13 +646,12 @@ def test_search_with_paging_bug(mocker):
             if page_size:
                 self.entries = [EntryMocker() for i in range(page_size)]
                 time.sleep(1)
-            return
 
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(demisto, 'args',
                         return_value={'member-type': 'group', 'group-dn': 'dn', 'time_limit': '3'})
 
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
 
     with patch('logging.Logger.info'):
         Active_Directory_Query.search_group_members('dc', 1)
@@ -771,7 +768,6 @@ def test_search_users_empty_userAccountControl(mocker):
 
         def search(self, *args, **kwargs):
             time.sleep(1)
-            return
 
     expected_results = {'ContentsFormat': 'json',
                         'Type': 1,
@@ -801,8 +797,34 @@ def test_search_users_empty_userAccountControl(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'page-size': '1'})
 
-    Active_Directory_Query.conn = ConnectionMocker()
+    Active_Directory_Query.connection = ConnectionMocker()
 
     with patch('logging.Logger.info') as mock:
         Active_Directory_Query.search_users('dc', 1)
         mock.assert_called_with(expected_results)
+
+
+def test_test_credentials_command(mocker):
+    """
+    Given:
+        A demisto args object with username and password
+    When:
+        Run the 'ad-test-credentials' command
+    Then:
+        The result returns with successful connection
+    """
+    import Active_Directory_Query
+    args = {'username': 'username_test_credentials', 'password': 'password_test_credentials'}
+    mocker.patch.object(demisto, 'args', return_value=args)
+
+    class MockConnection:
+        def unbind(self):
+            pass
+
+    def mock_create_connection(server, server_ip, username, password, ntlm_connection, auto_bind):
+        return MockConnection()
+
+    with patch("Active_Directory_Query.create_connection", side_effect=mock_create_connection), \
+            patch("Active_Directory_Query.Connection.unbind", side_effect=MockConnection.unbind):
+        command_results = Active_Directory_Query.test_credentials_command(BASE_TEST_PARAMS['server_ip'], ntlm_connection='true')
+        assert command_results.readable_output == 'Credential test with username username_test_credentials succeeded.'

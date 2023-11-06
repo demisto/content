@@ -5,7 +5,7 @@
           "is_array": false
         },
         "risk": {
-          "type": "int",
+          "type": "string",
           "is_array": false
         },
         "occurred_date": {

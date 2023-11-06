@@ -51,7 +51,7 @@ def test_get_indicators_value_argument(mocker, response_mock, value, expected_le
     mocker.patch.object(client.stix_cyber_observable, 'list', return_value=response_mock)
     indicators = get_indicators(client, ["ALL"], search=value)
     assert len(indicators) == expected_length
-    indicators[0].get('value') == expected_value
+    assert indicators[0].get('value') == expected_value
 
 
 def test_get_indicators_command(mocker):
@@ -73,6 +73,27 @@ def test_get_indicators_command(mocker):
     results: CommandResults = get_indicators_command(client, args)
     assert len(results.raw_response) == 2
     assert "Indicators" in results.readable_output
+
+
+def test_get_indicators_command_with_score(mocker):
+    """Tests get_indicators_command function with a specified score
+    Given
+        The following indicator types: 'registry key', 'account' that were chosen by the user and a specified 'score': 50
+    When
+        - Calling `get_indicators_command`
+    Then
+        - Verify that the result includes indicators with a score of 50.
+    """
+    client = Client
+    args = {
+        'indicator_types': 'registry key,account',
+        'score': '50'
+    }
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
+    results: CommandResults = get_indicators_command(client, args)
+    assert len(results.raw_response) == 2
+    for indicator in results.raw_response:
+        assert indicator.get('x_opencti_score') == 50
 
 
 def test_get_indicators_command_with_no_data_to_return(mocker):
