@@ -336,23 +336,11 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_atayaassigned",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_atayaimei",
                         "isVisible": true
                     },
                     {
                         "fieldId": "incident_atayaimsi",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_atayaip",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_atayaeventtype",
                         "isVisible": true
                     },
                     {
