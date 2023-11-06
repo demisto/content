@@ -174,7 +174,7 @@ def test_connection(client: Client, params: dict[str, Any]) -> str:
 def execute_query_command(client: Client, args: dict[str, Any]) -> CommandResults:
     query = args['query']
     timeout = arg_to_number(args.get('timeout', 10))
-    workspace_id = demisto.params()['workspaceID']
+    workspace_id = demisto.params().get('workspaceID')
     full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
 
     data = {
