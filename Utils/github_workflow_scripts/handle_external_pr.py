@@ -9,7 +9,7 @@ from git import Repo
 from github.Repository import Repository
 from demisto_sdk.commands.common.tools import get_pack_metadata
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
-from demisto_sdk.commands.content_graph.objects.pack import Pack, Integration
+from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 
 
@@ -200,7 +200,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_content(packs_in_pr: set[str],pr_files: list[str]) -> bool:
+def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     """
     This is where the actual search for feed:True or relevant tags or categories are being searched
     according to the login in is_tim_reviewer_needed
