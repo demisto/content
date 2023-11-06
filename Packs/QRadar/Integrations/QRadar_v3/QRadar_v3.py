@@ -2119,6 +2119,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
     print_debug_msg(f'{waiting_for_update=}')
     last_fetch_key = context_data.get(LAST_FETCH_KEY, 'Missing')
     last_mirror_update = context_data.get(LAST_MIRROR_KEY, 0)
+    last_mirror_update_closed = context_data.get(LAST_MIRROR_CLOSED_KEY, 0)
     concurrent_mirroring_searches = get_current_concurrent_searches(context_data)
     samples = context_data.get('samples', [])
     sample_length = 0
@@ -2130,6 +2131,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
                     f"\n Offenses ids waiting for update: {not_updated_ids}"
                     f"\n Concurrent mirroring events searches: {concurrent_mirroring_searches}"
                     f"\n Last Fetch Key {last_fetch_key}, Last mirror update {last_mirror_update}, "
+                    f"Last mirror update closed: {last_mirror_update_closed}, "
                     f"sample length {sample_length}")
     return set(not_updated_ids + finished_queries_ids)
 
