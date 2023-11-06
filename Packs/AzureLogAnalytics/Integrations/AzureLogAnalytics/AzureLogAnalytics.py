@@ -137,14 +137,14 @@ def tags_arg_to_request_format(tags) -> list[dict[str, str]] | None:
 
         for tag in tags:
             if len(tag) != 2:
-                return_error(bad_arg_msg)
+                raise DemistoException(bad_arg_msg)
 
         return [{
             'name': tag[0],
             'value': tag[1]
         } for tag in tags]
     except IndexError:
-        return_error(bad_arg_msg)
+        raise DemistoException(bad_arg_msg)
     return None
 
 
@@ -159,15 +159,18 @@ def test_connection(client: Client, params: dict[str, Any]) -> str:
         and not params.get('credentials_auth_code', {}).get('password')
         and not params.get('auth_code')
     ):
-        return_error('You must enter an authorization code in a self-deployed configuration.')
+        raise DemistoException('You must enter an authorization code in a self-deployed configuration.')
 
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
     try:
         execute_query_command(client, {'query': 'Usage | take 1'})
     except Exception as e:
-        return_error('Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
-                     '\n1. Workspace ID is wrong.'
-                     '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.', e)
+        raise DemistoException(
+            'Could not authorize to `api.loganalytics.io` resource. This could be due to one of the following:'
+            '\n1. Workspace ID is wrong.'
+            '\n2. Missing necessary grant IAM privileges in your workspace to the AAD Application.',
+            e,
+        ) from e
     return 'ok'
 
 
@@ -271,7 +274,7 @@ def create_or_update_saved_search_command(client: Client, args: dict[str, Any]) 
     etag = args.get('etag')
 
     if not etag and not (category and query and display_name):
-        return_error('You must specify category, display_name and query arguments for creating a new saved search.')
+        raise DemistoException('You must specify category, display_name and query arguments for creating a new saved search.')
     url_suffix = f'/savedSearches/{saved_search_id}'
 
     data = {
