@@ -314,6 +314,12 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
     - section_end "Create Artifacts instance directory"
 
+    - section_start "Copy env results to artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+    - section_end "Copy env results to artifacts folder"
+
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - !reference [.lock-machine]
@@ -321,12 +327,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - !reference [.export_cloud_machine_constants]
     - echo "Server URL $DEMISTO_BASE_URL"
     - echo "XSIAM_AUTH_ID $XSIAM_AUTH_ID"
-
-    - section_start "Copy env results to artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
-    - section_end "Copy env results to artifacts folder"
 
     - section_start "Test Modeling Rules" --collapsed
     - demisto-sdk upload -z -x -i Packs/SemperisDSP --insecure
@@ -428,12 +428,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
     - section_end "Install Packs"
-
-    - section_start "Wait Until Server Ready" --collapsed
-    - echo Going to sleep for 15 minutes to allow server finish indexing
-    - sleep-with-progress 900 30 "Sleeping... " 150
-    - echo "Done sleeping!"
-    - section_end "Wait Until Server Ready"
 
     - !reference [.run_tests]
 
