@@ -645,7 +645,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-vm-auth-reset
-  dockerimage: demisto/crypto:1.0.0.79610
+  dockerimage: demisto/crypto:1.0.0.79946
   runonce: false
   script: '-'
   subtype: python3
