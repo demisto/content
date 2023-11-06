@@ -8,7 +8,6 @@ FETCH_TIME_LIMIT = 60
 
 
 class Client(BaseClient):
-    next_run_filter: str
 
     def __init__(self, base_url, api_key, verify=True, proxy=False):
         headers = {"Accept": "application/json",
@@ -24,10 +23,6 @@ class Client(BaseClient):
             "limit": limit,
         }
         return self._http_request(url_suffix='/api/v1/logs', method='GET', headers=self._headers, params=params)
-
-    def set_next_run_filter(self, after: str):
-        demisto.debug(f'setting next run since value to: {after}')
-        self.next_run_filter = after  # type: ignore
 
 
 def get_events_command(client: Client, total_events_to_fetch, since,
@@ -58,7 +53,7 @@ def get_events_command(client: Client, total_events_to_fetch, since,
                     events = remove_duplicates(events, last_object_ids)  # type: ignore
                 if events:
                     last = events[-1]
-                    client.next_run_filter = last['published']
+                    since = last['published']
                     stored_events.extend(events)
                 else:
                     break  # after remove duplicates event list is empty. will return stored.
@@ -75,8 +70,7 @@ def get_events_command(client: Client, total_events_to_fetch, since,
             if status_code == HTTPStatus.TOO_MANY_REQUESTS.value:
                 demisto.debug(f'fetch-events Got 429. okta rate limit headers:\n \
                 x-rate-limit-remaining: {res.headers["x-rate-limit-remaining"]}\n \
-                    x-rate-limit-limit: {res.headers["x-rate-limit-limit"]}\n \
-                        x-rate-limit-reset: {res.headers["x-rate-limit-reset"]}\n')
+                    x-rate-limit-reset: {res.headers["x-rate-limit-reset"]}\n')
                 return stored_events, int(res.headers['x-rate-limit-reset'])
             if len(stored_events) == 0:
                 raise

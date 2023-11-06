@@ -1,9 +1,10 @@
-from OktaEventCollector import Client, remove_duplicates, get_last_run, get_events_command
+from OktaEventCollector import Client, remove_duplicates, get_last_run, get_events_command, main
 import pytest
 from unittest.mock import MagicMock
 import requests
 from CommonServerPython import DemistoException
-
+from freezegun import freeze_time
+import demistomock as demisto
 
 id1_pub = [{'uuid': 'a5b57ec5feaa', 'published': '2022-04-17T12:32:36.667'}]
 id2_pub = [{'uuid': 'a5b57ec5febb', 'published': '2022-04-17T12:32:36.667'}]
@@ -93,3 +94,54 @@ def test_get_events_rate_limit(dummy_client, mocker):
     mocker.patch.object(dummy_client, 'get_events', side_effect=[exc])
     with pytest.raises(DemistoException):
         events, epoch = get_events_command(client=dummy_client, total_events_to_fetch=2, since='2 days')
+
+
+@freeze_time('2022-04-17T12:32:36.667Z')
+def test_429_too_many_requests(mocker, requests_mock):
+
+    mock_events = [
+        {
+            'uuid': 1,
+            'published': '2022-04-17T14:00:00.000Z'
+        },
+        {
+            'uuid': 2,
+            'published': '2022-04-17T14:00:01.000Z'
+        },
+        {
+            'uuid': 3,
+            'published': '2022-04-17T14:00:02.000Z'
+        },
+        {
+            'uuid': 4,
+            'published': '2022-04-17T14:00:03.000Z'
+        }
+    ]
+    requests_mock.get(
+        'https://testurl.com/api/v1/logs?since=2022-04-17T12%3A32%3A36.667000%2B00%3A00&sortOrder=ASCENDING&limit=5',
+        json=mock_events)
+    requests_mock.get('https://testurl.com/api/v1/logs?since=2022-04-17T14%3A00%3A03.000Z&sortOrder=ASCENDING&limit=5',
+                      status_code=429,
+                      reason='Too many requests',
+                      headers={
+                          'x-rate-limit-remaining': '0',
+                          'x-rate-limit-reset': '1698343702',
+                      })
+
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'params', return_value={
+        'url': 'https://testurl.com',
+        'api_key': {
+            'password': 'TESTAPIKEY'
+        },
+        'limit': 5,
+        'after': '2022-04-17T12:32:36.667Z',
+        'proxy': False,
+        'verify': False
+    })
+    send_events_to_xsiam_mock = mocker.patch('OktaEventCollector.send_events_to_xsiam', return_value={})
+
+    main()
+
+    send_events_to_xsiam_mock.assert_called_once_with(mock_events, vendor='okta', product='okta')
