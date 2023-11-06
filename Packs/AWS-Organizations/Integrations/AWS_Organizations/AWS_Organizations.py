@@ -89,9 +89,9 @@ def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_out
     """Creates a dict for CommandResults.output with the next token.
     """
     return {
-        'AWS.Organizations(true)': {f'{outputs_prefix}NextToken': next_token},
         (f'AWS.Organizations.{outputs_prefix}(val.{page_outputs_key} && val.{page_outputs_key} == obj.{page_outputs_key})'):
             page_outputs,
+        'AWS.Organizations(true)': {f'{outputs_prefix}NextToken': next_token},
     }
 
 
@@ -118,8 +118,8 @@ def root_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandR
         ),
         readable_output=tableToMarkdown(
             'AWS Organizations Roots',
-            ['Arn', 'Id', 'Name'],
-            roots, removeNull=True,
+            roots, ['Arn', 'Id', 'Name'],
+            removeNull=True,
         )
     )
 
