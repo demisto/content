@@ -17,6 +17,7 @@ configuration:
   display: Indicator Query
   name: indicators_query
   type: 0
+  section: Collect
   advanced: false
   required: false
 - additionalinfo: The format of the exported list.
@@ -63,6 +64,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - xsoar_saas
 - additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
@@ -85,6 +87,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - xsoar_saas
 - additionalinfo: If selected, the comment "# Empty list" is added to an empty list.
   defaultvalue: 'true'
   display: Add comment to empty list
