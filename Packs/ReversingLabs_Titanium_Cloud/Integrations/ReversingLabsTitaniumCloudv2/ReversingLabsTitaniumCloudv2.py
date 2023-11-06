@@ -1,3 +1,4 @@
+from copy import deepcopy
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
@@ -1398,7 +1399,7 @@ def url_downloaded_files_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1440,7 +1441,7 @@ def url_latest_analyses_feed_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1493,7 +1494,7 @@ def url_analyses_feed_from_date_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1536,6 +1537,13 @@ def create_domain_ti_object():
     return domain_ti
 
 
+def bold_classification(input_list, key, value):
+    for obj in input_list:
+        if obj.get(key) == value:
+            obj[key] = f"**{value}**"
+    return input_list
+
+
 def domain_report_command():
     domain_ti = create_domain_ti_object()
 
@@ -1545,7 +1553,7 @@ def domain_report_command():
         response = domain_ti.get_domain_report(domain=domain)
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1556,15 +1564,15 @@ def domain_report_command():
 
 
 def domain_report_output(response_json, domain):
-    last_dns_records = response_json.get("rl").get("last_dns_records", [])
+    last_dns_records = response_json.get("rl", {}).get("last_dns_records", [])
     dns_records_table = tableToMarkdown(name="Last DNS records", t=last_dns_records)
-    dns_records_time = response_json.get("rl").get("last_dns_records_time")
+    dns_records_time = response_json.get("rl", {}).get("last_dns_records_time")
 
     markdown = f"""## ReversingLabs Domain Report for {domain}\n {dns_records_table}
     \n**Last DNS records time**: {dns_records_time}
     """
 
-    top_threats = response_json.get("rl").get("top_threats", [])
+    top_threats = response_json.get("rl", {}).get("top_threats", [])
     if top_threats:
         threats_table = tableToMarkdown(
             name="Top threats",
@@ -1572,7 +1580,7 @@ def domain_report_output(response_json, domain):
         )
         markdown = f"{markdown}\n {threats_table}"
 
-    third_party = response_json.get("rl").get("third_party_reputations")
+    third_party = response_json.get("rl", {}).get("third_party_reputations")
     if third_party:
         third_party_statistics = third_party.get("statistics")
 
@@ -1582,13 +1590,15 @@ def domain_report_output(response_json, domain):
         **TOTAL**: {third_party_statistics.get("total")}
         """
 
+        tp_sources = deepcopy(third_party.get("sources"))
+        tp_sources = bold_classification(tp_sources, "detection", "malicious")
         sources_table = tableToMarkdown(
             name="Third party sources",
-            t=third_party.get("sources"),
+            t=tp_sources,
         )
         markdown = f"{markdown}\n {sources_table}"
 
-    files_statistics = response_json.get("rl").get("downloaded_files_statistics")
+    files_statistics = response_json.get("rl", {}).get("downloaded_files_statistics")
     markdown = f"""{markdown}\n ### Downloaded files statistics\n **KNOWN**: {files_statistics.get("known")}
     **MALICIOUS**: {files_statistics.get("malicious")}
     **SUSPICIOUS**: {files_statistics.get("suspicious")}
@@ -1848,7 +1858,7 @@ def ip_report_command():
         response = ip_ti.get_ip_report(ip_address=ip)
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1858,7 +1868,7 @@ def ip_report_command():
 
 
 def ip_report_output(response_json, ip):
-    files_statistics = response_json.get("rl").get("downloaded_files_statistics")
+    files_statistics = response_json.get("rl", {}).get("downloaded_files_statistics")
 
     markdown = f"""## ReversingLabs IP address report for {ip}\n ### Downloaded files statistics\n **KNOWN**: {
     files_statistics.get("known")}
@@ -1868,7 +1878,7 @@ def ip_report_output(response_json, ip):
     **TOTAL**: {files_statistics.get("total")}
     """
 
-    third_party = response_json.get("rl").get("third_party_reputations")
+    third_party = response_json.get("rl", {}).get("third_party_reputations")
     if third_party:
         third_party_statistics = third_party.get("statistics")
 
@@ -1878,9 +1888,11 @@ def ip_report_output(response_json, ip):
          **TOTAL**: {third_party_statistics.get("total")}
         """
 
+        tp_sources = deepcopy(third_party.get("sources"))
+        tp_sources = bold_classification(tp_sources, "detection", "malicious")
         sources_table = tableToMarkdown(
             name="Third party sources",
-            t=third_party.get("sources")
+            t=tp_sources
         )
         markdown = f"{markdown}\n {sources_table}"
 
@@ -1930,9 +1942,11 @@ def ip_downloaded_files_command():
 
 
 def ip_downloaded_files_output(response, ip):
+    readable = deepcopy(response)
+    readable = bold_classification(readable, "classification", "MALICIOUS")
     files_table = tableToMarkdown(
         name="Downloaded files",
-        t=response
+        t=readable
     )
 
     markdown = f"## ReversingLabs Files downloaded from IP address {ip}\n {files_table}"
@@ -2080,7 +2094,7 @@ def network_reputation_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -2090,12 +2104,24 @@ def network_reputation_command():
 
 
 def network_reputation_output(response_json, network_locations):
-    entries = response_json.get("rl").get("entries")
+    entries = deepcopy(response_json.get("rl").get("entries"))
+    entries = bold_classification(entries, "classification", "malicious")
+
+    for entry in entries:
+        tp_reputations = entry.get("third_party_reputations")
+        if tp_reputations:
+            entry["third_party_reputations_malicious"] = tp_reputations.get("malicious")
+            entry["third_party_reputations_clean"] = tp_reputations.get("clean")
+            entry["third_party_reputations_undetected"] = tp_reputations.get("undetected")
+            entry["third_party_reputations_total"] = tp_reputations.get("total")
+            del entry["third_party_reputations"]
+
     entries_table = tableToMarkdown(
         name="Network locations",
         t=entries
     )
 
+    network_locations = ", ".join(network_locations)
     markdown = f"## ReversingLabs Reputation for the following network locations: {network_locations}\n {entries_table}"
 
     results = CommandResults(
@@ -2163,9 +2189,9 @@ def network_reputation_override_command():
 
 
 def network_reputation_override_output(response_json):
-    created_overrides = response_json.get("rl").get("user_override").get("created_overrides")
-    removed_overrides = response_json.get("rl").get("user_override").get("removed_overrides")
-    invalid = response_json.get("rl").get("user_override").get("invalid_network_locations")
+    created_overrides = response_json.get("rl", {}).get("user_override", {}).get("created_overrides")
+    removed_overrides = response_json.get("rl", {}).get("user_override", {}).get("removed_overrides")
+    invalid = response_json.get("rl", {}).get("user_override", {}).get("invalid_network_locations")
 
     markdown = "## ReversingLabs Network reputation user override"
 

@@ -54304,60 +54304,60 @@ Returns a domain analysis report.
                     }
                 ],
                 "last_dns_records_time": "2023-08-25T09:34:16",
-                "modified_time": "2023-10-27T14:28:46",
+                "modified_time": "2023-11-06T12:06:50",
                 "requested_domain": "bloom-artists.com",
                 "third_party_reputations": {
                     "sources": [
                         {
                             "detection": "undetected",
                             "source": "phishing_database",
-                            "update_time": "2023-10-24T02:12:15"
+                            "update_time": "2023-11-06T02:25:55"
                         },
                         {
                             "detection": "undetected",
                             "source": "0xSI_f33d",
-                            "update_time": "2023-10-27T05:21:09"
+                            "update_time": "2023-11-06T06:22:03"
                         },
                         {
                             "detection": "undetected",
                             "source": "cyradar",
-                            "update_time": "2023-10-27T09:22:38"
+                            "update_time": "2023-11-06T08:15:05"
                         },
                         {
                             "detect_time": "2023-10-22T21:13:34",
                             "detection": "malicious",
                             "source": "adminus_labs",
-                            "update_time": "2023-10-27T14:28:46"
+                            "update_time": "2023-11-06T12:06:50"
                         },
                         {
                             "detection": "undetected",
                             "source": "apwg",
-                            "update_time": "2023-10-27T07:35:45"
+                            "update_time": "2023-11-02T17:30:36"
                         },
                         {
                             "detection": "undetected",
                             "source": "netstar",
-                            "update_time": "2023-10-25T10:28:11"
+                            "update_time": "2023-11-06T11:39:40"
                         },
                         {
                             "detection": "undetected",
                             "source": "threatfox_abuse_ch",
-                            "update_time": "2023-10-27T07:20:30"
+                            "update_time": "2023-11-06T08:20:49"
                         },
                         {
                             "detection": "undetected",
                             "source": "botvrij",
-                            "update_time": "2023-10-27T01:26:57"
+                            "update_time": "2023-11-06T02:26:03"
                         },
                         {
                             "detection": "undetected",
                             "source": "alphamountain",
-                            "update_time": "2023-10-27T14:21:27"
+                            "update_time": "2023-11-06T10:57:13"
                         },
                         {
                             "detection": "undetected",
                             "source": "comodo_valkyrie",
-                            "update_time": "2023-10-27T04:54:02"
+                            "update_time": "2023-11-06T05:53:24"
                         },
                         {
                             "detection": "undetected",
@@ -54367,13 +54367,13 @@ Returns a domain analysis report.
                         {
                             "detection": "undetected",
                             "source": "osint",
-                            "update_time": "2023-10-27T00:30:38"
+                            "update_time": "2023-11-06T01:30:13"
                         },
                         {
                             "detect_time": "2023-10-23T03:27:25",
                             "detection": "malicious",
                             "source": "crdf",
-                            "update_time": "2023-10-27T11:29:38"
+                            "update_time": "2023-11-06T08:34:19"
                         }
                     ],
                     "statistics": {
@@ -54421,19 +54421,19 @@ Returns a domain analysis report.
 > ### Third party sources
 >|detection|source|update_time|
 >|---|---|---|
->| undetected | phishing_database | 2023-10-24T02:12:15 |
->| undetected | 0xSI_f33d | 2023-10-27T05:21:09 |
->| undetected | cyradar | 2023-10-27T09:22:38 |
->| malicious | adminus_labs | 2023-10-27T14:28:46 |
->| undetected | apwg | 2023-10-27T07:35:45 |
->| undetected | netstar | 2023-10-25T10:28:11 |
->| undetected | threatfox_abuse_ch | 2023-10-27T07:20:30 |
->| undetected | botvrij | 2023-10-27T01:26:57 |
->| undetected | alphamountain | 2023-10-27T14:21:27 |
->| undetected | comodo_valkyrie | 2023-10-27T04:54:02 |
+>| undetected | phishing_database | 2023-11-06T02:25:55 |
+>| undetected | 0xSI_f33d | 2023-11-06T06:22:03 |
+>| undetected | cyradar | 2023-11-06T08:15:05 |
+>| **malicious** | adminus_labs | 2023-11-06T12:06:50 |
+>| undetected | apwg | 2023-11-02T17:30:36 |
+>| undetected | netstar | 2023-11-06T11:39:40 |
+>| undetected | threatfox_abuse_ch | 2023-11-06T08:20:49 |
+>| undetected | botvrij | 2023-11-06T02:26:03 |
+>| undetected | alphamountain | 2023-11-06T10:57:13 |
+>| undetected | comodo_valkyrie | 2023-11-06T05:53:24 |
 >| undetected | web_security_guard | 2022-01-21T06:56:15 |
->| undetected | osint | 2023-10-27T00:30:38 |
->| malicious | crdf | 2023-10-27T11:29:38 |
+>| undetected | osint | 2023-11-06T01:30:13 |
+>| **malicious** | crdf | 2023-11-06T08:34:19 |
 >
 > ### Downloaded files statistics
 > **KNOWN**: 54
@@ -54457,7 +54457,7 @@ Returns a list of files downloaded from a domain.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | Domain string. | Required | 
-| classification | Return only files of this classification. Possible values are MALICIOUS, SUSPICIOUS and KNOWN. Possible values are: MALICIOUS, SUSPICIOUS, KNOWN. | Optional | 
+| classification | Return only files of this classification. Possible values are: MALICIOUS, SUSPICIOUS, KNOWN. | Optional | 
 | result_limit | Maximum number of returned results. Default is 50000. | Optional | 
 | results_per_page | Number of results returned per request. Default is 1000. | Optional | 
 
@@ -54809,45 +54809,45 @@ Returns an IP address analysis report.
                     "total": 0,
                     "unknown": 0
                 },
-                "modified_time": "2023-10-27T14:21:27",
+                "modified_time": "2023-11-06T12:00:35",
                 "requested_ip": "5.42.64.70",
                 "third_party_reputations": {
                     "sources": [
                         {
                             "detection": "undetected",
                             "source": "adminus_labs",
-                            "update_time": "2023-10-27T14:00:41"
+                            "update_time": "2023-11-06T12:00:35"
                         },
                         {
                             "detection": "undetected",
                             "source": "apwg",
-                            "update_time": "2023-10-27T08:24:00"
+                            "update_time": "2023-11-01T21:23:52"
                         },
                         {
                             "detection": "undetected",
                             "source": "threatfox_abuse_ch",
-                            "update_time": "2023-10-27T07:20:30"
+                            "update_time": "2023-11-06T08:20:49"
                         },
                         {
                             "detection": "undetected",
                             "source": "alphamountain",
-                            "update_time": "2023-10-27T14:21:27"
+                            "update_time": "2023-11-06T10:57:13"
                         },
                         {
                             "detection": "undetected",
                             "source": "osint",
-                            "update_time": "2023-10-27T00:30:38"
+                            "update_time": "2023-11-06T01:30:13"
                         },
                         {
                             "detection": "undetected",
                             "source": "feodotracker",
-                            "update_time": "2023-10-27T04:28:04"
+                            "update_time": "2023-11-06T05:28:24"
                         },
                         {
                             "detect_time": "2023-10-27T03:54:23",
                             "detection": "malicious",
                             "source": "crdf",
-                            "update_time": "2023-10-27T11:29:38"
+                            "update_time": "2023-11-06T08:34:19"
                         }
                     ],
                     "statistics": {
@@ -54882,13 +54882,13 @@ Returns an IP address analysis report.
 > ### Third party sources
 >|detection|source|update_time|
 >|---|---|---|
->| undetected | adminus_labs | 2023-10-27T14:00:41 |
->| undetected | apwg | 2023-10-27T08:24:00 |
->| undetected | threatfox_abuse_ch | 2023-10-27T07:20:30 |
->| undetected | alphamountain | 2023-10-27T14:21:27 |
->| undetected | osint | 2023-10-27T00:30:38 |
->| undetected | feodotracker | 2023-10-27T04:28:04 |
->| malicious | crdf | 2023-10-27T11:29:38 |
+>| undetected | adminus_labs | 2023-11-06T12:00:35 |
+>| undetected | apwg | 2023-11-01T21:23:52 |
+>| undetected | threatfox_abuse_ch | 2023-11-06T08:20:49 |
+>| undetected | alphamountain | 2023-11-06T10:57:13 |
+>| undetected | osint | 2023-11-06T01:30:13 |
+>| undetected | feodotracker | 2023-11-06T05:28:24 |
+>| **malicious** | crdf | 2023-11-06T08:34:19 |
 
 
 ### reversinglabs-titaniumcloud-ip-downloaded-files
@@ -54905,7 +54905,7 @@ Returns a list of files downloaded from an IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address. | Required | 
-| classification | Return only files of this classification. Possible values are MALICIOUS, SUSPICIOUS and KNOWN. Possible values are: MALICIOUS, SUSPICIOUS, KNOWN. | Optional | 
+| classification | Return only files of this classification. Possible values are: MALICIOUS, SUSPICIOUS, KNOWN. | Optional | 
 | result_limit | Maximum number of returned results. Default is 50000. | Optional | 
 | results_per_page | Number of results returned per request. Default is 1000. | Optional | 
 
@@ -55171,7 +55171,7 @@ Returns network reputation for requested network locations.
                     },
                     {
                         "associated_malware": false,
-                        "first_seen": "2023-10-27T16:31:41",
+                        "first_seen": "2023-11-06T13:10:15",
                         "last_seen": "2023-07-24T13:15:52",
                         "requested_network_location": "61.253.71.111",
                         "third_party_reputations": {
@@ -55204,13 +55204,13 @@ Returns network reputation for requested network locations.
 
 #### Human Readable Output
 
->## ReversingLabs Reputation for the following network locations: ['http:<span>//</span>43.138.221.139/jquery-3.3.1.min.js', '61.253.71.111', 'bloom-artists.com']
+>## ReversingLabs Reputation for the following network locations: http:<span>//</span>43.138.221.139/jquery-3.3.1.min.js, 61.253.71.111, bloom-artists.com
 > ### Network locations
->|associated_malware|categories|classification|first_seen|last_seen|reason|requested_network_location|third_party_reputations|type|
->|---|---|---|---|---|---|---|---|---|
->| false | phishing,<br/>command_and_control | malicious | 2022-09-11T11:54:39 | 2023-04-14T11:15:51 | third_party_reputation | http:<span>//</span>43.138.221.139/jquery-3.3.1.min.js | total: 19<br/>undetected: 17<br/>malicious: 2<br/>clean: 0 | url |
->| false |  |  | 2023-10-27T16:31:41 | 2023-07-24T13:15:52 |  | 61.253.71.111 | total: 7<br/>undetected: 7<br/>malicious: 0<br/>clean: 0 | ip |
->| true |  |  | 2023-10-22T21:13:34 | 2023-10-23T03:27:25 |  | bloom-artists.com | total: 13<br/>undetected: 11<br/>malicious: 2<br/>clean: 0 | domain |
+>|associated_malware|categories|classification|first_seen|last_seen|reason|requested_network_location|third_party_reputations_clean|third_party_reputations_malicious|third_party_reputations_total|third_party_reputations_undetected|type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| false | phishing,<br/>command_and_control | **malicious** | 2022-09-11T11:54:39 | 2023-04-14T11:15:51 | third_party_reputation | http:<span>//</span>43.138.221.139/jquery-3.3.1.min.js | 0 | 2 | 19 | 17 | url |
+>| false |  |  | 2023-11-06T13:10:15 | 2023-07-24T13:15:52 |  | 61.253.71.111 | 0 | 0 | 7 | 7 | ip |
+>| true |  |  | 2023-10-22T21:13:34 | 2023-10-23T03:27:25 |  | bloom-artists.com | 0 | 2 | 13 | 11 | domain |
 
 
 ### reversinglabs-titaniumcloud-network-reputation-override
@@ -55315,6 +55315,10 @@ Lists the active network reputation overrides.
     "ReversingLabs": {
         "network_reputation_overrides_list": [
             {
+                "network_location": "https://cisco.com/",
+                "type": "url"
+            },
+            {
                 "network_location": "http://banco.colpatria.com.co/banca-virtual/login/",
                 "type": "url"
             },
@@ -55328,6 +55332,10 @@ Lists the active network reputation overrides.
             },
             {
                 "network_location": "http://partner.frontread.com/",
+                "type": "url"
+            },
+            {
+                "network_location": "https://eclipse.org/",
                 "type": "url"
             },
             {
@@ -55345,14 +55353,6 @@ Lists the active network reputation overrides.
             {
                 "network_location": "https://synnexfpt.com/",
                 "type": "url"
-            },
-            {
-                "network_location": "https://nuernberger.digital/",
-                "type": "url"
-            },
-            {
-                "network_location": "http://winwam.com/",
-                "type": "url"
             }
         ]
     }
@@ -55365,13 +55365,14 @@ Lists the active network reputation overrides.
 > ### Network location list
 >|network_location|type|
 >|---|---|
+>| https:<span>//</span>cisco.com/ | url |
 >| http:<span>//</span>banco.colpatria.com.co/banca-virtual/login/ | url |
 >| http:<span>//</span>cvisd.com/ | url |
 >| https://ca-sil.com/ | url |
 >| http:<span>//</span>partner.frontread.com/ | url |
+>| https:<span>//</span>eclipse.org/ | url |
 >| http:<span>//</span>163.197.220.144/5x8x | url |
 >| https:<span>//</span>ajestudios.com/ | url |
 >| https:<span>//</span>openairmt.org/ | url |
 >| https:<span>//</span>synnexfpt.com/ | url |
->| https:<span>//</span>nuernberger.digital/ | url |
->| http:<span>//</span>winwam.com/ | url |
+
