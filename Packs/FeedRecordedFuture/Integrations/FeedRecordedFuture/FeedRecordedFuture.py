@@ -517,6 +517,7 @@ def main():  # pragma: no cover
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
                     params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'))
     command = demisto.command()
+
     demisto.info('Command being called is {}'.format(command))
     # Switch case
     commands = {
