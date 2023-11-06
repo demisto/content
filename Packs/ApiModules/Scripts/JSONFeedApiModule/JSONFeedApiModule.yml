@@ -1,4 +1,4 @@
-comment: Common code that will be appended into each JSON Feed integration when it's deployed.
+comment: Common code that will be appended into each JSON Feed integration when it's deployed
 commonfields:
   id: JSONFeedApiModule
   version: -1
