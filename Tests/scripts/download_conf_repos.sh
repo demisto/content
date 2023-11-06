@@ -117,7 +117,7 @@ cp -r ./content-test-conf/content/PrivatePacks/* ./Packs
 echo "Cloned PrivatePacks"
 
 if [[ "${NIGHTLY}" == "true" || "${EXTRACT_PRIVATE_TESTDATA}" == "true" ]]; then
-    python ./Tests/scripts/extract_content_test_conf.py --content-path . --content-test-conf-path ./content-test-conf
+    python ./Tests/scripts/extract_content_test_conf.py --content-path . --content-test-conf-path ./content-test-conf --missing-content-packs-test-conf "${ARTIFACTS_FOLDER_SERVER_TYPE}/missing_content_packs_test_conf.txt"
 fi
 rm -rf ./content-test-conf
 

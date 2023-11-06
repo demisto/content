@@ -2183,7 +2183,7 @@ class TestFetch:
         """
         mocker.patch.object(demisto, 'setLastRun')
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
-                                                                            'pagination': {'meta': {'total': 2}}})
+                                                                            'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={'resources': [{'detection_id': 'ldt:1',
                                                 'created_timestamp': '2020-09-04T09:16:11Z',
@@ -2281,7 +2281,7 @@ class TestFetch:
         """
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
-                                                                            'pagination': {'meta': {'total': 4}}})
+                                                                            'meta': {'pagination': {'total': 4}}})
 
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[{'time': '2020-09-04T09:16:10Z',
@@ -2300,7 +2300,7 @@ class TestFetch:
         assert demisto.setLastRun.mock_calls[0][1][0][0] == expected_last_run
 
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:3', 'ldt:4'],
-                                                                            'pagination': {'meta': {'total': 4}}})
+                                                                            'meta': {'pagination': {'total': 4}}})
 
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[expected_last_run, {}, {}])
@@ -2373,7 +2373,7 @@ class TestFetch:
         mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}, {}])
 
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2'],
-                                                                                'pagination': {'meta': {'total': 2}}})
+                                                                                'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
@@ -2421,7 +2421,7 @@ class TestIncidentFetch:
         requests_mock.post(f'{SERVER_URL}/detects/entities/summaries/GET/v1',
                            json={})
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2'],
-                                                                                'pagination': {'meta': {'total': 2}}})
+                                                                                'meta': {'pagination': {'total': 2}}})
         requests_mock.post(f'{SERVER_URL}/incidents/entities/incidents/GET/v1',
                            json={'resources': [{'incident_id': 'ldt:1', 'start': '2020-09-04T09:16:11Z'},
                                                {'incident_id': 'ldt:2', 'start': '2020-09-04T09:16:11Z'}]})
@@ -2494,7 +2494,7 @@ class TestIncidentFetch:
         assert demisto.setLastRun.mock_calls[0][1][0][1] == expected_last_run
 
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:3', 'ldt:4'],
-                                                                                'pagination': {'meta': {'total': 4}}})
+                                                                                'meta': {'pagination': {'total': 4}}})
 
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[{}, expected_last_run, {}])
@@ -4130,7 +4130,7 @@ def test_get_remote_incident_data(mocker):
     incident_entity['status'] = 'New'
     assert mirrored_data == incident_entity
     assert updated_object == {'state': 'closed', 'status': 'New', 'tags': ['Objective/Keep Access'],
-                              'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident'}
+                              'hosts.hostname': 'SFO-M-Y81WHJ', 'incident_type': 'incident', 'fine_score': 38}
 
 
 def test_get_remote_detection_data(mocker):
@@ -4229,16 +4229,11 @@ def test_get_modified_remote_data_command(mocker):
                                       return_value={'resources': [input_data.remote_incident_id]})
     mock_get_detections = mocker.patch('CrowdStrikeFalcon.get_fetch_detections',
                                        return_value={'resources': [input_data.remote_detection_id]})
-    mock_get_idp_detections = mocker.patch('CrowdStrikeFalcon.get_idp_detections_ids',
-                                           return_value={'resources': [input_data.remote_idp_detection_id]})
     last_update = '2022-03-08T08:17:09Z'
-    last_update_idp_detection = '2022-03-08T08:17:09.000000Z'
     result = get_modified_remote_data_command({'lastUpdate': last_update})
     assert mock_get_incidents.call_args.kwargs['last_updated_timestamp'] == last_update
     assert mock_get_detections.call_args.kwargs['last_updated_timestamp'] == last_update
-    assert last_update_idp_detection in mock_get_idp_detections.call_args.kwargs['filter_arg']
-    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id,
-                                            input_data.remote_idp_detection_id]
+    assert result.modified_incident_ids == [input_data.remote_incident_id, input_data.remote_detection_id]
 
 
 @pytest.mark.parametrize('status',
