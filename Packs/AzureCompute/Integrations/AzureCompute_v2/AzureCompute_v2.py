@@ -352,10 +352,10 @@ class MsGraphClient:
         self.subscription_id = subscription_id
         self.default_params = {"api-version": API_VERSION}
 
-    def list_resource_groups(self, limit: int, tag: str = ''):
+    def list_resource_groups(self, limit: int, tag: str = '', full_url: Optional[str] = ''):
         filter_by_tag = azure_tag_formatter(tag) if tag else None
-        parameters = {'$filter': filter_by_tag, '$top': limit, 'api-version': '2021-04-01'}
-        return self.ms_client.http_request(method='GET', params=parameters, url_suffix='')
+        parameters = {'$filter': filter_by_tag, '$top': limit, 'api-version': '2021-04-01'} if not full_url else {}
+        return self.ms_client.http_request(method='GET', params=parameters, url_suffix='', full_url=full_url)
 
     def list_subscriptions(self):
         parameters = {'api-version': '2020-01-01'}
@@ -501,19 +501,30 @@ def list_resource_groups_command(client: MsGraphClient, args: dict):
     """
     tag = args.get('tag', '')
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    response = client.list_resource_groups(limit, tag)
-    # Retrieve relevant properties to return to context
-    value = response.get('value')
-    resource_groups = []
-    for resource_group in value:
-        resource_group_context = {
-            'Name': resource_group.get('name'),
-            'ID': resource_group.get('id'),
-            'Location': resource_group.get('location'),
-            'ProvisioningState': resource_group.get('properties', {}).get('provisioningState')
-        }
-        resource_groups.append(resource_group_context)
 
+    resource_groups = []
+
+    next_link = True
+    while next_link:
+        full_url = next_link if isinstance(next_link, str) else None
+        response = client.list_resource_groups(limit, tag, full_url=full_url)
+        # Retrieve relevant properties to return to context
+        value = response.get('value')
+        next_link = response.get('nextLink')
+
+        for resource_group in value:
+            resource_group_context = {
+                'Name': resource_group.get('name'),
+                'ID': resource_group.get('id'),
+                'Location': resource_group.get('location'),
+                'ProvisioningState': resource_group.get('properties', {}).get('provisioningState')
+            }
+            resource_groups.append(resource_group_context)
+
+        if len(resource_groups) >= limit:
+            break
+
+    resource_groups = resource_groups[:limit]
     title = 'List of Resource Groups'
     human_readable = tableToMarkdown(title, resource_groups, removeNull=True)
 
