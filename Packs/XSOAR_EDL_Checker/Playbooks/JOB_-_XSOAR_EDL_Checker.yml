@@ -1,7 +1,7 @@
 id: JOB - XSOAR EDL Checker
 version: -1
 name: JOB - XSOAR EDL Checker
-description: "This playbook executes the XSOAR EDL Checker automation and will send email notification when an EDL is not functioning.   \n\nRun this playbook as a job (hourly?) to monitor your EDLs."
+description: "This playbook executes the XSOAR EDL Checker automation and will send email notification when an EDL is not functioning.   \n\nRun this playbook as a job to monitor your EDLs."
 starttaskid: "0"
 tasks:
   "0":

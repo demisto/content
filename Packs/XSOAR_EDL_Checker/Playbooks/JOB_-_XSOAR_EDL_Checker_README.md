@@ -1,6 +1,6 @@
 This playbook executes the XSOAR EDL Checker automation and will send email notification when an EDL is not functioning.   
 
-Run this playbook as a job (hourly?) to monitor your EDLs.
+Run this playbook as a job to monitor your EDLs.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
