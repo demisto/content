@@ -82,10 +82,10 @@ tasks:
       version: -1
       name: Create Saved Search
       description: Creates or updates a saved search from the Log Analytics workspace.
-      script: Azure Log Analytics_copy|||azure-log-analytics-create-or-update-saved-search
+      script: "|||azure-log-analytics-create-or-update-saved-search"
       type: regular
       iscommand: true
-      brand: Azure Log Analytics_copy
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
