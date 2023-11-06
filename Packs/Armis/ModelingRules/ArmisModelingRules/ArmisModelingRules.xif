@@ -66,7 +66,7 @@ alter // extract the device name from the activity title, according to the activ
 	target_ipv6_addresses = arrayfilter(target_ip_addresses, "@element" ~= "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}")
 | alter
 	xdm.network.ip_protocol = coalesce(protocol_name, protocol),
-	xdm.alert.original_threat_name = content, // extract protocol from content 
+	xdm.alert.original_threat_name = content, 
 	xdm.event.type = type,
 	xdm.event.description = title,
 	xdm.event.id = activityUUID,
@@ -75,7 +75,7 @@ alter // extract the device name from the activity title, according to the activ
 	xdm.network.session_id = arraystring(arraymap(connectionIds -> [], trim("@element", "\"")), ";"),
 	xdm.network.tls.cipher = tls_cipher,
 	xdm.network.tls.protocol_version = tls_version,
-	xdm.observer.name = sensor -> name, 
+	xdm.observer.name = sensor -> name,
 	xdm.observer.type = sensor -> type, 
 	xdm.source.application.name = application_name,
 	xdm.source.application.version = application_version,
@@ -98,10 +98,11 @@ alter os = uppercase(operatingSystem)
 | alter
 	xdm.alert.severity = to_string(risklevel), 
 	xdm.event.tags = tags -> [],
+	xdm.event.type = "Device Seen",
 	xdm.observer.name = sensor -> name, 
 	xdm.observer.type = sensor -> type, 
 	xdm.source.host.hostname = coalesce(name, arrayindex(split(names, ","), 0)),
-	xdm.source.host.device_category = type, 
+	xdm.source.host.device_category = coalesce(type, category),
 	xdm.source.host.device_model = model, 
 	xdm.source.host.device_id = to_string(id), 
 	xdm.source.host.manufacturer = manufacturer, 
