@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
 from CommonServerPython import *
 import pytest
+from pytest_mock import MockerFixture
 
 
 def load_mock_response(file_name):
@@ -14,11 +14,11 @@ def load_mock_response(file_name):
         str: Mock file content.
 
     """
-    with open('test_data/' + file_name, mode='r') as f:
+    with open(f'test_data/{file_name}') as f:
         return json.loads(f.read())
 
 
-def test_get_incidents(requests_mock, mocker):
+def test_get_incidents(requests_mock, mocker: MockerFixture):
     """
     Given:
         - An incident with non-ascii character in its documentation
@@ -60,7 +60,7 @@ def test_get_incidents(requests_mock, mocker):
     assert '| Documentation: • |' in res['HumanReadable']
 
 
-def test_add_responders(requests_mock, mocker):
+def test_add_responders(requests_mock, mocker: MockerFixture):
     """
     Given:
         - a responder request.
@@ -104,7 +104,7 @@ def test_add_responders(requests_mock, mocker):
     assert demisto.args().get('user_requests') == expected_users_requested
 
 
-def test_add_responders_default(requests_mock, mocker):
+def test_add_responders_default(requests_mock, mocker: MockerFixture):
     """
     Given:
         - a responder request without specifying responders.
@@ -147,7 +147,7 @@ def test_add_responders_default(requests_mock, mocker):
     assert demisto.params().get('DefaultRequestor') == expected_users_requested
 
 
-def test_play_response_play(requests_mock, mocker):
+def test_play_response_play(requests_mock, mocker: MockerFixture):
     """
     Given:
         - a responder request without specifying responders.
@@ -188,7 +188,7 @@ def test_play_response_play(requests_mock, mocker):
     assert res.raw_response == {"status": "ok"}
 
 
-def test_get_users_on_call(requests_mock, mocker):
+def test_get_users_on_call(requests_mock, mocker: MockerFixture):
     """
     Given:
         - a request to get user on-call by schedule ID.
@@ -225,7 +225,7 @@ def test_get_users_on_call(requests_mock, mocker):
     assert demisto.args().get('scheduleID') == res.outputs[0].get('ScheduleID')
 
 
-def test_get_users_on_call_now(requests_mock, mocker):
+def test_get_users_on_call_now(requests_mock, mocker: MockerFixture):
     """
     Given:
         - a reqest to get user oncall by schedule ID without specifying responders.
@@ -263,7 +263,7 @@ def test_get_users_on_call_now(requests_mock, mocker):
     assert 'oncalls' in res.raw_response
 
 
-def test_submit_event(requests_mock, mocker):
+def test_submit_event(requests_mock, mocker: MockerFixture):
     """
     Given:
         - a reqest to submit request.
@@ -302,7 +302,7 @@ def test_submit_event(requests_mock, mocker):
     assert '### Trigger Event' in res.get('HumanReadable')
 
 
-def test_get_all_schedules_command(mocker, requests_mock):
+def test_get_all_schedules_command(mocker: MockerFixture, requests_mock):
     """
     Given:
         - a reqest to get all schedule
@@ -339,7 +339,7 @@ def test_get_all_schedules_command(mocker, requests_mock):
     assert '### All Schedules' in res.get('HumanReadable')
 
 
-def test_get_users_contact_methods_command(mocker, requests_mock):
+def test_get_users_contact_methods_command(mocker: MockerFixture, requests_mock):
     """
     Given:
         - a reqest to get all schedule.
@@ -406,7 +406,7 @@ def test_get_users_notification_command(mocker, requests_mock):
 
 
 @pytest.mark.parametrize('severity, expected_result', [('high', 3), ('low', 1), ('other_severity', 0)])
-def test_translate_severity(mocker, severity, expected_result):
+def test_translate_severity(mocker: MockerFixture, severity, expected_result):
     """
     Given:
         - a severity.

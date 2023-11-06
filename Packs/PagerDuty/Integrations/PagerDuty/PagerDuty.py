@@ -3,9 +3,6 @@ from CommonServerUserPython import *
 
 from CommonServerPython import *
 
-# Disable insecure warnings
-import urllib3
-urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 # PagerDuty API works only with secured communication.
@@ -21,8 +18,8 @@ SERVER_URL = 'https://api.pagerduty.com/'
 CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
 
 DEFAULT_HEADERS = {
-    'Authorization': 'Token token=' + API_KEY,
-    'Accept': 'application/vnd.pagerduty+json;version=2'
+    'Authorization': f'Token token={API_KEY}',
+    'Accept': 'application/vnd.pagerduty+json;version=2',
 }
 
 '''HANDLE PROXY'''
@@ -91,7 +88,7 @@ INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urge
 
 
 def http_request(method, url, params_dict=None, data=None, json_data=None, additional_headers=None):  # pragma: no cover
-    LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
+    demisto.debug(f'running {method} request with url={url}\nparams={json.dumps(params_dict)}')
     headers = DEFAULT_HEADERS.copy()
     if not additional_headers:
         additional_headers = {}
@@ -110,7 +107,7 @@ def http_request(method, url, params_dict=None, data=None, json_data=None, addit
         return unicode_to_str_recur(res.json())
 
     except Exception as e:
-        LOG(e)
+        demisto.debug(e)
         raise
 
 
@@ -225,7 +222,7 @@ def parse_incident_data(incidents):
     outputs = []
     contexts = []
     raw_response = []
-    for i, incident in enumerate(incidents):
+    for _i, incident in enumerate(incidents):
         output = {}
         context = {}
 
@@ -307,7 +304,7 @@ def parse_incident_data(incidents):
 
 
 def extract_incidents_data(incidents, table_name):
-    """Extact data about incidents."""
+    """Extract data about incidents."""
     outputs, contexts, _ = parse_incident_data(incidents)
 
     return {
@@ -327,11 +324,10 @@ def extract_all_schedules_data(schedules):
     outputs = []
     contexts = []
     for i in range(len(schedules)):
-        output = {}
-        context = {}  # type: Dict
+        context: dict = {}
         data = schedules[i]
 
-        output['ID'] = data.get('id')
+        output = {'ID': data.get('id')}
         output['Name'] = data.get('name')
         output['Time Zone'] = data.get('time_zone')
         output['Today'] = datetime.today().strftime('%Y-%m-%d')
@@ -405,17 +401,15 @@ def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY):
 
 def extract_new_event_data(table_name, response):
     """Extract the data from the response of creating a new command."""
-    output = {}
-    context = {}
-
-    output['Status'] = response.get('status', '')
+    output = {'Status': response.get('status', '')}
     output['Message'] = response.get('message', '')
     output['Incident key'] = response.get('dedup_key', '')
 
-    context['Status'] = output['Status']
-    context['Message'] = output['Message']
-    context['incident_key'] = output['Incident key']
-
+    context = {
+        'Status': output['Status'],
+        'Message': output['Message'],
+        'incident_key': output['Incident key'],
+    }
     return {
         'Type': entryTypes['note'],
         'Contents': response,
@@ -447,7 +441,7 @@ def extract_users_contact_methods(user_contact_methods):
         outputs.append(output)
 
         del contact_method['address']
-        if output['Type'] == 'SMS' or output['Type'] == 'Phone':
+        if output['Type'] in ['SMS', 'Phone']:
             del contact_method['country_code']
             contact_method['phone'] = output['Details']
         else:
@@ -498,8 +492,7 @@ def extract_responder_request(responder_request_response):
     responder_request = responder_request_response.get("responder_request")
     for request in responder_request.get("responder_request_targets", []):
         request = request.get("responder_request_target")
-        output = {}
-        output["Type"] = request.get("type")
+        output = {"Type": request.get("type")}
         output["ID"] = request.get("id")
         if output["Type"] == "user":
             responder_user = request.get("incidents_responders", [])[0].get("user")
@@ -555,9 +548,9 @@ def fetch_incidents():
 
 def configure_status(status='triggered,acknowledged'):
     statuses = status.split(',')
-    statuses_string = "&" + STATUSES + '='
+    statuses_string = f"&{STATUSES}="
     statuses = statuses_string.join(statuses)
-    status_request = '&' + STATUSES + '=' + statuses
+    status_request = f'&{STATUSES}={statuses}'
 
     status_request = status_request + INCLUDED_FIELDS + UTC_PARAM
     return status_request
@@ -680,8 +673,8 @@ def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
     return extract_new_event_data(ACKNOWLEDGE_EVENT, action_response)
 
 
-def get_incident_data():
-    incident_id = demisto.args().get('incident_id')
+def get_incident_data(args: dict):
+    incident_id = args['incident_id']
 
     url = SERVER_URL + GET_INCIDENT_SUFFIX + incident_id
     res = http_request('GET', url, {})
@@ -690,18 +683,14 @@ def get_incident_data():
 
 def get_service_keys():
     offset = 0
-    raw_response = []
-
     url = SERVER_URL + GET_SERVICES_SUFFIX
     res = http_request('GET', url, {"offset": offset})
-    raw_response.append(res)
-
+    raw_response = [res]
     outputs = []
     contexts = []
     while res.get('services', []):
         services = res.get('services', [])
         for service in services:
-            output = {}
             context = {'ID': service.get('id'), 'Name': service.get('name'), 'Status': service.get('status'),
                        'CreatedAt': service.get('created_at')}
 
@@ -710,9 +699,12 @@ def get_service_keys():
             for integration in service.get('integrations', []):
                 integration_url = integration.get('self', '')
                 if integration_url:
-                    integration_data = {}
                     integration_res = http_request('GET', integration_url, {}).get('integration', {})
-                    integration_data['Name'] = integration_res.get('service', {}).get('summary', '')
+                    integration_data = {
+                        'Name': integration_res.get('service', {}).get(
+                            'summary', ''
+                        )
+                    }
                     integration_data['Key'] = integration_res.get('integration_key', '')
                     vendor_value = integration_res.get('vendor', {})
                     if not vendor_value:
@@ -721,11 +713,12 @@ def get_service_keys():
                         integration_data['Vendor'] = vendor_value.get('summary', 'Missing Vendor information')
 
                     integration_list.append(integration_data)
-                    integration_string += "Name: {}, Vendor: {}, Key: {}\n".format(integration_data['Name'],
-                                                                                   integration_data['Vendor'],
-                                                                                   integration_data['Key'])
+                    integration_string += (f"Name: {integration_data['Name']},"
+                                           " Vendor: {integration_data['Vendor']},"
+                                           " Key: {integration_data['Key']}\n"
+                                           )
 
-            output['Integration'] = integration_string
+            output = {'Integration': integration_string}
             context['Integration'] = integration_list
 
             outputs.append(output)
@@ -809,10 +802,10 @@ def run_response_play(incident_id, from_email, response_play_uuid):
     }
     response = http_request('POST', url, json_data=body, additional_headers={"From": from_email})
     if response != {"status": "ok"}:
-        raise Exception("Status NOT Ok - {}".format(response))
+        raise Exception(f"Status NOT Ok - {response}")
     return CommandResults(
-        readable_output="Response play successfully run to the incident " + incident_id + " by " + from_email,
-        raw_response=response
+        readable_output=f"Response play successfully run to the incident {incident_id} by {from_email}",
+        raw_response=response,
     )
 
 
@@ -820,40 +813,45 @@ def run_response_play(incident_id, from_email, response_play_uuid):
 
 
 def main():
+    command = demisto.command()
+    args = demisto.args()
+
     if not API_KEY:
         raise DemistoException('API key must be provided.')
-    LOG('command is %s' % (demisto.command(),))
+    demisto.debug(f'command is {command}')
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             test_module()
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'fetch-incidents':
             fetch_incidents()
-        elif demisto.command() == 'PagerDuty-incidents':
-            demisto.results(get_incidents_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-submit-event':
-            demisto.results(submit_event_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-users-on-call':
-            return_results(get_on_call_users_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-all-schedules':
-            demisto.results(get_all_schedules_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-users-on-call-now':
-            return_results(get_on_call_now_users_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-contact-methods':
-            demisto.results(get_users_contact_methods_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-users-notification':
-            demisto.results(get_users_notification_command(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-resolve-event':
-            demisto.results(resolve_event(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-acknowledge-event':
-            demisto.results(acknowledge_event(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-get-incident-data':
-            demisto.results(get_incident_data())
-        elif demisto.command() == 'PagerDuty-get-service-keys':
+        elif command == 'PagerDuty-incidents':
+            demisto.results(get_incidents_command(**args))
+        elif command == 'PagerDuty-submit-event':
+            demisto.results(submit_event_command(**args))
+        elif command == 'PagerDuty-get-users-on-call':
+            return_results(get_on_call_users_command(**args))
+        elif command == 'PagerDuty-get-all-schedules':
+            demisto.results(get_all_schedules_command(**args))
+        elif command == 'PagerDuty-get-users-on-call-now':
+            return_results(get_on_call_now_users_command(**args))
+        elif command == 'PagerDuty-get-contact-methods':
+            demisto.results(get_users_contact_methods_command(**args))
+        elif command == 'PagerDuty-get-users-notification':
+            demisto.results(get_users_notification_command(**args))
+        elif command == 'PagerDuty-resolve-event':
+            demisto.results(resolve_event(**args))
+        elif command == 'PagerDuty-acknowledge-event':
+            demisto.results(acknowledge_event(**args))
+        elif command == 'PagerDuty-get-incident-data':
+            demisto.results(get_incident_data(args))
+        elif command == 'PagerDuty-get-service-keys':
             demisto.results(get_service_keys())
-        elif demisto.command() == 'PagerDuty-add-responders':
-            return_results(add_responders_to_incident(**demisto.args()))
-        elif demisto.command() == 'PagerDuty-run-response-play':
-            return_results(run_response_play(**demisto.args()))
+        elif command == 'PagerDuty-add-responders':
+            return_results(add_responders_to_incident(**args))
+        elif command == 'PagerDuty-run-response-play':
+            return_results(run_response_play(**args))
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented")
     except Exception as err:
         return_error(str(err))
 
