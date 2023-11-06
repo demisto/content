@@ -900,8 +900,10 @@ def export_tsf_command(args: dict):
     Export a TSF from PAN-OS.
     """
     if job_id := args.get('job_id'):
-        export_tsf_status = get_tsf_export_status(job_id).get('response', {}).get('result', {})
-        job_status = export_tsf_status.get('job', {}).get('status')
+        job_status = dict_safe_get(
+                get_tsf_export_status(job_id),
+                ['response', 'result', 'job', 'status']
+        )
         return PollResult(
             response=download_tsf(job_id),
             continue_to_poll=job_status != 'FIN',  # continue polling if job isn't done
