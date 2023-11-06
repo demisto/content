@@ -1,3 +1,4 @@
+from copy import deepcopy
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
@@ -1589,7 +1590,8 @@ def domain_report_output(response_json, domain):
         **TOTAL**: {third_party_statistics.get("total")}
         """
 
-        tp_sources = bold_classification(third_party.get("sources"), "detection", "malicious")
+        tp_sources = deepcopy(third_party.get("sources"))
+        tp_sources = bold_classification(tp_sources, "detection", "malicious")
         sources_table = tableToMarkdown(
             name="Third party sources",
             t=tp_sources,
@@ -1886,7 +1888,8 @@ def ip_report_output(response_json, ip):
          **TOTAL**: {third_party_statistics.get("total")}
         """
 
-        tp_sources = bold_classification(third_party.get("sources"), "detection", "malicious")
+        tp_sources = deepcopy(third_party.get("sources"))
+        tp_sources = bold_classification(tp_sources, "detection", "malicious")
         sources_table = tableToMarkdown(
             name="Third party sources",
             t=tp_sources
@@ -1939,10 +1942,11 @@ def ip_downloaded_files_command():
 
 
 def ip_downloaded_files_output(response, ip):
-    response = bold_classification(response, "classification", "MALICIOUS")
+    readable = deepcopy(response)
+    readable = bold_classification(readable, "classification", "MALICIOUS")
     files_table = tableToMarkdown(
         name="Downloaded files",
-        t=response
+        t=readable
     )
 
     markdown = f"## ReversingLabs Files downloaded from IP address {ip}\n {files_table}"
@@ -2100,7 +2104,8 @@ def network_reputation_command():
 
 
 def network_reputation_output(response_json, network_locations):
-    entries = bold_classification(response_json.get("rl", {}).get("entries"), "classification", "malicious")
+    entries = deepcopy(response_json.get("rl").get("entries"))
+    entries = bold_classification(entries, "classification", "malicious")
 
     for entry in entries:
         tp_reputations = entry.get("third_party_reputations")
