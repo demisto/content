@@ -85,6 +85,9 @@ def fetch_certificates(message: str):
     else:
         for domain in all_domains:
             # Check for homographs
+            if domain.startswith('*'):
+                # Avoid jokers in certificates
+                continue
             is_suspicious_domain, result = check_homographs(domain)
             if is_suspicious_domain:
                 now = datetime.now()
