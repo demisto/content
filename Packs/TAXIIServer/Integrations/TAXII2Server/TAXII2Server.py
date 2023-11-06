@@ -1410,30 +1410,35 @@ def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value
     entity_b_objects: list[dict[str, Any]] = []
     entity_b_values = ""
     for relationship in relationships:
-        if relationship.get('CustomFields', {}).get('revoked', False):
-            continue
-        if (entity_b_value := relationship.get('entityB')) and entity_b_value not in iocs_value_to_id:
-            iocs_value_to_id[entity_b_value] = ""
-            entity_b_values += f'\"{entity_b_value}\" '
+        if relationship:
+            if relationship.get('CustomFields', {}).get('revoked', False):
+                continue
+            if (entity_b_value := relationship.get('entityB')) and entity_b_value not in iocs_value_to_id:
+                iocs_value_to_id[entity_b_value] = ""
+                entity_b_values += f'\"{entity_b_value}\" '
     if not entity_b_values:
         return entity_b_objects
 
-    found_indicators = demisto.searchIndicators(query=f'value:({entity_b_values})').get('iocs') or []
+    try:
+        found_indicators = demisto.searchIndicators(query=f'value:({entity_b_values})').get('iocs') or []
+    except AttributeError:
+        found_indicators = []
 
     extensions_dict: dict = {}
     for xsoar_indicator in found_indicators:
-        xsoar_type = xsoar_indicator.get('indicator_type')
-        stix_ioc, extension_definition, extensions_dict = create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
-        if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in SERVER.types_for_indicator_sdo:
-            stix_ioc = convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
-        if SERVER.has_extension and stix_ioc:
-            entity_b_objects.append(stix_ioc)
-            if extension_definition:
-                extensions.append(extension_definition)
-        elif stix_ioc:
-            entity_b_objects.append(stix_ioc)
+        if xsoar_indicator:
+            xsoar_type = xsoar_indicator.get('indicator_type')
+            stix_ioc, extension_definition, extensions_dict = create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
+            if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in SERVER.types_for_indicator_sdo:
+                stix_ioc = convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
+            if SERVER.has_extension and stix_ioc:
+                entity_b_objects.append(stix_ioc)
+                if extension_definition:
+                    extensions.append(extension_definition)
+            elif stix_ioc:
+                entity_b_objects.append(stix_ioc)
 
-        iocs_value_to_id[(get_stix_object_value(stix_ioc))] = stix_ioc.get('id')
+            iocs_value_to_id[(get_stix_object_value(stix_ioc))] = stix_ioc.get('id') if stix_ioc else None
     demisto.debug(f"Generated {len(entity_b_objects)} STIX objects for 'entityB' values.")
     return entity_b_objects
 
