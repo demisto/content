@@ -278,4 +278,3 @@ def test_get_server_numeric_version(mocker, version):
     from Tests.test_content import get_server_numeric_version
     mocker.patch("Tests.test_content.get_demisto_version", return_value=version)
     assert get_server_numeric_version(demisto_client) == version
-
