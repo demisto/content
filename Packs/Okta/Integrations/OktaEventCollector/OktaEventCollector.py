@@ -1,5 +1,6 @@
 from CommonServerPython import *
 from http import HTTPStatus
+from typing import cast
 VENDOR = "okta"
 PRODUCT = "okta"
 FETCH_LIMIT = 1000
@@ -144,14 +145,15 @@ def main():  # pragma: no cover
         client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate)
         command = demisto.command()
         demisto.debug(f'Command being called is {command}')
+        after: datetime
         if command == 'test-module':
-            from_date: datetime.datetime = dateparser.parse('1 hour')
-            get_events_command(client, events_limit, since=from_date.isoformat())
+            after = cast(datetime, dateparser.parse('1 hour'))
+            get_events_command(client, events_limit, since=after.isoformat())
             demisto.results('ok')
 
         if command == 'okta-get-events':
-            from_date: datetime.datetime = dateparser.parse(demisto_args.get('from_date').strip())
-            events, _ = get_events_command(client, events_limit, since=from_date.isoformat())
+            after = cast(datetime, dateparser.parse(demisto_args.get('from_date').strip()))
+            events, _ = get_events_command(client, events_limit, since=after.isoformat())
             command_results = CommandResults(
                 readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
                 raw_response=events,
@@ -162,7 +164,7 @@ def main():  # pragma: no cover
                 send_events_to_xsiam(events[:events_limit], vendor=VENDOR, product=PRODUCT)
 
         elif command == 'fetch-events':
-            after = dateparser.parse(demisto_params['after'].strip())
+            after = cast(datetime, dateparser.parse(demisto_params['after'].strip()))
             last_run = demisto.getLastRun()
             last_object_ids = last_run.get('ids')
             if 'after' not in last_run:
