@@ -356,6 +356,7 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
         return output
     except Exception as e:
         demisto.error(f'Failed to rasterize page. Exception: {e}')
+        raise
     finally:
         quit_driver_and_display_and_reap_children(driver, display)
 
@@ -448,6 +449,7 @@ def get_image(driver, width: int, height: int, full_screen: bool, include_url=Fa
         image = get_image_screenshot(driver=driver, include_url=include_url)
     except Exception as e:
         demisto.error(f'Failed to capture screenshot.png image. Exception: {e}')
+        raise
     finally:
         quit_driver_and_display_and_reap_children(driver, None)
 
