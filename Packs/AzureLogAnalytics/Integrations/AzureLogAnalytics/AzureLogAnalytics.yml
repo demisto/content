@@ -20,8 +20,8 @@ configuration:
   name: credentials
   type: 9
   required: false
-  section: Connect
   displaypassword: Key / Client Secret
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -89,26 +89,26 @@ configuration:
 - display: Default Subscription ID
   name: subscriptionID
   required: true
-  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
   type: 0
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
   section: Connect
 - display: Default Resource Group Name
   name: resourceGroupName
   required: true
-  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
   type: 0
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
   section: Connect
 - display: Default Workspace Name
   name: workspaceName
   required: true
-  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command.
   type: 0
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command.
   section: Connect
 - display: Default Workspace ID (the UUID of the workspace, e.g. 123e4567-e89b-12d3-a456-426614174000)
   name: workspaceID
   required: true
-  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
   type: 0
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -313,8 +313,8 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-log-analytics-generate-login-url
     arguments: []
-  - name: azure-log-analytics-subscriptions-list
-    description: List all subscriptions for a tenant.
+  - description: List all subscriptions for a tenant.
+    name: azure-log-analytics-subscriptions-list
     outputs:
     - contextPath: AzureLogAnalytics.Subscription.authorizationSource
       description: The authorization source of the request.
@@ -342,7 +342,7 @@ script:
       type: Object
     - contextPath: AzureLogAnalytics.Subscription.tenantId
       description: The subscription tenant ID.
-      type: String 
+      type: String
   - name: azure-log-analytics-workspace-list
     description: Gets workspaces in a resource group.
     arguments:
@@ -430,7 +430,7 @@ script:
       description: The capacity reservation level in GB for this workspace, when CapacityReservation sku is selected.
       type: Number
     - contextPath: AzureLogAnalytics.workspace.properties.sku.lastSkuUpdate
-      description: lastSkuUpdate
+      description: The last time when the sku was updated.
       type: String
     - contextPath: AzureLogAnalytics.workspace.properties.sku.name
       description: The name of the SKU.
@@ -460,7 +460,7 @@ script:
       description: The identity that last modified the resource.
       type: String
     - contextPath: AzureLogAnalytics.workspace.systemData.lastModifiedByType
-      description: lastModifiedByType
+      description: lastModifiedByType.
       type: String
     - contextPath: AzureLogAnalytics.workspace.tags
       description: Resource tags.
