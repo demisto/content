@@ -169,9 +169,13 @@ demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    MARKETPLACE_VERSION: "xsoar_saas"
-    MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
+    PRODUCT_TYPE: "XPANSE"
+    SERVER_TYPE: "XPANSE"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XPANSE}/server_type_${SERVER_TYPE}"
+    MARKETPLACE_VERSION: "xpanse"
+    PRODUCT_NAME: "Cortex XPANSE"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
   cache:
@@ -231,8 +235,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
-      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" "./artifacts/env_results.json"
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
 
     - section_start "Wait Until Server Ready" --collapsed
@@ -309,15 +313,17 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
       ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_xsiam"
       GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-      ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+      ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
       GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
-      GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+      GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
       SERVER_TYPE: "XSIAM"
       MARKETPLACE_NAME: "marketplacev2"
       NON_REMOVABLE_PACKS: "Base"
       EXTRACT_PRIVATE_TESTDATA: "true"
       NIGHTLY: "true"
       ALLOW_FAILURE: "true"
+      PRODUCT_TYPE: "XSIAM"
+      ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
   needs: ["demisto-sdk-nightly:mpv2-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -339,7 +345,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
 
     - !reference [.download-demisto-conf]
@@ -400,12 +406,15 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_saas"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
     NIGHTLY: "true"
     ALLOW_FAILURE: "true"
+    PRODUCT_TYPE: "XSOAR"
+    CLOUD_API_TOKENS: $XSIAM_TOKENS
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   needs: ["demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -428,7 +437,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
 
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
