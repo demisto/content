@@ -21,13 +21,15 @@ urllib3.disable_warnings()  # Disable insecure warnings
 DEFAULT_TTL = "300"
 SERVER_LOG_DIRECTORY = "/var/log/demisto"
 SERVER_LOG_FILE_PATH = f"{SERVER_LOG_DIRECTORY}/server.log"
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
 
 
 def options_handler() -> Namespace:
     parser = ArgumentParser(description='Utility for destroying integration test instances')
     parser.add_argument('--artifacts-dir', help='Path to the artifacts directory', required=True)
     parser.add_argument('--instance-role', help='The instance role', required=True)
-    parser.add_argument('--env-file', help='The env_results.json file')
+    parser.add_argument('--env-file', help='The env_results.json file', default=ENV_RESULTS_PATH, required=False)
     return parser.parse_args()
 
 
@@ -89,9 +91,9 @@ def tqdm_progress4_update(tqdm_progress: tqdm) -> Callable[[bytes, int, int, tup
     return update_to
 
 
-def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, role: str) -> bool:
+def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, readable_role: str, role: str) -> bool:
     try:
-        download_path = (Path(artifacts_dir) / f"server_{role}_{server_ip}.log").as_posix()
+        download_path = (Path(artifacts_dir) / f"instance_{readable_role}" / f"server_{role}_{server_ip}.log").as_posix()
         logging.info(f'Downloading server logs from server {server_ip} from:{SERVER_LOG_FILE_PATH} to {download_path}')
         with (tqdm(unit='B', unit_scale=True, unit_divisor=1024, desc='Downloading server logs', mininterval=1.0, leave=True,
                    colour='green') as tqdm_progress,
@@ -110,7 +112,7 @@ def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip:
             ssh.load_system_host_keys()
             ssh.connect(server_ip, username=SSH_USER)
             success &= chmod_logs(ssh, server_ip)
-            success &= download_logs(ssh, server_ip, artifacts_dir, role)
+            success &= download_logs(ssh, server_ip, artifacts_dir, readable_role, role)
 
             if (Path(artifacts_dir) / f'is_build_passed_{role}.txt').exists() and \
                     (Path(artifacts_dir) / f'is_post_update_passed_{role}.txt').exists():

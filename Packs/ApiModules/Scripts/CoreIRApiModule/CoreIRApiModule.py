@@ -2464,13 +2464,20 @@ def get_indicators_context(incident):
 
     file_artifacts = incident.get('file_artifacts', [])
     for file in file_artifacts:
+        file_sha = file.get('file_sha256')
         file_details = {
             'Name': file.get('file_name'),
-            'SHA256': file.get('file_sha256'),
+            'SHA256': file_sha,
         }
         remove_nulls_from_dictionary(file_details)
+        is_malicious = file.get("is_malicious")
+
         if file_details:
             file_context.append(file_details)
+            if file_sha:
+                relevant_processes = filter(lambda p: p.get("SHA256") == file_sha, process_context)
+                for process in relevant_processes:
+                    process["is_malicious"] = is_malicious
 
     return file_context, process_context, domain_context, ip_context
 
