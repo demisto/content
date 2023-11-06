@@ -278,6 +278,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - |
       # workaround for the hard-coded value in the sdk
       cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
     - section_end "Copy env results to artifacts folder"
 
     - section_start "Wait Until Server Ready" --collapsed
@@ -395,7 +396,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - |
       # workaround for the hard-coded value in the sdk
       cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
-      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
     - section_end "Copy env results to artifacts folder"
 
     - section_start "Test Modeling Rules" --collapsed
