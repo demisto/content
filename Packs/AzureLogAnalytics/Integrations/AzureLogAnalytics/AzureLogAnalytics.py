@@ -99,7 +99,7 @@ def validate_params(refresh_token, managed_identities_client_id, client_credenti
             raise DemistoException("Client Secret must be provided for client credentials flow.")
         elif not self_deployed and not enc_key:
             raise DemistoException('Key must be provided when not using self deployed flow. For further information see '
-                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         elif not enc_key and not (certificate_thumbprint and private_key):
             raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
