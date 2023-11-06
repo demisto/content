@@ -14,7 +14,8 @@ VENDOR = 'tenable'
 PRODUCT = 'io'
 NUM_ASSETS = 5000
 DATE_FORMAT = '%Y-%m-%d'
-MAX_CHUNK_SIZE = 5000
+MAX_CHUNK_SIZE = 10000
+CHUNK_SIZE = 5000
 MAX_CHUNKS_PER_FETCH = 10
 
 ''' CLIENT CLASS '''
@@ -198,16 +199,13 @@ def handle_assets(assets_last_run, assets):
     last_fetch = assets_last_run.get('last_fetch')
     if last_asset_id:
         assets = list(filter(lambda asset: asset.get('id') != last_asset_id, assets))
-    assets_last_run.pop('export_uuid', None)  # if the polling is over and we can start a new fetch
-    assets_last_run.pop('nextTrigger', None)
-    assets_last_run.pop('type', None)
-    assets_last_run.pop('available_chunks')
+
     for asset in assets:
         created_at = round(get_timestamp(arg_to_datetime(asset.get('created_at'))))
         if created_at > last_fetch:
             last_fetch = created_at
             assets_last_run.update({"asset_id": asset.get("id")})
-    assets_last_run.update({'last_fetch': last_fetch})
+    assets_last_run.update({'last_fetch': last_fetch + 1})
 
     return assets, assets_last_run
 
@@ -229,8 +227,6 @@ def handle_assets_chunks(client: Client, assets_last_run):
         assets_last_run.pop('available_chunks', None)
         assets_last_run.pop('export_uuid', None)
     return handle_assets(assets_last_run, assets)
-    # todo: add function to return assets and update last fetch in lastrun
-    # return assets, assets_last_run
 
 
 def try_get_assets_chunks(client: Client, export_uuid: str, assets_last_run):
@@ -445,10 +441,10 @@ def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_la
 
     """
 
-    demisto.info("Getting export uuid.")
+    demisto.info("Getting assets export uuid.")
 
-    last_fetch: int = assets_last_run.get('last_fetch') or round(get_timestamp(first_fetch))
-    export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=last_fetch)    # todo: to keep chunk size as 5000 max?
+    last_fetch: int = assets_last_run.get('last_fetch') or round(get_timestamp(first_fetch))    # todo: are we gonna fetch with new last fetch everytime?
+    export_uuid = client.export_assets_request(chunk_size=CHUNK_SIZE, fetch_from=last_fetch)    # todo: chunk_size const or customized?
     demisto.debug(f'assets export uuid is {export_uuid}')
 
     assets_last_run.update({'last_fetch': last_fetch, 'export_uuid': export_uuid})
@@ -470,11 +466,10 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):
     assets = []
     export_uuid = assets_last_run.get('export_uuid')    # if already in assets_last_run meaning its still polling chunks from api
     last_fetch = assets_last_run.get('last_fetch')  # assets last run fetch time
-    available_chunks = assets_last_run.get('available_chunks', [])
+    available_chunks = assets_last_run.get('available_chunks', [])  # if exists, still downloading chunks from prev fetch call
     if available_chunks:
         assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
     elif export_uuid:
-        demisto.info(f'Got export uuid from API {export_uuid}')
         status = try_get_assets_chunks(client=client, export_uuid=export_uuid, assets_last_run=assets_last_run)
 
         if status in ['PROCESSING', 'QUEUED']:
@@ -483,14 +478,13 @@ def fetch_assets_command(client: Client, assets_last_run, max_fetch):
         # set params for next run
         if status == 'FINISHED':
             assets, assets_last_run = handle_assets_chunks(client, assets_last_run)
-            # assets, assets_last_run = handle_finished_status(assets_last_run, assets)
             # assets = assets[:max_fetch]
         elif status in ['CANCELLED', 'ERROR'] and last_fetch:
             export_uuid = client.export_assets_request(chunk_size=MAX_CHUNK_SIZE, fetch_from=last_fetch)
             assets_last_run.update({'export_uuid': export_uuid})
             assets_last_run.update({'nextTrigger': '30', "type": 1})
 
-    demisto.info(f'merit, Done fetching {len(assets)} assets, {assets_last_run=}.')
+    demisto.info(f'Done fetching {len(assets)} assets, {assets_last_run=}.')
     return assets, assets_last_run
 
 
@@ -636,31 +630,21 @@ def main() -> None:  # pragma: no cover
                                       should_push_events=argToBoolean(args.get('should_push_events', 'true')))
 
         elif command == 'fetch-events':
-            demisto.debug("meritfetchevents")
             last_run = demisto.getLastRun()
-            demisto.debug(f"saved lastrun events: {last_run}")
-            new_last_run = {"testing": "events lastrun"}
-            demisto.debug(f"new lastrun events: {new_last_run}")
+            if run_vulnerabilities_fetch(last_run=last_run, first_fetch=first_fetch,
+                                         vuln_fetch_interval=vuln_fetch_interval):
+                generate_export_uuid(client, first_fetch, last_run, severity)
+
+            vulnerabilities = fetch_vulnerabilities(client, last_run, severity)
+            events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
+
+            call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities, should_push_events=True)
+
             demisto.setLastRun(new_last_run)
-            # last_run = demisto.getLastRun()
-            # if run_vulnerabilities_fetch(last_run=last_run, first_fetch=first_fetch,
-            #                              vuln_fetch_interval=vuln_fetch_interval):
-            #     generate_export_uuid(client, first_fetch, last_run, severity)
-            #
-            # vulnerabilities = fetch_vulnerabilities(client, last_run, severity)
-            # events, new_last_run = fetch_events_command(client, first_fetch, last_run, max_fetch)
-            #
-            # call_send_events_to_xsiam(events=events, vulnerabilities=vulnerabilities, should_push_events=True)
-            #
-            # demisto.setLastRun(new_last_run)
 
         elif command == 'fetch-assets':
             assets_last_run = demisto.getAssetsLastRun()
             demisto.debug(f"saved lastrun assets: {assets_last_run}")
-
-            # if assets_last_run.get('available_chunks'):
-            #     assets, new_assets_last_run = handle_assets_chunks(client, assets_last_run)
-            # else:
 
             # starting new fetch for assets, not polling from prev call
             if not assets_last_run.get('export_uuid'):
@@ -672,6 +656,7 @@ def main() -> None:  # pragma: no cover
 
             send_events_to_xsiam(assets, product=PRODUCT, vendor=VENDOR)
             demisto.debug(f"done sending {len(assets)} assets to xsiam")
+            demisto.updateModuleHealth({'eventsPulled': len(assets)})
 
             # todo: to be implemented in CSP once we have the api endpoint from xdr
             demisto.updateModuleHealth({'assetsPulled': len(assets)})
