@@ -197,8 +197,10 @@ def find_zombie_processes():
         ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
     """
     try:
+        demisto.debug('find_zombie_processes, running ps')
         ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
                                         stderr=subprocess.STDOUT, universal_newlines=True)
+        demisto.debug('find_zombie_processes, ran ps')
     except subprocess.CalledProcessError as exc:
         demisto.info(f"Failed to find zombie proecesses, {exc.returncode=}, {exc.output=}")
         return None, None
