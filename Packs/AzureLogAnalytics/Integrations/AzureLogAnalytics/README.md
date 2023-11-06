@@ -458,7 +458,7 @@ Gets a Log Analytics workspace table.
 | AzureLogAnalytics.SearchJob.properties.searchResults.endSearchTime | Date | The timestamp to end the search by (UTC). | 
 | AzureLogAnalytics.SearchJob.properties.searchResults.sourceTable | String | The table used in the search job. | 
 | AzureLogAnalytics.SearchJob.properties.schema.name | String | Table name. | 
-| AzureLogAnalytics.SearchJob.properties.schema.tableSubType | String | The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any, Classic, DataCollectionRuleBased For more info see in the readme file. | 
+| AzureLogAnalytics.SearchJob.properties.schema.tableSubType | String | The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any, Classic, DataCollectionRuleBased. | 
 | AzureLogAnalytics.SearchJob.properties.schema.tableType | String | Table's creator. | 
 | AzureLogAnalytics.SearchJob.properties.schema.displayName | String | Table display name. | 
 | AzureLogAnalytics.SearchJob.properties.schema.description | String | Table description. | 
@@ -466,7 +466,7 @@ Gets a Log Analytics workspace table.
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isHidden | Boolean | Is column hidden. | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.name | String | Column name. | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.type | String | Column data type (bool, datetime, dynamic, guid, int, long, real, string). | 
-| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint | String | Column data type logical hint. (armPath, guid, ip, uri) for more info see in the readme file. | 
+| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint | String | Column data type logical hint. (armPath, guid, ip, uri). | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.displayName | String | Column display name. | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.description | String | Column description. | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isDefaultDisplay | Boolean | Is displayed by default. | 

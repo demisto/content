@@ -346,7 +346,7 @@ script:
       description: Table name.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableSubType
-      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any, Classic, DataCollectionRuleBased For more info see in the readme file.
+      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any, Classic, DataCollectionRuleBased.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableType
       description: Table's creator.
@@ -370,7 +370,7 @@ script:
       description: Column data type (bool, datetime, dynamic, guid, int, long, real, string).
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint
-      description: Column data type logical hint. (armPath, guid, ip, uri) for more info see in the readme file.
+      description: Column data type logical hint. (armPath, guid, ip, uri).
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.displayName
       description: Column display name.
