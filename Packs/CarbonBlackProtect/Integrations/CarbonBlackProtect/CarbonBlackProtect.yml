@@ -6,7 +6,7 @@ commonfields:
   id: CarbonBlackProtectionV2
   version: -1
 configuration:
-- defaultvalue: https://192.168.0.1
+- defaultvalue: ec2-52-50-45-109.eu-west-1.compute.amazonaws.com
   display: Server URL (e.g. https://192.168.0.1)
   name: url
   required: true
