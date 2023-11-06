@@ -216,13 +216,21 @@ def main():
         asm_tags (List[Dict[str, Any]]): list of key-value dictionaries;
             each dictionary within the list must contain the keys "key" and "value";
             the values are arbitrary
-            Example value for `observed_key_value_pairs`:
+            Example value for `observed_list`:
                 [{"key": "env", "source": "AWS", "value": "dev"},
                  {"key": "Name", "source": "AWS", "value": "ssh-ec2-machine-name"}]
         active_classifications (List[str]): list of Xpanse ASM classification terms
             (a defined vocabulary)
             Example value for `classifications`:
                 ["RdpServer", "SelfSignedCertificate"]
+        hierarchy_info (List[str]): list of infrastructure hierarchy information to include CSPs
+            (such GCP folder, AWS account and Azure subscription names, which can indicate the enrivonemnt is dev)
+            Example value for `observed_list`:
+                ["Engineering-dev","dev-env-01"]
+        provider (str): Provider of the asset as returned by Xpanse
+            Example value for `provider`:
+                "AWS"
+
     Returns:
         No return value.
         Two side effects:

@@ -113,7 +113,7 @@ def test_full_truth_table():
     # Dev Hierachy only
     assert final_decision(sample_no_match, sample_no_match, sample_no_match, sample_dev_hierarchy, sample_no_match, "")["result"]
     # Both Dev Tags and Hierarchy
-    assert final_decision(sample_no_match, sample_no_match, sample_no_match, sample_dev_hierarchy, sample_no_match, "")["result"]
+    assert final_decision(sample_no_match, sample_dev_tag, sample_no_match, sample_dev_hierarchy, sample_no_match, "")["result"]
 
     # kv pair contains prod indicators only
     # DevEnv is set (--> conflicting)
