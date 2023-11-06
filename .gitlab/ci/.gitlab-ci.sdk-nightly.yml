@@ -14,7 +14,7 @@
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
   - section_start "Upload Entities to Cortex XSOAR" --collapsed
   - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
-  - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert.json--insecure
+  # - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert.json--insecure
   - demisto-sdk upload -i Packs/HelloWorld/Layouts/layout-details-Hello_World_Alert-V2.json --insecure
   - section_end "Upload Entities to Cortex XSOAR"
 
@@ -168,15 +168,14 @@ demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
-    PRODUCT_TYPE: "XPANSE"
-    SERVER_TYPE: "XPANSE"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
-    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XPANSE}/server_type_${SERVER_TYPE}"
-    MARKETPLACE_VERSION: "xpanse"
-    PRODUCT_NAME: "Cortex XPANSE"
-    MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
     IFRA_ENV_TYPE: "Server Master"
     KUBERNETES_CPU_REQUEST: 2000m
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR SAAS"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
+    MARKETPLACE_VERSION: "xsoar_saas"
+    MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
   cache:
     policy: pull-push
   needs: []
@@ -289,7 +288,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - !reference [.install_ssh_keys]
     - !reference [.ssh-config-setup]
     - section_start "Destroy Instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER_SERVER_TYPE}" --env-file "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" --instance-role "${INSTANCE_ROLE}"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ENV_RESULTS_PATH}" --instance-role "${INSTANCE_ROLE}"
     - destroy_instances_exit_code=$?
     - |
       if [ "${destroy_instances_exit_code}" -ne 0 ]; then
