@@ -53,6 +53,24 @@ def test_root_list_command(mocker):
     assert list(result.outputs.values()) == root_list.context_outputs
     assert result.readable_output == root_list.readable_output
 
+
+def test_children_list_command(mocker):
+
+    from AWS_Organizations import children_list_command
+
+    mocker.patch(
+        'AWS_Organizations.paginate',
+        side_effect=get_mock_paginator(
+            children_list.client_func_kwargs,
+            children_list.client_func_return
+        )
+    )
+
+    result = children_list_command(children_list.command_args, CLIENT)
+
+    assert list(result.outputs.values()) == children_list.context_outputs
+    assert result.readable_output == children_list.readable_output
+
 # @pytest.mark.parametrize('args, expected', [
 #     ({'limit': 10}, {'Accounts': [...], 'NextToken': 'xyz'}),  # example output
 #     ({'next_token': 'abc'}, {'Accounts': [...]}),

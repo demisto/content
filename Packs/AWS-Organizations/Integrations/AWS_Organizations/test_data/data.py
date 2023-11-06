@@ -83,11 +83,90 @@ class root_list(Data):
         ],
         {"RootNextToken": "next_token"},
     ]
-    readable_output = """### AWS Organizations Roots
+    readable_output = """### AWS Organization Roots
 |Arn|Id|Name|
 |---|---|---|
 | arn_1 | id_1 | name_1 |
 | arn_2 | id_2 | name_2 |
+"""
+
+
+class children_list(Data):
+    command_args = {
+        'child_type': 'OrganizationalUnit',
+        'parent_id': 'parent_id'
+    }
+    client_func_kwargs = {
+        'ChildType': 'ORGANIZATIONAL_UNIT',
+        'ParentId': 'parent_id'
+    }
+    client_func_return = [
+        [
+            {
+                "Id": 'id_1',
+                "Type": "type_1",
+            },
+            {
+                "Id": 'id_2',
+                "Type": "type_2",
+            }
+        ],
+        "next_token",
+    ]
+    context_outputs = [
+        [
+            {
+                "Id": 'id_1',
+                "Type": "type_1",
+                'ParentId': 'parent_id'
+            },
+            {
+                "Id": 'id_2',
+                "Type": "type_2",
+                'ParentId': 'parent_id'
+            },
+        ],
+        {"ChildrenNextToken": "next_token"},
+    ]
+    readable_output = """### AWS Account *parent_id* Children
+|Id|Type|
+|---|---|
+| id_1 | type_1 |
+| id_2 | type_2 |
+"""
+
+
+class parent_list(Data):
+    command_args = {
+        'child_type': 'OrganizationalUnit',
+        'parent_id': 'parent_id'
+    }
+    client_func_kwargs = {
+        'ChildType': 'ORGANIZATIONAL_UNIT',
+        'ParentId': 'parent_id'
+    }
+    client_func_return = [
+        [
+            {
+                "Id": 'id',
+                "Type": "type",
+            }
+        ],
+        "next_token",
+    ]
+    context_outputs = [
+        [
+            {
+                "Id": 'id',
+                "Type": "type",
+            }
+        ],
+    ]
+    readable_output = """### AWS Account *parent_id* Children
+|Id|Type|
+|---|---|
+| id_1 | type_1 |
+| id_2 | type_2 |
 """
 
 
@@ -132,7 +211,7 @@ class organization_unit_get(Data):
         "ResponseMetadata": ...,
     }
     context_outputs = {"Id": "id", "Arn": "arn", "Name": "name"}
-    readable_output = """### AWS Organizations Unit
+    readable_output = """### AWS Organization Unit
 |Arn|Id|Name|
 |---|---|---|
 | arn | id | name |

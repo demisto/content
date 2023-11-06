@@ -117,7 +117,7 @@ def root_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandR
             'Root', next_token, roots, 'Id',
         ),
         readable_output=tableToMarkdown(
-            'AWS Organizations Roots',
+            'AWS Organization Roots',
             roots, ['Arn', 'Id', 'Name'],
             removeNull=True,
         )
@@ -161,7 +161,7 @@ def parent_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comman
     parents, _ = paginate(
         aws_client.get_paginator('list_parents'),
         'Parents',
-        limit=1,
+        limit=1,  # at of the time of this writing, an account can have only one parent
         ChildId=args['child_id']
     )
 
@@ -190,7 +190,7 @@ def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient')
         outputs_prefix='AWS.Organizations.OrganizationalUnit',
         outputs=ou['OrganizationalUnit'],
         readable_output=tableToMarkdown(
-            'AWS Organizations Unit',
+            'AWS Organization Unit',
             ou['OrganizationalUnit'],
             removeNull=True,
         )
