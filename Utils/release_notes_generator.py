@@ -463,11 +463,11 @@ def get_release_notes_draft(github_token, asset_id):
     return ''
 
 
-def create_content_descriptor(release_notes, version, asset_id, github_token):
+def create_content_descriptor(release_notes, version, asset_id, github_token, content_descriptor):
     # time format example 2017 - 06 - 11T15:25:57.0 + 00:00
     current_date = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.0+00:00")
 
-    content_descriptor = {
+    content_descriptor_json = {
         "installDate": "0001-01-01T00:00:00Z",
         "assetId": int(asset_id),
         "releaseNotes": release_notes,
@@ -481,10 +481,10 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
     draft = get_release_notes_draft(github_token, asset_id)
     if draft:
-        content_descriptor['releaseNotes'] = draft
+        content_descriptor_json['releaseNotes'] = draft
 
-    with open('content-descriptor.json', 'w') as outfile:
-        json.dump(content_descriptor, outfile)
+    with open(content_descriptor, 'w') as outfile:
+        json.dump(content_descriptor_json, outfile)
 
 
 def main():
@@ -493,8 +493,12 @@ def main():
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
     arg_parser.add_argument('asset_id', help='Asset ID')
-    arg_parser.add_argument('--output', help='Output file, default is ./packs-release-notes.md',
+    arg_parser.add_argument('--packs-release-notes',
+                            help='Packs release notes file, default is ./packs-release-notes.md',
                             default='./packs-release-notes.md')
+    arg_parser.add_argument('--content-descriptor',
+                            help='Content Descriptor file, default is ./content-descriptor.json',
+                            default='./content-descriptor.json')
     arg_parser.add_argument('--github-token', help='Github token')
     args = arg_parser.parse_args()
 
@@ -513,8 +517,8 @@ def main():
     packs_metadata_dict.update(new_packs_metadata)
     packs_metadata_dict.update(modified_packs_metadata)
     release_notes = generate_release_notes_summary(new_packs_release_notes, modified_release_notes_dict,
-                                                   packs_metadata_dict, args.version, args.asset_id, args.output)
-    create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token)
+                                                   packs_metadata_dict, args.version, args.asset_id, args.packs_release_notes)
+    create_content_descriptor(release_notes, args.version, args.asset_id, args.github_token, args.content_descriptor)
 
 
 if __name__ == "__main__":
