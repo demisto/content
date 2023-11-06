@@ -248,8 +248,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
       echo "Server URL: $DEMISTO_BASE_URL"
 
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
     - *upload-entities-to-cortex-xsoar
     - section_end "Create and Upload Entities to XSOAR Instance"
@@ -358,7 +356,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - section_end "Test Modeling Rules"
 
     - section_start "Create Entities and Upload" --collapsed
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
     - demisto-sdk upload -i Packs/HelloWorld --insecure -z -x
     - section_end "Create Entities and Upload"
 
@@ -435,8 +432,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_end "Copy env results to artifacts folder"
 
     - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
-    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py AzureSentinel --artifacts-folder $ARTIFACTS_FOLDER
     - demisto-sdk upload -i Packs/AzureSentinel --insecure -z
     - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
     - section_end "Create and Upload Entities to XSOAR Instance"
