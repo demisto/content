@@ -341,7 +341,7 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
 
     with capfd.disabled(), pytest.raises(ValueError,
                                          match=f"The parameter from has a negative value, from: {args.get('from')}'"):
-        cyble_events(client, 'POST', "some_random_token", url, args, {}, True, "random_collections", False)
+        cyble_events(client, 'POST', "some_random_token", url, args, {}, True, "random_collections", True)
 
 
 def test_get_alert_fetch(requests_mock):
@@ -370,6 +370,37 @@ def test_get_alert_fetch(requests_mock):
     url = "https://test.com/apollo/api/v1/y/alerts"
 
     response, next = cyble_events(client, 'POST', "some_random_token", url, args, {}, False, "random_collections", False)
+
+    assert isinstance(response, list)
+    assert len(response) == 1
+
+
+def test_get_alert_fetch2(requests_mock):
+    """
+    Test the module fetch details
+    :param requests_mock:
+    :return:
+    """
+    from CybleEventsV2 import Client, cyble_events
+
+    mock_response_1 = util_load_json("dummy_fetch_incidents.json")
+    requests_mock.post('https://test.com/apollo/api/v1/y/alerts', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'from': 1,
+        'limit': 1,
+        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+    }
+
+    url = "https://test.com/apollo/api/v1/y/alerts"
+
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {}, False, "random_collections", True)
 
     assert isinstance(response, list)
     assert len(response) == 1

@@ -1,4 +1,6 @@
-Playbook for Cyble Vision Alert V2.
+# Cyble Vision Playbook
+
+This is a playbook which will handle the alerts coming from the Cyble Events service
 
 ## Dependencies
 
@@ -10,7 +12,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* cybleeventsv2
+* CybleEventsV2
 
 ### Scripts
 
@@ -23,11 +25,7 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| start_date |  | 2023-05-30T00:00:00+00:00 | Required |
-| end_date |  | 2023-05-31T00:00:00+00:00 | Required |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 
@@ -37,5 +35,3 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
-
-![Cyble Vision Alert V2](../doc_files/Cyble_Vision_Alert_V2.png)

@@ -1,7 +1,7 @@
 id: Cyble Vision Alert V2
 version: -1
 name: Cyble Vision Alert V2
-description: "Playbook for Cyble Vision Alert V2."
+description: ""
 fromversion: 6.2.0
 starttaskid: "0"
 tasks:
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": -20
+          "y": 50
         }
       }
     note: false
@@ -34,7 +34,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 5014e329-91cf-4501-817a-54775795639e
@@ -50,7 +49,7 @@ tasks:
       brand: cybleeventsv2
     scriptarguments:
       end_date:
-        simple: ${inputs.end_date}
+        simple: ${incident.end_date}
       from:
         simple: "0"
       limit:
@@ -58,7 +57,7 @@ tasks:
       order_by:
         simple: asc
       start_date:
-        simple: ${inputs.start_date}
+        simple: ${incident.start_date}
     separatecontext: false
     view: |-
       {
@@ -74,63 +73,31 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    nexttasks:
-      '#none#':
-      - "2"
-    continueonerrortype: ""
-  "2":
-    id: "2"
-    taskid: b347133b-3ed6-4d2f-8e8f-a8cd36d402dd
-    type: title
-    task:
-      id: b347133b-3ed6-4d2f-8e8f-a8cd36d402dd
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 595,
+        "height": 275,
         "width": 380,
         "x": 50,
-        "y": -20
+        "y": 50
       }
     }
   }
 inputs:
 - key: start_date
   value:
-    simple: "${inputs.start_date}"
+    simple: "2023-05-30T00:00:00+00:00"
   required: true
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: end_date
   value:
-    simple: "${inputs.end_date}"
+    simple: "2023-05-31T00:00:00+00:00"
   required: true
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

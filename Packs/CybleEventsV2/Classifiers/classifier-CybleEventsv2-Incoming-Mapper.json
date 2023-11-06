@@ -3,7 +3,7 @@
     "feed": false,
     "id": "CybleEventsv2-Incoming-Mapper",
     "mapping": {
-        "CybleEventsv2": {
+        "Cyble Vision Alert V2": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Additional Data": {
