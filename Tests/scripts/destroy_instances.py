@@ -21,13 +21,15 @@ urllib3.disable_warnings()  # Disable insecure warnings
 DEFAULT_TTL = "300"
 SERVER_LOG_DIRECTORY = "/var/log/demisto"
 SERVER_LOG_FILE_PATH = f"{SERVER_LOG_DIRECTORY}/server.log"
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
 
 
 def options_handler() -> Namespace:
     parser = ArgumentParser(description='Utility for destroying integration test instances')
     parser.add_argument('--artifacts-dir', help='Path to the artifacts directory', required=True)
     parser.add_argument('--instance-role', help='The instance role', required=True)
-    parser.add_argument('--env-file', help='The env_results.json file')
+    parser.add_argument('--env-file', help='The env_results.json file', default=ENV_RESULTS_PATH, required=False)
     return parser.parse_args()
 
 
