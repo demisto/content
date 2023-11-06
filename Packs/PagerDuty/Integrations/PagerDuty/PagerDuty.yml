@@ -137,6 +137,28 @@ script:
       name: until
     - description: Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec.
       name: incident_key
+    - description: The number of results per page. max is 100.
+      name: limit
+      defaultValue: 50
+    - description: "Returns only the incidents currently assigned to the passed user(s). This expects one or more user IDs. Note: When using the assigned_to_user filter, you will only receive incidents with statuses of triggered or acknowledged. This is because resolved incidents are not assigned to any user."
+      name: user_id
+    - auto: PREDEFINED
+      description: Array of the urgencies of the incidents to be returned. Defaults to all urgencies. Account must have the urgencies ability to do this.
+      name: urgencies
+      predefined:
+      - high
+      - low
+    - auto: PREDEFINED
+      description: When set to all, the since and until parameters and defaults are ignored.
+      name: date_range
+      defaultValue: Not Set
+      predefined:
+      - all
+      - Not Set
+    - description:
+      name: page
+    - description:
+      name: page_size
     description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged.
     name: PagerDuty-incidents
     outputs:

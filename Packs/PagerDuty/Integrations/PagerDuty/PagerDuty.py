@@ -87,7 +87,7 @@ INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urge
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url, params_dict=None, data=None, json_data=None, additional_headers=None):  # pragma: no cover
+def http_request(method: str, url: str, params_dict=None, data=None, json_data=None, additional_headers=None):  # pragma: no cover
     demisto.debug(f'running {method} request with url={url}\nparams={json.dumps(params_dict)}')
     headers = DEFAULT_HEADERS.copy()
     if not additional_headers:
@@ -174,18 +174,18 @@ def extract_on_call_user_data(users, schedule_id=None):
     )
 
 
-def extract_on_call_now_user_data(users_on_call_now):
+def extract_on_call_now_user_data(users_on_call_now: dict[str, Any]) -> CommandResults:
     """Extract the user data from the oncalls json."""
-    outputs = []  # type: List[Dict]
-    contexts = []  # type: List[Dict]
+    outputs: list[dict] = []
+    contexts: list[dict] = []
     oncalls = users_on_call_now.get('oncalls', {})
 
     for i in range(len(oncalls)):
         output = {}
         context = {}
 
-        data = oncalls[i]
-        user = data.get('user')
+        data: dict = oncalls[i]
+        user: dict = data.get('user', {})
         schedule_id = (data.get('schedule') or {}).get('id')
         if schedule_id:
             output['Schedule ID'] = schedule_id
@@ -217,7 +217,7 @@ def extract_on_call_now_user_data(users_on_call_now):
     )
 
 
-def parse_incident_data(incidents):
+def parse_incident_data(incidents: list) -> tuple[list, list, list]:
     """Parse incident data to output,context format"""
     outputs = []
     contexts = []
@@ -303,7 +303,7 @@ def parse_incident_data(incidents):
     return outputs, contexts, raw_response
 
 
-def extract_incidents_data(incidents, table_name):
+def extract_incidents_data(incidents: list, table_name: str):
     """Extract data about incidents."""
     outputs, contexts, _ = parse_incident_data(incidents)
 
@@ -556,19 +556,24 @@ def configure_status(status='triggered,acknowledged'):
     return status_request
 
 
-def get_incidents_command(since=None, until=None, status='triggered,acknowledged', sortBy=None, incident_key=None):
+def get_incidents_command(args: dict[str, str]) -> CommandResults:
     """Get incidents command."""
-    param_dict = {}
-    if since is not None:
-        param_dict['since'] = since
-    if until is not None:
-        param_dict['until'] = until
-    if sortBy is not None:
-        param_dict['sortBy'] = sortBy
-    if incident_key:
-        param_dict['incident_key'] = incident_key
+    param_dict: dict = {
+        "since": args.get("since"),
+        "until": args.get("until"),
+        "sortBy": args.get("sortBy"),
+        "incident_key": args.get("incident_key"),
+        "user_ids": argToList(args.get("user_id")),
+        "urgencies": args.get("urgencies"),
+        "date_range": args.get("date_range", "Not Set"),
+        "page": arg_to_number(args.get("page")),
+        "page_size": arg_to_number(args.get("page_size")),
+        "limit": arg_to_number(args.get("limit", 50))
+        
+    }
+    remove_nulls_from_dictionary(param_dict)
 
-    url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(status)
+    url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(args.get("status"))
     res = http_request('GET', url, param_dict)
     return extract_incidents_data(res.get('incidents', []), INCIDENTS_LIST)
 
@@ -623,7 +628,7 @@ def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedu
         param_dict['schedule_ids[]'] = argToList(schedule_ids)
 
     url = SERVER_URL + ON_CALLS_USERS_SUFFIX
-    users_on_call_now = http_request('GET', url, param_dict)
+    users_on_call_now: dict = http_request('GET', url, param_dict)
     return extract_on_call_now_user_data(users_on_call_now)
 
 
