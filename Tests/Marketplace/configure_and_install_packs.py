@@ -36,7 +36,7 @@ def options_handler():
 
 def install_packs_from_content_packs_to_install_path(servers, pack_ids, marketplace_tag_name, hostname=''):
     """
-    Install pack_ids from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
+    Install pack_ids from "$ARTIFACTS_FOLDER_SERVER_TYPE/content_packs_to_install.txt" file, and packs dependencies.
     This method is called during the post-update phase of the build (with branch changed applied).
 
     Args:

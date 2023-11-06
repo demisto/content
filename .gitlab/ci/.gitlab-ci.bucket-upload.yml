@@ -34,9 +34,9 @@
     - |
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload content graph GraphML to GCP" --collapsed
-        gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
+        gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph/${MARKETPLACE_VERSION}.zip" "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
         # copy the packs.json file to the bucket, used in contribution management
-        gsutil cp $ARTIFACTS_FOLDER/packs.json "gs://$GCS_MARKET_BUCKET_DEV/content_graph/"$MARKETPLACE_VERSION"_packs.json"
+        gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs.json" "gs://${GCS_MARKET_BUCKET_DEV}/content_graph/${MARKETPLACE_VERSION}_packs.json"
         section_end "Upload content graph GraphML to GCP"
       fi
 
@@ -142,7 +142,8 @@ xpanse-prepare-testing-bucket-upload-flow:
     SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -151,11 +152,6 @@ xpanse-prepare-testing-bucket-upload-flow:
     - .default-job-settings
   script:
     - EXIT_CODE=0
-    - section_start "Create Artifacts instance directory" --collapsed
-    - |
-      [ -d "${ARTIFACTS_FOLDER_INSTANCE}" ] || mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
-      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
-    - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
@@ -175,7 +171,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     - ./Tests/Marketplace/install_packs.sh || EXIT_CODE=$?
     - section_end "Install Packs"
     - section_start "Destroy instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ARTIFACTS_FOLDER}/env_results.json" --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ENV_RESULTS_PATH}" --instance-role "${INSTANCE_ROLE}" || EXIT_CODE=$?
     - section_end "Destroy instances"
     - job-done
     - exit "$EXIT_CODE"
@@ -233,8 +229,11 @@ install-packs-in-server-master:
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     - if: '$BUCKET_UPLOAD == "true"'
   variables:
+    PRODUCT_TYPE: "XSIAM"
+    SERVER_TYPE: "XSIAM"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     INSTANCE_CREATED: "true"
     TIME_TO_LIVE: ""
     GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-upload"
@@ -288,21 +287,10 @@ install-packs-in-server-master:
     - source .gitlab/helper_functions.sh
     - !reference [ .unlock-machine ]
 
-#install-packs-in-xsiam-dev:
-#  extends: .install-mpv2-packs-on-xsiam-instances
-#  variables:
-#    INSTANCE_ROLE: "XSIAM"
-#    PRODUCT_TYPE: "XSIAM"
-#    SERVER_TYPE: "XSIAM"
-#    GCS_QUEUE_FILE: "queue-master"
-#    TEST_MACHINES_LIST: "test-machines-master"
-
 install-packs-in-xsiam-ga:
   extends: .install-mpv2-packs-on-xsiam-instances
   variables:
     INSTANCE_ROLE: "XSIAM"
-    PRODUCT_TYPE: "XSIAM"
-    SERVER_TYPE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
@@ -324,12 +312,13 @@ upload-packs-to-marketplace:
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   variables:
-    MARKETPLACE_VERSION: "xsoar"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR"
     INSTANCE_ROLE: "Server Master"
+    MARKETPLACE_VERSION: "xsoar"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -343,8 +332,8 @@ upload-packs-to-marketplace:
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "$GCS_PRODUCTION_BUCKET" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
-        PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
-        PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
+        PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
+        PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
         GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
         if [[ $GCS_MARKET_BUCKET == $GCS_PRODUCTION_BUCKET ]] && [[ -z $STORAGE_BASE_PATH ]]; then
@@ -355,10 +344,10 @@ upload-packs-to-marketplace:
          STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
         fi
 
-        if [[ -z $PACKS_TO_UPLOAD ]]; then
+        if [[ -z "${PACKS_TO_UPLOAD}" ]]; then
           PACKS_TO_UPLOAD="All"
         fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -380,7 +369,9 @@ upload-packs-to-marketplace:
     - section_end "Download packs from GCP"
     - *upload_content_graph
     - *upload_dependencies_file
-    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
+    - section_start "Revoking GCP Auth"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - section_end "Revoking GCP Auth"
 
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
@@ -409,10 +400,11 @@ upload-packs-to-marketplace-v2:
     when: always
   variables:
     MARKETPLACE_VERSION: "marketplacev2"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-    INSTANCE_ROLE: "Server Master"
+    INSTANCE_ROLE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
     SERVER_TYPE: "XSIAM"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -425,8 +417,8 @@ upload-packs-to-marketplace-v2:
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_V2_BUCKET" != "$GCS_PRODUCTION_V2_BUCKET" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
-        PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
-        PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
+        PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
+        PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
         GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
         if [[ -z $STORAGE_BASE_PATH ]]; then
@@ -437,10 +429,10 @@ upload-packs-to-marketplace-v2:
           fi
           echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
-        if [[ -z $PACKS_TO_UPLOAD ]]; then
+        if [[ -z "${PACKS_TO_UPLOAD}" ]]; then
           PACKS_TO_UPLOAD="All"
         fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -462,7 +454,9 @@ upload-packs-to-marketplace-v2:
     - section_end "Download packs from GCP"
     - *upload_content_graph
     - *upload_dependencies_file
-    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
+    - section_start "Revoking GCP Auth"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - section_end "Revoking GCP Auth"
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
@@ -481,10 +475,11 @@ upload-packs-to-xpanse-marketplace:
     when: always
   variables:
     MARKETPLACE_VERSION: "xpanse"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
-    INSTANCE_ROLE: "Server Master"
+    INSTANCE_ROLE: "XPANSE"
     PRODUCT_TYPE: "XPANSE"
     SERVER_TYPE: "XPANSE"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XPANSE}/server_type_${SERVER_TYPE}"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -497,8 +492,8 @@ upload-packs-to-xpanse-marketplace:
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_XPANSE_BUCKET" != "$GCS_PRODUCTION_XPANSE_BUCKET" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
-        PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
-        PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
+        PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
+        PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
         GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
         if [[ -z $STORAGE_BASE_PATH ]]; then
@@ -509,10 +504,10 @@ upload-packs-to-xpanse-marketplace:
           fi
           echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
-        if [[ -z $PACKS_TO_UPLOAD ]]; then
+        if [[ -z "${PACKS_TO_UPLOAD}" ]]; then
           PACKS_TO_UPLOAD="All"
         fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XPANSE_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xpanse
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XPANSE_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xpanse
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -534,7 +529,9 @@ upload-packs-to-xpanse-marketplace:
     - section_end "Download packs from GCP"
     - *upload_content_graph
     - *upload_dependencies_file
-    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
+    - section_start "Revoking GCP Auth"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - section_end "Revoking GCP Auth"
 
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
@@ -554,10 +551,11 @@ upload-packs-to-xsoar-saas-marketplace:
     when: always
   variables:
     MARKETPLACE_VERSION: "xsoar_saas"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    INSTANCE_ROLE: "Server Master"
+    INSTANCE_ROLE: "xsoar_saas"
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR SAAS"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
@@ -572,8 +570,8 @@ upload-packs-to-xsoar-saas-marketplace:
       echo "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET"
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] ||  [[ "$GCS_MARKET_XSOAR_SAAS_BUCKET" != "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
-        PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
-        PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
+        PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
+        PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
         CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
         GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
         if [[ -z $STORAGE_BASE_PATH ]]; then
@@ -584,7 +582,7 @@ upload-packs-to-xsoar-saas-marketplace:
           fi
           echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
-        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XSOAR_SAAS_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar_saas
+        python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XSOAR_SAAS_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar_saas
       fi
     - section_end "Upload Packs To Marketplace Storage"
 
@@ -606,7 +604,9 @@ upload-packs-to-xsoar-saas-marketplace:
     - section_end "Download packs from GCP"
     - *upload_content_graph
     - *upload_dependencies_file
-    - gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
+    - section_start "Revoking GCP Auth"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - section_end "Revoking GCP Auth"
 
     - section_start "Zip Content Packs From GCS"
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
@@ -657,8 +657,8 @@ xpanse-force-pack-upload:
   script:
     - *check_user_permissions_to_upload_packs
     - EXTRACT_FOLDER=$(mktemp -d)
-    - PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
-    - PACKS_DEPENDENCIES=$ARTIFACTS_FOLDER/packs_dependencies.json
+    - PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
+    - PACKS_DEPENDENCIES="${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json"
     - CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
     - GCS_BUILD_BUCKET="${TEST_XDR_PREFIX}marketplace-ci-build"
     - |
@@ -670,7 +670,7 @@ xpanse-force-pack-upload:
        STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
       fi
 
-    - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET_TO_UPLOAD" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace $MARKETPLACE
+    - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET_TO_UPLOAD" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace $MARKETPLACE
 
 
 fan-in-bucket-upload:
@@ -720,7 +720,7 @@ upload-id-set-bucket:
 
     - !reference [.create-id-set-xsoar]
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-    - gsutil cp $ARTIFACTS_FOLDER/id_set.json "gs://$GCS_MARKET_BUCKET/content/id_set.json"
+    - gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json" "gs://$GCS_MARKET_BUCKET/content/id_set.json"
     - job-done
 
 
