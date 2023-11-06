@@ -186,7 +186,7 @@ tasks:
       retry-count:
         simple: "3"
       retry-interval:
-        simple: "10"
+        simple: "20"
       takedown_id:
         simple: ${Netcraft.Takedown.id}
     separatecontext: false
