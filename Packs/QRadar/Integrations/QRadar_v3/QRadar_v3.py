@@ -82,6 +82,8 @@ MIRRORED_OFFENSES_FINISHED_CTX_KEY = 'mirrored_offenses_finished'
 MIRRORED_OFFENSES_FETCHED_CTX_KEY = 'mirrored_offenses_fetched'
 
 LAST_MIRROR_KEY = 'last_mirror_update'
+LAST_MIRROR_CLOSED_KEY = 'last_mirror_closed_update'
+
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 NAME_AND_GROUP_REGEX = re.compile(r'^[\w-]+$')
@@ -973,7 +975,8 @@ def insert_to_updated_context(context_data: dict,
                                  'samples': context_data.get('samples', [])})
 
     if should_update_last_mirror:
-        new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0))})
+        new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0)),
+                                 LAST_MIRROR_CLOSED_KEY: int(context_data.get(LAST_MIRROR_CLOSED_KEY, 0))})
     return new_context_data, version
 
 
@@ -3574,7 +3577,8 @@ def add_modified_remote_offenses(client: Client,
                                  version: str,
                                  mirror_options: str,
                                  new_modified_records_ids: set[str],
-                                 current_last_update: int,
+                                 new_last_update_modified: int,
+                                 new_last_update_closed: int,
                                  events_columns: str,
                                  events_limit: int,
                                  fetch_mode: str
@@ -3587,7 +3591,8 @@ def add_modified_remote_offenses(client: Client,
         version: The version of the context data to update.
         mirror_options: The mirror options for the integration.
         new_modified_records_ids: The new modified offenses ids.
-        current_last_update: The current last mirror update.
+        new_last_update_modified: The current last mirror update modified.
+        new_last_update_closed: The current last mirror update.
         events_columns: The events_columns param.
         events_limit: The events_limit param.
 
@@ -3639,7 +3644,7 @@ def add_modified_remote_offenses(client: Client,
         new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
         new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
 
-    new_context_data.update({LAST_MIRROR_KEY: current_last_update})
+    new_context_data.update({LAST_MIRROR_KEY: new_last_update_modified, LAST_MIRROR_CLOSED_KEY: new_last_update_closed})
     print_context_data_stats(new_context_data, "Get Modified Remote Data - After update")
     safely_update_context_data(
         new_context_data, version, offense_ids=changed_ids_ctx, should_update_last_mirror=True
@@ -3697,18 +3702,20 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
         (GetModifiedRemoteDataResponse): IDs of the offenses that have been modified in QRadar.
     """
     ctx, ctx_version = get_integration_context_with_version()
-    remote_args = GetModifiedRemoteDataArgs(args)
     highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     fetch_mode = params.get('fetch_mode', '')
     range_ = f'items=0-{limit - 1}'
-    last_update_time = ctx.get(LAST_MIRROR_KEY, 0)
-    if not last_update_time:
-        last_update_time = remote_args.last_update
-    last_update = get_time_parameter(last_update_time, epoch_format=True)
-    assert isinstance(last_update, int)
-    filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update}'
-    filter_closed = f'id <= {highest_fetched_id} AND status=closed AND close_time > {last_update}'
+    last_update_time_modified = ctx.get(LAST_MIRROR_KEY, 0)
+    last_update_time_closed = ctx.get(LAST_MIRROR_CLOSED_KEY, last_update_time_modified)
+
+    last_update_modified = get_time_parameter(last_update_time_modified, epoch_format=True)
+    last_update_closed = get_time_parameter(last_update_time_closed, epoch_format=True)
+
+    assert isinstance(last_update_modified, int)
+    assert isinstance(last_update_closed, int)
+    filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update_modified}'
+    filter_closed = f'id <= {highest_fetched_id} AND status=closed AND close_time > {last_update_closed}'
     print_debug_msg(f'Filter to get modified offenses is: {filter_modified}')
     print_debug_msg(f'Filter to get closed offenses is: {filter_closed}')
     # if this call fails, raise an error and stop command execution
@@ -3720,21 +3727,20 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
                                            filter_=filter_closed,
                                            sort='+close_time',
                                            fields=FIELDS_MIRRORING)
-    last_update_modified, last_update_closed = last_update, last_update
     if offenses_modified:
         last_update_modified = int(offenses_modified[-1].get('last_persisted_time'))
     if offenses_closed:
         last_update_closed = int(offenses_closed[-1].get('close_time'))
     new_modified_records_ids = {str(offense.get('id')) for offense in offenses_modified + offenses_closed if 'id' in offense}
-    current_last_update = max(last_update_modified, last_update_closed)
-    print_debug_msg(f'Last update: {last_update}, current last update: {current_last_update}')
+    print_debug_msg(f'Last update modified: {last_update_modified}, Last update closed: {last_update_closed}')
     events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
 
     new_modified_records_ids = add_modified_remote_offenses(client=client, context_data=ctx, version=ctx_version,
                                                             mirror_options=params.get('mirror_options', ''),
                                                             new_modified_records_ids=new_modified_records_ids,
-                                                            current_last_update=current_last_update,
+                                                            new_last_update_modified=last_update_time_modified,
+                                                            new_last_update_closed=last_update_time_closed,
                                                             events_columns=events_columns,
                                                             events_limit=events_limit,
                                                             fetch_mode=fetch_mode,
