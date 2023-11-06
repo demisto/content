@@ -70,8 +70,8 @@ def get_events_command(client: Client, total_events_to_fetch, since,
             if (not exc.res or type(exc.res) is not requests.models.Response) and len(stored_events) == 0:
                 raise
             res: requests.models.Response = exc.res
-            status_code: HTTPStatus = res.status_code
-            if status_code == HTTPStatus.TOO_MANY_REQUESTS:
+            status_code: int = res.status_code
+            if status_code == HTTPStatus.TOO_MANY_REQUESTS.value:
                 demisto.debug(f'fetch-events Got 429. okta rate limit headers:\n \
                 x-rate-limit-remaining: {res.headers["x-rate-limit-remaining"]}\n \
                     x-rate-limit-limit: {res.headers["x-rate-limit-limit"]}\n \
@@ -115,7 +115,6 @@ def fetch_events(client: Client,
                  events_limit: int,
                  last_run_after,
                  last_object_ids: List[str] = None) -> List[dict]:
-    epoch_time_to_continue_fetch = True
     while True:
         events, epoch_time_to_continue_fetch = get_events_command(client, events_limit,
                                                                   since=last_run_after,
@@ -146,12 +145,12 @@ def main():  # pragma: no cover
         command = demisto.command()
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
-            from_date = dateparser.parse('1 hour')
+            from_date: datetime.datetime = dateparser.parse('1 hour')
             get_events_command(client, events_limit, since=from_date.isoformat())
             demisto.results('ok')
 
         if command == 'okta-get-events':
-            from_date = dateparser.parse(demisto_args.get('from_date').strip())
+            from_date: datetime.datetime = dateparser.parse(demisto_args.get('from_date').strip())
             events, _ = get_events_command(client, events_limit, since=from_date.isoformat())
             command_results = CommandResults(
                 readable_output=tableToMarkdown('Okta Logs', events, headerTransform=pascalToSpace),
