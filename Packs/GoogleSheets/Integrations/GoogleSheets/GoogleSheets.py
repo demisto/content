@@ -114,10 +114,16 @@ def handle_values_input(values: str) -> list:
         )
 
     # Converting the values the user entered into an array of arrays
-    if isinstance(values_as_array := ast.literal_eval(values), list) and (
-        not values_as_array
-        or not all(isinstance(item, list) for item in values_as_array)
-    ):
+    values_as_array = ast.literal_eval(values)
+
+    # Checks whether the given values are a singular empty list, such as "[]".
+    # if that's the case, it will convert it to [[]] (a list of lists).
+    if isinstance(values_as_array, list) and len(values_as_array) == 0:
+        values_as_array = [values_as_array]
+
+    # Checks whether the given values are a single non-empty list, e.g., "[1,2,3]".
+    # in such a case, it will convert it to [[1,2,3]] (a list of lists).
+    elif not all(isinstance(item, list) for item in values_as_array):
         values_as_array = [values_as_array]
 
     # Handling all values including the `None` value to be string
