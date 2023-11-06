@@ -147,6 +147,25 @@ script:
       name: max_jobs
     - description: A CSV list of tags to add to the sample.
       name: tags
+    - auto: PREDEFINED
+      description: Setting the network scheme.
+      name: net_scheme_name
+      predefined:
+      - Isolated
+      - Random VPN
+      - Austria (VPN)
+      - Brazil (VPN)
+      - Canada (VPN)
+      - France (VPN)
+      - Germany (VPN)
+      - Japan (VPN)
+      - Luxembourg (VPN)
+      - Spain (VPN)
+      - Sweden (VPN)
+      - Switzerland (VPN)
+      - United Arab Emirates (VPN)
+      - United Kingdom (VPN)
+      - United States (VPN)
     description: Submits a URL for analysis.
     name: vmray-upload-url
     outputs:
@@ -1075,16 +1094,11 @@ script:
     - description: ID of the analysis from which to retrieve the screenshots from (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
       name: analysis_id
       required: true
-      default: false
-      isArray: false
-      secret: false
-    deprecated: false
     description: >
       Retrieves screenshots taken during a specific dynamic analysis. The screenshots are stored with file names like
       'analysis_5_screenshot_2.png'. In this example, '5' represents the analysis ID from which the screenshot came,
       and '2' indicates that it's the third screenshot taken during the analysis, in chronological order.
     name: vmray-get-screenshots
-    execution: false
     outputs:
     - contextPath: InfoFile.Name
       description: Filename.
@@ -1115,6 +1129,7 @@ script:
   - deprecated: true
     description: Retrieves a sample using the sample ID. (Deprecated).
     name: upload_sample
+    arguments: []
   - name: vmray-get-license-usage-verdicts
     description: Get the used quota of verdicts.
     outputs:
@@ -1130,6 +1145,7 @@ script:
     - contextPath: VMRay.VerdictQuota.VerdictUsage
       description: Percentages used.
       type: Number
+    arguments: []
   - name: vmray-get-license-usage-reports
     description: Get the used quota of reports.
     outputs:
@@ -1145,7 +1161,8 @@ script:
     - contextPath: VMRay.ReportQuota.VerdictUsage
       description: Percentages used.
       type: Number
-  dockerimage: demisto/python3:3.10.13.77674
+    arguments: []
+  dockerimage: demisto/python3:3.10.13.78960
   runonce: false
   script: ''
   subtype: python3
