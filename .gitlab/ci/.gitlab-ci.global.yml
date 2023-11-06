@@ -256,9 +256,9 @@
     fi
   - |
     if [[ $TEST_XDR_ENV ]]; then
-      cat "${CLOUD_API_TOKENS}" > "cloud_api_token.json"
+      cat "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
     else
-      echo "${CLOUD_API_TOKENS}" > "cloud_api_token.json"
+      echo "${CLOUD_API_TOKENS}" > "cloud_api_tokens.json"
     fi
 
   - IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"

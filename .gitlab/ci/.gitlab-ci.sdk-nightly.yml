@@ -14,10 +14,9 @@
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
   - section_start "Upload Entities to Cortex XSOAR" --collapsed
   - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
-  - demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_IncidentField_Test.json --insecure
-  - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
+  - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert.json--insecure
+  - demisto-sdk upload -i Packs/HelloWorld/Layouts/layout-details-Hello_World_Alert-V2.json --insecure
   - section_end "Upload Entities to Cortex XSOAR"
-
 
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
@@ -251,10 +250,10 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
       export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
 
-    - section_start "Create and Upload Entities to XSOAR Instance" --collapsed
+    - section_start "Upload Entities to XSOAR Instance" --collapsed
     - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
     - *upload-entities-to-cortex-xsoar
-    - section_end "Create and Upload Entities to XSOAR Instance"
+    - section_end "Upload Entities to XSOAR Instance"
 
     - section_start "Download Entities from XSOAR Instance" --collapsed
     - demisto-sdk download -lf --insecure
@@ -263,9 +262,9 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - section_end "Download Entities from XSOAR Instance"
 
     - section_start "Install Packs and Test-Module" --collapsed
-    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    - cat "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs and Test-Module"
 
     - section_start "Wait Until Server Ready"  --collapsed
@@ -276,6 +275,13 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
 
     - !reference [.run_tests]
 
+    - section_start "Cleanup env results from artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      rm -f "./artifacts/env_results.json"
+      rm -f "./artifacts/filter_file.txt"
+    - section_end "Cleanup env results from artifacts folder"
+
     - job-done
     - exit $EXIT_CODE
   after_script:
@@ -283,7 +289,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - !reference [.install_ssh_keys]
     - !reference [.ssh-config-setup]
     - section_start "Destroy Instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ARTIFACTS_FOLDER}/env_results.json" --instance-role "${INSTANCE_ROLE}"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER_SERVER_TYPE}" --env-file "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" --instance-role "${INSTANCE_ROLE}"
     - destroy_instances_exit_code=$?
     - |
       if [ "${destroy_instances_exit_code}" -ne 0 ]; then
@@ -329,24 +335,24 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
   script:
     - EXIT_CODE=0
 
-    - section_start "Update packs to install and modeling rules to test." --collapsed
-    - echo -e "\nSemperisDSP" >> "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt"
-    - cat "$ARTIFACTS_FOLDER/modeling_rules_to_test.txt"
-    - section_end "Update packs to install and modeling rules to test."
+    - section_start "Update Packs To Install And Modeling Rules To Test" --collapsed
+    - echo -e "\nSemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/content_packs_to_install.txt"
+    - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
+    - cat "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
+    - section_end "Update Packs To Install And Modeling Rules To Test"
 
-    - section_start "Create Artifacts instance directory" --collapsed
+    - section_start "Create Artifacts Instance Directory" --collapsed
     - |
       echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
       [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
       echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
-    - section_end "Create Artifacts instance directory"
+    - section_end "Create Artifacts Instance Directory"
 
-    - section_start "Copy env results to artifacts folder" --collapsed
+    - section_start "Copy Env Results To Artifacts Folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
       cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
-    - section_end "Copy env results to artifacts folder"
+    - section_end "Copy Env Results To Artifacts Folder"
 
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -371,12 +377,18 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - section_end "Download Entities"
 
     - section_start "Install Packs" --collapsed
-    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    - cat "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs"
 
     - !reference [.run_tests]
+
+    - section_start "Cleanup env results from artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      rm -f "./artifacts/filter_file.txt"
+    - section_end "Cleanup env results from artifacts folder"
 
     - !reference [.cloud-machine-information]
     - exit $EXIT_CODE
@@ -452,12 +464,18 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_end "Download Entities from XSOAR Instance"
 
     - section_start "Install Packs" --collapsed
-    - cat "$ARTIFACTS_FOLDER/filter_file.txt" 
+    - cat "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs"
 
     - !reference [.run_tests]
+
+    - section_start "Cleanup env results from artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      rm -f "./artifacts/filter_file.txt"
+    - section_end "Cleanup env results from artifacts folder"
 
     - !reference [.cloud-machine-information]
     - job-done
