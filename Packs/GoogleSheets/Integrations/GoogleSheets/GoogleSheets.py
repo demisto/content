@@ -1,3 +1,4 @@
+import ast
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
@@ -105,15 +106,33 @@ def handle_values_input(values: str) -> list:
     Returns:
          (list) A list of lists of the values for this example [[1,2,3],[4,5,6]...]
     """
-    if not values:
-        raise ValueError('Wrong format of values entered, please check the documentation')
-    split_by_brackets = re.findall("\[(.*?)\]", values)
-    res_for_values_req = []
-    for element in split_by_brackets:
-        res_for_values_req.append(element.split(","))
 
-    if not res_for_values_req:
-        raise ValueError('Wrong format of values entered, please check the documentation')
+    # Validate that the user has entered valid values
+    if not values or not re.findall("\[(.*?)\]", values):
+        raise ValueError(
+            "Wrong format of values entered, please check the documentation"
+        )
+
+    # Converting the values the user entered into an array of arrays
+    values_as_array = ast.literal_eval(values)
+
+    # Checks whether the given values are a singular empty list, such as "[]".
+    # if that's the case, it will convert it to [[]] (a list of lists).
+    if isinstance(values_as_array, list) and len(values_as_array) == 0:
+        values_as_array = [values_as_array]
+
+    # Checks whether the given values are a single non-empty list, e.g., "[1,2,3]".
+    # in such a case, it will convert it to [[1,2,3]] (a list of lists).
+    elif not all(isinstance(item, list) for item in values_as_array):
+        values_as_array = [values_as_array]
+
+    # Handling all values including the `None` value to be string
+    res_for_values_req = []
+    for element in values_as_array:
+        if not element:
+            res_for_values_req.append([""])
+            continue
+        res_for_values_req.append([str(value) for value in element])
 
     return res_for_values_req
 
