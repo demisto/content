@@ -1,3 +1,5 @@
+import json
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pathlib
@@ -104,6 +106,35 @@ def create_test_incident_from_file_command(client: Client, args: Dict[str, Any])
     set_integration_context({'incidents': ready_incidents})
     return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from file.')
 
+def create_test_incident_from_json_command(args):
+    """
+    This function will get the incidents and save the formatted incidents to instance context, for the fetch.
+    """
+    incidents_entry_id = args.get('entry_id')
+    incidents_json = args.get('incident_raw_json')
+    if not (incidents_entry_id or incidents_json) or (incidents_entry_id and incidents_json):
+        raise DemistoException('Please insert entry_id or incident_raw_json, and not both')
+
+    if incidents_entry_id:
+        incidents_file_path = demisto.getFilePath(incidents_entry_id)
+        with open(incidents_file_path['path'], 'rb') as incidents_file:
+            incidents = json.load(incidents_file)
+    elif incidents_json:
+        incidents = json.loads(incidents_json)
+
+    attachment_path = argToList(args.get('attachment_paths'))
+
+    if not incidents:
+        raise ValueError('Incidents were not specified')
+
+    if not isinstance(incidents, list):
+        incidents = [incidents]
+
+    ready_incidents = parse_incidents(incidents, attachment_path)
+
+    set_integration_context({'incidents': ready_incidents})
+    return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from json.')
+
 
 def get_incidents_from_file(client: Client, incidents_path: str, attachment_path: List[str] = None):
     """
@@ -152,6 +183,7 @@ def main() -> None:  # pragma: no cover
     try:
         params = demisto.params()
         command = demisto.command()
+        args = demisto.args()
 
         demisto.debug(f'Command being called is {command}')
         client = Client(
@@ -168,7 +200,10 @@ def main() -> None:  # pragma: no cover
             return_results(result)
 
         elif command == 'create-test-incident-from-file':
-            return_results(create_test_incident_from_file_command(client, demisto.args()))
+            return_results(create_test_incident_from_file_command(client, args))
+
+        elif command == 'create-test-incident-from-json':
+            return_results(create_test_incident_from_json_command(args))
 
     # Log exceptions and return errors
     except Exception as e:
