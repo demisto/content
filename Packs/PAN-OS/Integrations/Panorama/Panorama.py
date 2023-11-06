@@ -910,7 +910,7 @@ def export_tsf_command(args: dict):
         )
     else:  # either no polling is required or this is the first run
         result = start_tsf_export()
-        job_id = result.get('response', {}).get('result', {}).get('job', '')
+        job_id = dict_safe_get(result, ['response', 'result', 'job'], '')
         if job_id:
             context_output = {
                 'JobID': job_id,
