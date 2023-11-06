@@ -1268,6 +1268,13 @@ def main():
     # changelog, etc.
     pack: Pack
     for pack in packs_list:
+
+        task_status = pack.load_user_metadata()
+        if not task_status:
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
+            pack.cleanup()
+            continue
+
         task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name  # type: ignore[misc]
