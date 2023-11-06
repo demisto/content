@@ -29,32 +29,32 @@
 
 .create-id-set:
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set.json >> "${ARTIFACTS_FOLDER}/logs/create_id_set.log"
-  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER}"
+  - demisto-sdk create-id-set -o ./Tests/id_set.json >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/create_id_set.log"
+  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}"
   - section_end "Create ID Set"
 
 .create-id-set-xsoar:
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xsoar" >> "${ARTIFACTS_FOLDER}/logs/create_id_set.log"
-  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER}"
-  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
-  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xsoar" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/create_id_set.log"
+  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}"
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
 .create-id-set-mp-v2:
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplacev2" >> "${ARTIFACTS_FOLDER}/logs/create_id_set.log"
-  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER}"
-  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
-  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "marketplacev2" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/create_id_set.log"
+  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}"
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
 .create-id-set-xpanse:
   - section_start "Create ID Set" --collapsed
-  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xpanse" >> "${ARTIFACTS_FOLDER}/logs/create_id_set.log"
-  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER}"
-  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
-  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER}/logs"; fi
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xpanse" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/create_id_set.log"
+  - cp ./Tests/id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}"
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs"; fi
   - section_end "Create ID Set"
 
 .download-demisto-conf:
@@ -84,12 +84,6 @@
     fi
   - section_end "Check Build Files Are Up To Date"
 
-.cleanup_logs_directory: &cleanup_logs_directory
-  - section_start "Creating new clean logs directory" --collapsed
-  - rm -rf "${ARTIFACTS_FOLDER}/logs"
-  - mkdir -p "${ARTIFACTS_FOLDER}/logs"
-  - section_end "Creating new clean logs directory"
-
 .stop_contrib_external_build: &stop_contrib_external_build
   - - section_start "Stop contrib external build"
   - |
@@ -100,14 +94,32 @@
     fi
   - section_end "Stop contrib external build"
 
+.create_artifacts_and_server_type_instance_folders: &create_artifacts_and_server_type_instance_folders
+  - section_start "Create Artifacts & Server Instance & Server Type folders" --collapsed
+  - |
+    if [[ -n "${ARTIFACTS_FOLDER}" ]] && [[ ! -d "${ARTIFACTS_FOLDER}" ]]; then
+      echo "Creating Artifacts folder: ${ARTIFACTS_FOLDER}"
+      mkdir -p -m 777 "${ARTIFACTS_FOLDER}/logs" # using the -p to create the logs folder as well.
+    fi
+  - |
+    if [[ -n "${ARTIFACTS_FOLDER_INSTANCE}" ]] && [[ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ]]; then
+      echo "Creating Artifacts instance folder: ${ARTIFACTS_FOLDER_INSTANCE}"
+      mkdir -p -m 777 "${ARTIFACTS_FOLDER_INSTANCE}/logs" # using the -p to create the logs folder as well.
+      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
+    fi
+  - |
+    if [[ -n "${ARTIFACTS_FOLDER_SERVER_TYPE}" ]] && [[ ! -d "${ARTIFACTS_FOLDER_SERVER_TYPE}" ]]; then
+      echo "Creating Artifacts Server type folder: ${ARTIFACTS_FOLDER_SERVER_TYPE}"
+      mkdir -p -m 777 "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs" # using the -p to create the logs folder as well.
+      echo "${SERVER_TYPE}" > "${ARTIFACTS_FOLDER_SERVER_TYPE}/server_type.txt"
+    fi
+  - section_end "Create Artifacts & Server Instance & Server Type folders"
+
 .clone_and_export_variables: &clone_and_export_variables
   - section_start "Git - Job Start Actions" --collapsed
   - git checkout -B $CI_COMMIT_BRANCH $CI_COMMIT_SHA
   - git config diff.renameLimit 6000
   - section_end "Git - Job Start Actions"
-  - section_start "Create artifacts directory" --collapsed
-  - mkdir -p -m 777 "${ARTIFACTS_FOLDER}/"
-  - section_end "Create artifacts directory"
   - section_start "Source BASH Environment" --collapsed
   - |
     if [[ -f "$BASH_ENV" ]]; then
@@ -148,8 +160,8 @@
       echo "Using SDK from pyproject.toml" | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
     fi
   - |
-      python3 --version | tee -a "${ARTIFACTS_FOLDER}/installed_python_libraries.txt"
-      python3 -m pip list | tee -a "${ARTIFACTS_FOLDER}/installed_python_libraries.txt"
+      python3 --version | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
+      python3 -m pip list | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
   - section_end "Installing Virtualenv"
 
 .ssh-config-setup:
@@ -172,16 +184,16 @@
   - source $NVM_DIR/nvm.sh
   - nvm use default | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"
   - echo "Installing Node Modules" | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"
-  - npm ci --cache .npm --prefer-offline | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"
-  - npm list --json | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"
-  - npm link jsdoc-to-markdown@5.0.3 | tee --append "${ARTIFACTS_FOLDER}/logs/installations_node.log"  # disable-secrets-detection
+  - npm ci --cache .npm --prefer-offline >> "${ARTIFACTS_FOLDER}/logs/installations_node.log" 2>&1
+  - npm list --json >> "${ARTIFACTS_FOLDER}/logs/installations_node.log" 2>&1
+  - npm link jsdoc-to-markdown@5.0.3 | tee  >> "${ARTIFACTS_FOLDER}/logs/installations_node.log" 2>&1  # disable-secrets-detection
   - section_end "Installing node modules"
 
 .get_last_upload_commit: &get_last_upload_commit
   - section_start "Getting last bucket upload commit" --collapsed
   - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-  - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER}/previous_index.json"
-  - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER}/previous_index.json" | jq -r ".\"commit\"")
+  - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
+  - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json" | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
 
 .neo4j-setup: &neo4j-setup
@@ -193,7 +205,7 @@
 .build_parameters: &build_parameters
   - section_start "Build Parameters" --collapsed
   - echo "Environment Variables:"
-  - set | grep -E "^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=" | sort
+  - set | grep -E "^ARTIFACTS_FOLDER.*=|^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ARTIFACTS_FOLDER_INSTANCE=|^ARTIFACTS_FOLDER_SERVER_TYPE=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=" | sort
   - echo "Versions Installed:"
   - python --version
   - python3 --version
@@ -241,9 +253,9 @@
     - *setup-network-certs
     - *setup-artifactory
     - *stop_contrib_external_build
+    - *create_artifacts_and_server_type_instance_folders
     - *clone_and_export_variables
     - *check_build_files_are_up_to_date
-    - *cleanup_logs_directory
     - *install_node_modules
     - *install_venv
     - *get_contribution_pack
@@ -444,9 +456,9 @@
     - section_start "Look For Secrets"
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"
-    - section_start "Copy Tests To Artifact Folder"
-    - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER}/conf.json"
-    - section_end "Copy Tests To Artifact Folder"
+    - section_start "Copy conf.json To Server Type Artifacts Folder"
+    - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json"
+    - section_end "Copy conf.json To Server Type Artifacts Folder"
     - section_start "Validate Files and Yaml"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
@@ -467,7 +479,6 @@
       echo "successfully activated google cloud service account"
       gsutil cp "gs://${TEST_XDR_PREFIX}marketplace-dist/content/packs/index.zip" $INDEX_PATH
       echo "successfully downloaded index.zip"
-      gcloud auth revoke $GCS_ARTIFACTS_ACCOUNT_NAME
     - echo "successfully downloaded index.zip into $INDEX_PATH"
 
     - UNZIP_PATH=$(mktemp -d)
@@ -475,6 +486,9 @@
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
     - section_end "Validate landingPageSections.json"
+    - section_start "Revoking GCP Auth"
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - section_end "Revoking GCP Auth"
     - !reference [ .validate_content_test_conf_branch_merged ]  # This section should be the last one in the script, do not move it.
     - job-done
 
