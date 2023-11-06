@@ -173,7 +173,7 @@ def parent_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comman
             for parent in parents
         ],
         readable_output=tableToMarkdown(
-            f'AWS Account *{args["child_id"]}* Parents',
+            f'AWS Account *{args["child_id"]}* Parent',
             parents, removeNull=True,
         )
     )

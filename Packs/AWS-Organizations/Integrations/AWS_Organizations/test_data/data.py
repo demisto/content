@@ -3,16 +3,14 @@ from datetime import datetime
 
 
 class Data:
-    command_args: dict[str, str]
-    client_func_kwargs: dict[str, Any]
-    client_func_return: Any
-    context_outputs: dict | list
-    readable_output: str
+    command_args: dict[str, str] = {}
+    client_func_kwargs: dict[str, Any] = {}
+    client_func_return: Any = None
+    context_outputs: dict | list | None = None
+    readable_output: str | None = None
 
 
 class root_list(Data):
-    command_args: dict = {}
-    client_func_kwargs: dict = {}
     client_func_return = [
         [
             {
@@ -138,12 +136,10 @@ class children_list(Data):
 
 class parent_list(Data):
     command_args = {
-        'child_type': 'OrganizationalUnit',
-        'parent_id': 'parent_id'
+        'child_id': 'child_id'
     }
     client_func_kwargs = {
-        'ChildType': 'ORGANIZATIONAL_UNIT',
-        'ParentId': 'parent_id'
+        'ChildId': 'child_id'
     }
     client_func_return = [
         [
@@ -155,24 +151,76 @@ class parent_list(Data):
         "next_token",
     ]
     context_outputs = [
-        [
-            {
-                "Id": 'id',
-                "Type": "type",
-            }
-        ],
+        {
+            "Id": 'id',
+            "Type": "type",
+            'ChildId': 'child_id'
+        }
     ]
-    readable_output = """### AWS Account *parent_id* Children
+    readable_output = """### AWS Account *child_id* Parent
 |Id|Type|
 |---|---|
-| id_1 | type_1 |
-| id_2 | type_2 |
+| id | type |
 """
 
 
 class account_list(Data):
-    command_args = {"account_id": "account_id"}
-    client_func_kwargs = {"AccountId": "account_id"}
+    client_func_return = [
+        [
+            {
+                "Id": "id_1",
+                "Arn": "arn_1",
+                "Email": "email_1",
+                "Name": "name_1",
+                "Status": "status_1",
+                "JoinedMethod": "joined_method_1",
+                "JoinedTimestamp": datetime(
+                    year=2022, month=10, day=15, hour=12, minute=30, second=45
+                ),
+            },
+            {
+                "Id": "id_2",
+                "Arn": "arn_2",
+                "Email": "email_2",
+                "Name": "name_2",
+                "Status": "status_2",
+                "JoinedMethod": "joined_method_2",
+                "JoinedTimestamp": datetime(
+                    year=2022, month=10, day=16, hour=12, minute=30, second=45
+                ),
+            }
+        ],
+        "next_token"
+    ]
+    context_outputs = [
+        [
+            {
+                "Id": "id_1",
+                "Arn": "arn_1",
+                "Email": "email_1",
+                "Name": "name_1",
+                "Status": "status_1",
+                "JoinedMethod": "joined_method_1",
+                "JoinedTimestamp": "2022-10-15 12:30:45",
+            },
+            {
+                "Id": "id_2",
+                "Arn": "arn_2",
+                "Email": "email_2",
+                "Name": "name_2",
+                "Status": "status_2",
+                "JoinedMethod": "joined_method_2",
+                "JoinedTimestamp": "2022-10-16 12:30:45",
+            }
+        ],
+        {"AccountNextToken": "next_token"}
+    ]
+    readable_output = """"""
+
+
+class account_get(Data):
+    command_args = {}
+    client_func_kwargs = {}
     client_func_return = {
         "Account": {
             "Id": "id",

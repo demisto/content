@@ -15,8 +15,8 @@ class MockOrganizationsClient:  # (OrganizationsClient):
         return None
 
     def describe_account(self, **kwargs):
-        assert account_list.client_func_kwargs == kwargs
-        return account_list.client_func_return
+        assert account_get.client_func_kwargs == kwargs
+        return account_get.client_func_return
 
     def describe_organizational_unit(self, **kwargs):
         assert organization_unit_get.client_func_kwargs == kwargs
@@ -71,26 +71,51 @@ def test_children_list_command(mocker):
     assert list(result.outputs.values()) == children_list.context_outputs
     assert result.readable_output == children_list.readable_output
 
-# @pytest.mark.parametrize('args, expected', [
-#     ({'limit': 10}, {'Accounts': [...], 'NextToken': 'xyz'}),  # example output
-#     ({'next_token': 'abc'}, {'Accounts': [...]}),
-#     ({}, {'Accounts': [...]})
-# ])
-# def test_account_list(args, expected):
-#     client = OrganizationsClient() # mock client
-#     result = account_list_command(args, client)
 
-#     assert result.outputs == expected
+def test_parent_list_command(mocker):
+
+    from AWS_Organizations import parent_list_command
+
+    mocker.patch(
+        'AWS_Organizations.paginate',
+        side_effect=get_mock_paginator(
+            parent_list.client_func_kwargs,
+            parent_list.client_func_return
+        )
+    )
+
+    result = parent_list_command(parent_list.command_args, CLIENT)
+
+    assert result.outputs == parent_list.context_outputs
+    assert result.readable_output == parent_list.readable_output
+
+
+def test_account_list_command(mocker):
+
+    from AWS_Organizations import account_list_command
+
+    mocker.patch(
+        'AWS_Organizations.paginate',
+        side_effect=get_mock_paginator(
+            account_list.client_func_kwargs,
+            account_list.client_func_return
+        )
+    )
+
+    result = account_list_command(account_list.command_args, CLIENT)
+
+    assert list(result.outputs.values()) == account_list.context_outputs
+    assert result.readable_output == account_list.readable_output
 
 
 def test_account_get():
 
     from AWS_Organizations import account_list_command
 
-    result = account_list_command(account_list.command_args, CLIENT)
+    result = account_list_command(account_get.command_args, CLIENT)
 
-    assert result.outputs == account_list.context_outputs
-    assert result.readable_output == account_list.readable_output
+    assert result.outputs == account_get.context_outputs
+    assert result.readable_output == account_get.readable_output
 
 
 def test_organization_unit_get():
