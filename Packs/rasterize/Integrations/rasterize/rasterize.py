@@ -453,7 +453,6 @@ def get_image(driver, width: int, height: int, full_screen: bool, include_url=Fa
     finally:
         quit_driver_and_display_and_reap_children(driver, None)
 
-
     demisto.debug('Capturing screenshot - COMPLETED')
 
     return image
