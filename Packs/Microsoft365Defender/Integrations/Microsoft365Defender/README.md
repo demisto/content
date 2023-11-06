@@ -27,6 +27,7 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 #### Required Permissions
 The required API permissions are for the ***Microsoft Threat Protection*** app.
  * offline_access - Delegate
+ * AdvancedHunting.Read - Delegated
  * Incident.ReadWrite.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
  * AdvancedHunting.Read.All - Application - See section 4 in [this article](https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-create-app-user-context?view=o365-worldwide#create-an-app)
 
