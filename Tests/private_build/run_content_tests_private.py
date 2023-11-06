@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys
 import time
 import argparse
@@ -13,7 +12,7 @@ import demisto_client.demisto_api
 from Tests.scripts.utils.log_util import install_logging
 from Tests.test_integration import check_integration
 from demisto_sdk.commands.common.constants import PB_Status
-from demisto_sdk.commands.common.tools import str2bool, get_demisto_version
+from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.test_content import SettingsTester, DataKeeperTester, \
     print_test_summary, update_test_msg, turn_off_telemetry, \
@@ -280,9 +279,9 @@ def execute_testing(tests_settings: SettingsTester, server_ip: str, all_tests: s
 
     failed_playbooks: list = []
     succeed_playbooks: list = []
-    skipped_tests: set = set([])
-    skipped_integration: set = set([])
-    playbook_skipped_integration: set = set([])
+    skipped_tests: set = set()
+    skipped_integration: set = set()
+    playbook_skipped_integration: set = set()
 
     #  Private builds do not use mocking. Here we copy the mocked test list to the unmockable list.
     private_tests = get_test_records_of_given_test_names(tests_settings, all_tests)

@@ -596,7 +596,8 @@ class XSOARBuild(Build):
                                     self.username,
                                     self.password,
                                     self.ci_build_number) for internal_ip in self.get_servers(options.ami_env)]
-        self.server_numeric_version = self.servers[0].server_numeric_version if self.run_environment == Running.CI_RUN else self.DEFAULT_SERVER_VERSION
+        self.server_numeric_version = self.servers[0].server_numeric_version if self.run_environment == Running.CI_RUN \
+            else self.DEFAULT_SERVER_VERSION
 
     @property
     def proxy(self) -> MITMProxy:
