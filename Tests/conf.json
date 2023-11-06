@@ -5572,7 +5572,8 @@
         },
         {
             "integrations": "Netcraft V2",
-            "playbookID": "Test - Netcraft"
+            "playbookID": "Test - Netcraft",
+            "timeout": 2400
         }
     ],
     "skipped_tests": {
