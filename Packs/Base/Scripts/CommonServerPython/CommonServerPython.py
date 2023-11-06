@@ -6831,9 +6831,8 @@ class CommandResults:
                  entry_type=None,
                  content_format=None,
                  execution_metrics=None,
-                 next_token=None,
-                 next_token_prefix=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any], str, str) -> None  # noqa: E501
+                 replace_existing=False):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -6875,8 +6874,7 @@ class CommandResults:
         self.scheduled_command = scheduled_command
         self.relationships = relationships
         self.execution_metrics = execution_metrics
-        self.next_token = next_token
-        self.next_token_prefix = next_token_prefix or (outputs_prefix or '') + 'NextToken'
+        self.replace_existing = replace_existing
 
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
             raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
@@ -6927,7 +6925,10 @@ class CommandResults:
                     human_readable = tableToMarkdown('Results', self.outputs)
                 else:
                     human_readable = self.outputs   # type: ignore[assignment]
-            if self.outputs_prefix and self._outputs_key_field:
+            if self.outputs_prefix and self.replace_existing:
+                next_token_path, _, next_token_key = self.outputs_prefix.rpartition('.')
+                outputs[next_token_path + '(true)'] = {next_token_key: self.outputs}
+            elif self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
                 formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
                                                      for key_field in self._outputs_key_field])
@@ -6937,10 +6938,6 @@ class CommandResults:
                 outputs[str(self.outputs_prefix)] = self.outputs
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
-
-        if self.next_token:
-            next_token_path, _, next_token_key = self.next_token_prefix.rpartition('.')
-            outputs[next_token_path + '(true)'] = {next_token_key: self.next_token}
 
         if self.relationships:
             relationships = [relationship.to_entry() for relationship in self.relationships if relationship.to_entry()]

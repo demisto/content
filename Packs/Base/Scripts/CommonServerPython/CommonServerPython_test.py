@@ -2632,6 +2632,26 @@ class TestCommandResults:
         context = res.to_context()
         assert "outputs_test" == context.get('HumanReadable')
 
+    def test_replace_existing(self):
+        """
+        Given:
+        - replace_existing=True
+
+        When:
+        - Returning an object to context that needs to override it's key on each run.
+
+        Then:
+        - Return an object with the DT "(true)"
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="next_token",
+            outputs_prefix="Path.To.Value",
+            replace_existing=True
+        )
+        context = res.to_context()
+        assert context["EntryContext"] == {"Path.To(true)": {"Value": "next_token"}}
+
 
 def test_http_request_ssl_ciphers_insecure():
     if IS_PY3 and PY_VER_MINOR >= 10:
