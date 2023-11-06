@@ -3,16 +3,15 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from MicrosoftApiModule import *  # noqa: E402
-import urllib3
 
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
 APP_NAME = 'ms-azure-log-analytics'
 
 API_VERSION = '2021-06-01'
+SUBSCRIPTION_LIST_API_VERSION = '2020-01-01'
+RESOURCE_GROUP_LIST_API_VERSION = '2021-04-01'
 
 AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
                           'The response from the server did not contain the expected content.'
@@ -59,6 +58,8 @@ class Client:
             managed_identities_resource_uri=Resources.management_azure,
             command_prefix="azure-log-analytics",
         )
+        self.subscription_id = subscription_id
+        self.resource_group_name = resource_group_name
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
                      data=None, resource=None, timeout=10):
@@ -171,7 +172,7 @@ def test_connection(client, params):
 def execute_query_command(client, args):
     query = args.get('query')
     timeout = int(args.get('timeout', 10))
-    workspace_id = demisto.params().get('workspaceID')
+    workspace_id = args.get('workspace_id') or demisto.params().get('workspaceID')
     full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
 
     data = {
@@ -315,19 +316,122 @@ def delete_saved_search_command(client, args):
     return f'Successfully deleted the saved search {saved_search_id}.'
 
 
+def subscriptions_list_command(client: Client):
+    response = client.http_request('GET', full_url='https://management.azure.com/subscriptions',
+                                   params={'api-version': SUBSCRIPTION_LIST_API_VERSION}, resource=AZURE_MANAGEMENT_RESOURCE)
+    value = response.get('value', [])
+
+    subscriptions = []
+    for subscription in value:
+        subscription_context = {
+            'Subscription ID': subscription.get('subscriptionId'),
+            'Tenant ID': subscription.get('tenantId'),
+            'State': subscription.get('state'),
+            'Display Name': subscription.get('displayName')
+        }
+        subscriptions.append(subscription_context)
+
+    human_readable = tableToMarkdown('List of subscriptions', subscriptions, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='AzureLogAnalytics.Subscription',
+        outputs_key_field='id',
+        outputs=value,
+        readable_output=human_readable,
+        raw_response=value
+    )
+
+
+def workspace_list_command(client: Client):
+    """
+    Gets workspaces in a resource group.
+    Returns:
+        List[dict]: API response from Azure.
+    """
+    full_url = f'https://management.azure.com/subscriptions/{client.subscription_id}/resourceGroups/' \
+        f'{client.resource_group_name}/providers/Microsoft.OperationalInsights/workspaces'
+    response = client.http_request('GET', full_url=full_url, params={
+                                   'api-version': API_VERSION}, resource=AZURE_MANAGEMENT_RESOURCE)
+    value = response.get('value', [])
+
+    workspaces = []
+    for workspace in value:
+        workspace_context = {
+            'Name': workspace.get('name'),
+            'Location': workspace.get('location'),
+            'Tags': workspace.get('tags'),
+            'Provisioning State': workspace.get('properties', {}).get('provisioningState')
+        }
+        workspaces.append(workspace_context)
+
+    readable_output = tableToMarkdown('Workspaces List', workspaces, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='AzureLogAnalytics.workspace',
+        outputs_key_field='id',
+        outputs=value,
+        raw_response=value,
+        readable_output=readable_output
+    )
+
+
+def resource_group_list_command(client: Client, args: Dict[str, Any]):
+    """
+    List all resource groups.
+    Args:
+        tag (str): Tag to filter by.
+        limit (int): Maximum number of resource groups to retrieve. Default is 50.
+    Returns:
+        List[dict]: API response from Azure.
+    """
+    limit = arg_to_number(args.get('limit')) or 50
+    tag = args.get('tag', '')
+    filter_by_tag = azure_tag_formatter(tag) if tag else None
+    params = {'$filter': filter_by_tag, '$top': limit, 'api-version': RESOURCE_GROUP_LIST_API_VERSION}
+    full_url = f'https://management.azure.com/subscriptions/{client.subscription_id}/resourcegroups'
+
+    response = client.http_request('GET', full_url=full_url, params=params, resource=AZURE_MANAGEMENT_RESOURCE)
+    value = response.get('value', [])
+
+    resource_groups = []
+    for resource_group in value:
+        resource_group_context = {
+            'Name': resource_group.get('name'),
+            'Location': resource_group.get('location'),
+            'Tags': resource_group.get('tags'),
+            'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
+        }
+        resource_groups.append(resource_group_context)
+
+    readable_output = tableToMarkdown('Resource Groups List', resource_groups, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='AzureLogAnalytics.ResourceGroup',
+        outputs_key_field='id',
+        outputs=value,
+        raw_response=value,
+        readable_output=readable_output
+    )
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
 
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
 
     try:
         self_deployed = params.get('self_deployed', False)
         client_credentials = params.get('client_credentials', False)
         auth_and_token_url = params.get('auth_id') or params.get('credentials', {}).get('identifier')  # client_id
         enc_key = params.get('enc_key') or params.get('credentials', {}).get('password')  # client_secret
+        subscription_id = args.get('subscription_id') or params.get('subscriptionID')
+        resource_group_name = args.get('resource_group_name') or params.get('resourceGroupName')
+        workspace_name = args.get('workspace_name') or params.get('workspaceName')
         certificate_thumbprint = params.get('credentials_certificate_thumbprint', {}).get(
             'password') or params.get('certificate_thumbprint')
         private_key = params.get('private_key')
@@ -353,9 +457,9 @@ def main():
             enc_key=enc_key,  # client_secret or enc_key
             redirect_uri=params.get('redirect_uri', ''),
             auth_code=auth_code if not client_credentials else '',
-            subscription_id=params.get('subscriptionID'),
-            resource_group_name=params.get('resourceGroupName'),
-            workspace_name=params.get('workspaceName'),
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            workspace_name=workspace_name,
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             certificate_thumbprint=certificate_thumbprint,
@@ -370,9 +474,10 @@ def main():
             'azure-log-analytics-get-saved-search-by-id': get_saved_search_by_id_command,
             'azure-log-analytics-create-or-update-saved-search': create_or_update_saved_search_command,
             'azure-log-analytics-delete-saved-search': delete_saved_search_command,
+            'azure-log-analytics-resource-group-list': resource_group_list_command,
         }
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             if not managed_identities_client_id:
                 # cannot use test module if not using Managed Identities
                 # due to the lack of ability to set refresh token to integration context
@@ -381,21 +486,27 @@ def main():
             test_connection(client, params)
             return_results('ok')
 
-        elif demisto.command() == 'azure-log-analytics-generate-login-url':
+        elif command == 'azure-log-analytics-subscriptions-list':
+            return_results(subscriptions_list_command(client))
+
+        elif command == 'azure-log-analytics-workspace-list':
+            return_results(workspace_list_command(client))
+
+        elif command == 'azure-log-analytics-generate-login-url':
             return_results(generate_login_url(client.ms_client))
 
-        elif demisto.command() == 'azure-log-analytics-test':
+        elif command == 'azure-log-analytics-test':
             test_connection(client, params)
             return_outputs('```✅ Success!```')
 
-        elif demisto.command() == 'azure-log-analytics-auth-reset':
+        elif command == 'azure-log-analytics-auth-reset':
             return_results(reset_auth())
 
-        elif demisto.command() in commands:
-            return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
+        elif command in commands:
+            return_results(commands[command](client, args))  # type: ignore
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
