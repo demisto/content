@@ -175,7 +175,7 @@ def test_rasterize_url_long_load(r_mode, mocker, http_wait_server, capfd):
     time.sleep(1)  # give time to the servrer to start
     with capfd.disabled():
         rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG, max_page_load_time=5,
-                r_mode=r_mode)
+                  r_mode=r_mode)
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
