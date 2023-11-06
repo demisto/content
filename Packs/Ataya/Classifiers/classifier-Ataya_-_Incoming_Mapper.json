@@ -1,7 +1,7 @@
 {
     "description": "Ataya Harmony fields for use in Integration Playbooks about 5G UE registration.",
     "feed": false,
-    "id": "Ataya Mapping",
+    "id": "Ataya - Incoming Mapper",
     "mapping": {
         "Ataya": {
             "dontMapEventToLabels": false,
@@ -25,21 +25,21 @@
                         "transformers": []
                     }
                 },
-                "Ataya_IP": {
-                    "complex": {
-                        "accessor": "ip",
-                        "filters": [],
-                        "root": "sessionInfo",
-                        "transformers": []
-                    }
-                },
                 "Event Type": {
                     "complex": {
                         "filters": [],
                         "root": "eventType",
                         "transformers": []
                     }
-                }
+                },
+				"Source IP": {
+					"complex": {
+						"accessor": "ip",
+						"filters": [],
+						"root": "sessionInfo",
+						"transformers": []
+					}
+				}
             }
         },
         "dbot_classification_incident_type_all": {
@@ -69,14 +69,6 @@
                         "transformers": []
                     }
                 },
-                "Ataya_IP": {
-                    "complex": {
-                        "accessor": "ip",
-                        "filters": [],
-                        "root": "sessionInfo",
-                        "transformers": []
-                    }
-                },
                 "Event Type": {
                     "complex": {
                         "filters": [],
@@ -84,13 +76,21 @@
                         "transformers": []
                     }
                 },
+				"Source IP": {
+					"complex": {
+						"accessor": "ip",
+						"filters": [],
+						"root": "sessionInfo",
+						"transformers": []
+					}
+				},
                 "name": {
                     "simple": "Ataya ${eventType} Incident ${sessionInfo.clientName} ${sessionInfo.info.imei}"
                 }
             }
         }
     },
-    "name": "Ataya Mapping",
+    "name": "Ataya - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.9.0"

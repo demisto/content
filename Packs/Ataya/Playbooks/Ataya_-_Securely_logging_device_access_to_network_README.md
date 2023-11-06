@@ -1,4 +1,4 @@
-Basic Playbook for Login/Logout User ID on pan-os
+With this playbook, we can enable Identity-Aware Security Across Multiaccess Networks.
 
 ## Dependencies
 
@@ -14,14 +14,14 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* Print
 * IsIntegrationAvailable
+* Print
 
 ### Commands
 
-* pan-os
-* closeInvestigation
 * ataya-assign-user
+* closeInvestigation
+* pan-os
 
 ## Playbook Inputs
 

@@ -121,7 +121,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 4
                     },
                     {
                         "displayType": "CARD",
@@ -180,8 +180,8 @@
                         "name": "Timeline Information",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 4
+                        "x": 2,
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -223,8 +223,8 @@
                         "name": "Closing Information",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 8
+                        "x": 2,
+                        "y": 4
                     },
                     {
                         "displayType": "CARD",
@@ -269,11 +269,22 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 22,
+                                "id": "4faa1690-7c57-11ee-826e-4bb0fd730d05",
+                                "index": 1,
+                                "listId": "caseinfoid-83be88a0-e9e8-11ed-9314-61e884feb460",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "atayaimei",
                                 "height": 22,
                                 "id": "928e9b50-e9e7-11ed-9314-61e884feb460",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -282,15 +293,6 @@
                                 "fieldId": "atayaimsi",
                                 "height": 22,
                                 "id": "9b8e8800-e9e7-11ed-9314-61e884feb460",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "atayaip",
-                                "height": 22,
-                                "id": "773415a0-e9e8-11ed-9314-61e884feb460",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -334,6 +336,10 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "incident_atayaassigned",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "incident_atayaimei",
                         "isVisible": true
                     },
@@ -343,6 +349,10 @@
                     },
                     {
                         "fieldId": "incident_atayaip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_atayaeventtype",
                         "isVisible": true
                     },
                     {

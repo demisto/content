@@ -1,7 +1,7 @@
 id: Ataya - Securely logging device access to network
 version: -1
 name: Ataya - Securely logging device access to network
-description: Basic Playbook for Login/Logout User ID on pan-os
+description: With this playbook, we can enable Identity-Aware Security Across Multiaccess Networks.
 starttaskid: "0"
 tasks:
   "0":
@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - "13"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": -190
+          "x": 910,
+          "y": 50
         }
       }
     note: false
@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 420
+          "x": 480,
+          "y": 720
         }
       }
     note: false
@@ -71,10 +71,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 044cbc8c-2b94-49b4-8ebc-f53043fe15f7
+    taskid: 0b1ec360-a643-4937-8708-58a2bd799e34
     type: regular
     task:
-      id: 044cbc8c-2b94-49b4-8ebc-f53043fe15f7
+      id: 0b1ec360-a643-4937-8708-58a2bd799e34
       version: -1
       name: Close Investigation
       description: commands.local.cmd.close.inv
@@ -87,14 +87,14 @@ tasks:
       - "9"
     scriptarguments:
       closeNotes:
-        simple: User ID has been successfully updated
+        simple: Session has been successfully updated by User ID
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 1210
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
@@ -106,13 +106,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: dd83e5cc-3e69-49c2-883c-ed37469c6daf
+    taskid: b69d7317-9ba5-4816-831c-4cdd61b12354
     type: regular
     task:
-      id: dd83e5cc-3e69-49c2-883c-ed37469c6daf
+      id: b69d7317-9ba5-4816-831c-4cdd61b12354
       version: -1
-      name: Update User ID
-      description: User logged in.
+      name: Create User ID
+      description: Login user on PAN NGFW by User ID.
       script: '|||pan-os'
       type: regular
       iscommand: true
@@ -122,7 +122,7 @@ tasks:
       - "2"
     scriptarguments:
       cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.sourceip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
       type:
         simple: user-id
     separatecontext: false
@@ -130,8 +130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 975
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -143,13 +143,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 52549b85-5836-4b54-8cc4-615a073c5631
+    taskid: 783c0ec7-34ea-4814-88aa-d87b6e55ff1b
     type: condition
     task:
-      id: 52549b85-5836-4b54-8cc4-615a073c5631
+      id: 783c0ec7-34ea-4814-88aa-d87b6e55ff1b
       version: -1
-      name: Event Type Inspection
-      description: Check the action of 5G UE sessions.
+      name: Event Type Inspection for Session Control
+      description: Check the action type of 5G UE sessions.
       type: condition
       iscommand: false
       brand: ""
@@ -199,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": 650
+          "x": 480,
+          "y": 895
         }
       }
     note: false
@@ -212,13 +212,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 6d68ac54-c2e9-49d3-8760-d08058f7ba1d
+    taskid: c6eb7979-d297-497c-8913-e9e7b7197877
     type: regular
     task:
-      id: 6d68ac54-c2e9-49d3-8760-d08058f7ba1d
+      id: c6eb7979-d297-497c-8913-e9e7b7197877
       version: -1
-      name: Remove User ID Mapping
-      description: User logged out.
+      name: Remove User ID
+      description: Logout user on PAN NGFW by User ID.
       script: '|||pan-os'
       type: regular
       iscommand: true
@@ -228,7 +228,7 @@ tasks:
       - "2"
     scriptarguments:
       cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <logout> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </logout> \n     </payload> \n</uid-message>"
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <logout> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.sourceip}\" timeout=\"20\"> \n               </entry> \n          </logout> \n     </payload> \n</uid-message>"
       type:
         simple: user-id
     separatecontext: false
@@ -236,8 +236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -250,
-          "y": 975
+          "x": 480,
+          "y": 1070
         }
       }
     note: false
@@ -249,13 +249,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a7e97d0d-511f-4052-848d-cf050df030a6
+    taskid: d4d94ace-1cab-444e-8023-091abebe66fc
     type: regular
     task:
-      id: a7e97d0d-511f-4052-848d-cf050df030a6
+      id: d4d94ace-1cab-444e-8023-091abebe66fc
       version: -1
       name: Update User ID
-      description: User logged in.
+      description: Update user on PAN NGFW by User ID..
       script: '|||pan-os'
       type: regular
       iscommand: true
@@ -265,7 +265,7 @@ tasks:
       - "2"
     scriptarguments:
       cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.atayaip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.sourceip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
       type:
         simple: user-id
     separatecontext: false
@@ -273,8 +273,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 1000
+          "x": 910,
+          "y": 1070
         }
       }
     note: false
@@ -286,22 +286,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c4102ff8-ea2d-4e8b-8908-0f5fe18f412e
+    taskid: 28da22af-b157-49cd-863e-813073de9bcf
     type: condition
     task:
-      id: c4102ff8-ea2d-4e8b-8908-0f5fe18f412e
+      id: 28da22af-b157-49cd-863e-813073de9bcf
       version: -1
-      name: IsIntegrationAvailable
+      name: Is Panorama Integration Enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "9"
       "yes":
-      - "12"
+      - "1"
     scriptarguments:
       brandname:
         simple: Panorama
@@ -312,8 +310,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": -10
+          "x": 480,
+          "y": 545
         }
       }
     note: false
@@ -340,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1610,
-          "y": 1520
+          "x": 910,
+          "y": 1420
         }
       }
     note: false
@@ -353,16 +351,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 33b33989-7a41-4109-88aa-f5d1f7b46616
+    taskid: 66745209-be4a-4e6c-8847-7574e26ed1b0
     type: collection
     task:
-      id: 33b33989-7a41-4109-88aa-f5d1f7b46616
+      id: 66745209-be4a-4e6c-8847-7574e26ed1b0
       version: -1
-      name: Pause for review
+      name: Pause for review the unassigned device
+      description: ""
       type: collection
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "11"
@@ -371,8 +369,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": 640
+          "x": 1340,
+          "y": 1070
         }
       }
     note: false
@@ -401,7 +399,7 @@ tasks:
         label: ""
         labelarg:
           simple: |-
-            Should it be approved?
+            Should the client be approved to access the network?
             ID: ${incident.atayaid}
         required: false
         gridcolumns: []
@@ -426,13 +424,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0878477b-2162-41c9-8fc9-c17a6c4efe21
+    taskid: 8d964650-d075-442c-8f73-7d3e10c3c8f9
     type: regular
     task:
-      id: 0878477b-2162-41c9-8fc9-c17a6c4efe21
+      id: 8d964650-d075-442c-8f73-7d3e10c3c8f9
       version: -1
-      name: Assign New Device
-      description: assign user
+      name: Approve the Unassigned Device
+      description: approve user to access external network
       script: '|||ataya-assign-user'
       type: regular
       iscommand: true
@@ -448,8 +446,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1210,
-          "y": 905
+          "x": 1340,
+          "y": 1245
         }
       }
     note: false
@@ -461,19 +459,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7954b47b-9377-4737-87fe-0bddc2d6c1e8
+    taskid: d5fa5d19-0ac4-4458-87e2-4210f71beb94
     type: condition
     task:
-      id: 7954b47b-9377-4737-87fe-0bddc2d6c1e8
+      id: d5fa5d19-0ac4-4458-87e2-4210f71beb94
       version: -1
-      name: Reject Type Detect
+      name: Is Reject Event Type Detected?
       description: Check the action of 5G UE sessions.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "1"
+      - "8"
       Authentication:
       - "10"
     separatecontext: false
@@ -493,8 +491,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 180
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fa949a0f-bd5b-41e8-8b9a-411c672d0986
+    type: condition
+    task:
+      id: fa949a0f-bd5b-41e8-8b9a-411c672d0986
+      version: -1
+      name: Is Ataya Harmony Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    scriptarguments:
+      brandname:
+        simple: Ataya Harmony
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
         }
       }
     note: false
@@ -507,15 +542,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "8_12_yes": 0.88,
-      "8_9_#default#": 0.66
+      "12_8_#default#": 0.81
     },
     "paper": {
       "dimensions": {
-        "height": 1775,
-        "width": 2240,
-        "x": -250,
-        "y": -190
+        "height": 1435,
+        "width": 1670,
+        "x": 50,
+        "y": 50
       }
     }
   }
