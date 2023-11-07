@@ -29,7 +29,6 @@
         "IPv6",
         "CIDR",
         "IP",
-        "URL",
         "File"
     ],
     "systemAssociatedTypes": null,
