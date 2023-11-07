@@ -179,7 +179,9 @@ def threat_summit_example():
     """
 
     data = json.loads(data)
-    create_xsoar_incident(data, "test.paypa1.xyz", datetime.now(), {"similarity": 0.9, "homograph": "paypa1", "asset": "paypal"})
+    create_xsoar_incident(data, "example.test.paypal.xyz", datetime.now(), {"similarity": 0.9,
+                                                                            "homograph": "paypa1",
+                                                                            "asset": "paypal"})
     create_xsoar_certificate_indicator(data)
     return_error('Done')
 
@@ -206,7 +208,8 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
             "userasset": result["asset"],
             "certificatesource": certificate["source"]["name"],
             "certificateindex": certificate["cert_index"],
-            "externallink": certificate["cert_link"]
+            "externallink": certificate["cert_link"],
+            "domain": domain
         }
     }
 
