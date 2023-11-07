@@ -15,6 +15,12 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "dependencies": {
+        "CTF02": {
+            "mandatory": false,
+            "display_name": "Capture The Flag - 02"
+        }
+    },
     "marketplaces": [
         "xsoar"
     ]
