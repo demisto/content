@@ -1073,7 +1073,6 @@ class Pack:
         final_path_to_zipped_pack = f"{source_path}.zip"
         return task_status, final_path_to_zipped_pack
 
-
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
