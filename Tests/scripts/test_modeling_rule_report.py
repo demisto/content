@@ -137,7 +137,7 @@ def write_test_modeling_rule_to_jira_mapping(artifacts_path: Path, jira_tickets_
                                                            default=str))
 
 
-def read_test_modeling_rule_to_jira_mapping(artifacts_path: Path) -> dict[str, Issue]:
+def read_test_modeling_rule_to_jira_mapping(artifacts_path: Path) -> dict[str, dict[str, str]]:
     with (contextlib.suppress(Exception),
           open(artifacts_path / TEST_MODELING_RULES_TO_JIRA_MAPPING) as playbook_to_jira_mapping_file):
         return json.load(playbook_to_jira_mapping_file)

@@ -129,8 +129,10 @@ def test_modeling_rules_results(artifact_folder: Path,
             if test_suite.failures or test_suite.errors:
                 properties = get_properties_for_test_suite(test_suite)
                 if modeling_rule := get_summary_for_test_modeling_rule(properties):
-                    failed_test_suites.append(failed_test_data_to_slack_link(modeling_rule,
-                                                                             failed_test_to_jira_mapping.get(modeling_rule)))
+                    if jira_ticket_data := failed_test_to_jira_mapping.get(modeling_rule):
+                        failed_test_suites.append(failed_test_data_to_slack_link(modeling_rule, jira_ticket_data))
+                    else:
+                        failed_test_suites.append(modeling_rule)
 
     if failed_test_suites:
 
@@ -388,7 +390,7 @@ def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
     project = gitlab_client.projects.get(int(project_id))
     pipeline = project.pipelines.get(int(pipeline_id))
 
-    failed_jobs = []
+    failed_jobs: list[ProjectPipelineJob] = []
     for job in pipeline.jobs.list(iterator=True):
         logging.info(f'status of gitlab job with id {job.id} and name {job.name} is {job.status}')
         if job.status == 'failed':
