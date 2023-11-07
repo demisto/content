@@ -638,7 +638,7 @@ script:
       contextPath: SysAid.ServiceRecord.notes
       description: 'The notes of the service record.'
   - name: sysaid-service-record-add-note
-    description: Add a note to a Service Record.
+    description: Add a note to a service record.
     arguments:
     - name: id
       description: The service record ID.
