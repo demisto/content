@@ -412,7 +412,7 @@ class MsClient:
         params = {"api-version": SECURE_STORES_API_VERSION}
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
-    def list_resource_groups(self, tag: str, limit: int) -> dict:
+    def list_resource_groups(self, tag: str, limit: int, full_url: Optional[str] = None) -> dict:
         """
         List all resource groups.
 
@@ -424,8 +424,8 @@ class MsClient:
             List[dict]: API response from Azure.
         """
         filter_by_tag = azure_tag_formatter(tag) if tag else None
-        params = {"$filter": filter_by_tag, "$top": limit, "api-version": LIST_RESOURCE_GROUP_VERSION}
-        return self.ms_client.http_request(method="GET", url_suffix="resourcegroups", params=params)
+        params = {"$filter": filter_by_tag, "$top": limit, "api-version": LIST_RESOURCE_GROUP_VERSION} if not full_url else {}
+        return self.ms_client.http_request(method="GET", url_suffix="resourcegroups", params=params, full_url=full_url)
 
 
 """ FUNCTIONS """
@@ -1326,25 +1326,35 @@ def list_resource_groups_command(client: MsClient, args: dict[str, Any]) -> Comm
     tag = args.get('tag', '')
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
 
-    response = client.list_resource_groups(tag=tag, limit=limit).get('value', [])
+    raw_responses = []
+    resource_groups: List[dict] = []
 
-    resource_groups = []
-    for resource_group in response:
-        resource_group_context = {
-            'Name': resource_group.get('name'),
-            'Location': resource_group.get('location'),
-            'Tags': resource_group.get('tags'),
-            'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
-        }
-        resource_groups.append(resource_group_context)
+    next_link: bool | str = True
+    while next_link and len(resource_groups) < limit:
+        full_url = next_link if isinstance(next_link, str) else None
+        response = client.list_resource_groups(tag=tag, limit=limit, full_url=full_url)
+        value = response.get('value', [])
+        next_link = response.get('nextLink', '')
 
+        raw_responses.extend(value)
+        for resource_group in value:
+            resource_group_context = {
+                'Name': resource_group.get('name'),
+                'Location': resource_group.get('location'),
+                'Tags': resource_group.get('tags'),
+                'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
+            }
+            resource_groups.append(resource_group_context)
+
+    raw_responses = raw_responses[:limit]
+    resource_groups = resource_groups[:limit]
     readable_output = tableToMarkdown('Resource Groups List', resource_groups, removeNull=True)
 
     return CommandResults(
         outputs_prefix='Azure.ResourceGroupName',
         outputs_key_field='id',
-        outputs=response,
-        raw_response=response,
+        outputs=raw_responses,
+        raw_response=raw_responses,
         readable_output=readable_output,
     )
 
