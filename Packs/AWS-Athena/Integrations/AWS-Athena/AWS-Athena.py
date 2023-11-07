@@ -69,11 +69,11 @@ def start_query_execution_command(args: dict, aws_client):
     })
 
     return_results(CommandResults(
-        outputs_prefix='AWS.Athena.Query',
+        outputs_prefix='AWS.Athena.StartQuery',
         outputs_key_field='QueryExecutionId',
         outputs=data,
         raw_response=response,
-        readable_output=tableToMarkdown('AWS Athena Query', data),
+        readable_output=tableToMarkdown('AWS Athena Query Start', data),
     ))
 
 
@@ -117,11 +117,11 @@ def get_query_execution_command(args: dict, aws_client):
         return
 
     return_results(CommandResults(
-        outputs_prefix='AWS.Athena.Query',
+        outputs_prefix='AWS.Athena.QueryExecution',
         outputs_key_field='QueryExecutionId',
         outputs=data,
         raw_response=response,
-        readable_output=tableToMarkdown('AWS Athena Query', data),
+        readable_output=tableToMarkdown('AWS Athena Query Execution', data),
     ))
 
 
@@ -139,7 +139,7 @@ def get_query_results_command(args: dict, aws_client):
     parsed_response = parse_rows_response(rows_data=raw_response['ResultSet']['Rows'])
 
     return_results(CommandResults(
-        outputs_prefix='AWS.Athena.Query',
+        outputs_prefix='AWS.Athena.QueryResults',
         outputs=parsed_response,
         raw_response=raw_response,
         readable_output=tableToMarkdown('AWS Athena Query Results', parsed_response),
