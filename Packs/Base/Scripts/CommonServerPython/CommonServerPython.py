@@ -10570,7 +10570,6 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     :rtype: ``Tuple``
     """
     last_run_time = last_run and 'time' in last_run and last_run['time']
-    offset = last_run.get('offset')
     now = get_current_time(timezone)
     if not last_run_time:
         last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
@@ -10579,7 +10578,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     else:
         last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
-    if not offset and look_back and look_back > 0:
+    if look_back and look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
