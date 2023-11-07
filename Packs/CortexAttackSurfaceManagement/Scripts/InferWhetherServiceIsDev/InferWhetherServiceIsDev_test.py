@@ -9,18 +9,19 @@ def test_canonicalize():
     assert _canonicalize_string('" BLAH" ') == "blah"
 
 
-@pytest.mark.parametrize('tags_raw,matches',
+@pytest.mark.parametrize('raw,matches,list_type',
                          [([{"key": "ENV", "value": "non-prd"}],
-                          [{"key": "ENV", "value": "non-prd"}]),
-                          ([{"key": "ENV", "value": "prd"}], []),
-                             ([{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}],
-                              [{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}])
-                          ])
-def test_get_indicators_from_list(tags_raw, matches):
+                          [{"key": "ENV", "value": "non-prd"}], "dictionary"),
+                          ([{"key": "ENV", "value": "prd"}], [], "dictionary"),
+                          ([{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}],
+                           [{"key": "ENV", "value": "dv"}, {"key": "stage", "value": "sbx"}], "dictionary"),
+                          (["eng-dev", "rando"], ["eng-dev"], "string"),
+                          (["eng-dev"], [], "break")])
+def test_get_indicators_from_list(raw, matches, list_type):
     from InferWhetherServiceIsDev import get_indicators_from_list
     from InferWhetherServiceIsDev import is_dev_indicator
 
-    assert get_indicators_from_list(tags_raw, is_dev_indicator, "dictionary") == matches
+    assert get_indicators_from_list(raw, is_dev_indicator, list_type) == matches
 
 
 def test_is_dev_indicator():
