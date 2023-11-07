@@ -17,7 +17,8 @@ from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API
     jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type
 from Tests.scripts.test_modeling_rule_report import (create_jira_issue_for_test_modeling_rule,
                                                      TEST_MODELING_RULES_BASE_HEADERS,
-                                                     calculate_test_modeling_rule_results)
+                                                     calculate_test_modeling_rule_results,
+                                                     write_test_modeling_rule_to_jira_mapping)
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -76,16 +77,18 @@ def main():
         logging.info(f"Found {len(jira_tickets_for_modeling_rule)} Jira tickets out "
                      f"of {len(modeling_rules_to_test_suite)} Test modeling rules")
 
+        write_test_modeling_rule_to_jira_mapping(options.artifacts_path, jira_tickets_for_modeling_rule)
+
         # Search if we have too many test modeling rules that failed beyond the max allowed limit to open, if so we print the
         # list and exit. This is to avoid opening too many Jira issues.
         failed_test_modeling_rule = get_all_failed_results(modeling_rules_to_test_suite)
 
         if len(failed_test_modeling_rule) >= options.max_failures_to_handle:
-            headers, column_align, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_modeling_rule,
-                                                                                 failed_test_modeling_rule,
-                                                                                 server_versions,
-                                                                                 TEST_MODELING_RULES_BASE_HEADERS)
-            table = tabulate(tabulate_data, headers, tablefmt="pretty", colalign=column_align)
+            column_align, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_modeling_rule,
+                                                                        failed_test_modeling_rule,
+                                                                        server_versions,
+                                                                        TEST_MODELING_RULES_BASE_HEADERS)
+            table = tabulate(tabulate_data, headers="firstrow", tablefmt="pretty", colalign=column_align)
             logging.info(f"Test Modeling rule Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
             logging.critical(f"Found {len(failed_test_modeling_rule)} failed test modeling rule, "
                              f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.")

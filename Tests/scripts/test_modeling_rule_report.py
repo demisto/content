@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -11,7 +12,7 @@ from tabulate import tabulate
 from Tests.scripts.common import get_properties_for_test_suite
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query_with_summary, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
-    generate_build_markdown_link, convert_jira_time_to_datetime
+    generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
@@ -121,3 +122,13 @@ def calculate_test_modeling_rule_results(test_modeling_rules_results_files: dict
                     jira_tickets_for_modeling_rule[summary] = sorted_issues_matching_summary[0]
 
     return modeling_rules_to_test_suite, jira_tickets_for_modeling_rule, server_versions
+
+
+def write_test_modeling_rule_to_jira_mapping(artifacts_path: Path, jira_tickets_for_modeling_rule: dict[str, Issue]):
+    test_modeling_rule_to_jira_mapping = artifacts_path / "test_modeling_rule_to_jira_mapping.json"
+    logging.info(f"Writing test modeling rules to Jira mapping to {test_modeling_rule_to_jira_mapping}")
+    with open(test_modeling_rule_to_jira_mapping, "w") as test_modeling_rule_to_jira_mapping_file:
+        test_modeling_rule_to_jira_mapping = {modeling_rule: jira_ticket_to_json_data(jira_ticket)
+                                              for modeling_rule, jira_ticket in jira_tickets_for_modeling_rule.items()}
+    test_modeling_rule_to_jira_mapping_file.write(json.dumps(test_modeling_rule_to_jira_mapping, indent=4, sort_keys=True,
+                                                             default=str))

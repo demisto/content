@@ -98,7 +98,9 @@ def get_test_report_pipeline_url(pipeline_url: str) -> str:
     return f"{pipeline_url}/test_report"
 
 
-def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
+def test_modeling_rules_results(artifact_folder: Path,
+                                failed_test_to_jira_mapping: dict[str, Any],
+                                pipeline_url: str, title: str) -> list[dict[str, Any]]:
 
     if not (test_modeling_rules_results_files := get_test_results_files(artifact_folder, TEST_MODELING_RULES_REPORT_FILE_NAME)):
         logging.error(f"Could not find any test modeling rule result files in {artifact_folder}")
@@ -141,7 +143,9 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
             'fields': [
                 {
                     "title": "Failed Tests Modeling rules",
-                    "value": ' ,'.join(failed_test_suites),
+                    "value": ' ,'.join(map(lambda failed_test: failed_test_data_to_slack_link(failed_test,
+                                                                                              failed_test_to_jira_mapping),
+                                           failed_test_suites)),
                     "short": False
                 }
             ]
@@ -156,11 +160,18 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
     }]
 
 
+def failed_test_data_to_slack_link(failed_test: str, jira_ticket_data: dict[str, str] | None) -> str:
+    if jira_ticket_data:
+        return f"<{jira_ticket_data['url']}|{failed_test} [{jira_ticket_data['key']}]>"
+    return failed_test
+
+
 def test_playbooks_results_to_slack_msg(instance_role: str,
                                         succeeded_tests: list[str],
                                         failed_tests: list[str],
                                         skipped_integrations: list[str],
                                         skipped_tests: list[str],
+                                        playbook_to_jira_mapping: dict[str, Any],
                                         title: str,
                                         pipeline_url: str) -> list[dict[str, Any]]:
     if failed_tests:
@@ -171,9 +182,12 @@ def test_playbooks_results_to_slack_msg(instance_role: str,
             'color': 'danger',
             'title': title,
             'title_link': get_test_report_pipeline_url(pipeline_url),
+            "mrkdwn_in": ["fields"],
             'fields': [{
                 "title": "Failed Test Playbooks",
-                "value": ', '.join(failed_tests),
+                "value": ', '.join(
+                    map(lambda playbook_id: failed_test_data_to_slack_link(playbook_id, playbook_to_jira_mapping.get(playbook_id)),
+                        failed_tests)),
                 "short": False
             }]
         }]
@@ -193,6 +207,12 @@ def split_results_file(tests_data: str | None) -> list[str]:
 
 def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
 
+    try:
+        with open(artifact_folder / "playbook_to_jira_mapping.json") as playbook_to_jira_mapping_file:
+            playbook_to_jira_mapping = json.load(playbook_to_jira_mapping_file)
+    except Exception:
+        playbook_to_jira_mapping = {}
+
     content_team_fields = []
     for instance_role, instance_directory in get_instance_directories(artifact_folder).items():
         succeeded_tests = split_results_file(get_artifact_data(instance_directory, 'succeeded_tests.txt'))
@@ -201,7 +221,8 @@ def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str)
         skipped_integrations = split_results_file(get_artifact_data(instance_directory, 'skipped_integrations.txt'))
 
         content_team_fields += test_playbooks_results_to_slack_msg(instance_role, succeeded_tests, failed_tests,
-                                                                   skipped_integrations, skipped_tests, title, pipeline_url)
+                                                                   skipped_integrations, skipped_tests, playbook_to_jira_mapping,
+                                                                   title, pipeline_url)
 
     return content_team_fields
 

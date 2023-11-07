@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 import re
 import sys
@@ -8,7 +9,6 @@ from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
-import pandas as pd
 import urllib3
 from jira import Issue
 from jira.client import JIRA
@@ -20,7 +20,7 @@ from Tests.scripts.common import calculate_results_table, get_all_failed_results
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
-    jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type
+    jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, jira_ticket_to_json_data
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
     TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS
 from Tests.scripts.utils import logging_wrapper as logging
@@ -49,8 +49,7 @@ def options_handler() -> argparse.Namespace:
 
 def generate_description(playbook_id: str, build_number: str, junit_file_name: str, table_data: Any, failed: bool) -> str:
     build_markdown_link = generate_build_markdown_link(build_number)
-    transposed = pd.DataFrame(table_data, index=None).transpose().to_numpy()
-    table = tabulate(transposed, headers="firstrow", tablefmt="jira")
+    table = tabulate(table_data, headers="firstrow", tablefmt="jira")
     msg = "failed" if failed else "succeeded"
     description = f"""
         *{playbook_id}* {msg} in {build_markdown_link}
@@ -149,49 +148,53 @@ def main():
         failed_playbooks = get_all_failed_results(playbooks_results)
 
         if len(failed_playbooks) >= options.max_failures_to_handle:
-            headers, column_align, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_playbooks,
-                                                                                 failed_playbooks,
-                                                                                 server_versions,
-                                                                                 TEST_PLAYBOOKS_BASE_HEADERS)
-            table = tabulate(tabulate_data, headers, tablefmt="pretty", colalign=column_align)
+            column_align, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_playbooks,
+                                                                        failed_playbooks,
+                                                                        server_versions,
+                                                                        TEST_PLAYBOOKS_BASE_HEADERS)
+            table = tabulate(tabulate_data, headers="firstrow", tablefmt="pretty", colalign=column_align)
             logging.info(f"Test Playbook Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
             logging.critical(f"Found {len(failed_playbooks)} failed test playbooks, "
                              f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.")
 
             sys.exit(1)
-
+        playbook_to_jira_mapping = {}
         for playbook_id, test_suites in playbooks_results.items():
             # We create the table without Jira tickets columns, as we don't want to have them within the Jira issue.
             # We also add the skipped tests, as we want to have them within the Jira issue.
             # The table should be created without colors, as we don't want to have them within the Jira issue.
             # We also don't want to have the total row, as we don't want to have it within the Jira issue
             # since it's a single playbook.
-            headers, _, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
-                                                                                   {
-                                                                                       playbook_id: test_suites
-                                                                                   },
-                                                                                   server_versions,
-                                                                                   TEST_PLAYBOOKS_JIRA_BASE_HEADERS,
-                                                                                   add_total_row=False,
-                                                                                   no_color=True,
-                                                                                   without_jira=True,
-                                                                                   with_skipped=True,
-                                                                                   multiline_headers=False,
-                                                                                   transpose=True,
-                                                                                   )
+            _, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
+                                                                          {
+                                                                              playbook_id: test_suites
+                                                                          },
+                                                                          server_versions,
+                                                                          TEST_PLAYBOOKS_JIRA_BASE_HEADERS,
+                                                                          add_total_row=False,
+                                                                          no_color=True,
+                                                                          without_jira=True,
+                                                                          with_skipped=True,
+                                                                          multiline_headers=False,
+                                                                          transpose=True,
+                                                                          )
 
-            if (jira_ticket := jira_tickets_for_playbooks.get(playbook_id)) or total_errors:
+            jira_ticket = jira_tickets_for_playbooks.get(playbook_id)
+            if jira_ticket or total_errors:
                 # if the ticket isn't resolved, or we found new errors, we update it, otherwise we skip it.
                 if jira_ticket and jira_ticket.get_field("resolution") and not total_errors:
+                    playbook_to_jira_mapping[playbook_id] = jira_ticket_to_json_data(jira_ticket)
                     logging.debug(f"Skipped updating Jira issue for resolved test playbook:{playbook_id}")
                     continue
-                # We append the headers to the table data, as we want to have them within the Jira issue.
-                jira_table_data = [headers] + tabulate_data
                 junit_file_name = get_attachment_file_name(playbook_id, options.build_number)
-                create_jira_issue(jira_server, jira_ticket, xml, playbook_id, options.build_number, jira_table_data,
-                                  options.max_days_to_reopen, now, junit_file_name, total_errors > 0)
+                jira_ticket = create_jira_issue(jira_server, jira_ticket, xml, playbook_id, options.build_number, tabulate_data,
+                                                options.max_days_to_reopen, now, junit_file_name, total_errors > 0)
+                playbook_to_jira_mapping[playbook_id] = jira_ticket_to_json_data(jira_ticket)
             else:
                 logging.debug(f"Skipped creating Jira issue for successful test playbook:{playbook_id}")
+        with open(Path(options.artifacts_path) / "playbook_to_jira_mapping.json", "w") as playbook_to_jira_mapping_file:
+            playbook_to_jira_mapping_file.write(json.dumps(playbook_to_jira_mapping, indent=4, sort_keys=True,
+                                                           default=str))
 
         logging.info("Finished creating/updating Jira issues")
 
