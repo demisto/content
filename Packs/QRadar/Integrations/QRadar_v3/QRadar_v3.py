@@ -4138,7 +4138,6 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
-    demisto.info('test')
 
     # handle allowed advanced parameters
     adv_params = params.get('adv_params')
