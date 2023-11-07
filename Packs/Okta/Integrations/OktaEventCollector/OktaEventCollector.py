@@ -120,10 +120,6 @@ class GetEvents:
                     demisto.error(f'Unexpected error.\n{traceback.format_exc()}')
 
                 return stored_events
-
-            if len(events) == 0:  # type: ignore
-                # stop the loop the moment returned 0 events from the API
-                break
                 
             if len(events) < page_size:
                 # we got less events than we requested. It means we should stop fetching.
@@ -132,6 +128,10 @@ class GetEvents:
 
             if last_object_ids:
                 events = GetEvents.remove_duplicates(events, last_object_ids)
+                
+            if len(events) == 0:  # type: ignore
+                # stop the loop the moment returned 0 events from the API
+                break
 
             stored_events.extend(events)
 
@@ -197,7 +197,7 @@ def main():  # pragma: no cover
         if command == 'test-module':
             get_events.aggregated_results()
             demisto.results('ok')
-        datetime.now()
+        
         if command == 'okta-get-events':
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
             command_results = CommandResults(
