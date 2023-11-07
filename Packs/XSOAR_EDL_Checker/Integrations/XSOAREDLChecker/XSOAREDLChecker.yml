@@ -36,9 +36,9 @@ script:
     name: xsoaredlchecker-get-edl
     outputs:
     - contextPath: EDLChecker.Name
-      description: The Name of the EDL from the Generic Indicators Export Service instance
+      description: The Name of the EDL from the Generic Indicators Export Service instance.
     - contextPath: EDLChecker.Status
-      description: The HTTP Status Code returned by the EDL
+      description: The HTTP Status Code returned by the EDL.
     - contextPath: EDLChecker.Response
       description: The Response or Error from the check.
     - contextPath: EDLChecker.ItemsOnList
