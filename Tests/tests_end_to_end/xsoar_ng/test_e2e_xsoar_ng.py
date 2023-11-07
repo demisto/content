@@ -1,3 +1,4 @@
+import time
 from datetime import timedelta
 from datetime import datetime
 from contextlib import contextmanager
@@ -333,7 +334,7 @@ def test_taxii2_server(
         username = integration_params["credentials"]["identifier"]
         password = integration_params["credentials"]["password"]
         headers = {"Accept": "application/taxii+json;version=2.1"}
-
+        time.sleep(7200)
         response = xsoar_ng_client.do_long_running_instance_request(
             instance_name,
             url_suffix="/threatintel/collections",
