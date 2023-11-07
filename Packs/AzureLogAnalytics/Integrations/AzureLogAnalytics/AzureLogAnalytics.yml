@@ -268,19 +268,19 @@ script:
     name: azure-log-analytics-auth-reset
     arguments: []
   - arguments:
-    - description: the name of the table to add.
+    - description: The name of the table to add.
       name: table_name
       required: true
     - description: Maximum number of records in the result set, up to one million records.
       name: limit
       defaultValue: 50
-    - description: Log query written in KQL to retrieve data. search job queries must always start with a table name. link to syntax documentation https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator
+    - description: Log query written in KQL format to retrieve data. Search job queries must always start with a table name. For the proper syntax, see https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator.
       name: query
       required: true
-    - description: Start of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
+    - description: Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
       name: start_search_time
       defaultValue: 1 day ago
-    - description: End of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
+    - description: End of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
       name: end_search_time
       defaultValue: now
     - description: The timeout in seconds until polling ends.
@@ -289,11 +289,11 @@ script:
     - description: The interval in seconds between each poll.
       name: interval
       defaultValue: '60'
-    - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. This argument is for the dev, not for the user.
+    - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. This argument is for a developer, not for a user.
       name: first_run
       defaultValue: true
       hidden: true
-    - description: Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user.
+    - description: Hide the polling message and only print the final status at the end. This argument is for a developer not for a user.
       name: hide_polling_output
       hidden: true
     polling: true
@@ -328,10 +328,10 @@ script:
       description: Search job query.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.description
-      description: Search job Description.
+      description: Search job description.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.limit
-      description: Limit the search job to return up to specified number of rows.
+      description: Limit the search job to return up to the specified number of rows.
       type: Number
     - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.startSearchTime
       description: The timestamp to start the search from (UTC).
@@ -346,7 +346,7 @@ script:
       description: Table name.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableSubType
-      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any, Classic, DataCollectionRuleBased.
+      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it (Any, Classic, DataCollectionRuleBased).
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableType
       description: Table's creator.
@@ -370,7 +370,7 @@ script:
       description: Column data type (bool, datetime, dynamic, guid, int, long, real, string).
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint
-      description: Column data type logical hint. (armPath, guid, ip, uri).
+      description: Column data type logical hint (armPath, guid, ip, uri).
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.displayName
       description: Column display name.
@@ -388,13 +388,13 @@ script:
       description: Table labels.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.source
-      description: Table's creator. (customer, microsoft).
+      description: Table's creator (customer, microsoft).
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.schema.solutions
       description: List of solutions the table is affiliated with.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.provisioningState
-      description: Table's current provisioning state. (Deleting, InProgress, Succeeded, Updating) If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
+      description: Table's current provisioning state (Deleting, InProgress, Succeeded, Updating). If set to 'updating', indicates a resource lock due to an ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
       type: String
     - contextPath: AzureLogAnalytics.SearchJob.properties.retentionInDays
       description: The table retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention.
