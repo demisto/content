@@ -13968,8 +13968,9 @@ def main():  # pragma: no cover
         LOG(f'Command being called is: {command}')
 
         # Log the API version
-        demisto.debug('Retrieving the API version')
-        demisto.debug(f'API version: {get_pan_os_version()}')
+        if is_debug_mode():
+            demisto.debug('Retrieving the API version')
+            demisto.debug(f'API version: {get_pan_os_version()}')
 
         # Remove proxy if not set to true in params
         handle_proxy()
