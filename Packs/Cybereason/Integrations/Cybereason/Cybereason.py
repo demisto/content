@@ -1926,11 +1926,11 @@ def fetch_machine_details_command(client: Client, args: dict):
         for single_sensor in response.get('sensors'):
             if single_sensor.get('machineName') == machine_name:
                 outputs.append({
-                    "MachineID": single_sensor["sensorId"],
-                    "MachineName": single_sensor["machineName"],
-                    "MachineFQDN": single_sensor["fqdn"],
-                    "GroupID": single_sensor["groupId"],
-                    "GroupName": single_sensor["groupName"]
+                    "MachineID": single_sensor.get("sensorId"),
+                    "MachineName": single_sensor.get("machineName"),
+                    "MachineFQDN": single_sensor.get("fqdn"),
+                    "GroupID": single_sensor.get("groupId"),
+                    "GroupName": single_sensor.get("groupName")
                 })
         empty_output_message = 'No Machine Details found for the given Machine Name'
         return CommandResults(
