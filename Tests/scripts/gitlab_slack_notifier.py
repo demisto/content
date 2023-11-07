@@ -43,6 +43,7 @@ SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
 CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
 CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
+CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
 
@@ -355,6 +356,7 @@ def construct_slack_msg(triggering_workflow: str,
     else:
         title += ' - Success'
         color = 'good'
+    title += f' (@{CI_SERVER_HOST})' if CI_SERVER_HOST else ''
     slack_msg = [{
         'fallback': title,
         'color': color,
