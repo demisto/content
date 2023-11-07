@@ -1299,14 +1299,6 @@ def main():
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
             continue
 
-        # This is commented out because we are not using the returned modified files and not skipping the
-        # packs in this phase (CIAC-3755). TODO - Will handle this in the refactor task - CIAC-3559.
-        # task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
-
-        # if not task_status:
-        #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
-        #     continue
-
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
                                                                     current_commit_hash,
