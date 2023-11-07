@@ -1164,6 +1164,89 @@ class Client(BaseClient):
 """ COMMAND FUNCTIONS """  # pylint: disable=pointless-string-statement
 
 
+def fetch_incidents_v2(
+    client: Client,
+    last_run: dict[str, Any],
+    first_fetch_time: str,
+    incident_severities: list[str | None],
+    event_types: list[int] = None,
+    max_incidents_to_fetch: int = FETCH_LIMIT,
+    include_null_severities: bool = False,
+) -> tuple[dict[str, int], list[dict]]:
+
+    last_fetch = last_run.get("last_fetch")
+    previous_ids = set(last_run.get("previous_ids", []))
+
+    if last_fetch is None:
+        last_fetch = first_fetch_time
+
+    last_fetch_timestamp = date_to_timestamp(last_fetch, ISO_8601_FORMAT)
+
+    items: list[dict] = []
+    offset: int = 0
+    while True:
+        response = client.event_list_request(start_date=last_fetch,
+                                             event_types=event_types,
+                                             limit=500,
+                                             offset=offset)
+        items = response["data"] + items
+        if "next" not in response["metadata"]["links"]:
+            items.reverse()
+            break
+        offset = len(items)
+
+    incidents: list[dict[str, Any]] = []
+    incident_name = 'Cisco AMP Event ID:"{event_id}"'
+
+    # Incase the severity acceptance list is empty, initialize it with all values.
+    if not incident_severities:
+        incident_severities.extend(XSOAR_SEVERITY_BY_AMP_SEVERITY.keys())
+
+    # Whether to accept an incident without a severity.
+    if include_null_severities:
+        incident_severities.append(None)
+
+    for item in items:
+        # Break once the maximum number of incidents has been achieved.
+        if len(incidents) >= max_incidents_to_fetch:
+            break
+
+        severity = item.get("severity")
+
+        # Skip if the incident severity isn't in the requested severities.
+        if severity not in incident_severities:
+            continue
+
+        # Skip if the incident ID has been fetched already.
+        if (incident_id := str(item.get("id"))) in previous_ids:
+            continue
+
+        previous_ids.add(incident_id)
+
+        incident_timestamp = item["timestamp"] * 1000
+        incident = remove_empty_elements(
+            {
+                "name": incident_name.format(
+                    event_id=incident_id,
+                ),
+                "occurred": timestamp_to_datestring(incident_timestamp),
+                "rawJSON": json.dumps(item),
+                "severity": XSOAR_SEVERITY_BY_AMP_SEVERITY.get(
+                    severity, IncidentSeverity.UNKNOWN
+                ),
+                "details": str(item.get("event_type")),
+                "dbotMirrorId": incident_id,
+            }
+        )
+
+        incidents.append(incident)
+
+        # Update the latest incident time that was fetched.
+        if incident_timestamp > last_fetch_timestamp:
+            last_fetch_timestamp = incident_timestamp
+
+
+
 def fetch_incidents(
     client: Client,
     last_run: Dict[str, Any],
