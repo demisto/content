@@ -334,35 +334,38 @@ def test_taxii2_server(
         username = integration_params["credentials"]["identifier"]
         password = integration_params["credentials"]["password"]
         headers = {"Accept": "application/taxii+json;version=2.1"}
-        time.sleep(7200)
-        response = xsoar_ng_client.do_long_running_instance_request(
-            instance_name,
-            url_suffix="/threatintel/collections",
-            headers=headers,
-            username=username,
-            password=password
-        )
+        try:
+            response = xsoar_ng_client.do_long_running_instance_request(
+                instance_name,
+                url_suffix="/threatintel/collections",
+                headers=headers,
+                username=username,
+                password=password
+            )
 
-        # get the collections available
-        collections = get_json_response(response).get("collections")
-        assert collections, f'could not get collections from url={response.request.url}, ' \
-            f'status_code={response.status_code}, response={collections}'
+            # get the collections available
+            collections = get_json_response(response).get("collections")
+            assert collections, f'could not get collections from url={response.request.url}, ' \
+                f'status_code={response.status_code}, response={collections}'
 
-        collection_id = collections[0]["id"]
+            collection_id = collections[0]["id"]
 
-        # get the actual indicators from the collection
-        response = xsoar_ng_client.do_long_running_instance_request(
-            instance_name,
-            url_suffix=f"/threatintel/collections/{collection_id}/objects",
-            headers=headers,
-            username=username,
-            password=password
-        )
+            # get the actual indicators from the collection
+            response = xsoar_ng_client.do_long_running_instance_request(
+                instance_name,
+                url_suffix=f"/threatintel/collections/{collection_id}/objects",
+                headers=headers,
+                username=username,
+                password=password
+            )
 
-        indicators = get_json_response(response).get("objects")
-        assert indicators, f'could not get indicators from url={response.request.url} with available ' \
-            f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
-            f'status code={response.status_code}, response={indicators}'
+            indicators = get_json_response(response).get("objects")
+            assert indicators, f'could not get indicators from url={response.request.url} with available ' \
+                f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
+                f'status code={response.status_code}, response={indicators}'
+        except Exception:
+            time.sleep(7200)
+            raise
 
 
 def test_slack_ask(request: SubRequest, xsoar_ng_client: XsoarNGApiClient):
