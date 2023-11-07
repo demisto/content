@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
+
 
 ''' IMPORTS '''
 import csv
