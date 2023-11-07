@@ -268,7 +268,7 @@ When reporting issues always run this script with `debug-mode=true` and include 
                                 "LocalityName": null, 
                                 "SurName": null, 
                                 "CommonName": [
-                                    "test.compute.amazonaws.com"
+                                    "test.compute-1.amazonaws.com"
                                 ], 
                                 "JurisdictionLocalityName": null, 
                                 "StreetAddress": null, 
@@ -360,7 +360,7 @@ When reporting issues always run this script with `debug-mode=true` and include 
 > |---|---|---|---|---|---|---|
 > | Demisto TLS | IL | all@paloaltonetworks.com | Tel Aviv | Demisto | Content | Hamerkaz |
 >
-> ## Endpoint certificate - ec2-54-220-131-136.eu-west-1.compute.amazonaws.com
+> ## Endpoint certificate - ec2.eu.compute-1.amazonaws.com
 > ### General
 > |NotValidBefore|NotValidAfter|Version|
 > |---|---|---|
@@ -372,7 +372,7 @@ When reporting issues always run this script with `debug-mode=true` and include 
 > ### Subject
 > |CommonName|CountryName|EmailAddress|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|
-> | ec2-54-220-131-136.eu-west-1.compute.amazonaws.com | IL | test@gmail.com | Content | Test | Demisto |
+> | ec2.eu.compute-1.amazonaws.com | IL | test@gmail.com | Content | Test | Demisto |
 > ### Extentions
 > |IssuerAlternativeName|
 > |---|

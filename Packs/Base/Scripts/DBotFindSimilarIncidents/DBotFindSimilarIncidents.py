@@ -9,7 +9,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import json
 import pandas as pd
 from scipy.spatial.distance import cdist
-from typing import List, Dict, Union
+from typing import Any, List, Dict, Union
 
 warnings.simplefilter("ignore")
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -528,9 +528,12 @@ def get_incident_by_id(incident_id: str, populate_fields: List[str], from_date: 
     :param to_date: to_date
     :return: Get incident acording to incident id
     """
+    populate_fields_value = ' , '.join(populate_fields)
+    message_of_values = build_message_of_values([incident_id, populate_fields_value, from_date, to_date])
+    demisto.debug(f'Executing GetIncidentsByQuery, {message_of_values}')
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': "id:(%s)" % incident_id,
-        'populateFields': ' , '.join(populate_fields),
+        'populateFields': populate_fields_value,
         'fromDate': from_date,
         'toDate': to_date,
     })
@@ -569,9 +572,11 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: List[s
     if query_sup:
         query += " %s" % query_sup
 
+    populate_fields_value = ' , '.join(populate_fields)
+    demisto.debug(f'Executing GetIncidentsByQuery, {build_message_of_values([populate_fields_value, from_date, to_date, limit])}')
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': query,
-        'populateFields': ' , '.join(populate_fields),
+        'populateFields': populate_fields_value,
         'fromDate': from_date,
         'toDate': to_date,
         'limit': limit
@@ -677,6 +682,7 @@ def get_similar_incidents_by_indicators(args: Dict):
     :param args: argument for DBotFindSimilarIncidentsByIndicators automation
     :return:  return similars incident from the automation
     """
+    demisto.debug('Executing DBotFindSimilarIncidentsByIndicators')
     res = demisto.executeCommand('DBotFindSimilarIncidentsByIndicators', args)
     if is_error(res):
         return_error(get_error(res))
@@ -878,10 +884,24 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: List[str
     return incident_filter
 
 
+def build_message_of_values(fields: list[Any]):
+    """
+    Prepare a message to be used in logs
+    :param fields: List of fields
+    :return: A text message snippet
+    """
+    return "; ".join([f'{current_field}' for current_field in fields])
+
+
 def main():
     similar_text_field, similar_json_field, similar_categorical_field, exact_match_fields, display_fields, from_date, \
         to_date, show_distance, confidence, max_incidents, query, aggregate, limit, show_actual_incident, \
         incident_id, include_indicators_similarity = get_args()
+    fields_values = build_message_of_values([similar_text_field, similar_json_field, similar_categorical_field,
+                                             exact_match_fields, display_fields, from_date, to_date, confidence,
+                                             max_incidents, aggregate, limit, incident_id,
+                                             ])
+    demisto.debug(f"Starting,\n{fields_values=}")
 
     global_msg = ""
 
@@ -894,6 +914,8 @@ def main():
         return_outputs_error(error_msg="%s \n" % MESSAGE_NO_CURRENT_INCIDENT % incident_id)
         return None, global_msg
 
+    demisto.debug(f'{exact_match_fields=}, {populate_high_level_fields=}')
+
     # load the related incidents
     populate_fields.remove('id')
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(exact_match_fields, populate_high_level_fields,
@@ -901,7 +923,10 @@ def main():
                                                                        from_date, to_date, query, limit)
     global_msg += "%s \n" % msg
 
-    if not incidents:
+    if incidents:
+        demisto.debug(f'Found {len(incidents)} incidents for {incident_id=}')
+    else:
+        demisto.debug(f'No incidents found for {incident_id=}')
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return None, global_msg

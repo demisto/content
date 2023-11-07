@@ -57,6 +57,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Rapid7 InsightVM (Nexpose)
   - Splunk
   - ServiceNow CMDB
+  - ServiceNow ITSM
   - Tenable.io Assets
   - Qualys
 - Indicators of a non-production host:
@@ -92,6 +93,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Remediation](#cortex-asm---remediation)
   - [Cortex ASM - Service Ownership](#cortex-asm---service-ownership)
   - [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+  - [Cortex ASM - ServiceNow ITSM Enrichment](#cortex-asm---servicenow-itsm-enrichment)
   - [Cortex ASM - ServiceNow Notification](#cortex-asm---servicenow-notification)
   - [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
@@ -228,6 +230,12 @@ Playbook that identifies and recommends the most likely owners of a given servic
 A playbook that given the IP address enriches ServiceNow CMDB information relevant to ASM alerts.
 
 ![Cortex ASM - ServiceNow CMDB Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)
+
+#### Cortex ASM - ServiceNow ITSM Enrichment
+
+A playbook that given the search terms enriches ServiceNow ITSM service owner information relevant to ASM alerts.
+
+![Cortex ASM - ServiceNow ITSM Enrichment](https://raw.githubusercontent.com/demisto/content/0fd2fb4a7240673f3a3fcb1dec5339549f0f2fb8/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_ITSM_Enrichment.png)
 
 #### Cortex ASM - ServiceNow Notification
 
