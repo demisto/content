@@ -3704,7 +3704,11 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     range_ = f'items=0-{limit - 1}'
     last_update_time = ctx.get(LAST_MIRROR_KEY, 0)
     if not last_update_time:
-        last_update_time = remote_args.last_update
+        last_update = dateparser.parse(remote_args.last_update)
+        if not last_update:
+            last_update = datetime.now()
+        last_update -= timedelta(minutes=10)
+        last_update_time = int(last_update.timestamp() * 1000)
     last_update = get_time_parameter(last_update_time, epoch_format=True)
     assert isinstance(last_update, int)
     filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update}'
