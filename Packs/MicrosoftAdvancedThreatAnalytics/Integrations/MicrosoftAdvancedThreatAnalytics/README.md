@@ -121,17 +121,17 @@ Retrieves suspicious activities.
             ],
             "NtlmResourceIdentifiers": [],
             "NtlmSourceComputerIds": [
-                "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com"
+                "computer  ec2-1.eu.compute-1.amazonaws.com"
             ],
             "ReasonKey": "HoneytokenActivitySuspiciousActivityReason",
             "RelatedActivityCount": 3,
             "RelatedUniqueEntityIds": [
                 "7a58c171-fa19-44f9-bf1e-81b544b318ad",
-                "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com"
+                "computer  ec2-3.eu.compute-1.amazonaws.com"
             ],
             "Severity": "Medium",
             "SourceComputerIds": [
-                "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com"
+                "computer  ec2-1.eu.compute-1.amazonaws.com"
             ],
             "SourceIpAddresses": [],
             "StartTime": "2020-07-28T08:49:54.1366697Z",
@@ -402,12 +402,12 @@ Retrieves information of distinct entity, such as computers and users.
                         "6b0e48f5-6c63-449c-8b6f-c749e18e28b3": {
                             "NtlmEvent": "High"
                         },
-                        "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com": {
+                        "computer  ec2-1.eu.compute-1.amazonaws.com": {
                             "NtlmEvent": "High"
                         }
                     },
                     "2020-07-28T00:00:00Z": {
-                        "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com": {
+                        "computer  ec2-1.eu.compute-1.amazonaws.com": {
                             "NtlmEvent": "High"
                         }
                     }
