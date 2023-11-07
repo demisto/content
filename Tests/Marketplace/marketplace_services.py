@@ -1075,77 +1075,6 @@ class Pack:
         final_path_to_zipped_pack = f"{source_path}.zip"
         return task_status, final_path_to_zipped_pack
 
-    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
-        """ Detects pack modified files.
-
-        The diff is done between current commit and previous commit that was saved in metadata that was downloaded from
-        index. In case that no commit was found in index (initial run), the default value will be set to previous commit
-        from origin/master.
-
-        Args:
-            content_repo (git.repo.base.Repo): content repo object.
-            index_folder_path (str): full path to downloaded index folder.
-            current_commit_hash (str): last commit hash of head.
-            previous_commit_hash (str): the previous commit to diff with.
-
-        Returns:
-            bool: whether the operation succeeded.
-            list: list of RN files that were modified.
-            bool: whether pack was modified and override will be required.
-        """
-        task_status = False
-        modified_rn_files_paths: list = []
-        pack_was_modified = False
-
-        try:
-            pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
-
-            if not os.path.exists(pack_index_metadata_path):
-                logging.info(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
-                task_status = True
-                return task_status, modified_rn_files_paths
-
-            with open(pack_index_metadata_path) as metadata_file:
-                downloaded_metadata = json.load(metadata_file)
-
-            previous_commit_hash = downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
-            # set 2 commits by hash value in order to check the modified files of the diff
-            current_commit = content_repo.commit(current_commit_hash)
-            previous_commit = content_repo.commit(previous_commit_hash)
-
-            for modified_file in current_commit.diff(previous_commit):
-                if modified_file.a_path.startswith(PACKS_FOLDER):
-                    modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
-                    pack_name, entity_type_dir = modified_file_path_parts[1], modified_file_path_parts[2]
-
-                    if pack_name and pack_name == self._pack_name:
-                        if not is_ignored_pack_file(modified_file_path_parts):
-                            logging.info(f"Detected modified files in {self._pack_name} pack - {modified_file.a_path}")
-                            task_status, pack_was_modified = True, True
-                            modified_rn_files_paths.append(modified_file.a_path)
-
-                            if entity_type_dir in PackFolders.pack_displayed_items():
-                                if entity_type_dir in self._modified_files:
-                                    self._modified_files[entity_type_dir].append(modified_file.a_path)
-                                else:
-                                    self._modified_files[entity_type_dir] = [modified_file.a_path]
-
-                        else:
-                            logging.debug(f'{modified_file.a_path} is an ignored file')
-
-            task_status = True
-            if pack_was_modified:
-                # Make sure the modification is not only of release notes files, if so count that as not modified
-                pack_was_modified = any(
-                    self.RELEASE_NOTES not in path
-                    for path in modified_rn_files_paths
-                )
-                # Filter modifications in release notes config JSON file - they will be handled later on.
-                modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-        except Exception:
-            logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-        return task_status, modified_rn_files_paths
-
     def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
         """
         Checks if the pack modification is relevant for the current marketplace.
@@ -1564,36 +1493,48 @@ class Pack:
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def get_rn_files_names(self, modified_rn_files_paths):
+    def get_rn_files_names(self, diff_files_list):
         """
-
         Args:
             modified_rn_files_paths: a list containing all modified files in the current pack, generated
             by comparing the old and the new commit hash.
         Returns:
             The names of the modified release notes files out of the given list only,
             as in the names of the files that are under ReleaseNotes directory in the format of 'filename.md'.
-
         """
         modified_rn_files = []
-        for file_path in modified_rn_files_paths:
-            modified_file_path_parts = os.path.normpath(file_path).split(os.sep)
-            if self.RELEASE_NOTES in modified_file_path_parts:
-                modified_rn_files.append(modified_file_path_parts[-1])
+        for file_path in diff_files_list:
+            file_a_path = file_path.a_path
+            if not self.is_pack_release_notes_file(file_a_path):
+                continue
+            logging.debug(f"Found file path '{file_a_path}' as a modified release notes file of pack '{self._pack_name}'")
+            modified_file_path_parts = os.path.normpath(file_a_path).split(os.sep)
+            modified_rn_files.append(modified_file_path_parts[-1])
         return modified_rn_files
 
-    def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
+    def is_pack_release_notes_file(self, file_path: str):
+        """ Indicates whether a file_path is an MD release notes file of the pack or not
+        Args:
+            file_path (str): The file path.
+        Returns:
+            bool: True if the file is a release notes file or False otherwise
+        """
+        return all([
+            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name, self.RELEASE_NOTES)),
+            os.path.basename(os.path.dirname(file_path)) == self.RELEASE_NOTES,
+            os.path.basename(file_path).endswith('.md')
+        ])
+
+    def prepare_release_notes(self, index_folder_path, build_number, diff_files_list=None,
                               marketplace='xsoar', id_set=None, is_override=False):
         """
         Handles the creation and update of the changelog.json files.
-
         Args:
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
             modified_rn_files_paths (list): list of paths of the pack's modified file
             marketplace (str): The marketplace to which the upload is made.
             is_override (bool): Whether the flow overrides the packs on cloud storage.
-
         Returns:
             bool: whether the operation succeeded.
             bool: whether running build has not updated pack release notes.
@@ -1603,7 +1544,7 @@ class Pack:
         not_updated_build = False
         release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
-        modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
+        diff_files_list = diff_files_list or []
         id_set = id_set if id_set else {}
         pack_versions_to_keep: list[str] = []
 
@@ -1625,7 +1566,7 @@ class Pack:
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
-                    rn_files_names = self.get_rn_files_names(modified_rn_files_paths)
+                    rn_files_names = self.get_rn_files_names(diff_files_list)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
