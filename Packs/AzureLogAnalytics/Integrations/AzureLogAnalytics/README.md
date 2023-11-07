@@ -69,22 +69,22 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| credentials - identifier | ID\Client ID (received from the authorization step or from the self-deployed configuration process - see Detailed Instructions (?) section) | True |
-| refresh_token | Token\tenant_id (received from the authorization step or from the self-deployed configuration process - see Detailed Instructions (?) section) | True |
-| credentials - password | Key\Client secret (received from the authorization step - see Detailed Instructions (?) section) | False |
+| credentials - identifier | ID\Client ID (received from the authorization step or from the self-deployed configuration process - see Detailed Instructions (?) section). | True |
+| refresh_token | Token\tenant_id (received from the authorization step or from the self-deployed configuration process - see Detailed Instructions (?) section). | True |
+| credentials - password | Key\Client secret (received from the authorization step - see Detailed Instructions (?) section). | False |
 | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
 | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
 | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
 | self_deployed | Use a self-deployed Azure application. | False |
 | Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-| redirect_uri | Application redirect URI (for self-deployed mode) | False |
-| auth_code | Authorization code (received from the authorization step - see Detailed Instructions (?) section) | False |
+| redirect_uri | Application redirect URI (for self-deployed mode). | False |
+| auth_code | Authorization code (received from the authorization step - see Detailed Instructions (?) section). | False |
 | subscriptionID | Subscription ID | True |
 | resourceGroupName | Resource Group Name | True |
 | workspaceName | Workspace Name | True |
-| workspaceID | Workspace ID (the UUID of the workspace, e.g., `123e4567-e89b-12d3-a456-426614174000`) | True |
-| insecure | Trust any certificate (not secure) | False |
+| workspaceID | Workspace ID (the UUID of the workspace, e.g., `123e4567-e89b-12d3-a456-426614174000`). | True |
+| insecure | Trust any certificate (not secure). | False |
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -150,7 +150,7 @@ Gets the saved searches of the Log Analytics workspace.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of saved searches to return. Default is 50. Default is 50. | Optional | 
+| limit | The maximum number of saved searches to return. Default is 50. | Optional | 
 | page | The page number from which to start a search. Default is 0. | Optional | 
 
 #### Context Output
@@ -162,7 +162,7 @@ Gets the saved searches of the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.category | String | The category of the saved search. This helps users quickly find a saved search. | 
 | AzureLogAnalytics.SavedSearch.displayName | String | Display name of the saved search. | 
 | AzureLogAnalytics.SavedSearch.functionAlias | String | The function alias if the query serves as a function. | 
-| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions> | 
+| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax, refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions> | 
 | AzureLogAnalytics.SavedSearch.query | String | The query expression for the saved search. | 
 | AzureLogAnalytics.SavedSearch.tags | String | The tags attached to the saved search. | 
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. | 
@@ -246,7 +246,7 @@ Creates or updates a saved search from the Log Analytics workspace.
 | category | The category of the saved search. This helps users quickly find a saved search. | Required | 
 | display_name | The display name of the saved search. | Required | 
 | function_alias | The function alias if the query serves as a function. | Optional | 
-| function_parameters | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions>. | Optional | 
+| function_parameters | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax, refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions>. | Optional | 
 | query | The query expression for the saved search. | Required | 
 | tags | The tags attached to the saved search. Value should be in the following format: 'name=value;name=value'. | Optional | 
 
@@ -259,7 +259,7 @@ Creates or updates a saved search from the Log Analytics workspace.
 | AzureLogAnalytics.SavedSearch.category | String | The category of the saved search. This helps users quickly find a saved search. | 
 | AzureLogAnalytics.SavedSearch.displayName | String | The display name of the saved search. | 
 | AzureLogAnalytics.SavedSearch.functionAlias | String | The function alias if the query serves as a function. | 
-| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax please refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions>. | 
+| AzureLogAnalytics.SavedSearch.functionParameters | String | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax, refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions>. | 
 | AzureLogAnalytics.SavedSearch.query | String | The query expression for the saved search. | 
 | AzureLogAnalytics.SavedSearch.tags | String | The tags attached to the saved search. | 
 | AzureLogAnalytics.SavedSearch.version | Number | The version number of the query language. The current version and default is 2. | 
@@ -400,15 +400,15 @@ Run a search job to fetch records from large datasets into a new search results 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_name | the name of the table to add. | Required | 
+| table_name | The name of the table to add. | Required | 
 | limit | Maximum number of records in the result set, up to one million records. Default is 50. | Optional | 
-| query | Log query written in KQL to retrieve data. search job queries must always start with a table name. link to syntax documentation https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator | Required | 
-| start_search_time | Start of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is 1 day ago. | Optional | 
-| end_search_time | End of the time range to search. The value can either be 20 minutes, 2 weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is now. | Optional | 
+| query | Log query written in KQL format to retrieve data. Search job queries must always start with a table name. For the proper syntax, see https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator | Required | 
+| start_search_time | Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is 1 day ago. | Optional | 
+| end_search_time | End of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is now. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
 | interval | The interval in seconds between each poll. Default is 60. | Optional | 
-| first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. This argument is for the dev, not for the user. Default is True. | Optional | 
-| hide_polling_output | Hide the polling message and only print the final status at the end. This argument is for the dev, not for the user. | Optional | 
+| first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. This argument is for a developer, not for a user. Default is True. | Optional | 
+| hide_polling_output | Hide the polling message and only print the final status at the end. This argument is for a developer, not for a user. | Optional | 
 
 #### Context Output
 
@@ -452,13 +452,13 @@ Gets a Log Analytics workspace table.
 | AzureLogAnalytics.SearchJob.properties.resultStatistics.ingestedRecords | Number | The number of rows that were returned by the search job. | 
 | AzureLogAnalytics.SearchJob.properties.resultStatistics.scannedGb | Number | Amount of scanned data in the search job. | 
 | AzureLogAnalytics.SearchJob.properties.searchResults.query | String | Search job query. | 
-| AzureLogAnalytics.SearchJob.properties.searchResults.description | String | Search job Description. | 
-| AzureLogAnalytics.SearchJob.properties.searchResults.limit | Number | Limit the search job to return up to specified number of rows. | 
+| AzureLogAnalytics.SearchJob.properties.searchResults.description | String | Search job description. | 
+| AzureLogAnalytics.SearchJob.properties.searchResults.limit | Number | Limit the search job to return up to the specified number of rows. | 
 | AzureLogAnalytics.SearchJob.properties.searchResults.startSearchTime | Date | The timestamp to start the search from (UTC). | 
 | AzureLogAnalytics.SearchJob.properties.searchResults.endSearchTime | Date | The timestamp to end the search by (UTC). | 
 | AzureLogAnalytics.SearchJob.properties.searchResults.sourceTable | String | The table used in the search job. | 
 | AzureLogAnalytics.SearchJob.properties.schema.name | String | Table name. | 
-| AzureLogAnalytics.SearchJob.properties.schema.tableSubType | String | The subtype describes what APIs can be used to interact with the table, and what features are available against it. Any, Classic, DataCollectionRuleBased. | 
+| AzureLogAnalytics.SearchJob.properties.schema.tableSubType | String | The subtype describes what APIs can be used to interact with the table, and what features are available against it (Any, Classic, DataCollectionRuleBased). | 
 | AzureLogAnalytics.SearchJob.properties.schema.tableType | String | Table's creator. | 
 | AzureLogAnalytics.SearchJob.properties.schema.displayName | String | Table display name. | 
 | AzureLogAnalytics.SearchJob.properties.schema.description | String | Table description. | 
@@ -466,15 +466,15 @@ Gets a Log Analytics workspace table.
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isHidden | Boolean | Is column hidden. | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.name | String | Column name. | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.type | String | Column data type (bool, datetime, dynamic, guid, int, long, real, string). | 
-| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint | String | Column data type logical hint. (armPath, guid, ip, uri). | 
+| AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint | String | Column data type logical hint (armPath, guid, ip, uri). | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.displayName | String | Column display name. | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.description | String | Column description. | 
 | AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isDefaultDisplay | Boolean | Is displayed by default. | 
 | AzureLogAnalytics.SearchJob.properties.schema.categories | String | Table category. | 
 | AzureLogAnalytics.SearchJob.properties.schema.labels | String | Table labels. | 
-| AzureLogAnalytics.SearchJob.properties.schema.source | String | Table's creator. (customer, microsoft). | 
+| AzureLogAnalytics.SearchJob.properties.schema.source | String | Table's creator (customer, microsoft). | 
 | AzureLogAnalytics.SearchJob.properties.schema.solutions | String | List of solutions the table is affiliated with. | 
-| AzureLogAnalytics.SearchJob.properties.provisioningState | String | Table's current provisioning state. (Deleting, InProgress, Succeeded, Updating) If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded. | 
+| AzureLogAnalytics.SearchJob.properties.provisioningState | String | Table's current provisioning state (Deleting, InProgress, Succeeded, Updating). If set to 'updating', indicates a resource lock due to an ongoing operation, forbidding any update to the table until the ongoing operation is concluded. | 
 | AzureLogAnalytics.SearchJob.properties.retentionInDays | Number | The table retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention. | 
 | AzureLogAnalytics.SearchJob.properties.totalRetentionInDays | Number | The table total retention in days, between 4 and 2556. Setting this property to -1 will default to table retention. | 
 | AzureLogAnalytics.SearchJob.properties.archiveRetentionInDays | Number | The table data archive retention in days. Calculated as (totalRetentionInDays-retentionInDays). | 
