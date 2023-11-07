@@ -215,10 +215,9 @@ def is_tim_content(pr_files: list[str]) -> bool:
         integration = BaseContent.from_path(CONTENT_PATH / file)
         if not isinstance(integration, Integration) or integration.path in integrations_checked:
             continue
-
+        integrations_checked.append(integration.path)
         if integration.is_feed:
             return True
-        integrations_checked.append(integration.path)
         pack = integration.in_pack
         tags = pack.tags
         categories = pack.categories
