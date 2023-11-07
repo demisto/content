@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Resolve and investigate domains from this URL. Also accepts a comma-separated list of up to 1,000 URLs.
+  description: Resolve and enrich domains from this URL. Also accepts a comma-separated list of up to 6,000 URLs.
   isArray: false
   name: url
   required: true
@@ -11,12 +11,12 @@ args:
   name: include_context
   required: false
   secret: false
-comment: Resolves a URL or fully qualified domain name (FQDN) and looks up a complete profile of the domain on the DomainTools Iris Investigate API.
+comment: Resolves a URL or fully qualified domain name (FQDN) and looks up a complete profile of the domain on the DomainTools Iris Enrich API.
 commonfields:
-  id: DomainExtractAndInvestigate
+  id: DomainExtractAndEnrich
   version: -1
 enabled: true
-name: DomainExtractAndInvestigate
+name: DomainExtractAndEnrich
 outputs:
 - contextPath: Domain.Name
   description: The name of the domain.
@@ -332,5 +332,6 @@ timeout: '0'
 type: python
 subtype: python3
 fromversion: 6.9.0
+dockerimage: demisto/python3:3.10.13.80014
 tests:
 - No tests (auto formatted)

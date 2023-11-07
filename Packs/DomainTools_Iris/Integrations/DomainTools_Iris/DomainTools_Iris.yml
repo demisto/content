@@ -201,9 +201,6 @@ script:
     - contextPath: DomainTools.Analytics.WebsiteResponseCode
       description: The Website Response Code in DomainTools.
       type: Number
-    - contextPath: DomainTools.Analytics.AlexaRank
-      description: The Alexa Rank in DomainTools.
-      type: Number
     - contextPath: DomainTools.Analytics.Tags
       description: The Tags in DomainTools.
       type: String
@@ -539,9 +536,6 @@ script:
       type: String
     - contextPath: DomainTools.Analytics.WebsiteResponseCode
       description: The Website Response Code in DomainTools.
-      type: Number
-    - contextPath: DomainTools.Analytics.AlexaRank
-      description: The Alexa Rank in DomainTools.
       type: Number
     - contextPath: DomainTools.Analytics.Tags
       description: The Tags in DomainTools.
@@ -879,9 +873,6 @@ script:
     - contextPath: DomainTools.Domains.Analytics.WebsiteResponseCode
       description: The Website Response Code.
       type: Number
-    - contextPath: DomainTools.Domains.Analytics.AlexaRank
-      description: The Alexa Rank.
-      type: Number
     - contextPath: DomainTools.Domains.Analytics.Tags
       description: The tags in DomainTools.
       type: String
@@ -1196,9 +1187,6 @@ script:
       type: String
     - contextPath: DomainTools.Domains.Analytics.WebsiteResponseCode
       description: The response code of the Website.
-      type: Number
-    - contextPath: DomainTools.Domains.Analytics.AlexaRank
-      description: The Alexa Rank.
       type: Number
     - contextPath: DomainTools.Domains.Analytics.Tags
       description: The DomainTools Tags.
@@ -1618,9 +1606,6 @@ script:
       type: String
     - contextPath: DomainTools.Pivots.PivotedDomains.Analytics.WebsiteResponseCode
       description: The response code of the website.
-      type: Number
-    - contextPath: DomainTools.Pivots.PivotedDomains.Analytics.AlexaRank
-      description: The Alexa rank.
       type: Number
     - contextPath: DomainTools.Pivots.PivotedDomains.Analytics.Tags
       description: The DomainTools tags.
