@@ -20,7 +20,7 @@
         "accountName": "aws-user-personal",
         "cloudType": "aws",
         "fqdn": [
-            "ec2-198-51-101-1.us-west-2.compute.amazonaws.com"
+            "ec2.us.compute-1.amazonaws.com"
         ],
         "hasAlert": false,
         "id": "i-3219831792378",

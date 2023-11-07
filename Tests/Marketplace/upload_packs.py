@@ -1299,15 +1299,6 @@ def main():
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
             continue
 
-        # detect if the pack is modified and return modified RN files
-        task_status, modified_rn_files_paths = pack.detect_modified(content_repo, index_folder_path,
-                                                                    current_commit_hash, previous_commit_hash)
-
-        if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
         # This is commented out because we are not using the returned modified files and not skipping the
         # packs in this phase (CIAC-3755). TODO - Will handle this in the refactor task - CIAC-3559.
         # task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
@@ -1336,7 +1327,7 @@ def main():
         task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
             index_folder_path,
             build_number,
-            modified_rn_files_paths,
+            diff_files_list,
             marketplace, id_set,
             is_override=override_all_packs
         )
