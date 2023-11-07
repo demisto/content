@@ -23,6 +23,7 @@ This playbook does not use any integrations.
 
 * GenerateASMReport
 * GridFieldSetup
+* DeleteContext
 
 ### Commands
 
