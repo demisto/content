@@ -52,7 +52,7 @@ def get_events_command(client: Client, total_events_to_fetch, since,
                 since = events[-1]['published']
                 if last_object_ids:
                     events = remove_duplicates(events, last_object_ids)  # type: ignore
-                if events:
+                if not events:
                     break
                 stored_events.extend(events)
             else:
