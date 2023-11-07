@@ -15,13 +15,12 @@ This playbook does not use any sub-playbooks.
 ### Scripts
 
 * IsIntegrationAvailable
-* Print
 
 ### Commands
 
-* ataya-assign-user
-* closeInvestigation
 * pan-os
+* closeInvestigation
+* ataya-assign-user
 
 ## Playbook Inputs
 

@@ -23,43 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 602.5,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 751ff58f-95d4-4b09-882e-1a620c8c7a06
-    type: regular
-    task:
-      id: 751ff58f-95d4-4b09-882e-1a620c8c7a06
-      version: -1
-      name: Check 5G UE IMEI Value for clarity
-      description: Check the 5G UE IMEI value.
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      value:
-        simple: ${incident.atayaimei}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 720
         }
       }
     note: false
@@ -93,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 275,
+          "y": 1070
         }
       }
     note: false
@@ -106,12 +71,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b69d7317-9ba5-4816-831c-4cdd61b12354
+    taskid: a2dddb43-ea33-4c3b-8f40-8949303725c1
     type: regular
     task:
-      id: b69d7317-9ba5-4816-831c-4cdd61b12354
+      id: a2dddb43-ea33-4c3b-8f40-8949303725c1
       version: -1
-      name: Create User ID
+      name: Create and Update User ID
       description: Login user on PAN NGFW by User ID.
       script: '|||pan-os'
       type: regular
@@ -131,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -143,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 783c0ec7-34ea-4814-88aa-d87b6e55ff1b
+    taskid: ba940b24-c0f6-418d-8242-420e0ee522d1
     type: condition
     task:
-      id: 783c0ec7-34ea-4814-88aa-d87b6e55ff1b
+      id: ba940b24-c0f6-418d-8242-420e0ee522d1
       version: -1
       name: Event Type Inspection for Session Control
       description: Check the action type of 5G UE sessions.
@@ -154,12 +119,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "2"
       create:
       - "3"
       delete:
       - "6"
-      modify:
-      - "7"
     separatecontext: false
     conditions:
     - label: create
@@ -173,6 +138,15 @@ tasks:
             value:
               simple: create
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: modify
+          ignorecase: true
     - label: delete
       condition:
       - - operator: isEqualString
@@ -184,23 +158,12 @@ tasks:
             value:
               simple: delete
           ignorecase: true
-    - label: modify
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.eventtype
-            iscontext: true
-          right:
-            value:
-              simple: modify
-          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 275,
+          "y": 720
         }
       }
     note: false
@@ -236,45 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: d4d94ace-1cab-444e-8023-091abebe66fc
-    type: regular
-    task:
-      id: d4d94ace-1cab-444e-8023-091abebe66fc
-      version: -1
-      name: Update User ID
-      description: Update user on PAN NGFW by User ID..
-      script: '|||pan-os'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      cmd:
-        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.sourceip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
-      type:
-        simple: user-id
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1070
+          "x": 500,
+          "y": 895
         }
       }
     note: false
@@ -299,7 +225,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "1"
+      - "4"
     scriptarguments:
       brandname:
         simple: Panorama
@@ -310,7 +236,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 275,
           "y": 545
         }
       }
@@ -338,8 +264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1420
+          "x": 602.5,
+          "y": 1245
         }
       }
     note: false
@@ -351,10 +277,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 66745209-be4a-4e6c-8847-7574e26ed1b0
+    taskid: c4260f09-0689-46c1-8174-64baa8ab7f48
     type: collection
     task:
-      id: 66745209-be4a-4e6c-8847-7574e26ed1b0
+      id: c4260f09-0689-46c1-8174-64baa8ab7f48
       version: -1
       name: Pause for review the unassigned device
       description: ""
@@ -369,8 +295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1070
+          "x": 930,
+          "y": 895
         }
       }
     note: false
@@ -382,6 +308,7 @@ tasks:
       subject:
         simple: Needs approval
       body:
+        simple: The unassigned device need to be approved.
       methods:
       - email
       format: ""
@@ -446,8 +373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1245
+          "x": 930,
+          "y": 1070
         }
       }
     note: false
@@ -491,7 +418,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 602.5,
           "y": 370
         }
       }
@@ -528,7 +455,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 602.5,
           "y": 195
         }
       }
@@ -542,12 +469,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_8_#default#": 0.81
+      "12_8_#default#": 0.81,
+      "4_3_create": 0.71,
+      "4_6_delete": 0.84
     },
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 1670,
+        "height": 1260,
+        "width": 1260,
         "x": 50,
         "y": 50
       }
