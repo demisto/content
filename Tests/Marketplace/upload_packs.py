@@ -20,7 +20,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import XSIAM_MP, PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
-    CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES
+    CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES, XSOAR_MP, XSOAR_SAAS_MP
 from demisto_sdk.commands.common.tools import str2bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
@@ -209,17 +209,12 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 
     logging.info("Start cleaning non existing packs in index.")
     valid_pack_names = {p.name for p in content_packs}
-    if marketplace == 'xsoar':
+    if marketplace in [XSOAR_MP, XSOAR_SAAS_MP]:
         private_packs_names = {p.get('id', '') for p in private_packs}
         valid_pack_names.update(private_packs_names)
-        # search for invalid packs folder inside index
-        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                               entry.name not in valid_pack_names and entry.is_dir()}
-    else:
-        # search for invalid packs folder inside index
-        invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
-                               entry.name not in valid_pack_names and entry.is_dir()}
-
+    # search for invalid packs folder inside index
+    invalid_packs_names = {(entry.name, entry.path) for entry in os.scandir(index_folder_path) if
+                           entry.name not in valid_pack_names and entry.is_dir()}
     if invalid_packs_names:
         try:
             logging.warning(f"Found the following invalid packs: {invalid_packs_names}")
@@ -1139,6 +1134,8 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-ast', '--artifacts-folder-server-type', help="The artifacts folder server type",
+                        required=True)
     parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
@@ -1210,9 +1207,8 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
-    artifact_folder_path = Path(packs_artifacts_path).parent
-    uploaded_packs_dir = Path(artifact_folder_path / f'uploaded_packs-{"id_set" if id_set else "graph"}')
-    markdown_images_data = Path(artifact_folder_path / BucketUploadFlow.MARKDOWN_IMAGES_ARTIFACT_FILE_NAME)
+    uploaded_packs_dir = Path(option.artifacts_folder_server_type) / f'uploaded_packs-{"id_set" if id_set else "graph"}'
+    markdown_images_data = Path(option.artifacts_folder_server_type) / BucketUploadFlow.MARKDOWN_IMAGES_ARTIFACT_FILE_NAME
 
     uploaded_packs_dir.mkdir(parents=True, exist_ok=True)
     # Relevant when triggering test upload flow
@@ -1461,7 +1457,7 @@ def main():
                             )
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
-    if is_create_dependencies_zip and marketplace == 'xsoar':
+    if is_create_dependencies_zip and marketplace == XSOAR_MP:
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                            packs_for_current_marketplace_dict)
