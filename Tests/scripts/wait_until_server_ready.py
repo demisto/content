@@ -18,7 +18,8 @@ from demisto_sdk.commands.test_content.constants import SSH_USER
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
 MAX_TRIES = 30
 PRINT_INTERVAL_IN_SECONDS = 30
 SETUP_TIMEOUT = 60 * 60
@@ -70,8 +71,7 @@ def main():
     args = parser.parse_args()
 
     ready_ami_list: list = []
-    env_results_path = os.path.join(ARTIFACTS_FOLDER, 'env_results.json')
-    with open(env_results_path) as json_file:
+    with open(ENV_RESULTS_PATH) as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_results]
 
