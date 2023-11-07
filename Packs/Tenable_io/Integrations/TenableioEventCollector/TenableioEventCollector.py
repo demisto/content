@@ -444,7 +444,7 @@ def generate_assets_export_uuid(client: Client, first_fetch: datetime, assets_la
     demisto.info("Getting assets export uuid.")
 
     last_fetch: int = assets_last_run.get('last_fetch') or round(get_timestamp(first_fetch))    # todo: are we gonna fetch with new last fetch everytime?
-    export_uuid = client.export_assets_request(chunk_size=CHUNK_SIZE, fetch_from=last_fetch)    # todo: chunk_size const or customized?
+    export_uuid = client.export_assets_request(chunk_size=CHUNK_SIZE, fetch_from=last_fetch)
     demisto.debug(f'assets export uuid is {export_uuid}')
 
     assets_last_run.update({'last_fetch': last_fetch, 'export_uuid': export_uuid})
