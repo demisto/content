@@ -42,8 +42,8 @@ def get_events_command(client: Client, total_events_to_fetch, since,
             int: x-rate-limit-reset: time in seconds until API can be called again.
     """
     stored_events: list = []
-    demisto.debug(f'max_events_to_fetch={total_events_to_fetch}')
     while len(stored_events) < total_events_to_fetch:
+        demisto.debug(f"stored_events collected: {len(stored_events)}")
         num_of_events_to_fetch = FETCH_LIMIT if total_events_to_fetch > FETCH_LIMIT else total_events_to_fetch
         try:
             events = client.get_events(since, num_of_events_to_fetch)  # type: ignore
@@ -53,6 +53,7 @@ def get_events_command(client: Client, total_events_to_fetch, since,
                 if last_object_ids:
                     events = remove_duplicates(events, last_object_ids)  # type: ignore
                 if not events:
+                    demisto.debug('Events are empty after dedup will break.')
                     break
                 stored_events.extend(events)
             else:
@@ -129,6 +130,7 @@ def main():  # pragma: no cover
         demisto_params = demisto.params()
         demisto_args = demisto.args()
         events_limit = int(demisto_params.get('limit', 1000))
+        demisto.debug(f'max_events_to_fetch={events_limit}')
         api_key = demisto_params['api_key']['password']
         verify_certificate = not demisto_params.get('insecure', True)
         base_url = demisto_params['url']

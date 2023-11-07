@@ -32,7 +32,7 @@ def dummy_client(mocker):
 @pytest.mark.parametrize("events,ids,result", [
     ([id1, id2, id3], ['a12f3c5d77f3'], [id1, id2]),
     ([id1, id2, id3], ['a12f3c5dxxxx'], [id1, id2, id3]),
-    ([], ['a12f3c5d77f3'], []),
+    ([id1], ['a5b57ec5febb'], []),
     ([{'uuid': 0}, {'uuid': 1}, {'uuid': 2}, {'uuid': 3}, {'uuid': 4}, {'uuid': 5}, {'uuid': 6}, {'uuid': 7},
       {'uuid': 8}, {'uuid': 9}], [0, 4, 7, 9],
      [{'uuid': 1}, {'uuid': 2}, {'uuid': 3}, {'uuid': 5}, {'uuid': 6}, {'uuid': 8}])])
