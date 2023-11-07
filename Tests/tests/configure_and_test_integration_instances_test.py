@@ -52,7 +52,8 @@ def create_build_object_with_mock(mocker, server_type):
     mocker.patch('Tests.configure_and_test_integration_instances.options_handler',
                  return_value=options)
     mocker.patch('Tests.configure_and_test_integration_instances.XSOARBuild.get_servers',
-                 return_value=({'1.1.1.1': '7000'}, '6.5.0'))
+                 return_value=({'1.1.1.1': '7000'}))
+    mocker.patch('Tests.configure_and_test_integration_instances.XSOARServer.server_numeric_version', return_value="6.5.0")
     build = create_build_object()
     return build
 
