@@ -4,8 +4,6 @@ import traceback
 from pathlib import Path
 
 import urllib3
-from Tests.Marketplace.Users.kmeir.dev.demisto.content.Tests.scripts.test_playbooks_report import \
-    write_test_playbook_to_jira_mapping
 from jira import JIRA
 from junitparser import JUnitXml, TestSuite
 from tabulate import tabulate
@@ -15,7 +13,7 @@ from Tests.scripts.common import calculate_results_table, TEST_PLAYBOOKS_REPORT_
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
     JIRA_API_KEY, jira_server_information, generate_query_by_component_and_issue_type, jira_search_all_by_query, JIRA_LABELS
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
-    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks
+    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, write_test_playbook_to_jira_mapping
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
