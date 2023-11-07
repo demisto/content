@@ -22,7 +22,7 @@ class PathManager:
     """
     Used for getting paths of various files and folders during the test collection process.
     """
-    ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
+    ARTIFACTS_FOLDER_SERVER_TYPE = Path(os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE', './artifacts/server_type_XSOAR'))
 
     def __init__(self, content_path: Path):
         self.content_path = content_path
@@ -32,7 +32,7 @@ class PathManager:
             if not os.getenv('UNIT_TESTING'):
                 raise
             self.content_repo = None  # type: ignore[assignment]
-        logging.debug(f'PathManager uses {self.content_path.resolve()=}, {PathManager.ARTIFACTS_PATH.resolve()=}')
+        logging.debug(f'PathManager uses {self.content_path.resolve()=}, {PathManager.ARTIFACTS_FOLDER_SERVER_TYPE.resolve()=} ')
 
         self.packs_path = self.content_path / 'Packs'
         self.files_triggering_sanity_tests = self._glob(_SANITY_FILES_FOR_GLOB)
@@ -46,14 +46,14 @@ class PathManager:
 
         self.files_to_ignore = (non_content | infrastructure_test_data) - self.files_triggering_sanity_tests
 
-        self.id_set_path = PathManager.ARTIFACTS_PATH / 'id_set.json'
-        self.conf_path = PathManager.ARTIFACTS_PATH / 'conf.json'
-        self.output_tests_file = PathManager.ARTIFACTS_PATH / 'filter_file.txt'
-        self.output_modeling_rules_to_test_file = PathManager.ARTIFACTS_PATH / 'modeling_rules_to_test.txt'
-        self.output_packs_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_install.txt'
-        self.output_packs_to_upload_file = PathManager.ARTIFACTS_PATH / 'content_packs_to_upload.txt'
-        self.output_machines_file = PathManager.ARTIFACTS_PATH / 'filter_envs.json'
-        self.output_packs_to_reinstall_test_file = PathManager.ARTIFACTS_PATH / 'packs_reinstall_to_test.txt'
+        self.id_set_path = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'id_set.json'
+        self.conf_path = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'conf.json'
+        self.output_tests_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'filter_file.txt'
+        self.output_modeling_rules_to_test_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'modeling_rules_to_test.txt'
+        self.output_packs_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'content_packs_to_install.txt'
+        self.output_packs_to_upload_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'content_packs_to_upload.txt'
+        self.output_machines_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'filter_envs.json'
+        self.output_packs_to_reinstall_test_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'packs_reinstall_to_test.txt'
 
     def _glob_single(self, relative_path: str) -> set[Path]:
         """
