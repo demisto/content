@@ -41,6 +41,8 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
   type: 15
   required: false
   section: Connect
