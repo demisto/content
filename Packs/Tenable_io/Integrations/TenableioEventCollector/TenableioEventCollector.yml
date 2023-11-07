@@ -95,10 +95,12 @@ configuration:
   name: active_cves
   type: 8
   required: false
+  advanced: true
   section: Collect - assets
 - display: Collect only assets seen in last
   name: scanned_from
   required: false
+  advanced: true
   type: 0
   section: Collect - assets
 description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs, assets and their vulnerabilities from Tenable.
