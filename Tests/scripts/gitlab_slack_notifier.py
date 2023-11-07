@@ -396,7 +396,7 @@ def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
         if job.status == 'failed':
             logging.info(f'collecting failed job {job.name}')
             logging.info(f'pipeline associated with failed job is {job.pipeline.get("web_url")}')
-            failed_jobs.append(job)
+            failed_jobs.append(job)  # type: ignore[arg-type]
 
     return pipeline.web_url, failed_jobs
 
