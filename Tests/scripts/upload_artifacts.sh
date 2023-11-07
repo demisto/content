@@ -8,13 +8,12 @@ BRANCH=${CI_COMMIT_BRANCH:-unknown}
 ARTIFACTS_DIR=${ARTIFACTS_FOLDER:-artifacts}
 
 # build type is staging if ID_SET doesn't exist
-ID_SET=$ARTIFACTS_FOLDER/id_set.json
+ID_SET="${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json"
 STAGING_SUFFIX=""
-if [ ! -f "$ID_SET" ]; then
-    echo "ID_SET file not found at $ID_SET"
+if [ ! -f "${ID_SET}" ]; then
+    echo "ID_SET file not found at ${ID_SET}"
     STAGING_SUFFIX="_staging"
 fi
-
 
 if [[ ! -d "$ARTIFACTS_DIR" ]]; then
     echo "Directory [$ARTIFACTS_DIR] not found. Nothing to upload. Skipping!"

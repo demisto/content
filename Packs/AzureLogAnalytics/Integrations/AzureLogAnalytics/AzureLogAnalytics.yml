@@ -15,10 +15,11 @@ configuration:
   type: 9
   required: false
 - additionalinfo: Received from the authorization process or from the self-deployed configuration process.
-  display: ID / (Client ID :For client credentials flow)
+  display: ID / Client ID
   name: credentials
   type: 9
   required: false
+  displaypassword: Key / Client Secret
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -36,13 +37,13 @@ configuration:
   name: private_key
   type: 14
   required: false
-- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  display: Use a self-deployed Azure application
+- additionalinfo: Check when authenticating using the Authorization Code flow.
+  display: Use a self-deployed Azure application - Authorization Code flow
   name: self_deployed
   type: 8
   required: false
 - additionalinfo: Check when authenticating using the Client Credentials flow.
-  display: Use Client Credentials Authorization Flow
+  display: Use a self-deployed Azure application - Client Credentials Flow
   name: client_credentials
   type: 8
   required: false
@@ -218,7 +219,7 @@ script:
     - description: The query expression for the saved search.
       name: query
       required: true
-    - description: 'The tags attached to the saved search. Value should be in the following format: ''name=value;name=value'''
+    - description: 'The tags attached to the saved search. Value should be in the following format: ''name=value;name=value''.'
       name: tags
     description: Creates or updates a saved search from the Log Analytics workspace.
     name: azure-log-analytics-create-or-update-saved-search
@@ -266,7 +267,7 @@ script:
     execution: false
     name: azure-log-analytics-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.79946
   runonce: false
   script: '-'
   subtype: python3
