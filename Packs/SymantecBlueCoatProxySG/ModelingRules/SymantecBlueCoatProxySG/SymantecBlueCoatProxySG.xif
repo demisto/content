@@ -1,5 +1,6 @@
 [MODEL: dataset=symantec_bluecoatproxysg_raw]
-alter
+filter _raw_log !~= "^#.*"
+| alter
 // timestamp = arrayindex(regextract(_raw_log, "^([\S]+\s[\S]+)\s[\d]+"), 0)
 // Although avialble in the format, cs-uri-path and cs-uri-query are not in One DM due to compability issues.
 time_taken = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s([\S]+)\s"), 0),
