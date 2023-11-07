@@ -598,7 +598,7 @@ script:
       description: The service record ID.
       required: true
     - name: file_id
-      description: File file ID to upload.
+      description: File ID to upload.
       required: true
   - name: sysaid-service-record-delete-file
     description: Delete an attachment from a service record.
