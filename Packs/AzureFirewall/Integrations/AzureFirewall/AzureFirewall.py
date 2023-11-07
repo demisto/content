@@ -5,7 +5,7 @@ from requests import Response
 from MicrosoftApiModule import *  # noqa: E402
 
 
-API_VERSION = '2022-09-01'
+API_VERSION = '2021-03-01'
 
 
 class AzureFirewallClient:
