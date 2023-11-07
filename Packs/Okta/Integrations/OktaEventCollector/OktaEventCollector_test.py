@@ -6,7 +6,7 @@ from CommonServerPython import DemistoException
 from freezegun import freeze_time
 import demistomock as demisto
 
-id1_pub = [{'uuid': 'a5b57ec5feaa', 'published': '2022-04-17T12:32:36.667'}]
+id1_pub = [[{'uuid': 'a5b57ec5feaa', 'published': '2022-04-17T12:32:36.667'}]]
 id2_pub = [{'uuid': 'a5b57ec5febb', 'published': '2022-04-17T12:32:36.667'}]
 id3_pub = [{'uuid': 'a5b57ec5fecc', 'published': '2022-04-17T12:32:36.667'}]
 id4_pub = [{'uuid': 'a5b57ec5fedd', 'published': '2022-04-17T12:32:36.667'}]
@@ -88,8 +88,7 @@ def test_get_events_rate_limit(dummy_client, mocker):
     res = requests.models.Response()
     res.status_code = 429
     res.headers['x-rate-limit-remaining'] = '1'
-    res.headers['x-rate-limit-limit'] = '2'
-    res.headers['x-rate-limit-reset'] = '3'
+    res.headers['x-rate-limit-reset'] = '2'
     exc = DemistoException(message="test_msg", res=res)
     mocker.patch.object(dummy_client, 'get_events', side_effect=[exc])
     with pytest.raises(DemistoException):

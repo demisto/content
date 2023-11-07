@@ -37,26 +37,24 @@ def get_events_command(client: Client, total_events_to_fetch, since,
         since: start fetch from this timestamp
         last_object_ids List[str]: list of uuids of the last fetched events.
     Returns:
-        Tuple (List[dict], x-rate-limit-reset):
+        tuple[List[dict], int]:
             List[dict]: list of events fetched,
-            x-rate-limit-reset: time in seconds until API can be called again.
+            int: x-rate-limit-reset: time in seconds until API can be called again.
     """
     stored_events: list = []
+    MAX_FETCH_ITERATIONS = 5
     demisto.debug(f'max_events_to_fetch={total_events_to_fetch}')
-    while len(stored_events) < total_events_to_fetch:
+    while len(stored_events) < total_events_to_fetch and MAX_FETCH_ITERATIONS > 0:
+        MAX_FETCH_ITERATIONS -= 1
         num_of_events_to_fetch = FETCH_LIMIT if total_events_to_fetch > FETCH_LIMIT else total_events_to_fetch
         try:
             events = client.get_events(since, num_of_events_to_fetch)  # type: ignore
             if events:
                 demisto.debug(f'received {len(events)} number of events.')
+                since = events[-1]['published']
                 if last_object_ids:
                     events = remove_duplicates(events, last_object_ids)  # type: ignore
-                if events:
-                    last = events[-1]
-                    since = last['published']
-                    stored_events.extend(events)
-                else:
-                    break  # after remove duplicates event list is empty. will return stored.
+                stored_events.extend(events)
             else:
                 demisto.debug('Didnt receive any events from the api.')
                 break
@@ -72,8 +70,6 @@ def get_events_command(client: Client, total_events_to_fetch, since,
                 x-rate-limit-remaining: {res.headers["x-rate-limit-remaining"]}\n \
                     x-rate-limit-reset: {res.headers["x-rate-limit-reset"]}\n')
                 return stored_events, int(res.headers['x-rate-limit-reset'])
-            if len(stored_events) == 0:
-                raise
             return stored_events, 0
         except Exception as exc:
             demisto.error(f'Unexpected error.\n{traceback.format_exc()}')
