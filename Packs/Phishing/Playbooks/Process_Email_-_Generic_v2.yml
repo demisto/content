@@ -2155,10 +2155,6 @@ tasks:
         complex:
           root: Email
           accessor: Attachment.ID
-      attachmentitem:
-        complex:
-          root: Email
-          accessor: Attachment.Item
       attachmentname:
         complex:
           root: Email
@@ -2222,10 +2218,6 @@ tasks:
                 iscontext: true
           - operator: uniq
           - operator: Stringify
-      emailimage:
-        complex:
-          root: Email
-          accessor: Image
       emailinreplyto:
         complex:
           root: Email
@@ -2472,10 +2464,6 @@ tasks:
         complex:
           root: Email
           accessor: Attachment.ID
-      attachmentitem:
-        complex:
-          root: Email
-          accessor: Attachment.Item
       attachmentname:
         complex:
           root: Email
@@ -2537,10 +2525,6 @@ tasks:
           accessor: HTML
           transformers:
           - operator: uniq
-      emailimage:
-        complex:
-          root: Email
-          accessor: Image
       emailinreplyto:
         complex:
           root: Email
