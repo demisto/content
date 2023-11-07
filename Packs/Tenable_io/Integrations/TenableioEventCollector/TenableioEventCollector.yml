@@ -77,19 +77,29 @@ configuration:
   required: false
   type: 0
   section: Collect - assets
-- additionalinfo: The maximum number of assets to retrieve. # todo: means per fetch?
-  defaultvalue: '5000'  # todo: what is default?
-  display: Max Assets Fetch
-  name: max_assets_fetch
-  required: false
-  type: 0
-  section: Collect - assets
+#- additionalinfo: The maximum number of assets to retrieve. # todo: means per fetch?
+#  defaultvalue: '5000'  # todo: what is default?
+#  display: Max Assets Fetch
+#  name: max_assets_fetch
+#  required: false
+#  type: 0
+#  section: Collect - assets
 - defaultvalue: '240'
   display: Assets Fetch Interval
   name: assetsFetchInterval
   type: 19
   required: false
   advanced: true
+  section: Collect - assets
+- display: Collect only assets with active CVEs
+  name: active_cves
+  type: 8
+  required: false
+  section: Collect - assets
+- display: Collect only assets seen in last
+  name: scanned_from
+  required: false
+  type: 0
   section: Collect - assets
 description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs, assets and their vulnerabilities from Tenable.
 display: Tenable.io Event Collector
