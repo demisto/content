@@ -42,10 +42,8 @@ def get_events_command(client: Client, total_events_to_fetch, since,
             int: x-rate-limit-reset: time in seconds until API can be called again.
     """
     stored_events: list = []
-    MAX_FETCH_ITERATIONS = 5
     demisto.debug(f'max_events_to_fetch={total_events_to_fetch}')
-    while len(stored_events) < total_events_to_fetch and MAX_FETCH_ITERATIONS > 0:
-        MAX_FETCH_ITERATIONS -= 1
+    while len(stored_events) < total_events_to_fetch:
         num_of_events_to_fetch = FETCH_LIMIT if total_events_to_fetch > FETCH_LIMIT else total_events_to_fetch
         try:
             events = client.get_events(since, num_of_events_to_fetch)  # type: ignore
@@ -54,6 +52,8 @@ def get_events_command(client: Client, total_events_to_fetch, since,
                 since = events[-1]['published']
                 if last_object_ids:
                     events = remove_duplicates(events, last_object_ids)  # type: ignore
+                if events:
+                    break
                 stored_events.extend(events)
             else:
                 demisto.debug('Didnt receive any events from the api.')
