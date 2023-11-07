@@ -1299,15 +1299,6 @@ def main():
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
             continue
 
-        # detect if the pack is modified and return modified RN files
-        task_status, modified_rn_files_paths = pack.detect_modified(content_repo, index_folder_path,
-                                                                    current_commit_hash, previous_commit_hash)
-
-        if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
                                                                     current_commit_hash,
@@ -1328,7 +1319,7 @@ def main():
         task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
             index_folder_path,
             build_number,
-            modified_rn_files_paths,
+            diff_files_list,
             marketplace, id_set,
             is_override=override_all_packs
         )
