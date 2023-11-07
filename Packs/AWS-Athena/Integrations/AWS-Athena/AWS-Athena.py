@@ -19,6 +19,23 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+def parse_rows_response(rows_data: list[dict]):
+    keys: list[str] = [item['VarCharValue'] for item in rows_data[0]['Data']]
+    raw_results = [item['Data'] for item in rows_data[1:]]
+    result_data = []
+
+    for raw_result in raw_results:
+        current_item_data = {}
+
+        for idx, value in enumerate(raw_result):
+            if 'VarCharValue' in value:
+                current_item_data[keys[idx]] = value['VarCharValue']
+
+        result_data.append(current_item_data)
+
+    return result_data
+
+
 def start_query_execution_command(args: dict, aws_client):
     client = aws_client.aws_session(
         service=AWS_SERVICE_NAME,
@@ -117,14 +134,15 @@ def get_query_results_command(args: dict, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'QueryExecutionId': args['QueryExecutionId']}
-    response = client.get_query_results(**kwargs)
+    raw_response = client.get_query_results(**kwargs)
+
+    parsed_response = parse_rows_response(rows_data=raw_response['ResultSet']['Rows'])
 
     return_results(CommandResults(
         outputs_prefix='AWS.Athena.Query',
-        outputs_key_field='QueryExecutionId',
-        outputs=response,
-        raw_response=response,
-        readable_output=tableToMarkdown('AWS Athena Query', response),
+        outputs=parsed_response,
+        raw_response=raw_response,
+        readable_output=tableToMarkdown('AWS Athena Query Results', parsed_response),
     ))
 
 
