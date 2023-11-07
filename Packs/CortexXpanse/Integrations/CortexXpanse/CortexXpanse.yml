@@ -836,6 +836,30 @@ script:
       description: User-provided notes related to the incident.
       type: string
     description: Returns additional details about a specific incident.
+  - name: asm-get-attack-surface-rule
+    arguments:
+    - description: 'Attack surface rule ID. Has to be command separated. For example: RdpServer,InsecureOpenSSH.'
+      name: attack_surface_rule_id
+    - description: 'Get the info about Rules ID(s) with enabled status on or off. Has to be command separated. For example: on,off.'
+      name: enabled_status
+    - description: 'Get the info about Rules ID(s) with a priority. Has to be command separated. For example: high,medium.'
+      name: priority
+    - description: Get the info about Rules ID(s) of a category. Has to be command separated.
+      name: category
+    description: Get information of an attack surface rule id.
+    outputs:
+    - contextPath: ASM.AttackSurfaceRule.attack_surface_rule_id
+      description: Attack surface rule ID.
+    - contextPath: ASM.AttackSurfaceRule.attack_surface_rule_name
+      description: Attack surface rule name.
+    - contextPath: ASM.AttackSurfaceRule.category
+      description: Attack surface rule category.
+    - contextPath: ASM.AttackSurfaceRule.enabled_status
+      description: Attack surface rule status.
+    - contextPath: ASM.AttackSurfaceRule.priority
+      description: Attack surface rule priority.
+    - contextPath: ASM.AttackSurfaceRule.remediation_guidance
+      description: Remediation guidance of attack surface rule.
   dockerimage: demisto/python3:3.10.13.78960
   isFetchSamples: true
   isfetch: true
