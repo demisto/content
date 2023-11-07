@@ -182,7 +182,6 @@ class Client(BaseClient):
 
         return response
 
-
     def service_record_delete_file_request(self, sr_id: str, file_id: str):
         data = {'fileId': f'{file_id}'}
 
