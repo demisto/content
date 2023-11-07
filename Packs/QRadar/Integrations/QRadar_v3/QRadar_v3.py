@@ -3712,9 +3712,10 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     range_ = f'items=0-{limit - 1}'
     last_update_modified = ctx.get(LAST_MIRROR_KEY, 0)
     if not last_update_modified:
+        # it means wer are in the first mirror. We get the last update of the latest incident with a window of 5 minutes
         last_update = dateparser.parse(remote_args.last_update)
         assert last_update
-        last_update -= timedelta(minutes=1)
+        last_update -= timedelta(minutes=5)
         last_update_modified = int(last_update.timestamp() * 1000)
     last_update_closed = ctx.get(LAST_MIRROR_CLOSED_KEY, last_update_modified)
     assert isinstance(last_update_modified, int)
