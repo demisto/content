@@ -170,16 +170,15 @@ def http_wait_server():
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
 @pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY,
                                     RasterizeMode.WEBDRIVER_PREFERED, RasterizeMode.HEADLESS_CLI_PREFERED])
-def test_rasterize_url_long_load(r_mode, mocker, http_wait_server, capfd):
+def test_rasterize_url_long_load(r_mode, mocker, http_wait_server):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
-    with capfd.disabled():
-        rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG, max_page_load_time=5,
-                  r_mode=r_mode)
+    rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG, max_page_load_time=5,
+              r_mode=r_mode)
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert 'Timeout exception' in err_msg or 'Timed out' in err_msg
+    assert 'Timeout exception' in err_msg
     return_error_mock.reset_mock()
     # test that with a higher value we get a response
     assert rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG,
