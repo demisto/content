@@ -1402,8 +1402,7 @@ tasks:
     scriptarguments:
       incident_id:
         complex:
-          root: incident
-          accessor: xdrincidentid
+          root: inputs.incident_id
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
