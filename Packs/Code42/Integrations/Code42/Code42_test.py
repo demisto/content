@@ -394,16 +394,16 @@ MOCK_FILE_CONTEXT = [
     },
 ]
 
-with open("test_data/alert_response.json", "r") as f:
+with open("test_data/alert_response.json") as f:
     MOCK_ALERTS_RESPONSE = f.read()
 
-with open("test_data/alert_aggregate_response.json", "r") as f:
+with open("test_data/alert_aggregate_response.json") as f:
     MOCK_ALERT_AGGREGATE_RESPONSE = f.read()
 
-with open("test_data/alert_details_response.json", "r") as f:
+with open("test_data/alert_details_response.json") as f:
     MOCK_ALERT_DETAILS_RESPONSE = f.read()
 
-with open("test_data/v2_file_event_response.json", "r") as f:
+with open("test_data/v2_file_event_response.json") as f:
     MOCK_V2_FILE_EVENTS_RESPONSE = f.read()
 
 MOCK_CODE42_ALERT_CONTEXT = [
@@ -778,137 +778,6 @@ MOCK_GET_ALL_ORGS_RESPONSE = """
 }"""
 
 
-MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE = """
-{
-    "items": [
-        {
-            "type$": "DEPARTING_EMPLOYEE_V2",
-            "tenantId": 1000,
-            "userId": "890973079883949999",
-            "userName": "test@example.com",
-            "displayName": "Name",
-            "notes": "",
-            "createdAt": "2019-10-25T13:31:14.1199010Z",
-            "status": "OPEN",
-            "cloudUsernames": ["test@cloud.com"],
-            "totalBytes": 139856482,
-            "numEvents": 11
-        },
-        {
-            "type$": "DEPARTING_EMPLOYEE_V2",
-            "tenantId": 1000,
-            "userId": "123412341234123412",
-            "userName": "user1@example.com",
-            "displayName": "Name",
-            "notes": "",
-            "createdAt": "2019-10-25T13:31:14.1199010Z",
-            "status": "OPEN",
-            "cloudUsernames": ["test@example.com"],
-            "totalBytes": 139856482,
-            "numEvents": 11,
-            "departureDate": "2020-07-20"
-        },
-        {
-            "type$": "DEPARTING_EMPLOYEE_V2",
-            "tenantId": 1000,
-            "userId": "890973079883949999",
-            "userName": "test@example.com",
-            "displayName": "Name",
-            "notes": "",
-            "createdAt": "2019-10-25T13:31:14.1199010Z",
-            "status": "OPEN",
-            "cloudUsernames": ["test@example.com"],
-            "totalBytes": 139856482,
-            "numEvents": 11
-        }
-    ],
-    "totalCount": 3
-}
-"""
-
-
-MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE = """
-{
-  "type$": "HIGH_RISK_SEARCH_RESPONSE_V2",
-  "items": [
-    {
-      "type$": "HIGH_RISK_EMPLOYEE_V2",
-      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
-      "userId": "91209844444444444",
-      "userName": "karen@example.com",
-      "displayName": "Karen",
-      "notes": "High risk notes",
-      "createdAt": "2020-05-22T17:47:42.7054310Z",
-      "status": "OPEN",
-      "cloudUsernames": [
-        "karen+test@example.com",
-        "karen+manager@example.com"
-      ],
-      "totalBytes": 816122,
-      "numEvents": 13,
-      "riskFactors": [
-        "PERFORMANCE_CONCERNS",
-        "SUSPICIOUS_SYSTEM_ACTIVITY",
-        "POOR_SECURITY_PRACTICES"
-      ]
-    },
-    {
-      "type$": "HIGH_RISK_EMPLOYEE_V2",
-      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
-      "userId": "94222222975202822222",
-      "userName": "james.test@example.com",
-      "displayName": "James Test",
-      "notes": "tests and more tests",
-      "createdAt": "2020-05-28T12:39:57.2058370Z",
-      "status": "OPEN",
-      "cloudUsernames": [
-        "james.test+test@example.com"
-      ]
-    },
-    {
-      "type$": "HIGH_RISK_EMPLOYEE_V2",
-      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
-      "userId": "123412341234123412",
-      "userName": "user1@example.com",
-      "displayName": "User 1",
-      "notes": "Test Notes",
-      "createdAt": "2020-05-22T17:47:42.4836920Z",
-      "status": "OPEN",
-      "cloudUsernames": [
-        "test@example.com",
-        "abc123@example.com"
-      ],
-      "riskFactors": [
-        "PERFORMANCE_CONCERNS"
-      ]
-    }
-  ],
-  "totalCount": 3,
-  "rollups": [
-    {
-      "type$": "HIGH_RISK_FILTER_ROLLUP_V2",
-      "filterType": "OPEN",
-      "totalCount": 3
-    },
-    {
-      "type$": "HIGH_RISK_FILTER_ROLLUP_V2",
-      "filterType": "EXFILTRATION_24_HOURS",
-      "totalCount": 0
-    },
-    {
-      "type$": "HIGH_RISK_FILTER_ROLLUP_V2",
-      "filterType": "EXFILTRATION_30_DAYS",
-      "totalCount": 1
-    }
-  ],
-  "filterType": "OPEN",
-  "pgSize": 10,
-  "pgNum": 1,
-  "srtKey": "NUM_EVENTS",
-  "srtDirection": "DESC"
-}
-"""
-
 MOCK_WATCHLISTS_RESPONSE = """
 {
     "watchlists": [
@@ -1073,20 +942,6 @@ MOCK_USER_RISK_PROFILE_RESPONSE = """
 }
 """
 
-MOCK_GET_DETECTIONLIST_RESPONSE = """
-{
-    "type$": "DEPARTING_EMPLOYEE_V2",
-    "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
-    "userId": "942897397520286581",
-    "userName": "new.user@example.com",
-    "displayName": "New user",
-    "notes": "tests and more tests",
-    "createdAt": "2020-05-19T21:17:36.0237810Z",
-    "status": "OPEN",
-    "cloudUsernames": ["new.user.cloud@example.com"]
-}
-"""
-
 
 MOCK_ADD_TO_MATTER_RESPONSE = """
 {
@@ -1245,28 +1100,6 @@ def create_file_events_mock(c42_sdk_mock, mocker):
 
 
 @pytest.fixture
-def code42_departing_employee_mock(code42_sdk_mock, mocker):
-    all_departing_employees_response = create_mock_code42_sdk_response_generator(
-        mocker, [MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE]
-    )
-    code42_sdk_mock.detectionlists.departing_employee.get_all.return_value = (
-        all_departing_employees_response
-    )
-    return code42_sdk_mock
-
-
-@pytest.fixture
-def code42_high_risk_employee_mock(code42_sdk_mock, mocker):
-    all_high_risk_employees_response = create_mock_code42_sdk_response_generator(
-        mocker, [MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE]
-    )
-    code42_sdk_mock.detectionlists.high_risk_employee.get_all.return_value = (
-        all_high_risk_employees_response
-    )
-    return code42_sdk_mock
-
-
-@pytest.fixture
 def code42_watchlists_mock(code42_sdk_mock, mocker):
     all_watchlists_response = create_mock_code42_sdk_response_generator(
         mocker, [MOCK_WATCHLISTS_RESPONSE]
@@ -1283,30 +1116,6 @@ def code42_watchlists_included_users_mock(code42_sdk_mock, mocker):
     code42_sdk_mock.watchlists.get_all_included_users.return_value = (
         included_users_response
     )
-    return code42_sdk_mock
-
-
-@pytest.fixture
-def code42_departing_employee_get_mock(code42_sdk_mock, mocker):
-    single_departing_employee = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)[
-        "items"
-    ][0]
-    response = create_mock_code42_sdk_response(
-        mocker, json.dumps(single_departing_employee)
-    )
-    code42_sdk_mock.detectionlists.departing_employee.get.return_value = response
-    return code42_sdk_mock
-
-
-@pytest.fixture
-def code42_high_risk_employee_get_mock(code42_sdk_mock, mocker):
-    single_high_risk_employee = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)[
-        "items"
-    ][0]
-    response = create_mock_code42_sdk_response(
-        mocker, json.dumps(single_high_risk_employee)
-    )
-    code42_sdk_mock.detectionlists.high_risk_employee.get.return_value = response
     return code42_sdk_mock
 
 
@@ -1346,15 +1155,6 @@ def _create_client(sdk):
     )
 
 
-def get_empty_detectionlist_response(mocker, base_text):
-    no_employees_response_text = json.loads(base_text)
-    no_employees_response_text["items"] = []
-    no_employees_response_text = json.dumps(no_employees_response_text)
-    return create_mock_code42_sdk_response_generator(
-        mocker, [no_employees_response_text]
-    )
-
-
 def get_empty_legalhold_matters_response(mocker, base_text):
     no_matters_response_text = json.loads(base_text)
     no_matters_response_text["legalHolds"] = []
@@ -1367,22 +1167,6 @@ def get_empty_legalhold_custodians_response(mocker, base_text):
     no_members_response_text["legalHoldMemberships"] = []
     no_members_response_text = json.dumps(no_members_response_text)
     return create_mock_code42_sdk_response_generator(mocker, [no_members_response_text])
-
-
-def assert_departingemployee_outputs_match_response(outputs_list, response_items):
-    assert_detection_list_outputs_match_response_items(outputs_list, response_items)
-    for i in range(0, len(outputs_list)):
-        assert outputs_list[i]["DepartureDate"] == response_items[i].get(
-            "departureDate"
-        )
-
-
-def assert_detection_list_outputs_match_response_items(outputs_list, response_items):
-    assert len(outputs_list) == len(response_items)
-    for i in range(0, len(outputs_list)):
-        assert outputs_list[i]["Username"] == response_items[i]["userName"]
-        assert outputs_list[i]["UserID"] == response_items[i]["userId"]
-        assert outputs_list[i]["Note"] == response_items[i]["notes"]
 
 
 """TESTS"""
@@ -1454,7 +1238,7 @@ def test_client_gets_jwt_provider_if_no_sdk_provided(mocker):
     client = Code42Client(
         sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False
     )
-    client.sdk
+    client.sdk()
     assert mock_sdk.from_jwt_provider.call_count == 1
 
 
@@ -1557,7 +1341,7 @@ def test_build_query_payload():
     query = build_query_payload(MOCK_SECURITY_DATA_SEARCH_QUERY)
     assert query.sort_key == MOCK_FILE_EVENT_QUERY_PAYLOAD["srtKey"]
     assert query.page_number == MOCK_FILE_EVENT_QUERY_PAYLOAD["pgNum"]
-    assert json.loads((str(query))) == MOCK_FILE_EVENT_QUERY_PAYLOAD
+    assert json.loads(str(query)) == MOCK_FILE_EVENT_QUERY_PAYLOAD
 
 
 def test_map_to_code42_event_context():
@@ -1606,289 +1390,70 @@ def test_alert_resolve_command(code42_alerts_mock):
 
 def test_departingemployee_add_command(code42_sdk_mock):
     client = _create_client(code42_sdk_mock)
-    date = "2020-01-01"
-    note = "Dummy note"
     cmd_res = departingemployee_add_command(
-        client, {"username": _TEST_USERNAME, "departuredate": date, "note": note}
+        client, {"username": _TEST_USERNAME, "departuredate": "2020-01-01", "note": "Dummy note"}
     )
-    add_func = code42_sdk_mock.detectionlists.departing_employee.add
-    assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs["DepartureDate"] == date
-    assert cmd_res.outputs["Note"] == note
-    assert cmd_res.outputs["Username"] == _TEST_USERNAME
-    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
-    assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
-    add_func.assert_called_once_with(_TEST_USER_ID, departure_date=date)
-    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(
-        _TEST_USER_ID, note
-    )
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-add-user command."
 
 
 def test_departingemployee_remove_command(code42_sdk_mock):
     client = _create_client(code42_sdk_mock)
     cmd_res = departingemployee_remove_command(client, {"username": _TEST_USERNAME})
-    assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs["Username"] == _TEST_USERNAME
-    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
-    assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
-    code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(
-        _TEST_USER_ID
-    )
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-remove-user command."
 
 
-def test_departingemployee_get_all_command(code42_departing_employee_mock):
-    client = _create_client(code42_departing_employee_mock)
-    cmd_res = departingemployee_get_all_command(client, {})
-    expected_raw_response = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)[
-        "items"
-    ]
-    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
-    assert (
-        cmd_res.raw_response
-        == json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
-    )
-    # Tests outputs
-    assert_departingemployee_outputs_match_response(
-        cmd_res.outputs, expected_raw_response
-    )
-
-
-def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
-    code42_departing_employee_mock, mocker
-):
-    # Setup get all departing employees
-    page = MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE
-    # Setup 3 pages of employees
-    employee_page_generator = (
-        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
-    )
-    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
-        employee_page_generator
-    )
-    client = _create_client(code42_departing_employee_mock)
+def test_departingemployee_get_all_command(code42_sdk_mock):
+    client = _create_client(code42_sdk_mock)
     cmd_res = departingemployee_get_all_command(client, {})
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-
-    # Expect to have employees from 3 pages in the result
-    expected_page = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
-    expected = expected_page + expected_page + expected_page
-    assert cmd_res.raw_response == expected
-    assert_departingemployee_outputs_match_response(
-        cmd_res.outputs, cmd_res.raw_response
-    )
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-list-included-users command."
 
 
-def test_departingemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
-    code42_departing_employee_mock, mocker
-):
-
-    # Setup get all departing employees
-    page = MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE
-    # Setup 3 pages of employees
-    employee_page_generator = (
-        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
-    )
-    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
-        employee_page_generator
-    )
-    client = _create_client(code42_departing_employee_mock)
-
-    cmd_res = departingemployee_get_all_command(client, {"results": 1})
-    assert len(cmd_res.raw_response) == 1
-    assert len(cmd_res.outputs) == 1
-
-
-def test_departingemployee_get_all_command_when_no_employees(
-    code42_departing_employee_mock, mocker
-):
-    no_employees_response = get_empty_detectionlist_response(
-        mocker, MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE
-    )
-    code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
-        no_employees_response
-    )
-    client = _create_client(code42_departing_employee_mock)
-    cmd_res = departingemployee_get_all_command(client, {})
-    assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.raw_response == {}
-    assert cmd_res.outputs == {"Results": []}
-    assert (
-        code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count
-        == 1
-    )
-
-
-def test_departingemployee_get_command(code42_departing_employee_get_mock):
-    client = _create_client(code42_departing_employee_get_mock)
+def test_departingemployee_get_command(code42_sdk_mock):
+    client = _create_client(code42_sdk_mock)
     cmd_res = departingemployee_get_command(client, {"username": _TEST_USERNAME})
-    get_func = code42_departing_employee_get_mock.detectionlists.departing_employee.get
-    get_func.assert_called_once_with(_TEST_USER_ID)
-    assert cmd_res.raw_response == _TEST_USERNAME
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    expected = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"][0]
-    assert_departingemployee_outputs_match_response([cmd_res.outputs], [expected])
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-user-get-risk-profile command."
 
 
-def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
-    client = _create_client(code42_high_risk_employee_get_mock)
+def test_highriskemployee_get_command(code42_sdk_mock):
+    client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_get_command(client, {"username": _TEST_USERNAME})
-    get_func = code42_high_risk_employee_get_mock.detectionlists.high_risk_employee.get
-    get_func.assert_called_once_with(_TEST_USER_ID)
-    assert cmd_res.raw_response == _TEST_USERNAME
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    expected = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
-    assert_detection_list_outputs_match_response_items([cmd_res.outputs], [expected])
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-user-get-risk-profile command."
 
 
-def test_highriskemployee_add_command(code42_high_risk_employee_mock):
-    client = _create_client(code42_high_risk_employee_mock)
+def test_highriskemployee_add_command(code42_sdk_mock):
+    client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_add_command(
         client, {"username": _TEST_USERNAME, "note": "Dummy note"}
     )
-    assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
-    assert cmd_res.outputs["Username"] == _TEST_USERNAME
-    code42_high_risk_employee_mock.detectionlists.high_risk_employee.add.assert_called_once_with(
-        _TEST_USER_ID
-    )
-    code42_high_risk_employee_mock.detectionlists.update_user_notes.assert_called_once_with(
-        _TEST_USER_ID, "Dummy note"
-    )
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-add-user command."
 
 
 def test_highriskemployee_remove_command(code42_sdk_mock):
     client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_remove_command(client, {"username": _TEST_USERNAME})
-    assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
-    assert cmd_res.outputs["Username"] == _TEST_USERNAME
-    code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(
-        _TEST_USER_ID
-    )
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-remove-user command."
 
 
-def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
-    client = _create_client(code42_high_risk_employee_mock)
+def test_highriskemployee_get_all_command(code42_sdk_mock):
+    client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_get_all_command(client, {})
-    expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
-    assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.raw_response == expected_response
-    assert (
-        code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count
-        == 1
-    )
-    assert_detection_list_outputs_match_response_items(
-        cmd_res.outputs, expected_response
-    )
-
-
-def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
-    code42_high_risk_employee_mock, mocker
-):
-    # Setup get all high risk employees
-    page = MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
-    # Setup 3 pages of employees
-    employee_page_generator = (
-        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
-    )
-    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
-        employee_page_generator
-    )
-    client = _create_client(code42_high_risk_employee_mock)
-
-    cmd_res = highriskemployee_get_all_command(client, {"username": _TEST_USERNAME})
-    expected_response = (
-        json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"] * 3
-    )
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.raw_response == expected_response
-    assert_detection_list_outputs_match_response_items(
-        cmd_res.outputs, expected_response
-    )
-
-
-def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employees_with_tags(
-    code42_high_risk_employee_mock,
-):
-    client = _create_client(code42_high_risk_employee_mock)
-    cmd_res = highriskemployee_get_all_command(
-        client,
-        {
-            "risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"
-        },
-    )
-    expected_response = [
-        json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
-    ]
-    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.raw_response == expected_response
-    assert (
-        code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count
-        == 1
-    )
-    assert_detection_list_outputs_match_response_items(
-        cmd_res.outputs, expected_response
-    )
-
-
-def test_highriskemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
-    code42_high_risk_employee_mock, mocker
-):
-    # Setup get all high risk employees
-    page = MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
-    # Setup 3 pages of employees
-    employee_page_generator = (
-        create_mock_code42_sdk_response(mocker, page) for page in [page, page, page]
-    )
-    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
-        employee_page_generator
-    )
-    client = _create_client(code42_high_risk_employee_mock)
-    cmd_res = highriskemployee_get_all_command(client, {"results": 1})
-    assert len(cmd_res.raw_response) == 1
-    assert len(cmd_res.outputs) == 1
-
-
-def test_highriskemployee_get_all_command_when_no_employees(
-    code42_high_risk_employee_mock, mocker
-):
-    no_employees_response = get_empty_detectionlist_response(
-        mocker, MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
-    )
-    code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
-        no_employees_response
-    )
-    client = _create_client(code42_high_risk_employee_mock)
-    cmd_res = highriskemployee_get_all_command(
-        client,
-        {
-            "risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"
-        },
-    )
-    assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
-    assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs == {"Results": []}
-    assert cmd_res.raw_response == {}
-    assert (
-        code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count
-        == 1
-    )
+    assert cmd_res.readable_output == "Deprecated. Please use the code42-watchlists-list-included-users command."
 
 
 def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
@@ -1897,14 +1462,10 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     cmd_res = highriskemployee_add_risk_tags_command(
         client, {"username": _TEST_USERNAME, "risktags": tags}
     )
-    assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
-    assert cmd_res.outputs["Username"] == _TEST_USERNAME
-    assert cmd_res.outputs["RiskTags"] == tags
-    code42_sdk_mock.detectionlists.add_user_risk_tags.assert_called_once_with(
-        _TEST_USER_ID, [tags]
+    assert cmd_res.readable_output == (
+        "Deprecated. The risk tags are now represented as separate watchlist types and there is no replacement for this command."
     )
 
 
@@ -1914,14 +1475,10 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
         client,
         {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK,CONTRACT_EMPLOYEE"},
     )
-    assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.outputs["UserID"] == _TEST_USER_ID
-    assert cmd_res.outputs["Username"] == _TEST_USERNAME
-    assert cmd_res.outputs["RiskTags"] == "FLIGHT_RISK,CONTRACT_EMPLOYEE"
-    code42_sdk_mock.detectionlists.remove_user_risk_tags.assert_called_once_with(
-        _TEST_USER_ID, ["FLIGHT_RISK", "CONTRACT_EMPLOYEE"]
+    assert cmd_res.readable_output == (
+        "Deprecated. The risk tags are now represented as separate watchlist types and there is no replacement for this command."
     )
 
 
@@ -2780,3 +2337,19 @@ def test_file_events_table_command_handles_v2_events(mocker):
     client = _create_client(code42_sdk_mock)
     cmd_res = file_events_to_table_command(client, args={"include": "all"})
     assert cmd_res.outputs is None
+
+
+def test_module_authenticated_returns_ok(code42_sdk_mock):
+    from Code42 import test_module
+    code42_sdk_mock.usercontext.get_current_tenant_id.return_value = "tenant_id"
+    client = _create_client(code42_sdk_mock)
+    cmd_res = test_module(client)
+    assert cmd_res == "ok"
+
+
+def test_module_unauthenticated_returns_invalid(code42_sdk_mock):
+    from Code42 import test_module
+    code42_sdk_mock.usercontext.get_current_tenant_id.side_effect = Exception()
+    client = _create_client(code42_sdk_mock)
+    cmd_res = test_module(client)
+    assert cmd_res != "ok"
