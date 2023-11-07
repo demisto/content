@@ -17,6 +17,15 @@ configuration:
   name: insecure
   type: 8
   required: false
+- display: XSOAR Version
+  name: xsoarversion
+  defaultvalue: 6.x
+  type: 15
+  required: false
+  options:
+  - 6.x
+  - 8.x
+  additionalinfo: 'The version of XSOAR you are using 6.x or 8.x '
 description: Checks an XSOAR hosted EDL to make sure it's returning a valid response.   Supports PAN-OS (text), CSV, or JSON EDLs.
 display: XSOAR EDL Checker
 name: XSOAR EDL Checker
@@ -27,14 +36,14 @@ script:
     name: xsoaredlchecker-get-edl
     outputs:
     - contextPath: EDLChecker.Name
-      description: The Name of the EDL from the Generic Indicators Export Service instance
+      description: The Name of the EDL from the Generic Indicators Export Service instance.
     - contextPath: EDLChecker.Status
-      description: The HTTP Status Code returned by the EDL
+      description: The HTTP Status Code returned by the EDL.
     - contextPath: EDLChecker.Response
       description: The Response or Error from the check.
     - contextPath: EDLChecker.ItemsOnList
       description: The number of indicators on the list, assuming a successful response!
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.80014
   runonce: false
   script: ''
   subtype: python3
