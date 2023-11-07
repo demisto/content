@@ -135,7 +135,7 @@ class Client(BaseClient):
         payload = {
             'chunk_size': chunk_size,
             "filters": {
-                "created_at": fetch_from
+                "last_assessed": fetch_from
             }
         }
         demisto.debug(f"my payload is: {payload}")
@@ -592,7 +592,7 @@ def main() -> None:  # pragma: no cover
 
     # transform minutes to seconds
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
-    first_assets_fetch: datetime = arg_to_datetime(params.get("first_fetch_time_assets", "10 years"))
+    first_assets_fetch: datetime = arg_to_datetime(params.get("first_fetch_time_assets", "107 days"))
 
     demisto.debug(f'Command being called is {command}')
     try:
