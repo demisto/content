@@ -92,7 +92,7 @@ def stop_query_command(args: dict, aws_client):
         demisto.results(f"The query {query_execution_id} was Deleted.")
 
     else:
-        demisto.results(f"Failed to Delete the query {query_execution_id}.")
+        demisto.results(f"Failed to Delete the query '{query_execution_id}'.")
         demisto.debug("Response:\n" + str(response))
 
 
@@ -105,23 +105,25 @@ def get_query_execution_command(args: dict, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'QueryExecutionId': args['QueryExecutionId']}
-    response = client.get_query_execution(**kwargs)
+    raw_response = client.get_query_execution(**kwargs)
 
     try:
-        data = json.loads(json.dumps(response, cls=DatetimeEncoder))
+        raw_response = json.loads(json.dumps(raw_response, cls=DatetimeEncoder))
 
     except ValueError as e:
         return_error('Could not parse the received response.')
         demisto.debug(f'Error:\n{e}\n'
-                      f'Response:\n{response}')
+                      f'Response:\n{raw_response}')
         return
+
+    response = raw_response['QueryExecution']
 
     return_results(CommandResults(
         outputs_prefix='AWS.Athena.QueryExecution',
         outputs_key_field='QueryExecutionId',
-        outputs=data,
-        raw_response=response,
-        readable_output=tableToMarkdown('AWS Athena Query Execution', data),
+        outputs=response,
+        raw_response=raw_response,
+        readable_output=tableToMarkdown('AWS Athena Query Execution', response),
     ))
 
 
