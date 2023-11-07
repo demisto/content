@@ -14,8 +14,9 @@
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
   - section_start "Upload Entities to Cortex XSOAR" --collapsed
   - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
-  # - demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert.json--insecure
-  - demisto-sdk upload -i Packs/HelloWorld/Layouts/layout-details-Hello_World_Alert-V2.json --insecure
+  - demisto-sdk upload -i Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml --insecure
+  - demisto-sdk upload -i Packs/AzureSentinel/IncidentTypes/incidenttype-Microsoft_Sentinel_Incident.json --insecure
+  - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
   - section_end "Upload Entities to Cortex XSOAR"
 
 demisto-sdk-nightly:run-unittests-and-lint:
@@ -250,7 +251,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
       echo "Server URL: $DEMISTO_BASE_URL"
 
     - section_start "Upload Entities to XSOAR Instance" --collapsed
-    - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
     - *upload-entities-to-cortex-xsoar
     - section_end "Upload Entities to XSOAR Instance"
 
