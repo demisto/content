@@ -8,19 +8,16 @@ description: Amazon Web Services Athena.
 configuration:
 - display: Role Arn
   name: roleArn
-  defaultvalue: ""
   type: 0
   required: false
   section: Connect
 - display: Role Session Name
   name: roleSessionName
-  defaultvalue: ""
   type: 0
   required: false
   section: Connect
 - display: Role Session Duration
   name: sessionDuration
-  defaultvalue: ""
   type: 0
   required: false
   section: Connect

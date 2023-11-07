@@ -19,7 +19,7 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def parse_rows_response(rows_data: list[dict]):
+def parse_rows_response(rows_data: list[dict]) -> list[dict]:
     keys: list[str] = [item['VarCharValue'] for item in rows_data[0]['Data']]
     raw_results = [item['Data'] for item in rows_data[1:]]
     result_data = []

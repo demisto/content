@@ -6,18 +6,18 @@ Amazon Web Services Athena.
 2. Search for AWS - Athena.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Role Arn | False |
-    | Role Session Name | False |
-    | AWS Default Region | False |
-    | Role Session Duration | False |
-    | Access Key | False |
-    | Secret Key | False |
-    | Access Key | False |
-    | Secret Key | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Role Arn |  | False |
+    | Role Session Name |  | False |
+    | Role Session Duration |  | False |
+    | AWS Default Region |  | False |
+    | Access Key |  | True |
+    | Secret Key |  | True |
+    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
