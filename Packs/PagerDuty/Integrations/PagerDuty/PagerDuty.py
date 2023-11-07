@@ -137,8 +137,8 @@ def test_module():  # pragma: no cover
     demisto.results('ok')
 
 
-def extract_on_call_user_data(users, schedule_id=None):
-    """Extact data about user from a given schedule."""
+def extract_on_call_user_data(users: list[dict], schedule_id=None) -> CommandResults:
+    """Extract data about user from a given schedule."""
     outputs = []
     contexts = []
     for user in users:
@@ -217,7 +217,7 @@ def extract_on_call_now_user_data(users_on_call_now: dict[str, Any]) -> CommandR
     )
 
 
-def parse_incident_data(incidents: list) -> tuple[list, list, list]:
+def parse_incident_data(incidents) -> tuple[list, list, list]:
     """Parse incident data to output,context format"""
     outputs = []
     contexts = []
@@ -265,7 +265,7 @@ def parse_incident_data(incidents: list) -> tuple[list, list, list]:
         context['resolve_reason'] = output['Resolve reason'] = incident.get('resolve_reason', '')
 
         context['teams'] = []
-        for team in incident.get('teams', []):
+        for team in incident.get('teams', [{}]):
             team_id = team.get('id', '')
             team_name = team.get('summary', '')
 
@@ -303,7 +303,7 @@ def parse_incident_data(incidents: list) -> tuple[list, list, list]:
     return outputs, contexts, raw_response
 
 
-def extract_incidents_data(incidents: list, table_name: str):
+def extract_incidents_data(incidents: list[dict], table_name: str) -> dict:
     """Extract data about incidents."""
     outputs, contexts, _ = parse_incident_data(incidents)
 
@@ -319,20 +319,22 @@ def extract_incidents_data(incidents: list, table_name: str):
     }
 
 
-def extract_all_schedules_data(schedules):
+def extract_all_schedules_data(schedules: list[dict]) -> dict:
     """Extract the data about all the schedules."""
     outputs = []
     contexts = []
-    for i in range(len(schedules)):
+    for schedule in schedules:
         context: dict = {}
-        data = schedules[i]
+        data = schedule
 
-        output = {'ID': data.get('id')}
-        output['Name'] = data.get('name')
-        output['Time Zone'] = data.get('time_zone')
-        output['Today'] = datetime.today().strftime('%Y-%m-%d')
-        escalation_policies = data.get('escalation_policies', [])
-        if len(escalation_policies) > 0:
+        output = {
+            'ID': data.get('id'),
+            'Name': data.get('name'),
+            'Time Zone': data.get('time_zone'),
+            'Today': datetime.today().strftime('%Y-%m-%d'),
+        }
+        escalation_policies: list[dict] = data.get('escalation_policies', [{}])
+        if escalation_policies:
             output['Escalation Policy ID'] = escalation_policies[0].get('id')
             output['Escalation Policy'] = escalation_policies[0].get('summary')
 
@@ -364,7 +366,7 @@ def extract_all_schedules_data(schedules):
 
 
 def create_new_incident(source, summary, severity, action, description='No description', group='',
-                        event_class='', component='', incident_key=None, service_key=SERVICE_KEY):
+                        event_class='', component='', incident_key=None, service_key=SERVICE_KEY) -> dict:
     """Create a new incident in the PagerDuty instance."""
     payload = {
         'routing_key': service_key,
@@ -388,7 +390,7 @@ def create_new_incident(source, summary, severity, action, description='No descr
     return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
 
 
-def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY):
+def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY) -> dict:
     """Resolve or Acknowledge an incident in the PagerDuty instance."""
     payload = {
         'routing_key': service_key,
@@ -399,12 +401,13 @@ def resolve_or_ack_incident(action, incident_key, service_key=SERVICE_KEY):
     return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
 
 
-def extract_new_event_data(table_name, response):
+def extract_new_event_data(table_name: str, response: dict) -> dict:
     """Extract the data from the response of creating a new command."""
-    output = {'Status': response.get('status', '')}
-    output['Message'] = response.get('message', '')
-    output['Incident key'] = response.get('dedup_key', '')
-
+    output = {
+        'Status': response.get('status', ''),
+        'Message': response.get('message', ''),
+        'Incident key': response.get('dedup_key', ''),
+    }
     context = {
         'Status': output['Status'],
         'Message': output['Message'],
@@ -423,11 +426,11 @@ def extract_new_event_data(table_name, response):
     }
 
 
-def extract_users_contact_methods(user_contact_methods):
+def extract_users_contact_methods(user_contact_methods: dict) -> dict:
     """Extract all the contact methods of a given user."""
     outputs = []
     contexts = []
-    contact_methods = user_contact_methods.get('contact_methods')
+    contact_methods: list[dict] = user_contact_methods.get('contact_methods', [{}])
     for contact_method in contact_methods:
         output = {
             'ID': contact_method.get('id'),
@@ -461,10 +464,10 @@ def extract_users_contact_methods(user_contact_methods):
     }
 
 
-def extract_users_notification_role(user_notification_role):
+def extract_users_notification_role(user_notification_role: dict) -> dict:
     """Extract the notification role of a given user."""
     outputs = []
-    notification_rules = user_notification_role.get('notification_rules')
+    notification_rules: list[dict] = user_notification_role.get('notification_rules', [{}])
     for notification_rule in notification_rules:
         output = {
             'ID': notification_rule.get('id'),
@@ -486,7 +489,7 @@ def extract_users_notification_role(user_notification_role):
     }
 
 
-def extract_responder_request(responder_request_response):
+def extract_responder_request(responder_request_response) -> CommandResults:
     """Extract the users that were requested to respond"""
     outputs = []
     responder_request = responder_request_response.get("responder_request")
@@ -556,7 +559,38 @@ def configure_status(status='triggered,acknowledged'):
     return status_request
 
 
-def get_incidents_command(args: dict[str, str]) -> CommandResults:
+def pagination_incidents(args: dict, url, param_dict) -> list[dict]:
+    def get_page(**pagination_args):
+        return http_request('GET', url, param_dict | pagination_args).get("incidents", [{}])
+    pages: list = []
+
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    if page and page_size:
+        limit = page_size
+        offset = (page - 1) * page_size
+
+    else:
+        limit = arg_to_number(args.get("limit")) or 50
+        offset = 0
+        api_limit = 10_000
+        for offset in range(0, limit - api_limit, api_limit):
+            pages += get_page(
+                limit=api_limit,
+                offset=offset)
+
+        # the remaining call can be less than OR equal the api_limit but not empty
+        limit = limit % api_limit or api_limit
+        offset += api_limit
+
+    pages += get_page(
+        limit=limit,
+        offset=offset)
+
+    return pages
+
+
+def get_incidents_command(args: dict[str, str]) -> dict:
     """Get incidents command."""
     param_dict: dict = {
         "since": args.get("since"),
@@ -569,13 +603,13 @@ def get_incidents_command(args: dict[str, str]) -> CommandResults:
         "page": arg_to_number(args.get("page")),
         "page_size": arg_to_number(args.get("page_size")),
         "limit": arg_to_number(args.get("limit", 50))
-        
+
     }
     remove_nulls_from_dictionary(param_dict)
-
     url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(args.get("status"))
-    res = http_request('GET', url, param_dict)
-    return extract_incidents_data(res.get('incidents', []), INCIDENTS_LIST)
+    res: list[dict] = pagination_incidents(args, url, param_dict)
+
+    return extract_incidents_data(res, INCIDENTS_LIST)
 
 
 def submit_event_command(source, summary, severity, action, description='No description', group='',
@@ -590,7 +624,7 @@ def submit_event_command(source, summary, severity, action, description='No desc
     return extract_new_event_data(TRIGGER_EVENT, res)
 
 
-def get_all_schedules_command(query=None, limit=None):
+def get_all_schedules_command(query=None, limit=None) -> dict:
     """Get all the schedules."""
     param_dict = {}
     if query is not None:
@@ -600,11 +634,11 @@ def get_all_schedules_command(query=None, limit=None):
 
     url = SERVER_URL + GET_SCHEDULES_SUFFIX
     res = http_request('GET', url, param_dict)
-    schedules = res.get('schedules', [])
+    schedules = res.get('schedules', [{}])
     return extract_all_schedules_data(schedules)
 
 
-def get_on_call_users_command(scheduleID, since=None, until=None):
+def get_on_call_users_command(scheduleID: str, since=None, until=None) -> CommandResults:
     """Get the list of user on call in a from scheduleID"""
     param_dict = {}
     if since is not None:
@@ -614,10 +648,10 @@ def get_on_call_users_command(scheduleID, since=None, until=None):
 
     url = SERVER_URL + ON_CALL_BY_SCHEDULE_SUFFIX.format(scheduleID)
     users_on_call = http_request('GET', url, param_dict)
-    return extract_on_call_user_data(users_on_call.get('users', []), scheduleID)
+    return extract_on_call_user_data(users_on_call.get('users', [{}]), scheduleID)
 
 
-def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedule_ids=None):
+def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedule_ids=None) -> CommandResults:
     """Get the list of users that are on call now."""
     param_dict = {}
     if limit is not None:
@@ -632,21 +666,21 @@ def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedu
     return extract_on_call_now_user_data(users_on_call_now)
 
 
-def get_users_contact_methods_command(UserID):
+def get_users_contact_methods_command(UserID: str):
     """Get the contact methods of a given user."""
     url = SERVER_URL + USERS_CONTACT_METHODS_SUFFIX.format(UserID)
     user_contact_methods = http_request('GET', url, {})
     return extract_users_contact_methods(user_contact_methods)
 
 
-def get_users_notification_command(UserID):
+def get_users_notification_command(UserID) -> dict:
     """Get the notification rule of a given user"""
     url = SERVER_URL + USERS_NOTIFICATION_RULE.format(UserID)
-    user_notification_role = http_request('GET', url, {})
+    user_notification_role: dict = http_request('GET', url, {})
     return extract_users_notification_role(user_notification_role)
 
 
-def resolve_event(incident_key=None, serviceKey=SERVICE_KEY):
+def resolve_event(incident_key=None, serviceKey=SERVICE_KEY) -> dict:
     if serviceKey is None:
         raise Exception('You must enter a ServiceKey at the integration '
                         'parameters or in the command to process this action.')
@@ -662,7 +696,7 @@ def resolve_event(incident_key=None, serviceKey=SERVICE_KEY):
     return extract_new_event_data(RESOLVE_EVENT, action_response)
 
 
-def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
+def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY) -> dict:
     if serviceKey is None:
         raise Exception('You must enter a ServiceKey at the integration '
                         'parameters or in the command to process this action.')
