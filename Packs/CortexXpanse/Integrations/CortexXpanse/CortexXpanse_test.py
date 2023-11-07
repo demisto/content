@@ -78,7 +78,7 @@ def test_get_attack_surface_rule_command(requests_mock):
     from test_data.raw_response import ASM_GET_ATTACK_SURFACE_RULE_RESPONSE
     from test_data.expected_results import ASM_GET_ATTACK_SURFACE_RULE_RESULTS
     requests_mock.post(
-        "https://test.com/api/webapp/public_api/v1/get_attack_surface_rules/",
+        "https://test.com/api/webapp/public_api/v1/public_api/v1/get_attack_surface_rules/",
         json=ASM_GET_ATTACK_SURFACE_RULE_RESPONSE,
     )
 
