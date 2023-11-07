@@ -13,7 +13,6 @@ from packaging.version import Version
 from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import Any
-from demisto_sdk.commands.common.constants import MarketplaceVersions
 from pathlib import Path
 
 # pylint: disable=no-member
