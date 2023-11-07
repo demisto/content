@@ -1,14 +1,20 @@
 [MODEL: dataset=armis_security_raw]
 alter
 	xdm.event.type = type,
+	xdm.alert.category = classification,
 	xdm.alert.description = description,
 	xdm.alert.name = title,
 	xdm.alert.original_alert_id = to_string(alertId),
+	xdm.alert.original_threat_id = (policyId),
+	xdm.alert.original_threat_name = policyTitle,
 	xdm.alert.severity = severity,
 	xdm.event.outcome = status,
+	xdm.event.is_completed = if(status = "Resolved", to_boolean("TRUE"), status = "Unhandled", to_boolean("FALSE")),
 	xdm.event.id = arraystring(arraymap(activityUUIDs -> [], trim("@element", "\"")), ";"),
-	xdm.source.host.device_id = arraystring(json_extract_array(deviceIds, "$."), ";"),
-	xdm.network.session_id = arraystring(arraymap(connectionIds -> [], trim("@element", "\"")), ";");
+	xdm.event.tags = policyLabels -> [],
+	xdm.source.host.device_id = arraystring(deviceIds -> [], ";"),
+	xdm.network.session_id = arraystring(arraymap(connectionIds -> [], trim("@element", "\"")), ";"),
+	xdm.network.rule = to_string(policyId);
 
 [MODEL: dataset=armis_security_activities_raw] 
 alter // extract the device name from the activity title, according to the activity type 
