@@ -230,7 +230,7 @@ class TestHelperFunction:
               last run dictionary for next fetch cycle.
         """
         from ArmisEventCollector import fetch_by_event_type
-        event_type = EVENT_TYPE('unique_id', 'example:query', 'events', 'time')
+        event_type = EVENT_TYPE('unique_id', 'example:query', 'events', 'time', 'events')
         events: dict[str, list[dict]] = {}
         next_run: dict = {}
         last_run = {'events_last_fetch_time': '2023-01-01T01:00:20', 'events_last_fetch_ids': ['1', '2']}
@@ -518,7 +518,7 @@ class TestFetchFlow:
         """
         from ArmisEventCollector import fetch_events
         mocker.patch.object(Client, 'fetch_by_aql_query', return_value=response)
-        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events', 'time')})
+        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events', 'time', 'events')})
         assert fetch_events(dummy_client, max_fetch, devices_max_fetch, last_run,
                             fetch_start_time, event_types_to_fetch, None) == (events, next_run)
 
@@ -551,7 +551,7 @@ class TestFetchFlow:
         fetch_start_time = arg_to_datetime('2023-01-01T01:00:00')
         mocker.patch.object(Client, 'fetch_by_aql_query', side_effect=[DemistoException(
             message='Invalid access token'), events_with_different_time])
-        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events', 'time')})
+        mocker.patch.dict(EVENT_TYPES, {'Events': EVENT_TYPE('unique_id', 'events_query', 'events', 'time', 'events')})
         mocker.patch.object(Client, 'update_access_token')
         if fetch_start_time:
             last_run = {'events_last_fetch_ids': ['3'],
