@@ -126,25 +126,16 @@ def add_changed_pack(func):
 
 
 @add_changed_pack
-def create_new_pack(only_for_xsoar: bool = False):
+def create_new_pack(pack_id: str):
     """
     Creates a new pack with a given pack name
     """
     content_path = Path(__file__).parent.parent.parent
-    source_path = Path(__file__).parent / 'TestUploadFlow'
-    dest_path = content_path / 'Packs' / 'TestUploadFlow' if not only_for_xsoar else \
-        content_path / 'Packs' / 'TestUploadFlowXSOAR'
+    source_path = Path(__file__).parent / pack_id
+    dest_path = content_path / 'Packs' / pack_id
     if dest_path.exists():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
-
-    if only_for_xsoar:
-        # remove marketplacev2 from metadata marketplaces field
-        new_pack_metadata_path = dest_path / 'pack_metadata.json'
-        with new_pack_metadata_path.open('r') as fr:
-            new_pack_metadata = json.load(fr)
-        new_pack_metadata.setdefault('marketplaces', []).remove('marketplacev2')
-        json_write(str(new_pack_metadata_path), new_pack_metadata)
 
     return dest_path, '1.0.0', get_pack_content_paths(dest_path)
 
@@ -292,7 +283,7 @@ def do_changes_on_branch(packs_path: Path):
     Makes the test changes on the created branch
     """
     # Case 1: Verify new pack - TestUploadFlow
-    new_pack_path, _, _ = create_new_pack()
+    new_pack_path, _, _ = create_new_pack(pack_id='TestUploadFlow')
 
     # Case 2: Verify modified pack - Armorblox
     modify_pack(packs_path / 'Armorblox', 'Integrations/Armorblox/Armorblox.py')
@@ -331,8 +322,8 @@ def do_changes_on_branch(packs_path: Path):
     add_dependency(packs_path / 'MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
                    mandatory=False)
 
-    # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket
-    create_new_pack(only_for_xsoar=True)
+    # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket - TestUploadFlowXSOAR
+    create_new_pack(pack_id='TestUploadFlowXSOAR')
 
     logging.info("Finished making test changes on the branch")
 
