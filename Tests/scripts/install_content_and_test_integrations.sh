@@ -40,12 +40,13 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; 
     exit_code=0
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
       python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" \
-        -s "$SECRET_CONF_PATH" --tests_to_run "$ARTIFACTS_FOLDER/filter_file.txt" \
-        --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" -g "$GIT_SHA1" --ami_env "${INSTANCE_ROLE}" \
+        -s "$SECRET_CONF_PATH" --tests_to_run "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" \
+        --pack_ids_to_install "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.txt" -g "$GIT_SHA1" --ami_env "${INSTANCE_ROLE}" \
         -n "${IS_NIGHTLY}" --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY" \
         --server-type "${SERVER_TYPE}" --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "$CLOUD_SERVERS_PATH" \
         --cloud_servers_api_keys "cloud_api_keys.json" --marketplace_name "$MARKETPLACE_NAME" \
-        --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET"
+        --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET" \
+        --test_pack_path "${ARTIFACTS_FOLDER_SERVER_TYPE}" --content_root "."
       if [ $? -ne 0 ]; then
         exit_code=1
         echo "Failed to run configure_and_test_integration_instances.py script on ${CLOUD_CHOSEN_MACHINE_ID}"
@@ -60,12 +61,13 @@ if [[ "${SERVER_TYPE}" == "XSIAM" ]] || [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; 
   fi
 elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
     python3 ./Tests/configure_and_test_integration_instances.py -u "$USERNAME" -p "$PASSWORD" -c "$CONF_PATH" \
-      -s "$SECRET_CONF_PATH" --tests_to_run "$ARTIFACTS_FOLDER/filter_file.txt"  \
-      --pack_ids_to_install "$ARTIFACTS_FOLDER/content_packs_to_install.txt" -g "$GIT_SHA1" --ami_env "${INSTANCE_ROLE}" \
+      -s "$SECRET_CONF_PATH" --tests_to_run "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"  \
+      --pack_ids_to_install "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.txt" -g "$GIT_SHA1" --ami_env "${INSTANCE_ROLE}" \
       --is-nightly "${IS_NIGHTLY}" --branch "$CI_COMMIT_BRANCH" --build-number "$CI_PIPELINE_ID" -sa "$GCS_MARKET_KEY" \
       --server-type "${SERVER_TYPE}"  --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" \
       --cloud_servers_path "$CLOUD_SERVERS_PATH" --cloud_servers_api_keys "cloud_api_keys.json" \
-      --marketplace_name "$MARKETPLACE_NAME" --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET"
+      --marketplace_name "$MARKETPLACE_NAME" --artifacts_folder "$ARTIFACTS_FOLDER" --marketplace_buckets "$GCS_MACHINES_BUCKET" \
+      --test_pack_path "${ARTIFACTS_FOLDER_SERVER_TYPE}" --content_root "."
     exit_on_error $? "Failed to $0 script"
 
     echo "Finished $0 successfully"
@@ -73,4 +75,3 @@ elif [[ "${SERVER_TYPE}" == "XSOAR" ]]; then
 else
   exit_on_error 1 "Unknown server type: ${SERVER_TYPE}"
 fi
-
