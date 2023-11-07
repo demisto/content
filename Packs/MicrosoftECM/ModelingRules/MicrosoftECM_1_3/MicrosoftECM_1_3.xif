@@ -19,11 +19,11 @@ alter
     user_name = arrayindex(regextract(_raw_log, "UserName=([^~\s]+)"), 0),
     user_domain = arrayindex(regextract(_raw_log, "UserName=([^\\]+)\\"), 0)
 | alter
-        duration = coalesce(duration1 , duration2, duration3),
-        component = coalesce(component, component2),
-        msg = coalesce(msg_1, msg_2),
-        event_type = if(event_type contains "CMGService", "CMGService", event_type contains "SMSPXE", "SMSPXE", event_type),
-        user_name = if(user_name contains """\\""", arrayindex(regextract(user_name, "\\([\S]+)"), 0), user_name)
+    duration = coalesce(duration1 , duration2, duration3),
+    component = coalesce(component, component2),
+    msg = coalesce(msg_1, msg_2),
+    event_type = if(event_type contains "CMGService", "CMGService", event_type contains "SMSPXE", "SMSPXE", event_type),
+    user_name = if(user_name contains """\\""", arrayindex(regextract(user_name, "\\([\S]+)"), 0), user_name)
 | alter
     xdm.session_context_id = thread_id,
     xdm.event.description = msg,
