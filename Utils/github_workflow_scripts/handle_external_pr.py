@@ -226,7 +226,7 @@ def is_tim_content(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_reviewer_needed(pr_files: list[str], support_label:str) -> bool:
+def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     """
     Checks whether the PR need to be reviewed by a TIM reviewer.
     It check the yml file of the integration - if it has the feed: True
@@ -332,7 +332,7 @@ def main():
         pr.add_to_labels(SECURITY_LABEL)
 
     # adding TIM reviewer
-    if is_tim_reviewer_needed(pr_files, support_label ):
+    if is_tim_reviewer_needed(pr_files, support_label):
         reviewers.append(tim_reviewer)
         pr.add_to_labels(TIM_LABEL)
 
@@ -359,9 +359,6 @@ def main():
             f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson).'
     if XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
         pr.create_issue_comment(contributors_body)
-
-
-
 
 
 if __name__ == "__main__":
