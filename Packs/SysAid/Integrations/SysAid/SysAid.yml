@@ -658,6 +658,40 @@ script:
     - name: file_name
       required: true
       description: The name of the file to download.
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: number
+    - contextPath: File.SHA1
+      description: The SHA1 of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA512 of the file.
+      type: string
+    - contextPath: File.Name
+      description: The full name with extension of the file.
+      type: string
+    - contextPath: File.SSDeep
+      description: The SSDeep of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: The entryId of the file.
+      type: string
+    - contextPath: File.Info
+      description: The info of the file.
+      type: string
+    - contextPath: File.Type
+      description: The type of the file.
+      type: string
+    - contextPath: File.MD5
+      description: The MD5 of the file.
+      type: string
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
   isfetch: true
   script: '-'
   type: python
