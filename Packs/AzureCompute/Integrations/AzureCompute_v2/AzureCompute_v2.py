@@ -502,10 +502,10 @@ def list_resource_groups_command(client: MsGraphClient, args: dict):
     tag = args.get('tag', '')
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
 
-    resource_groups = []
+    resource_groups: List[dict] = []
 
     next_link = True
-    while next_link:
+    while next_link and len(resource_groups) < limit:
         full_url = next_link if isinstance(next_link, str) else None
         response = client.list_resource_groups(limit, tag, full_url=full_url)
         # Retrieve relevant properties to return to context
@@ -520,9 +520,6 @@ def list_resource_groups_command(client: MsGraphClient, args: dict):
                 'ProvisioningState': resource_group.get('properties', {}).get('provisioningState')
             }
             resource_groups.append(resource_group_context)
-
-        if len(resource_groups) >= limit:
-            break
 
     resource_groups = resource_groups[:limit]
     title = 'List of Resource Groups'
