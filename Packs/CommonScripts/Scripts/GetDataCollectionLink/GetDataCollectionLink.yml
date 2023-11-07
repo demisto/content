@@ -16,7 +16,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.13.78960
+dockerimage: demisto/python3:3.10.13.80014
 enabled: true
 name: GetDataCollectionLink
 outputs:
