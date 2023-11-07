@@ -314,9 +314,6 @@ def test_taxii2_server(
     integration_params = get_integration_params(
         request.config.option.integration_secrets_path, instance_name="taxii2server-e2e"
     )
-    username = integration_params["credentials"]["identifier"]
-    password = integration_params["credentials"]["password"]
-    headers = {"Accept": "application/taxii+json;version=2.1"}
 
     feed_indicators = [
         FeedIndicator(value=value, type=_type, score=score) for value, _type, score in
@@ -333,6 +330,10 @@ def test_taxii2_server(
         )
     ) as taxii2_instance_response:
         instance_name = taxii2_instance_response.get("name")
+        username = integration_params["credentials"]["identifier"]
+        password = integration_params["credentials"]["password"]
+        headers = {"Accept": "application/taxii+json;version=2.1"}
+
         response = xsoar_ng_client.do_long_running_instance_request(
             instance_name,
             url_suffix="/threatintel/collections",
