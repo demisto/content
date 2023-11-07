@@ -214,19 +214,20 @@ def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
     for file in pr_files:
         print(f'file is: {file}')
         integration = BaseContent.from_path(CONTENT_PATH / file)
-        print(f'Integration is: {integration}')
-        if "Integrations" in file and integration not in integrations_checked:
-            if not isinstance(integration, Integration):
-                continue
-            if integration.is_feed:
-                return True
-            integrations_checked.append(file)
-            print(f'Integration checked are: {integrations_checked}')
-            pack = integration.in_pack
-            tags = pack.tags
-            categories = pack.categories
-            if TIM_TAGS in tags or TIM_CATEGORIES in categories:
-                return True
+        print(f'integration is: {integration}')
+        if not isinstance(integration, Integration) or integration.path in integrations_checked:
+            continue
+
+        if integration.is_feed:
+            return True
+        integrations_checked.append(integration.path)
+        print(f'Integration checked are: {integrations_checked}')
+        pack = integration.in_pack
+        print(f'pack is {pack}')
+        tags = pack.tags
+        categories = pack.categories
+        if TIM_TAGS in tags or TIM_CATEGORIES in categories:
+            return True
     return False
 
     # for file in pr_files:
