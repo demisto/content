@@ -13967,15 +13967,13 @@ def main():  # pragma: no cover
         command = demisto.command()
         LOG(f'Command being called is: {command}')
 
-        # Log the API version
-        if is_debug_mode():
-            demisto.debug('Retrieving the API version')
-            demisto.debug(f'API version: {get_pan_os_version()}')
-
         # Remove proxy if not set to true in params
         handle_proxy()
 
         if command == 'test-module':
+            # Log the API version
+            if is_debug_mode():
+                demisto.debug(f'PAN-OS Version (debug-mode): {get_pan_os_version()}')
             panorama_test(params)
 
         # Fetch incidents
