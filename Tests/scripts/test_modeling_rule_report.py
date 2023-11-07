@@ -133,8 +133,8 @@ def write_test_modeling_rule_to_jira_mapping(artifacts_path: Path, jira_tickets_
     with open(test_modeling_rule_to_jira_mapping_file, "w") as test_modeling_rule_to_jira_mapping_fp:
         test_modeling_rule_to_jira_mapping = {modeling_rule: jira_ticket_to_json_data(jira_ticket)
                                               for modeling_rule, jira_ticket in jira_tickets_for_modeling_rule.items()}
-    test_modeling_rule_to_jira_mapping_fp.write(json.dumps(test_modeling_rule_to_jira_mapping, indent=4, sort_keys=True,
-                                                           default=str))
+        test_modeling_rule_to_jira_mapping_fp.write(json.dumps(test_modeling_rule_to_jira_mapping, indent=4, sort_keys=True,
+                                                               default=str))
 
 
 def read_test_modeling_rule_to_jira_mapping(artifacts_path: Path) -> dict[str, dict[str, str]]:
