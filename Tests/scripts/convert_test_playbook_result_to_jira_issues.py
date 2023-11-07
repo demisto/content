@@ -1,5 +1,4 @@
 import argparse
-import json
 import os
 import re
 import sys
@@ -22,7 +21,8 @@ from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
     jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, jira_ticket_to_json_data
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
-    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS
+    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS, \
+    write_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -114,8 +114,9 @@ def main():
         install_logging('convert_test_playbook_result_to_jira_issues.log', logger=logging)
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
+        artifacts_path = Path(options.artifacts_path)
         logging.info("Converting test playbook results to Jira issues with the following settings:")
-        logging.info(f"\tArtifacts path: {options.artifacts_path}")
+        logging.info(f"\tArtifacts path: {artifacts_path}")
         logging.info(f"\tJira server url: {JIRA_SERVER_URL}")
         logging.info(f"\tJira verify SSL: {JIRA_VERIFY_SSL}")
         logging.info(f"\tJira project id: {JIRA_PROJECT_ID}")
@@ -142,6 +143,9 @@ def main():
         issues = jira_search_all_by_query(jira_server, generate_query_by_component_and_issue_type())
         jira_tickets_for_playbooks = get_jira_tickets_for_playbooks(list(playbooks_results.keys()), issues)
         logging.info(f"Found {len(jira_tickets_for_playbooks)} Jira tickets out of {len(playbooks_results)} playbooks")
+
+        write_test_playbook_to_jira_mapping(artifacts_path, jira_tickets_for_playbooks)
+        open(artifacts_path / TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED, "w")
 
         # Search if we have too many test playbooks that failed beyond the max allowed limit to open, if so we print the
         # list and exit. This is to avoid opening too many Jira issues.
@@ -192,9 +196,6 @@ def main():
                 playbook_to_jira_mapping[playbook_id] = jira_ticket_to_json_data(jira_ticket)
             else:
                 logging.debug(f"Skipped creating Jira issue for successful test playbook:{playbook_id}")
-        with open(Path(options.artifacts_path) / "playbook_to_jira_mapping.json", "w") as playbook_to_jira_mapping_file:
-            playbook_to_jira_mapping_file.write(json.dumps(playbook_to_jira_mapping, indent=4, sort_keys=True,
-                                                           default=str))
 
         logging.info("Finished creating/updating Jira issues")
 

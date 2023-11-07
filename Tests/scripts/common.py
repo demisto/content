@@ -16,6 +16,8 @@ PRIVATE_NIGHTLY = 'Private Nightly'
 TEST_NATIVE_CANDIDATE = 'Test Native Candidate'
 SECURITY_SCANS = 'Security Scans'
 BUILD_MACHINES_CLEANUP = 'Build Machines Cleanup'
+UNIT_TESTS_WORKFLOW_SUBSTRINGS = {'lint', 'unit', 'demisto sdk nightly', TEST_NATIVE_CANDIDATE.lower()}
+
 WORKFLOW_TYPES = {
     CONTENT_NIGHTLY,
     CONTENT_PR,

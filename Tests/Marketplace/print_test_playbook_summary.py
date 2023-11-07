@@ -1,10 +1,11 @@
 import argparse
-import json
 import sys
 import traceback
 from pathlib import Path
 
 import urllib3
+from Tests.Marketplace.Users.kmeir.dev.demisto.content.Tests.scripts.test_playbooks_report import \
+    write_test_playbook_to_jira_mapping
 from jira import JIRA
 from junitparser import JUnitXml, TestSuite
 from tabulate import tabulate
@@ -12,8 +13,7 @@ from tabulate import tabulate
 from Tests.scripts.common import calculate_results_table, TEST_PLAYBOOKS_REPORT_FILE_NAME, get_test_results_files, \
     TEST_SUITE_CELL_EXPLANATION
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, \
-    JIRA_API_KEY, jira_server_information, generate_query_by_component_and_issue_type, jira_search_all_by_query, JIRA_LABELS, \
-    jira_ticket_to_json_data
+    JIRA_API_KEY, jira_server_information, generate_query_by_component_and_issue_type, jira_search_all_by_query, JIRA_LABELS
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
     TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks
 from Tests.scripts.utils import logging_wrapper as logging
@@ -98,11 +98,7 @@ def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> bo
                                                                              without_jira=without_jira)
     logging.info(f"Writing test playbook report to {test_playbooks_report}")
     xml.write(test_playbooks_report.as_posix(), pretty=True)
-    with open(artifacts_path / "playbook_to_jira_mapping.json", "w") as playbook_to_jira_mapping_file:
-        playbook_to_jira_mapping = {playbook_id: jira_ticket_to_json_data(jira_ticket)
-                                    for playbook_id, jira_ticket in jira_tickets_for_playbooks.items()}
-        playbook_to_jira_mapping_file.write(json.dumps(playbook_to_jira_mapping, indent=4, sort_keys=True,
-                                                       default=str))
+    write_test_playbook_to_jira_mapping(artifacts_path, jira_tickets_for_playbooks)
 
     table = tabulate(tabulate_data, headers="firstrow", tablefmt="pretty", colalign=column_align)
     logging.info(f"Test Playbook Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
