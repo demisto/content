@@ -1883,28 +1883,36 @@ def test_get_closure_case(params, expected):
     assert get_closure_case(params) == expected
 
 
-@pytest.mark.parametrize('ticket_state, server_close_custom_state, expected_res',
-                         [('1', '', 'Other'),
-                          ('7', '', 'Resolved'),
-                          ('6', '', 'Resolved'),
-                          ('10', '10=Test', 'Test'),
-                          ('10', '10=Test,11=Test2', 'Test'),
-                          ('6', '6=Test', 'Test'),  # If builtin state was override by custom state.
-                          ('corrupt_state', '', 'Other'),
-                          ('corrupt_state', 'custom_state=Test', 'Other'),
-                          ('6', 'custom_state=Test', 'Resolved'),
+@pytest.mark.parametrize('ticket_state, ticket_close_code, server_close_custom_state, server_close_custom_code, expected_res',
+                         [('1', 'default close code', '', '', 'Other'),
+                          ('7', 'default close code', '', '', 'Resolved'),
+                          ('6', 'default close code', '', '', 'Resolved'),
+                          ('10', 'default close code', '10=Test', '', 'Test'),
+                          ('10', 'default close code', '10=Test,11=Test2', '', 'Test'),
+                          # If builtin state was override by custom.
+                          ('6', 'default close code', '6=Test', '', 'Test'),
+                          ('corrupt_state', 'default close code', '', '', 'Other'),
+                          ('corrupt_state', 'default close code', 'custom_state=Test', '', 'Other'),
+                          ('6', 'default close code', 'custom_state=Test', '', 'Resolved'),
+                          # custom close_code overwrites custom sate.
+                          ('10', 'custom close code', '10=Test,11=Test2', 'custom close code=Custom,90=90 Custom', 'Custom'),
+                          ('10', '90', '10=Test,11=Test2', '80=Custom, 90=90 Custom', '90 Custom'),
                           ])
-def test_converts_close_code_or_state_to_close_reason(ticket_state, server_close_custom_state, expected_res):
+def test_converts_close_code_or_state_to_close_reason(ticket_state, ticket_close_code, server_close_custom_state,
+                                                      server_close_custom_code, expected_res):
     """
     Given:
         - ticket_state: The state for the closed service now ticket
+        - ticket_close_code: The Service now ticket close code
         - server_close_custom_state: The custom state for the closed service now ticket
+        - server_close_custom_code: The custom close code for the closed service now ticket
     When:
         - closing a ticket on service now
     Then:
         - return the matching XSOAR incident state.
     """
-    assert converts_close_code_or_state_to_close_reason(ticket_state, server_close_custom_state) == expected_res
+    assert converts_close_code_or_state_to_close_reason(ticket_state, ticket_close_code, server_close_custom_state,
+                                                        server_close_custom_code) == expected_res
 
 
 def ticket_fields_mocker(*args, **kwargs):
