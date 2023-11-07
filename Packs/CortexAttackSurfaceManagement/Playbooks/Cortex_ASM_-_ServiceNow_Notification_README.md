@@ -4,10 +4,6 @@ This playbook is used to create ServiceNow tickets directed toward service owner
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-### Sub-playbooks
-
-Cortex ASM - Remediation Guidance
-
 ### Integrations
 
 ServiceNow v2
@@ -28,6 +24,7 @@ servicenow-create-ticket
 | --- | --- | --- | --- |
 | OwnerNotificationBody | Body of the notification \(email or ticket\) sent to the potential service owner. |  | Required |
 | NotificationTicketType | The ticket type used by ticketing systems. The default is "incident" because ticketing systems such as ServiceNow and Cherwell use it as default. |  | Required |
+| RemediationGuidance | Remediation Guidance of the Attack Surface Rule. |  | Required |
 
 ## Playbook Outputs
 
