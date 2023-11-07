@@ -23,16 +23,20 @@ configuration:
   type: 9
   displaypassword: Secret Key
   required: false
+  section: Connect
 - display: Timeout
   name: timeout
-  section: Connect
+  defaultvalue: 60,10
+  additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used."
   type: 0
-  advanced: true
+  required: false
+  section: Connect
 - display: Retries
   name: retries
-  section: Connect
   type: 0
-  advanced: true
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -45,27 +49,46 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: This is the Hello World integration for getting started.
+description: Manage Amazon Web Services accounts and their resources.
 display: AWS-Organizations
 name: AWS-Organizations
 script:
   commands:
     - name: aws-org-root-list
       arguments:
-      - description: 
+      - description: The number of roots to return.
         name: limit
-      - description: 
+        defaultValue: '50'
+      - description: The number of roots to return per page. The maximum is 1000.
         name: page_size
-      - description: 
+      - description: The token denoting the next page of roots, as given by the response of the previous run of this command under the context key "AWS.Organizations.RootNextToken".
         name: next_token
-      - description: 
+      - description: The Amazon Resource Name (ARN) of the role to assume.
         name: roleArn
-      - description: 
+      - description: An identifier for the assumed role session.
         name: roleSessionName
-      - description: 
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
         name: roleSessionDuration
-      description: 
-      outputs: []
+      description: List the roots that are defined in the current organization.
+      outputs:
+      - contextPath: AWS.Organizations.Root.Id
+        description: The unique identifier (ID) of the root.
+        type: String
+      - contextPath: AWS.Organizations.Root.Arn
+        description: The Amazon Resource Name (ARN) of the root.
+        type: String
+      - contextPath: AWS.Organizations.Root.Name
+        description: The friendly name of the root.
+        type: String
+      - contextPath: AWS.Organizations.Root.PolicyTypes.Type
+        description: The name of the policy type.
+        type: String
+      - contextPath: AWS.Organizations.Root.PolicyTypes.Status
+        description: The status of the policy type as it relates to the associated root.
+        type: String
+      - contextPath: AWS.Organizations.RootNextToken
+        description: If not null, indicates that more output is available than is included in the current response. Use this value in the next_token argument in a subsequent call of the command to get the next part of the output.
+        type: String
     - name: aws-org-children-list
       arguments:
       - description: The unique identifier (ID) for the parent root or OU whose children are to be listed.
@@ -78,19 +101,20 @@ script:
         - Account
         - OrganizationalUnit
         required: true
-      - description: 
+      - description: The number of children to return.
         name: limit
-      - description: 
+        defaultValue: '50'
+      - description: The number of children to return per page. The maximum is 1000.
         name: page_size
-      - description: 
+      - description: The token denoting the next page of children as given by the response of the previous run of this command under the context key "AWS.Organizations.ChildrenNextToken".
         name: next_token
-      - description: 
+      - description: The Amazon Resource Name (ARN) of the role to assume.
         name: roleArn
-      - description: 
+      - description: An identifier for the assumed role session.
         name: roleSessionName
-      - description: 
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
         name: roleSessionDuration
-      description: 
+      description: List all of the organizational units (OUs) or accounts that are contained in the specified parent OU or root.
       outputs:
       - contextPath: AWS.Organizations.Children.Id
         description: The unique identifier (ID) of the child entity.
@@ -112,11 +136,11 @@ script:
           # TODO
         name: child_id
         required: true
-      - description:
+      - description: The Amazon Resource Name (ARN) of the role to assume.
         name: roleArn
-      - description:
+      - description: An identifier for the assumed role session.
         name: roleSessionName
-      - description:
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
         name: roleSessionDuration
       description: |
         Lists all of the organizational units (OUs) or accounts that are a parent OU or root of the specified child.
@@ -136,11 +160,11 @@ script:
       - description: The unique identifier (ID) of the organizational unit that to retrieve details about.
         name: organization_unit_id
         required: true
-      - description: 
+      - description: The Amazon Resource Name (ARN) of the role to assume.
         name: roleArn
-      - description: 
+      - description: An identifier for the assumed role session.
         name: roleSessionName
-      - description: 
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
         name: roleSessionDuration
       description: |
         Retrieve information about an organizational unit (OU).
@@ -159,18 +183,18 @@ script:
       arguments:
       - description: Get a specific account by Id.
         name: account_id
-      - description: 
+      - description: The number of accounts to return.
         name: limit
-      - defaultValue: '20'
-        description: "Valid Range: Minimum value of 1. Maximum value of 20. Default - 20."
+        defaultValue: '50'
+      - description: The number of accounts to return per page. The maximum is 1000.
         name: page_size
-      - description: 
+      - description: The token denoting the next page of accounts, as given by the response of the previous run of this command under the context key "AWS.Organizations.AccountNextToken".
         name: next_token
-      - description:
+      - description: The Amazon Resource Name (ARN) of the role to assume.
         name: roleArn
-      - description: 
+      - description: An identifier for the assumed role session.
         name: roleSessionName
-      - description: 
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
         name: roleSessionDuration
       description: Lists all the accounts in the organization or a specific account by Id.
       outputs:
@@ -195,13 +219,16 @@ script:
       - contextPath: AWS.Organizations.Account.JoinedTimestamp
         description: The date the account became a part of the organization.
         type: Date
+      - contextPath: AWS.Organizations.AccountNextToken
+        description: If not null, indicates that more output is available than is included in the current response. Use this value in the next_token argument in a subsequent call of the command to get the next part of the output.
+        type: String
     - name: aws-org-organization-get
       arguments:
-      - description: 
+      - description: The Amazon Resource Name (ARN) of the role to assume.
         name: roleArn
-      - description: 
+      - description: An identifier for the assumed role session.
         name: roleSessionName
-      - description: 
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
         name: roleSessionDuration
       description: Retrieves information about the organization that the user's account belongs to.
       outputs:
@@ -235,9 +262,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld
-fromversion: 6.1.0
+fromversion: 6.10.0
 marketplaces:
 - xsoar
 - marketplacev2

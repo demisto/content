@@ -5567,6 +5567,10 @@
             "integrations": "Forcepoint Security Management Center",
             "playbookID": "ForcepointSecurityManagementCenter_test",
             "is_mockable": false
+        },
+        {
+            "integrations": "AWS-Organizations",
+            "playbookID": "Test - AWS_Organizations"
         }
     ],
     "skipped_tests": {

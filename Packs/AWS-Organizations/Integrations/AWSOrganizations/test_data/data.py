@@ -215,12 +215,17 @@ class account_list(Data):
         ],
         {"AccountNextToken": "next_token"}
     ]
-    readable_output = """"""
+    readable_output = """### AWS Organization Accounts
+|Id|Arn|Name|Email|JoinedMethod|JoinedTimestamp|Status|
+|---|---|---|---|---|---|---|
+| id_1 | arn_1 | name_1 | email_1 | joined_method_1 | 2022-10-15 12:30:45 | status_1 |
+| id_2 | arn_2 | name_2 | email_2 | joined_method_2 | 2022-10-16 12:30:45 | status_2 |
+"""
 
 
 class account_get(Data):
-    command_args = {}
-    client_func_kwargs = {}
+    command_args = {"account_id": "account_id"}
+    client_func_kwargs = {"AccountId": "account_id"}
     client_func_return = {
         "Account": {
             "Id": "id",

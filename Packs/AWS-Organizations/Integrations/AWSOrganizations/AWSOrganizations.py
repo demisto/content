@@ -19,6 +19,7 @@ MAX_PAGINATION = 20
 
 
 def create_client_session(args: dict, params: dict) -> 'OrganizationsClient':
+    '''Creates the AWS Organizations client and initiates a session.'''
 
     aws_access_key_id = dict_safe_get(params, ('credentials', 'identifier'))
     aws_secret_access_key = dict_safe_get(params, ('credentials', 'password'))
@@ -59,6 +60,10 @@ def create_client_session(args: dict, params: dict) -> 'OrganizationsClient':
 def paginate(
     paginator: 'Paginator', key_to_pages: str, limit=None, page_size=None, next_token=None, **kwargs
 ) -> tuple[list, str | None]:
+    '''This function exists because AWS doesn't guarantee that the client functions will
+    return all results specified in a single call.
+    This function also handles the XSOAR pagination conventions such as the limit, page_size and next_token args.
+    '''
 
     max_items = arg_to_number(limit or page_size) or 50
     pagination_max = min(max_items, MAX_PAGINATION)
@@ -99,6 +104,7 @@ def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_out
 
 
 def test_module(aws_client: 'OrganizationsClient') -> str:
+    aws_client.describe_organization()
     return 'ok'
 
 
@@ -198,9 +204,10 @@ def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient')
 
 
 def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
-    
-    def JoinedTimestamp_to_str(account):
+
+    def JoinedTimestamp_to_str(account) -> dict:
         account['JoinedTimestamp'] = str(account['JoinedTimestamp'])
+        return account
 
     def response_to_readable(accounts) -> str:
         return tableToMarkdown(
@@ -219,8 +226,7 @@ def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
             AccountId=args['account_id']
         )
 
-        account = description.get('Account', {})
-        JoinedTimestamp_to_str(account)
+        account = JoinedTimestamp_to_str(description.get('Account', {}))
 
         return CommandResults(
             readable_output=response_to_readable(account),

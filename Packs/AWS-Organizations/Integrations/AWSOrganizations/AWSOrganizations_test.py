@@ -38,10 +38,10 @@ def get_mock_paginator(kwargs: dict, return_obj):
 
 def test_root_list_command(mocker):
 
-    from AWS_Organizations import root_list_command
+    from AWSOrganizations import root_list_command
 
     mocker.patch(
-        'AWS_Organizations.paginate',
+        'AWSOrganizations.paginate',
         side_effect=get_mock_paginator(
             root_list.client_func_kwargs,
             root_list.client_func_return
@@ -56,10 +56,10 @@ def test_root_list_command(mocker):
 
 def test_children_list_command(mocker):
 
-    from AWS_Organizations import children_list_command
+    from AWSOrganizations import children_list_command
 
     mocker.patch(
-        'AWS_Organizations.paginate',
+        'AWSOrganizations.paginate',
         side_effect=get_mock_paginator(
             children_list.client_func_kwargs,
             children_list.client_func_return
@@ -74,10 +74,10 @@ def test_children_list_command(mocker):
 
 def test_parent_list_command(mocker):
 
-    from AWS_Organizations import parent_list_command
+    from AWSOrganizations import parent_list_command
 
     mocker.patch(
-        'AWS_Organizations.paginate',
+        'AWSOrganizations.paginate',
         side_effect=get_mock_paginator(
             parent_list.client_func_kwargs,
             parent_list.client_func_return
@@ -90,12 +90,22 @@ def test_parent_list_command(mocker):
     assert result.readable_output == parent_list.readable_output
 
 
+def test_organization_unit_get():
+
+    from AWSOrganizations import organization_unit_get_command
+
+    result = organization_unit_get_command(organization_unit_get.command_args, CLIENT)
+
+    assert result.outputs == organization_unit_get.context_outputs
+    assert result.readable_output == organization_unit_get.readable_output
+
+
 def test_account_list_command(mocker):
 
-    from AWS_Organizations import account_list_command
+    from AWSOrganizations import account_list_command
 
     mocker.patch(
-        'AWS_Organizations.paginate',
+        'AWSOrganizations.paginate',
         side_effect=get_mock_paginator(
             account_list.client_func_kwargs,
             account_list.client_func_return
@@ -110,7 +120,7 @@ def test_account_list_command(mocker):
 
 def test_account_get():
 
-    from AWS_Organizations import account_list_command
+    from AWSOrganizations import account_list_command
 
     result = account_list_command(account_get.command_args, CLIENT)
 
@@ -118,19 +128,9 @@ def test_account_get():
     assert result.readable_output == account_get.readable_output
 
 
-def test_organization_unit_get():
-
-    from AWS_Organizations import organization_unit_get_command
-
-    result = organization_unit_get_command(organization_unit_get.command_args, CLIENT)
-
-    assert result.outputs == organization_unit_get.context_outputs
-    assert result.readable_output == organization_unit_get.readable_output
-
-
 def test_organization_get():
 
-    from AWS_Organizations import organization_get_command
+    from AWSOrganizations import organization_get_command
 
     result = organization_get_command(CLIENT)
 
