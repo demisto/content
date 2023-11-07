@@ -511,7 +511,7 @@ class AzureFirewallClient:
 
     def azure_firewall_subscriptions_list_request(self) -> dict:
         """
-        Gets all subscriptions for a tenant. 
+        Gets all subscriptions for a tenant.
 
         Returns:
             List[dict]: API response from Azure.
