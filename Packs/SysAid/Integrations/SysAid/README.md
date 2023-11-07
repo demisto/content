@@ -19578,13 +19578,13 @@ Download an attachment to a service record.
 | File.SHA1 | String | The SHA1 of the file. | 
 | File.SHA256 | String | The SHA256 of the file. | 
 | File.SHA512 | String | The SHA512 of the file. |
-| File.Name | String | The full name with extension of the file | 
-| File.SSDeep | String | The SSDeep of the file | 
-| File.EntryID | String | The entryId of the file | 
-| File.Info | String | The info of the file | 
-| File.Type | String | The type of the file | 
-| File.MD5 | String | The MD5 of the file | 
-| File.Extension | String | The extension of the file | 
+| File.Name | String | The full name with extension of the file. | 
+| File.SSDeep | String | The SSDeep of the file. | 
+| File.EntryID | String | The entryId of the file. | 
+| File.Info | String | The info of the file. | 
+| File.Type | String | The type of the file. | 
+| File.MD5 | String | The MD5 of the file. | 
+| File.Extension | String | The extension of the file. | 
 
 #### Command example
 ```!sysaid-service-record-get-file file_id="-80357423_-1872498142" id=37 file_name="file_name.png"```
