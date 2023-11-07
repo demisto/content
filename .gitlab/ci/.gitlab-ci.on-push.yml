@@ -39,8 +39,7 @@ trigger-private-build:
 .create-release-notes-and-common-docs:
   - section_start "Create Release Notes and Common Server Documentation" --collapsed
   - echo "Creating Release Notes and Content Descriptor"
-  - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output "${ARTIFACTS_FOLDER}/packs-release-notes.md" --github-token $GITHUB_TOKEN
-  - cp content-descriptor.json "${ARTIFACTS_FOLDER}"
+  - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --packs-release-notes "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs-release-notes.md" --content-descriptor "${ARTIFACTS_FOLDER_SERVER_TYPE}/content-descriptor.json" --github-token $GITHUB_TOKEN
   - ./Documentation/commonServerDocs.sh
   - section_end "Create Release Notes and Common Server Documentation"
 
@@ -146,8 +145,8 @@ validate-content-conf:
     - section_start "Create or update content graph" --collapsed
 
     - echo "Updating the content graph"
-    - mkdir "${ARTIFACTS_FOLDER}/content_graph"
-    - demisto-sdk update-content-graph -g --marketplace $MARKETPLACE_VERSION -o "${ARTIFACTS_FOLDER}/content_graph"
+    - mkdir "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
+    - demisto-sdk update-content-graph -g --marketplace "${MARKETPLACE_VERSION}" -o "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
     - echo "Successfully updated content graph"
 
     - section_end "Create or update content graph"
@@ -158,23 +157,25 @@ validate-content-conf:
       if [[ $MARKETPLACE_VERSION == "xsoar" || $MARKETPLACE_VERSION == "xsoar_saas" ]];  # later the non xsoar will be edited to remove xsoar naming.
       then
         echo "Starting to create artifacts with zip for XSOAR."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output "${ARTIFACTS_FOLDER}/content_packs" --dependencies-output "${ARTIFACTS_FOLDER}/packs_dependencies.json" --packs-output "${ARTIFACTS_FOLDER}/packs.json" --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs" --dependencies-output "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --packs-output "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs.json" --bucket-upload "$BUCKET_UPLOAD"
       else
         echo "Starting to create artifacts without zip."
-        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output "${ARTIFACTS_FOLDER}/content_packs" --dependencies-output "${ARTIFACTS_FOLDER}/packs_dependencies.json" --packs-output "${ARTIFACTS_FOLDER}/packs.json" --no-zip --bucket-upload "$BUCKET_UPLOAD"
+        python Tests/scripts/create_artifacts_graph/create_artifacts.py --marketplace "$MARKETPLACE_VERSION" --artifacts-output "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs" --dependencies-output "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --packs-output "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs.json" --bucket-upload "$BUCKET_UPLOAD" --no-zip
       fi
 
-    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-
-    - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER}/conf.json"
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/gcloud_auth.log" 2>&1
     - section_end "Create Content Artifacts and Update Conf"
+
+    - section_start "Copy conf.json To Server Type Artifacts Folder"
+    - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json"
+    - section_end "Copy conf.json To Server Type Artifacts Folder"
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
       if [[ $MARKETPLACE_VERSION == "marketplacev2" ||  $MARKETPLACE_VERSION == "xpanse" ]];
       then
         echo "Replace Cortex XSOAR for non-xsoar build."
-        pushd "${ARTIFACTS_FOLDER}"
+        pushd "${ARTIFACTS_FOLDER_SERVER_TYPE}"
         find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
         pushd content_packs; zip -r ../content_packs.zip * 1> /dev/null; popd
         rm -rf content_packs
@@ -200,18 +201,21 @@ validate-content-conf:
       if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
         echo "Creating Instances, only for XSOAR."
         [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "${ARTIFACTS_FOLDER}/env_results.json" --creds $CONTENT_BUILD_GCP --zone $GCP_ZONE
+        time python3 ./gcp/create_instance.py --env-type "$IFRA_ENV_TYPE" --outfile "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" --creds $CONTENT_BUILD_GCP --zone $GCP_ZONE
       fi
     - section_end "Create Instances for XSOAR"
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
-    - echo "create instances done" > "${ARTIFACTS_FOLDER}/create_instances_done.txt"
+    - echo "create instances done" > "${ARTIFACTS_FOLDER_SERVER_TYPE}/create_instances_done.txt"
     - job-done
 
 xsoar-prepare-testing-bucket:
   variables:
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
   extends:
@@ -219,7 +223,10 @@ xsoar-prepare-testing-bucket:
 
 xsoar-saas-prepare-testing-bucket:
   variables:
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR SAAS"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     MARKETPLACE_VERSION: "xsoar_saas"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XSOAR_SAAS_BUCKET"
   extends:
@@ -227,7 +234,10 @@ xsoar-saas-prepare-testing-bucket:
 
 mpv2-prepare-testing-bucket:
   variables:
+    PRODUCT_TYPE: "XSIAM"
+    SERVER_TYPE: "XSIAM"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
     PRODUCT_NAME: "Cortex XSIAM"
@@ -236,7 +246,10 @@ mpv2-prepare-testing-bucket:
 
 xpanse-prepare-testing-bucket:
   variables:
+    PRODUCT_TYPE: "XPANSE"
+    SERVER_TYPE: "XPANSE"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XPANSE}/server_type_${SERVER_TYPE}"
     MARKETPLACE_VERSION: "xpanse"
     PRODUCT_NAME: "Cortex XPANSE"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
@@ -246,11 +259,12 @@ xpanse-prepare-testing-bucket:
 .run_tests:
   - section_start "Run Tests"
   - |
-    if [[ -f "${ARTIFACTS_FOLDER}/conf.json" ]]; then	
-      cp "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     fi
   - |
     ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
+  - rm -f Tests/conf.json
   - section_end "Run Tests"
 
 .test_content_on_xsoar_server_instances_base:
@@ -260,11 +274,12 @@ xpanse-prepare-testing-bucket:
     - .default-job-settings
     - .push-rule
   variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}/"
-    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     SERVER_TYPE: "XSOAR"
     PRODUCT_TYPE: "XSOAR"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}/"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_${INSTANCE_ROLE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   stage: run-instances
   needs:
     - job: xsoar-prepare-testing-bucket
@@ -279,16 +294,7 @@ xpanse-prepare-testing-bucket:
         job-done
         exit 0
       fi
-    - section_end "Check if should run Server Master"
-    - section_start "Create Artifacts instance directory" --collapsed
-    - |
-      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
-      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
-      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
-    - section_end "Create Artifacts instance directory"
-    - !reference [.download-demisto-conf]
-    - !reference [.secrets-fetch]
-    - export TEMP=$(cat "${ARTIFACTS_FOLDER}/filter_envs.json" | jq ".\"$INSTANCE_ROLE\"")
+    - export TEMP=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_envs.json" | jq ".\"$INSTANCE_ROLE\"")
     # If instance was not created
     - |
       if [[ "$TEMP" != "true" && -z "${NIGHTLY}" ]]; then
@@ -296,6 +302,9 @@ xpanse-prepare-testing-bucket:
         job-done
         exit 0
       fi
+    - section_end "Check if should run Server Master"
+    - !reference [.download-demisto-conf]
+    - !reference [.secrets-fetch]
     - !reference [.ssh-config-setup]
     - section_start "Wait Until Server Ready"
     - |
@@ -305,13 +314,12 @@ xpanse-prepare-testing-bucket:
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER}/env_results.json" "./artifacts/env_results.json"
-      cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
-
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" "./artifacts/env_results.json"
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER}/conf.json" Tests/conf.json
+    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs and run Test-Module"
     - section_start "Wait Until Server Ready"
     - echo Going to sleep for 15 minutes to allow server finish indexing
@@ -319,6 +327,12 @@ xpanse-prepare-testing-bucket:
     - echo "Done sleeping!"
     - section_end "Wait Until Server Ready"
     - !reference [.run_tests]
+    - section_start "Cleanup env results from artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      rm -f "./artifacts/env_results.json"
+      rm -f "./artifacts/filter_file.txt"
+    - section_end "Cleanup env results from artifacts folder"
     - job-done
     - exit $EXIT_CODE
   after_script:
@@ -326,7 +340,7 @@ xpanse-prepare-testing-bucket:
     - !reference [.install_ssh_keys]
     - !reference [.ssh-config-setup]
     - section_start "Destroy Instances"
-    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ARTIFACTS_FOLDER}/env_results.json" --instance-role "${INSTANCE_ROLE}"
+    - python3 ./Tests/scripts/destroy_instances.py --artifacts-dir "${ARTIFACTS_FOLDER}" --env-file "${ENV_RESULTS_PATH}" --instance-role "${INSTANCE_ROLE}"
     - destroy_instances_exit_code=$?
     - |
       if [ "${destroy_instances_exit_code}" -ne 0 ]; then
@@ -557,17 +571,11 @@ slack-notify-on-merge:
   stage: run-instances
   script:
     - EXIT_CODE=0
-    - section_start "Create Artifacts instance directory" --collapsed
-    - |
-      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
-      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
-      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
-    - section_end "Create Artifacts instance directory"
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - section_start "Are there tests to run?" --collapsed
     - |
-      if ! [[ -s "${ARTIFACTS_FOLDER}/content_packs_to_install.txt" || -s "${ARTIFACTS_FOLDER}/filter_file.txt" ]]; then
+      if ! [[ -s "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_install.txt" || -s "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" ]]; then
         # The files are empty.
         echo "Not running the instance flow, no tests to run were found."
         ./Tests/scripts/run_tests.sh --generate-empty-result-file
@@ -575,7 +583,8 @@ slack-notify-on-merge:
         job-done
         exit $EXIT_CODE
       fi
-    - cp "${ARTIFACTS_FOLDER}/filter_file.txt" "./artifacts/filter_file.txt"
+    # workaround for the hard-coded value in the sdk
+    - cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Are there tests to run?"
 
     - !reference [.lock-machine]
@@ -591,13 +600,19 @@ slack-notify-on-merge:
 
     - section_start "Packs re-installation test"
     - |
-      if [[ -z "${NIGHTLY}" && -s $ARTIFACTS_FOLDER/packs_reinstall_to_test.txt ]]; then
+      if [[ -z "${NIGHTLY}" && -s "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_reinstall_to_test.txt" ]]; then
         echo "Running the packs re-installation test."
         ./Tests/scripts/reinstall_packs_on_cloud_instances.sh || EXIT_CODE=$?
       fi
     - section_end "Packs re-installation test"
 
     - !reference [.cloud-machine-information]
+    - section_start "Cleanup env results from artifacts folder" --collapsed
+    - |
+      # workaround for the hard-coded value in the sdk
+      rm -f "./artifacts/filter_file.txt"
+    - section_end "Cleanup env results from artifacts folder"
+
     - job-done
     - exit $EXIT_CODE
   after_script:
@@ -636,8 +651,9 @@ xsiam_server_ga:
     CLOUD_API_TOKENS: $XSIAM_TOKENS
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_xsiam"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     MARKETPLACE_NAME: "marketplacev2"
@@ -683,7 +699,8 @@ xsoar_ng_server_ga:
     CLOUD_API_TOKENS: $XSIAM_TOKENS
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_saas"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
