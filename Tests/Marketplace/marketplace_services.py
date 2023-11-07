@@ -1544,7 +1544,7 @@ class Pack:
         not_updated_build = False
         release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
-        diff_files_list = diff_files_list if diff_files_list else []
+        diff_files_list = diff_files_list or []
         id_set = id_set if id_set else {}
         pack_versions_to_keep: list[str] = []
 
