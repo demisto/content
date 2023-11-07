@@ -3,7 +3,9 @@ if (args.polling_callback) {
         return 'Slept for ' + args.seconds + ' seconds';
 }
 
-if (args.polling_threshold && (parseInt(args.seconds) >= parseInt(args.polling_threshold))) {
+polling_threshold = args.polling_threshold || 60
+
+if (parseInt(args.seconds) >= parseInt(polling_threshold)) {
     // Polling implementation
     args.polling_callback = true;
     return {
