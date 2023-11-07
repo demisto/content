@@ -1,5 +1,6 @@
 import time
 import pytest
+import requests
 from unittest.mock import patch
 from freezegun import freeze_time
 
@@ -298,14 +299,17 @@ def test_service_record_get_file_command(mocker, sysaid_client):
         - The http request is called with the right arguments
     """
     from SysAid import service_record_get_file_command
-    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    mock_response = requests.Response
+    mock_response.status_code = 200
+    http_request = mocker.patch.object(sysaid_client, '_http_request', return_value=mock_response)
     file_name = 'file_name.png'
     file_data = b'data'
     mocker.patch('SysAid.read_file', return_value=(file_data, 4, file_name))
+    mocker.patch('SysAid.fileResult', return_value='')
 
     args = {'id': '37', 'file_id': '-80357423_-1872498142'}
     service_record_get_file_command(sysaid_client, args)
-    http_request.assert_called_with('POST', 'sr/37/attachment/-80357423_-1872498142', cookies=COOKIES, resp_type='response')
+    http_request.assert_called_with('GET', 'sr/37/attachment/-80357423_-1872498142', cookies=COOKIES, resp_type='response')
 
 
 def test_service_record_delete_file_command(mocker, sysaid_client):
