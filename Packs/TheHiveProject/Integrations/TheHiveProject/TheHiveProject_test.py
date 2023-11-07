@@ -12,8 +12,8 @@ def test_list_cases_command(requests_mock):
 
     mock_response = util_load_json('test_data/cases_list.json')
 
-    requests_mock.get('https://test/api/case',
-                      json=mock_response)
+    requests_mock.post('https://test/api/v1/query?name=list-cases',
+                       json=mock_response)
     requests_mock.get('https://test/api/status',
                       json={'versions': {'TheHive': 'version'}})
 
@@ -523,3 +523,26 @@ def test_update_observable_command(requests_mock):
     assert "Updated Observable" in response.readable_output
     assert response.outputs_prefix == 'TheHive.Observables'
     assert response.outputs_key_field == 'id'
+
+
+def test_migrate_last_run(mocker, requests_mock):
+    from TheHiveProject import fetch_incidents, demisto, Client
+    mocker.patch.object(demisto, "getLastRun", return_value={"timestamp": "1677728000000"})
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    requests_mock.get('https://test/api/status',
+                      json={'versions': {'TheHive': 'version'}})
+    requests_mock.post('https://test/api/v1/query?name=list-cases',
+                       json=[])
+
+    client = Client(
+        base_url='https://test/api',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer APIKEY'
+        },
+        proxy=False,
+        mirroring='both'
+    )
+
+    fetch_incidents(client)
+    assert set_last_run_mock.call_args_list[0][0]["time"] == "2023-11-07T07:59:23Z"

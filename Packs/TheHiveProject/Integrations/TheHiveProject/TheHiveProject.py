@@ -58,6 +58,7 @@ class Client(BaseClient):
 
         for case in res:
             case["id"] = case["_id"]
+            case["caseId"] = case["_id"]
             case["createdAt"] = case["_createdAt"]
             case["type"] = case["_type"]
             case["updatedAt"] = case.get("_updatedAt")
@@ -1043,7 +1044,6 @@ def fetch_incidents(client: Client, fetch_closed: bool = False):
                                       created_time_field='occurred', id_field='name', date_format=DATE_FORMAT)
 
     demisto.setLastRun(last_run)
-    demisto.debug(f"number of cases after filtering: {len(incidents)}")
     return incidents
 
 
