@@ -3,15 +3,15 @@ import logging
 import os
 import sys
 from argparse import Namespace, ArgumentParser
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from pathlib import Path
-from collections.abc import Callable
 from typing import Any
 
 import humanize
 import urllib3
 from demisto_sdk.commands.test_content.constants import SSH_USER
-from paramiko import SSHClient, SSHException, AutoAddPolicy
+from paramiko import SSHClient, SSHException, MissingHostKeyPolicy
 from scp import SCPClient, SCPException
 from tqdm import tqdm
 
@@ -106,7 +106,7 @@ def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, readable_r
     return False
 
 
-class LogMissingHostKeyPolicy(AutoAddPolicy):
+class LogMissingHostKeyPolicy(MissingHostKeyPolicy):
     def missing_host_key(self, client: SSHClient, hostname: str, key: Any) -> Any:
         logging.warning(f"Missing host key for {hostname}, adding it automatically.")
 
