@@ -62,7 +62,7 @@ def get_events_command(client: Client, total_events_to_fetch, since,
         except DemistoException as exc:
             msg = f'something went wrong: {exc}'
             demisto.debug(msg)
-            if (not exc.res or type(exc.res) is not requests.models.Response) and len(stored_events) == 0:
+            if type(exc.res) is not requests.models.Response:
                 raise
             res: requests.models.Response = exc.res
             status_code: int = res.status_code

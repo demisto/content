@@ -84,17 +84,6 @@ def test_get_events_no_events(dummy_client, mocker):
     assert epoch == 0
 
 
-def test_get_events_rate_limit(dummy_client, mocker):
-    res = requests.models.Response()
-    res.status_code = 429
-    res.headers['x-rate-limit-remaining'] = '1'
-    res.headers['x-rate-limit-reset'] = '2'
-    exc = DemistoException(message="test_msg", res=res)
-    mocker.patch.object(dummy_client, 'get_events', side_effect=[exc])
-    with pytest.raises(DemistoException):
-        events, epoch = get_events_command(client=dummy_client, total_events_to_fetch=2, since='2 days')
-
-
 @freeze_time('2022-04-17T12:32:36.667Z')
 def test_429_too_many_requests(mocker, requests_mock):
 
