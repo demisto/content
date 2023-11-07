@@ -575,9 +575,7 @@ def get_external_ip_address_range_command(client: Client, args: dict[str, Any]) 
     return command_results
 
 
-def get_attack_surface_rule_command(
-    client: Client, args: dict[str, Any]
-    ) -> CommandResults:
+def get_attack_surface_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     asm-list-external-service command: Returns list of external services.
 
