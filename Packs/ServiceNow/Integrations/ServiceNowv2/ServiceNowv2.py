@@ -2504,7 +2504,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         if (ticket_state and ticket_state in server_close_custom_state) \
             or (ticket_close_code and ticket_close_code in server_custom_close_code) \
                 or (ticket.get('closed_at') and close_incident == 'closed') \
-                    or (ticket.get('resolved_at') and close_incident == 'resolved'):
+                    or (ticket.get('resolved_at') and close_incident == 'resolved'):  # noqa: E127
             demisto.debug(f'SNOW ticket changed state - should be closed in XSOAR: {ticket}')
             entries.append({
                 'Type': EntryType.NOTE,
