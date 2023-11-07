@@ -55,7 +55,7 @@ filter provider_name contains "Microsoft-Windows-Security-" or channel = "System
         xdm.observer.type = provider_name,
         xdm.event.log_level = if(LogLevel="information", XDM_CONST.LOG_LEVEL_INFORMATIONAL,LogLevel="error",XDM_CONST.LOG_LEVEL_ERROR, LogLevel="warning",XDM_CONST.LOG_LEVEL_WARNING, LogLevel="critical",XDM_CONST.LOG_LEVEL_CRITICAL,to_string(coalesce(opcode,log_level))),
         xdm.event.description = coalesce(message,if(channel="System",json_extract_scalar(event_data ,"$.updateTitle")),if(channel="Application",json_extract_scalar(event_data ,"$.param3"))),
-        xdm.alert.description = if(channel="System",coalesce(json_extract_scalar(event_data ,"$.error"), check_fw_description != null, check_fw_description, json_extract_scalar(event_data ,"$.ErrorMessage"))),
+        xdm.alert.description = if(channel="System", json_extract_scalar(event_data ,"$.error"), check_fw_description != null, check_fw_description, json_extract_scalar(event_data ,"$.ErrorMessage")),
         xdm.alert.original_alert_id = activity_id,
         xdm.source.process.pid = coalesce(to_integer(check_message_processID), to_integer(process_pid),if(channel="System",to_integer(json_extract_scalar(event_data ,"$.ProcessID")))),
         xdm.source.process.thread_id = to_integer(process_thread_id),
