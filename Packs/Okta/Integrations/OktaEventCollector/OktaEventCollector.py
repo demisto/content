@@ -96,9 +96,9 @@ class GetEvents:
         stored_events: list = []
         max_events_to_fetch = int(self.client.request.params.limit)  # type: ignore
         page_size = MAX_API_LIMIT
-        if MAX_API_LIMIT > max_events_to_fetch:
+        if max_events_to_fetch < MAX_API_LIMIT:
             page_size = max_events_to_fetch
-        
+
         demisto.debug(f'max_events_to_fetch={max_events_to_fetch}')
         stop_fetch = False
 
@@ -120,7 +120,7 @@ class GetEvents:
                     demisto.error(f'Unexpected error.\n{traceback.format_exc()}')
 
                 return stored_events
-                
+
             if len(events) < page_size:
                 # we got less events than we requested. It means we should stop fetching.
                 # it means no more events there
@@ -128,7 +128,7 @@ class GetEvents:
 
             if last_object_ids:
                 events = GetEvents.remove_duplicates(events, last_object_ids)
-                
+
             if len(events) == 0:  # type: ignore
                 # stop the loop the moment returned 0 events from the API
                 break
@@ -137,7 +137,7 @@ class GetEvents:
 
             last = events[-1]
             self.client.set_next_run_filter(last['published'])
-            
+
             if stop_fetch:
                 # we break now because we want to update the last run and remove duplicates
                 break
@@ -197,7 +197,7 @@ def main():  # pragma: no cover
         if command == 'test-module':
             get_events.aggregated_results()
             demisto.results('ok')
-        
+
         if command == 'okta-get-events':
             events = get_events.aggregated_results(last_object_ids=last_object_ids)
             command_results = CommandResults(
