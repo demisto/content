@@ -1499,11 +1499,11 @@ script:
       type: string
   script: '-'
   type: python
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80014
   subtype: python3
   isfetch: true
   runonce: false
-fromversion: 6.9.0
+fromversion: 6.10.0
 tests:
 - Test - Netcraft
 defaultmapperin: Netcraft Incoming Mapper
