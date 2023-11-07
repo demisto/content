@@ -109,7 +109,6 @@ def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip:
     success = True
     with SSHClient() as ssh:
         try:
-            ssh.load_system_host_keys()
             ssh.connect(server_ip, username=SSH_USER)
             success &= chmod_logs(ssh, server_ip)
             success &= download_logs(ssh, server_ip, artifacts_dir, readable_role, role)
