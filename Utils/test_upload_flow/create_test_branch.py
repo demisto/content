@@ -126,16 +126,25 @@ def add_changed_pack(func):
 
 
 @add_changed_pack
-def create_new_pack():
+def create_new_pack(only_for_xsoar: bool = False):
     """
     Creates a new pack with a given pack name
     """
     content_path = Path(__file__).parent.parent.parent
     source_path = Path(__file__).parent / 'TestUploadFlow'
-    dest_path = content_path / 'Packs' / 'TestUploadFlow'
+    dest_path = content_path / 'Packs' / 'TestUploadFlow' if not only_for_xsoar else \
+        content_path / 'Packs' / 'TestUploadFlowXSOAR'
     if dest_path.exists():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
+
+    if only_for_xsoar:
+        # remove marketplacev2 from metadata marketplaces field
+        new_pack_metadata_path = dest_path / 'pack_metadata.json'
+        with new_pack_metadata_path.open('r') as fr:
+            new_pack_metadata = json.load(fr)
+        new_pack_metadata.setdefault('marketplaces', []).remove('marketplacev2')
+        json_write(str(new_pack_metadata_path), new_pack_metadata)
 
     return dest_path, '1.0.0', get_pack_content_paths(dest_path)
 
@@ -300,9 +309,8 @@ def do_changes_on_branch(packs_path: Path):
     # Case 6: Verify pack is set to hidden - Microsoft365Defender
     set_pack_hidden(packs_path / 'Microsoft365Defender')
 
-    # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
     # Case 7: Verify changed readme - Maltiverse
-    # update_readme(packs_path / 'Maltiverse')
+    update_readme(packs_path / 'Maltiverse')
 
     # TODO: need to cause this pack to fail in another way because the current way cause validation to fail
     # Case 8: Verify failing pack - Absolute
@@ -322,6 +330,9 @@ def do_changes_on_branch(packs_path: Path):
     # case 12: Verify setting hidden dependency does not add this dependency to the metadata - MicrosoftAdvancedThreatAnalytics
     add_dependency(packs_path / 'MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
                    mandatory=False)
+
+    # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket
+    create_new_pack(only_for_xsoar=True)
 
     logging.info("Finished making test changes on the branch")
 
