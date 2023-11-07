@@ -19,7 +19,7 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def start_query_execution_command(args: dict, aws_client: AWSClient):
+def start_query_execution_command(args: dict, aws_client):
     client = aws_client.aws_session(
         service=AWS_SERVICE_NAME,
         region=args.get('region'),
@@ -60,7 +60,7 @@ def start_query_execution_command(args: dict, aws_client: AWSClient):
     ))
 
 
-def stop_query_command(args: dict, aws_client: AWSClient):
+def stop_query_command(args: dict, aws_client):
     client = aws_client.aws_session(
         service=AWS_SERVICE_NAME,
         region=args.get('region'),
@@ -79,7 +79,7 @@ def stop_query_command(args: dict, aws_client: AWSClient):
         demisto.debug("Response:\n" + str(response))
 
 
-def get_query_execution_command(args: dict, aws_client: AWSClient):
+def get_query_execution_command(args: dict, aws_client):
     client = aws_client.aws_session(
         service=AWS_SERVICE_NAME,
         region=args.get('region'),
@@ -108,7 +108,7 @@ def get_query_execution_command(args: dict, aws_client: AWSClient):
     ))
 
 
-def get_query_results_command(args: dict, aws_client: AWSClient):
+def get_query_results_command(args: dict, aws_client):
     client = aws_client.aws_session(
         service=AWS_SERVICE_NAME,
         region=args.get('region'),
@@ -133,10 +133,10 @@ def main():
     args = demisto.args()
     command = demisto.command()
 
-    aws_role_arn = params.get('role_arn')
-    aws_role_session_name = params.get('role_session_name')
-    aws_default_region = params.get('default_region')
-    aws_role_session_duration = params.get('role_session_duration')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_default_region = params.get('defaultRegion')
+    aws_role_session_duration = params.get('sessionDuration')
     aws_access_key_id = demisto.get(params, 'credentials.identifier')
     aws_secret_access_key = demisto.get(params, 'credentials.password')
     verify_certificate = not params.get('insecure', True)
