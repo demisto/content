@@ -200,60 +200,31 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_content(packs_in_pr: set[str], pr_files: list[str]) -> bool:
+def is_tim_content(pr_files: list[str]) -> bool:
     """
     This is where the actual search for feed:True or relevant tags or categories are being searched
     according to the login in is_tim_reviewer_needed
 
     Arguments:
-    - packs_in_pr: packs that are part of the PR
+    - pr_files: List[str] The list of files changed in the Pull Request.
 
     Returns: returns True or False if tim reviewer needed
     """
     integrations_checked = []
     for file in pr_files:
-        print(f'file is: {file}')
         integration = BaseContent.from_path(CONTENT_PATH / file)
-        print(f'integration is: {integration}')
         if not isinstance(integration, Integration) or integration.path in integrations_checked:
             continue
 
         if integration.is_feed:
             return True
         integrations_checked.append(integration.path)
-        print(f'Integration checked are: {integrations_checked}')
         pack = integration.in_pack
-        print(f'pack is {pack}')
         tags = pack.tags
         categories = pack.categories
         if TIM_TAGS in tags or TIM_CATEGORIES in categories:
             return True
     return False
-
-    # for file in pr_files:
-    #     if file.endswith("yml"):
-    #         integration = BaseContent.from_path(Path(file))
-    #         try:
-    #             if isinstance(integration, Integration) and integration.is_feed:
-    #                 return True
-    #         except Exception as error:
-    #             print(f'Received error: {error}\nwhen trying to find pack {integration.path}')
-    #         pack = integration.in_pack
-    #         tags = pack.tags
-    #         categories = pack.categories
-    # for pack in packs_in_pr:
-    #     pack_object = BaseContent.from_path(CONTENT_PATH / pack)
-    #     try:
-    #          if isinstance(pack_object, Pack):
-    #              for integration in pack_object.content_items.integration:
-    #                  if integration.is_feed:
-    #                      return True
-    # pack_metadata = get_pack_metadata(pack)
-    # tags = pack_metadata.get("tags")
-    # categories = pack_metadata.get("categories")
-    # if TIM_TAGS in tags or TIM_CATEGORIES in categories:
-    #     return True
-    # return False
 
 
 def is_tim_reviewer_needed(pr_files: list[str], support_label:str) -> bool:
@@ -269,9 +240,8 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label:str) -> bool:
 
     Returns: True or false if tim reviewer needed
     """
-    packs_in_pr = packs_to_check_in_pr(pr_files)
     if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
-        return is_tim_content(packs_in_pr, pr_files)
+        return is_tim_content(pr_files)
     return False
 
 
