@@ -3222,60 +3222,6 @@ def create_rn_file(rn_dir: str, version: str, text: str):
         f.write(text)
 
 
-class TestDetectModified:
-    """ Test class for detect modified files. """
-
-    @pytest.fixture(scope="class")
-    def dummy_pack(self):
-        """ dummy pack fixture
-        """
-        dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
-        sample_pack = Pack(pack_name="TestPack", pack_path=dummy_path)
-        return sample_pack
-
-    @pytest.fixture(scope="class")
-    def content_repo(self):
-        class ModifiedFile:
-            a_path = 'Packs/TestPack/Integrations/integration/integration.yml'
-
-        class Commit:
-            def __init__(self, commit_hash) -> None:
-                commit_hash = commit_hash
-
-            @staticmethod
-            def diff(commit_hash):
-                return [ModifiedFile()]
-
-        class Repo:
-            @staticmethod
-            def commit(commit_hash):
-                return Commit(commit_hash)
-
-        return Repo()
-
-    def test_modified_files(self, mocker, dummy_pack: Pack, content_repo):
-        """
-           Given:
-               - Content repo with modified files.
-           When:
-               - Trying detect the modified files between commits.
-           Then:
-               - Ensure status is True
-               - Ensure the returned modified files data conteins the modified repo files.
-        """
-        open_mocker = MockOpen()
-        dummy_path = 'Irrelevant/Test/Path'
-        mocker.patch("os.path.exists", return_value=True)
-        mocker.patch("builtins.open", open_mocker)
-        open_mocker[os.path.join(dummy_path, dummy_pack.name, Pack.METADATA)].read_data = '{}'
-        # open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
-        status, _ = dummy_pack.detect_modified(content_repo, dummy_path, 'current_hash', 'previous_hash')
-
-        assert dummy_pack._modified_files['Integrations'][0] == \
-            'Packs/TestPack/Integrations/integration/integration.yml'
-        assert status is True
-
-
 class TestCheckChangesRelevanceForMarketplace:
     """ Test class for checking the changes relevance for marketplace. """
 
