@@ -133,10 +133,15 @@ def get_query_results_command(args: dict, aws_client):
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
-    kwargs = {'QueryExecutionId': args['QueryExecutionId']}
+
+    query_execution_id: str = args['QueryExecutionId']
+    kwargs = {'QueryExecutionId': query_execution_id}
     raw_response = client.get_query_results(**kwargs)
 
     parsed_response = parse_rows_response(rows_data=raw_response['ResultSet']['Rows'])
+
+    for result_item in parsed_response:
+        result_item['query_execution_id'] = query_execution_id
 
     return_results(CommandResults(
         outputs_prefix='AWS.Athena.QueryResults',
