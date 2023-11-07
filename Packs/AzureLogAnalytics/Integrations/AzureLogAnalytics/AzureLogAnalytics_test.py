@@ -337,7 +337,7 @@ def test_run_search_job_command(mocker: MockerFixture) -> None:
     response: CommandResults = run_search_job_command(args_to_next_run, CLIENT)
     assert response.readable_output == (
         f"The {args['table_name']} table created successfully."
-        f" In order to run queries on it, run !azure-log-analytics-execute-query query={args['table_name']}"
+        f" In order to get the table, run !azure-log-analytics-execute-query query={args['table_name']}"
     )
 
 

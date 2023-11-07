@@ -431,7 +431,7 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
                 outputs={"TableName": table_name},
                 readable_output=(
                     f"The {table_name} table created successfully."
-                    f" In order to run queries on it, run !azure-log-analytics-execute-query query={table_name}"
+                    f" In order to get the table, run !azure-log-analytics-execute-query query={table_name}"
                 )
             )
         )

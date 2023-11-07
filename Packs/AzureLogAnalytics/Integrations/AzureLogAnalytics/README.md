@@ -422,10 +422,10 @@ Run a search job to fetch records from large datasets into a new search results 
 
 #### Human Readable Output
 
->The command was sent successfully, to check the status of the command please run the azure-log-analytics-get-search-job command if the status of the provisioningState is Succeeded you can run query on the table, using the azure-log-analytics-execute-query command with the query argument query=test_SRCH.
+>The command was sent successfully. You can check the status of the command by running `!azure-log-analytics-get-search-job` command or wait.
 
 After polling is ending
->The test_SRCH table created successfully.
+> The test_SRCH table created successfully. In order to get the table, run `!azure-log-analytics-execute-query query=test_SRCH`
 
 ### azure-log-analytics-get-search-job
 
