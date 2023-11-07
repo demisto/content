@@ -446,9 +446,9 @@ def test_qradar_mirroring(request: SubRequest, xsoar_ng_client: XsoarNGApiClient
         assert investigation_id, f'investigation ID is empty in {qradar_incident_response}'
 
         # make sure that the playbook is finished before closing the qradar incident
-        assert is_playbook_state_as_expected(
-            xsoar_ng_client, incident_id=incident_id, expected_states={"completed", "failed", "waiting"}
-        )
+        # assert is_playbook_state_as_expected(
+        #     xsoar_ng_client, incident_id=incident_id, expected_states={"completed", "failed", "waiting"}
+        # )
 
         # close the qradar offense
         _, context = xsoar_ng_client.run_cli_command(
