@@ -24,7 +24,7 @@ This script is used in the following playbooks and scripts.
 | --- | --- |
 | asm_tags | Array of key-value objects. Each object within the array must contain the keys "Key" and "Value" to be considered. The values associated with those keys can be arbitrary. Example: \[\{"Key": "env", "Value": "dev"\}, \{"Key": "Name", "Value": "ssh-ec2-machine-name"\}\]. |
 | active_classifications | Array of strings representing the Xpanse ASM "active classifications" for the service. Example: \["RdpServer", "SelfSignedCertificate"\]. |
-| hierarchy_info | infrastructure hierarchy information to include CSPs. |
+| hierarchy_info | infrastructure hierarchy information to include CSPs \(such GCP folder, AWS account and Azure subscription names, which can indicate the enrivonemnt is dev\). |
 | provider | Provider of the asset as returned by Xpanse. |
 
 ## Outputs

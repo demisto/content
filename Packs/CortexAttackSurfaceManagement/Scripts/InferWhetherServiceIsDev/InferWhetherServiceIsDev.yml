@@ -6,6 +6,7 @@ args:
   isArray: true
   name: active_classifications
 - description: infrastructure hierarchy information to include CSPs (such GCP folder, AWS account and Azure subscription names, which can indicate the enrivonemnt is dev).
+  isArray: true
   name: hierarchy_info
 - description: Provider of the asset as returned by Xpanse.
   name: provider
