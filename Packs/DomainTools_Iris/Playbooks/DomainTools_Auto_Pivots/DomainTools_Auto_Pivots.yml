@@ -1,10 +1,7 @@
-id: DomainTools_Auto_Pivots
+id: DomainTools Auto Pivots
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: DomainTools Auto Pivots
-description: 'This playbook retrieves the Iris Investigate profile of domain and automatically
-  identifies potential connected infrastructure related to artifacts based on DomainTools
-  Guided Pivot value. '
+description: 'This playbook retrieves the Iris Investigate profile of domain and automatically identifies potential connected infrastructure related to artifacts based on DomainTools Guided Pivot value. '
 tags:
 - Domaintools
 starttaskid: "0"
@@ -19,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -45,8 +43,7 @@ tasks:
       id: 066e8866-1263-4541-839d-e1d68d4e4a5b
       version: -1
       name: Lookup Domain(s)
-      description: Returns a complete profile of the domain (SLD.TLD) using Iris Investigate.
-        If parsing of FQDNs is desired, see domainExtractAndInvestigate.
+      description: Returns a complete profile of the domain (SLD.TLD) using Iris Investigate. If parsing of FQDNs is desired, see domainExtractAndInvestigate.
       script: '|||domain'
       type: regular
       iscommand: true
@@ -85,6 +82,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -176,9 +174,7 @@ tasks:
       id: b8ddfe87-8d73-4bb4-8c7c-f2cefd1338bf
       version: -1
       name: Pivot NameServer Host
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -220,9 +216,7 @@ tasks:
       id: 538b72b5-bd59-43c7-863b-a4463921d890
       version: -1
       name: Pivot NameServer IP
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -387,9 +381,7 @@ tasks:
       id: e2307b78-c2fc-473e-8317-c4efb6550505
       version: -1
       name: Pivot Registrant Name
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -464,9 +456,7 @@ tasks:
       id: 22cd10a4-733b-45a9-89b5-95539d38e077
       version: -1
       name: Pivot Registrant Org
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -541,9 +531,7 @@ tasks:
       id: 488d8628-d5fd-4481-8dd7-7d9fb8cc703a
       version: -1
       name: Pivot SSL Org
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -618,9 +606,7 @@ tasks:
       id: f0069e09-6d44-4c9b-826b-bc53566dba59
       version: -1
       name: Pivot SSL Hash
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -695,9 +681,7 @@ tasks:
       id: c1d315ea-f8af-49cf-8ab1-c30c792ed03c
       version: -1
       name: Pivot SOA Email
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -734,6 +718,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -817,9 +802,7 @@ tasks:
       id: 11298ba2-c21d-4b40-8476-0048cb651613
       version: -1
       name: Pivot IP
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -894,9 +877,7 @@ tasks:
       id: 7db1ed88-3582-40dc-8349-d0d16206b4b8
       version: -1
       name: Pivot MX IP
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -973,11 +954,7 @@ tasks:
       id: 930e0874-747f-4eed-8386-5453105bc8f5
       version: -1
       name: Done
-      description: Prints a raw representation of a string or object, visualising
-        things likes tabs and newlines.  For instance, '\n' will be displayed instead
-        of a newline character, or a Windows CR will be displayed as '\r\n'.  This
-        is useful for debugging issues where things aren't behaving as expected, such
-        as when parsing a string with a regular expression.
+      description: Prints a raw representation of a string or object, visualising things likes tabs and newlines.  For instance, '\n' will be displayed instead of a newline character, or a Windows CR will be displayed as '\r\n'.  This is useful for debugging issues where things aren't behaving as expected, such as when parsing a string with a regular expression.
       type: title
       iscommand: false
       brand: ""
@@ -1157,9 +1134,7 @@ tasks:
       id: d2fa4809-917f-48d1-85b5-414215c406c8
       version: -1
       name: Pivot MX Host
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1232,9 +1207,7 @@ tasks:
       id: 5bf98c03-d021-4144-80ff-2d8a70e0e49c
       version: -1
       name: Pviot MX Domain
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1307,9 +1280,7 @@ tasks:
       id: d58dd774-b23d-4af1-88be-74dfa104861d
       version: -1
       name: Pivot Registrar
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1382,9 +1353,7 @@ tasks:
       id: c13bcb3d-56d1-4a53-8241-6a13059262fb
       version: -1
       name: Pivot SSL Subject
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1457,9 +1426,7 @@ tasks:
       id: 3e6e805d-7d01-46b0-8d90-5ca6fc5ce8c2
       version: -1
       name: Pivot SSL Email
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1532,9 +1499,7 @@ tasks:
       id: 76382550-5490-4c99-837f-a08e8059584e
       version: -1
       name: Pivot Nameserver Domain
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1607,9 +1572,7 @@ tasks:
       id: 311dd4f0-bf51-4375-8f48-11515620a153
       version: -1
       name: Pivot Google Analytics
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1682,9 +1645,7 @@ tasks:
       id: 357eb1ab-fcd3-4b67-8b28-345b642cb5e1
       version: -1
       name: Pivot Adsense
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -1729,120 +1690,119 @@ inputs:
   value: {}
   required: true
   description: 'The domains to lookup. '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_riskscore_threshold
   value:
     simple: "50"
   required: true
   description: The risk score threshold to compare.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: should_wait_for_analyst_review
   value:
     simple: "false"
   required: true
-  description: Flags if users should wait for an analyst to review. Default is false.
-    Value can be either true/false only.
-  playbookInputQuery: null
+  description: Flags if users should wait for an analyst to review. Default is false. Value can be either true/false only.
+  playbookInputQuery:
 - key: dt_max_name_server_host_count
   value:
     simple: "250"
   required: false
   description: The max nameserver host pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_registrant_contact_name_count
   value:
     simple: "200"
   required: false
   description: The max registrant contact name pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_registrant_org_count
   value:
     simple: "200"
   required: false
   description: 'The max registrant org pivot count threshold '
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_ssl_info_organization_count
   value:
     simple: "200"
   required: false
   description: the max ssl info organization pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_ssl_info_hash_count
   value:
     simple: "350"
   required: false
   description: the max ssl info hash pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_soa_email_count
   value:
     simple: "200"
   required: false
   description: the max soa email pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_ip_address_count
   value:
     simple: "150"
   required: false
   description: the max ip address pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_name_server_ip_count
   value:
     simple: "250"
   required: false
   description: the max nameserver ip pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_mx_ip_count
   value:
     simple: "200"
   required: false
   description: the max MX ip pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_ssl_email_count
   value:
     simple: "200"
   required: false
   description: The max ssl email pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_registrar_count
   value: {}
   required: false
   description: The max registrar pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_ssl_subject_count
   value:
     simple: "200"
   required: false
   description: the max ssl subject pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_name_server_domain_count
   value:
     simple: "200"
   required: false
   description: the max name server domain pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_mx_host_count
   value:
     simple: "200"
   required: false
   description: the max MX host pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_mx_domain_count
   value:
     simple: "200"
   required: false
   description: the max MX domain pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_google_adsense_count
   value:
     simple: "200"
   required: false
   description: the max google adsense pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_max_google_analytics_count
   value: {}
   required: false
   description: the max google analytics pivot count threshold
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: HighRiskPivotedDomains.Name
   description: The domain name
@@ -2106,3 +2066,6 @@ outputs:
 - contextPath: DomainTools.Pivots.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
   description: The tracking code of Google Analytics.
   type: Number
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

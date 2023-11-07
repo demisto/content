@@ -1036,31 +1036,31 @@ script:
       description: The country code counts of the IP addresses.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.isp.value
-      description: IP Addresses Info isp value
+      description: IP Addresses Info isp value.
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.isp.count
-      description: IP Addresses Info isp count
+      description: IP Addresses Info isp count.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.IPCountryCode
-      description: IP Country Code
+      description: IP Country Code.
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.domain.value
-      description: Mail Servers Info domain value
+      description: Mail Servers Info domain value.
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.domain.count
-      description: Mail Servers Info domain count
+      description: Mail Servers Info domain count.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.MailServers.host.value
-      description: Mail Servers Info host value
+      description: Mail Servers Info host value.
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.host.count
-      description: Mail Servers Info host count
+      description: Mail Servers Info host count.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.MailServers.ip.value
-      description: Mail Servers Info ip value
+      description: Mail Servers Info ip value.
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.ip.count
-      description: Mail Servers Info ip count
+      description: Mail Servers Info ip count.
       type: Number
     - contextPath: DomainTools.Domains.Hosting.SPFRecord
       description: The SPF record.
@@ -1855,13 +1855,13 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: A domain name to query (e.g. example.com)
+      description: A domain name to query (e.g. example.com).
       isArray: false
       name: domain
       required: true
       secret: false
     - default: false
-      description: "options: list, count, check_existence. list: (default), return whois records. count: return how many total records are available. check_existence: return if any records exist. Default: list"
+      description: "options: list, count, check_existence. list: (default), return whois records. count: return how many total records are available. check_existence: return if any records exist. Default: list."
       isArray: false
       name: mode
       required: false
@@ -1874,7 +1874,7 @@ script:
       auto: PREDEFINED
       defaultValue: "list"
     - default: false
-      description: "numeric, the index from which to begin retrieving results. Default: 0"
+      description: "numeric, the index from which to begin retrieving results. Default: 0."
       isArray: false
       name: offset
       required: false
@@ -1882,7 +1882,7 @@ script:
       type: Number
       defaultValue: "0"
     - default: false
-      description: "numeric, default: 100, max: 100, the total number of records to return. Default: 100"
+      description: "numeric, default: 100, max: 100, the total number of records to return. Default: 100."
       isArray: false
       name: limit
       required: false
@@ -1891,7 +1891,7 @@ script:
       auto: PREDEFINED
       defaultValue: "100"
     - default: false
-      description: "options: date_desc, date_asc. date_desc: (default), order records from newest to oldest. date_asc: sort order records from oldest to newest. Default: date_desc"
+      description: "options: date_desc, date_asc. date_desc: (default), order records from newest to oldest. date_asc: sort order records from oldest to newest. Default: date_desc."
       isArray: false
       name: sort
       required: false
@@ -1902,17 +1902,17 @@ script:
       - "date_desc"
       - "date_asc"
     deprecated: false
-    description: The DomainTools Whois History API endpoint returns up to 100 historical Whois records associated with a domain name
+    description: The DomainTools Whois History API endpoint returns up to 100 historical Whois records associated with a domain name.
     execution: false
     name: whoisHistory
     outputs:
     - contextPath: DomainTools.History.Value
-      description: Name of domain
+      description: Name of domain.
     - contextPath: DomainTools.History.WhoisHistory
-      description: Domain Whois history data
+      description: Domain Whois history data.
   - arguments:
     - default: true
-      description: A domain name to query (e.g. example.com)
+      description: A domain name to query (e.g. example.com).
       isArray: false
       name: domain
       required: true
@@ -1925,11 +1925,11 @@ script:
     - contextPath: DomainTools.History.Value
       description: Name of domain
     - contextPath: DomainTools.History.IPHistory
-      description: Domain IP history data
+      description: Domain IP history data.
     - contextPath: DomainTools.History.NameserverHistory
-      description: Domain Nameserver history data
+      description: Domain Nameserver history data.
     - contextPath: DomainTools.History.RegistrarHistory
-      description: Domain Registrar history data
+      description: Domain Registrar history data.
   - arguments:
     - default: true
       description: (mandatory and default) List of one or more terms to search for in the Whois record, separated with the pipe character ( | ).
@@ -1948,28 +1948,28 @@ script:
     name: reverseWhois
     outputs:
     - contextPath: DomainTools.ReverseWhois.Value
-      description: Search term to reverse whois lookup on
+      description: Search term to reverse whois lookup on.
     - contextPath: DomainTools.ReverseWhois.Results
-      description: List of results for reverse whois lookup
+      description: List of results for reverse whois lookup.
   - arguments:
     - default: true
-      description: A domain name or IP address (e.g. example.com or 192.168.1.1)
+      description: A domain name or IP address (e.g. example.com or 192.168.1.1).
       name: query
       required: true
     description: The DomainTools Parsed Whois API provides parsed information extracted from the raw Whois record. The API is optimized to quickly retrieve the Whois record, group important data together and return a well-structured format. The Parsed Whois API is ideal for anyone wishing to search for, index, or cross-reference data from one or multiple Whois records.
     name: whois
     outputs:
     - contextPath: Domain.Name
-      description: Requested domain name
+      description: Requested domain name.
     - contextPath: Domain.Whois
-      description: Parsed Whois data
+      description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
-      description: Full Whois record
+      description: Full Whois record.
   - arguments: []
-    description: Reverse loopkup of an IP address
+    description: Reverse loopkup of an IP address.
     name: reverseIP
   - arguments: []
-    description: Reverse nameserver lookup
+    description: Reverse nameserver lookup.
     name: reverseNameServer
   dockerimage: demisto/vendors-sdk:1.0.0.80194
   runonce: false

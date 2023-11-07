@@ -1,14 +1,7 @@
-id: DomainTools_Check_New_Domains_by_Iris_Hash
+id: DomainTools Check New Domains by Iris Hash
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: DomainTools Check New Domains by Iris Hash
-description: This playbook helps monitor for new domains matching given infrastructure
-  parameters (registrar, DNS, SSL certs, etc.). Start with a search in the Iris Investigate
-  UI. Add an advanced search filter for "First Seen", "Within", "the last day" (for
-  example) to your search. Run the search, then click "Import/Export Search" to view
-  the Search Hash. Copy that into this playbook trigger. Every time this playbook
-  runs, it will pull the new indicators matching the search and add them to the current
-  incident
+description: This playbook helps monitor for new domains matching given infrastructure parameters (registrar, DNS, SSL certs, etc.). Start with a search in the Iris Investigate UI. Add an advanced search filter for "First Seen", "Within", "the last day" (for example) to your search. Run the search, then click "Import/Export Search" to view the Search Hash. Copy that into this playbook trigger. Every time this playbook runs, it will pull the new indicators matching the search and add them to the current incident
 tags:
 - Domaintools
 starttaskid: "0"
@@ -23,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -49,9 +43,7 @@ tasks:
       id: 1607408f-cd38-4c08-82e9-dcaf38fcad35
       version: -1
       name: Load Search Hash
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -136,6 +128,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -273,16 +266,15 @@ inputs:
 - key: iris_search_hash
   value: {}
   required: true
-  description: 'The "search hash" that has a built in "first seen within" parameter.
-    -> Enter an Iris Investigate Search Hash (From the Iris Investigate UI: Advanced
-    -> Import/Export Search). This playbook works best when you include a filter for
-    "first seen within X [days/hours]" to monitor for new domains.'
-  playbookInputQuery: null
+  description: 'The "search hash" that has a built in "first seen within" parameter. -> Enter an Iris Investigate Search Hash (From the Iris Investigate UI: Advanced -> Import/Export Search). This playbook works best when you include a filter for "first seen within X [days/hours]" to monitor for new domains.'
+  playbookInputQuery:
 - key: should_wait_for_analyst_review
   value:
     simple: "false"
   required: true
-  description: Flags if users should wait for an analyst to review. Default is false.
-    Value can be either true/false only.
-  playbookInputQuery: null
+  description: Flags if users should wait for an analyst to review. Default is false. Value can be either true/false only.
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
