@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Instance configuration fields have been updated, and the context output keys of the commands have been changed."
+}
