@@ -10,7 +10,7 @@
             "IsTraffic": false,
             "ProtocolName": "Ntlm",
             "ResourceIdentifier": null,
-            "SourceComputerId": "computer  ec2-63-35-159-19.eu-west-1.compute.amazonaws.com",
+            "SourceComputerId": "computer  ec2.us.compute-1.amazonaws.com",
             "StartTime": "2020-07-22T13:36:36.2203957Z"
         },
         {
