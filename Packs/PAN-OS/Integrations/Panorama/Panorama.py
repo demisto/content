@@ -5316,7 +5316,7 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_
 
     if show_detail:
         params['show-detail'] = show_detail
-    
+
     result = http_request(
         URL,
         'GET',
@@ -5354,7 +5354,7 @@ def panorama_query_logs_command(args: dict):
     illegal_chars = {'@', '#'}
     ignored_keys = {'entry'}
     show_detail = args.get('show-detail', 'no')
-    
+
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
                       or time_generated or time_generated_after or action or port_dst or rule or url or filedigest):
