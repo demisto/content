@@ -10,18 +10,19 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-This playbook does not use any integrations.
+* VectraXDR
 
 ### Scripts
 
-This playbook does not use any scripts.
+* DeleteContext
 
 ### Commands
 
-* vectra-entity-assignment-add
 * vectra-entity-assignment-update
+* vectra-assignment-list
 * vectra-entity-detection-list
 * vectra-entity-note-add
+* vectra-entity-assignment-add
 
 ## Playbook Inputs
 
