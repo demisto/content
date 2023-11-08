@@ -3294,7 +3294,8 @@ The query logs in Panorama.
 | number_of_logs    | The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. Default is 100.                                                       | Optional | 
 | polling           | Whether to use polling. Possible values are: true, false. Default is false.                                                                                       | Optional | 
 | timeout           | The timeout (in seconds) when polling. Default is 120.                                                                                                            | Optional | 
-| interval_in_seconds | The interval (in seconds) when polling. Default is 10.                                                                                                            | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10.                                                                                                            | Optional |
+| show-detail       | Show the data of the fields `after-change-preview`, and `before-change-preview`, or keep them truncated. The full data are under the fields `after-change-detail`, and `before-change-detail`. If this argument was set to `no` when retrieving a job ID, then the data of the fields of that job ID will be truncated, and not if set to `yes`. Possible values are: yes, no. Default is no.                                                                                                             | Optional | 
 
 
 #### Context Output
@@ -3366,7 +3367,7 @@ enforce the policy. |
 | Panorama.Monitor.Logs.Vsys | String | The VSYS on the firewall that generated the log. | 
 
 #### Command example with polling
-```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true```
+```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true show-detail=yes```
 
 ### Context example
 ```json
