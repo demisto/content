@@ -31,7 +31,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Submit a high volume of samples to run in a sandbox and view reports
+description: Submit a high volume of samples to run in a sandbox and view reports.
 display: Hatching Triage
 name: Hatching Triage
 script:
@@ -594,7 +594,7 @@ script:
       required: true
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID.
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80014
   runonce: false
   script: ''
   subtype: python3
