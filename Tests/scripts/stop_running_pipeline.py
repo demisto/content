@@ -1,7 +1,7 @@
 import argparse
+import contextlib
 import os
 import sys
-import traceback
 
 from gitlab import Gitlab
 from gitlab.v4.objects import Project, ProjectPipeline
@@ -48,25 +48,28 @@ def get_all_pipelines_for_all_statuses(project: Project, branch_name: str, trigg
     # transition (e.g. from pending to running)
     pipelines: dict[str, ProjectPipeline] = {}
     for status in GITLAB_STATUSES_TO_CANCEL:
-        pipelines_for_status: list[ProjectPipeline] = project.pipelines.list(status=status,  # type: ignore[assignment]
-                                                                             ref=branch_name,
-                                                                             source=triggering_source)
-        for pipeline in pipelines_for_status:
-            pipelines[pipeline.id] = pipeline
+        with contextlib.suppress(Exception):
+            pipelines_for_status: list[ProjectPipeline] = project.pipelines.list(status=status,  # type: ignore[assignment]
+                                                                                 ref=branch_name,
+                                                                                 source=triggering_source)
+            for pipeline in pipelines_for_status:
+                pipelines[pipeline.id] = pipeline
     return list(pipelines.values())
 
 
 def delete_all_instances_for_pipeline(instances_service: InstancesService,
                                       all_instances: dict[str, compute_v1.Instance],
                                       pipeline_id: int):
-    pipeline_id_str = str(pipeline_id)
-    for instance_name in all_instances:
-        if pipeline_id_str in instance_name:
+    if instances_to_delete := [instance_name for instance_name in all_instances if str(pipeline_id) in instance_name]:
+        logging.info(f"Found {len(instances_to_delete)} instances to delete for pipeline:{pipeline_id}")
+        for i, instance_name in enumerate(sorted(instances_to_delete), start=1):
             try:
-                logging.info(f"Deleting instance:{instance_name}")
+                logging.info(f"Deleting instance:{instance_name} {i}/{len(instances_to_delete)}")
                 instances_service.delete_instance(instance_name)
             except Exception:
                 logging.error(f'Failed to delete instance:{instance_name}')
+    else:
+        logging.info(f"No instances to delete for pipeline:{pipeline_id}")
 
 
 def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
@@ -83,7 +86,7 @@ def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
         logging.info(f"No pipelines found for branch:{branch_name}, triggering source:{triggering_source}")
         return True
 
-    logging.info(f"Canceling {len(pipelines)} pipelines for branch:{branch_name}, triggering source:{triggering_source}")
+    logging.info(f"Found {len(pipelines)} pipelines for branch:{branch_name}, triggering source:{triggering_source}")
     success = True
     for pipeline in pipelines:
         # Only cancel pipelines that were created before the current pipeline, If there is a newer
@@ -138,8 +141,7 @@ def main():
         logging.success(f"Successfully canceled pipelines for branch:{options.current_branch}")
 
     except Exception:
-        logging.exception('Failed cancel pipelines')
-        logging.error(traceback.format_exc())
+        logging.exception('Failed to cancel pipelines')
         sys.exit(1)
 
 
