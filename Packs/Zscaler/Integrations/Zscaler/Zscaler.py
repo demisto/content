@@ -618,6 +618,8 @@ def category_add_url(category_id, url, retaining_parent_category_url):
         category_data["urls"] = all_urls
         retaining_parent_category_url_list = argToList(retaining_parent_category_url)
         demisto.debug(f'##### {retaining_parent_category_url_list=}')
+        if not (url_list, retaining_parent_category_url_list):
+            return_error('Either url_list argument or retaining_parent_category_url_list argument must be provided.')
         add_or_remove_urls_from_category(
             ADD, url_list, category_data, retaining_parent_category_url_list
         )  # add the urls to the category
@@ -625,6 +627,7 @@ def category_add_url(category_id, url, retaining_parent_category_url):
             "ID": category_id,
             "CustomCategory": category_data.get("customCategory"),
             "URL": category_data.get("urls"),
+            "RetainingParentCategory": retaining_parent_category_url_list
         }
         if category_data.get("description"):  # Custom might not have description
             context["Description"] = category_data["description"]
@@ -648,7 +651,7 @@ def category_add_url(category_id, url, retaining_parent_category_url):
         return return_error("Category could not be found.")
 
 
-def category_add_ip(category_id, ip):
+def category_add_ip(category_id, ip, retaining_parent_category_ip):
     categories = get_categories()
     found_category = False
     for category in categories:
@@ -661,11 +664,16 @@ def category_add_ip(category_id, ip):
         all_ips = ip_list[:]
         all_ips.extend(category_data["urls"])
         category_data["urls"] = all_ips
-        response = category_ioc_update(category_data)
+        retaining_parent_category_ip_list = argToList(retaining_parent_category_ip)
+        demisto.debug(f'##### {retaining_parent_category_ip_list=}')
+        if not (ip_list, retaining_parent_category_ip_list):
+            return_error('Either ip_list argument or retaining_parent_category_ip_list argument must be provided.')
+        response = category_ioc_update(category_data, retaining_parent_category_ip_list)
         context = {
             "ID": category_id,
             "CustomCategory": category_data["customCategory"],
             "URL": category_data["urls"],
+            "RetainingParentCategory": retaining_parent_category_ip_list
         }
         if (
             "description" in category_data and category_data["description"]
@@ -775,13 +783,15 @@ def category_remove_ip(category_id, ip):
         return return_error("Category could not be found.")
 
 
-def category_ioc_update(category_data):
+def category_ioc_update(category_data, retaining_parent_category_ip):
     cmd_url = "/urlCategories/" + category_data["id"]
     data = {
         "customCategory": category_data["customCategory"],
         "urls": category_data["urls"],
         "id": category_data["id"],
     }
+    if retaining_parent_category_ip:
+        data['dbCategorizedUrls'] = retaining_parent_category_ip
     if "description" in category_data:
         data["description"] = category_data["description"]
     if "configuredName" in category_data:
@@ -1444,10 +1454,10 @@ def main():  # pragma: no cover
                 return_results(unwhitelist_ip(args.get("ip")))
             elif command == "zscaler-category-add-url":
                 return_results(
-                    category_add_url(args.get("category-id"), args.get("url"), args.get('retaining-parent-url'))
+                    category_add_url(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url'))
                 )
             elif command == "zscaler-category-add-ip":
-                return_results(category_add_ip(args.get("category-id"), args.get("ip")))
+                return_results(category_add_ip(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip')))
             elif command == "zscaler-category-remove-url":
                 return_results(
                     category_remove_url(args.get("category-id"), args.get("url"))
