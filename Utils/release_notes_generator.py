@@ -96,6 +96,7 @@ def get_new_entity_record(entity_path: str) -> tuple[str, str]:
 
     return name, description
 
+
 def squash_docker_updates(description: str) -> str:
     """Squash docker updates to the latest update.
 
@@ -115,6 +116,7 @@ def squash_docker_updates(description: str) -> str:
     new_description_lines.append(latest_docker_update_line)
     new_description = '\n'.join(new_description_lines)
     return new_description
+
 
 def construct_entities_block(entities_data: dict) -> str:
     """
