@@ -1,5 +1,6 @@
+comment: Sets average risk score to context for pivot result.
 commonfields:
-  id: AddDomainRiskScoreContext
+  id: AddDomainRiskScoreToContext
   version: -1
 name: AddDomainRiskScoreToContext
 script: '-'
@@ -10,9 +11,14 @@ enabled: true
 args:
 - name: domaintools_data
   required: true
+  description: DomainTools Iris Enrich result.
 outputs:
 - contextPath: AddDomainRiskScoreToContext.HighRiskPivotedDomains.Name
   description: The domain name
 - contextPath: AddDomainRiskScoreToContext.HighRiskPivotedDomains.OverallRiskScore
   description: The overall risk score of the domain
 subtype: python3
+fromversion: 6.9.0
+dockerimage: demisto/python3:3.10.13.80014
+tests:
+- No tests (auto formatted)

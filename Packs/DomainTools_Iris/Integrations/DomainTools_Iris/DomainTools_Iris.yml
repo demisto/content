@@ -1471,97 +1471,97 @@ script:
       required: false
       secret: false
     - default: false
-      description: Only the domain portion of a Whois or DNS SOA email address
+      description: Only the domain portion of a Whois or DNS SOA email address.
       isArray: false
       name: email_domain
       required: false
       secret: false
     - default: false
-      description: Registered domain portion of the name server
+      description: Registered domain portion of the name server.
       isArray: false
       name: nameserver_domain
       required: false
       secret: false
     - default: false
-      description: Exact match to the Whois registrar field
+      description: Exact match to the Whois registrar field.
       isArray: false
       name: registrar
       required: false
       secret: false
     - default: false
-      description: Exact match to the Whois registrant field
+      description: Exact match to the Whois registrant field.
       isArray: false
       name: registrant
       required: false
       secret: false
     - default: false
-      description: Exact match to the Whois registrant organization field
+      description: Exact match to the Whois registrant organization field.
       isArray: false
       name: registrant_org
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of Iris Investigate tags. Returns domains tagged with any of the tags in a list
+      description: Comma-separated list of Iris Investigate tags. Returns domains tagged with any of the tags in a list.
       isArray: false
       name: tagged_with_any
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of tags. Only returns domains tagged with the full list of tags
+      description: Comma-separated list of tags. Only returns domains tagged with the full list of tags.
       isArray: false
       name: tagged_with_all
       required: false
       secret: false
     - default: false
-      description: Only the registered domain portion of the mail server (domaintools.net)
+      description: Only the registered domain portion of the mail server (domaintools.net).
       isArray: false
       name: mailserver_domain
       required: false
       secret: false
     - default: false
-      description: IP address of the mail server
+      description: IP address of the mail server.
       isArray: false
       name: mailserver_ip
       required: false
       secret: false
     - default: false
-      description: Find domains observed to redirect to another domain name
+      description: Find domains observed to redirect to another domain name.
       isArray: false
       name: redirect_domain
       required: false
       secret: false
     - default: false
-      description: Exact match to the organization name on the SSL certificate
+      description: Exact match to the organization name on the SSL certificate.
       isArray: false
       name: ssl_org
       required: false
       secret: false
     - default: false
-      description: Subject field from the SSL certificate
+      description: Subject field from the SSL certificate.
       isArray: false
       name: ssl_subject
       required: false
       secret: false
     - default: false
-      description: Email address from the SSL certificate
+      description: Email address from the SSL certificate.
       isArray: false
       name: ssl_email
       required: false
       secret: false
     - default: false
-      description: Domains with a Google Analytics tracking code
+      description: Domains with a Google Analytics tracking code.
       isArray: false
       name: google_analytics
       required: false
       secret: false
     - default: false
-      description: Domains with a Google AdSense tracking code
+      description: Domains with a Google AdSense tracking code.
       isArray: false
       name: adsense
       required: false
       secret: false
     - default: false
-      description: Encoded search from the Iris UI
+      description: Encoded search from the Iris UI.
       isArray: false
       name: search_hash
       required: false
@@ -1908,7 +1908,7 @@ script:
     name: hostingHistory
     outputs:
     - contextPath: DomainTools.History.Value
-      description: Name of domain
+      description: Name of domain.
     - contextPath: DomainTools.History.IPHistory
       description: Domain IP history data.
     - contextPath: DomainTools.History.NameserverHistory
@@ -1924,7 +1924,7 @@ script:
       name: exclude
     - auto: PREDEFINED
       defaultValue: "false"
-      description: Show only historic records
+      description: Show only historic records.
       name: onlyHistoricScope
       predefined:
       - "true"
