@@ -607,7 +607,7 @@ def lookup_request(ioc, multiple=True):
     return response
 
 
-def category_add_url(category_id, url, retaining_parent_url):
+def category_add_url(category_id, url, retaining_parent_category_url):
     demisto.debug('##### category_add_url function now running')
     category_data = get_category_by_id(category_id)
     demisto.debug(f'##### {category_data=}')
@@ -616,10 +616,10 @@ def category_add_url(category_id, url, retaining_parent_url):
         all_urls = url_list[:]
         all_urls.extend(list(map(lambda x: x.strip(), category_data["urls"])))
         category_data["urls"] = all_urls
-        retaining_parent_url_list = argToList(retaining_parent_url)
-        demisto.debug(f'##### {retaining_parent_url_list=}')
+        retaining_parent_category_url_list = argToList(retaining_parent_category_url)
+        demisto.debug(f'##### {retaining_parent_category_url_list=}')
         add_or_remove_urls_from_category(
-            ADD, url_list, category_data, retaining_parent_url_list
+            ADD, url_list, category_data, retaining_parent_category_url_list
         )  # add the urls to the category
         context = {
             "ID": category_id,
@@ -791,7 +791,7 @@ def category_ioc_update(category_data):
     return response
 
 
-def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_url):
+def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_category_url):
     """
     Add or remove urls from a category.
     Args:
@@ -811,8 +811,8 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
         "urls": urls,
         "id": category_data.get("id"),
     }
-    if retaining_parent_url:
-        data['dbCategorizedUrls'] = retaining_parent_url
+    if retaining_parent_category_url:
+        data['dbCategorizedUrls'] = retaining_parent_category_url
     if "description" in category_data:
         data["description"] = category_data["description"]
     if "configuredName" in category_data:

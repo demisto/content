@@ -245,10 +245,10 @@ script:
       isArray: true
       name: url
       required: true
-    - description: A comma-separated list of URLs to add to the retaining parent sub-category inside the specified category. For example, pandora.com,spotify.com.
+    - description: A comma-separated list of URLs to add to the retaining parent category section inside the specified category. For example, pandora.com,spotify.com.
       isArray: true
-      name: retaining-parent-url
-      required: true
+      name: retaining-parent-category-url
+      required: false
     description: Adds URLs to the specified category.
     name: zscaler-category-add-url
     outputs:
