@@ -30,10 +30,16 @@ class Client(BaseClient):
         if profile in preset_profiles:
             return profile
         else:
-            return self._http_request(
-                method='GET',
-                url_suffix=f'/api/public/acquisitions/profiles?filter[name]={profile}&filter[organizationIds]='
-                           f'{organization_id}').get('result', {}).get('entities', {})[0].get('_id', None)
+            try:
+                profile_id = self._http_request(
+                    method='GET',
+                    url_suffix=f'/api/public/acquisitions/profiles?filter[name]={profile}&filter[organizationIds]='
+                               f'{organization_id}').get('result', {}).get('entities', {})[0].get('_id', None)
+                if profile_id:
+                    return profile_id
+            except Exception as ex:
+                demisto.error(traceback.format_exc())  # print the traceback
+                return_error(f'Failed to find "{profile}". Please use a valid profile.')
 
     def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: Optional[int]) -> Dict[str, Any]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
