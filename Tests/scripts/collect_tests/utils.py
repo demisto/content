@@ -111,6 +111,7 @@ class DictBased:
                 self.get('fromversion', warn_if_missing=False)
                 or self.get('fromVersion', warn_if_missing=False)
                 or self.get('fromServerVersion', warn_if_missing=False)
+                or self.get('serverMinVersion', warn_if_missing=False)
         ):
             return Version(value)
         return version.NegativeInfinity
@@ -182,7 +183,7 @@ class ContentItem(DictFileBased):
     def __init__(self, path: Path):
         super().__init__(path)
         self.pack_path = find_pack_folder(self.path)
-        self.deprecated = self.get('deprecated', warn_if_missing=False)
+        self.deprecated = self.get('deprecated', warn_if_missing=False) or self.get('hidden', warn_if_missing=False)
         self._tests = self.get('tests', default=(), warn_if_missing=False)
 
     @property

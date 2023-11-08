@@ -2471,6 +2471,7 @@ Generic call to ServiceNow api
 | headers | json of headers to add. | Optional | 
 | sc_api | Service Catalog Call. Possible values are: true, false. Default is false. | Optional | 
 | cr_api | Change Request Call. Possible values are: true, false. Default is false. | Optional | 
+| custom_api | Define a custom API root (like /api/custom/tasks). | Optional | 
 
 
 #### Context Output

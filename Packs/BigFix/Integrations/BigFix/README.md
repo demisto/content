@@ -101,7 +101,7 @@
     "Bigfix": {
         "Site": [
             {
-                "Resource": "https://content.demisto.works:20021/api/site/master/ActionSite", 
+                "Resource": "https://xsoar-example:20021/api/site/master/ActionSite", 
                 "Description": null, 
                 "GatherURL": "http://WIN-CQD6UQJIA7J:52311/cgi-bin/bfgather.exe/actionsite", 
                 "GlobalReadPermission": "false", 
@@ -112,7 +112,7 @@
                 }
             }, 
             {
-                "Resource": "https://content.demisto.works:20021/api/site/external/BES Support", 
+                "Resource": "https://xsoar-example:20021/api/site/external/BES Support", 
                 "Description": null, 
                 "GatherURL": "http://sync.bigfix.com/cgi-bin/bfgather/bessupport", 
                 "GlobalReadPermission": "true", 
@@ -123,7 +123,7 @@
                 }
             }, 
             {
-                "Resource": "https://content.demisto.works:20021/api/site/external/BES Inventory and License", 
+                "Resource": "https://xsoar-example:20021/api/site/external/BES Inventory and License", 
                 "Description": null, 
                 "GatherURL": "http://sync.bigfix.com/cgi-bin/bfgather/besinventory", 
                 "GlobalReadPermission": "false", 
@@ -134,7 +134,7 @@
                 }
             }, 
             {
-                "Resource": "https://content.demisto.works:20021/api/site/external/BES Asset Discovery", 
+                "Resource": "https://xsoar-example:20021/api/site/external/BES Asset Discovery", 
                 "Description": null, 
                 "GatherURL": "http://sync.bigfix.com/cgi-bin/bfgather/assetdiscovery", 
                 "GlobalReadPermission": "false", 
@@ -147,7 +147,7 @@
             {
                 "GatherURL": "http://WIN-CQD6UQJIA7J:52311/cgi-bin/bfgather.exe/actionsite", 
                 "Type": "operator", 
-                "Resource": "https://content.demisto.works:20021/api/site/operator/admin", 
+                "Resource": "https://xsoar-example:20021/api/site/operator/admin", 
                 "Name": "admin"
             }
         ]
@@ -244,7 +244,7 @@
 <pre><code>{
     "Bigfix": {
         "Site": {
-            "Resource": "https://content.demisto.works:20021/api/site/master/None", 
+            "Resource": "https://xsoar-example:20021/api/site/master/None", 
             "Description": null, 
             "GatherURL": "http://WIN-CQD6UQJIA7J:52311/cgi-bin/bfgather.exe/actionsite", 
             "GlobalReadPermission": "false", 
@@ -378,7 +378,7 @@
         "Patch": [
             {
                 "Category": null, 
-                "Resource": "https://content.demisto.works:20021/api/fixlet/master/38", 
+                "Resource": "https://xsoar-example:20021/api/fixlet/master/38", 
                 "Description": "This is a description of foo patch", 
                 "DownloadSize": null, 
                 "SourceID": null, 
@@ -397,7 +397,7 @@
             }, 
             {
                 "Category": null, 
-                "Resource": "https://content.demisto.works:20021/api/fixlet/master/39", 
+                "Resource": "https://xsoar-example:20021/api/fixlet/master/39", 
                 "Description": "Test Fixlet", 
                 "DownloadSize": null, 
                 "SourceID": null, 
@@ -618,7 +618,7 @@
                 "TotalSizeofSystemDrive": "101896 MB", 
                 "AgentType": "Native", 
                 "DNSName": "WIN-CQD6UQJIA7J", 
-                "Resource": "https://content.demisto.works:20021/api/computer/2696130", 
+                "Resource": "https://xsoar-example:20021/api/computer/2696130", 
                 "CPU": "2200 MHz Xeon Gold 5120", 
                 "LicenseType": "Windows Server", 
                 "Relay": "BES Root Server", 
@@ -684,7 +684,7 @@
                 "TotalSizeofSystemDrive": "101896 MB", 
                 "AgentType": "Native", 
                 "DNSName": "WIN-CQD6UQJIA7J", 
-                "Resource": "https://content.demisto.works:20021/api/computer/3385267", 
+                "Resource": "https://xsoar-example:20021/api/computer/3385267", 
                 "CPU": "2200 MHz Xeon", 
                 "LicenseType": "Windows Server", 
                 "Relay": "BES Root Server", 
@@ -944,7 +944,7 @@
             "TotalSizeofSystemDrive": "101896 MB", 
             "AgentType": "Native", 
             "DNSName": "WIN-CQD6UQJIA7J", 
-            "Resource": "https://content.demisto.works:20021/api/computer/3385267", 
+            "Resource": "https://xsoar-example:20021/api/computer/3385267", 
             "CPU": "2200 MHz Xeon", 
             "LicenseType": "Windows Server", 
             "Relay": "BES Root Server", 
@@ -1210,7 +1210,7 @@
     "Bigfix": {
         "Patch": {
             "Category": null, 
-            "Resource": "https://content.demisto.works:20021/api/fixlet/master/38", 
+            "Resource": "https://xsoar-example:20021/api/fixlet/master/38", 
             "Description": "This is a description of foo patch", 
             "DownloadSize": null, 
             "SourceID": null, 

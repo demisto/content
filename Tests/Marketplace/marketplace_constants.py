@@ -90,11 +90,12 @@ class GCPConfig:
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
-    PRODUCTION_BUCKET = "marketplace-dist"
-    PRODUCTION_BUCKET_V2 = "marketplace-v2-dist"
-    CI_BUILD_BUCKET = "marketplace-ci-build"
-    PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
-    CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
+    TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
+    PRODUCTION_BUCKET = f"{TEST_XDR_PREFIX}marketplace-dist"
+    PRODUCTION_BUCKET_V2 = f"{TEST_XDR_PREFIX}marketplace-v2-dist"
+    CI_BUILD_BUCKET = f"{TEST_XDR_PREFIX}marketplace-ci-build"
+    PRODUCTION_PRIVATE_BUCKET = f"{TEST_XDR_PREFIX}marketplace-dist-private"
+    CI_PRIVATE_BUCKET = f"{TEST_XDR_PREFIX}marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
@@ -373,7 +374,6 @@ class PackStatus(enum.Enum):
     PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific pack is not updated in current build"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
-    FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
