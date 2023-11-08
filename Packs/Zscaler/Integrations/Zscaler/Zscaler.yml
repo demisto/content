@@ -274,7 +274,7 @@ script:
     - description: A comma-separated list of IP address to add to the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: ip
-      required: true
+      required: false
     - description: A comma-separated list of IP address to add to the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
       isArray: true
       name: retaining-parent-category-ip
