@@ -291,7 +291,7 @@ class Client(BaseClient):
             siteIds=site_ids,
             rank=int(rank) if rank else None,
             keys_to_ignore=keys_to_ignore,
-            incidentStatuses=argToList(incident_statuses.lower() if incident_statuses is not None else None)
+            incidentStatuses=incident_statuses.lower() if incident_statuses else None
         )
         response = self._http_request(method='GET', url_suffix='threats', params=params, ok_codes=[200])
         return response.get('data', {})
@@ -3386,13 +3386,12 @@ def fetch_threats(client: Client, args):
     incidents_threats = []
     current_fetch = args.get('current_fetch')
     incident_statuses = args.get('fetch_threat_incident_statuses')
-    resolved = 'true' if incident_statuses and 'RESOLVED' in incident_statuses else 'false'
 
     threats = client.get_threats_request(limit=args.get('fetch_limit'),
                                          created_after=args.get('last_fetch_date_string'),
                                          site_ids=args.get('fetch_site_ids'),
                                          incident_statuses=','.join(incident_statuses).lower() if incident_statuses else None,
-                                         resolved=resolved)
+                                         include_resolved_param=False)
     for threat in threats:
         rank = threat.get('rank')
         threat.update(get_mirroring_fields(args))
@@ -3518,8 +3517,8 @@ def main():
     fetch_type = params.get('fetch_type', 'Threats')
     first_fetch_time = params.get('fetch_time', '3 days')
     fetch_severity = params.get('fetch_severity', [])
-    fetch_incidentStatus = params.get('fetch_incidentStatus', [])
-    fetch_threat_incident_statuses = params.get('fetch_threat_incident_statuses', [])
+    fetch_incidentStatus = params.get('fetch_incidentStatus', ["UNRESOLVED"])
+    fetch_threat_incident_statuses = params.get('fetch_threat_incident_statuses', ["UNRESOLVED"])
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
     fetch_site_ids = params.get('fetch_site_ids', None)
