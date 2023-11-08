@@ -2,12 +2,6 @@ Welcome to XSOAR’s Capture the Flag pack.
 
 ###
 
-### **Note**
-
-Please Install `Capture The Flag - 01` pack before you continue with this one.
-
-###
-
 
 This pack was prepared with small challenges which enables you to get familiar with XSOAR8.
 To play this game, follow the instructions located within the "Prepare your CTF" playbook, located in the `Capture The Flag - 01` pack.
