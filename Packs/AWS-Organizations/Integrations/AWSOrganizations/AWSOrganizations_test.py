@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class MockOrganizationsClient:  # (OrganizationsClient):
-
+    
     def get_paginator(self, _):
         return None
 
@@ -29,11 +29,82 @@ class MockOrganizationsClient:  # (OrganizationsClient):
 CLIENT = MockOrganizationsClient()
 
 
-def get_mock_paginator(kwargs: dict, return_obj):
-    def mock_paginator(paginator, key_to_pages, limit=None, page_size=None, next_token=None, **paginator_kwargs):
+def get_mock_paginate(kwargs: dict, return_obj):
+    def mock_paginate(paginator, key_to_pages, limit=None, page_size=None, next_token=None, **paginator_kwargs):
         assert kwargs == paginator_kwargs
         return return_obj
-    return mock_paginator
+    return mock_paginate
+
+
+def paginate(
+    paginator: 'Paginator', key_to_pages: str, limit=None, page_size=None, next_token=None, **kwargs
+) -> tuple[list, str | None]:
+
+    max_items = arg_to_number(limit or page_size) or 50
+    pagination_max = min(max_items, MAX_PAGINATION)
+
+    iterator = paginator.paginate(
+        **kwargs,
+        PaginationConfig={
+            'MaxItems': pagination_max,
+            'PageSize': pagination_max,
+            'StartingToken': next_token if not limit else None
+        }
+    )
+
+    pages: list = []
+    next_token = None
+
+    for response in iterator:
+        pages.extend(response.get(key_to_pages, []))
+        next_token = response.get('NextToken')
+        if len(pages) >= max_items:
+            break
+
+    del pages[max_items:]
+    return pages, next_token
+
+
+@pytest.mark.parametrize(
+    'paginate_kwargs, expected_kwargs, expected_PaginationConfig, real_key_to_pages',
+    [
+        (
+            {'Limit': 10}, 
+            {'Limit': 10, 'PaginationConfig': {'MaxItems': 10, 'PageSize': 10}},
+            {'MaxItems': 10, 'PageSize': 10},
+            'Accounts',
+            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'next_token')
+        ),
+        (
+            {'Limit': 10}, 
+            {'Limit': 10, 'PaginationConfig': {'MaxItems': 10, 'PageSize': 10}},
+            {'MaxItems': 10, 'PageSize': 10},
+            'Accounts',
+            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'next_token')
+        ),
+    ]
+)
+def test_paginate(paginate_kwargs, expected_kwargs, expected_PaginationConfig, real_key_to_pages, expected_output):
+
+    from AWSOrganizations import paginate
+
+    def mock_paginate(PaginationConfig, **kwargs):
+        assert kwargs == expected_kwargs
+        assert PaginationConfig == expected_PaginationConfig
+        return (
+            {
+                'NextToken': 'next_token',
+                real_key_to_pages: list(range(nums, nums + 5))
+            }
+            for nums in range(0, 1000, 5)
+        )
+
+    output = paginate(
+        type('Mock', (), {'paginate': mock_paginate}),
+        **paginate_kwargs
+    )
+
+    assert output == expected_output
 
 
 def test_root_list_command(mocker):
@@ -42,7 +113,7 @@ def test_root_list_command(mocker):
 
     mocker.patch(
         'AWSOrganizations.paginate',
-        side_effect=get_mock_paginator(
+        side_effect=get_mock_paginate(
             root_list.client_func_kwargs,
             root_list.client_func_return
         )
@@ -60,7 +131,7 @@ def test_children_list_command(mocker):
 
     mocker.patch(
         'AWSOrganizations.paginate',
-        side_effect=get_mock_paginator(
+        side_effect=get_mock_paginate(
             children_list.client_func_kwargs,
             children_list.client_func_return
         )
@@ -78,7 +149,7 @@ def test_parent_list_command(mocker):
 
     mocker.patch(
         'AWSOrganizations.paginate',
-        side_effect=get_mock_paginator(
+        side_effect=get_mock_paginate(
             parent_list.client_func_kwargs,
             parent_list.client_func_return
         )
@@ -106,7 +177,7 @@ def test_account_list_command(mocker):
 
     mocker.patch(
         'AWSOrganizations.paginate',
-        side_effect=get_mock_paginator(
+        side_effect=get_mock_paginate(
             account_list.client_func_kwargs,
             account_list.client_func_return
         )

@@ -1,6 +1,7 @@
 !aws-org-root-list
-!aws-org-parent-list child_id=668688824393
-!aws-org-children-list child_type=Account parent_id="r-lf12"
+!aws-org-parent-list child_id="ou-lf12-xzacq1nu"
+!aws-org-children-list parent_id="r-lf12" child_type="OrganizationalUnit"
 !aws-org-organization-unit-get organization_unit_id="ou-lf12-xzacq1nu"
 !aws-org-account-list account_id=890404229245
 !aws-org-account-list
+!aws-org-organization-get
