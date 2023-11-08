@@ -84,7 +84,7 @@ def get_threats_outputs(threats, rank: int = 0):
             yield entry
 
 
-def get_agents_outputs(agents, column_to_display):
+def get_agents_outputs(agents, column_to_display: list):
     for agent in agents:
         entry = {
             'ID': agent.get('id'),
@@ -750,7 +750,7 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
-    def get_threat_notes_request(self, threatid):
+    def get_threat_notes_request(self, threatid: str):
         endpoint_url = f'threats/{threatid}/notes'
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response.get('data', {})
@@ -795,7 +795,7 @@ class Client(BaseClient):
         pagination = response.get('pagination')
         return data, pagination
 
-    def get_accounts_request(self, account_id = None):
+    def get_accounts_request(self, account_id: str = None):
         response = self._http_request(method='GET', url_suffix='accounts'/account_id if account_id else 'accounts')
         return response.get('data', {})
 
