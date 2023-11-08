@@ -1,5 +1,5 @@
 A threat intelligence and investigation platform for domain names, IP addresses, email addresses, name servers and so on.
-This integration was integrated and tested with version xx of DomainTools Iris
+This integration was integrated and tested with version 1.0 of DomainTools Iris
 
 ## Configure DomainTools Iris on Cortex XSOAR
 
