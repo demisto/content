@@ -38,3 +38,4 @@ xql_query: "datamodel \n| filter xdm.observer.vendor = \"Google\" and xdm.observ
   \ xdm.observer.action, xdm.event.outcome_reason, xdm.source.user.username, xdm.intermediate.user.username,\
   \ xdm.source.host.hostname, xdm.source.host.os, xdm.source.host.os_family, xdm.network.http.browser,\
   \ xdm.network.http.url, xdm.source.user_agent, xdm.target.resource.name, xdm.target.resource.id"
+fromversion: 8.4.0
