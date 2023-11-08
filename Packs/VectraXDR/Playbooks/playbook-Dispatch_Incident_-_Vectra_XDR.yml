@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7cb044af-3878-46b1-820c-9fd95c134f94
+    taskid: dfd34bb0-a6f1-48a9-88a8-586a403eb12a
     type: start
     task:
-      id: 7cb044af-3878-46b1-820c-9fd95c134f94
+      id: dfd34bb0-a6f1-48a9-88a8-586a403eb12a
       version: -1
       name: ""
       iscommand: false
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 50
+          "x": 265,
+          "y": -130
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 9f5f9515-2624-4f7a-83cf-73848f2eaa00
+    taskid: e0c28e19-298b-47e6-850f-5a6e275bf106
     type: regular
     task:
-      id: 9f5f9515-2624-4f7a-83cf-73848f2eaa00
+      id: e0c28e19-298b-47e6-850f-5a6e275bf106
       version: -1
       name: Fetch Entity Active Detections
       description: Returns a list of detections for a specified entity.
@@ -49,7 +49,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "20"
     scriptarguments:
       entity_id:
         complex:
@@ -66,7 +66,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 220
         }
       }
     note: false
@@ -78,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 67e9e790-fb8f-4321-8459-3fedde01c4a9
+    taskid: 712e4dc1-8938-4908-8856-332154863c0c
     type: regular
     task:
-      id: 67e9e790-fb8f-4321-8459-3fedde01c4a9
+      id: 712e4dc1-8938-4908-8856-332154863c0c
       version: -1
       name: Assign Entity in Vectra.
       description: Add an assignment for the entity.
@@ -113,8 +113,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 40,
+          "y": 1140
         }
       }
     note: false
@@ -126,10 +126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4e3e32c7-91da-4bbe-89b7-d864472762d3
+    taskid: dc77ae79-9d61-4f99-817d-ad68e77069fd
     type: regular
     task:
-      id: 4e3e32c7-91da-4bbe-89b7-d864472762d3
+      id: dc77ae79-9d61-4f99-817d-ad68e77069fd
       version: -1
       name: Add Note in the Entity.
       description: Add a note to the entity.
@@ -169,14 +169,14 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: '.'
+                  simple: .
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1070
+          "y": 1330
         }
       }
     note: false
@@ -188,12 +188,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6ca40956-f82f-478c-821a-4bfbcedf93d7
+    taskid: d8226da5-b876-47eb-8766-6ea17d2c2692
     type: condition
     task:
-      id: 6ca40956-f82f-478c-821a-4bfbcedf93d7
+      id: d8226da5-b876-47eb-8766-6ea17d2c2692
       version: -1
-      name: Is the assignment already exist?
+      name: Does the assignment already exist?
       description: Check if the Assignment already exists or not
       type: condition
       iscommand: false
@@ -210,7 +210,9 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: incident.vectraxdrentityassignmentid
+              complex:
+                root: Vectra.Entity
+                accessor: Assignments
             iscontext: true
           right:
             value: {}
@@ -219,7 +221,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -231,12 +233,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 1a7f8509-d94e-4ba8-85fc-b057399f33a5
+    taskid: 54fb1d36-4228-4eec-8459-046b1adc40f3
     type: regular
     task:
-      id: 1a7f8509-d94e-4ba8-85fc-b057399f33a5
+      id: 54fb1d36-4228-4eec-8459-046b1adc40f3
       version: -1
-      name: Update Assignment with provided User ID.
+      name: Update the assignment with the provided user ID.
       description: Update an assignment in the entity.
       script: '|||vectra-entity-assignment-update'
       type: regular
@@ -248,7 +250,15 @@ tasks:
     scriptarguments:
       assignment_id:
         complex:
-          root: incident.vectraxdrentityassignmentid
+          root: Vectra.Entity
+          accessor: Assignments
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
       user_id:
         complex:
           root: inputs.UserID
@@ -257,8 +267,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 470,
+          "y": 1140
         }
       }
     note: false
@@ -270,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a55a3667-d220-49e5-8d09-34485af8e737
+    taskid: 304efc98-d7d7-412f-8fe5-0ae8fafe3dc0
     type: title
     task:
-      id: a55a3667-d220-49e5-8d09-34485af8e737
+      id: 304efc98-d7d7-412f-8fe5-0ae8fafe3dc0
       version: -1
       name: Done
       type: title
@@ -285,8 +295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 1245
+          "x": 690,
+          "y": 1510
         }
       }
     note: false
@@ -298,10 +308,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: c1d00eb3-bc38-4bdf-898a-5a55e4baf963
+    taskid: 1a977b9c-79df-4a7a-8564-b35455df859e
     type: condition
     task:
-      id: c1d00eb3-bc38-4bdf-898a-5a55e4baf963
+      id: 1a977b9c-79df-4a7a-8564-b35455df859e
       version: -1
       name: Is the assignment already resolved?
       description: Check if the Assignment is already resolved.
@@ -321,8 +331,15 @@ tasks:
           left:
             value:
               complex:
-                root: incident
-                accessor: vectraxdrentityassignmentresolveddate
+                root: Vectra.Entity
+                accessor: Assignments
+                transformers:
+                - operator: FirstArrayElement
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: date_resolved
             iscontext: true
           right:
             value: {}
@@ -331,7 +348,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 720
+          "y": 915
         }
       }
     note: false
@@ -343,10 +360,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 50b0f7f0-dbd5-4267-880f-6890bf282c08
+    taskid: 50fe562d-1db8-4f3a-8583-37ce37867c30
     type: condition
     task:
-      id: 50b0f7f0-dbd5-4267-880f-6890bf282c08
+      id: 50fe562d-1db8-4f3a-8583-37ce37867c30
       version: -1
       name: Is VectraXDR Integration enabled?
       description: Check if Ingration is enable or not.
@@ -390,8 +407,91 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 195
+          "x": 265,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 19a01b0e-92f4-439a-8462-30e7de9775c7
+    type: regular
+    task:
+      id: 19a01b0e-92f4-439a-8462-30e7de9775c7
+      version: -1
+      name: Get the current assignment for the entity.
+      description: Returns a list of all assignments.
+      script: '|||vectra-assignment-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entity_ids:
+        complex:
+          root: incident
+          accessor: vectraxdrentityid
+      entity_type:
+        complex:
+          root: incident
+          accessor: vectraxdrentitytype
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 3bc8ec27-4d31-475b-859f-e19ff6a4d442
+    type: regular
+    task:
+      id: 3bc8ec27-4d31-475b-859f-e19ff6a4d442
+      version: -1
+      name: Delete the context for the assignment list command.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: Vectra.Entity.Assignments
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 390
         }
       }
     note: false
@@ -406,10 +506,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 810,
-        "x": 50,
-        "y": 50
+        "height": 1705,
+        "width": 1030,
+        "x": 40,
+        "y": -130
       }
     }
   }

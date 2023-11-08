@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2d0ad8aa-1356-4346-8de9-68dccdc0a40b
+    taskid: 3c98d2d3-b434-4946-8366-b4dfddb80a29
     type: start
     task:
-      id: 2d0ad8aa-1356-4346-8de9-68dccdc0a40b
+      id: 3c98d2d3-b434-4946-8366-b4dfddb80a29
       version: -1
       name: ""
       iscommand: false
@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "12"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -34,44 +34,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 7dd99534-e4e0-4ed7-8360-477521510324
-    type: playbook
-    task:
-      id: 7dd99534-e4e0-4ed7-8360-477521510324
-      version: -1
-      name: Add Notes In The Layout - Vectra XDR
-      description: This playbook will add notes in the incident layout.
-      playbookName: Add Notes In The Layout - Vectra XDR
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a55d47e8-a738-4dfc-8b8f-0185043d9331
+    taskid: eb0627e1-fd16-48a9-8a73-b06a5d0d0cfa
     type: title
     task:
-      id: a55d47e8-a738-4dfc-8b8f-0185043d9331
+      id: eb0627e1-fd16-48a9-8a73-b06a5d0d0cfa
       version: -1
       name: Done
       type: title
@@ -96,13 +64,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 01f8fbf9-f13f-4be7-88e5-0514c9d90215
+    taskid: 4b15e9c2-436f-41e3-8d2e-cd60c9ecc09c
     type: collection
     task:
-      id: 01f8fbf9-f13f-4be7-88e5-0514c9d90215
+      id: 4b15e9c2-436f-41e3-8d2e-cd60c9ecc09c
       version: -1
-      name: Get UserID from the user.
-      description: Get UserID from the user.
+      name: Get the Vectra UserID to assign the current entity.
+      description: Provide the Vectra User ID to assign the current entity in Vectra.
       type: collection
       iscommand: false
       brand: ""
@@ -125,6 +93,7 @@ tasks:
       to:
       subject:
       body:
+        simple: Provide the Vectra User ID to assign the current entity in Vectra.
       methods: []
       format: ""
       bcc:
@@ -140,7 +109,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Enter User ID for Assignment: '
+          simple: 'Enter the Vectra User ID to assign the current entity: '
         required: false
         gridcolumns: []
         defaultrows: []
@@ -162,10 +131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 1511ffa5-a933-4d3d-83fa-9ca51d155300
+    taskid: e2d22193-588a-4dc0-88d8-abde5bce3375
     type: regular
     task:
-      id: 1511ffa5-a933-4d3d-83fa-9ca51d155300
+      id: e2d22193-588a-4dc0-88d8-abde5bce3375
       version: -1
       name: Delete the context of GetUserID
       description: |-
@@ -202,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: bf04f09f-af14-4cc1-8b9d-f35ab8748e00
+    taskid: 344ff522-06bc-4a6a-847e-850c73d4f655
     type: regular
     task:
-      id: bf04f09f-af14-4cc1-8b9d-f35ab8748e00
+      id: 344ff522-06bc-4a6a-847e-850c73d4f655
       version: -1
       name: List Available Users for Assignment
       description: Returns a list of users.
@@ -234,10 +203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: bc52c3d3-7766-4139-81d6-dbab1492bfdf
+    taskid: 0cc1a518-e1e9-4773-851d-41cf98477437
     type: playbook
     task:
-      id: bc52c3d3-7766-4139-81d6-dbab1492bfdf
+      id: 0cc1a518-e1e9-4773-851d-41cf98477437
       version: -1
       name: Dispatch Incident - Vectra XDR
       playbookName: Dispatch Incident - Vectra XDR
@@ -278,10 +247,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: e1c925a2-20d9-4e0c-81dd-74a1c10eae49
+    taskid: 67172383-99f8-454c-88af-0eff8ceba2d9
     type: playbook
     task:
-      id: e1c925a2-20d9-4e0c-81dd-74a1c10eae49
+      id: 67172383-99f8-454c-88af-0eff8ceba2d9
       version: -1
       name: Add Note - Vectra XDR
       playbookName: Add Note - Vectra XDR
@@ -299,6 +268,38 @@ tasks:
         "position": {
           "x": 50,
           "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 819e40bf-1a4d-4892-82dd-04b1739b76f0
+    type: regular
+    task:
+      id: 819e40bf-1a4d-4892-82dd-04b1739b76f0
+      version: -1
+      name: Add entity notes to the layout.
+      description: This script allows to add Entity notes in the layout.
+      scriptName: VectraXDRAddNotesInLayout
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false
