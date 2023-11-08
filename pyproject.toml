@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.20.6"
+demisto-sdk = "1.20.8"
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 google-cloud-compute = "^1.8.0"
@@ -154,6 +154,7 @@ tqdm = "^4.66.1"
 tabulate = ">=0.8.9,<0.10.0"
 jira = "^3.5.2"
 junitparser = "^3.1.0"
+tenacity = "^8.2.3"
 
 [tool.ruff]
 select = [

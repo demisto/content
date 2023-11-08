@@ -112,7 +112,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: 'Whether the shared drive is hidden from the default view. Possible values: "True" and "False".'
+      description: 'Whether the shared drive is hidden from the default view.'
       name: hidden
       predefined:
       - "True"
@@ -135,17 +135,17 @@ script:
       description: Whether the shared drive is hidden from the default view.
       type: Boolean
   - arguments:
-      - description: The user's primary email address.
-        name: user_id
-      - description: The name of this shared drive.
-        name: name
-        required: true
-      - auto: PREDEFINED
-        description: 'Whether the shared drive is hidden from the default view. Possible values: "True" and "False".'
-        name: hidden
-        predefined:
-          - "True"
-          - "False"
+    - description: The user's primary email address.
+      name: user_id
+    - description: The name of this shared drive.
+      name: name
+      required: true
+    - auto: PREDEFINED
+      description: 'Whether the shared drive is hidden from the default view.'
+      name: hidden
+      predefined:
+      - "True"
+      - "False"
     description: >-
       Creates a new Team Drive. The name argument specifies the name of the
       Team Drive. The specified user will be the first organizer.
@@ -155,18 +155,18 @@ script:
       edition.
     name: google-drive-drive-create
     outputs:
-      - contextPath: GoogleDrive.Drive.kind
-        description: Identifies what kind of resource this is.
-        type: String
-      - contextPath: GoogleDrive.Drive.id
-        description: The ID of the shared drive which is also the ID of the top level folder of the shared drive.
-        type: String
-      - contextPath: GoogleDrive.Drive.name
-        description: The name of the shared drive.
-        type: String
-      - contextPath: GoogleDrive.Drive.hidden
-        description: Whether the shared drive is hidden from the default view.
-        type: Boolean
+    - contextPath: GoogleDrive.Drive.kind
+      description: Identifies what kind of resource this is.
+      type: String
+    - contextPath: GoogleDrive.Drive.id
+      description: The ID of the shared drive which is also the ID of the top level folder of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.Drive.name
+      description: The name of the shared drive.
+      type: String
+    - contextPath: GoogleDrive.Drive.hidden
+      description: Whether the shared drive is hidden from the default view.
+      type: Boolean
   - arguments:
     - description: The token for continuing a previous list request on the next page.
       name: page_token
@@ -177,14 +177,14 @@ script:
       name: drive_id
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file. Possible values: "true" and "false".'
+      description: 'Whether changes should include the file resource if the file is still accessible by the user at the time of the request, even when a file was removed from the list of changes and there will be no further change entries for this file.'
       name: include_corpus_removals
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false".'
+      description: 'Whether both My Drive and shared drive items should be included in the results.'
       name: include_items_from_all_drives
       predefined:
       - "true"
@@ -193,7 +193,7 @@ script:
       name: include_permissions_for_view
     - auto: PREDEFINED
       defaultValue: "true"
-      description: 'Whether to include changes indicating that items have been removed from the list of changes, for example by deletion or loss of access. Possible values: "true" and "false".'
+      description: 'Whether to include changes indicating that items have been removed from the list of changes, for example by deletion or loss of access.'
       name: include_removed
       predefined:
       - "true"
@@ -203,7 +203,7 @@ script:
       name: page_size
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether to restrict the results to changes inside the My Drive hierarchy. This omits changes to files such as those in the Application Data folder or shared files which have not been added to My Drive. Possible values: "true" and "false".'
+      description: 'Whether to restrict the results to changes inside the My Drive hierarchy. This omits changes to files such as those in the Application Data folder or shared files which have not been added to My Drive.'
       name: restrict_to_my_drive
       predefined:
       - "true"
@@ -212,7 +212,7 @@ script:
       name: spaces
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: 'Whether the requesting application supports both My Drives and shared drives.'
       name: supports_all_drives
       predefined:
       - "true"
@@ -1805,25 +1805,25 @@ script:
   - name: google-drive-drive-delete
     description: Deletes a shared drive.
     arguments:
-      - auto: PREDEFINED
-        defaultValue: "false"
-        name: use_domain_admin_access
-        description: If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs.
-        predefined:
-          - "true"
-          - "false"
-      - auto: PREDEFINED
-        defaultValue: "false"
-        name: allow_item_deletion
-        description: "Whether any items inside the shared drive should also be deleted. This option is only supported when use_domain_admin_access argument is set to true."
-        predefined:
-          - "true"
-          - "false"
-      - name: user_id
-        description: The user's primary email address.
-      - name: drive_id
-        required: true
-        description: The ID of the shared drive to delete. Can be retrieved using the `google-drive-drives-list` command.
+    - auto: PREDEFINED
+      defaultValue: "false"
+      name: use_domain_admin_access
+      description: If set to true, then the requester will be granted access if they are an administrator of the domain to which the shared drive belongs.
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      name: allow_item_deletion
+      description: "Whether any items inside the shared drive should also be deleted. This option is only supported when use_domain_admin_access argument is set to true."
+      predefined:
+      - "true"
+      - "false"
+    - name: user_id
+      description: The user's primary email address.
+    - name: drive_id
+      required: true
+      description: The ID of the shared drive to delete. Can be retrieved using the `google-drive-drives-list` command.
   - name: google-drive-files-list
     description: Lists the user's shared drives.
     arguments:
@@ -1836,7 +1836,7 @@ script:
       description: Query string for searching shared drives.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false".'
+      description: 'Whether both My Drive and shared drive items should be included in the results.'
       name: include_items_from_all_drives
       predefined:
       - "true"
@@ -1886,7 +1886,7 @@ script:
       description: The user's primary email address.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether both My Drive and shared drive items should be included in the results. Possible values: "true" and "false".'
+      description: 'Whether both My Drive and shared drive items should be included in the results.'
       name: include_items_from_all_drives
       predefined:
       - "true"
@@ -2588,7 +2588,7 @@ script:
       description: The user's primary email address.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: 'Whether the requesting application supports both My Drives and shared drives.'
       name: supports_all_drives
       predefined:
       - "true"
@@ -2611,7 +2611,7 @@ script:
       description: Page token for shared drives.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: 'Whether the requesting application supports both My Drives and shared drives.'
       name: supports_all_drives
       predefined:
       - "true"
@@ -2654,7 +2654,7 @@ script:
       description: The user's primary email address.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether a confirmation email will be sent. Possible values: "true" and "false".'
+      description: 'Whether a confirmation email will be sent.'
       name: send_notification_email
       predefined:
       - "true"
@@ -2760,7 +2760,7 @@ script:
       description: The ID of the permission. Can be retrieved using the `google-drive-file-permissions-list` command.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: 'Whether the requesting application supports both My Drives and shared drives.'
       name: supports_all_drives
       predefined:
       - "true"
@@ -2780,7 +2780,7 @@ script:
       description: the label id to set for the field.
     - auto: PREDEFINED
       defaultValue: "false"
-      description: 'Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false".'
+      description: 'Whether the requesting application supports both My Drives and shared drives.'
       name: remove_label
       predefined:
       - "true"
@@ -3046,7 +3046,37 @@ script:
     - contextPath: GoogleDrive.Labels.labels.revisionId
       description: 'The revision id of the label.'
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.75697
+  - name: google-drive-file-copy
+    description: Make a copy of a Google Drive file.
+    arguments:
+    - description: The ID of the file to copy.
+      name: file_id
+      required: true
+    - description: The name of the copied file.
+      name: copy_title
+    - name: user_id
+      description: The user's primary email address.
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether the requesting application supports both My Drives and shared drives.
+      name: supports_all_drives
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: GoogleDrive.File.File.kind
+      description: The content type of the file.
+      type: String
+    - contextPath: GoogleDrive.File.File.id
+      description: The ID of the copied file.
+      type: String
+    - contextPath: GoogleDrive.File.File.name
+      description: The name of the copied file.
+      type: String
+    - contextPath: GoogleDrive.File.File.mimeType
+      description: The MIME type of the copied file.
+      type: String
+  dockerimage: demisto/googleapi-python3:1.0.0.77375
   isfetch: true
   runonce: false
   script: "-"

@@ -7,6 +7,7 @@ description: |-
   Enrich accounts using one or more integrations.
   Supported integrations:
   - Active Directory
+  - Microsoft Graph User
   - SailPoint IdentityNow
   - SailPoint IdentityIQ
   - PingOne
@@ -874,10 +875,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 04fff51c-4e58-4c1e-8625-1247f537d5b4
+    taskid: 82a4d18b-fcb9-416a-87e9-0c1b07255560
     type: playbook
     task:
-      id: 04fff51c-4e58-4c1e-8625-1247f537d5b4
+      id: 82a4d18b-fcb9-416a-87e9-0c1b07255560
       version: -1
       name: Active Directory - Get User Manager Details
       description: Takes an email address or a username of a user account in Active Directory, and returns the email address of the user's manager.
@@ -920,7 +921,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1034,10 +1035,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 0cc7d1db-2b59-42c7-846a-9859a3d851c9
+    taskid: 56bea608-c34d-4914-8b16-594603971e22
     type: condition
     task:
-      id: 0cc7d1db-2b59-42c7-846a-9859a3d851c9
+      id: 56bea608-c34d-4914-8b16-594603971e22
       version: -1
       name: Is there a manager?
       description: Is there a manager?
@@ -2020,6 +2021,72 @@ outputs:
   type: string
 - contextPath: PaloAltoNetworksXDR.RiskyUser.reasons.points
   description: The score.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.DONT_EXPIRE_PASSWORD
+  description: Whether to never expire the password on the account.
+  type: string
+- contextPath: ActiveDirectory.Users.userAccountControlFields.PASSWORD_EXPIRED
+  description: Whether the user password expired.
+  type: string
+- contextPath: Account.ManagerEmail
+  description: The manager email.
+  type: string
+- contextPath: AWS.IAM.Users
+  description: AWS IAM output.
+  type: string
+- contextPath: AWS.IAM.Users.UserName
+  description: The friendly name identifying the user.
+  type: string
+- contextPath: AWS.IAM.Users.UserId
+  description: The stable and unique string identifying the user.
+  type: string
+- contextPath: AWS.IAM.Users.Arn
+  description: The Amazon Resource Name (ARN) that identifies the user.
+  type: string
+- contextPath: AWS.IAM.Users.CreateDate
+  description: The date and time when the user was created.
+  type: string
+- contextPath: AWS.IAM.Users.Path
+  description: The path to the user.
+  type: string
+- contextPath: AWS.IAM.Users.PasswordLastUsed
+  description: The date and time,  when the user's password was last used to sign in to an AWS website.
+  type: string
+- contextPath: MSGraphUser.MobilePhone
+  description: User's mobile phone number.
+  type: string
+- contextPath: MSGraphUser.OfficeLocation
+  description: User's office location.
+  type: string
+- contextPath: Account.JobTitle
+  description: User’s job title.
+  type: string
+- contextPath: Account.TelephoneNumber
+  description: User’s mobile phone number.
+  type: string
+- contextPath: Account.Office
+  description: User’s office location.
+  type: string
+- contextPath: Account.Type
+  description: The account entity type.
+  type: string
+- contextPath: Account.Email.Address
+  description: User’s mail address.
+  type: string
+- contextPath: MSGraphUserManager.Manager.BusinessPhones
+  description: User's business phone numbers.
+  type: string
+- contextPath: MSGraphUser.BusinessPhones
+  description: User's business phone numbers.
+  type: string
+- contextPath: MSGraphUserManager.Manager.JobTitle
+  description: User's job title.
+  type: string
+- contextPath: MSGraphUserManager.Manager.MobilePhone
+  description: User's mobile phone number.
+  type: string
+- contextPath: MSGraphUserManager.Manager.OfficeLocation
+  description: User's office location.
   type: string
 tests:
 - Account Enrichment - Generic v2.1 - Test

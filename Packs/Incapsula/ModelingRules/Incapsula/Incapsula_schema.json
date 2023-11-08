@@ -139,7 +139,11 @@
       "requestClientApplication": {
         "type": "string",
         "is_array": false
-      },          
+      },
+      "cs11": {
+        "type": "string",
+        "is_array": false
+      },                
       "postbody": {
         "type": "string",
         "is_array": false
