@@ -28,9 +28,8 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
-    ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
+    XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
 from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
@@ -126,7 +125,6 @@ class Pack:
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = is_modified
-        self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
         self._is_data_source = False
@@ -1075,49 +1073,6 @@ class Pack:
         final_path_to_zipped_pack = f"{source_path}.zip"
         return task_status, final_path_to_zipped_pack
 
-    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
-        """
-        Checks if the pack modification is relevant for the current marketplace.
-
-        This is done by searching the modified files in the id_set, if the files were not found in id_set,
-        then the modified entities probably not relevant for the current marketplace upload.
-        This check is done to identify changed items inside a pack that have both XSIAM and XSOAR entities.
-
-        Args:
-            id_set (dict): The current id set.
-            modified_rn_files_paths (list): list of paths of the pack's modified release notes files.
-
-        Returns:
-            bool: whether the operation succeeded and changes are relevant for marketplace.
-            dict: data from id set for the modified files.
-        """
-        logging.debug(f"Starting to filter modified files of pack {self._pack_name} by the id set")
-
-        task_status = False
-        modified_files_data = {}
-
-        for pack_folder, modified_file_paths in self._modified_files.items():
-            modified_entities = []
-            for path in modified_file_paths:
-                if id_set:
-                    if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
-                        logging.debug(f"The entity with the path {path} is present in the id set")
-                        modified_entities.append(id_set_entity)
-                else:
-                    if entity := get_graph_entity_by_path(Path(path), marketplace):
-                        logging.debug(f"The entity with the path {path} is present in the content graph")
-                        modified_entities.append(entity)
-
-            if modified_entities:
-                modified_files_data[pack_folder] = modified_entities
-
-        if not self._modified_files or modified_files_data or modified_rn_files_paths:
-            # The task status will be success if there are no modified files in the pack or if the modified files were found in
-            # the id-set or if there are modified old release notes files for items that are not being modified.
-            task_status = True
-
-        return task_status, modified_files_data
-
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
@@ -1744,15 +1699,7 @@ class Pack:
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
         filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set, marketplace)
 
-        # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
-        #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
-        #     # modified files are actually relevant for the other marketplace.
-        #     logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
-        #                   f"marketplace")
-        #     return {}, True
-
         # Convert the RN dict to string
-
         final_release_notes = construct_entities_block(filtered_release_notes).strip()
         if not final_release_notes:
             final_release_notes = f"Changes are not relevant for " \
@@ -1761,25 +1708,6 @@ class Pack:
         changelog_entry[Changelog.RELEASE_NOTES] = final_release_notes
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
-
-    def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
-        """
-        Returns true if all the modified files are also relevant to another marketplace besides the current one
-         this upload is done for.
-
-        Args:
-            modified_files_data (dict): The modified files data that are given from id-set.
-
-        Return:
-            (bool) True, if all the files are relevant to more than one marketplace.
-                   False, if there is an item that is relevant only to the current marketplace.
-        """
-        modified_items = []
-
-        for entities_data in modified_files_data.values():
-            modified_items.extend([list(item.values())[0] for item in entities_data])
-
-        return all(len(item['marketplaces']) != 1 for item in modified_items)
 
     @staticmethod
     def filter_entries_by_display_name(release_notes: dict, id_set: dict, marketplace="xsoar"):
@@ -4242,44 +4170,6 @@ def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.
     index_string = index_blob.download_as_string()
     index_json = json.loads(index_string)
     return index_json.get('commit')
-
-
-def get_graph_entity_by_path(entity_path: Path, marketplace):
-    with Neo4jContentGraphInterface() as content_graph_interface:
-        return content_graph_interface.search(marketplace, path=entity_path)[0]
-
-
-def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
-    """
-    Get the full entity dict from the id set of the entity given as a path, if it does not exist in the id set
-    return None. The item's path in the id set is of the yml/json file, so for integrations, scripts and playbooks this
-    function checks if there is an item in the id set that the containing folder of it's yml file is the same as the
-    containing folder of the entity path given. For all other content items, we check if the path's are identical.
-    Args:
-        entity_path: path to entity (content item)
-        pack_folder: containing folder of that item
-        id_set: id set dict
-
-    Returns:
-        id set dict entity if exists, otherwise {}
-    """
-    logging.debug(f"Checking if the entity with the path {entity_path} is present in the id set")
-
-    for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
-
-        if len(entity_path.parts) == 5:  # Content items that have a sub folder (integrations, scripts, etc)
-            if Path(list(id_set_entity.values())[0]['file_path']).parent == entity_path.parent:
-                return id_set_entity
-
-        else:  # Other content items
-            if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
-                return id_set_entity
-
-    if pack_folder == PackFolders.CLASSIFIERS.value:  # For Classifiers, check also in Mappers
-        for id_set_entity in id_set['Mappers']:
-            if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
-                return id_set_entity
-    return {}
 
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
