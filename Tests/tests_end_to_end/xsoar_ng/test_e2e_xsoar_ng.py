@@ -11,6 +11,11 @@ from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGAp
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.utils.utils import retry
 from Tests.tools import get_integration_params
+from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
+
+
+install_logging('e2e-xsoar-ng.log', logger=logging)
 
 
 @contextmanager
@@ -29,6 +34,7 @@ def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: list[FeedIn
             try:
                 response = xsoar_ng_client.create_indicator(indicator.value, indicator_type=indicator.type, score=indicator.score)
                 if created_indicator_id := response.get("id"):
+                    logging.info(f'Created indicator {indicator}')
                     indicators_to_remove.append(created_indicator_id)
             except ApiException as e:
                 if "it is in the exclusion list" not in e.reason:
@@ -36,6 +42,7 @@ def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: list[FeedIn
         yield
     finally:
         xsoar_ng_client.delete_indicators(indicators_to_remove)
+        logging.info(f'Deleted indicators {indicators}')
 
 
 @pytest.fixture()
@@ -68,19 +75,23 @@ def create_integration_instance(
         the raw api response of the newly created integration instance
     """
     created_instance_uuid = ""
+    name = instance_name or f"end-to-end-{integration_id}"
     try:
         response = xsoar_ng_client.create_integration_instance(
             _id=integration_id,
-            name=instance_name or f"end-to-end-{integration_id}",
+            name=name,
             integration_instance_config=integration_params,
             integration_log_level="Verbose",
             is_long_running=is_long_running
         )
+        logging.info(
+            f'Created integration instance {integration_id} with name {name} as long-running-integration={is_long_running}')
         created_instance_uuid = response.get("id")
         yield response
     finally:
         if created_instance_uuid:
             xsoar_ng_client.delete_integration_instance(created_instance_uuid)
+            logging.info(f'Deleted integration instance {integration_id} with name {name}')
 
 
 @contextmanager
@@ -99,15 +110,18 @@ def create_incident(
         the raw api response of the newly created incident
     """
     incident_id = None
+    incident_name = name or f'end-to-end-{playbook_id}-incident'
     try:
         response = xsoar_ng_client.create_incident(
-            name or f'end-to-end-{playbook_id}-incident', should_create_investigation=True, attached_playbook_id=playbook_id
+            incident_name, should_create_investigation=True, attached_playbook_id=playbook_id
         )
+        logging.info(f'Created incident {incident_name} that will run the playbook {playbook_id}')
         incident_id = response.id
         yield response
     finally:
         if incident_id:
             xsoar_ng_client.delete_incidents(incident_id)
+            logging.info(f'Removed incident {incident_name}')
 
 
 @contextmanager
@@ -123,9 +137,11 @@ def create_playbook(xsoar_ng_client: XsoarNGApiClient, playbook_path: str, playb
     """
     try:
         xsoar_ng_client.client.import_playbook(playbook_path)
+        logging.info(f'Created playbook {playbook_id}')
         yield
     finally:
         xsoar_ng_client.delete_playbook(playbook_name, playbook_id)
+        logging.info(f'Deleted playbook {playbook_id}')
 
 
 @retry(times=10, delay=30)
@@ -240,6 +256,7 @@ def get_fetched_incident(
             start_investigation_response = xsoar_ng_client.start_incident_investigation(incident_id)
             incident["investigationId"] = start_investigation_response.get("response", {}).get("id")
 
+        logging.info(f'Found the following incident {incident.get("name")}')
         yield incident
 
     finally:
