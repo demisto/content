@@ -244,7 +244,7 @@ script:
     - description: A comma-separated list of URLs to add to the specified category. For example, pandora.com,spotify.com.
       isArray: true
       name: url
-      required: true
+      required: false
     - description: A comma-separated list of URLs to add to the retaining parent category section inside the specified category. For example, pandora.com,spotify.com.
       isArray: true
       name: retaining-parent-category-url
