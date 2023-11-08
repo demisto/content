@@ -1,4 +1,4 @@
-This playbook is responsible for collecting and enriching data on Identity Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
+This playbook provides a generic enrichment of AWS, GCP, and Azure compute resources.
 
 ## Dependencies
 
@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* AWS - IAM
+This playbook does not use any integrations.
 
 ### Scripts
 
@@ -18,19 +18,9 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* aws-iam-list-access-keys-for-user
-* msgraph-groups-list-groups
-* gcp-iam-service-accounts-get
-* msgraph-identity-protection-risky-user-history-list
-* aws-iam-get-user
-* aws-iam-list-groups-for-user
-* gcp-iam-project-role-list
-* aws-iam-list-user-policies
-* gsuite-role-assignment-list
-* gcp-iam-service-account-keys-get
-* gsuite-user-get
-* aws-iam-list-attached-user-policies
-* msgraph-user-get
+* aws-ec2-describe-instances
+* gcp-compute-get-instance
+* azure-vm-get-instance-details
 
 ## Playbook Inputs
 
@@ -38,10 +28,12 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| username | User name. |  | Optional |
-| GCPProjectName | The GCP project name. |  | Optional |
-| cloudProvider | The cloud service provider involved. |  | Optional |
-| cloudIdentityType | The cloud identity type. |  | Optional |
+| cloudProvider | The cloud provider involved. |  | Optional |
+| instanceName | The instance name. |  | Optional |
+| instanceID | The instance ID. |  | Optional |
+| zone | The zone holding the instance. |  | Optional |
+| region | The region holding the instance. |  | Optional |
+| azureResourceGroup | The instance's resource group. |  | Optional |
 
 ## Playbook Outputs
 
@@ -49,33 +41,36 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AWS.IAM.Users | AWS AM Users include:<br/>UserId<br/>Arn<br/>CreateDate<br/>Path<br/>PasswordLastUsed. | unknown |
-| AWS.IAM.Users.AccessKeys | AWS IAM Users Access Keys include:<br/>AccessKeyId<br/>Status<br/>CreateDate<br/>UserName. | unknown |
-| GCPIAM | GCP IAM information. | unknown |
-| GSuite | GSuite user information. | unknown |
-| GSuite.PageToken | Token to specify the next page in the list. | unknown |
-| MSGraphUser | MSGraph user information. | unknown |
-| MSGraphGroups | MSGraph groups information. | unknown |
-| MSGraph.identityProtection | MSGraph identity protection - risky user history. | unknown |
-| AWS.IAM.Users.AccessKeys.CreateDate | The date when the access key was created. | unknown |
-| AWS.IAM.Users.AccessKeys.UserName | The name of the IAM user that the key is associated with. | unknown |
-| AWS.IAM.Users.Groups | AWS IAM - User groups. | unknown |
-| AWS.IAM.UserPolicies | AWS IAM - user inline policies. | unknown |
-| AWS.IAM.AttachedUserPolicies | AWS IAM - User attached policies. | unknown |
-| MSGraphGroup | MSGraph group information. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory | User risk history. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory.userPrincipalName | Risky user principal name. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory.userDisplayName | Risky user display name. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory.riskDetail | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory.riskstate | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory.riskLevel | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory.isProcessing | Indicates whether a user's risky state is being processed by the backend. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory.isDeleted | Indicates whether the user is deleted. | unknown |
-| MSGraph.identityProtection.RiskyUserHistory.id | Unique ID of the risky user. | unknown |
+| AWS.EC2.Instances | The instances. | unknown |
+| AWS.EC2.Instances.Monitoring | The monitoring for the instance. | unknown |
+| AWS.EC2.Instances.State | The current state of the instance. | unknown |
+| AWS.EC2.Instances.IamInstanceProfile | The IAM instance profile associated with the instance, if applicable. | unknown |
+| AWS.EC2.Instances.NetworkInterfaces | The network interfaces for the instance. | unknown |
+| AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddresses | The private IPv4 addresses associated with the network interface. | unknown |
+| AWS.EC2.Instances.SecurityGroups | The security groups for the instance. | unknown |
+| AWS.EC2.Instances.StateReason | The reason for the most recent state transition. | unknown |
+| AWS.EC2.Instances.Tags | Any tags assigned to the instance. | unknown |
+| GoogleCloudCompute.Instances | The instances. | unknown |
+| GoogleCloudCompute.Instances.tags | Tags to apply to this instance. Tags are used to identify valid sources or targets for network firewalls and are specified by the client during instance creation. The tags can be later modified by the setTags method. Each tag within the list must comply with RFC1035. Multiple tags can be specified via the tags.items field. | unknown |
+| GoogleCloudCompute.Instances.networkInterfaces | An array of network configurations for this instance. These specify how interfaces are configured to interact with other network services, such as connecting to the internet. Multiple interfaces are supported per instance. | unknown |
+| GoogleCloudCompute.Instances.networkInterfaces.aliasIpRanges | An array of alias IP ranges for this network interface. Can only be specified for network interfaces on subnet-mode networks. | unknown |
+| GoogleCloudCompute.Instances.disks | Array of disks associated with this instance. Persistent disks must be created before you can assign them. | unknown |
+| GoogleCloudCompute.Instances.disks.initializeParams | Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance. | unknown |
+| GoogleCloudCompute.Instances.disks.initializeParams.sourceImageEncryptionKey | The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key. | unknown |
+| GoogleCloudCompute.Instances.disks.initializeParams.labels | Labels to apply to this disk. These can be later modified by the disks.setLabels method. This field is only applicable for persistent disks. | unknown |
+| GoogleCloudCompute.Instances.disks.guestOsFeatures | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. | unknown |
+| GoogleCloudCompute.Instances.disks.diskEncryptionKey | Encrypts or decrypts a disk using a customer-supplied encryption key. | unknown |
+| GoogleCloudCompute.Instances.metadata | The metadata key/value pairs assigned to this instance. This includes custom metadata and predefined keys. | unknown |
+| GoogleCloudCompute.Instances.metadata.items | Array of key/value pairs. The total size of all keys and values must be less than 512 KB. | unknown |
+| GoogleCloudCompute.Instances.serviceAccounts | A list of service accounts, with their specified scopes, authorized for this instance. Only one service account per VM instance is supported. | unknown |
+| GoogleCloudCompute.Instances.scheduling | Sets the scheduling options for this instance. | unknown |
+| GoogleCloudCompute.Instances.scheduling.nodeAffinities | A set of node affinity and anti-affinity. | unknown |
+| GoogleCloudCompute.Instances.labels | Labels to apply to this instance. These can be later modified by the setLabels method. | unknown |
+| GoogleCloudCompute.Instances.guestAccelerators | A list of the type and count of accelerator cards attached to the instance. | unknown |
+| Azure.Compute | The VMs. | unknown |
 
 ## Playbook Image
 
 ---
 
-![Cloud IAM Enrichment - Generic](../doc_files/Cloud_IAM_Enrichment_-_Generic.png)
+![Cloud Compute Enrichment - Generic](../doc_files/Cloud_Compute_Enrichment_-_Generic.png)
