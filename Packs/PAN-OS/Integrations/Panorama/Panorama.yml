@@ -6001,7 +6001,7 @@ script:
     - description: whether to hide the polling result (automatically filled by polling).
       name: hide_polling_output
       deprecated: true
-    - description: Show the data of the fields `after-change-preview`, and `before-change-preview`, or keep them truncated. The full data are under the fields `after-change-detail`, and `before-change-detail`. If this argument was set to `no` when retrieving a job ID, then the data of the fields of that job ID will be truncated, and not if set to `yes`.
+    - description: Whether to show only `after-change-preview`, and `before-change-preview`, or get full data for it.  The full data are under the fields `after-change-detail`, and `before-change-detail`.
       name: show-detail
       predefined:
       - yes
