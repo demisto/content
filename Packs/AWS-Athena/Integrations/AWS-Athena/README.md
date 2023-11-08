@@ -55,8 +55,8 @@ Start Athena Query.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Athena.StartQuery | String | ID of the newly created query. | 
-| AWS.Athena.QueryString | String | Object size. | 
+| AWS.Athena.StartQuery.QueryExecutionId | String | ID of the newly created query. | 
+| AWS.Athena.StartQuery.QueryString | String | Object size. | 
 
 ### aws-athena-stop-query
 

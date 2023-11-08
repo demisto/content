@@ -46,7 +46,6 @@ def parse_rows_response(rows_data: list[dict]) -> list[dict]:
 
 
 def start_query_execution_command(args: dict, client):
-    data = []
     query_string: str = args['QueryString']
     kwargs: dict[str, Any] = {'QueryString': query_string}
 
@@ -65,17 +64,17 @@ def start_query_execution_command(args: dict, client):
 
     response = client.start_query_execution(**kwargs)
 
-    data.append({
+    context_data = {
         'QueryString': query_string,
         'QueryExecutionId': response['QueryExecutionId']
-    })
+    }
 
     return CommandResults(
         outputs_prefix='AWS.Athena.StartQuery',
         outputs_key_field='QueryExecutionId',
-        outputs=data,
+        outputs=context_data,
         raw_response=response,
-        readable_output=tableToMarkdown('AWS Athena Query Start', data),
+        readable_output=tableToMarkdown('AWS Athena Query Start', context_data),
     )
 
 

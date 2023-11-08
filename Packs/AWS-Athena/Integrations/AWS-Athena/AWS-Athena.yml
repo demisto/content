@@ -113,12 +113,12 @@ script:
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
-    description: Start Athena Query.
+    description: Start an Athena query.
     outputs:
-    - contextPath: AWS.Athena.StartQuery
+    - contextPath: AWS.Athena.StartQuery.QueryExecutionId
       description: ID of the newly created query.
       type: String
-    - contextPath: AWS.Athena.QueryString
+    - contextPath: AWS.Athena.StartQuery.QueryString
       description: Object size.
       type: String
   - name: aws-athena-stop-query
