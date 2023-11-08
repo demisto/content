@@ -3863,6 +3863,7 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
+            "instance_names": "QRadar_v3",
             "fromversion": "6.0.0",
             "timeout": 600,
             "is_mockable": false
