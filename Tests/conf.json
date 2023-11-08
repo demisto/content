@@ -5575,6 +5575,11 @@
             "integrations": "Forcepoint Security Management Center",
             "playbookID": "ForcepointSecurityManagementCenter_test",
             "is_mockable": false
+        },
+        {
+            "integrations": "Netcraft V2",
+            "playbookID": "Test - Netcraft",
+            "timeout": 2400
         }
     ],
     "skipped_tests": {
