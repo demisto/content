@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Tenable.io Event Collector
+  id: Tenable.io Event Collector Test
   version: -1
 configuration:
 - additionalinfo: This is the API endpoint for the Tenable.io API.
@@ -51,8 +51,8 @@ configuration:
   required: true
   type: 0
 description: Use Tenable.io Event Collector integration to get Audit and Endpoint logs from Tenable.
-display: Tenable.io Event Collector
-name: Tenable.io Event Collector
+display: Tenable.io Event Collector Test
+name: Tenable.io Event Collector Test
 script:
   commands:
   - arguments:
