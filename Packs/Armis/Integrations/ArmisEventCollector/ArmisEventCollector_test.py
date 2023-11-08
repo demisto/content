@@ -259,25 +259,34 @@ class TestHelperFunction:
     # test_add_time_to_events parametrize arguments
     case_one_event = (
         [{'time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'}
-         ], [{'time': '2023-01-01T01:00:10.123456+00:00', '_time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'}]
+         ], [{'time': '2023-01-01T01:00:10.123456+00:00', '_time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'}],
+        'events'
     )
 
     case_two_events = (
         [{'time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'},
             {'time': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}],
         [{'time': '2023-01-01T01:00:10.123456+00:00', '_time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'},
-         {'time': '2023-01-01T01:00:20.123456+00:00', '_time': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}]
+         {'time': '2023-01-01T01:00:20.123456+00:00', '_time': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}],
+        'events'
     )
     case_empty_event: tuple = (
-        [], []
+        [], [], 'events'
+    )
+    case_devices_events: tuple = (
+        [{'lastSeen': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'},
+            {'lastSeen': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}],
+        [{'lastSeen': '2023-01-01T01:00:10.123456+00:00', '_time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'},
+         {'lastSeen': '2023-01-01T01:00:20.123456+00:00', '_time': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}],
+        'devices'
     )
 
-    @pytest.mark.parametrize('events, expected_result', [
+    @pytest.mark.parametrize('events, expected_result, eventType', [
         case_one_event,
         case_two_events,
         case_empty_event,
     ])
-    def test_add_time_to_events(self, events, expected_result):
+    def test_add_time_to_events(self, events, expected_result, eventType):
         """
         Given:
             - Case 1: One event with valid time attribute.
@@ -289,7 +298,7 @@ class TestHelperFunction:
             - Add _time attribute to each event with a valid time attribute.
         """
         from ArmisEventCollector import add_time_to_events
-        add_time_to_events(events)
+        add_time_to_events(events, eventType)
         assert events == expected_result
 
     def test_events_to_command_results(self):
