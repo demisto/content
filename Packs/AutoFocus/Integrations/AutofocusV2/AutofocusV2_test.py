@@ -385,7 +385,7 @@ def test_create_relationships_list():
          - The relationships that are created contain the expected types and names.
      """
     from AutofocusV2 import create_relationships_list
-    expected_entity_b_types = ['STIX Threat Actor', 'Campaign', 'STIX Malware', 'STIX Attack Pattern']
+    expected_entity_b_types = ['Threat Actor', 'Campaign', 'Malware', 'Attack Pattern']
     expected_name = 'indicator-of'
     expected_name_entity_b = ['Upatre1', 'Upatre2', 'Upatre3', 'Upatre5']
 
