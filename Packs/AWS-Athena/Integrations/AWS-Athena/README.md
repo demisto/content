@@ -53,7 +53,11 @@ Start Athena Query.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Athena.StartQuery | String | ID of the newly created query. | 
+| AWS.Athena.QueryString | String | Object size. | 
+
 ### aws-athena-stop-query
 
 ***
@@ -97,7 +101,10 @@ Returns information about a single execution of a query if you have access to th
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Athena.QueryExecution | Dictionary | Query execution details. | 
+
 ### aws-athena-get-query-results
 
 ***
@@ -119,4 +126,6 @@ Returns the results of a single query execution specified by QueryExecutionId if
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.Athena.QueryResults | List | List of query results. | 

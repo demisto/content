@@ -113,6 +113,13 @@ script:
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
+    outputs:
+      - contextPath: AWS.Athena.StartQuery
+        description: ID of the newly created query.
+        type: String
+      - contextPath: AWS.Athena.QueryString
+        description: Object size.
+        type: String
     description: Start Athena Query.
   - name: aws-athena-stop-query
     arguments:
@@ -141,6 +148,10 @@ script:
     - name: QueryExecutionId
       required: true
       description: The unique ID of the query execution.
+    outputs:
+      - contextPath: AWS.Athena.QueryExecution
+        description: Query execution details.
+        type: Dictionary
     description: Returns information about a single execution of a query if you have access to the workgroup in which the query ran.
   - name: aws-athena-get-query-results
     arguments:
@@ -155,6 +166,10 @@ script:
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+    outputs:
+      - contextPath: AWS.Athena.QueryResults
+        description: List of query results.
+        type: List
     description: Returns the results of a single query execution specified by QueryExecutionId if you have access to the workgroup in which the query ran.
   dockerimage: demisto/boto3py3:1.0.0.79944
   subtype: python3

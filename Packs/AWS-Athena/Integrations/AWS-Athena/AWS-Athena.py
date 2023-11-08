@@ -20,6 +20,15 @@ class DatetimeEncoder(json.JSONEncoder):
 
 
 def parse_rows_response(rows_data: list[dict]) -> list[dict]:
+    """
+    Parse and arrange the 'Rows' data from the response.
+
+    Args:
+        rows_data (list[dict]): The 'Rows' data from the response.
+
+    Returns:
+        list[dict]: The data in a parsed and arranged format.
+    """
     keys: list[str] = [item['VarCharValue'] for item in rows_data[0]['Data']]
     raw_results = [item['Data'] for item in rows_data[1:]]
     result_data = []
@@ -36,14 +45,7 @@ def parse_rows_response(rows_data: list[dict]) -> list[dict]:
     return result_data
 
 
-def start_query_execution_command(args: dict, aws_client):
-    client = aws_client.aws_session(
-        service=AWS_SERVICE_NAME,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
+def start_query_execution_command(args: dict, client):
     data = []
     query_string: str = args['QueryString']
     kwargs: dict[str, Any] = {'QueryString': query_string}
@@ -67,45 +69,31 @@ def start_query_execution_command(args: dict, aws_client):
         'QueryString': query_string,
         'QueryExecutionId': response['QueryExecutionId']
     })
-
-    return_results(CommandResults(
+    # b2178832-66d2-4045-8342-e54cf4c0e21b
+    return CommandResults(
         outputs_prefix='AWS.Athena.StartQuery',
         outputs_key_field='QueryExecutionId',
         outputs=data,
         raw_response=response,
         readable_output=tableToMarkdown('AWS Athena Query Start', data),
-    ))
-
-
-def stop_query_command(args: dict, aws_client):
-    client = aws_client.aws_session(
-        service=AWS_SERVICE_NAME,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
     )
+
+
+def stop_query_command(args: dict, client):
     query_execution_id = args['QueryExecutionId']
     response = client.stop_query_execution(QueryExecutionId=query_execution_id)
 
     if response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
-        demisto.results(f"The query {query_execution_id} was Deleted.")
+        return CommandResults(readable_output="The query {query_execution_id} was Deleted.")
 
     else:
-        demisto.results(f"Failed to Delete the query '{query_execution_id}'.")
         demisto.debug("Response:\n" + str(response))
+        return CommandResults(readable_output=f"Failed to Delete the query '{query_execution_id}'.")
 
 
-def get_query_execution_command(args: dict, aws_client):
-    client = aws_client.aws_session(
-        service=AWS_SERVICE_NAME,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
-    kwargs = {'QueryExecutionId': args['QueryExecutionId']}
-    raw_response = client.get_query_execution(**kwargs)
+def get_query_execution_command(args: dict, client):
+    query_execution_id = args['QueryExecutionId']
+    raw_response = client.get_query_execution(QueryExecutionId=query_execution_id)
 
     try:
         raw_response = json.loads(json.dumps(raw_response, cls=DatetimeEncoder))
@@ -114,46 +102,36 @@ def get_query_execution_command(args: dict, aws_client):
         return_error('Could not parse the received response.')
         demisto.debug(f'Error:\n{e}\n'
                       f'Response:\n{raw_response}')
-        return
 
     response = raw_response['QueryExecution']
 
-    return_results(CommandResults(
+    return CommandResults(
         outputs_prefix='AWS.Athena.QueryExecution',
         outputs_key_field='QueryExecutionId',
         outputs=response,
         raw_response=raw_response,
         readable_output=tableToMarkdown('AWS Athena Query Execution', response),
-    ))
-
-
-def get_query_results_command(args: dict, aws_client):
-    client = aws_client.aws_session(
-        service=AWS_SERVICE_NAME,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
     )
 
+
+def get_query_results_command(args: dict, client):
     query_execution_id: str = args['QueryExecutionId']
-    kwargs = {'QueryExecutionId': query_execution_id}
-    raw_response = client.get_query_results(**kwargs)
+    raw_response = client.get_query_results(QueryExecutionId=query_execution_id)
 
     parsed_response = parse_rows_response(rows_data=raw_response['ResultSet']['Rows'])
 
     for result_item in parsed_response:
         result_item['query_execution_id'] = query_execution_id
 
-    return_results(CommandResults(
+    return CommandResults(
         outputs_prefix='AWS.Athena.QueryResults',
         outputs=parsed_response,
         raw_response=raw_response,
         readable_output=tableToMarkdown('AWS Athena Query Results', parsed_response),
-    ))
+    )
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
@@ -168,29 +146,47 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries', 5)
 
-    aws_client = AWSClient(aws_default_region=aws_default_region, aws_role_arn=aws_role_arn,
-                           aws_role_session_name=aws_role_session_name, aws_role_session_duration=aws_role_session_duration,
-                           aws_role_policy=None, aws_access_key_id=aws_access_key_id, aws_secret_access_key=aws_secret_access_key,
-                           verify_certificate=verify_certificate, timeout=timeout, retries=retries)
-
     try:
         demisto.debug(f'Command being called is {command}')
+
+        aws_client = AWSClient(aws_default_region=aws_default_region, aws_role_arn=aws_role_arn,
+                               aws_role_session_name=aws_role_session_name, aws_role_session_duration=aws_role_session_duration,
+                               aws_role_policy=None, aws_access_key_id=aws_access_key_id,
+                               aws_secret_access_key=aws_secret_access_key,
+                               verify_certificate=verify_certificate, timeout=timeout, retries=retries)
+
+        client = aws_client.aws_session(
+            service=AWS_SERVICE_NAME,
+            region=args.get('region'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
+        )
+
         if demisto.command() == 'test-module':
             response = aws_client.aws_session(service=AWS_SERVICE_NAME).list_named_queries()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                demisto.results('ok')
+                return 'ok'
+
+            else:
+                return CommandResults(readable_output=f'Error: {response}')
 
         elif demisto.command() == 'aws-athena-start-query':
-            start_query_execution_command(args=args, aws_client=aws_client)
+            result = start_query_execution_command(args=args, client=client)
 
         elif demisto.command() == 'aws-athena-stop-query':
-            stop_query_command(args=args, aws_client=aws_client)
+            result = stop_query_command(args=args, client=client)
 
         elif demisto.command() == 'aws-athena-get-query-execution':
-            get_query_execution_command(args=args, aws_client=aws_client)
+            result = get_query_execution_command(args=args, client=client)
 
         elif demisto.command() == 'aws-athena-get-query-results':
-            get_query_results_command(args=args, aws_client=aws_client)
+            result = get_query_results_command(args=args, client=client)
+
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
+
+        return_results(result)
 
     except Exception as e:
         return_error(f'Error: {e}')
