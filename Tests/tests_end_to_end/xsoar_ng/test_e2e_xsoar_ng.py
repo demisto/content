@@ -1,4 +1,3 @@
-import time
 from datetime import timedelta
 from datetime import datetime
 from contextlib import contextmanager
@@ -362,7 +361,6 @@ def test_taxii2_server(
             assert indicators, f'could not get indicators from url={response.request.url} with available ' \
                 f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
                 f'status code={response.status_code}, response={indicators}'
-
 
 
 def test_slack_ask(request: SubRequest, xsoar_ng_client: XsoarNGApiClient):
