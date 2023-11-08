@@ -704,14 +704,13 @@ class TestMergeVersionBlocks:
     def test_merge_rns_with_several_docker_updates(self, pack_rns: dict, expected_rns: str, expected_version: str):
         """
         Given: Two consecutive versions of RNs.
-            - Case 1: Both containing general pack notes.
-            - Case 2: One contains a content entity change and one contains general pack notes.
-            - Case 3: One is combined (content entity change & general note) and one contains general pack notes.
+            - Case 1: Both containing docker updates.
+            - Case 2: Both containing docker updates and other updates.
+            - Case 3: One is combined (docker updates and other updates) and one contains other updates only.
         When: Using merge_version_blocks function.
         Then: Ensure that the merge was done correctly:
-            - General notes were merged and are on top.
-            - All other notes are also present.
-            - The latest version is as expected.
+            - Only one docker update is present.
+            - It is the one that came from the latest version.
         """
         merged_rn_block, latest_version = merge_version_blocks(pack_rns)
         assert merged_rn_block == expected_rns
