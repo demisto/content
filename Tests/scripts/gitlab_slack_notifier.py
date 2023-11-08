@@ -11,6 +11,7 @@ from typing import Any
 
 import gitlab
 import requests
+from dateutil.relativedelta import relativedelta
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
 from gitlab.v4.objects import ProjectPipelineJob
 from slack_sdk import WebClient
@@ -296,7 +297,6 @@ def construct_slack_msg(triggering_workflow: str,
                         pull_request: GithubPullRequest | None) -> list[dict[str, Any]]:
     # report failing jobs
     content_fields = []
-    slack_msg_append = []
 
     failed_jobs_names = {job.name: job.web_url for job in pipeline_failed_jobs}
     if failed_jobs_names:
@@ -331,6 +331,7 @@ def construct_slack_msg(triggering_workflow: str,
         content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE, "XSIAM", False)
         content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
 
+    slack_msg_append = []
     # report failing test-playbooks and test modeling rules.
     if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR, CONTENT_MERGE}:
         slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, pipeline_url, title="XSOAR")
@@ -403,10 +404,11 @@ def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
 
 def construct_coverage_slack_msg() -> list[dict[str, Any]]:
     coverage_today = get_total_coverage(filename=(ROOT_ARTIFACTS_FOLDER / "coverage_report" / "coverage-min.json").as_posix())
-    yesterday = datetime.now() - timedelta(days=1)
-    coverage_yesterday = get_total_coverage(date=yesterday)
+    coverage_yesterday = get_total_coverage(date=datetime.now() - timedelta(days=1))
+    coverage_last_month = get_total_coverage(date=datetime.now() - relativedelta(months=-1))
     color = 'good' if coverage_today >= coverage_yesterday else 'danger'
-    title = f'Content code coverage: {coverage_today:.3f}% (Yesterday: {coverage_yesterday:.3f}%)'
+    title = (f'Content code coverage: {coverage_today:.3f}% (Yesterday: {coverage_yesterday:.3f}%, '
+             f'Last month: {coverage_last_month:.3f}%)')
 
     return [{
         'fallback': title,
