@@ -92,6 +92,7 @@ def get_existing_incidents(input_args, current_incident_type):
     for res in incidents_query_res:
         if res['Contents']:
             incidents_query_contents = res['Contents']
+            break
     incidents = json.loads(incidents_query_contents)
     return incidents
 
