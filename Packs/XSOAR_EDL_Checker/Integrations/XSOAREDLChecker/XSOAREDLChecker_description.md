@@ -2,9 +2,13 @@
 
 This integration checks an external dynamic list provided by the [XSOAR Generic Indicators Export Service](https://xsoar.pan.dev/docs/reference/integrations/edl), to validate it is responding as required.
 
+XSOAR 6.x:
 Only supports lists hosted off the XSOAR server, and requires the following server configuration be set from Settings -> About -> Troubleshooting
 
 instance.execute.external = true 
+
+XSOAR 8.X: 
+Make sure to configre the credentials for Long Running Integrations (Settings -> Settings & Info -> Instances -> Long Running Integrations)
 
 ## Setup
 
