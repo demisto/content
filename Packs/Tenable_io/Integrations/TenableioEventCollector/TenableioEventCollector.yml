@@ -107,7 +107,9 @@ configuration:
   display: Collect only assets seen in last
   type: 21
   required: false
+  defaultvalue: 'all'
   options:
+  - 'all'
   - '30'
   - '360'
   - '107'
