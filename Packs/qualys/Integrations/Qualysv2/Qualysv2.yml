@@ -2718,7 +2718,7 @@ script:
     - contextPath: Qualys.Purge.ID
       description: IDs of the hosts queued for purging.
     description: Purge hosts in your account to remove the assessment data associated with them.
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80014
   script: ''
   subtype: python3
   type: python
