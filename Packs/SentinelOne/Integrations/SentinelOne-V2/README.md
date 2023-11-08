@@ -60,7 +60,7 @@ Returns all agents that match the specified criteria.
 | min_active_threats | Minimum number of threats per agent. | Optional | 
 | limit | The maximum number of agents to return. Default is 10. | Optional | 
 | params | Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd. | Optional | 
-| columns | Additionals fields to display. | Optional |
+| columns | A comma-separated list of additionals fields to display. | Optional |
 
 #### Context Output
 
@@ -673,7 +673,7 @@ Returns all Deep Visibility events that match the query.
 | limit | Maximum number of items to return (1-100). Default is 50. | Optional | 
 | query_id | QueryId obtained when creating a query in the sentinelone-create-query command. Example: "q1xx2xx3". | Required | 
 | cursor | Cursor pointer to get next page of results from query. | Optional | 
-| columns | Additionals fields to display. | Optional |
+| columns | A comma-separated list of additionals fields to display. | Optional |
 
 #### Context Output
 

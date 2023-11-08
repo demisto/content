@@ -158,8 +158,9 @@ script:
       name: limit
     - description: Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4). Query params are OR'd.
       name: params
-    - description: Additionals fields to display.
+    - description: A comma-separated list of additionals fields to display.
       name: columns
+      isArray: true
     description: Returns all agents that match the specified criteria.
     name: sentinelone-list-agents
     outputs:
@@ -1031,8 +1032,9 @@ script:
       required: true
     - description: Cursor pointer to get next page of results from query.
       name: cursor
-    - description: Additionals fields to display.
+    - description: A comma-separated list of additionals fields to display.
       name: columns
+      isArray: true
     description: Returns all Deep Visibility events that match the query.
     name: sentinelone-get-events
     outputs:
