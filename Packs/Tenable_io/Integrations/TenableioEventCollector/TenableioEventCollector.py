@@ -656,7 +656,7 @@ def main() -> None:  # pragma: no cover
 
             send_events_to_xsiam(assets, product=PRODUCT, vendor=VENDOR)
             demisto.debug(f"done sending {len(assets)} assets to xsiam")
-            demisto.updateModuleHealth({'eventsPulled': len(assets)})
+            # demisto.updateModuleHealth({'eventsPulled': len(assets)})
 
             # todo: to be implemented in CSP once we have the api endpoint from xdr
             demisto.updateModuleHealth({'assetsPulled': len(assets)})
