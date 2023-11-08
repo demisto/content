@@ -10,6 +10,9 @@ ignore=BA101
 [file:README.md]
 ignore=RM104
 
+[file:playbook-playbook-Detonate_File_-_JoeSecurity_V2.yml]
+ignore=PB118
+
 [known_words]
 html
 readme
