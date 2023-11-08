@@ -22,6 +22,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -83,6 +84,7 @@ tasks:
     id: "2"
     taskid: 08cfdb90-ed08-4a4b-8cb4-a4d15eee3c10
     type: title
+    description: 'Title'
     task:
       id: 08cfdb90-ed08-4a4b-8cb4-a4d15eee3c10
       version: -1
@@ -109,6 +111,7 @@ tasks:
     id: "3"
     taskid: b33df737-cba2-4c75-8ec0-60dd106fa207
     type: regular
+    description: 'Manually Review High Risk Score Domains'
     task:
       id: b33df737-cba2-4c75-8ec0-60dd106fa207
       version: -1
@@ -232,6 +235,7 @@ tasks:
     id: "6"
     taskid: 034fc5cb-6f90-4c37-8154-b995643d1edd
     type: condition
+    description: 'Should wait for an analyst review?'
     task:
       id: 034fc5cb-6f90-4c37-8154-b995643d1edd
       version: -1

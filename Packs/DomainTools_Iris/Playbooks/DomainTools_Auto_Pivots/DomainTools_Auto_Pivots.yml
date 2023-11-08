@@ -109,6 +109,7 @@ tasks:
       id: cf6666ec-071b-41da-81f8-c41808bb0398
       version: -1
       name: Check Pivotable Domains
+      description: 'Get guided pivot counts.'
       scriptName: CheckPivotableDomains
       type: regular
       iscommand: false
@@ -254,10 +255,12 @@ tasks:
     id: "17"
     taskid: fb46caed-8e5c-45c3-8c9e-20114dd46ab2
     type: condition
+
     task:
       id: fb46caed-8e5c-45c3-8c9e-20114dd46ab2
       version: -1
       name: Is Pivotable NS Host?
+      description: 'Is NS Host a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -299,6 +302,7 @@ tasks:
       id: 3116eba1-d42b-4621-848f-7880b0880799
       version: -1
       name: Is Pivotable NS IP?
+      description: 'Is NS IP a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -340,6 +344,7 @@ tasks:
       id: 9ddf8e07-b134-4094-8e53-2750c84d085a
       version: -1
       name: Is Pivotable Registrant?
+      description: 'Is Registrant a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -415,6 +420,7 @@ tasks:
       id: 83a90792-329c-43a6-871b-33a4127213c5
       version: -1
       name: Is Pivotable Registrant Org?
+      description: 'Is Registrant org a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -490,6 +496,7 @@ tasks:
       id: b225b62f-2d88-4eb8-88d9-79c5954b8306
       version: -1
       name: Is Pivotable SSL Org?
+      description: 'Is SSL org a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -565,6 +572,7 @@ tasks:
       id: 1c077ccb-1256-4fca-873d-dd73e1101122
       version: -1
       name: Is Pivotable SSL Hash?
+      description: 'Is SSL hash a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -640,6 +648,7 @@ tasks:
       id: c03d7a1d-9ac1-488c-884d-d1528ab96298
       version: -1
       name: Is Pivotable SOA Email?
+      description: 'Is SOA email a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -761,6 +770,7 @@ tasks:
       id: 21de504b-add9-4ea0-8289-17bd63072a76
       version: -1
       name: Is Pivotable IP?
+      description: 'Is IP address a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -836,6 +846,7 @@ tasks:
       id: 2b882c45-a316-4e99-8cac-f11d12270e1f
       version: -1
       name: Is Pivotable MX IP
+      description: 'Is MX IP a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -911,6 +922,7 @@ tasks:
       id: 35986446-8d91-4f48-8d47-3d7ffe16e67b
       version: -1
       name: Is there Any High Risk Score Domain?
+      description: 'Check high risk domains.'
       type: condition
       iscommand: false
       brand: ""
@@ -981,6 +993,7 @@ tasks:
       id: 2b9385cc-c045-4478-8baf-3889f41d2eba
       version: -1
       name: Add High Risk Domain to Context
+      description: 'Add high risk domain to context.'
       scriptName: AddDomainRiskScoreToContext
       type: regular
       iscommand: false
@@ -1025,6 +1038,7 @@ tasks:
       id: 3616ae76-1825-47bf-89e4-b382f630c95e
       version: -1
       name: Manually Review High Risk Score Domains
+      description: 'Manually review high risk score domains.'
       type: regular
       iscommand: false
       brand: ""
@@ -1056,6 +1070,7 @@ tasks:
       id: 990b24ad-dd36-4b96-8793-b36801e2024a
       version: -1
       name: 'Should Wait for an Analyst Review? '
+      description: 'Should Wait for an Analyst Review.'
       type: condition
       iscommand: false
       brand: ""
@@ -1095,6 +1110,7 @@ tasks:
       id: dbcb5fa6-f951-4a8c-8e55-a1f1cb651373
       version: -1
       name: Is Pivotable MX Host?
+      description: 'Is MX host a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -1168,6 +1184,7 @@ tasks:
       id: cff54b01-4a0f-420a-80b0-ccac9a99f0d5
       version: -1
       name: Is Pivotable MX Domain?
+      description: 'Is MX domain a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -1241,6 +1258,7 @@ tasks:
       id: dfd744f6-8fb0-4916-80d0-bd594a7a9711
       version: -1
       name: Is Pivotable Registrar?
+      description: 'is registrar a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -1314,6 +1332,7 @@ tasks:
       id: 8d9bde15-525e-4748-8a80-01fc3b5e6c41
       version: -1
       name: Is Pivotable SSL Subject?
+      description: 'Is SSL subject a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -1387,6 +1406,7 @@ tasks:
       id: f4abc552-69f0-40c1-8bb9-5be30639fa12
       version: -1
       name: Is Pivotable SSL Email?
+      description: 'Is SSL email a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -1460,6 +1480,7 @@ tasks:
       id: ff4b596d-8de9-468a-8f1b-d3c46422b824
       version: -1
       name: Is Pivotable NS Domain?
+      description: 'Is NS domain a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -1533,6 +1554,7 @@ tasks:
       id: 0da04d50-78c2-4b8d-841e-01cbb96f7adf
       version: -1
       name: Is Pivotable Google Analytics?
+      description: 'Is Google analytics a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
@@ -1606,6 +1628,7 @@ tasks:
       id: c348790d-db73-4e67-8962-ae8a23c1e25f
       version: -1
       name: Is Pivotable Adsense?
+      description: 'Is adsense a guided pivot.'
       type: condition
       iscommand: false
       brand: ""
