@@ -562,6 +562,7 @@ def main():
             res_entry_context = r['EntryContext']
     incidents = json.loads(res_contents)
 
+    demisto.debug(f'IN main: Length of received {incidents=}')
     if is_number_of_incidents_too_low(res_entry_context, incidents):
         return
     if is_number_of_unique_recipients_is_too_low(incidents):
