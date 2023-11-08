@@ -1,4 +1,4 @@
-from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main,\
+from HTTPFeedApiModule import get_indicators_command, Client, datestring_to_server_format, feed_main, \
     fetch_indicators_command, get_no_update_value
 import requests_mock
 import demistomock as demisto
@@ -359,7 +359,7 @@ def test_get_indicators_with_relations():
                          {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
                           'entityA': '127.0.0.1', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
                           'entityB': 'Test',
-                          'entityBFamily': 'Indicator', 'entityBType': 'STIX Malware', 'fields': {}}],
+                          'entityBFamily': 'Indicator', 'entityBType': 'Malware', 'fields': {}}],
                       'fields': {'tags': []}}], True)
 
     asn_ranges = '"2021-01-17 07:44:49","127.0.0.1","3889","online","2021-04-22","Test"'

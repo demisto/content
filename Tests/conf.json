@@ -157,7 +157,8 @@
             "integrations": [
                 "WildFire-v2"
             ],
-            "playbookID": "Detonate File - WildFire - Test"
+            "playbookID": "Detonate File - WildFire - Test",
+            "timeout": 400
         },
         {
             "integrations": [
@@ -760,7 +761,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 1500
+            "timeout": 1800
         },
         {
             "integrations": "HelloWorld",
@@ -1537,7 +1538,7 @@
         {
             "integrations": "WildFire-v2",
             "playbookID": "Detonate URL - WildFire-v2 - Test",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "WildFire-v2",
@@ -1972,7 +1973,8 @@
         },
         {
             "integrations": "PhishTank V2",
-            "playbookID": "PhishTank Testing"
+            "playbookID": "PhishTank Testing",
+            "is_mockable": false
         },
         {
             "integrations": "McAfee Web Gateway",
@@ -2145,7 +2147,6 @@
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
             "is_mockable": false
-
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2975,7 +2976,9 @@
             "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
-            "memory_threshold": 90
+            "memory_threshold": 90,
+            "timeout": 700,
+            "is_mockable": false
         },
         {
             "integrations": "AWS - EC2",
@@ -3480,6 +3483,11 @@
             "playbookID": "Code42 File Search Test",
             "integrations": "Code42",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Code42 Suspicious Activity Action v2 - Test",
+            "integrations": "Code42",
+            "fromversion": "6.10.0"
         },
         {
             "playbookID": "FetchIndicatorsFromFile-test",
@@ -4941,7 +4949,8 @@
         },
         {
             "playbookID": "playbook-SearchIncidentsV2InsideGenericPollng-Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "timeout": 300
         },
         {
             "playbookID": "IsRFC1918-Test",

@@ -34,6 +34,14 @@ configuration:
   defaultvalue: 1 day
   type: 0
   section: Collect
+- display: The maximum number of events per fetch for each event type
+  additionalinfo: Each fetch will bring the `limit` number of events for each type (audits, groups and projects) and each group/project ID.
+                  For example, if `limit` is set to 500 and groups/projects IDs are given as well, then the fetch will bring 500 audit events and 500 group/project events for each group/project ID.
+  name: limit
+  type: 0
+  defaultvalue: 500
+  required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -64,7 +72,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: gitlab-get-events
-  dockerimage: demisto/fastapi:1.0.0.61475
+  dockerimage: demisto/fastapi:1.0.0.79757
   isfetchevents: true
   subtype: python3
 marketplaces:

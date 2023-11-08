@@ -16,6 +16,7 @@ Recommend most likely service owners from those surfaced by Cortex ASM Enrichmen
 | **Argument Name** | **Description** |
 | --- | --- |
 | owners | List of potential service owners |
+| asmsystemids | System IDs or names associated with the compute instance |
 
 ## Outputs
 

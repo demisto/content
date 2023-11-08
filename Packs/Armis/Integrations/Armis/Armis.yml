@@ -100,7 +100,7 @@ script:
       description: The maximum number of results to fetch.
       name: max_results
     - defaultValue: 3 days
-      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
+      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\"."
       name: time_frame
     - description: The ID of the alert.
       name: alert_id
@@ -385,7 +385,7 @@ script:
     - contextPath: Armis.Device.visibility
       description: The visibility of the device.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.78960
   isfetch: true
   runonce: false
   script: '-'

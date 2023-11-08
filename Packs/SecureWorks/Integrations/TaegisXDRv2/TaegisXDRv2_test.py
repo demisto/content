@@ -323,6 +323,15 @@ def test_fetch_investigation(requests_mock):
     assert response.outputs[0]["url"] == f"{TAEGIS_URL}/investigations/{args['id']}"
 
     # Investigation not found
+    mock_result = {
+        "errors": [{"message": "record not found"}],
+        "data": {"investigationV2": None}
+    }
+    client = mock_client(requests_mock, mock_result)
+    response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert len(response.outputs) == 0
+
+    # Invalid query response
     client = mock_client(requests_mock, {})
     response = fetch_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert len(response.outputs) == 0
@@ -464,6 +473,11 @@ def test_update_investigation(requests_mock):
     args = {"id": UPDATE_INVESTIGATION_RESPONSE["data"]["updateInvestigationV2"]["id"]}
     with pytest.raises(ValueError, match="No valid investigation fields provided. Supported Update Fields"):
         assert update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Tags defined
+    args["tags"] = "test_tag01"
+    response = update_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs["id"] == args["id"]
 
     # Successful Update
     args = {

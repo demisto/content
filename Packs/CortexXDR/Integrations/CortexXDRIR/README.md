@@ -8,9 +8,10 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
+    | - | --- | --- |
     | Fetch incidents |  | False |
     | Incident type |  | False |
+    | Remove legacy incident fields | Unchecked for backwards compatibility, recommended to check. This will remove duplicated incident fields under file_artifacts, network_artifacts, and alerts (like client_id, clientid.) | False |
     | Incident Mirroring Direction |  | False |
     | Server URL (copy URL from XDR - click ? to see more info.) |  | True |
     | API Key ID |  | False |
@@ -30,10 +31,12 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Configuration
+
 ---
 You need to collect several pieces of information in order to configure the integration on Cortex XSOAR.
 
 #### Generate an API Key and API Key ID
+
 1. In your Cortex XDR platform, go to **Settings**.
 2. Click the **+New Key** button in the top right corner.
 3. Generate a key of type **Advanced**.
@@ -45,12 +48,16 @@ The highest privileged builtin role is the Instance Admin.
 For builtin role with less permission but maximum command running abilities, use the `Privileged Responder`.  
 
 #### URL
+
 1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **API key** page > **API Keys**.
 2. Click the **Copy URL** button in the top right corner.
 
 ## Playbooks
+
 ---
+
 #### Cortex XDR Incident Handling
+
 The playbook syncs and updates new XDR alerts that construct the incident.
 It enriches indicators using Threat Intelligence integrations and Palo Alto Networks
 AutoFocus. The incident's severity is then updated based on the indicators reputation
@@ -60,7 +67,9 @@ SOC analyst, the XDR incident is closed automatically.
 
 
 ## Use Cases
+
 ---
+
 - Fetch incidents from XDR
 - Enrich incident with alerts and incident from XDR
 - Update incident in XDR
@@ -75,11 +84,14 @@ SOC analyst, the XDR incident is closed automatically.
 - Get distribution versions
 
 ## Automation
+
 ---
 To sync incidents between Cortex XSOAR and Cortex XDR, you should use the **XDRSyncScript** script, which you can find in the automation page.
 
 ## Fetched Incidents Data
+
 ---
+
 ```
 incident_id:31
 creation_time:1564594008755
@@ -104,44 +116,51 @@ xdr_url:https://1111.paloaltonetworks.com/incident-view/31
 ```
 
 ## XDR Incident Mirroring
+
 **Note this feature is available from Cortex XSOAR version 6.0.0**
 
 You can enable incident mirroring between Cortex XSOAR incidents and Cortex XDR incidents.
 To setup the mirroring follow these instructions:
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Cortex XDR - IR and select your integration instance.
 3. Enable **Fetches incidents**.
 4. Under **Mapper (incoming)**, select `XDR - Incoming Mapper`.
 5. Under **Mapper (outgoing)**, select `Cortex XDR - Outgoing Mapper`.
 6. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-  * Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
-  * Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
-  * Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
-  * None - Choose this to turn off incident mirroring.
+
+- Incoming - Any changes in XDR incidents will be reflected in XSOAR incidents.
+- Outgoing - Any changes in XSOAR incidents will be reflected in XDR incidents.
+- Both - Changes in XSOAR and XDR incidents will be reflected in both directions.
+- None - Choose this to turn off incident mirroring.
+
 7. Optional: Check the *Sync Incident Owners* integration parameter to sync the incident owners in both XDR and XSOAR.
-  * Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
+
+- Note: This feature will only work if the same users are registered in both Cortex XSOAR and Cortex XDR.
+
 8. Newly fetched incidents will be mirrored in the chosen direction.
-  * Note: This will not effect existing incidents.
+
+- Note: This will not effect existing incidents.
 
 ### XDR Mirroring Notes, limitations and Troubleshooting
 
-* While you can mirror changes in incident fields both in and out in each incident, you can only mirror in a single direction at a time. For example:
+- While you can mirror changes in incident fields both in and out in each incident, you can only mirror in a single direction at a time. For example:
   If we have an incident with two fields (A and B) in XDR and XSOAR while *Incoming And Outgoing* mirroring is selected: 
-   * I can mirror field A from XDR to XSOAR and field B from XSOAR to XDR.
-   * I cannot mirror changes from field A in both directions.
+  - I can mirror field A from XDR to XSOAR and field B from XSOAR to XDR.
+  - I cannot mirror changes from field A in both directions.
 
   Initially all fields are mirrored in from XDR to XSOAR. Once they are changed in XSOAR, they can only be mirrored out.
-* **Do not use the `XDRSyncScript` automation nor any playbook that uses this automation** 
+- **Do not use the `XDRSyncScript` automation nor any playbook that uses this automation** 
   (e.g `Cortex XDR Incident Sync` or `Cortex XDR incident handling v2`), as it impairs the mirroring functionality.
 
-* When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
-   * The default playbook of the *Cortex XDR Incident* incident type is not *Cortex XDR Incident Sync*, change it to a 
+- When migrating an existing instance to the mirroring feature, or in case the mirroring does not work as expected, make sure that:
+  - The default playbook of the *Cortex XDR Incident* incident type is not *Cortex XDR Incident Sync*, change it to a 
      different playbook that does not use `XDRSyncScript`.
-   * The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
+  - The XDR integration instance incoming mapper is set to `Cortex XDR - Incoming Mapper` and the outgoing mapper is set to `Cortex XDR - Outgoing Mapper`.
 
-* The API includes a limit rate of 10 API requests per minute. Therefore, in a case of a limit rate exception, the sync loop will stop and will resume from the last incident. 
+- The API includes a limit rate of 10 API requests per minute. Therefore, in a case of a limit rate exception, the sync loop will stop and will resume from the last incident. 
 
-* `Owner` and `closeReason` mappings are done using the integration code, therefore they are not part of the out-of-the-box mapper and should not be specified in any future mapper.
+- `Owner` and `closeReason` mappings are done using the integration code, therefore they are not part of the out-of-the-box mapper and should not be specified in any future mapper.
 
 ### Fetch Behavior vs Mirroring
 
@@ -150,6 +169,7 @@ Note: All incidents, including those with a "resolved" status, will be fetched i
 Regarding mirroring, if you have already imported an incident and the mirroring feature is enabled, changing the incident's status to resolved on the Cortex XDR platform will trigger the mirroring process, resulting in the closure of the incident in Cortex XSOAR.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -160,6 +180,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Alerts And Incidents` --> `View`
 Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
@@ -167,6 +188,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 #### Base Command
 
 `xdr-get-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -217,9 +239,11 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 
 ##### Command Example
+
 ```!xdr-get-incidents gte_creation_time=2010-10-10T00:00:00 limit=3 sort_by_creation_time=desc```
 
 ##### Context Example
+
 ```
 {
     "PaloAltoNetworksXDR.Incident": [
@@ -297,7 +321,9 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 ```
 
 ##### Human Readable Output
+
 >### Incidents
+
 >|alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
@@ -306,10 +332,12 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 
 ### xdr-get-incident-extra-data
+
 ***
 Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Alerts And Incidents` --> `View`
 
@@ -318,6 +346,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 #### Base Command
 
 `xdr-get-incident-extra-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -427,17 +456,21 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | Process.Path | String | The file system path to the binary file. | 
 | Process.Start Time | String | The timestamp of the process start time. | 
 | Process.CommandLine | String | The full command line \(including arguments\). | 
+| Process.is_malicious | boolean | Whether the artifact is malicious, as decided by the Wildfire verdict. | 
 | IP.Address | String | IP address. | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
 
 ##### Human Readable Output
+
 >### Incident 4
+
 >|alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
 >
 >### Alerts
+
 >|action|action_external_hostname|action_file_md5|action_file_path|action_file_sha256|action_local_ip|action_local_port|action_pretty|action_process_image_command_line|action_process_image_name|action_process_image_sha256|action_process_signature_status|action_process_signature_vendor|action_registry_data|action_registry_full_key|action_remote_ip|action_remote_port|actor_process_command_line|actor_process_image_name|actor_process_signature_status|actor_process_signature_vendor|alert_id|category|causality_actor_causality_id|causality_actor_process_command_line|causality_actor_process_image_name|causality_actor_process_signature_status|causality_actor_process_signature_vendor|description|detection_timestamp|event_type|fw_app_id|host_ip_list|host_name|is_whitelisted|name|severity|source|starred|user_name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.1 | 7000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 8000 |  |  | N/A | N/A | 6 |  |  |  |  | N/A | N/A | Test - alert generated by Test XDR Playbook | 1577276586921 | Network Event |  |  |  | No | Test - alert generated by Test XDR Playbook | medium | Cisco - Sandblast | false |  |
@@ -447,18 +480,22 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 >| VALUE_NA,<br/>N/A |  |  |  |  | 196.168.0.111 | 2000 | VALUE_NA,<br/>N/A |  |  |  | N/A | N/A |  |  | 2.2.2.2 | 6000 |  |  | N/A | N/A | 10 |  |  |  |  | N/A | N/A | This alert from content  TestXDRPlaybook description | 1578927443615 | Network Event |  |  |  | No | This alert from content  TestXDRPlaybook | high | Checkpoint - SandBlast | false |  |
 >
 >### Network Artifacts
+
 >|alert_count|is_manual|network_country|network_domain|network_remote_ip|network_remote_port|type|
 >|---|---|---|---|---|---|---|
 >| 5 | false |  |  | 2.2.2.2 | 8000 | IP |
 >
 >### File Artifacts
+
 >**No entries.**
 
 ### xdr-update-incident
+
 ***
 Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Alerts And Incidents` --> `View / Edit`
 
@@ -481,6 +518,7 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 | unassign_user | If true, will remove all assigned users from the incident. Possible values are: true. | Optional | 
 
 ##### Command Example
+
 ```!xdr-update-incident incident_id=4```
 
 #### Context Output
@@ -492,19 +530,23 @@ There is no context output for this command.
 ```Incident 4 has been updated```
 
 ### xdr-insert-parsed-alert
+
 ***
 Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
 successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
 maximum of 60 alerts.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `External Alerts Mapping`--> `View`
 
 Builtin Roles with this permission includes: "Instance Admin".
+
 #### Base Command
 
 `xdr-insert-parsed-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -524,11 +566,14 @@ Builtin Roles with this permission includes: "Instance Admin".
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-insert-cef-alerts
+
 ***
 Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `External Alerts Mapping`--> `View`
 
@@ -537,6 +582,7 @@ Builtin Roles with this permission includes: "Instance Admin".
 #### Base Command
 
 `xdr-insert-cef-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -547,10 +593,14 @@ Builtin Roles with this permission includes: "Instance Admin".
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-endpoint-isolate
+
 ***
 Isolates the specified endpoint.
+
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Administrations` --> `View`
 `Action Center` --> `View/ Edit`
@@ -562,6 +612,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 #### Base Command
 
 `xdr-endpoint-isolate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -581,10 +632,12 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | PaloAltoNetworksXDR.Isolation.endpoint_id | String | The endpoint ID. | 
 
 ### xdr-endpoint-unisolate
+
 ***
 Reverses the isolation of an endpoint.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Administrations` --> `View`
 `Action Center` --> `View/ Edit`
@@ -595,6 +648,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 #### Base Command
 
 `xdr-endpoint-unisolate`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -614,10 +668,12 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | PaloAltoNetworksXDR.UnIsolation.endpoint_id | String | Isolates the specified endpoint. | 
 
 ### xdr-get-endpoints
+
 ***
 Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Administrations` --> `View`
 
@@ -626,6 +682,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 #### Base Command
 
 `xdr-get-endpoints`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -686,9 +743,11 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 ##### Command Example
+
 ```!xdr-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"```
 
 ##### Context Example
+
 ```
 {
     "Endpoint": [
@@ -771,7 +830,9 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 ```
 
 ##### Human Readable Output
+
 >### Endpoints
+
 >|active_directory|alias|content_version|domain|endpoint_id|endpoint_name|endpoint_status|endpoint_type|endpoint_version|first_seen|group_name|install_date|installation_package|ip|is_isolated|last_seen|os_type|users|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  |  | 111-17757 |  | ea303670c76e4ad09600c8b346f7c804 | aaaaa.compute.internal | CONNECTED | AGENT_TYPE_SERVER | 7.0.0.1915 | 1575795969644 |  | 1575795969644 | linux | 172.31.11.11 | AGENT_UNISOLATED | 1579290023629 | AGENT_OS_LINUX | ec2-user |
@@ -779,10 +840,12 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 
 
 ### xdr-get-distribution-versions
+
 ***
 Gets a list of all the agent versions to use for creating a distribution list.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Installations` --> `View`
 
@@ -791,6 +854,7 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 #### Base Command
 
 `xdr-get-distribution-versions`
+
 #### Input
 
 There are no input arguments for this command.
@@ -805,9 +869,11 @@ There are no input arguments for this command.
 
 
 ##### Command Example
+
 ```!xdr-get-distribution-versions```
 
 ##### Context Example
+
 ```
 {
     "PaloAltoNetworksXDR.DistributionVersions": {
@@ -830,7 +896,9 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
+
 >### windows
+
 >|versions|
 >|---|
 >| 5.0.8.29673 |
@@ -840,6 +908,7 @@ There are no input arguments for this command.
 >
 >
 >### linux
+
 >|versions|
 >|---|
 >| 6.1.4.1680 |
@@ -847,6 +916,7 @@ There are no input arguments for this command.
 >
 >
 >### macos
+
 >|versions|
 >|---|
 >| 6.1.4.1681 |
@@ -854,10 +924,12 @@ There are no input arguments for this command.
 
 
 ### xdr-create-distribution
+
 ***
 Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Installations` --> `View/ Edit`
 
@@ -866,6 +938,7 @@ Builtin Roles with this permission includes: "Instance Admin".
 #### Base Command
 
 `xdr-create-distribution`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -889,9 +962,11 @@ Builtin Roles with this permission includes: "Instance Admin".
 
 
 ##### Command Example
+
 ```!xdr-create-distribution agent_version=6.1.4.1680 name="dist_1" package_type=standalone platform=linux description="some description"```
 
 ##### Context Example
+
 ```
 {
     "PaloAltoNetworksXDR.Distribution": {
@@ -906,20 +981,25 @@ Builtin Roles with this permission includes: "Instance Admin".
 ```
 
 ##### Human Readable Output
+
 Distribution 43aede7f846846fa92b50149663fbb25 created successfully
 
 ### xdr-get-distribution-url
+
 ***
 Gets the distribution URL for downloading the installation package.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Installations` --> `View`
 
 Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
+
 #### Base Command
 
 `xdr-get-distribution-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -936,21 +1016,26 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | PaloAltoNetworksXDR.Distribution.url | String | URL for downloading the installation package. | 
 
 ##### Command Example
+
 ```!xdr-get-distribution-url distribution_id=2c74c11b63074653aa01d575a82bf52a package_type=sh```
 
 
 ### xdr-get-create-distribution-status
+
 ***
 Gets the status of the installation package.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Installations` --> `View`
 
 Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
+
 #### Base Command
 
 `xdr-get-create-distribution-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -966,18 +1051,23 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | PaloAltoNetworksXDR.Distribution.status | String | The status of installation package. | 
 
 ##### Command Example
+
 ```!xdr-get-create-distribution-status distribution_ids=2c74c11b63074653aa01d575a82bf52a```
 
 ### xdr-get-audit-management-logs
+
 ***
 Gets management logs. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of management logs from the start of the result set (start by counting from 0).
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Auditing` --> `View`
 
 Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
+
 ##### Context Example
+
 ```
 {
     "PaloAltoNetworksXDR.Distribution": [
@@ -990,7 +1080,9 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 ```
 
 ##### Human Readable Output
+
 >### Distribution Status
+
 >|id|status|
 >|---|---|
 >| 2c74c11b63074653aa01d575a82bf52a | Completed |
@@ -998,6 +1090,7 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 #### Base Command
 
 `xdr-get-audit-management-logs`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1033,10 +1126,12 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | PaloAltoNetworksXDR.AuditManagementLogs.AUDIT_INSERT_TIME | Date | Log's insert time. | 
 
 ### xdr-get-audit-agent-reports
+
 ***
 Gets agent event reports. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Auditing` --> `View`
 
@@ -1045,6 +1140,7 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 #### Base Command
 
 `xdr-get-audit-agent-reports`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1083,10 +1179,12 @@ Builtin Roles with this permission includes: "Viewer" and "Instance Admin".
 | Endpoint.Domain | String | The domain of the endpoint. | 
 
 ### xdr-blocklist-files
+
 ***
 Block lists requested files which have not already been block listed or added to allow lists.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Allow List/Block List`
@@ -1096,6 +1194,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 #### Base Command
 
 `xdr-blocklist-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1114,10 +1213,12 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 | PaloAltoNetworksXDR.blocklist.excluded_hashes | Number | Number of file hashes excluded from block list. | 
 
 ### xdr-allowlist-files
+
 ***
 Adds requested files to allow list if they are not already on block list or allow list.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Allow List/Block List`
@@ -1127,6 +1228,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 #### Base Command
 
 `xdr-allowlist-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1145,10 +1247,12 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 | PaloAltoNetworksXDR.allowlist.excluded_hashes | Number | Number of excluded file hashes from allowlist. | 
 
 ### xdr-file-quarantine
+
 ***
 Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Quarantine`
@@ -1158,6 +1262,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 #### Base Command
 
 `xdr-file-quarantine`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1176,18 +1281,22 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 There is no context output for this command.
 
 ### xdr-get-quarantine-status
+
 ***
 Retrieves the quarantine status for a selected file.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Quarantine`
 
 Builtin Roles with this permission includes: "Responder", "Privileged Responder" and "Instance Admin".
+
 #### Base Command
 
 `xdr-get-quarantine-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1200,11 +1309,14 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-file-restore
+
 ***
 Restores a quarantined file on requested endpoints.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Quarantine`
@@ -1214,6 +1326,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 #### Base Command
 
 `xdr-file-restore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1231,10 +1344,12 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 There is no context output for this command.
 
 ### xdr-endpoint-scan-execute
+
 ***
 Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note: scanning all the endpoints may cause performance issues and latency.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View`
 `Endpoint Administrations` --> `View/ Edit`
@@ -1245,6 +1360,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 #### Base Command
 
 `xdr-endpoint-scan-execute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1276,10 +1392,12 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Was the scan aborted? | 
 
 ### xdr-endpoint-scan-abort
+
 ***
 Cancels the scan of selected endpoints. A scan can only be aborted if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 `Endpoint Administrations` --> `Endpoint Scan`
@@ -1289,6 +1407,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 #### Base Command
 
 `xdr-endpoint-scan-abort`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1317,6 +1436,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Was the scan aborted? | 
 
 ### get-mapping-fields
+
 ***
 Gets mapping fields from remote incident. Note: This method will not update the current incident, it's here for debugging purposes.
 
@@ -1324,6 +1444,7 @@ Gets mapping fields from remote incident. Note: This method will not update the 
 #### Base Command
 
 `get-mapping-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1333,7 +1454,9 @@ Gets mapping fields from remote incident. Note: This method will not update the 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
+
 ***
 Gets remote data from a remote incident. Note: This method will not update the current incident, it's here for debugging purposes.
 
@@ -1341,6 +1464,7 @@ Gets remote data from a remote incident. Note: This method will not update the c
 #### Base Command
 
 `get-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1352,7 +1476,9 @@ Gets remote data from a remote incident. Note: This method will not update the c
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
+
 ***
 Gets the list of incidents that were modified since the last update. Note: This method is here for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.
 
@@ -1360,6 +1486,7 @@ Gets the list of incidents that were modified since the last update. Note: This 
 #### Base Command
 
 `get-modified-remote-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1370,11 +1497,14 @@ Gets the list of incidents that were modified since the last update. Note: This 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-get-policy
+
 ***
 Gets the policy name for a specific endpoint.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Prevention Policies` --> `View`
 
@@ -1383,6 +1513,7 @@ Builtin Roles with this permission includes: "Privileged Investigator", "Privile
 #### Base Command
 
 `xdr-get-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1399,10 +1530,12 @@ Builtin Roles with this permission includes: "Privileged Investigator", "Privile
 | PaloAltoNetworksXDR.Policy.endpoint_id | string | Endpoint ID. | 
 
 ### xdr-get-scripts
+
 ***
 Gets a list of scripts available in the scripts library.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 `Endpoint Administrations` --> `View/ Edit`
@@ -1413,6 +1546,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 #### Base Command
 
 `xdr-get-scripts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1445,10 +1579,12 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.Scripts.script_uid | string | Globally Unique Identifier of the script, used to identify the script when executing. | 
 
 ### xdr-delete-endpoints
+
 ***
 Deletes selected endpoints in the Cortex XDR app. You can delete up to 1000 endpoints.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 
@@ -1457,6 +1593,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 #### Base Command
 
 `xdr-delete-endpoints`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1467,11 +1604,14 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-get-endpoint-device-control-violations
+
 ***
 Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Device Control` --> `View`
 
@@ -1480,6 +1620,7 @@ Builtin Roles with this permission includes: "Privileged Investigator", "Privile
 #### Base Command
 
 `xdr-get-endpoint-device-control-violations`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1520,10 +1661,12 @@ Builtin Roles with this permission includes: "Privileged Investigator", "Privile
 | PaloAltoNetworksXDR.EndpointViolations.violations.endpoint_id | string | Endpoint ID of the violation. | 
 
 ### xdr-file-retrieve
+
 ***
 Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `File Retrieval`
@@ -1533,6 +1676,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 #### Base Command
 
 `xdr-file-retrieve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1558,18 +1702,22 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | PaloAltoNetworksXDR.RetrievedFiles.status | string | The action status. Added only when the operation is unsuccessful. | 
 
 ### xdr-retrieve-file-details
+
 ***
 View the file retrieved by the xdr-retrieve-files command according to the action ID. Before running this command, you can use the xdr-action-status-get command to check if this action completed successfully.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `File Retrieval`
 
 Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
+
 #### Base Command
 
 `xdr-retrieve-file-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1593,17 +1741,21 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 | File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
 
 ### xdr-get-script-metadata
+
 ***
 Gets the full definition of a specific script in the scripts library.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
 Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
+
 #### Base Command
 
 `xdr-get-script-metadata`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1631,17 +1783,21 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.ScriptMetadata.script_output_dictionary_definitions | Unknown | If the script_output_type is a dictionary, an array with friendly name, name, and type for each output. | 
 
 ### xdr-get-script-code
+
 ***
 Gets the code of a specific script in the script library.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
 Builtin Roles with this permission includes: "Privileged Responder", "Viewer" and "Instance Admin".
+
 #### Base Command
 
 `xdr-get-script-code`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1658,17 +1814,21 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.ScriptCode.script_uid | string | Unique identifier of the script. | 
 
 ### xdr-action-status-get
+
 ***
 Retrieves the status of the requested actions according to the action ID.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View`
 
 Builtin Roles with this permission includes: "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
+
 #### Base Command
 
 `xdr-action-status-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1686,6 +1846,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Investigat
 | PaloAltoNetworksXDR.GetActionStatus.action_id | number | The specified action ID. | 
 
 ### xdr-run-script
+
 ***
 This command will soon be deprecated; prefer xdr-script-run instead. Initiates a new endpoint script execution action using a script from the script library.
 
@@ -1693,6 +1854,7 @@ This command will soon be deprecated; prefer xdr-script-run instead. Initiates a
 #### Base Command
 
 `xdr-run-script`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1712,17 +1874,21 @@ This command will soon be deprecated; prefer xdr-script-run instead. Initiates a
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### xdr-snippet-code-script-execute
+
 ***
 Initiates a new endpoint script execution action using the provided snippet code.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View`
 
 Builtin Roles with this permission includes: "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
+
 #### Base Command
 
 `xdr-snippet-code-script-execute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1743,10 +1909,12 @@ Builtin Roles with this permission includes: "Responder", "Privileged Investigat
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### xdr-get-script-execution-status
+
 ***
 Retrieves the status of a script execution action.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
@@ -1755,6 +1923,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 #### Base Command
 
 `xdr-get-script-execution-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1780,10 +1949,12 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.ScriptStatus.endpoints_aborted | Number | Number of endpoints in "aborted" status. | 
 
 ### xdr-get-script-execution-results
+
 ***
 Retrieve the results of a script execution action.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
@@ -1792,6 +1963,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 #### Base Command
 
 `xdr-get-script-execution-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1817,10 +1989,12 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
 
 ### xdr-get-script-execution-result-files
+
 ***
 Gets the files retrieved from a specific endpoint during a script execution.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
@@ -1829,6 +2003,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 #### Base Command
 
 `xdr-get-script-execution-result-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1854,6 +2029,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | File.Extension | String | The extension of the file. | 
 
 ### xdr-script-commands-execute
+
 ***
 Initiates a new endpoint script execution of shell commands.
 
@@ -1861,6 +2037,7 @@ Initiates a new endpoint script execution of shell commands.
 #### Base Command
 
 `xdr-script-commands-execute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1882,6 +2059,7 @@ Initiates a new endpoint script execution of shell commands.
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### xdr-file-delete-script-execute
+
 ***
 Initiates a new endpoint script execution to delete the specified file.
 
@@ -1889,6 +2067,7 @@ Initiates a new endpoint script execution to delete the specified file.
 #### Base Command
 
 `xdr-file-delete-script-execute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1910,6 +2089,7 @@ Initiates a new endpoint script execution to delete the specified file.
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### xdr-file-exist-script-execute
+
 ***
 Initiates a new endpoint script execution to check if file exists.
 
@@ -1917,6 +2097,7 @@ Initiates a new endpoint script execution to check if file exists.
 #### Base Command
 
 `xdr-file-exist-script-execute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1938,6 +2119,7 @@ Initiates a new endpoint script execution to check if file exists.
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### xdr-kill-process-script-execute
+
 ***
 Initiates a new endpoint script execution kill process.
 
@@ -1945,6 +2127,7 @@ Initiates a new endpoint script execution kill process.
 #### Base Command
 
 `xdr-kill-process-script-execute`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1966,10 +2149,12 @@ Initiates a new endpoint script execution kill process.
 | PaloAltoNetworksXDR.ScriptRun.endpoints_count | Number | Number of endpoints the action was initiated on. | 
 
 ### endpoint
+
 ***
 Returns information about an endpoint.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Administrations` --> `View`
 
@@ -1978,6 +2163,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2001,10 +2187,12 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
 
 ### xdr-get-endpoints-by-status
+
 ***
 Returns the number of the connected\disconnected endpoints.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Administrations` --> `View`
 
@@ -2013,6 +2201,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 #### Base Command
 
 `xdr-get-endpoints-by-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2030,17 +2219,21 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.EndpointsStatus.count | Number | The number of endpoints with this status. | 
 
 ### xdr-get-cloud-original-alerts
+
 ***
 Returns information about each alert ID.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Alerts & Incidents` --> `View`
 
 Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
+
 #### Base Command
 
 `xdr-get-cloud-original-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2096,9 +2289,12 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | PaloAltoNetworksXDR.OriginalAlert.event.ingestion_time | String | Ingestion time. | 
 
 ### xdr-remove-allowlist-files
+
 ***
 Removes requested files from allow list.
+
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Allow List/Block List`
@@ -2108,6 +2304,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 #### Base Command
 
 `xdr-remove-allowlist-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2124,10 +2321,12 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 | PaloAltoNetworksXDR.allowlist.removed_hashes | Number | Removed file hash | 
 
 ### xdr-remove-blocklist-files
+
 ***
 Removes requested files from block list.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Action Center` --> `View/ Edit`
 `Action Center` --> `Allow List/Block List`
@@ -2137,6 +2336,7 @@ Builtin Roles with this permission includes: "Responder", "Privileged Responder"
 #### Base Command
 
 `xdr-remove-blocklist-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2156,18 +2356,22 @@ There is no context output for this command.
 
 
 ### xdr-get-alerts
+
 ***
 Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. 
 Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Alerts & Incidents` --> `View`
 
 Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
+
 #### Base Command
 
 `xdr-get-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2270,8 +2474,11 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
 | PaloAltoNetworksXDR.Alert.starred | Boolean | Whether the alert is starred or not. | 
 
 #### Command example
+
 ```!xdr-get-alerts severity="high" alert_action_status="detected (reported)" sort_field="source_insert_ts" offset="0" limit="1"```
+
 #### Context Example
+
 ```json
 {
     "PaloAltoNetworksXDR": {
@@ -2714,24 +2921,29 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
 #### Human Readable Output
 
 >### Alerts
+
 >|Action|Alert ID|Category|Description|Detection Timestamp|Host IP|Host Name|Name|Severity|
 >|---|---|---|---|---|---|---|---|---|
 >| detected (reported) | 6887 | Malware | Behavioral threat detected (rule: bioc.masquerade_svchost) | 2022-03-29T13:35:49.000Z | 10.111.230.11 | DC1ENV1APC02 | Behavioral Threat | SEV_040_HIGH |
 
 
 ### xdr-get-contributing-event
+
 ***
 Retrieves contributing events for a specific correlation alert.
 Known limitation: the command is compatible **only** with correlation alerts, otherwise an error will be raised.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Alerts & Incidents` --> `View`
 
 Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
+
 #### Base Command
 
 `xdr-get-contributing-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2750,9 +2962,11 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | PaloAltoNetworksXDR.ContributingEvent.events | Unknown | Contributing events per alert. | 
 
 #### Command example
+
 ```!xdr-get-contributing-event alert_ids=`[123456 , 123457]````
 
 #### Context Example
+
 ```json
 {
     "PaloAltoNetworksXDR": {
@@ -2813,6 +3027,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 #### Human Readable Output
 
 >### Contributing events
+
 >|Alert _ Id|Events|
 >|---|---|
 >| 123456 | **-**	***Logon_Type***: 7<br/>	***User_Name***: xsoar<br/>	***Domain***: WIN10X64<br/>	***Source_IP***: 1.1.1.1<br/>	***Process_Name***: C:\Windows\System32\svchost.exe<br/>	***Host_Name***: WIN10X64<br/>	***Raw_Message***: An account was successfully logged on.	***_time***: 165298280000<br/>	***555555***: a1b2c3d4<br/>	***222222***: 165298280000<br/>	***333333***: abcdef<br/>	***111111***: 15<br/>	***444444***: 1<br/>	***insert_timestamp***: 165298280001<br/>	***_vendor***: PANW<br/>	***_product***: XDR agent<br/>	***_is_cardable***: true |
@@ -2820,17 +3035,21 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 
 ### xdr-replace-featured-field
+
 ***
 Replace the featured hosts\users\IP addresses\active directory groups listed in your environment.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Alerts & Incidents` --> `View/ Edit`
 
 Builtin Roles with this permission includes: "Investigator", "Privileged Investigator", "Privileged Responder" and "Instance Admin".
+
 #### Base Command
 
 `xdr-replace-featured-field`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2849,9 +3068,11 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 | PaloAltoNetworksXDR.FeaturedField.fields | String | String value that defines the new field. | 
 
 #### Command example
+
 ```!xdr-replace-featured-field field_type=ip_addresses values=`["1.1.1.1"]` comments=`new ip address````
 
 #### Context Example
+
 ```json
 {
     "PaloAltoNetworksXDR": {
@@ -2871,6 +3092,7 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 #### Human Readable Output
 
 >### Replaced featured: ip_addresses
+
 >|Comment|Value|
 >|---|---|
 >| new ip address | 1.1.1.1 |
@@ -2878,8 +3100,8 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 ### xdr-list-users
 
 ***
-Retrieve a list of the current users in the environment.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Retrieve a list of the current users in the environment.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -2904,8 +3126,11 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 | PaloAltoNetworksXDR.User.scope | array | Name of scope associated with the user, if applicable. | 
 
 #### Command example
+
 ```!xdr-list-users```
+
 #### Context Example
+
 ```json
 {
     "dummy": {
@@ -2938,6 +3163,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Human Readable Output
 
 >### Users
+
 >|First Name|Groups|Last Name|Role|Type|User email|
 >|---|---|---|---|---|---|
 >| dummy |  | dummy | dummy | dummy | dummy |
@@ -2948,7 +3174,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 ### xdr-list-risky-users
 
 ***
-Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
+Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -2975,8 +3202,11 @@ Retrieve the risk score of a specific user or list of users with the highest ris
 | PaloAltoNetworksXDR.RiskyUser.reasons.points | Number | The score. | 
 
 #### Command example
+
 ```!xdr-list-risky-users user_id=dummy```
+
 #### Context Example
+
 ```json
 {
     "PaloAltoNetworksXDR": {
@@ -2993,6 +3223,7 @@ Retrieve the risk score of a specific user or list of users with the highest ris
 #### Human Readable Output
 
 >### Risky Users
+
 >|User ID|Score|Description|
 >|---|---|---|
 >| dummy | 0 |  |
@@ -3001,8 +3232,8 @@ Retrieve the risk score of a specific user or list of users with the highest ris
 ### xdr-list-risky-hosts
 
 ***
-Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3029,8 +3260,11 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 | PaloAltoNetworksXDR.RiskyHost.reasons.points | Number | The score. | 
 
 #### Command example
+
 ```!xdr-list-risky-hosts host_id=dummy```
+
 #### Context Example
+
 ```json
 {
     "PaloAltoNetworksXDR": {
@@ -3047,6 +3281,7 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Human Readable Output
 
 >### Risky Hosts
+
 >|Host ID|Score|Description|
 >|---|---|---|
 >| dummy | 0 |  |
@@ -3055,7 +3290,8 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 ### xdr-list-user-groups
 
 ***
-Retrieve a list of the current user emails associated with one or more user groups in the environment.
+Retrieve a list of the current user emails associated with one or more user groups in the environment.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3080,8 +3316,11 @@ Retrieve a list of the current user emails associated with one or more user grou
 | PaloAltoNetworksXDR.UserGroup.source | String | Type of user group. | 
 
 #### Command example
+
 ```!xdr-list-user-groups group_names=test```
+
 #### Context Example
+
 ```json
 {
     "PaloAltoNetworksXDR": {
@@ -3103,6 +3342,7 @@ Retrieve a list of the current user emails associated with one or more user grou
 #### Human Readable Output
 
 >### Groups
+
 >|Group Name|Group Description|User email|
 >|---|---|---|
 >| test | test for demo |  |
@@ -3111,7 +3351,8 @@ Retrieve a list of the current user emails associated with one or more user grou
 ### xdr-list-roles
 
 ***
-Retrieve information about one or more roles created in the environment.
+Retrieve information about one or more roles created in the environment.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3137,8 +3378,11 @@ Retrieve information about one or more roles created in the environment.
 | PaloAltoNetworksXDR.Role.users | array | Email address of users associated with the role. | 
 
 #### Command example
+
 ```!xdr-list-roles role_names=dummy```
+
 #### Context Example
+
 ```json
 {
     "PaloAltoNetworksXDR": {
@@ -3165,6 +3409,7 @@ Retrieve information about one or more roles created in the environment.
 #### Human Readable Output
 
 >### Roles
+
 >|Role Name|Description|Permissions|Users|Groups|
 >|---|---|---|---|---|
 >| dummy | The user(s) have full access. | ADMIN |  |  |
@@ -3173,8 +3418,8 @@ Retrieve information about one or more roles created in the environment.
 ### xdr-set-user-role
 
 ***
-Add one or more users to a role.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Add one or more users to a role.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3190,8 +3435,11 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!xdr-set-user-role role_name=dummy user_emails=dummy```
+
 #### Human Readable Output
 
 >Role was updated successfully for 1 user.
@@ -3199,8 +3447,8 @@ There is no context output for this command.
 ### xdr-remove-user-role
 
 ***
-Remove one or more users from a role.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Remove one or more users from a role.  
+Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per GB.
 
 #### Base Command
 
@@ -3215,17 +3463,22 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!xdr-remove-user-role user_emails=dummy```
+
 #### Human Readable Output
 
 >Role was removed successfully for 1 user.
 
 ## xdr-script-run
+
 ***
 Initiates a new endpoint script execution action using a script from the script library and returns the results.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Agent Scripts library` --> `View`
 
@@ -3235,6 +3488,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 #### Base Command
 
 `xdr-script-run`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3270,6 +3524,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 #### Base Command
 
 `xdr-script-run`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3301,18 +3556,22 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.ScriptResult.results.retention_date | Date | Timestamp in which the retrieved files will be deleted from the server. | 
 
 #### Command example
+
 ```!xdr-script-run endpoint_ids=1 script_uid=123```
+
 #### Human Readable Output
 
 >Waiting for the script to finish running on the following endpoints: ['1']...
 
 >### Script Execution Results - 10368
+
 >|_return_value|domain|endpoint_id|endpoint_ip_address|endpoint_name|endpoint_status|execution_status|failed_files|retention_date|retrieved_files|standard_output|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| Name: return value | WORKGROUP | 1 | 1.1.1.1 | WIN10X64 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY | 0 |  | 0 |  |
 
 
 #### Context Example
+
 ```json
 {
   "PaloAltoNetworksXDR": {
@@ -3345,18 +3604,23 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
   }
 }
 ```
+
 ### xdr-endpoint-tag-add
+
 ***
 Adds a tag to specified endpoint_ids
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 
 Builtin Roles with this permission includes: "Privileged Responder" and "Instance Admin".
+
 #### Base Command
 
 `xdr-endpoint-tag-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3368,11 +3632,14 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-endpoint-tag-remove
+
 ***
 Removes a tag from specified endpoint_ids.
 
 ##### Required Permissions
+
 Required Permissions For API call:
 `Endpoint Administrations` --> `View/ Edit`
 
@@ -3381,6 +3648,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 #### Base Command
 
 `xdr-endpoint-tag-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3394,6 +3662,7 @@ Builtin Roles with this permission includes: "Privileged Responder" and "Instanc
 There is no context output for this command.
 
 ### xdr-get-tenant-info
+
 ***
 Provides information about the tenant. 
 
@@ -3401,6 +3670,7 @@ Provides information about the tenant.
 #### Base Command
 
 `xdr-get-tenant-info`
+
 #### Input
 
 There are no arguments for this command.
@@ -3428,8 +3698,11 @@ There are no arguments for this command.
 | PaloAltoNetworksXDR.TenantInformation.purchased_forensics | Number | Number of forensics purchased. | 
 
 #### Command example
+
 ```!xdr-get-tenant-info```
+
 #### Context Example
+
 ```json
 {
     "PaloAltoNetworksXDR": {
@@ -3458,6 +3731,7 @@ There are no arguments for this command.
 #### Human Readable Output
 
 >### Tenant Information
+
 >|Compute _ Unit _ Expiration|Data _ Enabled _ Pro _ Per _ Endpoint|Forensics _ Expiration|Installed _ Prevent|Installed _ Pro _ Tb|Prevent _ Expiration|Pro _ Per _ Endpoint _ Expiration|Pro _ Tb _ Expiration|Purchased _ Compute _ Unit|Purchased _ Prevent|Purchased _ Pro _ Per _ Endpoint|Purchased _ Pro _ Tb|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  |  |  |  |  |  | May 7th 2025 06:59:59 | May 7th 2025 06:59:59 |  |  | ***agents***: 300 | ***tb***: 1 |
@@ -3469,6 +3743,7 @@ There are no arguments for this command.
 
 You can enable incident mirroring between Cortex XSOAR incidents and Palo Alto Networks Cortex XDR - Investigation and Response corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
@@ -3482,7 +3757,9 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Palo Alto Networks Cortex XDR - Investigation and Response.
+
 ### xdr-endpoint-alias-change
+
 ***
 Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
 
@@ -3490,6 +3767,7 @@ Gets a list of endpoints according to the passed filters, and changes their alia
 #### Base Command
 
 `xdr-endpoint-alias-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3515,8 +3793,11 @@ Gets a list of endpoints according to the passed filters, and changes their alia
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!xdr-endpoint-alias-change new_alias_name=test scan_status=success ip_list=1.1.1.1```
+
 #### Human Readable Output
 
 >The endpoint alias was changed successfully.

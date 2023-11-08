@@ -579,6 +579,19 @@ MOC_ES7_SERVER_RESPONSE = {
     }
 }
 
+MOCK_INDEX_RESPONSE = {
+    '_index': 'test-index',
+    '_id': '1',
+    '_version': 1,
+    'result': 'created',
+    '_shards': {
+        'total': 2,
+        'successful': 2,
+        'failed': 0},
+    '_seq_no': 5,
+    '_primary_term': 1
+}
+
 MOCK_PARAMS = [
     {
         'client_type': 'Elasticsearch',
@@ -992,3 +1005,57 @@ def test_convert_date_to_timestamp(date_time, time_method, expected_time):
     """
     Elasticsearch_v2.TIME_METHOD = time_method
     assert Elasticsearch_v2.convert_date_to_timestamp(date_time) == expected_time
+
+
+def test_index_document(mocker):
+    """
+    Given
+      - index name, document in JSON format, id of document
+
+    When
+    - executing index_document function.
+
+    Then
+     - Make sure that the returned function response is as expected with the correct format
+    """
+    import Elasticsearch_v2
+    mocker.patch.object(
+        Elasticsearch_v2.Elasticsearch, 'index', return_value=MOCK_INDEX_RESPONSE
+    )
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    assert Elasticsearch_v2.index_document({'index_name': 'test-index', 'document': '{}', 'id': '1'}, '') == MOCK_INDEX_RESPONSE
+
+
+def test_index_document_command(mocker):
+    """
+    Given
+      - index name, document in JSON format, id of document
+
+    When
+    - executing index_document_command function.
+
+    Then
+     - Make sure that the returned function response is as expected with the correct format
+    """
+    import Elasticsearch_v2
+    mocker.patch.object(
+        Elasticsearch_v2.Elasticsearch, 'index', return_value=MOCK_INDEX_RESPONSE
+    )
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    command_result = Elasticsearch_v2.index_document_command({'index_name': 'test-index', 'document': '{}', 'id': '1'}, '')
+    expected_index_context = {
+        'id': MOCK_INDEX_RESPONSE.get('_id', ''),
+        'index': MOCK_INDEX_RESPONSE.get('_index', ''),
+        'version': MOCK_INDEX_RESPONSE.get('_version', ''),
+        'result': MOCK_INDEX_RESPONSE.get('result', '')
+    }
+    expected_human_readable = "### Indexed document\n" \
+        "|ID|Index name|Version|Result|\n" \
+        "|---|---|---|---|\n" \
+        "| 1 | test-index | 1 | created |\n"
+
+    assert command_result.outputs == expected_index_context
+    assert command_result.readable_output == expected_human_readable
+    assert command_result.outputs_prefix == 'Elasticsearch.Index'
+    assert command_result.raw_response == MOCK_INDEX_RESPONSE
+    assert command_result.outputs_key_field == 'id'

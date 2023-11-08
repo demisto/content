@@ -10,6 +10,7 @@ from EWSv2 import fetch_last_emails
 from exchangelib.errors import UnauthorizedError
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
+import demistomock as demisto
 
 
 class TestNormalCommands:
@@ -192,6 +193,98 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
 
     x = fetch_last_emails(client, since_datetime='since_datetime')
     assert len(x) == expected_result
+
+
+def test_fetch_last_emails_fail(mocker):
+    """
+    This UT is added due to the following issue: XSUP-28730
+    where an ErrorMimeContentConversionFailed exception is raised if there was a corrupt object in the stream of
+    results returned from the fetch process (exchangelib module behavior).
+    If such exception is encountered, it would be handled internally so that the integration would not crash.
+
+    Given:
+        - First exception raised is ErrorMimeContentConversionFailed
+        - Second exception raised is ValueError
+
+    When:
+        - Iterating over mail objects when fetching last emails
+
+    Then:
+        - Catch ErrorMimeContentConversionFailed, print relevant debug message
+          for encountered corrupt object and continue iteration to next object
+        - Catch ValueError, and raise it forward
+    """
+    from EWSv2 import ErrorMimeContentConversionFailed
+
+    class MockObject:
+        def filter(self, datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            return [Message(), Message(), Message(), Message(), Message()]
+
+    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
+    EWSv2.MAX_FETCH = 1
+    client = TestNormalCommands.MockClient()
+
+    mocker.patch('EWSv2.isinstance', side_effect=[ErrorMimeContentConversionFailed(AttributeError()), ValueError()])
+
+    with pytest.raises(ValueError) as e:
+        fetch_last_emails(client, since_datetime='since_datetime')
+        assert str(e) == 'Got an error when pulling incidents. You might be using the wrong exchange version.'
+
+
+def test_fetch_last_emails_object_stream_behavior(mocker):
+    """
+    This UT is added due to the following issue: XSUP-28730
+    where an ErrorMimeContentConversionFailed exception is raised if there was a corrupt object in the stream of
+    results returned from the fetch process (exchangelib module behavior).
+    If such exception is encountered, it would be handled internally so that the integration would not crash
+
+    Given:
+        - A stream of 3 fetched objects, where objects in indexes 0,2 are valid message objects
+          and the object in index 1 is an exception object (corrupt object)
+
+    When:
+        - Iterating over mail objects when fetching last emails
+
+    Then:
+        - Iterate over the fetched objects
+        - Catch the corrupt object object, print relevant debug message
+          and continue iteration to next object
+        - Assert only valid objects are in the result
+    """
+    from EWSv2 import ErrorMimeContentConversionFailed
+
+    class MockObject:
+        def filter(self, datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            return [Message(), Message(), Message()]
+
+    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
+    EWSv2.MAX_FETCH = 3
+    client = TestNormalCommands.MockClient()
+
+    mocker.patch('EWSv2.isinstance', side_effect=[True, ErrorMimeContentConversionFailed(AttributeError()), True])
+
+    x = fetch_last_emails(client, since_datetime='since_datetime')
+    assert len(x) == 2
 
 
 def test_dateparser():
@@ -557,3 +650,17 @@ def test_get_entry_for_object():
     from EWSv2 import get_entry_for_object
     obj = {"a": 1, "b": 2}
     assert get_entry_for_object("test", "keyTest", obj)['HumanReadable'] == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'
+
+
+def test_get_time_zone(mocker):
+    """
+    When -
+        trying to send/reply an email we check the XOSAR user time zone
+
+    Then -
+        verify that info returns
+    """
+    from EWSv2 import get_time_zone
+    mocker.patch.object(demisto, 'callingContext', new={'context': {'User': {'timeZone': 'Asia/Jerusalem'}}})
+    results = get_time_zone()
+    assert results.key == 'Asia/Jerusalem'
