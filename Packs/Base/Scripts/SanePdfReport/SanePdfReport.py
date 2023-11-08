@@ -75,7 +75,6 @@ def startServer():
 
         def do_GET(self):
             demisto.debug(f'Handling MD Image request {self.path}')
-            MD_IMAGE_PATH
             img_path = MD_IMAGE_PATH_SAAS if is_demisto_version_ge(MD_IMAGE_SAAS_VERSION) else MD_IMAGE_PATH
             if TENANT_ACCOUNT_NAME:
                 markdown_path_prefix = f"/{TENANT_ACCOUNT_NAME}{img_path}"
