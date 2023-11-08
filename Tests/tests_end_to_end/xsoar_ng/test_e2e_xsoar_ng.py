@@ -291,7 +291,7 @@ def test_edl(request: SubRequest, xsoar_ng_client: XsoarNGApiClient, available_i
         username = integration_params["credentials"]["identifier"]
         password = integration_params["credentials"]["password"]
 
-        with create_indicators(xsoar_ng_client, indicators=feed_indicators), create_integration_instance(
+        with create_integration_instance(
             xsoar_ng_client,
             integration_params=integration_params,
             integration_id="EDL",
