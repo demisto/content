@@ -783,7 +783,7 @@ def category_remove_ip(category_id, ip):
         return return_error("Category could not be found.")
 
 
-def category_ioc_update(category_data, retaining_parent_category_ip):
+def category_ioc_update(category_data, retaining_parent_category_ip=None):
     cmd_url = "/urlCategories/" + category_data["id"]
     data = {
         "customCategory": category_data["customCategory"],
@@ -801,7 +801,7 @@ def category_ioc_update(category_data, retaining_parent_category_ip):
     return response
 
 
-def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_category_url):
+def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_category_url=None):
     """
     Add or remove urls from a category.
     Args:
