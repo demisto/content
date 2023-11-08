@@ -3485,6 +3485,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Code42 Suspicious Activity Action v2 - Test",
+            "integrations": "Code42",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
         },
@@ -3858,6 +3863,7 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
+            "instance_names": "QRadar_v3",
             "fromversion": "6.0.0",
             "timeout": 600,
             "is_mockable": false
