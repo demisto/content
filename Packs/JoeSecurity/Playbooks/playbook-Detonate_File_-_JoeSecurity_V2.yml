@@ -1,5 +1,7 @@
 id: Detonate File - JoeSecurity V2
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Detonate File - JoeSecurity V2
 description: The Detonate File using Joe Sandbox Process is designed to streamline and enhance the security assessment of files. This automated system accepts a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology, and returns comprehensive results as attachments to the user. The process is designed to be swift, efficient, and secure, providing users with valuable insights into potential threats and vulnerabilities within their files.
 tags:
@@ -435,12 +437,6 @@ inputs:
   value: {}
   required: false
   description: Comments for the analysis.
-  playbookInputQuery:
-- key: InternetAccess
-  value:
-    simple: "True"
-  required: false
-  description: Enable internet access (boolean). True= internet access (default), False= no internet access.
   playbookInputQuery:
 - key: ReportFileType
   value: {}

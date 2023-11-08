@@ -18,9 +18,9 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* joe-analysis-info
-* joe-download-report
 * joe-submit-sample
+* joe-download-report
+* joe-analysis-info
 
 ## Playbook Inputs
 
@@ -33,7 +33,6 @@ This playbook does not use any sub-playbooks.
 | Timeout | The duration after which to stop pooling and to resume the playbook \(in minutes\) | 1500 | Optional |
 | Systems | Operating system to run the analysis on \(comma-separated\). Supported values are: w7, w7x64, w7_1, w7_2, w7native, android2, android3, mac1, w7l, w7x64l, w10, android4, w7x64native, w7_3, w10native, android5native_1, w7_4, w7_5, w10x64, w7x64_hvm, android6, iphone1, w7_sec, macvm, w7_lang_packs, w7x64native_hvm, lnxubuntu1, lnxcentos1, android7_nougat \(if no input is provided, the default is w10x64_office\) |  | Optional |
 | Comments | Comments for the analysis. |  | Optional |
-| InternetAccess | Enable internet access \(boolean\). True= internet access \(default\), False= no internet access. | True | Optional |
 | ReportFileType | The resource type to download. Default is html. Supported values are: html, lighthtml, executive, pdf, classhtml, xml, lightxml, classxml, clusterxml, irxml, json, jsonfixed, lightjson, lightjsonfixed, irjson, irjsonfixed, shoots \(screenshots\), openioc, maec, misp, graphreports, memstrings, binstrings, sample, cookbook, bins \(dropped files\), unpackpe \(unpacked PE files\), unpack, ida, pcap, pcapslim, memdumps, yara |  | Optional |
 
 ## Playbook Outputs
