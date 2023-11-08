@@ -61,6 +61,21 @@ class Client:
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
 
+    def resource_group_list_request(self, tag: str, limit: int, full_url: Optional[str] = None) -> dict:
+        """
+        List all resource groups.
+        Args:
+            tag str: Tag to filter by.
+            limit (int): Maximum number of resource groups to retrieve. Default is 50.
+            full_url (str): URL to retrieve the next set of results.
+        Returns:
+            List[dict]: API response from Azure.
+        """
+        filter_by_tag = azure_tag_formatter(tag) if tag else None
+        params = {'$filter': filter_by_tag, '$top': limit, 'api-version': RESOURCE_GROUP_LIST_API_VERSION} if not full_url else {}
+        full_url = full_url if full_url else f'https://management.azure.com/subscriptions/{self.subscription_id}/resourcegroups'
+        return self.http_request('GET', full_url=full_url, params=params, resource=AZURE_MANAGEMENT_RESOURCE)
+
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
                      data=None, resource=None, timeout=10):
         if not params:
@@ -386,30 +401,37 @@ def resource_group_list_command(client: Client, args: Dict[str, Any]):
     """
     limit = arg_to_number(args.get('limit')) or 50
     tag = args.get('tag', '')
-    filter_by_tag = azure_tag_formatter(tag) if tag else None
-    params = {'$filter': filter_by_tag, '$top': limit, 'api-version': RESOURCE_GROUP_LIST_API_VERSION}
-    full_url = f'https://management.azure.com/subscriptions/{client.subscription_id}/resourcegroups'
 
-    response = client.http_request('GET', full_url=full_url, params=params, resource=AZURE_MANAGEMENT_RESOURCE)
-    value = response.get('value', [])
+    raw_responses = []
+    resource_groups: List[dict] = []
 
-    resource_groups = []
-    for resource_group in value:
-        resource_group_context = {
-            'Name': resource_group.get('name'),
-            'Location': resource_group.get('location'),
-            'Tags': resource_group.get('tags'),
-            'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
-        }
-        resource_groups.append(resource_group_context)
+    next_link = True
+    while next_link and len(resource_groups) < limit:
+        full_url = next_link if isinstance(next_link, str) else None
+        response = client.resource_group_list_request(tag=tag, limit=limit, full_url=full_url)
 
+        value = response.get('value', [])
+        next_link = full_url = response.get('nextLink', '')
+
+        raw_responses.extend(value)
+        for resource_group in value:
+            resource_group_context = {
+                'Name': resource_group.get('name'),
+                'Location': resource_group.get('location'),
+                'Tags': resource_group.get('tags'),
+                'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
+            }
+            resource_groups.append(resource_group_context)
+
+    raw_responses = raw_responses[:limit]
+    resource_groups = resource_groups[:limit]
     readable_output = tableToMarkdown('Resource Groups List', resource_groups, removeNull=True)
 
     return CommandResults(
         outputs_prefix='AzureLogAnalytics.ResourceGroup',
         outputs_key_field='id',
-        outputs=value,
-        raw_response=value,
+        outputs=raw_responses,
+        raw_response=raw_responses,
         readable_output=readable_output
     )
 
