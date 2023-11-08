@@ -8,9 +8,9 @@ Manage Amazon Web Services accounts and their resources.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Role Arn |  |  |
-    | Role Session Name |  |  |
-    | Role Session Duration |  |  |
+    | Role Arn | The Amazon Resource Name (ARN) of the role to assume. | False | 
+    | Role Session Name | An identifier for the assumed role session. | False | 
+    | Role Session Duration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | False | 
     | Access Key |  | False |
     | Secret Key |  | False |
     | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
@@ -164,7 +164,7 @@ This command returns only the immediate parents in the hierarchy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| child_id | The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root.<br/>This value by running the commands  “root-list” / “organization-unit-list <br/># TODO<br/>. | Required | 
+| child_id | The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root.<br/>This value can be retrieved by running the command "aws-org-account-list". | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -342,42 +342,6 @@ Lists all the accounts in the organization or a specific account by Id.
                     "JoinedMethod": "INVITED",
                     "JoinedTimestamp": "2022-07-25 09:11:23.528000+00:00",
                     "Name": "ferrum-techs",
-                    "Status": "ACTIVE"
-                },
-                {
-                    "Arn": "arn:aws:organizations::111222333444:account/o-abcde12345/111222333444",
-                    "Email": "user@xsoar.com",
-                    "Id": "111222333444",
-                    "JoinedMethod": "CREATED",
-                    "JoinedTimestamp": "2023-09-04 14:34:18.547000+00:00",
-                    "Name": "Moishy32",
-                    "Status": "SUSPENDED"
-                },
-                {
-                    "Arn": "arn:aws:organizations::111222333444:account/o-abcde12345/111222333444",
-                    "Email": "user@xsoar.com",
-                    "Id": "111222333444",
-                    "JoinedMethod": "CREATED",
-                    "JoinedTimestamp": "2023-02-02 11:34:33.118000+00:00",
-                    "Name": "Ferrum-Techs secondary",
-                    "Status": "ACTIVE"
-                },
-                {
-                    "Arn": "arn:aws:organizations::111222333444:account/o-abcde12345/111222333444",
-                    "Email": "user@xsoar.com",
-                    "Id": "111222333444",
-                    "JoinedMethod": "CREATED",
-                    "JoinedTimestamp": "2023-10-30 12:26:31.949000+00:00",
-                    "Name": "new_account",
-                    "Status": "SUSPENDED"
-                },
-                {
-                    "Arn": "arn:aws:organizations::111222333444:account/o-abcde12345/111222333444",
-                    "Email": "user@xsoar.com",
-                    "Id": "111222333444",
-                    "JoinedMethod": "CREATED",
-                    "JoinedTimestamp": "2023-09-04 09:22:16.691000+00:00",
-                    "Name": "Moishy2",
                     "Status": "SUSPENDED"
                 }
             ],
@@ -393,11 +357,7 @@ Lists all the accounts in the organization or a specific account by Id.
 >|Id|Arn|Name|Email|JoinedMethod|JoinedTimestamp|Status|
 >|---|---|---|---|---|---|---|
 >| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | Moishy | user@xsoar.com | CREATED | 2023-09-04 09:17:14.299000+00:00 | ACTIVE |
->| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | ferrum-techs | user@xsoar.com | INVITED | 2022-07-25 09:11:23.528000+00:00 | ACTIVE |
->| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | Moishy32 | user@xsoar.com | CREATED | 2023-09-04 14:34:18.547000+00:00 | SUSPENDED |
->| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | Ferrum-Techs secondary | user@xsoar.com | CREATED | 2023-02-02 11:34:33.118000+00:00 | ACTIVE |
->| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | new_account | user@xsoar.com | CREATED | 2023-10-30 12:26:31.949000+00:00 | SUSPENDED |
->| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | Moishy2 | user@xsoar.com | CREATED | 2023-09-04 09:22:16.691000+00:00 | SUSPENDED |
+>| 111222333444 | arn:aws:organizations::111222333444:account/o-abcde12345/111222333444 | ferrum-techs | user@xsoar.com | INVITED | 2022-07-25 09:11:23.528000+00:00 | SUSPENDED |
 
 
 ### aws-org-organization-get
@@ -423,10 +383,7 @@ Retrieves information about the organization that the user's account belongs to.
 | --- | --- | --- |
 | AWS.Organizations.Organization.Id | String | The unique identifier \(ID\) of the organization. | 
 | AWS.Organizations.Organization.Arn | String | The Amazon Resource Name \(ARN\) of the organization. | 
-| AWS.Organizations.Organization.FeatureSet | String | Specifies the functionality that currently is available to the organization.
-If set to “ALL”, then all features are enabled and policies can be applied to accounts in the organization.
-If set to “CONSOLIDATED_BILLING”, then only consolidated billing functionality is available.
- | 
+| AWS.Organizations.Organization.FeatureSet | String | Specifies the functionality that currently is available to the organization. If set to “ALL”, then all features are enabled and policies can be applied to accounts in the organization. If set to “CONSOLIDATED_BILLING”, then only consolidated billing functionality is available. | 
 | AWS.Organizations.Organization.MasterAccountArn | String | The Amazon Resource Name \(ARN\) of the account that is designated as the management account for the organization. | 
 | AWS.Organizations.Organization.MasterAccountId | String | The unique identifier \(ID\) of the management account of the organization. | 
 | AWS.Organizations.Organization.MasterAccountEmail | String | The email address that is associated with the Amazon Web Services account that is designated as the management account for the organization. | 

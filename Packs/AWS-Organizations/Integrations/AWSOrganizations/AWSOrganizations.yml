@@ -9,15 +9,18 @@ configuration:
   name: role_arn
   section: Connect
   type: 0
+  additionalinfo: An identifier for the assumed role session.
 - display: Role Session Name
   name: role_session_name
   section: Connect
   type: 0
+  additionalinfo: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
 - display: Role Session Duration
   name: role_session_duration
   section: Connect
   type: 0
   advanced: true
+  additionalinfo: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
 - display: Access Key
   name: credentials
   type: 9
@@ -132,8 +135,7 @@ script:
       arguments:
       - description: |
           The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root.
-          This value by running the commands  “root-list” / “organization-unit-list 
-          # TODO
+          This value can be retrieved by running the command "aws-org-account-list".
         name: child_id
         required: true
       - description: The Amazon Resource Name (ARN) of the role to assume.
