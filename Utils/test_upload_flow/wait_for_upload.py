@@ -12,8 +12,7 @@ GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '2596')  # the default is the i
 
 # disable-secrets-detection
 GITLAB_CONTENT_PIPELINES_BASE_URL = f'{GITLAB_SERVER_URL}/api/v4/projects/{GITLAB_PROJECT_ID}/pipelines/'
-TIMEOUT = 60 * 60 * 6  # 6 hours - TODO - Decrease after replacing id-set with graph
-
+TIMEOUT = 60 * 60 * 7  # 7 hours - TODO - Decrease after migration has been completed
 
 def get_pipeline_info(pipeline_id, token):
     url = GITLAB_CONTENT_PIPELINES_BASE_URL + pipeline_id
