@@ -1,18 +1,7 @@
-id: 4fcd072b-e7d2-4c6b-8a03-21391debf352
-version: 8
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Common Playbooks
-    itemVersion: 2.4.11
-    fromServerVersion: 6.8.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
-name: Cloud IAM Enrichment - Generic_dev
-description: This playbook is responsible for collecting and enriching data on Identity
-  Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
+id: Cloud Compute Enrichment - Generic
+version: -1
+name: Cloud IAM Enrichment - Generic
+description: This playbook is responsible for collecting and enriching data on Identity Access Management (IAM) in cloud environments (AWS, Azure, and GCP).
 starttaskid: "0"
 tasks:
   "0":
@@ -25,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -55,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -74,6 +65,116 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f80c87c9-d081-4fb9-8902-ed4688b60faf
+    type: regular
+    task:
+      id: f80c87c9-d081-4fb9-8902-ed4688b60faf
+      version: -1
+      name: Azure IAM - Get user information
+      description: |-
+        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+        Permissions: - User.Read (Delegated) - User.Read.All (Application)
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      user:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ac99bbcf-26f3-4810-891c-bbf7df66a649
+    type: regular
+    task:
+      id: ac99bbcf-26f3-4810-891c-bbf7df66a649
+      version: -1
+      name: Azure IAM - List risky user history
+      description: Retrieve the risky users history in active directory.
+      script: '|||msgraph-identity-protection-risky-user-history-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      user_id:
+        complex:
+          root: MSGraphUser
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9ba1aabc-8faa-46ec-80c2-20f99ae5faac
+    type: regular
+    task:
+      id: 9ba1aabc-8faa-46ec-80c2-20f99ae5faac
+      version: -1
+      name: Azure IAM - List user groups
+      type: regular
+      iscommand: true
+      brand: ""
+      description: 'Provides a list of groups.'
+      script: '|||msgraph-groups-list-groups'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      filter:
+        simple: startsWith(Mail,'${inputs.username}')
   "6":
     id: "6"
     taskid: b8926391-3158-4b4e-880e-4c25beb4752f
@@ -288,116 +389,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: f80c87c9-d081-4fb9-8902-ed4688b60faf
-    type: regular
-    task:
-      id: f80c87c9-d081-4fb9-8902-ed4688b60faf
-      version: -1
-      name: Azure IAM - Get user information
-      description: |-
-        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-        Permissions: - User.Read (Delegated) - User.Read.All (Application)
-      script: '|||msgraph-user-get'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      user:
-        complex:
-          root: inputs.username
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -500,
-          "y": 510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: ac99bbcf-26f3-4810-891c-bbf7df66a649
-    type: regular
-    task:
-      id: ac99bbcf-26f3-4810-891c-bbf7df66a649
-      version: -1
-      name: Azure IAM - List risky user history
-      description: Retrieve the risky users history in active directory.
-      script: '|||msgraph-identity-protection-risky-user-history-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      user_id:
-        complex:
-          root: MSGraphUser
-          accessor: ID
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -500,
-          "y": 900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 9ba1aabc-8faa-46ec-80c2-20f99ae5faac
-    type: regular
-    task:
-      id: 9ba1aabc-8faa-46ec-80c2-20f99ae5faac
-      version: -1
-      name: Azure IAM - List user groups
-      description: Provides a list of groups.
-      script: '|||msgraph-groups-list-groups'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      filter:
-        simple: startsWith(Mail,'${inputs.username}')
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -40,
-          "y": 510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 817df662-98b0-4a53-809b-2bd38f28f289
@@ -454,6 +445,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -482,8 +474,7 @@ tasks:
       id: d9ef2f89-4ea7-4552-8afd-b4daf0d04743
       version: -1
       name: AWS IAM - Get user information
-      description: Retrieves information about the specified IAM user, including the
-        user's creation date, path, unique ID, and ARN.
+      description: Retrieves information about the specified IAM user, including the user's creation date, path, unique ID, and ARN.
       script: AWS - IAM|||aws-iam-get-user
       type: regular
       iscommand: true
@@ -520,8 +511,7 @@ tasks:
       id: 219490f3-8185-4975-880b-0ea73d998606
       version: -1
       name: AWS IAM - List user access keys
-      description: Returns information about the access key IDs associated with the
-        specified IAM user.
+      description: Returns information about the access key IDs associated with the specified IAM user.
       script: AWS - IAM|||aws-iam-list-access-keys-for-user
       type: regular
       iscommand: true
@@ -595,8 +585,7 @@ tasks:
       id: b0d79051-aeee-4d78-8ea1-7ed02bbe01ab
       version: -1
       name: AWS IAM - List user attached policies
-      description: Lists all managed policies that are attached to the specified IAM
-        user.
+      description: Lists all managed policies that are attached to the specified IAM user.
       script: '|||aws-iam-list-attached-user-policies'
       type: regular
       iscommand: true
@@ -633,8 +622,7 @@ tasks:
       id: e558a2a4-a714-4a0b-8790-77ad50c1bf23
       version: -1
       name: AWS IAM - List user inline policies
-      description: Lists the names of the inline policies embedded in the specified
-        IAM user.
+      description: Lists the names of the inline policies embedded in the specified IAM user.
       script: '|||aws-iam-list-user-policies'
       type: regular
       iscommand: true
@@ -674,6 +662,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -704,6 +693,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -734,6 +724,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -894,9 +885,7 @@ tasks:
       id: 7cf34b5f-d865-46ae-82bd-1d5e0e28c48e
       version: -1
       name: GCP IAM - Get service account information
-      description: 'Lists service accounts in a project, or retrieves a specific service
-        account information. One of the arguments: ''service_account_name'' or ''project_name''  must
-        be provided.'
+      description: 'Lists service accounts in a project, or retrieves a specific service account information. One of the arguments: ''service_account_name'' or ''project_name''  must be provided.'
       script: '|||gcp-iam-service-accounts-get'
       type: regular
       iscommand: true
@@ -972,9 +961,7 @@ tasks:
       id: b92b83a2-fcdf-41f4-81e2-a38139eadac7
       version: -1
       name: GCP IAM - List service account access keys
-      description: 'Lists service account keys, or retrieves a specific service account
-        key information. One of the arguments: ''service_account_name'' or ''key_name''  must
-        be provided.'
+      description: 'Lists service account keys, or retrieves a specific service account key information. One of the arguments: ''service_account_name'' or ''key_name''  must be provided.'
       script: '|||gcp-iam-service-account-keys-get'
       type: regular
       iscommand: true
@@ -1013,6 +1000,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
@@ -1043,6 +1031,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1130,22 +1119,22 @@ inputs:
   value: {}
   required: false
   description: User name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: GCPProjectName
   value: {}
   required: false
   description: The GCP project name.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: cloudProvider
   value: {}
   required: false
   description: The cloud service provider involved.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: cloudIdentityType
   value: {}
   required: false
   description: The cloud identity type.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: AWS.IAM.Users
   description: |-
@@ -1154,7 +1143,7 @@ outputs:
     Arn
     CreateDate
     Path
-    PasswordLastUsed
+    PasswordLastUsed.
   type: unknown
 - contextPath: AWS.IAM.Users.AccessKeys
   description: |-
@@ -1162,7 +1151,7 @@ outputs:
     AccessKeyId
     Status
     CreateDate
-    UserName
+    UserName.
   type: unknown
 - contextPath: GCPIAM
   description: GCP IAM information.
@@ -1199,35 +1188,29 @@ outputs:
   description: MSGraph group information.
   type: unknown
 - contextPath: MSGraph.identityProtection.RiskyUserHistory
+  description: User risk history.
   type: unknown
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.userPrincipalName
   description: Risky user principal name.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.userDisplayName
   description: Risky user display name.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskDetail
-  description: Reason why the user is considered a risky user. The possible values
-    are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange,
-    userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe,
-    userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised,
-    hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+  description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskstate
-  description: State of the user's risk. The possible values are none, confirmedSafe,
-    remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+  description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLevel
-  description: Risk level of the detected risky user. The possible values are low,
-    medium, high, hidden, none, and unknownFutureValue.
+  description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime
-  description: The date and time that the risky user was last updated. The DateTimeOffset
-    type represents date and time information using the ISO 8601 format and is always
-    in UTC time.
+  description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.isProcessing
   description: Indicates whether a user's risky state is being processed by the backend.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.isDeleted
   description: Indicates whether the user is deleted.
 - contextPath: MSGraph.identityProtection.RiskyUserHistory.id
   description: Unique ID of the risky user.
-sourceplaybookid: Cloud IAM Enrichment - Generic
 quiet: false
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
