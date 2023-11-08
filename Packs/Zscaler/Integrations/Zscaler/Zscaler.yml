@@ -275,6 +275,10 @@ script:
       isArray: true
       name: ip
       required: true
+    - description: A comma-separated list of IP address to add to the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8.
+      isArray: true
+      name: retaining-parent-category-ip
+      required: false
     description: Adds IP address to the specified category.
     name: zscaler-category-add-ip
     outputs:
@@ -289,6 +293,9 @@ script:
       type: string
     - contextPath: Zscaler.Category.URL
       description: The URL of the category
+      type: string
+    - contextPath: Zscaler.Category.RetainingParentCategory
+      description: The IP of the category that are in Retaining Parent category.
       type: string
   - arguments:
     - description: The ID of the category to remove the specified URLs from. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command.
