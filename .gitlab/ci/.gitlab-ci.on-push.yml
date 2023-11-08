@@ -78,7 +78,7 @@ stop-running-pipelines:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running pipelines on current branch"
-    - python3 ./Tests/scripts/stop_running_pipeline.py
+    - python3 ./Tests/scripts/stop_running_pipeline.py --creds "${CONTENT_BUILD_GCP}" --zone "${GCP_ZONE}"
     - section_end "Stop running pipelines on current branch"
     - job-done
 
