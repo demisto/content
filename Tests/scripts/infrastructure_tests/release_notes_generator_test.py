@@ -655,3 +655,64 @@ class TestMergeVersionBlocks:
         rn_block, latest_version = merge_version_blocks(pack_versions_dict)
         assert latest_version == expected_version
         assert rn_block == expected_results
+
+    @pytest.mark.parametrize('pack_rns, expected_rns, expected_version', [
+        pytest.param({
+            "1.0.1": "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Updated the Docker image to: 123.",
+            "1.0.2": "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Updated the Docker image to: 456.",
+        },
+            "#### Integrations\n"
+            "##### Some Integration\n"
+            "- Updated the Docker image to: 456.",
+            "1.0.2", id="Merge docker updates"),
+        pytest.param({
+            "1.0.1": "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Added the new update to the integration.\n"
+                     "- Updated the Docker image to: 123.",
+            "1.0.2": "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Added the other update to the integration.\n"
+                     "- Updated the Docker image to: 456.",
+        },
+            "#### Integrations\n"
+            "##### Some Integration\n"
+            "- Added the new update to the integration.\n"
+            "- Added the other update to the integration.\n"
+            "- Updated the Docker image to: 456.",
+            "1.0.2", id="Merge docker updates with other updates"),
+        pytest.param({
+            "1.0.1": "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Added the new update to the integration.\n"
+                     "- Updated the Docker image to: 123.",
+            "1.0.2": "#### Integrations\n"
+                     "##### Some Integration\n"
+                     "- Added the other update to the integration.\n",
+        },
+            "#### Integrations\n"
+            "##### Some Integration\n"
+            "- Added the new update to the integration.\n"
+            "- Added the other update to the integration.\n"
+            "- Updated the Docker image to: 123.",
+            "1.0.2", id="Handle old docker update"),
+    ])
+    def test_merge_rns_with_several_docker_updates(self, pack_rns: dict, expected_rns: str, expected_version: str):
+        """
+        Given: Two consecutive versions of RNs.
+            - Case 1: Both containing general pack notes.
+            - Case 2: One contains a content entity change and one contains general pack notes.
+            - Case 3: One is combined (content entity change & general note) and one contains general pack notes.
+        When: Using merge_version_blocks function.
+        Then: Ensure that the merge was done correctly:
+            - General notes were merged and are on top.
+            - All other notes are also present.
+            - The latest version is as expected.
+        """
+        merged_rn_block, latest_version = merge_version_blocks(pack_rns)
+        assert merged_rn_block == expected_rns
+        assert latest_version == expected_version
