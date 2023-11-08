@@ -239,7 +239,7 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tim
 ''' FUNCTIONS '''
 
 
-def check_ip_command(reliability, ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD, disable_private_ip_lookup=DISABLE_PRIVATE_IP_LOKKUP):
+def check_ip_command(reliability, ip, override_private_lookup="False", days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD, disable_private_ip_lookup=DISABLE_PRIVATE_IP_LOKKUP):
     params = {
         "maxAgeInDays": days
     }
@@ -248,10 +248,9 @@ def check_ip_command(reliability, ip, days=MAX_AGE, verbose=VERBOSE, threshold=T
     ip_list = argToList(ip)
     entry_list = []
     private_ips = []
-    override_private_lookup = argToBoolean(args.get("override_private_lookup", "False"))
     
     for current_ip in ip_list:
-        if disable_private_ip_lookup and ipaddress.ip_address(current_ip).is_private and not override_private_lookup:
+        if disable_private_ip_lookup and ipaddress.ip_address(current_ip).is_private and not argToBoolean(override_private_lookup):
             private_ips.append(current_ip)
             continue
         params["ipAddress"] = current_ip
