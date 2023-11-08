@@ -129,19 +129,25 @@ configuration:
   name: skipinitialspace
   type: 8
   required: false
-- additionalinfo: Supports CSV values.
-  display: Tags
+- additionalinfo: Text encoding for the CSV file. Defaults to latin-1.
+  display: Text Encoding
+  name: encoding
+  type: 0
+  required: true
+  defaultvalue: latin-1
+- display: Tags
   name: feedTags
   type: 0
   required: false
+  additionalinfo: Supports CSV values.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 description: Fetch indicators from a CSV feed.
 display: CSV Feed
 name: CSVFeed
@@ -165,10 +171,10 @@ script:
     - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/py3-tools:1.0.0.45904
+  dockerimage: demisto/py3-tools:1.0.0.80165
   feed: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
