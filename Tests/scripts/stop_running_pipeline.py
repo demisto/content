@@ -2,10 +2,13 @@ import argparse
 import os
 import sys
 import traceback
+
 from gitlab import Gitlab
 from gitlab.v4.objects import Project, ProjectPipeline
+from google.cloud import compute_v1
 
 from Tests.scripts.common import BUCKET_UPLOAD_BRANCH_SUFFIX
+from Tests.scripts.gcp_instances import InstancesService
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -25,6 +28,14 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('-c', '--ci-token', help='The token for Gitlab', required=False, default=GITLAB_CANCEL_TOKEN)
     parser.add_argument('--pipeline-id', help='Current Pipeline ID', required=False, default=CI_PIPELINE_ID)
     parser.add_argument('--current-branch', required=False, help='Current branch name', default=CI_COMMIT_BRANCH)
+    parser.add_argument('--creds',
+                        help='GCP creds',
+                        required=True,
+                        type=str)
+    parser.add_argument('--zone',
+                        help='GCP zone',
+                        required=True,
+                        type=str)
     return parser.parse_args()
 
 
@@ -45,10 +56,25 @@ def get_all_pipelines_for_all_statuses(project: Project, branch_name: str, trigg
     return list(pipelines.values())
 
 
+def delete_all_instances_for_pipeline(instances_service: InstancesService,
+                                      all_instances: dict[str, compute_v1.Instance],
+                                      pipeline_id: int):
+    pipeline_id_str = str(pipeline_id)
+    for instance_name in all_instances:
+        if pipeline_id_str in instance_name:
+            try:
+                logging.info(f"Deleting instance:{instance_name}")
+                instances_service.delete_instance(instance_name)
+            except Exception:
+                logging.error(f'Failed to delete instance:{instance_name}')
+
+
 def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
                                      project: Project,
                                      branch_name: str,
                                      triggering_source: str,
+                                     instances_service: InstancesService,
+                                     all_instances: dict[str, compute_v1.Instance],
                                      cancel_children: bool = True,
                                      pipeline_id: int | None = None) -> bool:
 
@@ -76,11 +102,13 @@ def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
                 logging.error(f'Failed to cancel pipeline:{pipeline.id} for branch:{branch_name}')
                 success = False
 
+            delete_all_instances_for_pipeline(instances_service, all_instances, pipeline.id)
+
             if cancel_children:
                 test_upload = branch_name_for_test_upload_flow(branch_name, pipeline.id)
                 logging.info(f"Trying to cancel pipeline for test upload flow branch:{test_upload}")
-                success &= cancel_pipelines_for_branch_name(gitlab_client, project, test_upload,
-                                                            "trigger", False)
+                success &= cancel_pipelines_for_branch_name(gitlab_client, project, test_upload, "trigger",
+                                                            instances_service, all_instances, False)
         elif pipeline.id == pipeline_id:
             logging.info(f"Pipeline {pipeline.id} was not canceled as it is the current pipeline")
         else:
@@ -97,11 +125,14 @@ def main():
                      f"Current branch: {options.current_branch}\n"
                      f"Pipeline ID: {options.pipeline_id}\n")
 
+        instances_service = InstancesService(options.creds, options.zone)
+        all_instances = instances_service.get_all_instances()
+        logging.info(f"Found {len(all_instances)} instances")
         gitlab_client = Gitlab(options.url, private_token=options.ci_token)
         project = gitlab_client.projects.get(int(options.gitlab_project_id))
         pipeline_id = int(options.pipeline_id) if options.pipeline_id else None
         if not cancel_pipelines_for_branch_name(gitlab_client, project, options.current_branch, "push",
-                                                True, pipeline_id):
+                                                instances_service, all_instances, True, pipeline_id):
             logging.info(f"Failed to cancel pipelines for branch:{options.current_branch}")
             sys.exit(1)
         logging.success(f"Successfully canceled pipelines for branch:{options.current_branch}")
