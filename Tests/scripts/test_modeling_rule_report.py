@@ -129,7 +129,7 @@ def calculate_test_modeling_rule_results(test_modeling_rules_results_files: dict
 
 def write_test_modeling_rule_to_jira_mapping(artifacts_path: Path, jira_tickets_for_modeling_rule: dict[str, Issue]):
     test_modeling_rule_to_jira_mapping_file = artifacts_path / TEST_MODELING_RULES_TO_JIRA_MAPPING
-    logging.info(f"Writing test modeling rules to Jira mapping to {test_modeling_rule_to_jira_mapping_file}")
+    logging.info(f"Writing test_modeling_rules_to_jira_mapping to {test_modeling_rule_to_jira_mapping_file}")
     with open(test_modeling_rule_to_jira_mapping_file, "w") as test_modeling_rule_to_jira_mapping_fp:
         test_modeling_rule_to_jira_mapping = {modeling_rule: jira_ticket_to_json_data(jira_ticket)
                                               for modeling_rule, jira_ticket in jira_tickets_for_modeling_rule.items()}
@@ -138,6 +138,7 @@ def write_test_modeling_rule_to_jira_mapping(artifacts_path: Path, jira_tickets_
 
 
 def read_test_modeling_rule_to_jira_mapping(artifacts_path: Path) -> dict[str, dict[str, str]]:
+    logging.debug(f"Reading test_modeling_rules_to_jira_mapping from {TEST_MODELING_RULES_TO_JIRA_MAPPING}")
     with (contextlib.suppress(Exception),
           open(artifacts_path / TEST_MODELING_RULES_TO_JIRA_MAPPING) as playbook_to_jira_mapping_file):
         return json.load(playbook_to_jira_mapping_file)

@@ -49,7 +49,7 @@ def get_jira_tickets_for_playbooks(playbook_ids: list[str],
 
 def write_test_playbook_to_jira_mapping(artifacts_path: Path, jira_tickets_for_playbooks: dict[str, Issue]):
     test_playbooks_to_jira_mapping = artifacts_path / TEST_PLAYBOOKS_TO_JIRA_MAPPING
-    logging.info(f"Writing test playbooks to Jira mapping to {test_playbooks_to_jira_mapping}")
+    logging.info(f"Writing test_playbooks_to_jira_mapping to {test_playbooks_to_jira_mapping}")
     with open(test_playbooks_to_jira_mapping, "w") as playbook_to_jira_mapping_file:
         playbook_to_jira_mapping = {playbook_id: jira_ticket_to_json_data(jira_ticket)
                                     for playbook_id, jira_ticket in jira_tickets_for_playbooks.items()}
@@ -58,6 +58,7 @@ def write_test_playbook_to_jira_mapping(artifacts_path: Path, jira_tickets_for_p
 
 
 def read_test_playbook_to_jira_mapping(artifacts_path: Path):
+    logging.debug(f"Reading test_playbooks_to_jira_mapping from {TEST_PLAYBOOKS_TO_JIRA_MAPPING}")
     with (contextlib.suppress(Exception),
           open(artifacts_path / TEST_PLAYBOOKS_TO_JIRA_MAPPING) as playbook_to_jira_mapping_file):
         return json.load(playbook_to_jira_mapping_file)
