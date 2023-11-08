@@ -112,6 +112,9 @@ tasks:
                 value:
                   simple: 'Cortex ASM Alert: '
               suffix: {}
+      ticket_type:
+        complex:
+          root: inputs.NotificationTicketType
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -213,6 +216,10 @@ inputs:
   required: true
   description: Body of the notification (email or ticket) sent to the potential service owner.
   playbookInputQuery:
+- key: NotificationTicketType
+  value: {}
+  required: true
+  description: The ticket type used by ticketing systems. The default is "incident" because ticketing systems such as ServiceNow and Cherwell use it as default.
 - key: RemediationGuidance
   value: {}
   required: true
