@@ -301,7 +301,7 @@ def get_verdict(mscore: Optional[str]) -> int:
     Returns:
         int: DBotScore
     """
-    if not mscore:
+    if mscore is None:
         return Common.DBotScore.NONE
     mscore_int: int = int(mscore)
     if 0 <= mscore_int <= 20:
@@ -1016,7 +1016,7 @@ def get_new_indicators(
     Returns:
         tuple[List, str]: A list of new indicators, and the new "last updated" checkpoint
     """
-    start_date = arg_to_datetime(last_run)
+    start_date = arg_to_datetime(last_run, None, True)
     minimum_mscore = int(demisto.params().get("feedMinimumConfidence", 80))
     exclude_osint = demisto.params().get("feedExcludeOSIntel", True)
 
@@ -1028,8 +1028,12 @@ def get_new_indicators(
 
         param_start_date: datetime = datetime.fromtimestamp(0)
         if start_date is not None:
+            if start_date.tzinfo is None:
+                start_date = pytz.utc.localize(start_date)
+            else:
+                start_date = start_date.astimezone(pytz.UTC)
             param_start_date = max(
-                earliest_fetch.replace(tzinfo=pytz.UTC), start_date.replace(tzinfo=pytz.UTC)
+                earliest_fetch.replace(tzinfo=pytz.UTC), start_date
             )  # type:ignore
         else:
             param_start_date = earliest_fetch
@@ -1037,7 +1041,7 @@ def get_new_indicators(
             "start_epoch": int(param_start_date.timestamp()),
             "limit": limit,
             "exclude_osint": exclude_osint,
-            "last_updated": "asc"
+            "sort_by": "last_updated:asc"
         }  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
