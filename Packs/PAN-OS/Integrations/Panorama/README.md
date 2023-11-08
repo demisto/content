@@ -3295,7 +3295,7 @@ The query logs in Panorama.
 | polling           | Whether to use polling. Possible values are: true, false. Default is false.                                                                                       | Optional | 
 | timeout           | The timeout (in seconds) when polling. Default is 120.                                                                                                            | Optional | 
 | interval_in_seconds | The interval (in seconds) when polling. Default is 10.                                                                                                            | Optional |
-| show-detail       | Show the data of the fields `after-change-preview`, and `before-change-preview`, or keep them truncated. The full data are under the fields `after-change-detail`, and `before-change-detail`. If this argument was set to `no` when retrieving a job ID, then the data of the fields of that job ID will be truncated, and not if set to `yes`. Possible values are: yes, no. Default is no.                                                                                                             | Optional | 
+| show-detail       | Whether to show only `after-change-preview`, and `before-change-preview`, or get full data for it.  The full data are under the fields `after-change-detail`, and `before-change-detail`. Possible values are: yes, no. Default is no.                                                                                                             | Optional | 
 
 
 #### Context Output
