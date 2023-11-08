@@ -42,11 +42,12 @@ def get_events_command(client: Client, total_events_to_fetch, since,
             int: x-rate-limit-reset: time in seconds until API can be called again.
     """
     stored_events: list = []
+    num_of_events_to_fetch = FETCH_LIMIT if total_events_to_fetch > FETCH_LIMIT else total_events_to_fetch
+    demisto.debug(f"num of events to fetch: {num_of_events_to_fetch} since: {since}")
     while len(stored_events) < total_events_to_fetch:
         demisto.debug(f"stored_events collected: {len(stored_events)}")
-        num_of_events_to_fetch = FETCH_LIMIT if total_events_to_fetch > FETCH_LIMIT else total_events_to_fetch
         try:
-            events = client.get_events(since, num_of_events_to_fetch)  # type: ignore
+            events = client.get_events(since=since, limit=num_of_events_to_fetch)  # type: ignore
             if events:
                 demisto.debug(f'received {len(events)} number of events.')
                 since = events[-1]['published']
@@ -56,6 +57,9 @@ def get_events_command(client: Client, total_events_to_fetch, since,
                     demisto.debug('Events are empty after dedup will break.')
                     break
                 stored_events.extend(events)
+                if len(events) < num_of_events_to_fetch:
+                    demisto.debug(f"Number of events collected is smaller than: {num_of_events_to_fetch} will break.")
+                    break
             else:
                 demisto.debug('Didnt receive any events from the api.')
                 break
@@ -108,7 +112,8 @@ def fetch_events(client: Client,
                  last_run_after,
                  last_object_ids: List[str] = None) -> List[dict]:
     while True:
-        events, epoch_time_to_continue_fetch = get_events_command(client, events_limit,
+        events, epoch_time_to_continue_fetch = get_events_command(client=client,
+                                                                  total_events_to_fetch=events_limit,
                                                                   since=last_run_after,
                                                                   last_object_ids=last_object_ids)
         if epoch_time_to_continue_fetch == 0:
