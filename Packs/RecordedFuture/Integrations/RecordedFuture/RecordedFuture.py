@@ -219,7 +219,7 @@ class Client(BaseClient):
             'method': 'post',
             'url_suffix': url_suffix,
             'json_data': json_data,
-            'timeout': 180,
+            'timeout': 90,
             'retries': 3,
             'status_list_to_retry': STATUS_TO_RETRY,
         }
