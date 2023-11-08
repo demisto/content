@@ -431,6 +431,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers['Accept'] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{organization}-DataStore/config/orgs/org",
@@ -498,6 +499,7 @@ class Client(BaseClient):
         params = assign_params(url_category_name=url_category_name, offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"/api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
@@ -609,6 +611,7 @@ class Client(BaseClient):
 
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
 
         response = self._http_request("GET", url_suffix=suffix, params=params, headers=headers, resp_type="xml")
         return response
@@ -703,6 +706,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
@@ -724,6 +728,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
@@ -840,6 +845,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
@@ -862,6 +868,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
@@ -978,6 +985,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
@@ -999,6 +1007,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
@@ -1136,6 +1145,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
@@ -1157,6 +1167,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
@@ -1293,6 +1304,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/"
@@ -1375,6 +1387,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
@@ -1457,6 +1470,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
@@ -1478,6 +1492,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
@@ -1499,6 +1514,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/template/{template_name}/config/orgs/org-services/{organization}"
@@ -1520,6 +1536,7 @@ class Client(BaseClient):
         params = assign_params(offset=offset, limit=limit)
         headers = self._headers
         headers["Content-Type"] = "application/xml"
+        headers["Accept"] = "application/xml"
         response = self._http_request(
             "GET",
             url_suffix=f"api/config/devices/device/{appliance_name}/config/orgs/org-services/{organization}"
