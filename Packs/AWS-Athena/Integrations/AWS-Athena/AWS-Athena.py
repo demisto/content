@@ -69,7 +69,7 @@ def start_query_execution_command(args: dict, client):
         'QueryString': query_string,
         'QueryExecutionId': response['QueryExecutionId']
     })
-    # b2178832-66d2-4045-8342-e54cf4c0e21b
+
     return CommandResults(
         outputs_prefix='AWS.Athena.StartQuery',
         outputs_key_field='QueryExecutionId',
