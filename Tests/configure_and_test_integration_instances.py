@@ -157,6 +157,10 @@ class XSOARServer(Server):
         return self.internal_ip
 
     @property
+    def server_numeric_version(self) -> str:
+        return get_server_numeric_version(self.client)
+
+    @property
     def client(self):
         if self.__client is None:
             self.__client = self.reconnect_client()
@@ -583,15 +587,17 @@ class Build(ABC):
 
 
 class XSOARBuild(Build):
+    DEFAULT_SERVER_VERSION = "6.99.99"
 
     def __init__(self, options):
         super().__init__(options)
         self.ami_env = options.ami_env
-        servers_list, self.server_numeric_version = self.get_servers(options.ami_env)
         self.servers = [XSOARServer(internal_ip,
                                     self.username,
                                     self.password,
-                                    self.ci_build_number) for internal_ip in servers_list]
+                                    self.ci_build_number) for internal_ip in self.get_servers(options.ami_env)]
+        self.server_numeric_version = self.servers[0].server_numeric_version if self.run_environment == Running.CI_RUN \
+            else self.DEFAULT_SERVER_VERSION
 
     @property
     def proxy(self) -> MITMProxy:
@@ -756,12 +762,7 @@ class XSOARBuild(Build):
     @staticmethod
     def get_servers(ami_env):
         env_conf = get_env_conf()
-        servers = get_servers(env_conf, ami_env)
-        if Build.run_environment == Running.CI_RUN:
-            server_numeric_version = get_server_numeric_version(ami_env)
-        else:
-            server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return servers, server_numeric_version
+        return get_servers(env_conf, ami_env)
 
     def concurrently_run_function_on_servers(
         self, function=None, pack_path=None, service_account=None, packs_to_install=None
