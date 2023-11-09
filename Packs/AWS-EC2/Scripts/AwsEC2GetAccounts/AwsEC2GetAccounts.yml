@@ -1,0 +1,19 @@
+args:
+  - TODO
+comment: TODO
+commonfields:
+  id: AwsEC2GetAccounts
+  version: -1
+enabled: true
+name: AwsEC2GetAccounts
+outputs: 
+  - TODO
+script: '-'
+tags:
+- Amazon Web Services
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+fromversion: 6.10.0
