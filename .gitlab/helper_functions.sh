@@ -104,3 +104,4 @@ clone_repository() {
     fi
   done
   return ${exit_code}
+}
