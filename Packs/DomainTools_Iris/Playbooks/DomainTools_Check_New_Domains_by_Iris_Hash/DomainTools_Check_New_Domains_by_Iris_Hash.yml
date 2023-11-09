@@ -54,8 +54,6 @@ tasks:
     scriptarguments:
       search_hash:
         simple: ${inputs.iris_search_hash}
-      using:
-        simple: DomainTools Iris_instance_1
     separatecontext: false
     view: |-
       {
