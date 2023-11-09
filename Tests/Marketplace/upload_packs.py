@@ -1346,12 +1346,6 @@ def main():
                 pack.cleanup()
                 continue
 
-        task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name  # type: ignore[misc]
@@ -1366,7 +1360,7 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_upload and exists_in_index and pack not in packs_with_missing_dependencies:
+        if skipped_upload and pack not in packs_with_missing_dependencies:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
             continue
