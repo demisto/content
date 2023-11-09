@@ -139,8 +139,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 600,
-          "y": 1910
+          "x": 580,
+          "y": 1930
         }
       }
     note: false
@@ -793,9 +793,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "4"
-      "Yes":
       - "5"
+      "Yes":
+      - "4"
     separatecontext: false
     conditions:
     - label: "Yes"
