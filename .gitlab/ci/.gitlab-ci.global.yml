@@ -225,7 +225,7 @@
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
   - section_start "Checkout upload commit content nightly"
   - | 
-    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
+    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
       echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
       git status
       git reset $LAST_UPLOAD_COMMIT -- ./Packs  # resets the state of the "Packs" folder to the last successful upload commit, it discards any changes made to the folder since that commit
@@ -238,6 +238,7 @@
       for file in $deleted_files; do
         git checkout HEAD -- "$file"  # restore any deleted files between the master branch and the last successful upload commit.
       done
+      find ./Packs -type d -empty -exec sh -c 'rmdir "$0" && echo "Deleted: $0"' {} \;  # remove empty folders under Packs, this can happen when deleting all files of newly added packs between master and upload commit, git doesn't delete the folders
       git status
       echo "content nightly: successfully reverted the Packs folder to upload commit $LAST_UPLOAD_COMMIT"
     else
