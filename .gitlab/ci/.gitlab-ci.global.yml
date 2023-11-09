@@ -265,6 +265,18 @@
   - *install_node_modules
   - *install_venv
 
+.add-content-production-to-artifacts:
+  - section_start "Clone production content and add it to artifacts"
+  - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
+  - mkdir ${ARTIFACTS_FOLDER}/content_production
+  - cd ${ARTIFACTS_FOLDER}/content_production
+  - git init
+  - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
+  - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
+  - git checkout FETCH_HEAD
+  - echo "checked out $LAST_UPLOAD_COMMIT"
+  - section_end "Clone production content and add it to artifacts"
+
 .default-job-settings:
   interruptible: true
   extends:
@@ -509,11 +521,4 @@ cloning-content-repo-last-upload-commit:
   variables:
     ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
-    - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
-    - mkdir ${ARTIFACTS_FOLDER}/content_production
-    - cd ${ARTIFACTS_FOLDER}/content_production
-    - git init
-    - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
-    - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
-    - git checkout FETCH_HEAD
-    - echo "checked out $LAST_UPLOAD_COMMIT"
+    - !reference [.add-content-production-to-artifacts]
