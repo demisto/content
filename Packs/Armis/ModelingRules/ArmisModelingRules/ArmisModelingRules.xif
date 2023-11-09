@@ -33,7 +33,8 @@ alter // extract the device name from the activity title, according to the activ
 		type = "Suspicious Host", regextract(title, "(.+?)\s+communicated"),
 		type = "Suspicious SMB Connection", regextract(title, "(.+?)\s+created"),
 		type = "Threat Detected", regextract(title, "\sfrom\s+(.+?)\s+to"),
-		type = "User Agent Found", regextract(title, "found\s+for\s+(.+)")), 0)
+		type = "User Agent Found", regextract(title, "found\s+for\s+(.+)"),
+		regextract(title, "policy\sviolation\sfrom\s+(.+?)\s+to")), 0)
 | alter 
 	application_name = if(type = "Application Usage", arrayindex(regextract(title, "\sused\s+\'([^\']+)"), 0)),
 	application_version = if(type = "Application Usage", arrayindex(regextract(title, "\version\s+(\S+)"), 0)),
@@ -43,7 +44,8 @@ alter // extract the device name from the activity title, according to the activ
 					type ~= "DNS", "DNS", 
 					type = "QUIC Connection", "QUIC",
 					type = "Suspicious SMB Connection", "SMB",
-					type = "Credentials", arrayindex(regextract(title, "protocol\s+(\S+)"), 0), null),
+					type = "Credentials", arrayindex(regextract(title, "protocol\s+(\S+)"), 0),
+					arrayindex(regextract(title, "via\s+(\w+)\s+over\s+port\s+\d{1,5}"), 0)),
 	resolved_ip_addresses = arraymap(split(if(type = "DNS Query", arrayindex(regextract(content, "IPs:(.+)"), 0)), ","), trim("@element")),
 	scanned_ip_addresses = arraymap(split(if(type = "Port Scan Detected", arrayindex(regextract(content, "IPs:(.+)"), 0)), ","), trim("@element")),
 	source_ip = if(type in ("QUIC Connection", "SSL Connection"), arrayindex(regextract(title, "with\s(\S+)\s"), 0)),
@@ -53,7 +55,8 @@ alter // extract the device name from the activity title, according to the activ
 	target_ip = if(type = "Credentials", arrayindex(regextract(title, "to\s+target\s+(\S+)"), 0),
 				   type = "Restricted Connection", arrayindex(regextract(title, "address\s+\-\s+\S+\s+\(([^\)]+)"), 0)),
 	target_port = if(type in ("HTTP Request", "Threat Detected", "Suspicious Host"), arrayindex(regextract(content, "Port:\s*(\d{1,5})"), 0),
-					 type = "Port Scan Detected", arrayindex(regextract(content, "port[s]*:\s*(\d{1,5})"), 0)),
+					 type = "Port Scan Detected", arrayindex(regextract(content, "port[s]*:\s*(\d{1,5})"), 0),
+					 arrayindex(regextract(title, "via\s+\w+\s+over\s+port\s+(\d{1,5})"), 0)),
 	target_host = if(type = "DNS Query", arrayindex(regextract(title, "to\s+domain\s+\'([^\']+)"), 0),
 					   type = "DNS Response Too Slow", arrayindex(regextract(title, "to\s+\S+\s+for\s+([^\:]+)\:"), 0),
 					   type in("HTTP Request", "QUIC Connection", "SSL Connection"), arrayindex(regextract(title, "to\s+\'([^\'\:]+)"), 0),
@@ -106,8 +109,7 @@ alter // extract the device name from the activity title, according to the activ
 alter os = uppercase(operatingSystem)
 | alter
 	xdm.alert.severity = to_string(risklevel), 
-	xdm.event.tags = tags -> [],
-	xdm.event.type = "Device Seen",
+	xdm.event.tags = arraymap(tags -> [], trim("@element", "\"")),
 	xdm.observer.name = sensor -> name, 
 	xdm.observer.type = sensor -> type, 
 	xdm.source.host.hostname = coalesce(name, arrayindex(split(names, ","), 0)),
