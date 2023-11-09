@@ -53,7 +53,7 @@ def generate_description(playbook_id: str, build_number: str, junit_file_name: s
     msg = "failed" if failed else "succeeded"
     description = f"""
         *{playbook_id}* {msg} in {build_markdown_link}
-        Test Results file: {junit_file_name}
+        Test Results file: [^{junit_file_name}]
 
         {table}
         """

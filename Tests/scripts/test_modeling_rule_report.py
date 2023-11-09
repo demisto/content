@@ -95,7 +95,7 @@ def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
     ], tablefmt="jira", headers=["Tests", "Result"])
     description = f"""
         *{properties['pack_id']}* - *{properties['file_name']}* failed in {build_markdown_link}
-        Test Results file: {junit_file_name}
+        Test Results file: [^{junit_file_name}]
 
         {table}
         """
