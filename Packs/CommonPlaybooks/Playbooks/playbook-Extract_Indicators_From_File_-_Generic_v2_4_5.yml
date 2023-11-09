@@ -1566,7 +1566,7 @@ tasks:
     task:
       id: 7d2bdab4-aee1-4922-87a4-19eb4d35e264
       version: -1
-      name: Is Image File?
+      name: Is there an image file?
       description: |-
         Checks if the uploaded file is a valid image file.
       type: condition
