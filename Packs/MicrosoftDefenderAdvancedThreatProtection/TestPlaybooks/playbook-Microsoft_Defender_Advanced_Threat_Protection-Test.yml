@@ -1398,7 +1398,7 @@ tasks:
       name: Verify vulnerabilities
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
+      scriptName: IsValueInArray
       type: condition
       iscommand: false
       brand: ""
@@ -1406,28 +1406,16 @@ tasks:
       "yes":
       - "57"
     scriptarguments:
-      left:
+      value:
         complex:
           root: MicrosoftATP.CveMachine
           accessor: CVE
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
-      right:
+      array:
         complex:
           root: MicrosoftATP.MachineCVE
           accessor: cveId
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
     results:
-    - AreValuesEqual
+    - IsValueInArray
     separatecontext: false
     continueonerrortype: ""
     view: |-
