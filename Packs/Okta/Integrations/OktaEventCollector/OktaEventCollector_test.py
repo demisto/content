@@ -1,8 +1,6 @@
 from OktaEventCollector import Client, remove_duplicates, get_last_run, get_events_command, main
 import pytest
 from unittest.mock import MagicMock
-import requests
-from CommonServerPython import DemistoException
 from freezegun import freeze_time
 import demistomock as demisto
 
