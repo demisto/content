@@ -227,6 +227,9 @@
   - | 
     if [[ "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
       rm -rf ./Packs
+      cd ${CI_PROJECT_DIR}/artifacts/content_production
+      git status
+      cd -
       echo "copying production Packs folder"
       cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
       rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
