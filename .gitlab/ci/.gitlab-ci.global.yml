@@ -225,7 +225,6 @@
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
   - section_start "Checkout upload commit content nightly"
   - | 
-#    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
     if [[ "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
       rm -rf ./Packs
       echo "copying production Packs folder"
