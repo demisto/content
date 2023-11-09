@@ -1164,7 +1164,7 @@ class Client(BaseClient):
 """ COMMAND FUNCTIONS """  # pylint: disable=pointless-string-statement
 
 
-def fetch_incidents_v2(
+def fetch_incidents(
     client: Client,
     last_run: dict[str, Any],
     first_fetch_time: str,
@@ -1175,7 +1175,13 @@ def fetch_incidents_v2(
 ) -> tuple[dict[str, int], list[dict]]:
 
     last_fetch = last_run.get("last_fetch")
+
+    # The list of event ids that are suspected of being duplicates
     previous_ids = set(last_run.get("previous_ids", []))
+
+    # Copy the previous_ids list to manage the events list suspectedof
+    # being duplicates for the next fetch
+    new_previous_ids = previous_ids.copy()
 
     if last_fetch is None:
         last_fetch = first_fetch_time
@@ -1184,13 +1190,21 @@ def fetch_incidents_v2(
 
     items: list[dict] = []
     offset: int = 0
+
+    # A loop of fetching the events,
+    # fetches all the events from the current time up
+    # to the provided start_time or last_fetch
     while True:
         response = client.event_list_request(start_date=last_fetch,
                                              event_types=event_types,
                                              limit=500,
                                              offset=offset)
-        items = response["data"] + items
+        items = items + response["data"]
+
+        # Check if there are more pages to fetch
         if "next" not in response["metadata"]["links"]:
+            # Reverses the list of events so that the list is in ascending order
+            # so that the earliest event will be the first in the list
             items.reverse()
             break
         offset = len(items)
@@ -1221,7 +1235,6 @@ def fetch_incidents_v2(
         if (incident_id := str(item.get("id"))) in previous_ids:
             continue
 
-        previous_ids.add(incident_id)
 
         incident_timestamp = item["timestamp"] * 1000
         incident = remove_empty_elements(
@@ -1242,12 +1255,25 @@ def fetch_incidents_v2(
         incidents.append(incident)
 
         # Update the latest incident time that was fetched.
+        # And accordingly initializing the list of `previous_ids`
+        # to the ids that belong to the time of the last incident received
         if incident_timestamp > last_fetch_timestamp:
+            new_previous_ids = {incident_id}
             last_fetch_timestamp = incident_timestamp
 
+        # Adding the event ID when the event time is equal to the last received event
+        elif incident_timestamp == last_fetch_timestamp:
+            new_previous_ids.add(incident_id)
+
+    next_run = {
+        "last_fetch": timestamp_to_datestring(last_fetch_timestamp),
+        "previous_ids": list(new_previous_ids),
+    }
+
+    return next_run, incidents
 
 
-def fetch_incidents(
+'''def fetch_incidents(
     client: Client,
     last_run: Dict[str, Any],
     first_fetch_time: str,
@@ -1349,7 +1375,7 @@ def fetch_incidents(
         "previous_ids": list(previous_ids),
     }
 
-    return next_run, incidents
+    return next_run, incidents'''
 
 
 def test_module(client: Client) -> str:
@@ -2123,7 +2149,9 @@ def computer_isolation_polling_command(
 def create_relationships(
     client: Client, indicator: str, relationship: dict[str, str | int | dict]
 ):
-    # 
+    '''
+    Creates relationships only when the event has a parent file for the file attached to the event
+    '''
     if not client.should_create_relationships or not relationship:
         return None
 
@@ -2231,6 +2259,8 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
             disposition = dict_safe_get(context_output, ["file", "disposition"])
 
             dbot_score = get_dbotscore(client.reliability, sha256, disposition)
+
+            # Create relationships for the file indicator
             relationships = (
                 create_relationships(
                     client=client,
@@ -3872,4 +3902,5 @@ def main() -> None:
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    main()
+    # main()
+    print(timestamp_to_datestring(1699311891000, ISO_8601_FORMAT, is_utc=False))
