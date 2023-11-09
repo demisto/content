@@ -22,13 +22,17 @@ INCIDENT_SEVERITY = {
     'high': 3,
     'critical': 4
 }
-INCIDENT_STATUS = [
-    "VIEWED",
-    "UNREVIEWED",
-    "CONFIRMED_INCIDENT",
-    "UNDER_REVIEW",
-    "INFORMATIONAL"
-]
+INCIDENT_STATUS = {
+    "Unreviewed": "UNREVIEWED",
+    "Viewed": "VIEWED",
+    "False Positive": "FALSE_POSITIVE",
+    "Confirmed Incident": "CONFIRMED_INCIDENT",
+    "Under Review": "UNDER_REVIEW",
+    "Informational": "INFORMATIONAL",
+    "Resolved": "RESOLVED",
+    "Remediation in Progress": "REMEDIATION_IN_PROGRESS",
+    "Remediation not Required": "REMEDIATION_NOT_REQUIRED"
+}
 
 ROUTES = {
     "services": r"/apollo/api/v1/y/services",
@@ -237,6 +241,7 @@ def format_incidents(alerts, hide_cvv_expiry):
                 "data_message": json.dumps(alert['data_message']),
                 "keyword": "{}".format(alert['metadata']['entity']['keyword']['tag_name']),
                 "created_at": "{}".format(alert['created_at']),
+                "status": "{}".format(alert['status']),
                 "mirrorInstance": demisto.integrationInstance()
             }
 
@@ -507,7 +512,7 @@ def update_remote_system(client, method, token, args, url):
         }
 
         if status in INCIDENT_STATUS:
-            updated_event["status"] = status
+            updated_event["status"] = INCIDENT_STATUS.get(status)
 
         if assignee_id:
             updated_event["assignee_id"] = assignee_id
