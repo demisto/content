@@ -185,6 +185,11 @@ configuration:
   name: server_close_custom_state
   type: 0
   required: false
+- additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
+  display: Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state)
+  name: server_custom_close_code
+  type: 0
+  required: false
 - additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: 'None'
   display: Mirrored ServiceNow Ticket closure method
@@ -1562,7 +1567,7 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      defaultValue: '0'
+      defaultValue: 'GET'
       description: action to be performed on path.
       isArray: true
       name: method
@@ -1601,7 +1606,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
   ismappable: true
   isremotesyncin: true
