@@ -194,10 +194,10 @@ def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient')
     return CommandResults(
         outputs_key_field='Id',
         outputs_prefix='AWS.Organizations.OrganizationalUnit',
-        outputs=ou['OrganizationalUnit'],
+        outputs=ou.get('OrganizationalUnit', {}),
         readable_output=tableToMarkdown(
             'AWS Organization Unit',
-            ou['OrganizationalUnit'],
+            ou.get('OrganizationalUnit', {}),
             removeNull=True,
         )
     )
@@ -206,7 +206,7 @@ def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient')
 def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
     def JoinedTimestamp_to_str(account) -> dict:
-        account['JoinedTimestamp'] = str(account['JoinedTimestamp'])
+        account['JoinedTimestamp'] = str(account.get('JoinedTimestamp', ''))
         return account
 
     def response_to_readable(accounts) -> str:
@@ -265,12 +265,12 @@ def organization_get_command(aws_client: 'OrganizationsClient') -> CommandResult
     organization = aws_client.describe_organization()
 
     return CommandResults(
-        outputs=organization['Organization'],
+        outputs=organization.get('Organization', {}),
         outputs_prefix='AWS.Organizations.Organization',
         outputs_key_field='Id',
         readable_output=tableToMarkdown(
             'AWS Organization',
-            organization['Organization'],
+            organization.get('Organization', {}),
             [
                 'Id', 'Arn', 'FeatureSet', 'MasterAccountArn',
                 'MasterAccountId', 'MasterAccountEmail'
