@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class MockOrganizationsClient:  # (OrganizationsClient):
-    
+
     def get_paginator(self, _):
         return None
 
@@ -36,64 +36,47 @@ def get_mock_paginate(kwargs: dict, return_obj):
     return mock_paginate
 
 
-def paginate(
-    paginator: 'Paginator', key_to_pages: str, limit=None, page_size=None, next_token=None, **kwargs
-) -> tuple[list, str | None]:
-
-    max_items = arg_to_number(limit or page_size) or 50
-    pagination_max = min(max_items, MAX_PAGINATION)
-
-    iterator = paginator.paginate(
-        **kwargs,
-        PaginationConfig={
-            'MaxItems': pagination_max,
-            'PageSize': pagination_max,
-            'StartingToken': next_token if not limit else None
-        }
-    )
-
-    pages: list = []
-    next_token = None
-
-    for response in iterator:
-        pages.extend(response.get(key_to_pages, []))
-        next_token = response.get('NextToken')
-        if len(pages) >= max_items:
-            break
-
-    del pages[max_items:]
-    return pages, next_token
-
-
 @pytest.mark.parametrize(
-    'paginate_kwargs, expected_kwargs, real_key_to_pages',
+    'paginate_kwargs, expected_kwargs, real_key_to_pages, expected_output, message',
     [
         (
-            {'key_to_pages': 'Accounts', 'Limit': 10, 'page_size': -1, 'next_token': 'token'},
+            {'key_to_pages': 'Accounts', 'limit': 10, 'page_size': -1, 'next_token': 'token'},
             {'PaginationConfig': {'MaxItems': 10, 'PageSize': 10, 'StartingToken': None}},
             'Accounts',
-            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'next_token')
+            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'next_token'),
+            'Test case: ignore page_size and next_token and when a limit is provided.',
         ),
         (
             {'key_to_pages': 'Accounts', 'page_size': 10, 'next_token': 'token'},
             {'PaginationConfig': {'MaxItems': 10, 'PageSize': 10, 'StartingToken': 'token'}},
             'Accounts',
-            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'next_token')
+            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'next_token'),
+            'Test case: use page_size and next_token correctly.',
         ),
         (
             {'key_to_pages': 'Accounts', 'page_size': 13, 'next_token': 'token', 'another_arg': 'value'},
             {'PaginationConfig': {'MaxItems': 13, 'PageSize': 13, 'StartingToken': 'token'}, 'another_arg': 'value'},
             'Accounts',
-            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 'next_token')
+            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 'next_token'),
+            'Test case: check that the args are passed toi the paginator correctly.',
         )
     ]
 )
-def test_paginate(paginate_kwargs, expected_kwargs, real_key_to_pages, expected_output):
-    
+def test_paginate(paginate_kwargs, expected_kwargs, real_key_to_pages, expected_output, message):
+    """
+    Given:
+        Pagination args following the XSOAR pagination protocol.
+
+    When:
+        Calling the paginate function.
+
+    Then:
+        Use the client paginator to fetch all the results and return them with the next token.
+    """
     from AWSOrganizations import paginate
 
     def mock_paginate(**kwargs):
-        assert kwargs == expected_kwargs
+        assert kwargs == expected_kwargs, message
         return (
             {
                 'NextToken': 'next_token',
@@ -107,7 +90,7 @@ def test_paginate(paginate_kwargs, expected_kwargs, real_key_to_pages, expected_
         **paginate_kwargs
     )
 
-    assert output == expected_output
+    assert output == expected_output, message
 
 
 def test_root_list_command(mocker):
