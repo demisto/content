@@ -19,41 +19,28 @@
 						"i": "zsgh4yoppk-caseinfoid-e3d26b30-30a1-11ee-a2f1-bb0fdfd31f7a",
 						"items": [
 							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "checkpointhecfarm",
+								"endCol": 4,
+								"fieldId": "externallink",
 								"height": 53,
-								"id": "bc5fbb10-362e-11ee-b944-c7997e9b1fa5",
+								"id": "7c014190-7f37-11ee-b215-3f9c6cb66dbc",
 								"index": 0,
-								"listId": "zsgh4yoppk-caseinfoid-e3d26b30-30a1-11ee-a2f1-bb0fdfd31f7a",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "checkpointheccustomer",
+								"fieldId": "eventtype",
 								"height": 53,
-								"id": "e7844fa0-30a1-11ee-a2f1-bb0fdfd31f7a",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "checkpointhecsaas",
-								"height": 53,
-								"id": "ec22de00-30a1-11ee-a2f1-bb0fdfd31f7a",
+								"id": "db4609a0-5247-11ee-8baf-93fd1e8f095a",
 								"index": 2,
-								"listId": "zsgh4yoppk-caseinfoid-e3d26b30-30a1-11ee-a2f1-bb0fdfd31f7a",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "checkpointhectype",
+								"fieldId": "severity",
 								"height": 53,
-								"id": "f6421d60-30a1-11ee-a2f1-bb0fdfd31f7a",
+								"id": "257ac5b0-5248-11ee-8baf-93fd1e8f095a",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -64,6 +51,15 @@
 								"height": 53,
 								"id": "ce02f060-357c-11ee-b33b-21e4a1f3ca81",
 								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 4,
+								"fieldId": "details",
+								"height": 106,
+								"id": "1f030a80-5248-11ee-8baf-93fd1e8f095a",
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -160,7 +156,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "checkpointhectask"
+													"simple": "checkpointhecemailtask"
 												}
 											},
 											"operator": "isEmpty",
@@ -238,7 +234,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "checkpointhectask"
+													"simple": "checkpointhecemailtask"
 												}
 											},
 											"operator": "isEmpty",
@@ -276,7 +272,7 @@
 									},
 									"task": {
 										"complex": {
-											"accessor": "checkpointhectask",
+											"accessor": "checkpointhecemailtask",
 											"filters": [],
 											"root": "incident",
 											"transformers": []
@@ -293,7 +289,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "checkpointhectask"
+													"simple": "checkpointhecemailtask"
 												}
 											},
 											"operator": "isNotEmpty",
@@ -321,7 +317,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "checkpointhectype"
+													"simple": "eventtype"
 												}
 											},
 											"operator": "isEqualString",
@@ -432,7 +428,7 @@
 											"left": {
 												"isContext": true,
 												"value": {
-													"simple": "checkpointhectype"
+													"simple": "eventtype"
 												}
 											},
 											"operator": "isNotEqualString",

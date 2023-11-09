@@ -1,10 +1,9 @@
 import json
 
 import demistomock as demisto
-from CheckPointHEC import (Client, fetch_incidents, checkpointhec_get_entity, checkpointhec_get_email_info,
+from CheckPointHEC import (Client, fetch_incidents, checkpointhec_get_entity, checkpointhec_get_events,
                            checkpointhec_get_scan_info, checkpointhec_search_emails, checkpointhec_send_action,
-                           checkpointhec_get_action_result, checkpointhec_send_notification,
-                           test_module as check_module)
+                           checkpointhec_get_action_result, checkpointhec_send_notification, test_module as check_module)
 
 
 def util_load_json(path):
@@ -113,14 +112,14 @@ def test_test_module(mocker):
     )
 
     mock_response = util_load_json('./test_data/checkpointhec-test_api.json')
-    test_api = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value=mock_response,
     )
 
     result = check_module(client)
-    test_api.assert_called_once()
+    call_api.assert_called_once()
     assert result == 'ok'
 
 
@@ -134,15 +133,15 @@ def test_fetch_incidents(mocker):
     )
 
     mock_response = util_load_json('./test_data/checkpointhec-query_events.json')
-    query_events = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value=mock_response,
     )
     demisto_incidents = mocker.patch.object(demisto, 'incidents')
 
-    fetch_incidents(client, '1 day', 10)
-    query_events.assert_called_once()
+    fetch_incidents(client, '1 day', [], [], [], 10)
+    call_api.assert_called_once()
     demisto_incidents.assert_called_once()
 
 
@@ -156,14 +155,14 @@ def test_checkpointhec_get_entity_success(mocker):
     )
 
     mock_response = util_load_json('./test_data/checkpointhec-get_entity.json')
-    get_entity = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value=mock_response,
     )
 
     result = checkpointhec_get_entity(client, '00000000000000000000000000000000')
-    get_entity.assert_called_once()
+    call_api.assert_called_once()
     assert result.outputs == mock_response['responseData'][0]['entityPayload']
 
 
@@ -176,19 +175,19 @@ def test_checkpointhec_get_entity_fail(mocker):
         proxy=False
     )
 
-    get_entity = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value={'responseData': []}
     )
 
     entity = '00000000000000000000000000000001'
-    result = checkpointhec_get_scan_info(client, entity)
-    get_entity.assert_called_once()
+    result = checkpointhec_get_entity(client, entity)
+    call_api.assert_called_once()
     assert result.readable_output == f'Entity with id {entity} not found'
 
 
-def test_checkpointhec_get_email_info_success(mocker):
+def test_checkpointhec_get_events_success(mocker):
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',
         client_id='****',
@@ -197,19 +196,19 @@ def test_checkpointhec_get_email_info_success(mocker):
         proxy=False
     )
 
-    mock_response = util_load_json('./test_data/checkpointhec-get_email_info.json')
-    get_entity = mocker.patch.object(
+    mock_response = util_load_json('./test_data/checkpointhec-query_events.json')
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value=mock_response,
     )
 
-    result = checkpointhec_get_email_info(client, '00000000000000000000000000000000')
-    get_entity.assert_called_once()
-    assert result.outputs == mock_response['responseData'][0]['entityPayload']
+    result = checkpointhec_get_events(client, '2023-11-01 00:00:00')
+    call_api.assert_called_once()
+    assert result.outputs == mock_response['responseData']
 
 
-def test_checkpointhec_get_email_info_fail(mocker):
+def test_checkpointhec_get_events_fail(mocker):
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',
         client_id='****',
@@ -218,16 +217,15 @@ def test_checkpointhec_get_email_info_fail(mocker):
         proxy=False
     )
 
-    get_entity = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value={'responseData': []}
     )
 
-    entity = '00000000000000000000000000000001'
-    result = checkpointhec_get_scan_info(client, entity)
-    get_entity.assert_called_once()
-    assert result.readable_output == f'Entity with id {entity} not found'
+    result = checkpointhec_get_events(client, '2023-11-01 00:00:00')
+    call_api.assert_called_once()
+    assert result.readable_output == 'Events not found with the given criteria'
 
 
 def test_checkpointhec_get_scan_info_success(mocker):
@@ -240,14 +238,14 @@ def test_checkpointhec_get_scan_info_success(mocker):
     )
 
     mock_response = util_load_json('./test_data/checkpointhec-get_entity.json')
-    get_entity = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value=mock_response,
     )
 
     result = checkpointhec_get_scan_info(client, '00000000000000000000000000000000')
-    get_entity.assert_called_once()
+    call_api.assert_called_once()
     assert result.outputs == {'av': json.dumps(mock_response['responseData'][0]['entitySecurityResult']['av'])}
 
 
@@ -260,7 +258,7 @@ def test_checkpointhec_get_scan_info_fail(mocker):
         proxy=False
     )
 
-    get_entity = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value={'responseData': []}
@@ -268,11 +266,11 @@ def test_checkpointhec_get_scan_info_fail(mocker):
 
     entity = '00000000000000000000000000000001'
     result = checkpointhec_get_scan_info(client, entity)
-    get_entity.assert_called_once()
+    call_api.assert_called_once()
     assert result.readable_output == f'Entity with id {entity} not found'
 
 
-def test_checkpointhec_search_emails(mocker):
+def test_checkpointhec_search_emails_success(mocker):
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',
         client_id='****',
@@ -282,16 +280,75 @@ def test_checkpointhec_search_emails(mocker):
     )
 
     mock_response = util_load_json('./test_data/checkpointhec-search_emails.json')
-    search_emails = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value=mock_response,
     )
 
-    result = checkpointhec_search_emails(client, '1 day', 'Automation@avtestqa.com')
-    search_emails.assert_called_once()
-    ids = [entity['entityInfo']['entityId'] for entity in mock_response['responseData']]
-    assert result.outputs == {'ids': ids}
+    emails = []
+    for entity in mock_response['responseData']:
+        email = entity['entityPayload']
+        email['entityId'] = entity['entityInfo']['entityId']
+        emails.append(email)
+
+    result = checkpointhec_search_emails(client, '1 day')
+    call_api.assert_called()
+    assert result.outputs == emails
+
+    checkpointhec_search_emails(client, date_from='2023-11-01 00:00:00', date_to='2023-11-02 00:00:00')
+    call_api.assert_called()
+    assert result.outputs == emails
+
+
+def test_checkpointhec_search_emails_fail(mocker):
+    client = Client(
+        base_url='https://smart-api-example-1-us.avanan-example.net',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    call_api = mocker.patch.object(
+        Client,
+        '_call_api'
+    )
+
+    date_last, date_from, date_to = '1 day', '2023-11-01 00:00:00', None
+    result = checkpointhec_search_emails(client, date_last, date_from=date_from)
+    call_api.assert_not_called()
+    assert result.readable_output == f'Argument {date_last=} cannot be used with {date_from=} or {date_to=}'
+
+    date_last = 'uno week'
+    result = checkpointhec_search_emails(client, date_last)
+    call_api.assert_not_called()
+    assert result.readable_output == f'Could not establish start date with {date_last=}'
+
+    result = checkpointhec_search_emails(client)
+    call_api.assert_not_called()
+    assert result.readable_output == 'Argument date_last and date_from cannot be both empty'
+
+    subject_contains, subject_match = 'Any subject, ...', 'This subject'
+    result = checkpointhec_search_emails(client, '1 day', subject_contains=subject_contains, subject_match=subject_match)
+    call_api.assert_not_called()
+    assert result.readable_output == f'Argument {subject_contains=} and {subject_match=} cannot be both set'
+
+    sender_contains, sender_match = 'a@b.c', 'd@e.f'
+    result = checkpointhec_search_emails(client, '1 day', sender_contains=sender_contains, sender_match=sender_match)
+    call_api.assert_not_called()
+    assert result.readable_output == f'Argument {sender_contains=} and {sender_match=} cannot be both set'
+
+    recipients_contains, recipients_match = 'a@b.c', 'd@e.f'
+    result = checkpointhec_search_emails(client, '1 day', recipients_contains=recipients_contains,
+                                         recipients_match=recipients_match)
+    call_api.assert_not_called()
+    assert result.readable_output == f'Argument {recipients_contains=} and {recipients_match=} cannot be both set'
+
+    name_contains, name_match = 'My Nam', 'My Name'
+    result = checkpointhec_search_emails(client, '1 day', name_contains=name_contains, name_match=name_match)
+    call_api.assert_not_called()
+    assert result.readable_output == f'Argument {name_contains=} and {name_match=} cannot be both set'
 
 
 def test_checkpointhec_send_action(mocker):
@@ -304,16 +361,16 @@ def test_checkpointhec_send_action(mocker):
     )
 
     mock_response = util_load_json('./test_data/checkpointhec-send_action.json')
-    send_action = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value=mock_response,
     )
 
     result = checkpointhec_send_action(
-        client, 'mt-rnd-ng-6', 'avananlab', ['00000000000000000000000000000002'], 'restore'
+        client, ['00000000000000000000000000000002'], 'restore'
     )
-    send_action.assert_called_once()
+    call_api.assert_called_once()
     assert result.outputs == {'task': mock_response['responseData'][0]['taskId']}
 
 
@@ -327,14 +384,14 @@ def test_checkpointhec_get_action_result(mocker):
     )
 
     mock_response = util_load_json('./test_data/checkpointhec-get_action_result.json')
-    get_task = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value=mock_response,
     )
 
-    result = checkpointhec_get_action_result(client, 'mt-rnd-ng-6', 'avananlab', '1691525788820900')
-    get_task.assert_called_once()
+    result = checkpointhec_get_action_result(client, '1691525788820900')
+    call_api.assert_called_once()
     assert result.outputs == mock_response['responseData']
 
 
@@ -348,12 +405,12 @@ def test_send_notification(mocker):
     )
 
     mock_response = util_load_json('./test_data/checkpointhec-test_api.json')
-    get_task = mocker.patch.object(
+    call_api = mocker.patch.object(
         Client,
         '_call_api',
         return_value=mock_response,
     )
 
     result = checkpointhec_send_notification(client, '0000', ['a@b.c', 'd@e.f'])
-    get_task.assert_called_once()
+    call_api.assert_called_once()
     assert result.outputs == mock_response

@@ -1,4 +1,4 @@
-Get email info from Check Point Smart API
+Get email info from Check Point Smart API.
 
 ## Script Data
 

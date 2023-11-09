@@ -1,5 +1,5 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version 1.0.3 of CheckPointHEC
+This integration was integrated and tested with version 1.1.0 of CheckPointHEC.
 
 ## Configure Check Point Harmony Email and Collaboration (HEC) on Cortex XSOAR
 
@@ -7,18 +7,21 @@ This integration was integrated and tested with version 1.0.3 of CheckPointHEC
 2. Search for Check Point Harmony Email and Collaboration (HEC).
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Smart API URL (e.g. https://smart-api-dev-1-us.avanan-dev.net) | True |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Maximum number of incidents per fetch | False |
-    | Client ID | True |
-    | Client Secret | True |
-    | First fetch time | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Incidents Fetch Interval | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Smart API URL (e.g. https://smart-api-dev-1-us.avanan-dev.net) |  | True |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Client ID |  | True |
+    | Client Secret |  | True |
+    | First fetch time |  | False |
+    | State | Get incidents with only the selected states | False |
+    | Severity | Get incidents with only the selected severities | False |
+    | Threat Type | Get incidents with only the selected types | False |
+    | Maximum number of incidents per fetch |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -30,7 +33,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### checkpointhec-get-entity
 
 ***
-Retrieve specific entity
+Retrieve specific entity.
 
 #### Base Command
 
@@ -47,7 +50,6 @@ Retrieve specific entity
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CheckPointHEC.Entity.internetMessageId | String | Email message id in internet. | 
-| CheckPointHEC.Entity.subject | String | Email subject. | 
 | CheckPointHEC.Entity.received | String | Datetime email was received in iso 8601 format. | 
 | CheckPointHEC.Entity.size | String | Email size. | 
 | CheckPointHEC.Entity.emailLinks | unknown | Links in email. | 
@@ -81,46 +83,53 @@ Retrieve specific entity
 | CheckPointHEC.Entity.saasSpamVerdict | String | Spam verdict. | 
 | CheckPointHEC.Entity.SpfResult | String | Sender Policy Framework check result. | 
 | CheckPointHEC.Entity.restoreRequestTime | String | Restore request datetime in iso 8601 format. | 
+| CheckPointHEC.Entity.isUserExposed | Boolean | Email reached user inbox. | 
 
-### checkpointhec-get-email-info
+### checkpointhec-get-events
 
 ***
-Retrieve specific email entity
+Retrieve security events.
 
 #### Base Command
 
-`checkpointhec-get-email-info`
+`checkpointhec-get-events`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity | Email entity id. | Required | 
+| start_date | Start date in ISO 8601 format. | Required | 
+| end_date | End date in ISO 8601 format, now by default. | Optional | 
+| states | Event states to be retrieved. Possible values are: New, Remediated, Detected, Exception, Dismissed. | Optional | 
+| severities | Severity levels to be retrieved. Possible values are: Critical, High, Medium, Low, Very Low. | Optional | 
+| threat_types | Threat types to be retrieved. Possible values are: DLP, Malware, Phishing, Anomaly, Suspicious Phishing, Suspicious Malware, Shadow IT, Alert, Spam, Malicious URL, Malicious URL Click. | Optional | 
+| limit | Number of events to be returned. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointHEC.Email.fromEmail | String | Email sender. | 
-| CheckPointHEC.Email.to | unknown | Email main recipients. | 
-| CheckPointHEC.Email.replyToEmail | String | Email reply. | 
-| CheckPointHEC.Email.replyToNickname | String | Email reply nickname. | 
-| CheckPointHEC.Email.recipients | unknown | Recipient email addresses. | 
-| CheckPointHEC.Email.subject | String | Email subject. | 
-| CheckPointHEC.Email.cc | unknown | Email carbon copy recipients. | 
-| CheckPointHEC.Email.bcc | unknown | Email blind carbon copy recipients. | 
-| CheckPointHEC.Email.isRead | Boolean | Email has been read. | 
-| CheckPointHEC.Email.received | String | Datetime email was received in iso 8601 format. | 
-| CheckPointHEC.Email.isDeleted | Boolean | Email has been deleted. | 
-| CheckPointHEC.Email.isIncoming | Boolean | Email is from external organization. | 
-| CheckPointHEC.Email.isOutgoing | Boolean | Email is to an external organization. | 
-| CheckPointHEC.Email.internetMessageId | String | Email message id in internet. | 
-| CheckPointHEC.Email.isUserExposed | Boolean | Email reached user inbox | 
+| CheckPointHEC.Event.eventId | String | Security event id. | 
+| CheckPointHEC.Event.customerId | String | Customer portal name. | 
+| CheckPointHEC.Event.saas | String | SaaS internal name. | 
+| CheckPointHEC.Event.entityId | String | Email entity id related to the security event. | 
+| CheckPointHEC.Event.state | String | Security event state. | 
+| CheckPointHEC.Event.type | String | Security event threat type. | 
+| CheckPointHEC.Event.confidenceIndicator | String | Security event threat type. | 
+| CheckPointHEC.Event.eventCreated | String | Security event creation date. | 
+| CheckPointHEC.Event.severity | String | Security event severity 1 - 5. | 
+| CheckPointHEC.Event.description | String | Security event description. | 
+| CheckPointHEC.Event.data | String | Security event data information. | 
+| CheckPointHEC.Event.additionalData | String | Security event additional data information if available. | 
+| CheckPointHEC.Event.availableEventActions | unknown | Actions available for the security event. | 
+| CheckPointHEC.Event.actions | unknown | Performed actions related to the security event. | 
+| CheckPointHEC.Event.senderAddress | String | Sender of email related to the security event. | 
+| CheckPointHEC.Event.entityLink | String | Email link | 
 
 ### checkpointhec-get-scan-info
 
 ***
-Retrieve specific email scan with positive threats
+Retrieve specific email scan with positive threats.
 
 #### Base Command
 
@@ -136,16 +145,16 @@ Retrieve specific email scan with positive threats
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointHEC.ScanResult.ap | unknown | Anti-phishing scan results | 
-| CheckPointHEC.ScanResult.dlp | unknown | Data Loss Prevention scan results | 
-| CheckPointHEC.ScanResult.clicktimeProtection | unknown | Click Time Protection scan results | 
-| CheckPointHEC.ScanResult.shadowIt | unknown | Shadow IT scan results | 
-| CheckPointHEC.ScanResult.av | unknown | Antivirus scan results | 
+| CheckPointHEC.ScanResult.ap | unknown | Anti-phishing scan results. | 
+| CheckPointHEC.ScanResult.dlp | unknown | Data Loss Prevention scan results. | 
+| CheckPointHEC.ScanResult.clicktimeProtection | unknown | Click Time Protection scan results. | 
+| CheckPointHEC.ScanResult.shadowIt | unknown | Shadow IT scan results. | 
+| CheckPointHEC.ScanResult.av | unknown | Antivirus scan results. | 
 
 ### checkpointhec-search-emails
 
 ***
-Get email ids with same sender and/or subject
+Search for emails.
 
 #### Base Command
 
@@ -155,20 +164,41 @@ Get email ids with same sender and/or subject
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| date_range | Range to search for emails (1 day, 2 weeks, etc.). | Required | 
-| sender | Search emails with this sender. | Optional | 
-| subject | Search emails with this subject. | Optional | 
+| date_last | Emails not older than (1 day, 2 weeks, etc.). The arguments `date_last` and `date_from` with `date_to` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| date_from | Start date to get emails in ISO 8601 format. The arguments `date_last` and `date_from` with `date_to` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| date_to | End date to get emails in ISO 8601 format. The arguments `date_last` and `date_from` with `date_to` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| direction | Email precedence. Possible values are: Internal, Incoming, Outgoing. | Optional | 
+| subject_contains | Emails with subject containing the given value. The arguments `subject_contains` and `subject_match` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| subject_match | Emails with subject matching the given value. The arguments `subject_contains` and `subject_match` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| sender_contains | Emails with sender email containing the given value. The arguments `sender_contains` and `sender_match` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| sender_match | Emails with sender email matching the given value. The arguments `sender_contains` and `sender_match` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| domain | Emails with sender domain matching the given value. | Optional | 
+| cp_detection | Detection by Check Point. Possible values are: Phishing, Suspected Phishing, Malware, Suspected Malware, Spam, Clean, DLP, Malicious URL Click, Malicious URL. | Optional | 
+| ms_detection | Detection by Microsoft. Possible values are: Malware, High Confidence Phishing, Phishing, High Confidence Spam, Spam, Bulk, Clean. | Optional | 
+| detection_op | Detection operator. Possible values are: OR, AND. | Optional | 
+| server_ip | Sender server ip. | Optional | 
+| recipients_contains | Emails with recipients containing the given value. The arguments `recipients_contains` and `recipients_match` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| recipients_match | Emails with recipients matching the given value. The arguments `recipients_contains` and `recipients_match` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| links | Emails with links in body matching the given value. | Optional | 
+| message_id | Get specific email by id. | Optional | 
+| cp_quarantined_state | Quarantine authored by Check Point. Possible values are: Quarantined (Any source), Not Quarantined, Quarantined by Check Point, Quarantined by CP Analyst, Quarantined by Admin. | Optional | 
+| ms_quarantined_state | Quarantine authored by Microsoft. Possible values are: Quarantined, Not Quarantined, Not Quarantined Delivered to Inbox, Not Quarantined Delivered to Junk. | Optional | 
+| quarantined_state_op | Quarantine state operator. Possible values are: OR, AND. | Optional | 
+| name_contains | Emails with sender name containing the given value. The arguments `name_contains` and `name_match` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| name_match | Emails with sender name matching the given value. The arguments `name_contains` and `name_match` are mutually exclusive and cannot be specified together in the same request. | Optional | 
+| client_ip | Sender client IP. | Optional | 
+| attachment_md5 | Attachment MD5 checksum. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointHEC.SearchResult.ids | unknown | List of email ids returned by the search | 
+| CheckPointHEC.Entity. | unknown | List of email ids returned by the search. | 
 
 ### checkpointhec-send-action
 
 ***
-Quarantine or restore an email
+Quarantine or restore an email.
 
 #### Base Command
 
@@ -178,8 +208,6 @@ Quarantine or restore an email
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| farm | Customer farm. | Required | 
-| customer | Customer portal name. | Required | 
 | entity | One or multiple Email ids to apply action over. | Required | 
 | action | Action to perform (quarantine or restore). Possible values are: quarantine, restore. | Required | 
 
@@ -187,12 +215,12 @@ Quarantine or restore an email
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointHEC.Task.task | String | Task id of the sent action | 
+| CheckPointHEC.Task.task | String | Task id of the sent action. | 
 
 ### checkpointhec-get-action-result
 
 ***
-Get task info related to a sent action
+Get task info related to a sent action.
 
 #### Base Command
 
@@ -202,33 +230,31 @@ Get task info related to a sent action
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| farm | Customer farm. | Required | 
-| customer | Customer portal name. | Required | 
 | task | Task id to retrieve. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPointHEC.ActionResult.actions | unknown | Action information for each sent entity | 
-| CheckPointHEC.ActionResult.created | String | Date when action was created in iso 8601 format | 
-| CheckPointHEC.ActionResult.customer | String | Customer portal name | 
-| CheckPointHEC.ActionResult.failed | Number | Number of failed actions | 
-| CheckPointHEC.ActionResult.id | Number | Action task id | 
-| CheckPointHEC.ActionResult.name | String | Action name | 
-| CheckPointHEC.ActionResult.owner | String | Action owner | 
-| CheckPointHEC.ActionResult.progress | Number | Number of actions in progress | 
-| CheckPointHEC.ActionResult.sequential | Boolean | Actions are in sequence | 
-| CheckPointHEC.ActionResult.status | String | Action status | 
-| CheckPointHEC.ActionResult.succeed | Number | Number of succeed actions | 
-| CheckPointHEC.ActionResult.total | Number | Total of actions | 
-| CheckPointHEC.ActionResult.type | String | Action internal name | 
-| CheckPointHEC.ActionResult.updated | String | Date when action last updated in iso 8601 format | 
+| CheckPointHEC.ActionResult.actions | unknown | Action information for each sent entity. | 
+| CheckPointHEC.ActionResult.created | String | Date when action was created in iso 8601 format. | 
+| CheckPointHEC.ActionResult.customer | String | Customer portal name. | 
+| CheckPointHEC.ActionResult.failed | Number | Number of failed actions. | 
+| CheckPointHEC.ActionResult.id | Number | Action task id. | 
+| CheckPointHEC.ActionResult.name | String | Action name. | 
+| CheckPointHEC.ActionResult.owner | String | Action owner. | 
+| CheckPointHEC.ActionResult.progress | Number | Number of actions in progress. | 
+| CheckPointHEC.ActionResult.sequential | Boolean | Actions are in sequence. | 
+| CheckPointHEC.ActionResult.status | String | Action status. | 
+| CheckPointHEC.ActionResult.succeed | Number | Number of succeed actions. | 
+| CheckPointHEC.ActionResult.total | Number | Total of actions. | 
+| CheckPointHEC.ActionResult.type | String | Action internal name. | 
+| CheckPointHEC.ActionResult.updated | String | Date when action last updated in iso 8601 format. | 
 
 ### checkpointhec-send-notification
 
 ***
-Send notification about user exposition for the specific entity to the list of emails
+Send notification about user exposition for the specific entity to the list of emails.
 
 #### Base Command
 

@@ -1,4 +1,4 @@
-Send quarantine or restore action and update action task id
+Send quarantine or restore action and update action task id.
 
 ## Script Data
 
@@ -15,6 +15,7 @@ Send quarantine or restore action and update action task id
 This script uses the following commands and scripts.
 
 * checkpointhec-send-action
+* CheckPointHEC
 
 ## Inputs
 
@@ -22,10 +23,8 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| farm | Customer farm |
-| customer | Customer portal name |
-| entity | Email entity id |
-| action | Action name |
+| entity | Email entity id. |
+| action | Action name. |
 
 ## Outputs
 
