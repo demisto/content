@@ -24,11 +24,11 @@ if not BASE_URL:
     BASE_URL = 'http://api.domaintools.com'  # we keep old http url for backwards comp
 USERNAME = demisto.params().get('username')
 API_KEY = demisto.params().get('apikey')
-RISK_THRESHOLD = int(demisto.params().get('risk_threshold'))
-YOUNG_DOMAIN_TIMEFRAME = int(demisto.params().get('young_domain_timeframe'))
+RISK_THRESHOLD = arg_to_number(demisto.params().get('risk_threshold') or '70')
+YOUNG_DOMAIN_TIMEFRAME = arg_to_number(demisto.params().get('young_domain_timeframe') or '7')
 VERIFY_CERT = not demisto.params().get('insecure', False)
 PROXIES = handle_proxy()
-GUIDED_PIVOT_THRESHOLD = arg_to_number(demisto.params().get('pivot_threshold'))
+GUIDED_PIVOT_THRESHOLD = arg_to_number(demisto.params().get('pivot_threshold') or '500')
 IRIS_LINK = 'https://iris.domaintools.com/investigate/search/'
 
 DOMAINTOOLS_MONITOR_DOMAINS_INCIDENT_NAME_BY_IRIS_SEARCH_HASH = "DomainTools Iris Monitor Domain Search Hash"
@@ -65,7 +65,8 @@ def http_request(method, params=None):
         app_name='iris-plugin',
         app_version='1',
         proxy_url=PROXIES,
-        verify_ssl=VERIFY_CERT
+        verify_ssl=VERIFY_CERT,
+        always_sign_api_key=True
     )
 
     try:
