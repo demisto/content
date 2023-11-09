@@ -283,7 +283,6 @@ xpanse-prepare-testing-bucket:
   stage: run-instances
   needs:
     - job: xsoar-prepare-testing-bucket
-      optional: true
   script:
     - EXIT_CODE=0
     - section_start "Check if should run Server Master"
