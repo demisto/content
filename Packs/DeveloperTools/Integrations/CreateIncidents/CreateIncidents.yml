@@ -53,7 +53,10 @@ script:
     name: create-test-incident-from-file
   - arguments:
     - description: 'The enry ID of the json file that represents the incidents.'
-      name: incident_entry_ids
+      name: incident_entry_id
+      required: false
+    - description: 'The enry IDs of the incident attachments.'
+      name: attachment_entry_ids
       required: false
     - description: 'The json object that represents the incident.'
       name: incident_raw_json
