@@ -123,6 +123,7 @@ def create_test_incident_from_json_command(args):
         incidents = json.loads(incidents_json)
 
     attachment_path = argToList(args.get('attachment_paths'))
+    attachment_entry_ids = argToList(args.get('attachment_entry_ids'))
 
     if not incidents:
         raise ValueError('Incidents were not specified')
@@ -130,7 +131,7 @@ def create_test_incident_from_json_command(args):
     if not isinstance(incidents, list):
         incidents = [incidents]
 
-    ready_incidents = parse_incidents(incidents, attachment_path)
+    ready_incidents = parse_incidents(incidents, attachment_path, attachment_entry_ids)
 
     set_integration_context({'incidents': ready_incidents})
     return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from json.')
@@ -150,7 +151,7 @@ def get_incidents_from_file(client: Client, incidents_path: str, attachment_path
     return ready_incidents
 
 
-def parse_incidents(incidents: List[dict], attachment_path: List[str] = None) -> List[dict]:
+def parse_incidents(incidents: List[dict], attachment_path: List[str] = None, attachment_entry_ids: List[str] = None) -> List[dict]:
     """
     This function will take a list of incidents and make them in the format of XSoar format,
      as a preparation for the fetch command.
@@ -158,6 +159,7 @@ def parse_incidents(incidents: List[dict], attachment_path: List[str] = None) ->
      The actual file is added at the fetch command.
     """
     ready_incidents = []
+    attachments = []
 
     for incident in incidents:
         parsed_incident = {
@@ -170,7 +172,14 @@ def parse_incidents(incidents: List[dict], attachment_path: List[str] = None) ->
             parsed_incident['labels'] = incident.get('labels')
 
         if attachment_path:
-            parsed_incident['attachment'] = attachment_path
+            parsed_incident['attachment'] = attachments.extend(attachment_path)
+
+        if attachment_entry_ids:
+            for attachment_entry_id in attachment_entry_ids:
+                attachment = demisto.getFilePath(attachment_entry_id)
+                attachments.append({'path': attachment.get('file'),
+                                    'name': attachment.get('name')})
+
 
         ready_incidents.append(parsed_incident)
     return ready_incidents
@@ -202,7 +211,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'create-test-incident-from-file':
             return_results(create_test_incident_from_file_command(client, args))
 
-        elif command == 'create-test-incident-from-json':
+        elif command == 'create-test-incident-from-raw-json':
             return_results(create_test_incident_from_json_command(args))
 
     # Log exceptions and return errors

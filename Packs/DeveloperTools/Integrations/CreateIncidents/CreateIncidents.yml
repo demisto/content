@@ -53,7 +53,7 @@ script:
     name: create-test-incident-from-file
   - arguments:
     - description: 'The enry ID of the json file that represents the incidents.'
-      name: entry_id
+      name: incident_entry_ids
       required: false
     - description: 'The json object that represents the incident.'
       name: incident_raw_json
@@ -61,7 +61,7 @@ script:
     - description: 'The paths of the files to be added to incidents as attachment. Would be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml'
       name: attachment_paths
     description: Creates incidents from json files provided, and stores it in the instance context.
-    name: create-test-incident-from-json
+    name: create-test-incident-from-raw-json
   dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
   runonce: false
