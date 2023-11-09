@@ -3,7 +3,6 @@ import datetime
 import json
 import logging
 import os
-import re
 import sys
 from contextlib import contextmanager
 from queue import Queue
@@ -16,10 +15,10 @@ import requests
 import urllib3
 from google.api_core.exceptions import PreconditionFailed
 from google.cloud import storage
-
 from Tests.test_dependencies import get_used_integrations
 from demisto_sdk.commands.common.constants import FILTER_CONF
 from demisto_sdk.commands.test_content.ParallelLoggingManager import ParallelLoggingManager
+from demisto_sdk.commands.common.tools import get_demisto_version
 
 logging_manager: ParallelLoggingManager = None
 
@@ -37,6 +36,10 @@ BUCKET_NAME = os.environ.get('GCS_ARTIFACTS_BUCKET')
 BUILD_NUM = os.environ.get('CI_BUILD_ID')
 WORKFLOW_ID = os.environ.get('CI_PIPELINE_ID')
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN')
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
+
+MAX_ON_PREM_SERVER_VERSION = "6.99.99"
 
 
 class SettingsTester:
@@ -53,7 +56,6 @@ class SettingsTester:
         self.isAMI = options.isAMI
         self.memCheck = options.memCheck
         self.serverVersion = options.serverVersion
-        self.serverNumericVersion = None
         self.specific_tests_to_run = self.parse_tests_list_arg(options.testsList)
         self.is_local_run = (self.server is not None)
 
@@ -301,73 +303,30 @@ def load_conf_files(conf_path, secret_conf_path):
 
 
 def load_env_results_json():
-    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
-                                                                  'env_results.json'))
-
-    if not os.path.isfile(env_results_path):
-        logging.warning(f"Did not find {env_results_path} file ")
+    if not os.path.isfile(ENV_RESULTS_PATH):
+        logging.warning(f"Did not find {ENV_RESULTS_PATH} file ")
         return {}
 
-    with open(env_results_path) as json_file:
+    with open(ENV_RESULTS_PATH) as json_file:
         return json.load(json_file)
 
 
-def get_server_numeric_version(ami_env, is_local_run=False):
+def get_server_numeric_version(client: demisto_client, is_local_run=False) -> str:
     """
     Gets the current server version
     Arguments:
-        ami_env: (str)
-            AMI version name.
-        is_local_run: (bool)
-            when running locally, assume latest version.
+        client: (demisto_client): the demisto client
+        is_local_run: (bool) when running locally, assume latest version.
 
     Returns:
         (str) Server numeric version
     """
-    default_version = '99.99.98'
+    default_version = MAX_ON_PREM_SERVER_VERSION
     if is_local_run:
         logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
 
-    env_json = load_env_results_json()
-    if not env_json:
-        logging.warning(f"assuming server version is {default_version}.")
-        return default_version
-
-    instances_ami_names = {env.get('ImageName') for env in env_json if ami_env in env.get('Role', '')}
-    if len(instances_ami_names) != 1:
-        logging.warning(f'Did not get one AMI Name, got {instances_ami_names}.'
-                        f' Assuming server version is {default_version}')
-        return default_version
-
-    instances_ami_name = list(instances_ami_names)[0]
-
-    return extract_server_numeric_version(instances_ami_name, default_version)
-
-
-def extract_server_numeric_version(instances_ami_name, default_version):
-    try:
-        server_numeric_version = re.search(  # type: ignore[union-attr]
-            r'family/xsoar-(?:ga-)?(?P<version>[a-z0-9\-]+)',
-            instances_ami_name
-        ).group('version')
-    except (AttributeError, IndexError) as e:
-        logging.info(f'Got exception when trying to get the server version. Setting server version to {default_version=}.'
-                     f' Given {instances_ami_name=}. Exact error is {str(e)}')
-        return default_version
-
-    if server_numeric_version == 'master':
-        logging.info('Server version: Master')
-        return default_version
-    else:
-        server_numeric_version = server_numeric_version.replace('-', '.')
-
-    # make sure version is three-part version
-    if server_numeric_version.count('.') == 1:
-        server_numeric_version += ".0"
-
-    logging.info(f'Server version: {server_numeric_version}')
-    return server_numeric_version
+    return str(get_demisto_version(client))
 
 
 def get_instances_ips_and_names(tests_settings):
