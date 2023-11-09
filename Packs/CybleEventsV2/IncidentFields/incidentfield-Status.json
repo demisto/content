@@ -35,7 +35,7 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": false,
     "sla": 0,
     "threshold": 72,
