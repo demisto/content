@@ -3,7 +3,7 @@ from CommonServerPython import *
 import urllib3
 from typing import Any, NamedTuple
 import itertools
-
+from dateutil import parser
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -458,12 +458,12 @@ def should_run_device_fetch(last_run,
     if not device_fetch_interval:
         return False
     if last_fetch_time := last_run.get(DEVICES_LAST_FETCH):
-        last_check_time = datetime.strptime(last_fetch_time, DATE_FORMAT)
+        last_fetch_datetime = parser.parse(last_fetch_time).replace(tzinfo=None)
     else:
         # first time device fetch
         return True
-    demisto.debug(f'Should run device fetch? {last_check_time=}, {device_fetch_interval=}')
-    return datetime_now - last_check_time > device_fetch_interval
+    demisto.debug(f'Should run device fetch? {last_fetch_datetime=}, {device_fetch_interval=}')
+    return datetime_now - last_fetch_datetime > device_fetch_interval
 
 
 ''' MAIN FUNCTION '''
