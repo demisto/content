@@ -1261,7 +1261,6 @@ def fetch_incidents(
         if (incident_id := str(item.get("id"))) in previous_ids:
             continue
 
-
         incident_timestamp = item["timestamp"] * 1000
         incident = remove_empty_elements(
             {
