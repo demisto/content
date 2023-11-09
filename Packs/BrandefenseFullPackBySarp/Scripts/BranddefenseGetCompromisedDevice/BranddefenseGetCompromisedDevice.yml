@@ -1,0 +1,24 @@
+args:
+- description: If no id provided, all compromised devices will return as an output.
+  name: botnet_id
+commonfields:
+  id: branddefense_get_compromisedice
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.80014
+enabled: true
+name: branddefense_get_compromisedice
+outputs:
+- contextPath: compromised_devices
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

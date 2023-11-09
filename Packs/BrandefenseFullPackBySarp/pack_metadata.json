@@ -1,0 +1,21 @@
+{
+    "name": "Brandefense Full Pack by Sarp",
+    "description": "Brandefense complete integration derived from its API documentation, including getting incidents from Brandefense, getting indicators, and all capabilities of API of Brandefense. (Brandefense is reviewing the data about a firm which any data is found on deeb web)",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Asim Sarp Kurt",
+    "url": "",
+    "email": "",
+    "created": "2023-11-09T14:35:39Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "asimsarpkurt"
+    ]
+}
