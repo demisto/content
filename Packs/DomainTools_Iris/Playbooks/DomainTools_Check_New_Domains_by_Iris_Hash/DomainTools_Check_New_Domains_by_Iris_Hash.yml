@@ -186,11 +186,11 @@ tasks:
     id: "6"
     taskid: 2acb6136-a013-4137-8d01-8b4f5a02b24c
     type: regular
-    description: 'Manually Review the Incident'
     task:
       id: 2acb6136-a013-4137-8d01-8b4f5a02b24c
       version: -1
       name: Manually Review the Incident
+      description: 'Manually Review the Incident'
       type: regular
       iscommand: false
       brand: ""
@@ -216,11 +216,11 @@ tasks:
     id: "7"
     taskid: dcfda4ef-9cf2-4bea-892e-f2fdf08f1ece
     type: condition
-    description: 'Should wait for analyst review?'
     task:
       id: dcfda4ef-9cf2-4bea-892e-f2fdf08f1ece
       version: -1
       name: Should wait for analyst review?
+      description: 'Should wait for analyst review?'
       type: condition
       iscommand: false
       brand: ""

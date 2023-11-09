@@ -1,13 +1,7 @@
-id: DomainTools_Check_Domain_Risk_Score_By_Iris_Tags
+id: DomainTools Check Domain Risk Score By Iris Tags
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: DomainTools Check Domain Risk Score By Iris Tags
-description: This playbook will alert a user if a monitored set of domains, labeled
-  by Iris Investigate tags, becomes high risk. To use it, tag domains in the Iris
-  Investigate UI. Enter a comma-separated list of tags to monitor to the playbook
-  input "dt_monitored_iris_tags" and run this playbook on a scheduled basis. It will
-  add any new high risk domains (based on the threshold defined in this playbook)
-  as indicators on the associated incident.
+description: This playbook will alert a user if a monitored set of domains, labeled by Iris Investigate tags, becomes high risk. To use it, tag domains in the Iris Investigate UI. Enter a comma-separated list of tags to monitor to the playbook input "dt_monitored_iris_tags" and run this playbook on a scheduled basis. It will add any new high risk domains (based on the threshold defined in this playbook) as indicators on the associated incident.
 tags:
 - Domaintools
 starttaskid: "0"
@@ -49,9 +43,7 @@ tasks:
       id: ab1c0140-232a-4f9b-8f17-032bfe53def0
       version: -1
       name: Query Domains by Iris Tag(s)
-      description: Pivot on connected infrastructure (IP, email, SSL), or import domains
-        from Iris Investigate using a search hash. Retrieves up to 5000 domains at
-        a time. Optionally attach the results to context with include_context=true.
+      description: Pivot on connected infrastructure (IP, email, SSL), or import domains from Iris Investigate using a search hash. Retrieves up to 5000 domains at a time. Optionally attach the results to context with include_context=true.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -84,7 +76,6 @@ tasks:
     id: "2"
     taskid: 08cfdb90-ed08-4a4b-8cb4-a4d15eee3c10
     type: title
-    description: 'Title'
     task:
       id: 08cfdb90-ed08-4a4b-8cb4-a4d15eee3c10
       version: -1
@@ -92,6 +83,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -111,11 +103,11 @@ tasks:
     id: "3"
     taskid: b33df737-cba2-4c75-8ec0-60dd106fa207
     type: regular
-    description: 'Manually Review High Risk Score Domains'
     task:
       id: b33df737-cba2-4c75-8ec0-60dd106fa207
       version: -1
       name: Manually Review High Risk Score Domains
+      description: Manually Review High Risk Score Domains
       type: regular
       iscommand: false
       brand: ""
@@ -235,11 +227,11 @@ tasks:
     id: "6"
     taskid: 034fc5cb-6f90-4c37-8154-b995643d1edd
     type: condition
-    description: 'Should wait for an analyst review?'
     task:
       id: 034fc5cb-6f90-4c37-8154-b995643d1edd
       version: -1
       name: Should wait for an analyst review?
+      description: Should wait for an analyst review?
       type: condition
       iscommand: false
       brand: ""
@@ -291,7 +283,7 @@ inputs:
     simple: "70"
   required: true
   description: The minimum risk score threshold value to compare.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: dt_monitored_iris_tags
   value:
     simple: blocklist,good
@@ -299,13 +291,14 @@ inputs:
   description: |-
     The Iris tags to lookup. Values should be a comma separated value.
     e.g. (tag1,tag2)
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: should_wait_for_analyst_review
   value:
     simple: "false"
   required: true
-  description: Flags if users should wait for an analyst to review. Default is false.
-    Value can be either true/false only.
-  playbookInputQuery: null
+  description: Flags if users should wait for an analyst to review. Default is false. Value can be either true/false only.
+  playbookInputQuery:
 outputs: []
 fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
