@@ -48,17 +48,22 @@ configuration:
   name: fetch_time
   type: 0
   required: false
-- defaultvalue: 1
+- additionalinfo: When fetching incident from specific queue, search also back for incident created before the last run time but moved to the queue after the last fetch.
+  defaultvalue: '1'
   display: Days to look back when fetching
-  additionalinfo: When fetching incident from specific queue, search also back for incident created before the last run time but moved to the queue after the last fetch.
   name: look_back
-  type: 0
   required: false
+  type: 0
 - additionalinfo: If true, use sessions compatibility for OTRS versions lower than V8.
   display: Use legacy sessions
   name: use_legacy_sessions
-  type: 8
   required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Service management suite that comprises ticketing, workflow automation, and notification.
 display: OTRS
 name: OTRS
@@ -333,6 +338,8 @@ script:
       - 3Normal
       - 4High
       - 5VeryHigh
+    - description: Owner of the ticket to update
+      name: owner
     - description: Article Subject of the ticket to update
       name: article_subject
     - description: Article Body of the ticket to update
@@ -400,7 +407,7 @@ script:
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.44880
+  dockerimage: demisto/pyotrs:1.0.0.80173
   isfetch: true
   runonce: false
   script: '-'

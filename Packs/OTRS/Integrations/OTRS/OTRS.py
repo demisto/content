@@ -1,6 +1,8 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
-from CommonServerPython import *
+
 import urllib3
 from pyotrs import Article, Attachment, Client, DynamicField, Ticket
 from urllib.parse import unquote
@@ -394,13 +396,14 @@ def update_ticket_command():
     queue = demisto.args().get('queue')
     state = demisto.args().get('state')
     priority = demisto.args().get('priority')
+    owner = demisto.args().get('owner')
     article_subject = demisto.args().get('article_subject')
     article_body = demisto.args().get('article_body')
     ticket_type = demisto.args().get('type')
     dynamic_fields = demisto.args().get('dynamic_fields')
     attachment = demisto.args().get('attachment')
 
-    if all(v is None for v in [title, queue, state, priority, article_subject,
+    if all(v is None for v in [title, queue, state, priority, owner, article_subject,
                                article_body, ticket_type, dynamic_fields, attachment]):
         return_error('No fields to update were given')
 
@@ -434,7 +437,7 @@ def update_ticket_command():
         attachments_list = argToList(attachment)
         attachments = demisto_entry_to_otrs_attachment(attachments_list)
 
-    ticket = update_ticket(ticket_id, title, queue, state, priority, article, ticket_type, df, attachments)
+    ticket = update_ticket(ticket_id, title, queue, state, priority, owner, article, ticket_type, df, attachments)
 
     context = {
         'ID': ticket['TicketID'],
@@ -501,11 +504,12 @@ def close_ticket_command():
     })
 
 
-def update_ticket(ticket_id, title=None, queue=None, state=None, priority=None,
+def update_ticket(ticket_id, title=None, queue=None, state=None, priority=None, owner=None,
                   article=None, ticket_type=None, df=None, attachments=None):
     kwargs = {'Type': ticket_type}
     args = {'ticket_id': ticket_id,
             'Title': title,
+            'Owner': owner,
             'Queue': queue,
             'State': state,
             'Priority': priority,
@@ -630,3 +634,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
