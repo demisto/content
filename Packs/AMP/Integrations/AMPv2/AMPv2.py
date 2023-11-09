@@ -1174,6 +1174,26 @@ def fetch_incidents(
     include_null_severities: bool = False,
 ) -> tuple[dict[str, int], list[dict]]:
 
+    '''
+    Retrieves new alerts every interval (default is 1 minute).
+    Implements the logic of making sure that incidents are fetched only once.
+    By default it's invoked by XSOAR every minute.
+    It will use last_run to save the time of the last incident it processed and previous incident IDs.
+    If last_run is not provided, first_fetch_time will be used to determine when to start fetching the first time.
+    Args:
+        client (Client): Cisco AMP client to run desired requests
+        last_run (Dict[str, Any]):
+            last_fetch: Time of the last processed incident.
+            previous_ids: list of incident IDs to that would not be repeated.
+        first_fetch_time (str): Determines the time of when fetching has been started.
+        event_types (list[int], optional): Event types to filter by.
+            Defaults to None.
+        incident_severities (list[str], optional): Incident severities to filter by.
+            Defaults to None.
+        max_incidents_to_fetch (int, optional): Max number of incidents to fetch in a single run.
+            Defaults to FETCH_LIMIT.
+        include_null_severities (bool): Whether to include incidents without any severity.
+    '''
     last_fetch = last_run.get("last_fetch")
 
     # The list of event ids that are suspected of being duplicates
