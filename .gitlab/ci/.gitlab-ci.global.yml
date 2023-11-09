@@ -516,4 +516,4 @@ cloning-content-repo-last-upload-commit:
     - git checkout $LAST_UPLOAD_COMMIT
     - cd -
     - echo "Save the content repository into the artifacts ${ARTIFACTS_FOLDER}/content_production"
-    - mv content ${ARTIFACTS_FOLDER}/content_production
+    - mv content_production ${ARTIFACTS_FOLDER}/content_production
