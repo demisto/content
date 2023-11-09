@@ -42,12 +42,12 @@ The following XQL Queries demonstrate the XDM modeling for the supported dataset
 2. **Activities** 
     ```javascript
     config timeframe = 1H
-    | datamodel dataset in(armis_security_activities_raw) 
-    | fields    xdm.source.zone, xdm.observer.name, xdm.observer.type,xdm.event.id, xdm.event.type, xdm.event.description,   xdm.source.host.device_id, xdm.source.host.hostname, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user_agent, xdm.target.host.hostname, xdm.target.ipv4,xdm.target.host.ipv4_addresses, xdm.target.ipv6, xdm.target.port, xdm.network.tls.cipher, xdm.network.tls.protocol_version, xdm.event.duration, xdm.network.http.method, xdm.network.ip_protocol, xdm.network.session_id, xdm.target.user.username,  xdm.source.application.name, xdm.source.application.version
+    | datamodel dataset = armis_security_activities_raw
+    | fields xdm.source.zone, xdm.observer.name, xdm.observer.type,xdm.event.id, xdm.event.type, xdm.event.description, xdm.source.host.device_id, xdm.source.host.hostname, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user_agent, xdm.target.host.hostname, xdm.target.ipv4,xdm.target.host.ipv4_addresses, xdm.target.ipv6, xdm.target.port, xdm.network.tls.cipher, xdm.network.tls.protocol_version, xdm.event.duration, xdm.network.http.method, xdm.network.ip_protocol, xdm.network.session_id, xdm.target.user.username, xdm.source.application.name, xdm.source.application.version
     ```
 3. **Devices** 
     ```javascript
-    config timeframe = 1H 
+    config timeframe = 1D 
     | datamodel dataset = armis_security_devices_raw 
     | fields xdm.source.host.device_id, xdm.source.host.hostname, xdm.source.host.device_category, xdm.source.host.manufacturer, xdm.source.host.device_model, xdm.source.host.os, xdm.source.host.os_family, xdm.source.host.mac_addresses, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user.identifier, xdm.observer.name, xdm.observer.type, xdm.source.zone, xdm.alert.severity, xdm.event.tags
     ```
