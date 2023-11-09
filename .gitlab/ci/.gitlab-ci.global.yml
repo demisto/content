@@ -494,8 +494,8 @@
 
 cloning-content-repo-last-upload-commit:
   stage: .pre
-  rules:
-    - if: '$NIGHTLY'
+#  rules:
+#    - if: '$NIGHTLY'
   artifacts:
     expire_in: 30 days
     paths:
@@ -509,7 +509,6 @@ cloning-content-repo-last-upload-commit:
   variables:
     ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
-    - source ./Tests/scripts/download_conf_repos.sh
     - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
     - clone_repository "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content" "${CI_COMMIT_BRANCH}" "{$LAST_UPLOAD_COMMIT}"
     - echo "replacing Packs folder with production Packs folder"
