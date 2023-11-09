@@ -202,7 +202,8 @@ class TestHelperFunction:
         case_events_with_different_time,
         case_empty_event_list
     ])
-    def test_dedup_events(self, events, events_last_fetch_ids, unique_id_key, expected_result):
+    def test_dedup_events(self, events, events_last_fetch_ids,
+                          unique_id_key, expected_result):
         """
         Given:
             - Case 1: All events from the current fetch cycle have the same timestamp.
@@ -216,8 +217,9 @@ class TestHelperFunction:
             - Case 2: Return list of dedup event and new list of 'new_ids' for next run.
             - Case 3: Return empty list and the unchanged list of 'events_last_fetch_ids' for next run.
         """
+        event_order_by = "time"
         from ArmisEventCollector import dedup_events
-        assert dedup_events(events, events_last_fetch_ids, unique_id_key) == expected_result
+        assert dedup_events(events, events_last_fetch_ids, unique_id_key, event_order_by) == expected_result
 
     def test_fetch_by_event_type(self, mocker, dummy_client):
         """
