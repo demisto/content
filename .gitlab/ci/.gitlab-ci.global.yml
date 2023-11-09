@@ -339,7 +339,6 @@
 .unittests-and-lint-settings:
   tags:
     - gce
-  needs: [ ]
   stage: unittests-and-validations
   artifacts:
     reports:
@@ -436,7 +435,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  needs: []
   variables:
     KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
@@ -510,6 +508,6 @@ cloning-content-repo-last-upload-commit:
     ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
     - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
-    - clone_repository "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content" "${CI_COMMIT_BRANCH}" "{$LAST_UPLOAD_COMMIT}"
+    - clone_repository "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content" "${LAST_UPLOAD_COMMIT}" 3 10 "master"
     - echo "replacing Packs folder with production Packs folder"
     - mv content ${ARTIFACTS_FOLDER}/content_production

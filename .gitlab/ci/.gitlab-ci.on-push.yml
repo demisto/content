@@ -12,7 +12,6 @@
 trigger-private-build:
   tags:
     - gke
-  needs: []
   stage: unittests-and-validations
   extends:
     - .default-job-settings
@@ -68,7 +67,6 @@ stop-running-pipelines:
   tags:
     - gke
   stage: unittests-and-validations
-  needs: []
   extends:
     - .default-job-settings
   variables:
@@ -113,7 +111,6 @@ validate-content-conf:
   tags:
     - gke
   stage: unittests-and-validations
-  needs: []
   extends:
     - .default-job-settings
   rules:
@@ -136,7 +133,6 @@ validate-content-conf:
   variables:
     KUBERNETES_CPU_REQUEST: 2000m
     EXTRACT_PRIVATE_TESTDATA: "true"
-  needs: []
   stage: prepare-testing-bucket
   script:
     - !reference [.download-demisto-conf]
