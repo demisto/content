@@ -193,7 +193,7 @@
   - section_start "Getting last bucket upload commit" --collapsed
   - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
   - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
-  - export LAST_UPLOAD_COMMIT=d4d42d27b021473bd2adf55e9ae75fa4ae74be78
+  - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json" | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
 
 .neo4j-setup: &neo4j-setup
@@ -226,15 +226,10 @@
   - section_start "Checkout upload commit content nightly"
   - | 
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
-      echo "content nightly: checking out to the last successful upload commit $LAST_UPLOAD_COMMIT for the Packs folder"
-      git status
-      git reset $LAST_UPLOAD_COMMIT -- ./Packs  # resets the state of the "Packs" folder to the last successful upload commit, it discards any changes made to the folder since that commit
-      git checkout -- ./Packs  # checks out the "Packs" folder to the state of the last successful upload commit. it ensures that the folder matches the commit's content.
-      git clean -fd ./Packs  # cleans any untracked files and directories in the "Packs" folder. it ensures that only tracked files remain.
-
-      find ./Packs -type d -empty -exec sh -c 'rmdir "$0" && echo "Deleted: $0"' {} \;  # remove empty folders under Packs, this can happen when deleting all files of newly added packs between master and upload commit, git doesn't delete the folders
-      git status
-      echo "content nightly: successfully reverted the Packs folder to upload commit $LAST_UPLOAD_COMMIT"
+      rm -rf ./Packs
+      echo "copying production Packs folder"
+      cp -r ${ARTIFACTS_FOLDER}/content_production/Packs ./Packs
+      echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
       echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
     fi
@@ -493,3 +488,23 @@
     - .default-job-settings
   script:
     - python3 Tests/scripts/check_jobs_done.py --triggering-workflow "${WORKFLOW}" --job-done-files "${PIPELINE_JOBS_FOLDER}"
+
+.checkout-upload-commit-nightly-content:
+  stage: .pre
+  rules:
+    - if: '$NIGHTLY'
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+    when: always
+  before_script:
+    - *create_artifacts_and_server_type_instance_folders
+    - *get_last_upload_commit
+  script:
+    - source ./Tests/scripts/download_conf_repos.sh
+    - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
+    - clone_repository "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content" "${CI_COMMIT_BRANCH}" "{$LAST_UPLOAD_COMMIT}"
+    - echo "replacing Packs folder with production Packs folder"
+    - mv content ${ARTIFACTS_FOLDER}/content_production
