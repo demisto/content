@@ -262,7 +262,7 @@ def test_template_list_by_datastore_command(mocker, client):
         "GET",
         url_suffix="api/config/devices/template/org_name-DataStore/config/orgs/org",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -316,7 +316,7 @@ def test_template_custom_url_category_list_command(mocker, client):
         url_suffix="/api/config/devices/template/temp_name/config/orgs/org-services"
         + "/org_name/url-filtering/user-defined-url-categories/url-category",
         params={"offset": 0},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -457,7 +457,7 @@ def test_template_access_policy_list_command(mocker, client):
         url_suffix="api/config/devices/template/template_name/config/orgs/org-services"
         + "/org_name/security/access-policies/access-policy-group",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -492,7 +492,7 @@ def test_template_access_policy_rule_list_command(mocker, client):
         url_suffix="api/config/devices/template/template_name/config/orgs/org-services/org_name/security/access-policies"
         + "/access-policy-group/access_policy_name/rules/access-policy",
         params={"offset": 0},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -603,7 +603,7 @@ def test_appliance_custom_url_category_list_command(mocker, client, url_category
         + "/org_name/url-filtering/user-defined-url-categories/url-category"
         + suffix,
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -711,7 +711,7 @@ def test_appliance_access_policy_list_command(mocker, client):
         url_suffix="api/config/devices/device/appliance_name/config/orgs/org-services"
         + "/org_name/security/access-policies/access-policy-group",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         ok_codes=(200, 201),
         resp_type="xml",
     )
@@ -748,7 +748,7 @@ def test_appliance_access_policy_rule_list_command(mocker, client):
         url_suffix="api/config/devices/device/appliance_name/config/orgs/org-services/org_name/security/access-policies"
         + "/access-policy-group/access_policy_name/rules/access-policy",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -856,7 +856,7 @@ def test_template_sdwan_policy_list_command(mocker, client):
         url_suffix="api/config/devices/template/template_name/config/orgs/"
         + "org-services/org_name/sd-wan/policies/sdwan-policy-group",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -892,7 +892,7 @@ def test_template_sdwan_policy_rule_list_command(mocker, client):
         url_suffix="api/config/devices/template/template_name/config/orgs/org-services/"
         + "organization/sd-wan/policies/sdwan-policy-group/sdwan_policy_name/rules/rule",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -1008,7 +1008,7 @@ def test_appliance_sdwan_policy_list_command(mocker, client):
         url_suffix="api/config/devices/device/appliance_name/config/orgs/org-services"
         + "/organization/sd-wan/policies/sdwan-policy-group",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -1043,7 +1043,7 @@ def test_appliance_sdwan_policy_rule_list_command(mocker, client):
         url_suffix="api/config/devices/device/appliance_name/config/orgs/org-services/"
         + "organization/sd-wan/policies/sdwan-policy-group/sdwan_policy_name/rules/rule",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -1159,7 +1159,7 @@ def test_template_address_object_list_command(mocker, client):
         "GET",
         url_suffix="api/config/devices/template/template_name/config/orgs/org-services/organization/objects/addresses/address",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -1322,7 +1322,7 @@ def test_appliance_address_object_list_command(mocker, client):
         "GET",
         url_suffix="api/config/devices/device/appliance_name/config/orgs/org-services/organization/objects/addresses/address",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
     )
 
@@ -1486,7 +1486,7 @@ def test_template_user_defined_application_list_command(mocker, client):
         url_suffix="api/config/devices/template/template_name/config/orgs/org-services/org_name/"
         + "application-identification/user-defined-applications/user-defined-application",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
         ok_codes=(200, 201, 204),
     )
@@ -1521,7 +1521,7 @@ def test_appliance_user_defined_application_list_command(mocker, client):
         url_suffix="api/config/devices/device/appliance_name/config/orgs/org-services/org_name/"
         + "application-identification/user-defined-applications/user-defined-application",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
         ok_codes=(200, 201),
     )
@@ -1556,7 +1556,7 @@ def test_template_user_modified_application_list_command(mocker, client):
         url_suffix="api/config/devices/template/template_name/config/orgs/org-services/org_name/"
         + "application-identification/application-specific-options/app-specific-option-list",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
         ok_codes=(200, 201),
     )
@@ -1591,7 +1591,7 @@ def test_appliance_user_modified_application_list_command(mocker, client):
         url_suffix="api/config/devices/device/appliance_name/config/orgs/org-services/org_name/"
         + "application-identification/application-specific-options/app-specific-option-list",
         params={},
-        headers={"Content-Type": "application/xml"},
+        headers={"Content-Type": "application/xml", "Accept": "application/xml"},
         resp_type="xml",
         ok_codes=(200, 201),
     )
