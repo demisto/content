@@ -3,14 +3,15 @@ import logging
 import os
 import sys
 from argparse import Namespace, ArgumentParser
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from pathlib import Path
-from collections.abc import Callable
+from typing import Any
 
 import humanize
 import urllib3
 from demisto_sdk.commands.test_content.constants import SSH_USER
-from paramiko import SSHClient, SSHException
+from paramiko import SSHClient, SSHException, MissingHostKeyPolicy
 from scp import SCPClient, SCPException
 from tqdm import tqdm
 
@@ -21,13 +22,15 @@ urllib3.disable_warnings()  # Disable insecure warnings
 DEFAULT_TTL = "300"
 SERVER_LOG_DIRECTORY = "/var/log/demisto"
 SERVER_LOG_FILE_PATH = f"{SERVER_LOG_DIRECTORY}/server.log"
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
 
 
 def options_handler() -> Namespace:
     parser = ArgumentParser(description='Utility for destroying integration test instances')
     parser.add_argument('--artifacts-dir', help='Path to the artifacts directory', required=True)
     parser.add_argument('--instance-role', help='The instance role', required=True)
-    parser.add_argument('--env-file', help='The env_results.json file')
+    parser.add_argument('--env-file', help='The env_results.json file', default=ENV_RESULTS_PATH, required=False)
     return parser.parse_args()
 
 
@@ -103,11 +106,16 @@ def download_logs(ssh: SSHClient, server_ip: str, artifacts_dir: str, readable_r
     return False
 
 
+class LogMissingHostKeyPolicy(MissingHostKeyPolicy):
+    def missing_host_key(self, client: SSHClient, hostname: str, key: Any) -> Any:
+        logging.warning(f"Missing host key for {hostname}, adding it automatically.")
+
+
 def destroy_server(artifacts_dir: str, readable_role: str, role: str, server_ip: str, time_to_live: int) -> bool:
     success = True
     with SSHClient() as ssh:
         try:
-            ssh.load_system_host_keys()
+            ssh.set_missing_host_key_policy(LogMissingHostKeyPolicy())
             ssh.connect(server_ip, username=SSH_USER)
             success &= chmod_logs(ssh, server_ip)
             success &= download_logs(ssh, server_ip, artifacts_dir, readable_role, role)
