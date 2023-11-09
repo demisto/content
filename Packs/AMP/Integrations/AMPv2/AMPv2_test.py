@@ -1547,3 +1547,7 @@ def test_vulnerability_list_command(
             computer.pop("links", None)
 
         assert output == mock_output
+
+
+def test_fetch_incidents():
+    
