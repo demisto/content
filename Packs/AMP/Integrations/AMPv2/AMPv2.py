@@ -1208,6 +1208,7 @@ def fetch_incidents(
     # being duplicates for the next fetch
     new_previous_ids = previous_ids.copy()
 
+    # If a last fetch run doesn't exist, use the first fetch time.
     if last_fetch is None:
         last_fetch = first_fetch_time
 
