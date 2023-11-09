@@ -121,16 +121,16 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         sys.exit(1)
 
 
-def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, pack_version: str = '',
+def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, current_pack_version: str = '',
                         hidden_pack: bool = False, pack_versions_to_keep: list = None) -> bool:
     """
-    Copies pack folder into index folder.
+    Updates index folder with pack metadata, changelog and README files.
 
     Args:
         index_folder_path (str): full path to index folder.
         pack_name (str): pack folder name to copy.
         pack_path (str): pack folder full path.
-        pack_version (str): pack latest version.
+        current_pack_version (str): pack latest version.
         hidden_pack (bool): whether pack is hidden/internal or regular pack.
         pack_versions_to_keep (list): pack versions to keep its metadata. If empty, do not remove any versions.
 
@@ -138,49 +138,44 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
         bool: whether the operation succeeded.
     """
     task_status = False
+    index_pack_path = os.path.join(index_folder_path, pack_name)
+    pack_versions_to_keep = pack_versions_to_keep or []
 
     try:
-        index_folder_subdirectories = [d for d in os.listdir(index_folder_path) if
-                                       os.path.isdir(os.path.join(index_folder_path, d))]
-        index_pack_path = os.path.join(index_folder_path, pack_name)
-        metadata_files_in_index = glob.glob(f"{index_pack_path}/metadata-*.json")
-        new_metadata_path = os.path.join(index_pack_path, f"metadata-{pack_version}.json")
-
-        if pack_version and new_metadata_path in metadata_files_in_index:
-            metadata_files_in_index.remove(new_metadata_path)
-
-        # Remove old files but keep metadata files
-        if pack_name in index_folder_subdirectories:
-            for d in os.scandir(index_pack_path):
-                if d.path not in metadata_files_in_index:
-                    os.remove(d.path)
-                elif (metadata_version := re.findall(METADATA_FILE_REGEX_GET_VERSION, d.name)) \
-                        and pack_versions_to_keep and metadata_version[0] not in pack_versions_to_keep:
-                    os.remove(d.path)
-
-        # skipping index update in case hidden is set to True
+        # skipping index update in case pack is hidden
         if hidden_pack:
             if os.path.exists(index_pack_path):
                 shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
-            logging.warning(f"Skipping updating {pack_name} pack files to index")
+            logging.warning(f"Pack '{pack_name}' is hidden - Skipping updating pack files in index")
             task_status = True
-            return True
+            return task_status
+
+        # Remove old metadata files
+        if os.path.exists(index_pack_path):
+            for d in os.scandir(index_pack_path):
+                if (metadata_version := re.findall(METADATA_FILE_REGEX_GET_VERSION, d.name)) \
+                        and pack_versions_to_keep and metadata_version[0] not in pack_versions_to_keep:
+                    os.remove(d.path)
+
+        if not os.path.exists(index_pack_path):
+            Path(index_pack_path).mkdir()
+            logging.debug(f"Created '{pack_name}' pack folder in {GCPConfig.INDEX_NAME}")
 
         # Copy new files and add metadata for latest version
         for d in os.scandir(pack_path):
-            if not os.path.exists(index_pack_path):
-                Path(index_pack_path).mkdir()
-                logging.info(f"Created {pack_name} pack folder in {GCPConfig.INDEX_NAME}")
+            if d.name not in [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]:
+                continue
 
+            logging.debug(f"Copying pack's {d.name} file to pack '{pack_name}' index folder")
             shutil.copy(d.path, index_pack_path)
-            if pack_version and d.name == Pack.METADATA:
-                shutil.copy(d.path, new_metadata_path)
+            if current_pack_version and d.name == Pack.METADATA:
+                shutil.copy(d.path, os.path.join(index_pack_path, f"metadata-{current_pack_version}.json"))
 
         task_status = True
-    except Exception:
-        logging.exception(f"Failed in updating index folder for {pack_name} pack.")
-    finally:
-        return task_status
+    except Exception as e:
+        logging.exception(f"Failed in updating index folder for {pack_name} pack.\n{e}")
+
+    return task_status
 
 
 def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
@@ -1352,13 +1347,8 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.prepare_for_index_upload()
-        if not task_status:
-            pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                          pack_version=pack.latest_version, hidden_pack=pack.hidden,
+                                          current_pack_version=pack.current_version, hidden_pack=pack.hidden,
                                           pack_versions_to_keep=pack_versions_to_keep)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
@@ -1389,7 +1379,7 @@ def main():
             continue
 
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
-                                          pack_version=pack.latest_version, hidden_pack=pack.hidden)
+                                          current_pack_version=pack.latest_version, hidden_pack=pack.hidden)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
             pack.cleanup()

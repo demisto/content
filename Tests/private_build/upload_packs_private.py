@@ -377,14 +377,8 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
         pack.cleanup()
         return
 
-    task_status = pack.prepare_for_index_upload()
-    if not task_status:
-        pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name  # type: ignore[misc]
-        pack.cleanup()
-        return
-
     task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name,
-                                      pack_path=pack.path, pack_version=pack.latest_version,
+                                      pack_path=pack.path, current_pack_version=pack.latest_version,
                                       hidden_pack=pack.hidden, pack_versions_to_keep=pack_versions_to_keep)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]

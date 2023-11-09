@@ -2663,34 +2663,6 @@ class Pack:
         self._all_levels_dependencies = all_levels_dependencies
         self._displayed_images_dependent_on_packs = displayed_images_dependent_on_packs
 
-    def prepare_for_index_upload(self):
-        """ Removes and leaves only necessary files in pack folder.
-
-        Returns:
-            bool: whether the operation succeeded.
-
-        """
-        task_status = False
-        files_to_leave = [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]
-
-        try:
-            for file_or_folder in os.listdir(self._pack_path):
-                files_or_folder_path = os.path.join(self._pack_path, file_or_folder)
-
-                if file_or_folder in files_to_leave:
-                    continue
-
-                if os.path.isdir(files_or_folder_path):
-                    shutil.rmtree(files_or_folder_path)
-                else:
-                    os.remove(files_or_folder_path)
-
-            task_status = True
-        except Exception:
-            logging.exception(f"Failed in preparing index for upload in {self._pack_name} pack.")
-        finally:
-            return task_status
-
     @staticmethod
     def _get_spitted_yml_image_data(root, target_folder_files):
         """ Retrieves pack integration image and integration display name and returns binding image data.
