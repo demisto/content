@@ -1,10 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """AddKeyToList
 Adds/Updates a Key to a JSON-backed List
 """
 
-from CommonServerUserPython import *  # noqa
+
+# Test!!
+
 
 from typing import Dict, Any
 import traceback
