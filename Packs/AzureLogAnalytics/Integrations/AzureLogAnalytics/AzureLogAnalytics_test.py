@@ -1,3 +1,4 @@
+import json
 import pytest
 import json
 from pathlib import Path
@@ -69,6 +70,34 @@ MOCKED_EXECUTE_QUERY_OUTPUT = {
     ]
 }
 
+BASE_URL = 'https://management.azure.com/subscriptions'
+SUBSCRIPTION_ID = 'subscriptionID'
+RESOURCE_GROUP_NAME = 'resourceGroupName'
+
+
+def get_azure_access_token_mock() -> dict:
+    """
+    Mock Azure access token object.
+
+    Returns:
+        dict: Azure access token mock.
+    """
+    return {
+        'access_token': 'my-access-token',
+        'expires_in': 3595,
+        'refresh_token': 'my-refresh-token',
+    }
+
+
+def authorization_mock(requests_mock):
+    """
+    Azure authorization API request mock.
+
+    """
+    authorization_url = 'https://login.microsoftonline.com/refresh_token/oauth2/token'
+    requests_mock.post(authorization_url, json=get_azure_access_token_mock())
+
+
 
 CLIENT = Client(
     self_deployed=True,
@@ -77,8 +106,8 @@ CLIENT = Client(
     redirect_uri="redirect_uri",
     enc_key="enc_key",
     auth_code="auth_code",
-    subscription_id="subscriptionID",
-    resource_group_name="resourceGroupName",
+    subscription_id=SUBSCRIPTION_ID,
+    resource_group_name=RESOURCE_GROUP_NAME,
     workspace_name="workspaceName",
     verify=False,
     proxy=False,
@@ -86,6 +115,18 @@ CLIENT = Client(
     private_key=None,
     client_credentials=False,
 )
+
+
+def load_mock_response(file_path: str) -> dict:
+    """
+    Load mock file that simulates an API response.
+    Args:
+        file_path (str): Path of the mock response JSON file to return.
+    Returns:
+        str: Mock file content.
+    """
+    with open(file_path, encoding='utf-8') as mock_file:
+        return json.loads(mock_file.read())
 
 
 def test_execute_query_command(mocker: MockerFixture) -> None:
@@ -287,6 +328,7 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
     assert expected_url in res
 
 
+
 def test_run_search_job_command(mocker: MockerFixture) -> None:
     """
     Given:
@@ -387,3 +429,74 @@ def test_delete_search_job_command(mocker: MockerFixture) -> None:
     mocker.patch.object(CLIENT, "http_request", return_value=None)
     response = delete_search_job_command(CLIENT, {"table_name": "test_SRCH"})
     assert response.readable_output == "Search job test_SRCH deleted successfully."
+
+
+def test_subscriptions_list_command(requests_mock):
+    """
+    Given:
+        - Mock response from API client
+    When:
+        - Calling subscriptions_list_command
+    Then:
+        - Validate expected outputs returned
+    """
+    from AzureLogAnalytics import subscriptions_list_command
+
+    authorization_mock(requests_mock)
+    
+    mock_response = load_mock_response('test_data/subscriptions_list.json')
+    requests_mock.get(BASE_URL, json=mock_response)
+
+    command_result = subscriptions_list_command(CLIENT)
+
+    assert len(command_result.outputs) == 2
+    assert command_result.outputs_prefix == 'AzureLogAnalytics.Subscription'
+    assert command_result.outputs[0].get('id') == '/subscriptions/1234'
+
+
+def test_workspace_list_command(requests_mock):
+    """
+    Given:
+        - Mock response from API client
+    When:
+        - Calling workspace_list_command
+    Then:
+        - Validate expected outputs returned
+    """
+    from AzureLogAnalytics import workspace_list_command
+
+    authorization_mock(requests_mock)
+    mock_response = load_mock_response('test_data/workspace_list.json')
+    url = f'{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups/{RESOURCE_GROUP_NAME}/providers/Microsoft.OperationalInsights/workspaces'
+    requests_mock.get(url, json=mock_response)
+
+    command_result = workspace_list_command(CLIENT)
+
+    assert len(command_result.outputs) == 1
+    assert command_result.outputs_prefix == 'AzureLogAnalytics.workspace'
+    assert command_result.outputs[0].get('name') == 'Test2170'
+
+
+def test_resource_group_list_command(requests_mock):
+    """
+    Given:
+        - limit argument
+        - Mock response from API client
+    When:
+        - Calling resource_group_list_command
+    Then:
+        - Validate expected outputs returned
+    """
+    from AzureLogAnalytics import resource_group_list_command
+
+    authorization_mock(requests_mock)
+   
+    url = f'{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups'
+    mock_response = load_mock_response('test_data/resource_group_list.json')
+    requests_mock.get(url, json=mock_response)
+
+    command_result = resource_group_list_command(CLIENT, {'limit': 50})
+
+    assert len(command_result.outputs) == 1
+    assert command_result.outputs_prefix == 'AzureLogAnalytics.ResourceGroup'
+    assert command_result.outputs[0].get('id') == 'id'

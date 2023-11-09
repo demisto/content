@@ -67,25 +67,28 @@ To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resou
 2. Search for Azure Log Analytics.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| credentials - identifier | ID\Client ID (received from the authorization step or from the self-deployed configuration process - see Detailed Instructions (?) section). | True |
-| refresh_token | Token\tenant_id (received from the authorization step or from the self-deployed configuration process - see Detailed Instructions (?) section). | True |
-| credentials - password | Key\Client secret (received from the authorization step - see Detailed Instructions (?) section). | False |
-| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
-| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-| Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-| self_deployed | Use a self-deployed Azure application. | False |
-| Use Client Credentials Authorization Flow | Use a self-deployed Azure application and authenticate using the Client Credentials flow. | False |
-| redirect_uri | Application redirect URI (for self-deployed mode). | False |
-| auth_code | Authorization code (received from the authorization step - see Detailed Instructions (?) section). | False |
-| subscriptionID | Subscription ID | True |
-| resourceGroupName | Resource Group Name | True |
-| workspaceName | Workspace Name | True |
-| workspaceID | Workspace ID (the UUID of the workspace, e.g., `123e4567-e89b-12d3-a456-426614174000`). | True |
-| insecure | Trust any certificate (not secure). | False |
-| proxy | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Token / Tenant ID | Received from the authorization process or from the self-deployed configuration process \(find the tenant ID in your app overview page in the Azure portal\) | False |
+    | Token / Tenant ID |  | False |
+    | ID / Client ID | Received from the authorization process or from the self-deployed configuration process. | False |
+    | Key / Client Secret |  | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+    | Use a self-deployed Azure application - Authorization Code flow | Check when authenticating using the Authorization Code flow. | False |
+    | Use a self-deployed Azure application - Client Credentials Flow | Check when authenticating using the Client Credentials flow. | False |
+    | Application redirect URI (for self-deployed mode) |  | False |
+    | Authorization code | Get the Authorization code from steps 3-5 in the self deployed authorization process. | False |
+    | Authorization code | Get the Authorization code from steps 3-5 in the self deployed authorization process. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
+    | Default Subscription ID | The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail. | True |
+    | Default Resource Group Name | The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail. | True |
+    | Default Workspace Name | The parameter can be saved as 000-000 and added as an argument to each command. | True |
+    | Default Workspace ID (the UUID of the workspace, e.g. 123e4567-e89b-12d3-a456-426614174000) | The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail. | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -110,6 +113,8 @@ Executes an Analytics query for data.
 | query | The query to execute. | Required | 
 | timespan | The timespan over which to query data. This is an ISO8601 time period value. This timespan is applied in addition to any timespans specified in the query expression. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. Default is 10. | Optional | 
+| workspace_id | The Workspace ID. Note: This argument will override the instance parameter ‘Default Workspace ID'. | Optional | 
+
 
 #### Context Output
 
@@ -137,6 +142,30 @@ Executes an Analytics query for data.
 | TENANT_ID | Deprecated field: see <http://aka.ms/LA-Usage> | 2020-07-30T05:00:00Z | OMS | 2020-07-30T04:00:00Z | 2020-07-30T05:00:00Z | /subscriptions/SUBSCRIPTION_ID/resourcegroups/RESOURCE_GROUP/providers/microsoft.operationalinsights/workspaces/WORKSPACE_NAME | SigninLogs | LogManagement | 0 | 0 | 0 | 0 | 0 | 0.009107 | MBytes | true | METER_ID | 00000000-0000-0000-0000-000000000000 | Usage |
 
 
+### azure-log-analytics-test
+
+***
+Tests connectivity to Azure Log Analytics.
+
+#### Base Command
+
+`azure-log-analytics-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!azure-log-analytics-test```
+
+#### Human Readable Output
+```✅ Success!```
+
+
 ### azure-log-analytics-list-saved-searches
 
 ***
@@ -152,6 +181,10 @@ Gets the saved searches of the Log Analytics workspace.
 | --- | --- | --- |
 | limit | The maximum number of saved searches to return. Default is 50. | Optional | 
 | page | The page number from which to start a search. Default is 0. | Optional | 
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'. | Optional | 
+
 
 #### Context Output
 
@@ -198,6 +231,10 @@ Gets a specified saved search from the Log Analytics workspace.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | saved_search_id | The ID of the saved search. | Required | 
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'. | Optional | 
+
 
 #### Context Output
 
@@ -227,7 +264,6 @@ Gets a specified saved search from the Log Analytics workspace.
 |---|---|---|---|---|---|
 | W/"datetime'2020-07-30T12%3A21%3A05.3197505Z'" | test1234 | test | test | SecurityAlert &#124; summarize arg_max(TimeGenerated, *) by SystemAlertId &#124; where SystemAlertId in("TEST_SYSTEM_ALERT_ID") | 2 |
 
-
 ### azure-log-analytics-create-or-update-saved-search
 
 ***
@@ -249,6 +285,10 @@ Creates or updates a saved search from the Log Analytics workspace.
 | function_parameters | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax, refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions>. | Optional | 
 | query | The query expression for the saved search. | Required | 
 | tags | The tags attached to the saved search. Value should be in the following format: 'name=value;name=value'. | Optional | 
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'. | Optional | 
+
 
 #### Context Output
 
@@ -297,7 +337,9 @@ Deletes a specified saved search in the Log Analytics workspace.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | saved_search_id | The ID of the saved search. | Required | 
-
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'. | Optional | 
 
 #### Context Output
 
@@ -312,38 +354,13 @@ There is no context output for this command.
 Successfully deleted the saved search test1234.
 
 
-### azure-log-analytics-test
-
-***
-Tests connectivity to Azure Log Analytics.
-
-#### Base Command
-
-`azure-log-analytics-test`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-
-```!azure-log-analytics-test```
-
-#### Human Readable Output
-
-```✅ Success!```
-
-
 ### azure-log-analytics-generate-login-url
 
 ***
 Generate the login url used for Authorization code flow.
 
 #### Base Command
+
 
 `azure-log-analytics-generate-login-url`
 
@@ -362,13 +379,131 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization instructions
->
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `“code=”` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
 
+
+### azure-log-analytics-subscriptions-list
+
+***
+List all subscriptions for a tenant.
+
+#### Base Command
+
+`azure-log-analytics-subscriptions-list`
+
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureLogAnalytics.Subscription.authorizationSource | String | The authorization source of the request. | 
+| AzureLogAnalytics.Subscription.displayName | String | The subscription display name. | 
+| AzureLogAnalytics.Subscription.id | String | The fully qualified ID for the subscription. For example, /subscriptions/8d65815f-a5b6-402f-9298-045155da7d74. | 
+| AzureLogAnalytics.Subscription.managedByTenants | Unknown | An array containing the tenants managing the subscription. | 
+| AzureLogAnalytics.Subscription.state | Unknown | The subscription state. Possible values are Enabled, Warned, PastDue, Disabled, and Deleted. | 
+| AzureLogAnalytics.Subscription.subscriptionId | String | The subscription ID. | 
+| AzureLogAnalytics.Subscription.subscriptionPolicies | Unknown | The subscription policies. | 
+| AzureLogAnalytics.Subscription.tags | Object | The tags attached to the subscription. | 
+| AzureLogAnalytics.Subscription.tenantId | String | The subscription tenant ID. | 
+
+### azure-log-analytics-workspace-list
+
+
+***
+Gets workspaces in a resource group.
+
+#### Base Command
+
+
+`azure-log-analytics-workspace-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureLogAnalytics.workspace.etag | String | The etag of the workspace. | 
+| AzureLogAnalytics.workspace.id | String | Fully qualified resource ID for the resource. | 
+| AzureLogAnalytics.workspace.identity.principalId | String | The principal ID of resource identity. | 
+| AzureLogAnalytics.workspace.identity.tenantId | String | The tenant ID of resource. | 
+| AzureLogAnalytics.workspace.identity.type | String | Type of managed service identity. | 
+| AzureLogAnalytics.workspace.identity.userAssignedIdentities.clientId | String | The client id of user assigned identity. | 
+| AzureLogAnalytics.workspace.identity.userAssignedIdentities.principalId | String | The principal id of user assigned identity. | 
+| AzureLogAnalytics.workspace.location | String | The geo-location where the resource lives. | 
+| AzureLogAnalytics.workspace.name | String | The name of the resource. | 
+| AzureLogAnalytics.workspace.properties.createdDate | String | Workspace creation date. | 
+| AzureLogAnalytics.workspace.properties.customerId | String | This is a read-only property. Represents the ID associated with the workspace. | 
+| AzureLogAnalytics.workspace.properties.defaultDataCollectionRuleResourceId | String | The resource ID of the default Data Collection Rule to use for this workspace. | 
+| AzureLogAnalytics.workspace.properties.features.clusterResourceId | String | Dedicated LA cluster resourceId that is linked to the workspaces. | 
+| AzureLogAnalytics.workspace.properties.features.disableLocalAuth | Boolean | Disable Non-AAD based Auth. | 
+| AzureLogAnalytics.workspace.properties.features.enableDataExport | Boolean | Flag that indicate if data should be exported. | 
+| AzureLogAnalytics.workspace.properties.features.enableLogAccessUsingOnlyResourcePermissions | Boolean | Flag that indicate which permission to use - resource or workspace or both. | 
+| AzureLogAnalytics.workspace.properties.features.immediatePurgeDataOn30Days | Boolean | Flag that describes if we want to remove the data after 30 days. | 
+| AzureLogAnalytics.workspace.properties.forceCmkForQuery | Boolean | Indicates whether customer managed storage is mandatory for query management. | 
+| AzureLogAnalytics.workspace.properties.modifiedDate | String | Workspace modification date. | 
+| AzureLogAnalytics.workspace.properties.privateLinkScopedResources.resourceId | String | The full resource Id of the private link scope resource. | 
+| AzureLogAnalytics.workspace.properties.privateLinkScopedResources.scopeId | String | The private link scope unique Identifier. | 
+| AzureLogAnalytics.workspace.properties.provisioningState | String | The provisioning state of the workspace. | 
+| AzureLogAnalytics.workspace.properties.publicNetworkAccessForIngestion | String | The network access type for accessing Log Analytics ingestion. | 
+| AzureLogAnalytics.workspace.properties.publicNetworkAccessForQuery | String | The network access type for accessing Log Analytics query. | 
+| AzureLogAnalytics.workspace.properties.retentionInDays | Number | The workspace data retention in days. Allowed values are per pricing plan. See pricing tiers documentation for details. | 
+| AzureLogAnalytics.workspace.properties.sku.capacityReservationLevel | Number | The capacity reservation level in GB for this workspace, when CapacityReservation sku is selected. | 
+| AzureLogAnalytics.workspace.properties.sku.lastSkuUpdate | String | lastSkuUpdate | 
+| AzureLogAnalytics.workspace.properties.sku.name | String | The name of the SKU. | 
+| AzureLogAnalytics.workspace.properties.workspaceCapping.dailyQuotaGb | Number | The workspace daily quota for ingestion. | 
+| AzureLogAnalytics.workspace.properties.workspaceCapping.dataIngestionStatus | String | The status of data ingestion for this workspace. | 
+| AzureLogAnalytics.workspace.properties.workspaceCapping.quotaNextResetTime | String | The time when the quota will be rest. | 
+| AzureLogAnalytics.workspace.systemData.createdAt | String | The timestamp of resource creation \(UTC\). | 
+| AzureLogAnalytics.workspace.systemData.createdBy | String | The identity that created the resource. | 
+| AzureLogAnalytics.workspace.systemData.createdByType | String | The type of identity that created the resource. | 
+| AzureLogAnalytics.workspace.systemData.lastModifiedAt | String | The timestamp of resource last modification \(UTC\). | 
+| AzureLogAnalytics.workspace.systemData.lastModifiedBy | String | The identity that last modified the resource. | 
+| AzureLogAnalytics.workspace.systemData.lastModifiedByType | String | lastModifiedByType | 
+| AzureLogAnalytics.workspace.tags | Object | Resource tags. | 
+| AzureLogAnalytics.workspace.type | String | The type of the resource. | 
+
+### azure-log-analytics-resource-group-list
+
+***
+List all resource groups for a subscription.
+
+#### Base Command
+
+`azure-log-analytics-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. | Optional | 
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureLogAnalytics.ResourceGroup.id | String | The ID of the resource group. | 
+| AzureLogAnalytics.ResourceGroup.location | String | The location of the resource group. | 
+| AzureLogAnalytics.ResourceGroup.managedBy | String | The ID of the resource that manages this resource group. | 
+| AzureLogAnalytics.ResourceGroup.name | String | The name of the resource group. | 
+| AzureLogAnalytics.ResourceGroup.properties.provisioningState | String | The provisioning state. | 
+| AzureLogAnalytics.ResourceGroup.tags | Object | The tags attached to the resource group. | 
+| AzureLogAnalytics.ResourceGroup.type | String | The type of the resource group. | 
 
 ### azure-log-analytics-auth-reset
 
@@ -386,6 +521,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 
 ### azure-log-analytics-run-search-job
 
@@ -601,3 +737,4 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Search job test_SRCH deleted successfully.
+
