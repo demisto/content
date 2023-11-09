@@ -164,9 +164,8 @@ def tags_arg_to_request_format(tags) -> list[dict[str, str]] | None:
             'name': tag[0],
             'value': tag[1]
         } for tag in tags]
-    except IndexError:
-        raise DemistoException(bad_arg_msg)
-    return None
+    except IndexError as e:
+        raise DemistoException(bad_arg_msg) from e
 
 
 ''' INTEGRATION COMMANDS '''
@@ -193,7 +192,6 @@ def test_connection(client: Client, params: dict[str, Any]) -> str:
             e,
         ) from e
     return 'ok'
-
 
 
 def execute_query_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -343,6 +341,149 @@ def delete_saved_search_command(client: Client, args: dict[str, Any]) -> str:
     return f'Successfully deleted the saved search {saved_search_id}.'
 
 
+def subscriptions_list_command(client: Client) -> CommandResults:
+    response = client.http_request('GET', full_url='https://management.azure.com/subscriptions',
+                                   params={'api-version': SUBSCRIPTION_LIST_API_VERSION}, resource=AZURE_MANAGEMENT_RESOURCE)
+    value = response.get('value', [])
+
+    subscriptions = []
+    for subscription in value:
+        subscription_context = {
+            'Subscription ID': subscription.get('subscriptionId'),
+            'Tenant ID': subscription.get('tenantId'),
+            'State': subscription.get('state'),
+            'Display Name': subscription.get('displayName')
+        }
+        subscriptions.append(subscription_context)
+
+    human_readable = tableToMarkdown('List of subscriptions', subscriptions, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='AzureLogAnalytics.Subscription',
+        outputs_key_field='id',
+        outputs=value,
+        readable_output=human_readable,
+        raw_response=value
+    )
+
+
+def workspace_list_command(client: Client) -> CommandResults:
+    """
+    Gets workspaces in a resource group.
+    Returns:
+        List[dict]: API response from Azure.
+    """
+    full_url = f'https://management.azure.com/subscriptions/{client.subscription_id}/resourceGroups/' \
+        f'{client.resource_group_name}/providers/Microsoft.OperationalInsights/workspaces'
+    response = client.http_request('GET', full_url=full_url, params={
+                                   'api-version': API_VERSION}, resource=AZURE_MANAGEMENT_RESOURCE)
+    value = response.get('value', [])
+
+    workspaces = []
+    for workspace in value:
+        workspace_context = {
+            'Name': workspace.get('name'),
+            'Location': workspace.get('location'),
+            'Tags': workspace.get('tags'),
+            'Provisioning State': workspace.get('properties', {}).get('provisioningState')
+        }
+        workspaces.append(workspace_context)
+
+    readable_output = tableToMarkdown('Workspaces List', workspaces, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='AzureLogAnalytics.workspace',
+        outputs_key_field='id',
+        outputs=value,
+        raw_response=value,
+        readable_output=readable_output
+    )
+
+
+def resource_group_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    List all resource groups.
+    Args:
+        tag (str): Tag to filter by.
+        limit (int): Maximum number of resource groups to retrieve. Default is 50.
+    Returns:
+        List[dict]: API response from Azure.
+    """
+    limit = arg_to_number(args.get('limit')) or 50
+    tag = args.get('tag', '')
+
+    raw_responses = []
+    resource_groups: list[dict] = []
+
+    next_link = True
+    while next_link and len(resource_groups) < limit:
+        full_url = next_link if isinstance(next_link, str) else None
+        response = client.resource_group_list_request(tag=tag, limit=limit, full_url=full_url)
+
+        value = response.get('value', [])
+        next_link = full_url = response.get('nextLink', '')
+
+        raw_responses.extend(value)
+        for resource_group in value:
+            resource_group_context = {
+                'Name': resource_group.get('name'),
+                'Location': resource_group.get('location'),
+                'Tags': resource_group.get('tags'),
+                'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
+            }
+            resource_groups.append(resource_group_context)
+
+    raw_responses = raw_responses[:limit]
+    resource_groups = resource_groups[:limit]
+    readable_output = tableToMarkdown('Resource Groups List', resource_groups, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='AzureLogAnalytics.ResourceGroup',
+        outputs_key_field='id',
+        outputs=raw_responses,
+        raw_response=raw_responses,
+        readable_output=readable_output
+    )
+
+
+def get_search_job_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieve information about a search job in Azure Log Analytics.
+
+    Args:
+        client (Client): An instance of the Azure Log Analytics client.
+        args (dict): A dictionary containing the command arguments, including 'table_name'.
+
+    Returns:
+        CommandResults: A CommandResults object containing the retrieved search job information.
+    """
+    response = get_search_job(client, args['table_name'])
+
+    properties: dict = response["properties"]
+    schema: dict = properties["schema"]
+
+    # Extract search results from schema or properties, the response sometimes returns it in schema sometimes in properties
+    # https://github.com/MicrosoftDocs/azure-docs/issues/116671
+    searchResults: dict = schema.get("searchResults", {}) or properties.get("searchResults", {})
+
+    readable_output = {
+        "Name": schema["name"],
+        "Create Date": properties["createDate"],
+        "Plan": properties["plan"],
+        "Query": searchResults["query"],
+        "Description": searchResults["description"],
+        "startSearchTime": searchResults["startSearchTime"],
+        "endSearchTime": searchResults["endSearchTime"],
+        "provisioningState": properties["provisioningState"]
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown("Search Job", readable_output),
+        outputs=response,
+        outputs_prefix="AzureLogAnalytics.SearchJob",
+        outputs_key_field="id"
+    )
+
+
 def get_search_job(client: Client, table_name: str) -> dict:
     url_suffix = f"/tables/{table_name}"
     response = client.http_request(
@@ -460,149 +601,6 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
         )
 
 
-def subscriptions_list_command(client: Client):
-    response = client.http_request('GET', full_url='https://management.azure.com/subscriptions',
-                                   params={'api-version': SUBSCRIPTION_LIST_API_VERSION}, resource=AZURE_MANAGEMENT_RESOURCE)
-    value = response.get('value', [])
-
-    subscriptions = []
-    for subscription in value:
-        subscription_context = {
-            'Subscription ID': subscription.get('subscriptionId'),
-            'Tenant ID': subscription.get('tenantId'),
-            'State': subscription.get('state'),
-            'Display Name': subscription.get('displayName')
-        }
-        subscriptions.append(subscription_context)
-
-    human_readable = tableToMarkdown('List of subscriptions', subscriptions, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix='AzureLogAnalytics.Subscription',
-        outputs_key_field='id',
-        outputs=value,
-        readable_output=human_readable,
-        raw_response=value
-    )
-
-
-def workspace_list_command(client: Client):
-    """
-    Gets workspaces in a resource group.
-    Returns:
-        List[dict]: API response from Azure.
-    """
-    full_url = f'https://management.azure.com/subscriptions/{client.subscription_id}/resourceGroups/' \
-        f'{client.resource_group_name}/providers/Microsoft.OperationalInsights/workspaces'
-    response = client.http_request('GET', full_url=full_url, params={
-                                   'api-version': API_VERSION}, resource=AZURE_MANAGEMENT_RESOURCE)
-    value = response.get('value', [])
-
-    workspaces = []
-    for workspace in value:
-        workspace_context = {
-            'Name': workspace.get('name'),
-            'Location': workspace.get('location'),
-            'Tags': workspace.get('tags'),
-            'Provisioning State': workspace.get('properties', {}).get('provisioningState')
-        }
-        workspaces.append(workspace_context)
-
-    readable_output = tableToMarkdown('Workspaces List', workspaces, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix='AzureLogAnalytics.workspace',
-        outputs_key_field='id',
-        outputs=value,
-        raw_response=value,
-        readable_output=readable_output
-    )
-
-
-def resource_group_list_command(client: Client, args: Dict[str, Any]):
-    """
-    List all resource groups.
-    Args:
-        tag (str): Tag to filter by.
-        limit (int): Maximum number of resource groups to retrieve. Default is 50.
-    Returns:
-        List[dict]: API response from Azure.
-    """
-    limit = arg_to_number(args.get('limit')) or 50
-    tag = args.get('tag', '')
-
-    raw_responses = []
-    resource_groups: List[dict] = []
-
-    next_link = True
-    while next_link and len(resource_groups) < limit:
-        full_url = next_link if isinstance(next_link, str) else None
-        response = client.resource_group_list_request(tag=tag, limit=limit, full_url=full_url)
-
-        value = response.get('value', [])
-        next_link = full_url = response.get('nextLink', '')
-
-        raw_responses.extend(value)
-        for resource_group in value:
-            resource_group_context = {
-                'Name': resource_group.get('name'),
-                'Location': resource_group.get('location'),
-                'Tags': resource_group.get('tags'),
-                'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
-            }
-            resource_groups.append(resource_group_context)
-
-    raw_responses = raw_responses[:limit]
-    resource_groups = resource_groups[:limit]
-    readable_output = tableToMarkdown('Resource Groups List', resource_groups, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix='AzureLogAnalytics.ResourceGroup',
-        outputs_key_field='id',
-        outputs=raw_responses,
-        raw_response=raw_responses,
-        readable_output=readable_output
-    )
-
-
-def get_search_job_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """
-    Retrieve information about a search job in Azure Log Analytics.
-
-    Args:
-        client (Client): An instance of the Azure Log Analytics client.
-        args (dict): A dictionary containing the command arguments, including 'table_name'.
-
-    Returns:
-        CommandResults: A CommandResults object containing the retrieved search job information.
-    """
-    response = get_search_job(client, args['table_name'])
-
-    properties: dict = response["properties"]
-    schema: dict = properties["schema"]
-
-    # Extract search results from schema or properties, the response sometimes returns it in schema sometimes in properties
-    # https://github.com/MicrosoftDocs/azure-docs/issues/116671
-    searchResults: dict = schema.get("searchResults", {}) or properties.get("searchResults", {})
-
-    readable_output = {
-        "Name": schema["name"],
-        "Create Date": properties["createDate"],
-        "Plan": properties["plan"],
-        "Query": searchResults["query"],
-        "Description": searchResults["description"],
-        "startSearchTime": searchResults["startSearchTime"],
-        "endSearchTime": searchResults["endSearchTime"],
-        "provisioningState": properties["provisioningState"]
-    }
-    return CommandResults(
-        readable_output=tableToMarkdown("Search Job", readable_output),
-        outputs=response,
-        outputs_prefix="AzureLogAnalytics.SearchJob",
-        outputs_key_field="id"
-    )
-
-
 def delete_search_job_command(client: Client, args: dict[str, str]) -> CommandResults:
     table_name = args['table_name']
     if not table_name.endswith(TABLE_NAME_SUFFIX):
@@ -684,12 +682,6 @@ def main():
                 # due to the lack of ability to set refresh token to integration context
                 raise Exception("Please use !azure-log-analytics-test instead")
 
-        elif command == 'azure-log-analytics-subscriptions-list':
-            return_results(subscriptions_list_command(client))
-
-        elif command == 'azure-log-analytics-workspace-list':
-            return_results(workspace_list_command(client))
-
         elif command == 'azure-log-analytics-generate-login-url':
             return_results(generate_login_url(client.ms_client))
 
@@ -699,13 +691,19 @@ def main():
 
         elif command == 'azure-log-analytics-auth-reset':
             return_results(reset_auth())
-      
+
+        elif command == 'azure-log-analytics-subscriptions-list':
+            return_results(subscriptions_list_command(client))
+
+        elif command == 'azure-log-analytics-workspace-list':
+            return_results(workspace_list_command(client))
+
         elif command == 'azure-log-analytics-run-search-job':
             return_results(run_search_job_command(args, client))
-  
+
         elif command in commands:
             return_results(commands[command](client, args))
-  
+
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

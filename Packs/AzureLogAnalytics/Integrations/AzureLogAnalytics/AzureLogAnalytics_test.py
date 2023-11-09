@@ -72,6 +72,12 @@ MOCKED_EXECUTE_QUERY_OUTPUT = {
 BASE_URL = 'https://management.azure.com/subscriptions'
 SUBSCRIPTION_ID = 'subscriptionID'
 RESOURCE_GROUP_NAME = 'resourceGroupName'
+WORKSPACE_NAME = "workspaceName"
+TABLE_NAME = "test_SRCH"
+BASE_URL_SEARCH_JOB = (
+    f'{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups/{RESOURCE_GROUP_NAME}'
+    f'/providers/microsoft.operationalinsights/workspaces/{WORKSPACE_NAME}/tables/{TABLE_NAME}'
+)
 
 
 def get_azure_access_token_mock() -> dict:
@@ -88,14 +94,13 @@ def get_azure_access_token_mock() -> dict:
     }
 
 
-def authorization_mock(requests_mock):
+def authorization_mock(requests_mock: MockerCore) -> None:
     """
     Azure authorization API request mock.
 
     """
     authorization_url = 'https://login.microsoftonline.com/refresh_token/oauth2/token'
     requests_mock.post(authorization_url, json=get_azure_access_token_mock())
-
 
 
 CLIENT = Client(
@@ -107,7 +112,7 @@ CLIENT = Client(
     auth_code="auth_code",
     subscription_id=SUBSCRIPTION_ID,
     resource_group_name=RESOURCE_GROUP_NAME,
-    workspace_name="workspaceName",
+    workspace_name=WORKSPACE_NAME,
     verify=False,
     proxy=False,
     certificate_thumbprint=None,
@@ -327,8 +332,7 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
     assert expected_url in res
 
 
-
-def test_run_search_job_command(mocker: MockerFixture) -> None:
+def test_run_search_job_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
     """
     Given:
     -----
@@ -345,15 +349,13 @@ def test_run_search_job_command(mocker: MockerFixture) -> None:
     create the search job, and the second run checks the job status with a 'GET' request and prepares
     arguments for the next run. It ensures that the function behaves as expected in both cases.
     """
-    args = {"table_name": "test_SRCH", "query": "test", "limit": 50, "first_run": True}
+    authorization_mock(requests_mock)
+    args = {"table_name": TABLE_NAME, "query": "test", "limit": 50, "first_run": True}
 
-    mocker.patch.object(
-        ScheduledCommand,
-        "raise_error_if_not_supported",
-        return_value=None,
-    )
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+
     """ First run"""
-    mocker.patch.object(CLIENT, "http_request", return_value=None)  # first_run, 'PUT'
+    requests_mock.put(BASE_URL_SEARCH_JOB, status_code=202)  # first_run, 'PUT'
     response: CommandResults = run_search_job_command(args, CLIENT)
     assert response.readable_output == (
         "The command was sent successfully. "
@@ -362,11 +364,8 @@ def test_run_search_job_command(mocker: MockerFixture) -> None:
 
     """Secund run"""
     # 'GET' get status
-    mocker.patch.object(
-        CLIENT,
-        "http_request",
-        return_value={"properties": {"provisioningState": "Succeeded"}},
-    )
+    requests_mock.get(BASE_URL_SEARCH_JOB, json={"properties": {"provisioningState": "Succeeded"}})
+
     args_to_next_run = response.scheduled_command._args
     assert args_to_next_run == {
         "table_name": "test_SRCH",
@@ -389,7 +388,7 @@ def test_run_search_job_command(mocker: MockerFixture) -> None:
         pytest.param("case properties", id="searchResults key under properties key")
     ]
 )
-def test_get_search_job_command(mocker: MockerFixture, index: str) -> None:
+def test_get_search_job_command(requests_mock: MockerCore, index: str) -> None:
     """ The searchResults key could be under schema or properties key, this test checks both cases
     Given:
     ----
@@ -401,9 +400,10 @@ def test_get_search_job_command(mocker: MockerFixture, index: str) -> None:
     ----
         it should retrieve the search job information and return a readable output with the expected table.
     """
-    mock_data = util_load_json("test_data/get_search_job.json")
-    mocker.patch.object(CLIENT, "http_request", return_value=mock_data[index])
-    response = get_search_job_command(CLIENT, {"table_name": "test"})
+    authorization_mock(requests_mock)
+    mock_data = util_load_json("test_data/get_search_job.json")[index]
+    requests_mock.get(BASE_URL_SEARCH_JOB, json=mock_data)
+    response = get_search_job_command(CLIENT, {"table_name": TABLE_NAME})
     assert response.readable_output == (
         "### Search Job\n"
         "|Create Date|Description|Name|Plan|Query|endSearchTime|provisioningState|startSearchTime|\n"
@@ -413,7 +413,7 @@ def test_get_search_job_command(mocker: MockerFixture, index: str) -> None:
     )
 
 
-def test_delete_search_job_command(mocker: MockerFixture) -> None:
+def test_delete_search_job_command(requests_mock: MockerCore) -> None:
     """
     Given:
     -----
@@ -425,12 +425,14 @@ def test_delete_search_job_command(mocker: MockerFixture) -> None:
     ----
         it should delete the search job and return a readable output confirming the deletion.
     """
-    mocker.patch.object(CLIENT, "http_request", return_value=None)
-    response = delete_search_job_command(CLIENT, {"table_name": "test_SRCH"})
+    authorization_mock(requests_mock)
+
+    requests_mock.delete(BASE_URL_SEARCH_JOB, status_code=204)
+    response = delete_search_job_command(CLIENT, {"table_name": TABLE_NAME})
     assert response.readable_output == "Search job test_SRCH deleted successfully."
 
 
-def test_subscriptions_list_command(requests_mock):
+def test_subscriptions_list_command(requests_mock: MockerCore) -> None:
     """
     Given:
         - Mock response from API client
@@ -442,7 +444,7 @@ def test_subscriptions_list_command(requests_mock):
     from AzureLogAnalytics import subscriptions_list_command
 
     authorization_mock(requests_mock)
-    
+
     mock_response = load_mock_response('test_data/subscriptions_list.json')
     requests_mock.get(BASE_URL, json=mock_response)
 
@@ -453,7 +455,7 @@ def test_subscriptions_list_command(requests_mock):
     assert command_result.outputs[0].get('id') == '/subscriptions/1234'
 
 
-def test_workspace_list_command(requests_mock):
+def test_workspace_list_command(requests_mock: MockerCore) -> None:
     """
     Given:
         - Mock response from API client
@@ -476,7 +478,7 @@ def test_workspace_list_command(requests_mock):
     assert command_result.outputs[0].get('name') == 'Test2170'
 
 
-def test_resource_group_list_command(requests_mock):
+def test_resource_group_list_command(requests_mock: MockerCore) -> None:
     """
     Given:
         - limit argument
@@ -489,7 +491,7 @@ def test_resource_group_list_command(requests_mock):
     from AzureLogAnalytics import resource_group_list_command
 
     authorization_mock(requests_mock)
-   
+
     url = f'{BASE_URL}/{SUBSCRIPTION_ID}/resourcegroups'
     mock_response = load_mock_response('test_data/resource_group_list.json')
     requests_mock.get(url, json=mock_response)
