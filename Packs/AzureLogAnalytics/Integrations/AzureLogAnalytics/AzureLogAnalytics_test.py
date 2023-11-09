@@ -1,6 +1,5 @@
 import json
 import pytest
-import json
 from pathlib import Path
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore

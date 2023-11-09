@@ -671,7 +671,7 @@ def main():
             'azure-log-analytics-create-or-update-saved-search': create_or_update_saved_search_command,
             'azure-log-analytics-delete-saved-search': delete_saved_search_command,
             'azure-log-analytics-get-search-job': get_search_job_command,
-            'azure-log-analytics-delete-search-job': delete_search_job_command
+            'azure-log-analytics-delete-search-job': delete_search_job_command,
             'azure-log-analytics-resource-group-list': resource_group_list_command,
         }
 
