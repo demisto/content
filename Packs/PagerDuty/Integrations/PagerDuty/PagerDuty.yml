@@ -151,10 +151,8 @@ script:
     - auto: PREDEFINED
       description: When set to all, the since and until parameters and defaults are ignored.
       name: date_range
-      defaultValue: Not Set
       predefined:
       - all
-      - Not Set
     - description:
       name: page
     - description:

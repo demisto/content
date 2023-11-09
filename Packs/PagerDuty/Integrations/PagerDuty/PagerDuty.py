@@ -29,6 +29,8 @@ if not USE_PROXY:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
+INCIDENT_API_LIMIT = 100  # TODO try to find the docs
+
 '''PARAMS'''
 UTC_PARAM = '&time_zone=UTC'
 STATUSES = 'statuses%5B%5D'
@@ -573,15 +575,16 @@ def pagination_incidents(args: dict, url, param_dict) -> list[dict]:
     else:
         limit = arg_to_number(args.get("limit")) or 50
         offset = 0
-        api_limit = 10_000
-        for offset in range(0, limit - api_limit, api_limit):
-            pages += get_page(
-                limit=api_limit,
-                offset=offset)
+        api_limit = 100
+        if limit > api_limit:
+            for offset in range(0, limit - api_limit, api_limit):
+                pages += get_page(
+                    limit=api_limit,
+                    offset=offset)
 
-        # the remaining call can be less than OR equal the api_limit but not empty
-        limit = limit % api_limit or api_limit
-        offset += api_limit
+            # the remaining call can be less than OR equal the api_limit but not empty
+            limit = limit % api_limit or api_limit
+            offset += api_limit
 
     pages += get_page(
         limit=limit,
@@ -599,14 +602,14 @@ def get_incidents_command(args: dict[str, str]) -> dict:
         "incident_key": args.get("incident_key"),
         "user_ids": argToList(args.get("user_id")),
         "urgencies": args.get("urgencies"),
-        "date_range": args.get("date_range", "Not Set"),
+        "date_range": args.get("date_range"),
         "page": arg_to_number(args.get("page")),
         "page_size": arg_to_number(args.get("page_size")),
         "limit": arg_to_number(args.get("limit", 50))
 
     }
     remove_nulls_from_dictionary(param_dict)
-    url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(args.get("status"))
+    url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(args.get("status", 'triggered,acknowledged'))
     res: list[dict] = pagination_incidents(args, url, param_dict)
 
     return extract_incidents_data(res, INCIDENTS_LIST)
@@ -864,7 +867,7 @@ def main():
         elif command == 'fetch-incidents':
             fetch_incidents()
         elif command == 'PagerDuty-incidents':
-            demisto.results(get_incidents_command(**args))
+            demisto.results(get_incidents_command(args))
         elif command == 'PagerDuty-submit-event':
             demisto.results(submit_event_command(**args))
         elif command == 'PagerDuty-get-users-on-call':
