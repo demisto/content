@@ -725,41 +725,41 @@ def test_reset_enriching_fetch_mechanism(mocker):
     splunk.reset_enriching_fetch_mechanism()
     assert integration_context == {'wow': 'wow'}
 
-# TODO Uncomment unit test
-# @pytest.mark.parametrize(
-#     "drilldown_creation_time, asset_creation_time, enrichment_timeout, output",
-#     [
-#         (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
-#         (
-#             (datetime.utcnow() - timedelta(minutes=6)).isoformat(),
-#             datetime.utcnow().isoformat(),
-#             5,
-#             True,
-#         ),
-#     ],
-# )
-# def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout,
-#                                          output):
-#     """
-#     Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident we all
-#      the data gathered so far.
 
-#     Given:
-#     - Two enrichments that none of them exceeds the timeout.
-#     - An enrichment exceeding the timeout and one that does not exceeds the timeout.
+@pytest.mark.parametrize(
+    "drilldown_creation_time, asset_creation_time, enrichment_timeout, output",
+    [
+        (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
+        (
+            (datetime.utcnow() - timedelta(minutes=6)).isoformat(),
+            datetime.utcnow().isoformat(),
+            5,
+            True,
+        ),
+    ],
+)
+def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout,
+                                         output):
+    """
+    Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident we all
+     the data gathered so far.
 
-#     When:
-#     - is_enrichment_process_exceeding_timeout is called
+    Given:
+    - Two enrichments that none of them exceeds the timeout.
+    - An enrichment exceeding the timeout and one that does not exceeds the timeout.
 
-#     Then:
-#     - Return the expected result
-#     """
-#     mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS',
-#                         return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
-#     notable = splunk.Notable({splunk.EVENT_ID: 'id'})
-#     notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
-#     notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
-#     assert notable.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
+    When:
+    - is_enrichment_process_exceeding_timeout is called
+
+    Then:
+    - Return the expected result
+    """
+    mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS',
+                        return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
+    notable = splunk.Notable({splunk.EVENT_ID: 'id'})
+    notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
+    notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
+    assert notable.is_enrichment_process_exceeding_timeout(enrichment_timeout) is output
 
 
 INCIDENT_1 = {'name': 'incident1', 'rawJSON': json.dumps({})}
