@@ -1,6 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 start_time = demisto.args()['start_time'].replace('"', '')
 end_time = demisto.args()['end_time'].replace('"', '')
@@ -19,7 +19,7 @@ try:
         "Time.Start": start_time,
         "Time.End": end_time
     }
-
+    # just test
     return_outputs(hr, context, mins)
 
 
