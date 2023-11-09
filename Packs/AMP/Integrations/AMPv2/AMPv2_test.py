@@ -1567,7 +1567,7 @@ def test_vulnerability_list_command(
         ),
         (
             {
-                "last_fetch": "2023-11-07T14:34:11.000Z",
+                "last_fetch": "2023-11-07T16:34:11.000Z",
                 "previous_ids": ["6159258594551267592"]
             },
             1,
