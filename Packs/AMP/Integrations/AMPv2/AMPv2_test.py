@@ -1567,7 +1567,7 @@ def test_vulnerability_list_command(
         ),
         (
             {
-                "last_fetch": "2023-11-07T16:34:11.000Z",
+                "last_fetch": "test",
                 "previous_ids": ["6159258594551267592"]
             },
             1,
@@ -1600,6 +1600,7 @@ def test_fetch_incidents(
     mock_response_2 = load_mock_response("incidents_response_2.json")
 
     mocker.patch.object(Client, "event_list_request", side_effect=[mock_response_1, mock_response_2])
+    mocker.patch("AMPv2.date_to_timestamp", return_value=1699360451000)
 
     from AMPv2 import fetch_incidents
 
