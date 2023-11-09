@@ -1583,7 +1583,7 @@ def test_fetch_incidents(
     expeted_previous_ids: list[str],
 ):
     """
-    Given:  
+    Given:
         - args: last_run, limit.
     When:
         - run `fetch_incidents` function.
@@ -1621,7 +1621,7 @@ def test_fetch_incidents_with_no_new_incidents(
     mocker,
 ):
     """
-    Given:  
+    Given:
         - args with last_run that has previous_ids
           (Simulates a given situation where there are no new incidents).
     When:
@@ -1655,7 +1655,7 @@ def test_fetch_incidents_for_incident_severities(
     mocker,
 ):
     """
-    Given:  
+    Given:
         - the last_run empty and incident_severities without "Medium" severity.
     When:
         - run `fetch_incidents` function.
