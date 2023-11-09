@@ -49,6 +49,10 @@ def convert_jira_time_to_datetime(jira_time: str) -> datetime:
     return datetime.strptime(jira_time, JIRA_TIME_FORMAT)
 
 
+def jira_file_link(file_name: str) -> str:
+    return f"[^{file_name}]"
+
+
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
                               max_days_to_reopen: int,
