@@ -500,6 +500,7 @@ cloning-content-repo-last-upload-commit:
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   before_script:
+    - source .gitlab/helper_functions.sh
     - *create_artifacts_and_server_type_instance_folders
     - *get_last_upload_commit
   variables:
