@@ -489,7 +489,7 @@
   script:
     - python3 Tests/scripts/check_jobs_done.py --triggering-workflow "${WORKFLOW}" --job-done-files "${PIPELINE_JOBS_FOLDER}"
 
-.checkout-upload-commit-nightly-content:
+.cloning-content-repo-last-upload-commit:
   stage: .pre
   rules:
     - if: '$NIGHTLY'
