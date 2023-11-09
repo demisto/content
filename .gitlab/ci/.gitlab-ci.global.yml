@@ -508,6 +508,9 @@ cloning-content-repo-last-upload-commit:
     ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
     - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
-    - clone_repository "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content" "${LAST_UPLOAD_COMMIT}" 3 10 "master"
-    - echo "replacing Packs folder with production Packs folder"
+    - clone_repository "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content" "${CI_COMMIT_BRANCH}" 3 10 "master"
+    - cd content
+    - git checkout $LAST_UPLOAD_COMMIT
+    - cd -
+    - echo "Save the content repository into the artifacts ${ARTIFACTS_FOLDER}/content_production"
     - mv content ${ARTIFACTS_FOLDER}/content_production
