@@ -1,0 +1,40 @@
+{
+    "description": "Check Point HEC Incoming Mapper",
+    "feed": false,
+    "id": "CP HEC Incoming Mapper",
+    "mapping": {
+        "CheckPointHEC Security Event": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "CheckPointHEC Entity": {
+                    "simple": "entityId"
+                },
+                "Event ID": {
+                    "simple": "eventId"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "dbotMirrorId": {
+                    "simple": "eventId"
+                },
+                "External Link": {
+					"simple": "entityLink"
+                },
+                "details": {
+                    "simple": "description"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "CP HEC Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.9.0"
+}
