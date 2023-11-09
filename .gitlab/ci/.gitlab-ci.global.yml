@@ -228,7 +228,7 @@
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
       rm -rf ./Packs
       echo "copying production Packs folder"
-      cp -r ${ARTIFACTS_FOLDER}/content_production/Packs ./Packs
+      cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
       echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
