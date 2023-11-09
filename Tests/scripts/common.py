@@ -32,7 +32,7 @@ WORKFLOW_TYPES = {
 BUCKET_UPLOAD_BRANCH_SUFFIX = '-upload_test_branch'
 TOTAL_HEADER = "Total"
 NOT_AVAILABLE = "N/A"
-TEST_SUITE_JIRA_HEADERS: list[str] = ["Jira\nTicket", "Jira Ticket\nResolution"]
+TEST_SUITE_JIRA_HEADERS: list[str] = ["Jira\nTicket", "Jira\nTicket\nResolution"]
 TEST_SUITE_DATA_CELL_HEADER = "S/F/E/T"
 TEST_SUITE_CELL_EXPLANATION = "(Table headers: Skipped/Failures/Errors/Total)"
 NO_COLOR_ESCAPE_CHAR = "\033[0m"
@@ -93,9 +93,9 @@ class TestSuiteStatistics:
         return red_text(res_str) if show_as_error else green_text(res_str)
 
     def __str__(self):
-        return (f"{self.show_with_color(self.skipped)} / "
-                f"{self.show_with_color(self.failures, self.failures > 0)} / "
-                f"{self.show_with_color(self.errors, self.errors > 0)} / "
+        return (f"{self.show_with_color(self.skipped)}/"
+                f"{self.show_with_color(self.failures, self.failures > 0)}/"
+                f"{self.show_with_color(self.errors, self.errors > 0)}/"
                 f"{self.show_with_color(self.tests, self.errors + self.failures > 0)}")
 
 
@@ -116,10 +116,11 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         headers.extend([h.replace("\n", headers_multiline_char) for h in TEST_SUITE_JIRA_HEADERS])
     column_align = ["left"] * len(headers)
     fixed_headers_length = len(headers)
-    server_versions_list: list[str] = sorted(server_versions)
+    server_versions_list: list[str] = [server_version.replace(' ', headers_multiline_char)
+                                       for server_version in sorted(server_versions)]
     for server_version in server_versions_list:
         headers.append(
-            server_version if transpose else f"{server_version}{headers_multiline_char}({TEST_SUITE_DATA_CELL_HEADER})"
+            server_version if transpose else f"{server_version}{headers_multiline_char}{TEST_SUITE_DATA_CELL_HEADER}"
         )
         column_align.append("center")
     tabulate_data = [headers]
