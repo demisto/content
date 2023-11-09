@@ -1,13 +1,13 @@
 Full documentation for this integration is available at our [reference docs](https://xsoar.pan.dev/docs/reference/integrations/azure-sentinel).
-
+ 
 
 ## Authorize Cortex XSOAR for Azure Sentinel
 
 #### Self-Deployed Authentication
-Follow these steps for a self-deployed configuration:
+ Follow these steps for a self-deployed configuration:
 
 1. To use a self-configured Azure application, add a new Azure App Registration in the Azure Portal. To add the registration, see the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-2. In your registered app - create a new Client secret.
+ 2. In your registered app - create a new Client secret.
    1. Navigate in the Azure Portal to **App registrations** > your registered application > **Certificates & secrets** and click **+ New client secret**.
    2. Copy and save the new secret value to use in the add credentials step.
 3. Assign a role to the registered app.
@@ -19,7 +19,7 @@ Follow these steps for a self-deployed configuration:
 6. In the *Password* parameter, enter the secret value you created.
 7. Copy your tenant ID for the integration configuration usage.
 
-#### Azure Managed Identities Authentication
+ #### Azure Managed Identities Authentication
 ##### Note: This option is relevant only if the integration is running on Azure VM.
 Follow one of these steps for authentication based on Azure Managed Identities:
 
@@ -32,7 +32,7 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. Select the **Use Azure Managed Identities** checkbox.
 
 For information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
-## Configure the Server URL
+ ## Configure the Server URL
 If you have a dedicated server URL, enter it in the *Server Url* parameter. 
 
 ## Get the Additional Instance Parameters

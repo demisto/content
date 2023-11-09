@@ -1,6 +1,7 @@
-import demistomock as demisto  # noqa
-from CommonServerPython import *  # noqa
-from CommonServerUserPython import *  # noqa
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
 # IMPORTS
 
 import json
@@ -8,6 +9,7 @@ import urllib3
 import requests
 import dateparser
 import uuid
+
 
 from MicrosoftApiModule import *  # noqa: E402
 
@@ -56,10 +58,10 @@ MIRROR_DIRECTION_DICT = {
 }
 
 MIRROR_STATUS_DICT = {
-    'Undetermined': 'Other',
-    'TruePositive': 'Resolved',
-    'BenignPositive': 'Resolved',
-    'FalsePositive': 'False Positive',
+    'Undetermined': 'Other - Closed on Microsoft Sentinel',
+    'TruePositive': 'Resolved - Closed on Microsoft Sentinel',
+    'BenignPositive': 'Resolved - Closed on Microsoft Sentinel',
+    'FalsePositive': 'False Positive - Closed on Microsoft Sentinel',
 }
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
@@ -579,11 +581,12 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, re
 
 def close_in_xsoar(entries: List, remote_incident_id: str, close_reason: str, close_notes: str) -> None:
     demisto.debug(f'Incident is closed: {remote_incident_id}')
+    mapped_close_reason = MIRROR_STATUS_DICT.get(close_reason, f'{close_reason} - Closed on Microsoft Sentinel')
     entries.append({
         'Type': EntryType.NOTE,
         'Contents': {
             'dbotIncidentClose': True,
-            'closeReason': f'{MIRROR_STATUS_DICT.get(close_reason, close_reason)} - Closed on Microsoft Sentinel',
+            'closeReason': mapped_close_reason,
             'closeNotes': close_notes
         },
         'ContentsFormat': EntryFormat.JSON
@@ -1984,6 +1987,15 @@ def main():
 
         subscription_id = args.get('subscription_id') or params.get('subscriptionID', '')
         resource_group_name = args.get('resource_group_name') or params.get('resourceGroupName', '')
+
+        custom_mirror_status_json = params.get('custom_mirror_status_dict')
+        if custom_mirror_status_json:
+            try:
+                custom_mirror_status_dict = json.loads(custom_mirror_status_json)
+                global MIRROR_STATUS_DICT
+                MIRROR_STATUS_DICT = custom_mirror_status_dict
+            except json.decoder.JSONDecodeError:
+                demisto.error("Failed to parse *Custom Mirror Status Mapper* as JSON object")
 
         client = AzureSentinelClient(
             azure_cloud=get_azure_cloud(params, 'AzureSentinel'),

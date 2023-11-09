@@ -1,7 +1,4 @@
 category: Analytics & SIEM
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Azure Sentinel
   version: -1
@@ -34,6 +31,7 @@ configuration:
   required: false
   displaypassword: Tenant ID
   hiddenusername: true
+  display: ''
 - display: Tenant ID
   name: tenant_id
   type: 4
@@ -84,6 +82,7 @@ configuration:
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
   advanced: true
+  display: ''
 - display: Default Subscription ID
   name: subscriptionID
   required: true
@@ -167,8 +166,6 @@ configuration:
   display: Mirroring Direction
   name: mirror_direction
   type: 15
-  hidden:
-  - marketplacev2
   section: Collect
   required: false
   options:
@@ -181,8 +178,6 @@ configuration:
   display: Close Mirrored XSOAR Incident
   name: close_incident
   type: 8
-  hidden:
-  - marketplacev2
   section: Collect
   advanced: true
   required: false
@@ -191,11 +186,19 @@ configuration:
   display: Close Mirrored Microsoft Sentinel Ticket
   name: close_ticket
   type: 8
-  hidden:
-  - marketplacev2
   section: Collect
   advanced: true
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: 'Relevant only if *Close Mirrored XSOAR Incident* is checked. Optionally overwrite the default mapping for Close Reasons when incident is closed in the Sentinel. Example: `{"Undetermined": "Other","TruePositive": "Resolved","BenignPositive": "Resolved","FalsePositive": "False Positive"}`'
+  display: Custom Mirror Status Mapper
+  name: custom_mirror_status_dict
+  required: false
+  type: 0
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel
@@ -732,6 +735,7 @@ script:
       name: entity_kinds
       predefined:
       - ''
+      auto: PREDEFINED
     - description: 'Filter results using OData syntax. For example: properties/createdTimeUtc gt 2020-02-02T14:00:00Z`). For more information see the Azure documentation: https://docs.microsoft.com/bs-latn-ba/azure/search/search-query-odata-filter.'
       name: filter
     - description: The subscription ID.
@@ -1658,8 +1662,10 @@ script:
     name: get-remote-data
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     name: get-mapping-fields
+    arguments: []
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
+    arguments: []
   - arguments:
     - description: The rule ID. If not given, will return all rules.
       name: rule_id
@@ -2324,6 +2330,7 @@ script:
     - contextPath: AzureSentinel.Subscription.subscriptionPolicies
       description: The subscription policies of the resource.
       type: String
+    arguments: []
   - name: azure-sentinel-resource-group-list
     description: List all resource groups for a subscription.
     arguments:
@@ -2335,7 +2342,7 @@ script:
       type: String
     - name: limit
       description: The maximum number of resource groups to return.
-      defaultValue: 50
+      defaultValue: '50'
       type: Number
     outputs:
     - contextPath: AzureSentinel.ResourceGroup.id
@@ -2357,13 +2364,12 @@ script:
       description: The properties of the resource group.
       type: dictionary
   - description: Run this command if for some reason you need to rerun the authentication process.
-    execution: false
     name: azure-sentinel-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.79946
+  dockerimage: demisto/crypto:1.0.0.80214
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
   ismappable: true
@@ -2373,6 +2379,3 @@ tests:
 - TestAzureSentinelPlaybookV2
 - No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
 fromversion: 5.0.0
-defaultclassifier: Microsoft Sentinel - Classifier
-defaultmapperin: Microsoft Sentinel - Incoming Mapper
-defaultmapperout: Microsoft Sentinel - Outgoing Mapper
