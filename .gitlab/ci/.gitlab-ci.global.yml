@@ -502,6 +502,8 @@ cloning-content-repo-last-upload-commit:
   before_script:
     - *create_artifacts_and_server_type_instance_folders
     - *get_last_upload_commit
+  variables:
+    ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
     - source ./Tests/scripts/download_conf_repos.sh
     - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
