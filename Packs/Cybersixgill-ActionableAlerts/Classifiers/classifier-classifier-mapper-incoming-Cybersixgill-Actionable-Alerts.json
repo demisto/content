@@ -1,0 +1,23 @@
+{
+	"description": "",
+	"feed": false,
+	"id": "cybersixgill-actionable-alerts-1234",
+	"mapping": {
+		"Cybersixgill Actionable Alerts": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Suspicious domain": {
+					"simple": "additional_info.tables.[0].suspicious_domain"
+				},
+				"Triggered domain": {
+					"simple": "additional_info.tables.[0].triggered_domain"
+				}
+			}
+		}
+	},
+	"name": "classifier-mapper-incoming-Cybersixgill-Actionable-Alerts",
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
