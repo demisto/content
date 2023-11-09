@@ -1606,7 +1606,7 @@ def test_fetch_incidents(
     next_run, incidents = fetch_incidents(mock_client,
                                           last_run=last_run,
                                           first_fetch_time="2023-11-01T23:17:39.000Z",
-                                          incident_severities=["Low","Medium","High", "Critical"],
+                                          incident_severities=["Low", "Medium", "High", "Critical"],
                                           max_incidents_to_fetch=limit)
 
     # Validate response
@@ -1641,7 +1641,7 @@ def test_fetch_incidents_with_no_new_incidents(
                                               "previous_ids": ["6159258594551267595"]
                                           },
                                           first_fetch_time="2023-11-01T23:17:39.000Z",
-                                          incident_severities=["Low","Medium","High", "Critical"],
+                                          incident_severities=["Low", "Medium", "High", "Critical"],
                                           max_incidents_to_fetch=100)
 
     # Validate response
@@ -1668,10 +1668,10 @@ def test_fetch_incidents_for_incident_severities(
     from AMPv2 import fetch_incidents
 
     _, incidents = fetch_incidents(mock_client,
-                                          last_run={},
-                                          first_fetch_time="2023-11-01T23:17:39.000Z",
-                                          incident_severities=["Low", "High", "Critical"],
-                                          max_incidents_to_fetch=100)
+                                   last_run={},
+                                   first_fetch_time="2023-11-01T23:17:39.000Z",
+                                   incident_severities=["Low", "High", "Critical"],
+                                   max_incidents_to_fetch=100)
 
     # Validate response
     assert len(incidents) == 3
