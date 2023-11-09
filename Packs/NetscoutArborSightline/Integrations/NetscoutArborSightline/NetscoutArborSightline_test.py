@@ -142,7 +142,7 @@ def test_calculate_amount_of_incidents_raise_error(mocker):
 
     with pytest.raises(DemistoException,
                        match='Could not calculate page size, last page number was not found:\n'
-                             'https://content.demisto.works:57585/api/sp/v7/alerts/?'):
+                             'https://xsoar-example:57585/api/sp/v7/alerts/?'):
         client.calculate_amount_of_incidents('', {})
 
 
