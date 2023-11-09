@@ -1,4 +1,3 @@
-from optparse import Option
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import hashlib
@@ -291,7 +290,7 @@ def get_fetch_start_times(params, service, last_run_earliest_time, occurence_tim
     return occured_start_time, now
 
 
-def build_fetch_kwargs(params, occured_start_time, latest_time, search_offset, fetch_limit: int = FETCH_LIMIT):
+def build_fetch_kwargs(params, occured_start_time, latest_time, search_offset):
     occurred_start_time_fieldname = params.get("earliest_occurrence_time_fieldname", "earliest_time")
     occurred_end_time_fieldname = params.get("latest_occurrence_time_fieldname", "latest_time")
 
@@ -301,7 +300,7 @@ def build_fetch_kwargs(params, occured_start_time, latest_time, search_offset, f
     return {
         occurred_start_time_fieldname: occured_start_time,
         occurred_end_time_fieldname: latest_time,
-        "count": fetch_limit,
+        "count": FETCH_LIMIT,
         'offset': search_offset,
         "output_mode": OUTPUT_MODE_JSON,
     }
@@ -314,7 +313,7 @@ def build_fetch_query(params):
         for field in extract_fields.split(','):
             field_trimmed = field.strip()
             fetch_query = f'{fetch_query} | eval {field_trimmed}={field_trimmed}'
-    # Add "| stats count"
+
     return fetch_query
 
 
@@ -348,137 +347,55 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
 
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
 
-    # incidents = []
-    # notables = []
-    # incident_ids_to_add = []
-    # num_of_dropped = 0
-    # for item in reader:
-    #     if handle_message(item):
-    #         continue
-    #     extensive_log(f'[SplunkPy] Incident data before parsing to notable: {item}')
-    #     notable_incident = Notable(data=item)
-    #     inc = notable_incident.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
-    #     extensive_log(f'[SplunkPy] Incident data after parsing to notable: {inc}')
-    #     incident_id = create_incident_custom_id(inc)
+    incidents = []
+    notables = []
+    incident_ids_to_add = []
+    num_of_dropped = 0
+    for item in reader:
+        if handle_message(item):
+            continue
+        extensive_log(f'[SplunkPy] Incident data before parsing to notable: {item}')
+        notable_incident = Notable(data=item)
+        inc = notable_incident.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+        extensive_log(f'[SplunkPy] Incident data after parsing to notable: {inc}')
+        incident_id = create_incident_custom_id(inc)
 
-    #     if incident_id not in last_run_fetched_ids: 
-    #         incident_ids_to_add.append(incident_id)
-    #         incidents.append(inc)
-    #         notables.append(notable_incident)
-    #         extensive_log(f'[SplunkPy] - Fetched incident {item.get("event_id", incident_id)} to be created.')
-    #     else:
-    #         num_of_dropped += 1
-    #         extensive_log(f'[SplunkPy] - Dropped incident {item.get("event_id", incident_id)} due to duplication.')
-    incident_ids_to_add, incidents, notables = retrieve_notables_for_fetch(reader=reader, mapper=mapper,
-                                                                               comment_tag_from_splunk=comment_tag_from_splunk,
-                                                                               comment_tag_to_splunk=comment_tag_to_splunk,
-                                                                               last_run_fetched_ids=last_run_fetched_ids)
-    num_of_dropped = len(reader) - len(incident_ids_to_add)
+        if incident_id not in last_run_fetched_ids:
+            incident_ids_to_add.append(incident_id)
+            incidents.append(inc)
+            notables.append(notable_incident)
+            extensive_log(f'[SplunkPy] - Fetched incident {item.get("event_id", incident_id)} to be created.')
+        else:
+            num_of_dropped += 1
+            extensive_log(f'[SplunkPy] - Dropped incident {item.get("event_id", incident_id)} due to duplication.')
 
-    # current_epoch_time = int(time.time())
-    # extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
-    # for incident_id in incident_ids_to_add:
-    #     last_run_fetched_ids[incident_id] = current_epoch_time
-    # extensive_log(f'[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {len(last_run_fetched_ids)}')
-    # last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
-    # extensive_log('[SplunkPy] Size of last_run_fetched_ids after '
-    #               f'removing old IDs: {len(last_run_fetched_ids)}')
-    # extensive_log(f'[SplunkPy] SplunkPy - incidents fetched on last run = {last_run_fetched_ids}')
+    current_epoch_time = int(time.time())
+    extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
+    for incident_id in incident_ids_to_add:
+        last_run_fetched_ids[incident_id] = current_epoch_time
+    extensive_log(f'[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {len(last_run_fetched_ids)}')
+    last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
+    extensive_log('[SplunkPy] Size of last_run_fetched_ids after '
+                  f'removing old IDs: {len(last_run_fetched_ids)}')
+    extensive_log(f'[SplunkPy] SplunkPy - incidents fetched on last run = {last_run_fetched_ids}')
 
-    last_run_fetched_ids = update_fetched_ids_of_last_run(last_run_fetched_ids=last_run_fetched_ids,
-                                                          incident_ids_to_add=incident_ids_to_add,
-                                                          occurred_look_behind=occurred_look_behind)
     demisto.debug(f'SplunkPy - total number of new incidents found is: {len(incidents)}')
     demisto.debug(f'SplunkPy - total number of dropped incidents is: {num_of_dropped}')
 
-    digest_notables(enrich_notables=enrich_notables, incidents=incidents, notables=notables,
-                   last_run_data=last_run_data, cache_object=cache_object)
-    # if not enrich_notables or not cache_object:
-    #     demisto.incidents(incidents)
-    # else:
-    #     cache_object.not_yet_submitted_notables += notables
-    #     if DUMMY not in last_run_data:
-    #         # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
-    #         # fetch-incidents running as part of "Pull from instance" in Classification & Mapping, as we don't
-    #         # want to add data to the integration context (which will ruin the logic of the cache object)
-    #         last_run_data.update({DUMMY: DUMMY})
+    if not enrich_notables or not cache_object:
+        demisto.incidents(incidents)
+    else:
+        cache_object.not_yet_submitted_notables += notables
+        if DUMMY not in last_run_data:
+            # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
+            # fetch-incidents running as part of "Pull from instance" in Classification & Mapping, as we don't
+            # want to add data to the integration context (which will ruin the logic of the cache object)
+            last_run_data.update({DUMMY: DUMMY})
 
     # we didn't get any new incident or get less then limit
     # so the next run earliest time will be the latest_time from this iteration
     # should also set when num_of_dropped == FETCH_LIMIT
-    next_fetch_offset: Optional[int] = None
-    if not incidents:
-        # Increase page size to be limit * 2
-        # Do pagination with same start + end time as currently configured until:
-        # 1. No more pages are found (we can check by len(fetched_notables <= page_size)) - In such a case,
-        # we set the offset to be 0 and the time to be next_run_earliest_time
-        # 2. The number of fetched notables that were not fetched from before reaches the fetch limit - In such a case,
-        # we save the offset to be where we reached in the pagination process so the next round can continue.
-        # 3. 4 pagination iterations gone by, and we haven't fetched anything new
-        # Any new notables fetched will be digested and converted to incidents
-        do_pagination = True
-        new_page_size = FETCH_LIMIT * 2
-        useless_pages = 0
-        new_offset = search_offset + FETCH_LIMIT
-        pagination_incident_ids, pagination_incidents, pagination_notables = [], [], []
-        while do_pagination:
-            pagination_kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, new_offset,
-                                                fetch_limit=new_page_size)
-            pagination_fetch_query = build_fetch_query(params)
-
-            demisto.debug(f'[SplunkPy] pagination fetch query = {pagination_fetch_query}')
-            demisto.debug(f'[SplunkPy] pagination oneshot query args = {pagination_kwargs_oneshot}')
-            pagination_oneshotsearch_results = service.jobs.oneshot(pagination_fetch_query, **pagination_kwargs_oneshot)
-            pagination_reader = results.JSONResultsReader(pagination_oneshotsearch_results)
-            incident_ids_to_add, incidents, notables = retrieve_notables_for_fetch(reader=pagination_reader, mapper=mapper,
-                                                                        comment_tag_from_splunk=comment_tag_from_splunk,
-                                                                        comment_tag_to_splunk=comment_tag_to_splunk,
-                                                                        last_run_fetched_ids=last_run_fetched_ids)
-            pagination_incident_ids.extend(incident_ids_to_add), pagination_incidents.extend(incidents),\
-                pagination_notables.extend(notables)
-            num_of_dropped = len(pagination_reader) - len(incident_ids_to_add)
-            if len(pagination_reader) < new_page_size:
-                    # If entered here, this means that the current page has less than the maximum allowed capacity, which means
-                    # we don't have another page, therefore, stopping pagination
-                    do_pagination = False
-            if num_of_dropped == new_page_size:
-                # This means we dropped every fetched notables, which means we already fetched
-                # them, which makes this page useless
-                useless_pages += 1
-            else:
-                # This means some of the fetched notables are new, therefore, this page was not useless
-                useless_pages = 0
-            if useless_pages == 4:
-                # That means we paginated 4 times in a row and we dropped all notables, we should stop
-                do_pagination = False
-            if len(pagination_incident_ids) <= FETCH_LIMIT:
-                # Since we increased the page size to be FETCH_LIMIT * 2, that means we will fetch more notables than
-                # the fetch limit. If the number of notables that we need to digest from this page is less than the fetch limit,
-                # then the next page should start from the current offset + new_page_size, else, the next pagination will remain
-                # at the same page, since the page still has notables that we need to digest, but we weren't able to since we
-                # digested the maximum number of allowed notables in a current fetch round
-                new_offset = new_offset + new_page_size
-            else:
-                do_pagination = False
-                next_fetch_offset = new_offset
-                # Since we can only digest FETCH_LIMIT amount of fetched notables
-                pagination_incident_ids, pagination_incidents, pagination_notables = pagination_incident_ids[:FETCH_LIMIT], \
-                                                            pagination_incidents[:FETCH_LIMIT], \
-                                                            pagination_notables[:FETCH_LIMIT]
-            last_run_fetched_ids = update_fetched_ids_of_last_run(last_run_fetched_ids=last_run_fetched_ids,
-                                                          incident_ids_to_add=pagination_incident_ids,
-                                                          occurred_look_behind=occurred_look_behind)
-            digest_notables(enrich_notables=enrich_notables, incidents=pagination_incidents, notables=pagination_notables,
-                   last_run_data=last_run_data, cache_object=cache_object)
-            if next_fetch_offset:
-                new_last_run = {
-                    'time': occured_start_time,
-                    'latest_time': latest_time,
-                    'offset': next_fetch_offset,
-                    'found_incidents_ids': last_run_fetched_ids
-                }
-    # Should this be and or or?
-    elif (len(incidents) + num_of_dropped) < FETCH_LIMIT and not next_fetch_offset:
+    if not incidents or (len(incidents) + num_of_dropped) < FETCH_LIMIT:
         next_run_earliest_time = latest_time
         new_last_run = {
             'time': next_run_earliest_time,
@@ -501,81 +418,6 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
 
-
-def retrieve_notables_for_fetch(reader: list[dict[str, Any]], mapper: UserMappingObject, comment_tag_to_splunk: str,
-                    comment_tag_from_splunk: str, last_run_fetched_ids: dict[str, int]):
-    """Retrieve notables for fetch and create incidents from them.
-
-    Args:
-        reader (list[dict[str, Any]]): _description_
-        mapper (UserMappingObject): _description_
-        comment_tag_to_splunk (str): _description_
-        comment_tag_from_splunk (str): _description_
-        last_run_fetched_ids (dict[str, int]): _description_
-
-    Returns:
-        _type_: _description_
-    """
-    incidents = []
-    notables = []
-    incident_ids_to_add = []
-    num_of_dropped = 0
-    for item in reader:
-        if handle_message(item):
-            continue
-        extensive_log(f'[SplunkPy] Incident data before parsing to notable: {item}')
-        notable_incident = Notable(data=item)
-        inc = notable_incident.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
-        extensive_log(f'[SplunkPy] Incident data after parsing to notable: {inc}')
-        incident_id = create_incident_custom_id(inc)
-
-        if incident_id not in last_run_fetched_ids:
-            incident_ids_to_add.append(incident_id)
-            incidents.append(inc)
-            notables.append(notable_incident)
-            extensive_log(f'[SplunkPy] - Fetched incident {item.get("event_id", incident_id)} to be created.')
-        else:
-            num_of_dropped += 1
-            extensive_log(f'[SplunkPy] - Dropped incident {item.get("event_id", incident_id)} due to duplication.')
-    return incident_ids_to_add, incidents, notables
-
-def update_fetched_ids_of_last_run(last_run_fetched_ids: dict[str, int], incident_ids_to_add: list[str],
-                                   occurred_look_behind: int):
-    """Update the fetched ids of the last run, by adding new fetched ids, and remove old ones that
-    are not necessary anymore
-
-    Args:
-        last_run_fetched_ids (dict[str, int]): _description_
-        incident_ids_to_add (list[str]): _description_
-        occurred_look_behind (int): _description_
-
-    Returns:
-        _type_: _description_
-    """
-    new_last_run_fetched_ids = {}
-    current_epoch_time = int(time.time())
-    extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
-    for incident_id in incident_ids_to_add:
-        last_run_fetched_ids[incident_id] = current_epoch_time
-    extensive_log(f'[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {len(last_run_fetched_ids)}')
-    new_last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
-    extensive_log('[SplunkPy] Size of last_run_fetched_ids after '
-                  f'removing old IDs: {len(new_last_run_fetched_ids)}')
-    extensive_log(f'[SplunkPy] SplunkPy - incidents fetched on last run = {new_last_run_fetched_ids}')
-    return new_last_run_fetched_ids
-
-def digest_notables(enrich_notables: bool, incidents: list[dict[str, Any]],
-                   notables: list["Notable"], last_run_data: dict[str, Any],
-                   cache_object: "Cache" = None):
-    if not enrich_notables or not cache_object:
-        demisto.incidents(incidents)
-    else:
-        cache_object.not_yet_submitted_notables += notables
-        if DUMMY not in last_run_data:
-            # we add dummy data to the last run to differentiate between the fetch-incidents triggered to the
-            # fetch-incidents running as part of "Pull from instance" in Classification & Mapping, as we don't
-            # want to add data to the integration context (which will ruin the logic of the cache object)
-            last_run_data.update({DUMMY: DUMMY})
 
 def fetch_incidents(service: client.Service, mapper: UserMappingObject, comment_tag_to_splunk: str, comment_tag_from_splunk: str):
     if ENABLED_ENRICHMENTS:
