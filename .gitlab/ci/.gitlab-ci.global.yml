@@ -511,7 +511,7 @@ cloning-content-repo-last-upload-commit:
     - mkdir content_production
     - cd content_production
     - git init
-    - git remote add origin ${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/content.git
+    - git remote add origin https://${CI_SERVER_HOST}:-code.pan.run/${CI_PROJECT_NAMESPACE}/content.git
     - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
     - git checkout $LAST_UPLOAD_COMMIT
     - cd -
