@@ -66,31 +66,34 @@ def paginate(
 
 
 @pytest.mark.parametrize(
-    'paginate_kwargs, expected_kwargs, expected_PaginationConfig, real_key_to_pages',
+    'paginate_kwargs, expected_kwargs, real_key_to_pages',
     [
         (
-            {'Limit': 10}, 
-            {'Limit': 10, 'PaginationConfig': {'MaxItems': 10, 'PageSize': 10}},
-            {'MaxItems': 10, 'PageSize': 10},
+            {'key_to_pages': 'Accounts', 'Limit': 10, 'page_size': -1, 'next_token': 'token'},
+            {'PaginationConfig': {'MaxItems': 10, 'PageSize': 10, 'StartingToken': None}},
             'Accounts',
             ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'next_token')
         ),
         (
-            {'Limit': 10}, 
-            {'Limit': 10, 'PaginationConfig': {'MaxItems': 10, 'PageSize': 10}},
-            {'MaxItems': 10, 'PageSize': 10},
+            {'key_to_pages': 'Accounts', 'page_size': 10, 'next_token': 'token'},
+            {'PaginationConfig': {'MaxItems': 10, 'PageSize': 10, 'StartingToken': 'token'}},
             'Accounts',
             ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 'next_token')
         ),
+        (
+            {'key_to_pages': 'Accounts', 'page_size': 13, 'next_token': 'token', 'another_arg': 'value'},
+            {'PaginationConfig': {'MaxItems': 13, 'PageSize': 13, 'StartingToken': 'token'}, 'another_arg': 'value'},
+            'Accounts',
+            ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 'next_token')
+        )
     ]
 )
-def test_paginate(paginate_kwargs, expected_kwargs, expected_PaginationConfig, real_key_to_pages, expected_output):
-
+def test_paginate(paginate_kwargs, expected_kwargs, real_key_to_pages, expected_output):
+    
     from AWSOrganizations import paginate
 
-    def mock_paginate(PaginationConfig, **kwargs):
+    def mock_paginate(**kwargs):
         assert kwargs == expected_kwargs
-        assert PaginationConfig == expected_PaginationConfig
         return (
             {
                 'NextToken': 'next_token',
