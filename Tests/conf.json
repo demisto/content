@@ -3279,14 +3279,14 @@
             "playbookID": "QRadar Indicator Hunting Test",
             "instance_names": "QRadar_v3",
             "timeout": 12000,
-            "fromversion": "6.0.0",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar - Get Offense Logs Test",
             "instance_names": "QRadar_v3",
             "timeout": 600,
-            "fromversion": "6.0.0",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "SetAndHandleEmpty test",
@@ -3868,7 +3868,7 @@
             "instance_names": "QRadar_v3",
             "fromversion": "6.0.0",
             "timeout": 600,
-            "is_mockable": false,
+            "is_mockable": false
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
