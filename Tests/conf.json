@@ -5579,7 +5579,7 @@
             "is_mockable": false
         },
         {
-            "integrations": "AWS-Organizations",
+            "integrations": "AWS - Organizations",
             "playbookID": "Test - AWS_Organizations"
         },
         {

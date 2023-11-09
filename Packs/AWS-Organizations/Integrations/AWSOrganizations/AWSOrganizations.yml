@@ -1,6 +1,6 @@
 category: Identity and Access Management
 commonfields:
-  id: AWS-Organizations
+  id: AWS - Organizations
   version: -1
 configuration:
 - display: Role Arn
@@ -44,8 +44,8 @@ configuration:
   type: 8
   advanced: true
 description: Manage Amazon Web Services accounts and their resources.
-display: AWS-Organizations
-name: AWS-Organizations
+display: AWS - Organizations
+name: AWS - Organizations
 script:
   commands:
   - name: aws-org-root-list

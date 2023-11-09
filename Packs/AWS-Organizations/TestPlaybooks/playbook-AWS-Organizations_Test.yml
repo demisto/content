@@ -75,7 +75,7 @@ tasks:
       id: 7c12f573-55c3-4d30-8aa3-52db836f814c
       version: -1
       name: aws-org-root-list
-      script: AWS-Organizations|||aws-org-root-list
+      script: AWS - Organizations|||aws-org-root-list
       type: regular
       iscommand: true
       brand: ""
@@ -146,10 +146,10 @@ tasks:
       id: 57aca9a2-735f-4074-82c9-df47828a69f8
       version: -1
       name: aws-org-children-list
-      script: AWS-Organizations|||aws-org-children-list
+      script: AWS - Organizations|||aws-org-children-list
       type: regular
       iscommand: true
-      brand: AWS-Organizations
+      brand: AWS - Organizations
     nexttasks:
       '#none#':
       - "5"
@@ -222,10 +222,10 @@ tasks:
       id: fb31de64-28ca-41f1-8a40-eff9c8d65993
       version: -1
       name: aws-org-parent-list
-      script: AWS-Organizations|||aws-org-parent-list
+      script: AWS - Organizations|||aws-org-parent-list
       type: regular
       iscommand: true
-      brand: AWS-Organizations
+      brand: AWS - Organizations
     nexttasks:
       '#none#':
       - "7"
@@ -296,10 +296,10 @@ tasks:
       id: ab378f36-23fb-4443-88e1-b63631b6bf9a
       version: -1
       name: aws-org-organization-unit-get
-      script: AWS-Organizations|||aws-org-organization-unit-get
+      script: AWS - Organizations|||aws-org-organization-unit-get
       type: regular
       iscommand: true
-      brand: AWS-Organizations
+      brand: AWS - Organizations
     nexttasks:
       '#none#':
       - "9"
@@ -370,10 +370,10 @@ tasks:
       id: e4bc26b4-c479-4e16-8560-da820aac249f
       version: -1
       name: aws-org-account-list
-      script: AWS-Organizations|||aws-org-account-list
+      script: AWS - Organizations|||aws-org-account-list
       type: regular
       iscommand: true
-      brand: AWS-Organizations
+      brand: AWS - Organizations
     nexttasks:
       '#none#':
       - "11"
@@ -441,7 +441,7 @@ tasks:
       id: 354c4738-967d-4ad0-8db5-468f1efb8ac0
       version: -1
       name: aws-org-organization-get
-      script: AWS-Organizations|||aws-org-organization-get
+      script: AWS - Organizations|||aws-org-organization-get
       type: regular
       iscommand: true
       brand: ""
