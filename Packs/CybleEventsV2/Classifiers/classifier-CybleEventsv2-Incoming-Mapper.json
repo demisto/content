@@ -1,0 +1,98 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "CybleEventsv2-Incoming-Mapper",
+    "mapping": {
+        "Cyble Vision Alert V2": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Additional Data": {
+                    "simple": "data_message"
+                },
+                "CybleEventsV2 Application": {
+                    "simple": "application"
+                },
+                "CybleEventsV2 CE Filename": {
+                    "simple": "filename"
+                },
+                "CybleEventsV2 CE Username": {
+                    "simple": "username"
+                },
+                "CybleEventsV2 Card Brand": {
+                    "simple": "card_brand"
+                },
+                "CybleEventsV2 Card CVV": {
+                    "simple": "card_cvv"
+                },
+                "CybleEventsV2 Card Expiry": {
+                    "simple": "card_expiry"
+                },
+                "CybleEventsV2 Card Level": {
+                    "simple": "card_level"
+                },
+                "CybleEventsV2 Card No.": {
+                    "simple": "card_no"
+                },
+                "CybleEventsV2 Card Type": {
+                    "simple": "card_type"
+                },
+                "Event ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_id",
+                        "transformers": []
+                    }
+                },
+                "Event Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_type",
+                        "transformers": []
+                    }
+                },
+                "CybleEventsV2 Keyword": {
+                    "simple": "keyword"
+                },
+                "CybleEventsV2 Password": {
+                    "simple": "password"
+                },
+                "CybleEventsV2 URL": {
+                    "simple": "url"
+                },
+                "dbotMirrorDirection": {
+                    "simple": ".='Out'"
+                },
+                "dbotMirrorId": {
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirrorInstance"
+                },
+                "dbotMirrorTags": {
+                    "simple": ".=['severity','status']"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "simple": "created_at"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "CybleEventsv2-Incoming-Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
