@@ -660,7 +660,7 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     """
     closing_field = 'classification'
     closing_reason = delta.get(closing_field, data.get(closing_field, ''))
-    return demisto.params().get('close_ticket') and data.get('status', '') != 'Closed' and bool(closing_reason)
+    return demisto.params().get('close_ticket') and bool(closing_reason)
 
 
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
