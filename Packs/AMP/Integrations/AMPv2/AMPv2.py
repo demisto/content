@@ -3902,5 +3902,4 @@ def main() -> None:
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
-    # main()
-    print(timestamp_to_datestring(1699311891000, ISO_8601_FORMAT, is_utc=False))
+    main()
