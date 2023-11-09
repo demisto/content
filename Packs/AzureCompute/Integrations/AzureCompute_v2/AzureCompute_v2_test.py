@@ -1,8 +1,8 @@
 import pytest
 import json
 
-from AzureCompute_v2 import MsGraphClient, screen_errors, assign_image_attributes, list_vms_command,\
-    create_vm_parameters, get_network_interface_command, get_public_ip_details_command,\
+from AzureCompute_v2 import MsGraphClient, screen_errors, assign_image_attributes, list_vms_command, \
+    create_vm_parameters, get_network_interface_command, get_public_ip_details_command, \
     get_all_public_ip_details_command, create_nic_command, get_single_ip_details_from_list_of_ip_details
 
 # test_create_vm_parameters data:
