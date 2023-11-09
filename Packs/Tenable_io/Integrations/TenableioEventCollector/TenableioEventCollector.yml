@@ -97,17 +97,11 @@ configuration:
   required: false
   advanced: true
   section: Collect - assets
-#- display: Collect only assets seen in last
-#  name: scanned_from
-#  required: false
-#  advanced: true
-#  type: 0
-#  section: Collect - assets
 - name: scanned_from
   display: Collect only assets seen in last
   type: 21
   required: false
-  defaultvalue: 'all'
+  defaultvalue: '107'
   options:
   - 'all'
   - '30'
@@ -171,9 +165,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of the assets per chunk.
+      description: maximum amount of assets to export.
       isArray: false
-      name: chunk_size
+      name: limit
       required: false
       secret: false
     - name: hide_polling_output

@@ -201,7 +201,7 @@ def handle_assets(assets_last_run, assets):
         assets = list(filter(lambda asset: asset.get('id') != last_asset_id, assets))
 
     for asset in assets:
-        created_at = round(get_timestamp(arg_to_datetime(asset.get('created_at'))))
+        created_at = round(get_timestamp(arg_to_datetime(asset.get('last_scan_time'))))
         if created_at > last_fetch:
             last_fetch = created_at
             assets_last_run.update({"asset_id": asset.get("id")})
@@ -402,7 +402,7 @@ def get_assets_command(args: Dict[str, Any], client: Client):
 
     """
     fetch_from = arg_to_number(args.get('last_fetch'))
-    max_fetch = arg_to_number(args.get('chunk_size')) or MAX_CHUNK_SIZE
+    max_fetch = arg_to_number(args.get('limit')) or -1
     export_uuid = args.get('export_uuid')
     assets = []
     if not export_uuid:
@@ -411,7 +411,7 @@ def get_assets_command(args: Dict[str, Any], client: Client):
     status, chunks_available = client.get_export_assets_status(export_uuid=export_uuid)
 
     # if getting chunks from API has finished, or we reached the max amount required
-    if status == 'FINISHED' or MAX_CHUNK_SIZE * len(chunks_available) < max_fetch:
+    if status == 'FINISHED' or MAX_CHUNK_SIZE * len(chunks_available) > max_fetch:
         for chunk_id in chunks_available:
             assets.extend(client.download_assets_chunk(export_uuid=export_uuid, chunk_id=chunk_id))
         readable_output = tableToMarkdown('Assets List:', assets,
@@ -593,7 +593,8 @@ def main() -> None:  # pragma: no cover
     # transform minutes to seconds
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
     first_assets_fetch: datetime = arg_to_datetime(params.get("first_fetch_time_assets", "107 days"))
-
+    demisto.debug(f"scanned from is: {params.get('scanned_from')}")
+    scanned_since: datetime = arg_to_datetime(params.get('scanned_from', '107') + ' days')
     demisto.debug(f'Command being called is {command}')
     try:
         headers = {'X-ApiKeys': f'accessKey={access_key}; secretKey={secret_key}',
@@ -648,7 +649,7 @@ def main() -> None:  # pragma: no cover
 
             # starting new fetch for assets, not polling from prev call
             if not assets_last_run.get('export_uuid'):
-                generate_assets_export_uuid(client, first_assets_fetch, assets_last_run)
+                generate_assets_export_uuid(client, scanned_since, assets_last_run)
 
             assets, new_assets_last_run = fetch_assets_command(client, assets_last_run, max_fetch)
             demisto.debug(f"new lastrun assets: {new_assets_last_run}")
