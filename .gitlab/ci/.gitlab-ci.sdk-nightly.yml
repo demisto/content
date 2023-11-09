@@ -14,7 +14,7 @@
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
   - section_start "Upload Entities to Cortex XSOAR" --collapsed
   - demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
-  - demisto-sdk upload -i Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml --insecure
+  - demisto-sdk upload -i Packs/AzureSentinel/Integrations/AzureSentinel/AzureSentinel.yml --insecure
   - demisto-sdk upload -i Packs/AzureSentinel/IncidentTypes/incidenttype-Microsoft_Sentinel_Incident.json --insecure
   - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
   - section_end "Upload Entities to Cortex XSOAR"
