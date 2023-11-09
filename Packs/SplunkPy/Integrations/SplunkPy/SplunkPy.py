@@ -339,6 +339,14 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     latest_time = last_run_latest_time or now
     kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, search_offset)
     fetch_query = build_fetch_query(params)
+    if not last_run_latest_time:
+        # If we are not doing pagination, then it means we are starting a new round of pagination,
+        # and we need to exclude the previous fetched incidents by adding the `where not event_id in`
+        fetch_query = f'{fetch_query} | where not event_id in ({", ".join(last_run_fetched_ids)})' if last_run_fetched_ids \
+            else fetch_query
+    elif last_fetch_query := last_run_data.get('last_fetch_query'):
+        # Use the same fetch query as from the last fetch if doing pagination
+        fetch_query = last_fetch_query
 
     demisto.debug(f'[SplunkPy] fetch query = {fetch_query}')
     demisto.debug(f'[SplunkPy] oneshot query args = {kwargs_oneshot}')
@@ -395,23 +403,38 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     # we didn't get any new incident or get less then limit
     # so the next run earliest time will be the latest_time from this iteration
     # should also set when num_of_dropped == FETCH_LIMIT
-    if not incidents or (len(incidents) + num_of_dropped) < FETCH_LIMIT:
-        next_run_earliest_time = latest_time
-        new_last_run = {
+    # if not incidents or (len(incidents) + num_of_dropped) < FETCH_LIMIT:
+    #     next_run_earliest_time = latest_time
+    #     new_last_run = {
+    #         'time': next_run_earliest_time,
+    #         'latest_time': None,
+    #         'offset': 0,
+    #         'found_incidents_ids': last_run_fetched_ids
+    #     }
+    
+    if (len(incidents) + num_of_dropped) < FETCH_LIMIT:
+            # This means that we are done with pagination, therefore, the next round should
+            # use the original fetch query, and add `where not event_id in {last_run_fetched_ids}`
+            next_run_earliest_time = latest_time
+            new_last_run = {
             'time': next_run_earliest_time,
             'latest_time': None,
             'offset': 0,
             'found_incidents_ids': last_run_fetched_ids
-        }
+            }
 
     # we get limit notables from splunk
     # we should fetch the entire queue with offset - so set the offset, time and latest_time for the next run
     else:
+        # We should let the next fetch use the same query as the one in the current fetch
+        # Possible solution is to save the last query and if `latest_time != None`, use it
         new_last_run = {
             'time': occured_start_time,
             'latest_time': latest_time,
             'offset': search_offset + FETCH_LIMIT,
-            'found_incidents_ids': last_run_fetched_ids
+            'found_incidents_ids': last_run_fetched_ids,
+            # Since the next fetch will continue the pagination, we use the same fetch query
+            'last_fetch_query': fetch_query
         }
     demisto.debug(f'SplunkPy - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}')
 
