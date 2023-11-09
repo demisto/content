@@ -186,7 +186,7 @@
           "type_id": 1002,
           "id": 1925,
           "last_reported_by": "IDENTITY:0",
-          "value": "ec2-54-245-171-52.us-west-2.compute.amazonaws.com"
+          "value": "ec2.us.compute-1.amazonaws.com"
         }
       ],
       "domain_id": 0
@@ -224,7 +224,7 @@
           "type_id": 1002,
           "id": 1939,
           "last_reported_by": "IDENTITY:0",
-          "value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com"
+          "value": "ec2.us.compute-1.amazonaws.com"
         }
       ],
       "domain_id": 0
@@ -264,7 +264,7 @@
           "type_id": 1002,
           "id": 1939,
           "last_reported_by": "IDENTITY:0",
-          "value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com"
+          "value": "ec2.us.compute-1.amazonaws.com"
         }
       ],
       "domain_id": 0

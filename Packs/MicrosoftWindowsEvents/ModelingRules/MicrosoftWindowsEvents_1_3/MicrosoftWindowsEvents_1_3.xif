@@ -1,5 +1,5 @@
 [MODEL: dataset = microsoft_windows_raw]
-filter provider_name contains "Microsoft-Windows-Security-" or channel = "System" or channel = "Application" or provider_name = "Microsoft-Windows-PowerShell" or provider_name = "Microsoft-Windows-TaskScheduler"
+filter provider_name contains "Microsoft-Windows-Security-" or channel = "System" or channel = "Application" or provider_name = "Microsoft-Windows-PowerShell" or provider_name = "Microsoft-Windows-TaskScheduler" or provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security"
 | alter
         IpPort = json_extract_scalar(event_data ,"$.IpPort"),
         LogLevel = lowercase(log_level),
@@ -11,8 +11,12 @@ filter provider_name contains "Microsoft-Windows-Security-" or channel = "System
         message_task = arrayindex(regextract(message, "task \"([^\"]+)\""),0),
         message_instance = arrayindex(regextract(message, "instance \"([^\"]+)\""),0),
         message_processID = arrayindex(regextract(message, "process ID \"([^\"]+)\""),0),
-        message_action = arrayindex(regextract(message, "action \"([^\"]+)\""),0)
+        message_action = arrayindex(regextract(message, "action \"([^\"]+)\""),0),
+        rule_name1 = arraystring(regextract(message, "Rule\s+Name\:\s+(.*)\b\s+Modifying\s*User:"), ""),
+    	rule_name2 = arraystring(regextract(message, "Rule\s*Name\:\s+(.*[^\w\s])\s+Modifying\s*User"), "")
 | alter
+    	check_rule_name1 = if(rule_name1 ~= "\S", rule_name1, null),
+    	check_rule_name2 = if(rule_name2 ~= "\S", rule_name2, null),
         check_Command_Path = if(Command_Path ~= "\S", Command_Path, null),
         check_Command_Name = if(Command_Name ~= "\S", Command_Name, null),
         check_Script_Name = if(Script_Name ~= "\S", Script_Name, null),
@@ -21,19 +25,24 @@ filter provider_name contains "Microsoft-Windows-Security-" or channel = "System
         check_message_task = if(message_task ~= "\S", message_task, null),
         check_message_processID = if(message_processID ~= "\S", message_processID, null),
         check_message_action = if(message_action ~= "\S", message_action, null),
+        check_fw_description = if(provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security", arraystring(regextract(message, "^[^\.]+\."), ""), null),
+        check_fw_sid = if(provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security", arraystring(regextract(message, "Modifying\s*User\:\s+(.*)\b\s+Modifying\s+Application:"), ""), null),
+        check_fw_process_name = if(provider_name = "Microsoft-Windows-Windows Firewall With Advanced Security", arraystring(regextract(message, "Modifying\s*Application:\s+\S+\\([^\.]+\.exe)"), ""), null),
         get_message_instance_exe_path = if(message_instance ~= "exe", message_instance, null),
         get_message_instance_exe_process = if(message_instance ~= "exe", arrayindex(regextract(message_instance, "\\([a-zA-Z0-9]+\.exe)$"),0), null)
 | alter
         EventType = coalesce(event_action, task, check_message_task, "")      
 | alter
+        xdm.source.process.executable.directory = arraystring(regextract(message, "Modifying\s*Application:\s+(\S+)"), ""),
+        xdm.network.rule = coalesce(check_rule_name1, check_rule_name2),
         xdm.source.ipv4 = coalesce(if(json_extract_scalar(event_data ,"$.IpAddress") contains "." and json_extract_scalar(event_data ,"$.IpAddress") not contains ":",json_extract_scalar(event_data ,"$.IpAddress"),json_extract_scalar(event_data ,"$.IpAddress") contains ":" and json_extract_scalar(event_data ,"$.IpAddress") contains ".", arrayindex(regextract(json_extract_scalar(event_data ,"$.IpAddress"),"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),null),if(channel="System",json_extract_scalar(event_data ,"$.Ipaddress"))),
         xdm.source.ipv6 = if(json_extract_scalar(event_data ,"$.IpAddress") contains ":" and json_extract_scalar(event_data ,"$.IpAddress") not contains ".",json_extract_scalar(event_data ,"$.IpAddress"),json_extract_scalar(event_data ,"$.IpAddress") contains ":" and json_extract_scalar(event_data ,"$.IpAddress") contains ".", arrayindex(regextract(json_extract_scalar(event_data ,"$.IpAddress"),"(.*?)\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),0),null),
         xdm.source.port = if(IpPort~="\d+",to_integer(IpPort),null),
         xdm.source.user.username = coalesce(if(json_extract_scalar(event_data ,"$.SubjectUserName") not contains "*$",json_extract_scalar(event_data ,"$.SubjectUserName")),if(json_extract_scalar(user, "$.name") not contains "*$",json_extract_scalar(user, "$.name")),if(channel="Application" and json_extract_scalar(event_data ,"$.param3") contains "*\\*",json_extract_scalar(event_data ,"$.param3")),if(channel="Application",json_extract_scalar(event_data ,"$.User"))),
         xdm.source.process.executable.path = coalesce(get_message_instance_exe_path, json_extract_scalar(event_data ,"$.ProcessName"), if(channel="Application",json_extract_scalar(event_data ,"$.Module")), if(check_Script_Path != null and check_Script_Path != "", check_Script_Path), if(check_Command_Path != null and check_Command_Path != "", check_Command_Path), process_path),
-        xdm.source.process.name = coalesce(get_message_instance_exe_process, arrayindex(regextract(json_extract_scalar(event_data ,"$.ProcessName"),"\\([^\\]+)$"),0), if(channel="System",json_extract_scalar(event_data ,"$.ProcessName")), process_name),
+        xdm.source.process.name = coalesce(check_fw_process_name, get_message_instance_exe_process, arrayindex(regextract(json_extract_scalar(event_data ,"$.ProcessName"),"\\([^\\]+)$"),0), if(channel="System",json_extract_scalar(event_data ,"$.ProcessName")), process_name),
         xdm.source.application.name = coalesce(if(channel="System", json_extract_scalar(event_data ,"$.param1")), arrayindex(regextract(message, "HostApplication=([\S]+)"), 0)),
-        xdm.source.user.identifier = coalesce(check_message_user_sid, json_extract_scalar(event_data ,"$.SubjectUserSid"),json_extract_scalar(user ,"$.identifier"),json_extract_scalar(user,"$.SubjectUserSid"),if(channel="System",json_extract_scalar(event_data ,"$.UserSid"))),
+        xdm.source.user.identifier = coalesce(check_message_user_sid, json_extract_scalar(event_data ,"$.SubjectUserSid"),json_extract_scalar(user ,"$.identifier"),json_extract_scalar(user,"$.SubjectUserSid"), check_fw_sid, if(channel="System",json_extract_scalar(event_data ,"$.UserSid"))),
         xdm.target.user.identifier = json_extract_scalar(event_data ,"$.TargetUserSid"),
         xdm.source.user.domain = coalesce(json_extract_scalar(event_data ,"$.SubjectDomainName"),json_extract_scalar(user_data,"$.SubjectDomainName"),json_extract_scalar(user,"$.domain")),
         xdm.target.user.domain = coalesce(json_extract_scalar(event_data ,"$.TargetDomainName"),if(channel="System",json_extract_scalar(event_data ,"$.DCName"))),
@@ -46,7 +55,7 @@ filter provider_name contains "Microsoft-Windows-Security-" or channel = "System
         xdm.observer.type = provider_name,
         xdm.event.log_level = if(LogLevel="information", XDM_CONST.LOG_LEVEL_INFORMATIONAL,LogLevel="error",XDM_CONST.LOG_LEVEL_ERROR, LogLevel="warning",XDM_CONST.LOG_LEVEL_WARNING, LogLevel="critical",XDM_CONST.LOG_LEVEL_CRITICAL,to_string(coalesce(opcode,log_level))),
         xdm.event.description = coalesce(message,if(channel="System",json_extract_scalar(event_data ,"$.updateTitle")),if(channel="Application",json_extract_scalar(event_data ,"$.param3"))),
-        xdm.alert.description = if(channel="System",coalesce(json_extract_scalar(event_data ,"$.error"),json_extract_scalar(event_data ,"$.ErrorMessage"))),
+        xdm.alert.description = if(channel="System", json_extract_scalar(event_data ,"$.error"), check_fw_description != null, check_fw_description, json_extract_scalar(event_data ,"$.ErrorMessage")),
         xdm.alert.original_alert_id = activity_id,
         xdm.source.process.pid = coalesce(to_integer(check_message_processID), to_integer(process_pid),if(channel="System",to_integer(json_extract_scalar(event_data ,"$.ProcessID")))),
         xdm.source.process.thread_id = to_integer(process_thread_id),
