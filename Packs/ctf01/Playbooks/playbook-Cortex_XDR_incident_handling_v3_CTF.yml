@@ -380,122 +380,6 @@ tasks:
           "y": 2080
         }
       }
-  "35":
-    continueonerrortype: ""
-    id: "35"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "23"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      CVE:
-        complex:
-          accessor: ID
-          root: CVE
-      Domain:
-        complex:
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: Domain.Name
-              operator: isNotEqualString
-              right:
-                iscontext: true
-                value:
-                  simple: inputs.XDRDomain
-          root: Domain.Name
-          transformers:
-          - operator: uniq
-      Email:
-        complex:
-          accessor: Email.Address
-          root: Account
-          transformers:
-          - operator: uniq
-      Hostname:
-        complex:
-          accessor: Hostname
-          root: Endpoint
-          transformers:
-          - operator: uniq
-      IP:
-        complex:
-          accessor: Address
-          root: IP
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          accessor: MD5
-          root: File
-          transformers:
-          - operator: uniq
-      ResolveIP:
-        simple: "False"
-      SHA1:
-        complex:
-          accessor: SHA1
-          root: File
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          accessor: SHA256
-          root: File
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: URL.Data
-              operator: isNotEqualString
-              right:
-                iscontext: true
-                value:
-                  simple: incident.xdrurl
-          root: URL.Data
-          transformers:
-          - operator: uniq
-      Username:
-        complex:
-          accessor: Username
-          root: Account
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Enrich entities using one or more integrations.
-      id: 727e5f68-a09c-45b0-8fd3-29d276bbf5e5
-      iscommand: false
-      name: Entity Enrichment - Generic v3
-      playbookId: Entity Enrichment - Generic v3
-      type: playbook
-      version: -1
-    taskid: 727e5f68-a09c-45b0-8fd3-29d276bbf5e5
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1210
-        }
-      }
   "36":
     continueonerrortype: ""
     id: "36"
@@ -504,7 +388,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "35"
+      - "23"
     note: false
     quietmode: 0
     scriptarguments:
