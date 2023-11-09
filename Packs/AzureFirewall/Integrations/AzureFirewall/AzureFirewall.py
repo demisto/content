@@ -3,7 +3,9 @@ from CommonServerPython import *  # noqa: F401
 import copy
 from requests import Response
 from MicrosoftApiModule import *  # noqa: E402
-import urllib3
+
+
+API_VERSION = '2021-03-01'
 
 
 class AzureFirewallClient:
@@ -11,7 +13,6 @@ class AzureFirewallClient:
                  subscription_id: str,
                  resource_group: str,
                  client_id: str,
-                 api_version: str,
                  verify: bool,
                  proxy: bool,
                  client_secret: str | None = None,
@@ -21,8 +22,7 @@ class AzureFirewallClient:
                  managed_identities_client_id: str | None = None):
         self.resource_group = resource_group
         self.subscription_id = subscription_id
-        self.api_version = api_version
-        self.default_params = {"api-version": api_version}
+        self.default_params = {"api-version": API_VERSION}
 
         is_credentials = (client_secret and tenant_id) or (certificate_thumbprint and private_key)
 
@@ -508,6 +508,33 @@ class AzureFirewallClient:
                                                json_data=ip_group_data, resp_type="json", timeout=100)
 
         return response
+
+    def azure_firewall_subscriptions_list_request(self) -> dict:
+        """
+        Gets all subscriptions for a tenant.
+
+        Returns:
+            List[dict]: API response from Azure.
+        """
+        full_url = 'https://management.azure.com/subscriptions'
+        return self.ms_client.http_request('GET', full_url=full_url, params=self.default_params,
+                                           resp_type="json", timeout=100)
+
+    def azure_firewall_resource_group_list_request(self, tag: str, limit: int, full_url: Optional[str] = None) -> dict:
+        """
+        List all resource groups.
+        Args:
+            tag str: Tag to filter by.
+            limit (int): Maximum number of resource groups to retrieve. Default is 50.
+            full_url (str): URL to retrieve the next set of results.
+
+        Returns:
+            List[dict]: API response from Azure.
+        """
+        filter_by_tag = azure_tag_formatter(tag) if tag else None
+        params = {'$filter': filter_by_tag, '$top': limit} | self.default_params if not full_url else {}
+        full_url = full_url if full_url else f'https://management.azure.com/subscriptions/{self.subscription_id}/resourcegroups'
+        return self.ms_client.http_request('GET', full_url=full_url, params=params)
 
 
 def generate_polling_readable_message(resource_type_name: str, resource_name: str) -> str:
@@ -2791,6 +2818,76 @@ def azure_firewall_ip_group_delete_command(client: AzureFirewallClient, args: Di
     return command_results_list
 
 
+def azure_firewall_subscriptions_list_command(client: AzureFirewallClient):
+    response = client.azure_firewall_subscriptions_list_request()
+    value = response.get('value', [])
+
+    subscriptions = []
+    for subscription in value:
+        subscription_context = {
+            'Subscription ID': subscription.get('subscriptionId'),
+            'Tenant ID': subscription.get('tenantId'),
+            'State': subscription.get('state'),
+            'Display Name': subscription.get('displayName')
+        }
+        subscriptions.append(subscription_context)
+
+    human_readable = tableToMarkdown('List of subscriptions', subscriptions, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='AzureFirewall.Subscription',
+        outputs_key_field='id',
+        outputs=value,
+        readable_output=human_readable,
+        raw_response=value
+    )
+
+
+def azure_firewall_resource_group_list_command(client: AzureFirewallClient, args: Dict[str, Any]):
+    """
+    List all resource groups.
+    Args:
+        tag (str): Tag to filter by.
+        limit (int): Maximum number of resource groups to retrieve. Default is 50.
+    Returns:
+        List[dict]: API response from Azure.
+    """
+    tag = args.get('tag', '')
+    limit = arg_to_number(args.get('limit')) or 50
+
+    raw_responses = []
+    resource_groups: List[dict] = []
+
+    next_link: bool | str = True
+    while next_link and len(resource_groups) < limit:
+        full_url = next_link if isinstance(next_link, str) else None
+        response = client.azure_firewall_resource_group_list_request(tag=tag, limit=limit, full_url=full_url)
+        value = response.get('value', [])
+        next_link = response.get('nextLink', '')
+
+        raw_responses.extend(value)
+        for resource_group in value:
+            resource_group_context = {
+                'Name': resource_group.get('name'),
+                'Location': resource_group.get('location'),
+                'Tags': resource_group.get('tags'),
+                'Provisioning State': resource_group.get('properties', {}).get('provisioningState')
+            }
+            resource_groups.append(resource_group_context)
+
+    raw_responses = raw_responses[:limit]
+    resource_groups = resource_groups[:limit]
+    readable_output = tableToMarkdown('Resource Groups List', resource_groups, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix='AzureFirewall.ResourceGroup',
+        outputs_key_field='id',
+        outputs=raw_responses,
+        raw_response=raw_responses,
+        readable_output=readable_output
+    )
+
+
 # --Authorization Commands--
 
 def start_auth(client: AzureFirewallClient) -> CommandResults:
@@ -2843,10 +2940,9 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    api_version = params.get('api_version', '')
 
-    subscription_id = params['subscription_id']['password']
-    resource_group = params['resource_group']
+    subscription_id = args.get('subscription_id') or params['subscription_id']['password']
+    resource_group = args.get('resource_group_name') or params['resource_group']
     client_id = params.get('client_id', '')
 
     client_secret = dict_safe_get(params, ['client_secret', 'password'])
@@ -2865,12 +2961,10 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        urllib3.disable_warnings()
         client: AzureFirewallClient = AzureFirewallClient(
             subscription_id=subscription_id,
             resource_group=resource_group,
             client_id=client_id,
-            api_version=api_version,
             verify=verify_certificate,
             proxy=proxy,
             client_secret=client_secret,
@@ -2904,6 +2998,7 @@ def main() -> None:
             'azure-firewall-ip-group-list': azure_firewall_ip_group_list_command,
             'azure-firewall-ip-group-get': azure_firewall_ip_group_get_command,
             'azure-firewall-ip-group-delete': azure_firewall_ip_group_delete_command,
+            'azure-firewall-resource-group-list': azure_firewall_resource_group_list_command,
         }
 
         if command == 'test-module':
@@ -2928,6 +3023,9 @@ def main() -> None:
 
         elif command == 'azure-firewall-auth-reset':
             return_results(reset_auth())
+
+        elif command == 'azure-firewall-subscriptions-list':
+            return_results(azure_firewall_subscriptions_list_command(client))
 
         elif command in commands:
             return_results(commands[command](client, args))
