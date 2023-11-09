@@ -513,6 +513,4 @@ cloning-content-repo-last-upload-commit:
     - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}:-code.pan.run/${CI_PROJECT_NAMESPACE}/content.git
     - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
     - git checkout FETCH_HEAD
-    - cd -
-    - echo "Save the content repository into the artifacts ${ARTIFACTS_FOLDER}/content_production"
-    - mv content_production ${ARTIFACTS_FOLDER}/content_production
+    - echo "checked out $LAST_UPLOAD_COMMIT"
