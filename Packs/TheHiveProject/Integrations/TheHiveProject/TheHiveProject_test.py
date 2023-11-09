@@ -10,7 +10,7 @@ def test_list_cases_command(requests_mock):
 
     from TheHiveProject import list_cases_command, Client
 
-    mock_response = util_load_json('test_data/cases_list.json')
+    mock_response = util_load_json('test_data/cases_list_new.json')
 
     requests_mock.post('https://test/api/v1/query?name=list-cases',
                        json=mock_response)
