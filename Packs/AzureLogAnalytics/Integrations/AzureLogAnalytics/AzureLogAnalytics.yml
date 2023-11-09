@@ -504,7 +504,7 @@ script:
     execution: false
     name: azure-log-analytics-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.79946
+  dockerimage: demisto/crypto:1.0.0.80214
   runonce: false
   script: '-'
   subtype: python3
