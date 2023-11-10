@@ -123,7 +123,7 @@ def fetch_events(client: Client,
         if sleep_time and sleep_time < FETCH_TIME_LIMIT:
             demisto.debug(f'Will try fetch again in: {sleep_time},\
                 as a result of 429 Too Many Requests HTTP status.')
-            time.sleep(sleep_time)
+            time.sleep(sleep_time)  # pylint: disable=E9003
         else:
             break
     return events
