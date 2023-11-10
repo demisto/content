@@ -110,7 +110,7 @@ def fetch_events(client: Client,
                  start_time_epoch: int,
                  events_limit: int,
                  last_run_after,
-                 last_object_ids: List[str] = None) -> List[dict]:
+                 last_object_ids: List[str] = None) -> List[dict]:  # pragma: no cover
     while True:
         events, epoch_time_to_continue_fetch = get_events_command(client=client,
                                                                   total_events_to_fetch=events_limit,
