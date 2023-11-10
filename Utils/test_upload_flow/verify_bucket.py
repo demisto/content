@@ -308,7 +308,7 @@ class BucketVerifier:
         self.verify_modified_item_path('AlibabaActionTrail', 'ModelingRules/modelingrule-Alibaba.yml',
                                        self.items_dict.get('AlibabaActionTrail'))
 
-        self.verify_new_xsoar_pack('TestUploadFlowXSOAR', self.items_dict.get('TestUploadFlowXSOAR'))
+        self.verify_new_xsoar_pack('TestUploadFlowXSOAR')
 
     def run_xsoar_bucket_validations(self):
         """
