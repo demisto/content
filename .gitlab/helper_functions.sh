@@ -75,33 +75,3 @@ sleep-with-progress() {
   local sleep_step=$((sleep_time / sleep_interval))
   for ((i=0; i< sleep_step;i++)); do echo "${sleep_interval}";sleep "${sleep_interval}"; done | tqdm --total ${sleep_time} --unit seconds --leave --update --colour green -ncols ${columns} --desc "${sleep_message}" 1> /dev/null
 }
-
-clone_repository() {
-  local host=$1
-  local user=$2
-  local token=$3
-  local repo_name=$4
-  local branch=$5
-  local retry_count=$6
-  local sleep_time=${7:-10}  # default sleep time is 10 seconds.
-  local exit_code=0
-  local i=1
-  echo -e "${GREEN}Cloning ${repo_name} from ${host} branch:${branch} with ${retry_count} retries${NC}"
-  if [ -z "${user}" ] && [ -z "${token}" ]; then
-    user_info=""
-  else
-    user_info="${user}:${token}@"
-    # If either user or token is not empty, then we need to add them to the url.
-  fi
-  for ((i=1; i <= retry_count; i++)); do
-    git clone --depth=1 "https://${user_info}${host}/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
-    if [ ${i} -ne "${retry_count}" ]; then
-      echo -e "${RED}Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, sleeping for ${sleep_time} seconds and trying again${NC}"
-      sleep "${sleep_time}"
-    else
-      echo -e "${RED}Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, exhausted all ${retry_count} retries${NC}"
-      break
-    fi
-  done
-  return ${exit_code}
-}
