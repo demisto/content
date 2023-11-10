@@ -1,0 +1,442 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Source IP Enrichment
+inputs: []
+name: Source IP Enrichment
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2b84bfa9-c6a2-4298-8a06-74499f8a4313
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 2b84bfa9-c6a2-4298-8a06-74499f8a4313
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -120
+        }
+      }
+  "1":
+    continueonerror: true
+    continueonerrortype: ""
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Abuse IPDB Information
+    fieldMapping:
+    - incidentfield: sourceip_abuseipdb_totalreports
+      output:
+        simple: ${AbuseIPDB.[0].IP.TotalReports}
+    - incidentfield: sourceip_abuseip_confidencescore
+      output:
+        simple: ${AbuseIPDB.[0].IP.AbuseConfidenceScore}
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        simple: ${incident.sourceip}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AbuseIPDB
+      description: Checks the specified IP address against the AbuseIP database.
+      id: 75974cd1-2d10-45ce-83d9-447fabaf4b63
+      iscommand: true
+      name: Abuse IPDB Source IP Enrichment
+      script: AbuseIPDB|||ip
+      type: regular
+      version: -1
+    taskid: 75974cd1-2d10-45ce-83d9-447fabaf4b63
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "2":
+    continueonerror: true
+    continueonerrortype: ""
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Virus Total IP Information
+    fieldMapping:
+    - incidentfield: sourceip_virustotal_geo
+      output:
+        simple: ${IP.Geo.Country}
+    - incidentfield: sourceip_virustotal_totalreports
+      output:
+        simple: ${VirusTotal.IP.attributes.last_analysis_stats.malicious}
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extended_data:
+        simple: "false"
+      ip:
+        simple: ${incident.sourceip}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VirusTotal (API v3)
+      description: Checks the reputation of an IP address.
+      id: ecf10060-436b-4a7c-8b09-916d36691a9a
+      iscommand: true
+      name: VT Source IP Enrichment
+      script: VirusTotal (API v3)|||ip
+      type: regular
+      version: -1
+    taskid: ecf10060-436b-4a7c-8b09-916d36691a9a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      InternalRange:
+        simple: inputs.InternalRange
+      ResolveIP:
+        simple: "True"
+      Source IP:
+        complex:
+          accessor: sourceip}
+          root: ${incident
+          transformers:
+          - operator: uniq
+      UseReputationCommand:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Enrich IP addresses using one or more integrations.
+
+        - Resolve IP addresses to hostnames (DNS).
+        - Provide threat information.
+        - Separate internal and external addresses.
+      id: 52b4e9fc-63a4-46c9-8386-9ea2794f55ff
+      iscommand: false
+      name: Source IP Internal Enrichment
+      playbookId: Source IP Internal Enrichment
+      type: playbook
+      version: -1
+    taskid: 52b4e9fc-63a4-46c9-8386-9ea2794f55ff
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e5ebf99b-b98d-4be3-8208-d5b69a2165a4
+      iscommand: false
+      name: Source IP Internal Enrichment
+      type: title
+      version: -1
+      description: ''
+    taskid: e5ebf99b-b98d-4be3-8208-d5b69a2165a4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 575
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 185eb516-3937-4cc7-82f7-0c303e3a5c79
+      iscommand: false
+      name: Source IP Enrichment
+      type: title
+      version: -1
+      description: ''
+    taskid: 185eb516-3937-4cc7-82f7-0c303e3a5c79
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 575
+        }
+      }
+  "7":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sourceip:
+        complex:
+          accessor: qradarevents}
+          root: ${incident
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: sourceip":"([^\"]+)
+              unpack_matches: {}
+            operator: RegexExtractAll
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: b059c369-ef12-4f70-897d-80202b975372
+      iscommand: true
+      name: Map Source IP
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: b059c369-ef12-4f70-897d-80202b975372
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 230
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.sourceip}
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e65a0fa1-dc34-40d3-8f9c-bae636d0b903
+      iscommand: false
+      name: Does Source IP exist?
+      type: condition
+      version: -1
+    taskid: e65a0fa1-dc34-40d3-8f9c-bae636d0b903
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c5831331-80a6-4ca1-8460-0af87c49bb4a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c5831331-80a6-4ca1-8460-0af87c49bb4a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1050
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.sourceip
+                    operator: IsInCidrRanges
+                    right:
+                      value:
+                        simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+                root: incident.sourceip
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ace09db2-0d19-4f85-8c0f-524247133ea3
+      iscommand: false
+      name: Is Source IP address internal ?
+      type: condition
+      version: -1
+    taskid: ace09db2-0d19-4f85-8c0f-524247133ea3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 400
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1235,
+        "width": 1240,
+        "x": 50,
+        "y": -120
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,807 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Ana IP Block Action
+inputs: []
+name: Ana IP Block Action
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 06b50439-7c36-4fd1-8c25-71c7a995c632
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 06b50439-7c36-4fd1-8c25-71c7a995c632
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -280
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${AbuseIPDB.[0].IP.TotalReports}
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "7"
+        - left:
+            iscontext: true
+            value:
+              simple: ${AbuseIPDB.[0].IP.AbuseConfidenceScore}
+          operator: greaterThan
+          right:
+            value:
+              simple: "40"
+        - left:
+            iscontext: true
+            value:
+              simple: incident.sourceipvirustotaltotalreports
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "5"
+      label: Block IP
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      Block IP:
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0d330454-460b-4e2c-8d02-a2c75b6b65a1
+      iscommand: false
+      name: Source IP Score Control
+      type: condition
+      version: -1
+    taskid: 0d330454-460b-4e2c-8d02-a2c75b6b65a1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 350
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.sourceip}
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              simple: lists.B-Block_IP
+      label: "yes"
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fb013595-5638-4c81-81f5-8d8e8dd79aca
+      iscommand: false
+      name: Is IP addres already in the list?
+      type: condition
+      version: -1
+    taskid: fb013595-5638-4c81-81f5-8d8e8dd79aca
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listData:
+        simple: ${incident.sourceip}
+      listName:
+        simple: B-Block_IP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.add
+      id: e89ab56e-90ab-4d5c-887e-5e0c8addf766
+      iscommand: true
+      name: Add to List
+      script: Builtin|||addToList
+      type: regular
+      version: -1
+    taskid: e89ab56e-90ab-4d5c-887e-5e0c8addf766
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: ${incident.sourceip} - IP Adresi TI kaynaklarında yüksek risk skoruna sahip olduğundan otomatik olarak firewallda KALICI engellenen ip'ler listesine eklenmiştir.
+      to:
+        simple: sarp@deneme.com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: da4e47eb-4231-4c6a-8f2a-d0137f64cae7
+      iscommand: true
+      name: Bilgilendirme Maili
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: da4e47eb-4231-4c6a-8f2a-d0137f64cae7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: ${incident.sourceip} - Kaynak IP Adresi kalıcı listede olduğundan listeye tekrardan eklenmemiştir.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 10f63a77-eff9-4ff3-8e9c-f00234b888b9
+      iscommand: true
+      name: Bilgilendirme Maili IP adresi zaten Listede
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 10f63a77-eff9-4ff3-8e9c-f00234b888b9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bf4b2395-04fc-4574-8382-7e210d05e842
+      iscommand: false
+      name: Source IP Action Completed
+      type: title
+      version: -1
+      description: ''
+    taskid: bf4b2395-04fc-4574-8382-7e210d05e842
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1100
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.sourceip}
+          operator: inList
+          right:
+            value:
+              simple: B-IPExclusionList
+      label: In Exclusion List
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      In Exclusion List:
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ea01509-a19a-4a22-88f4-3803fe647fa9
+      iscommand: false
+      name: Is Source IP in exclusion list?
+      type: condition
+      version: -1
+    taskid: 7ea01509-a19a-4a22-88f4-3803fe647fa9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 115
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Excluded
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 7be602de-5f50-4b13-88dc-5d6f5967044e
+      iscommand: false
+      name: Source IP In Exclusion List
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 7be602de-5f50-4b13-88dc-5d6f5967044e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 540
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.destinationip}
+          operator: inList
+          right:
+            value:
+              simple: B-IPExclusionList
+      label: In Exclusion List
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "13"
+      In Exclusion List:
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ea8f853f-c852-4691-8cc2-dc718f052385
+      iscommand: false
+      name: Is Destination IP in exclusion list?
+      type: condition
+      version: -1
+    taskid: ea8f853f-c852-4691-8cc2-dc718f052385
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1305
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.destinationipabuseiptotalreport
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "7"
+        - left:
+            iscontext: true
+            value:
+              simple: incident.destinationipabuseipconfidence
+          operator: greaterThan
+          right:
+            value:
+              simple: "40"
+        - left:
+            iscontext: true
+            value:
+              simple: incident.destinationipvirustotalmaliciousreport
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "5"
+      label: Block IP
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "19"
+      Block IP:
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 38f60eae-43ed-4103-8e33-6365e07a3800
+      iscommand: false
+      name: Destination IP Score Control
+      type: condition
+      version: -1
+    taskid: 38f60eae-43ed-4103-8e33-6365e07a3800
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1510
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Excluded
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 405686e7-79d7-4797-8ca9-61756076f9c3
+      iscommand: false
+      name: Destination IP In Exclusion List
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: 405686e7-79d7-4797-8ca9-61756076f9c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1780
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listData:
+        simple: ${incident.destinationip}
+      listName:
+        simple: B-Block_IP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.add
+      id: 49ff15f1-3cf0-4318-8312-be3185f64ab7
+      iscommand: true
+      name: Add to List
+      script: Builtin|||addToList
+      type: regular
+      version: -1
+    taskid: 49ff15f1-3cf0-4318-8312-be3185f64ab7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1910
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: ${incident.destinationip} - Hedef IP Adresi TI kaynaklarında yüksek risk skoruna sahip olduğundan otomatik olarak firewallda KALICI engellenen ip'ler listesine eklenmiştir.
+      to:
+        simple: sarp@deneme.com
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: d9b2d3c2-9862-4b57-8171-449f78d006be
+      iscommand: true
+      name: Bilgilendirme Maili
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: d9b2d3c2-9862-4b57-8171-449f78d006be
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2085
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: ${incident.destinationip} - Hedef IP Adresi kalıcı listede olduğundan listeye tekrardan eklenmemiştir.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: 7b592180-143f-471f-81e1-bef5081958fa
+      iscommand: true
+      name: Bilgilendirme Maili IP adresi zaten Listede
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: 7b592180-143f-471f-81e1-bef5081958fa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2085
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4759dd92-9014-4387-8dee-6c10f5986804
+      iscommand: false
+      name: Destination IP Action Completed
+      type: title
+      version: -1
+      description: ''
+    taskid: 4759dd92-9014-4387-8dee-6c10f5986804
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 2340
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.sourceip}
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              simple: lists.B-Block_IP
+      label: "yes"
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f948f499-b3d6-4df0-8565-2f4f3d120dce
+      iscommand: false
+      name: Is IP addres already in the list?
+      type: condition
+      version: -1
+    taskid: f948f499-b3d6-4df0-8565-2f4f3d120dce
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1710
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.bmultiipabusecheck
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 23e20fa8-761f-4344-8002-04f8f8bdc274
+      iscommand: false
+      name: B-MultiAbuseCheck
+      type: condition
+      version: -1
+    taskid: 23e20fa8-761f-4344-8002-04f8f8bdc274
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -80
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 53f90af1-3c7b-49b6-822f-57ef805af878
+      iscommand: false
+      name: Multiple Source IP Path
+      type: title
+      version: -1
+      description: ''
+    taskid: 53f90af1-3c7b-49b6-822f-57ef805af878
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 145
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listData:
+        simple: dd
+      listName:
+        simple: ${lists.B-Block_IP}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.add
+      id: f3aa4a51-ea76-4b43-8bc1-4f7ea4462446
+      iscommand: true
+      name: Add Source IPs to List Which Will be Blocked (Subplaybook + Loop)
+      script: Builtin|||addToList
+      type: regular
+      version: -1
+    taskid: f3aa4a51-ea76-4b43-8bc1-4f7ea4462446
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 380
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2685,
+        "width": 1830,
+        "x": -500,
+        "y": -280
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

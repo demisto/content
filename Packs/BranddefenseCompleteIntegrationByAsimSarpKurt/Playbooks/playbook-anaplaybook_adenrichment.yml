@@ -1,0 +1,408 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: anaplaybook_adenrichment
+inputs: []
+name: anaplaybook_adenrichment
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6d6c064e-c398-4c38-8153-e78c03000fa9
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6d6c064e-c398-4c38-8153-e78c03000fa9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: containsString
+                    right:
+                      value:
+                        simple: Directory
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e9b10d63-83ad-4f0b-818b-e38d8ed15f0d
+      iscommand: false
+      name: Is Ad Integration Enabled?
+      type: condition
+      version: -1
+    taskid: e9b10d63-83ad-4f0b-818b-e38d8ed15f0d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 055c0d12-eba4-4a4c-8085-c82f4522cb8a
+      iscommand: false
+      name: Enabled
+      type: title
+      version: -1
+      description: ''
+    taskid: 055c0d12-eba4-4a4c-8085-c82f4522cb8a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8d2b803a-5972-4f77-8bde-14cabccfe3e6
+      iscommand: false
+      name: Playbook End
+      type: title
+      version: -1
+      description: ''
+    taskid: 8d2b803a-5972-4f77-8bde-14cabccfe3e6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 905,
+          "y": 370
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      name:
+        simple: ${incident.sourcehostname}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Active Directory Query v2
+      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
+      id: 06b30fa3-169b-412d-88ff-5dbd2b0d0a79
+      iscommand: true
+      name: AD Get Computer
+      script: Active Directory Query v2|||ad-get-computer
+      type: regular
+      version: -1
+    taskid: 06b30fa3-169b-412d-88ff-5dbd2b0d0a79
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 650
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    evidencedata:
+      customfields: {}
+      description:
+        simple: AD Kullanici Hareketleri
+      occurred: {}
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      username:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Active Directory Query v2
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      id: b8d7a814-e84b-4e8a-845a-7265e52e6947
+      iscommand: true
+      name: AD Get User
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      version: -1
+    taskid: b8d7a814-e84b-4e8a-845a-7265e52e6947
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 555
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 08ca2c35-302c-4acb-8ce0-316b355a8acb
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 08ca2c35-302c-4acb-8ce0-316b355a8acb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 920
+        }
+      }
+  "7":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "6"
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sourcehostname:
+        complex:
+          accessor: events}
+          root: ${incident.labels
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: Computer\=([^\\]+)
+              unpack_matches: {}
+            operator: RegexExtractAll
+          - operator: toLowerCase
+          - args:
+              delimiter:
+                value:
+                  simple: .
+            operator: split
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 18670f45-a99a-4e1b-8698-09b525fff915
+      iscommand: true
+      name: Get Source Computer Name
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 18670f45-a99a-4e1b-8698-09b525fff915
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 490
+        }
+      }
+  "8":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "9"
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      group-dn:
+        simple: ${ActiveDirectory.Users.dn}
+      member-type:
+        simple: person
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Active Directory Query v2
+      description: Retrieves the list of users or computers that are members of the specified group.
+      id: a81b093f-5618-4f87-81ca-42b648890b9e
+      iscommand: true
+      name: User Group Member Information
+      script: Active Directory Query v2|||ad-get-group-members
+      type: regular
+      version: -1
+    taskid: a81b093f-5618-4f87-81ca-42b648890b9e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 720
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0aa37f1e-a5ae-44f2-8fbe-1bca502df38f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 0aa37f1e-a5ae-44f2-8fbe-1bca502df38f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 910
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 935,
+        "width": 1570,
+        "x": -280,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

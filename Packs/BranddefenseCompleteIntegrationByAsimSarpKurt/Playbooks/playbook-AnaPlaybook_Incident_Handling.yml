@@ -1,0 +1,1760 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: AnaPlaybook_Incident_Handling
+inputs:
+- description: ""
+  key: Enrich
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+name: AnaPlaybook_Incident_Handling
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4b6b5575-db8a-4cd3-8e78-8da438c3e94c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 4b6b5575-db8a-4cd3-8e78-8da438c3e94c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -340
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Investigation Başlatılsın mı?
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - Evet
+      - Başkasına Ata
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      Evet:
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f099aeb5-acf3-4e3b-8d2e-f30f5fe14b41
+      iscommand: false
+      name: Investigation Başlatılsın mı?
+      type: condition
+      version: -1
+    taskid: f099aeb5-acf3-4e3b-8d2e-f30f5fe14b41
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 195
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a7c785e9-4f8e-4047-8243-6e8392d044ec
+      iscommand: false
+      name: Assigned to L1 MTT-L1 Started STOP MTTD, START MTTI
+      type: title
+      version: -1
+      description: ''
+    taskid: a7c785e9-4f8e-4047-8243-6e8392d044ec
+    timertriggers:
+    - action: start
+      fieldname: mttl1
+    - action: stop
+      fieldname: mttd
+    - action: start
+      fieldname: mtti
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 720
+        }
+      }
+  "12":
+    continueonerror: true
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: owner
+      output:
+        simple: response.invPlaybook.tasks.13.subPlaybook.tasks.85.completedBy
+    - incidentfield: owner
+      output:
+        simple: response.invPlaybook.tasks.13.subPlaybook.tasks.85.completedBy
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: owner=response.invPlaybook.tasks.13.subPlaybook.tasks.85.completedBy
+      uri:
+        simple: /investigation/${incident.investigationId}/workplan
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: send HTTP GET requests
+      id: e64f2a6f-a4d7-468a-8b79-d80deffbe024
+      iscommand: true
+      name: get-user
+      script: '|||demisto-api-get'
+      type: regular
+      version: -1
+    taskid: e64f2a6f-a4d7-468a-8b79-d80deffbe024
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 370
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      owner:
+        simple: ${incident.owner}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.owner
+      id: fca9b23a-1daf-41cc-8771-a474bc0f14cf
+      iscommand: true
+      name: set-owner
+      script: Builtin|||setOwner
+      type: regular
+      version: -1
+    taskid: fca9b23a-1daf-41cc-8771-a474bc0f14cf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 545
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: l1notes
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Investigation Notları
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Incident Investigation Sürecini Gerçekleştir
+      totalanswers: 0
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Investigation tamamlnadı mı?
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manually review and investigate this incident.
+      id: f727d4b8-5103-44ee-836f-38f125610062
+      iscommand: false
+      name: L1 Manually review the incident.
+      type: collection
+      version: -1
+    taskid: f727d4b8-5103-44ee-836f-38f125610062
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 860
+        }
+      }
+  "18":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "20"
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      note_text:
+        simple: ${incident.l1notes}
+      offense_id:
+        simple: ${incident.labels.id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Creates a note on an offense.
+      id: f7f5c5e4-7a5e-4e73-896d-597752c745c8
+      iscommand: true
+      name: QRadar Create Note
+      script: QRadar v3|||qradar-offense-note-create
+      type: regular
+      version: -1
+    taskid: f7f5c5e4-7a5e-4e73-896d-597752c745c8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1040
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: "1"
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      label: condition-1
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 33d7e470-c81a-46dd-8805-7c1978b89dd1
+      iscommand: false
+      name: If There is No QRadar Integration
+      type: condition
+      version: -1
+    taskid: 33d7e470-c81a-46dd-8805-7c1978b89dd1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 1215
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'Question 1:'
+        options: []
+        optionsarg:
+        - simple: Olay Kapatılsın - Olay Hatalı Bir Alarmdan (False Positive) Kaynaklanıyor
+        - simple: Olay Kapatılsın - Olay Doğru Bir Alarmdan (True Positive) Kaynaklanıyor
+        - simple: L2 İnceleme
+        - simple: Otomatik aksiyon al - Incident tipine göre alınacak aksyionun bilgisi
+        - simple: Olay Müdahale Gerçekleştirilsin (Olay müdahale taleplerinizi 0531 221 22 81 numaralı telefondan 7/24 olarak yapabilirsiniz)
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: customerresponse
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Lütfen Açıklamanızı Giriniz
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: Your SOC team
+      title: Olay Bildirim Formu
+      totalanswers: 0
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: ${l1mailbody}
+      cc: {}
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: '${incident.id}: ${incident.name} Olay Kaydı Açıldı'
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${lists.MusteriMailList}
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 71c4f1e6-65e5-4b80-8772-75f5b0c081c0
+      iscommand: false
+      name: Müşteriye Sor
+      type: collection
+      version: -1
+    taskid: 71c4f1e6-65e5-4b80-8772-75f5b0c081c0
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1870
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: l1mailbody
+      listTemplate:
+        simple: L1Mail
+      object:
+        simple: ${incident.l1notes}
+      removeNotFound:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        This script allows sending an HTML email, using a template stored as a list item under Lists (Settings -> Advanced -> Lists).
+        Placeholders are marked in DT format (i.e. ${incident.id} for incident ID).
+        Available placeholders for example:
+        - ${incident.labels.Email/from}
+        - ${incident.name}
+        - ${object.value}
+        See incident Context Data menu for available placeholders
+
+        Note: Sending emails require an active  Mail Sender integration instance.
+      id: efee26a7-db0a-4653-887d-d58e317d1db7
+      iscommand: false
+      name: Create Mail Body
+      scriptName: CreateEmailHtmlBody
+      type: regular
+      version: -1
+    taskid: efee26a7-db0a-4653-887d-d58e317d1db7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1710
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b9191cbd-41b3-42a0-832e-7760dfde0be5
+      iscommand: false
+      name: Start Awaitning_Cust and Stop MTT-L1 and Pause MTTR
+      type: title
+      version: -1
+      description: ''
+    taskid: b9191cbd-41b3-42a0-832e-7760dfde0be5
+    timertriggers:
+    - action: start
+      fieldname: awaitingcustomer
+    - action: stop
+      fieldname: mttl1
+    - action: pause
+      fieldname: mttr
+    - action: pause
+      fieldname: mtti
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1595
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Müşteriye Bildirilcek mi?
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - Müşteriye Sor ve Onayını Bekle
+      - L2'ye Yükselt
+      - True Positive - Çözüldü (Kapatılacak)
+      - False Positive
+      - Otomatik aksiyon al - Incident tipine göre alınacak aksyionun bilgisi
+      - False Positive - Rule Tuning and Improvement Process
+      subject:
+        simple: Müşteriye Bildirilcek mi?
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      False Positive - Rule Tuning and Improvement Process:
+      - "49"
+      L2'ye Yükselt:
+      - "32"
+      Müşteriye Sor ve Onayını Bekle:
+      - "25"
+      Otomatik aksiyon al - Incident tipine göre alınacak aksyionun bilgisi:
+      - "42"
+      - "38"
+      True Positive - Çözüldü (Kapatılacak):
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 125fcee4-0b56-428a-893c-d1e7eb88d507
+      iscommand: false
+      name: Müşteriye Bildirilcek mi?
+      type: condition
+      version: -1
+    taskid: 125fcee4-0b56-428a-893c-d1e7eb88d507
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1390
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      musterisecimi:
+        simple: ${Olay Bildirim Formu.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: d058a0e5-3380-41ac-87dd-c4ebbd03bd0a
+      iscommand: true
+      name: Musteri Secimi Mapleme
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d058a0e5-3380-41ac-87dd-c4ebbd03bd0a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 2060
+        }
+      }
+  "28":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Kapatılsın - Olay Hatalı Bir Alarmdan (False Positive) Kaynaklanıyor
+      label: False Positive
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Kapatılsın - Olay Doğru Bir Alarmdan (True Positive) Kaynaklanıyor
+      label: True Positive
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Müdahale Gerçekleştirilsin (Olay müdahale taleplerinizi 0531 221 22 81 numaralı telefondan 7/24 olarak yapabilirsiniz)
+      label: Olay Müdahale
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: L2 İnceleme
+      label: L2 İnceleme
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Otomatik aksiyon al - Incident tipine göre alınacak aksyionun bilgisi
+      label: Otomatik Aksyion Al
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      False Positive:
+      - "51"
+      L2 İnceleme:
+      - "32"
+      Olay Müdahale:
+      - "31"
+      Otomatik Aksyion Al:
+      - "38"
+      True Positive:
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b88ec816-0008-4b36-8e0d-525ed5aa525d
+      iscommand: false
+      name: Müşteri Seçimi
+      type: condition
+      version: -1
+    taskid: b88ec816-0008-4b36-8e0d-525ed5aa525d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 2235
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e62e2b3a-93c7-4e5d-8b4a-3eed14f09039
+      iscommand: false
+      name: Playbook End
+      type: title
+      version: -1
+      description: ''
+    taskid: e62e2b3a-93c7-4e5d-8b4a-3eed14f09039
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 2250
+        }
+      }
+  "30":
+    continueonerrortype: ""
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 10aa6761-d824-4b49-8bc1-1f9e70f4121f
+      iscommand: false
+      name: True Positive
+      type: title
+      version: -1
+      description: ''
+    taskid: 10aa6761-d824-4b49-8bc1-1f9e70f4121f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 3750
+        }
+      }
+  "31":
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 33389b88-e40d-4a20-8f70-356c06422306
+      iscommand: false
+      name: Olay Müdahale
+      type: title
+      version: -1
+      description: ''
+    taskid: 33389b88-e40d-4a20-8f70-356c06422306
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3750
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 220ce842-6959-4f3c-8468-2721902833a4
+      iscommand: false
+      name: L2 İnceleme
+      type: title
+      version: -1
+      description: ''
+    taskid: 220ce842-6959-4f3c-8468-2721902833a4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 2410
+        }
+      }
+  "33":
+    continueonerrortype: ""
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cc:
+        simple: msocl2analist@barikat.com.tr
+      htmlBody:
+        simple: "<div class=\"table-wrap\">\n\t<div>\n\t\t<table class=\"wrapped investigationTable\" style=\"width:99%;border-collapse: collapse;\">\n\t\t\n\t\t<style>\n\t\ttr:nth-child(even) {background-color: #f2f2f2;}\n\t\t</style>\n\t\t<tr>\n\t\t\t<td style=\"text-align:center;background-color:#FF7D33;border: 1px solid #C1C7D0;padding: 12px 10px\" colspan=\"2\">\n\t\t\t<p style=\"color:#FDFEFE\"><span><strong>OLAY BİLDİRİM FORMU - DETAYLI INCELEME TALEBİ</strong></span></p></td>\n\t\t</tr>\n\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Kayıt No</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.id}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>SIEM Alarm No</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.alertid}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>SIEM Adresi</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.alertlink}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Adı</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.name}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Tipi</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.type}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Kritiklik Derecesi</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.severitytr}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Kurum/Kuruluş Adı</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.account}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Tespit Kaynağı</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceBrand}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Tarih ve Saati</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.starttime}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Analist</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.owner}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Kaynak Kullanıcı Adı</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceusername}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Kaynak IP</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceips}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Hedef IP</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.destinationips}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\" ><p style=\"color:#120a8f\"><span><strong>Olay Açıklaması</strong></span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.account} Account'u için ${incident.id}'li olaya detaylı inceleme talep edilmiştir.<br>${incident.l1notes}</span></p></td>\n\t\t</tr>\n\t\t\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\" ><p style=\"color:#120a8f\"><span><strong>Müşteri Yanıtı</strong></span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.customerresponse}
+          </span></p></td>\n\t\t</tr>\n\t</tbody>\n</table>\n</div>\n</div>"
+      subject:
+        simple: XSOAR Detaylı İnceleme Talebi
+      to:
+        simple: ${lists.B - L2MailAddressList}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: ec2df986-51fa-4aae-843f-0ed80561cf56
+      iscommand: true
+      name: L2ye Mail At
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: ec2df986-51fa-4aae-843f-0ed80561cf56
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 2635
+        }
+      }
+  "34":
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Investigation Başlatılsın mı?
+      cc:
+      format: ""
+      methods: []
+      replyOptions:
+      - Evet
+      - Başkasına ata
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      Evet:
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 69b643a3-73aa-45d8-85c0-b9e322d0fe32
+      iscommand: false
+      name: Investigation Başlatılsın mı?
+      type: condition
+      version: -1
+    taskid: 69b643a3-73aa-45d8-85c0-b9e322d0fe32
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 2780
+        }
+      }
+  "35":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: l2notes
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Investigation Notları
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Incident Investigation Sürecini Gerçekleştir
+      totalanswers: 0
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Investigation Tamamlandı mı?
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b2fdfe0a-1cf9-400f-8054-a7a101e1855f
+      iscommand: false
+      name: L2 Manually Review the Incident
+      type: collection
+      version: -1
+    taskid: b2fdfe0a-1cf9-400f-8054-a7a101e1855f
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 2945
+        }
+      }
+  "36":
+    continueonerrortype: ""
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e737ff4d-a935-432e-844c-d7cda745dec7
+      iscommand: false
+      name: Notified
+      type: title
+      version: -1
+      description: ''
+    taskid: e737ff4d-a935-432e-844c-d7cda745dec7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 3080
+        }
+      }
+  "38":
+    continueonerrortype: ""
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 849f070f-a515-41f0-8047-3e8ff7ff6be3
+      iscommand: false
+      name: Otomatik Aksiyon Al
+      type: title
+      version: -1
+      description: ''
+    taskid: 849f070f-a515-41f0-8047-3e8ff7ff6be3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1420,
+          "y": 3750
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      musterisecimi:
+        simple: ${L2 İnceleme Sonrası Olay Bildirim Formu.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: d31a15cc-9481-45a2-8cb4-4b88788b5488
+      iscommand: true
+      name: Musteri Secimi Mapleme
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d31a15cc-9481-45a2-8cb4-4b88788b5488
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 3400
+        }
+      }
+  "40":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'Question 1:'
+        options: []
+        optionsarg:
+        - simple: Olay Kapatılsın - Olay Hatalı Bir Alarmdan (False Positive) Kaynaklanıyor
+        - simple: Olay Kapatılsın - Olay Doğru Bir Alarmdan (True Positive) Kaynaklanıyor
+        - simple: Otomatik aksiyon al - Incident tipine göre alınacak aksyionun bilgisi
+        - simple: Olay Müdahale Gerçekleştirilsin (Olay müdahale taleplerinizi 0531 221 22 81 numaralı telefondan 7/24 olarak yapabilirsiniz)
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: L2 İnceleme Sonrası Olay Bildirim Formu
+      totalanswers: 0
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: "<div class=\"table-wrap\">\n\t<div>\n\t\t<table class=\"wrapped investigationTable\" style=\"width:99%;border-collapse: collapse;\">\n\t\t\n\t\t<style>\n\t\ttr:nth-child(even) {background-color: #f2f2f2;}\n\t\t</style>\n\t\t<tr>\n\t\t\t<td style=\"text-align:center;background-color:#b3d4ff;border: 1px solid #C1C7D0;padding: 12px 10px\" colspan=\"2\">\n\t\t\t<p style=\"color:#120a8f\"><span><strong>OLAY BİLDİRİM FORMU</strong></span></p></td>\n\t\t</tr>\n\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Kayıt No</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.id}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>SIEM Alarm No</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.alertid}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>SIEM Adresi</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.alertlink}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Adı</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.name}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Tipi</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.type}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Kritiklik Derecesi</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.severitytr}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Kurum/Kuruluş Adı</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.account}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Tespit Kaynağı</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceBrand}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Olay Tarih ve Saati</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.starttime}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Analist</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.owner}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Kaynak Kullanıcı Adı</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceusername}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Kaynak IP</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceips}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Hedef IP</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.destinationips}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Müşteri Yanıtı</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.customerresponse}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\" ><p style=\"color:#120a8f\"><span><strong>Olay Açıklaması</strong></span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.l1notes}\n<br>\nDetaylı İnceleme Notları:\n<br>\n${incident.l2notes}\n</span></p></td>\n\t\t</tr>\n\t</tbody>\n</table>\n\t</div>\n</div>"
+      cc:
+        simple: mghanalist@barikat.com.tr
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: ${incident.name}
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: msco-guo@barikat.com.tr,cemil.sabir@barikat.com.tr,itteam@barikat.com.tr,msocl2analist@barikat.com.tr
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8d244034-5d72-47bb-8d33-358a9446e380
+      iscommand: false
+      name: Müşteriye Sor L2
+      type: collection
+      version: -1
+    taskid: 8d244034-5d72-47bb-8d33-358a9446e380
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 3175
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Kapatılsın - Olay Hatalı Bir Alarmdan (False Positive) Kaynaklanıyor
+      label: False Positive
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Kapatılsın - Olay Doğru Bir Alarmdan (True Positive) Kaynaklanıyor
+      label: True Positive
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Müdahale Gerçekleştirilsin (Olay müdahale taleplerinizi 0531 221 22 81 numaralı telefondan 7/24 olarak yapabilirsiniz)
+      label: Olay Müdahale
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Otomatik aksiyon al - Incident tipine göre alınacak aksyionun bilgisi
+      label: Otomatik Aksyion Al
+    continueonerrortype: ""
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Olay Müdahale:
+      - "31"
+      Otomatik Aksyion Al:
+      - "38"
+      True Positive:
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5a7303d8-17b5-4b46-85db-42ad30ce83a3
+      iscommand: false
+      name: Müşteri Seçimi
+      type: condition
+      version: -1
+    taskid: 5a7303d8-17b5-4b46-85db-42ad30ce83a3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 3565
+        }
+      }
+  "42":
+    continueonerrortype: ""
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dd1cec55-79d8-4709-8566-9937eae22c96
+      iscommand: false
+      name: Otomatik Aksiyon Al
+      type: title
+      version: -1
+      description: ''
+    taskid: dd1cec55-79d8-4709-8566-9937eae22c96
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 1690
+        }
+      }
+  "43":
+    continueonerrortype: ""
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      musterisecimi:
+        simple: Otomatik aksiyon al - Incident tipine göre alınacak aksyionun bilgisi
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 30122fc7-974c-48c2-80ae-413b72ee845c
+      iscommand: true
+      name: Musteri Secimi Mapleme
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 30122fc7-974c-48c2-80ae-413b72ee845c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 1980
+        }
+      }
+  "44":
+    continueonerrortype: ""
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 109c7eda-4d1e-4a6b-8b0d-19dff86de05c
+      iscommand: false
+      name: MTTL2 Start, Pause Awaiting Customer, Start MTTR, Start MTTI
+      type: title
+      version: -1
+      description: ''
+    taskid: 109c7eda-4d1e-4a6b-8b0d-19dff86de05c
+    timertriggers:
+    - action: start
+      fieldname: mttl2
+    - action: pause
+      fieldname: awaitingcustomer
+    - action: start
+      fieldname: mttr
+    - action: start
+      fieldname: mtti
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 2520
+        }
+      }
+  "45":
+    continueonerrortype: ""
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b029ff06-6f6d-4ad0-8a85-87154155333f
+      iscommand: false
+      name: Stop MTT-L2, Start Awaiting Customer
+      type: title
+      version: -1
+      description: ''
+    taskid: b029ff06-6f6d-4ad0-8a85-87154155333f
+    timertriggers:
+    - action: stop
+      fieldname: mttl2
+    - action: start
+      fieldname: awaitingcustomer
+    - action: pause
+      fieldname: mttr
+    - action: stop
+      fieldname: mtti
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 3290
+        }
+      }
+  "47":
+    continueonerrortype: ""
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 16b9d0cf-37a0-4741-81db-68311c12e762
+      iscommand: false
+      name: Bildirim Otomasyonu
+      type: title
+      version: -1
+      description: ''
+    taskid: 16b9d0cf-37a0-4741-81db-68311c12e762
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 280
+        }
+      }
+  "48":
+    continueonerrortype: ""
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      musterisecimi:
+        simple: BildirimOtomasyonu
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c67c2dc8-eb2a-43c5-8fa3-2143680edc27
+      iscommand: true
+      name: Bildirim Otomasyonu Mapleme
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c67c2dc8-eb2a-43c5-8fa3-2143680edc27
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 520
+        }
+      }
+  "49":
+    continueonerrortype: ""
+    id: "49"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "50"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 18d6d57c-be40-4f68-83b5-8feacbac6715
+      iscommand: false
+      name: False Positive - Rule Tuning Requested
+      type: title
+      version: -1
+      description: ''
+    taskid: 18d6d57c-be40-4f68-83b5-8feacbac6715
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1780
+        }
+      }
+  "50":
+    continueonerrortype: ""
+    id: "50"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      musterisecimi:
+        simple: False Positive - Tuning
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 6526a221-7938-4a6c-817c-203bdb7add22
+      iscommand: true
+      name: Musteri Secimi False Positive Mapleme
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 6526a221-7938-4a6c-817c-203bdb7add22
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1965
+        }
+      }
+  "51":
+    continueonerrortype: ""
+    id: "51"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1cbaf5c1-892d-4e57-8c26-1ba955b0be12
+      iscommand: false
+      name: False Positive
+      type: title
+      version: -1
+      description: ''
+    taskid: 1cbaf5c1-892d-4e57-8c26-1ba955b0be12
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 3750
+        }
+      }
+  "52":
+    continueonerrortype: ""
+    id: "52"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 338a7783-40a4-4991-8c01-56c90ae568d6
+      iscommand: false
+      name: Full Otomatik Aksiyon
+      type: title
+      version: -1
+      description: ''
+    taskid: 338a7783-40a4-4991-8c01-56c90ae568d6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 270
+        }
+      }
+  "53":
+    continueonerrortype: ""
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      musterisecimi:
+        simple: FullOtomatikAksiyon
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: fd4ff45e-c585-4657-8aaf-870531706fae
+      iscommand: true
+      name: Full Otomatik Aksiyon Mapleme
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: fd4ff45e-c585-4657-8aaf-870531706fae
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 520
+        }
+      }
+  "54":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.eventid}
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              simple: lists.EventIDList
+        - left:
+            iscontext: true
+            value:
+              simple: ${incident.name}
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              simple: lists.B-Block_IP_Rule
+      label: Automations
+    continueonerrortype: ""
+    id: "54"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      Automations:
+      - "47"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 248b56fb-d23d-45ed-8fad-cef330d542e6
+      iscommand: false
+      name: Evaluate
+      type: condition
+      version: -1
+    taskid: 248b56fb-d23d-45ed-8fad-cef330d542e6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1197.5,
+          "y": 20
+        }
+      }
+  "55":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "55"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "54"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      eventid:
+        complex:
+          accessor: qradarevents}
+          root: ${incident
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: EventID=([^\\]+)
+              unpack_matches: {}
+            operator: RegexExtractAll
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 9d89960a-706b-4ff1-8b3c-0ec3698851ed
+      iscommand: true
+      name: Map Event ID
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 9d89960a-706b-4ff1-8b3c-0ec3698851ed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -150
+        }
+      }
+  "56":
+    continueonerrortype: ""
+    id: "56"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1aff2e6e-41b5-4194-8a39-147c20576bcd
+      iscommand: false
+      name: Ana Bildirim Otomasyon
+      playbookId: Ana Bildirim Otomasyon
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 1aff2e6e-41b5-4194-8a39-147c20576bcd
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 800
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_31_Olay Müdahale": 0.53,
+      "54_47_Automations": 0.32
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4155,
+        "width": 2770,
+        "x": -490,
+        "y": -340
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

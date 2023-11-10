@@ -1,0 +1,295 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Get Incidents From Branddefense
+inputs: []
+name: Get Incidents From Branddefense
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6316b471-7e06-4f85-806f-85c404829e83
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6316b471-7e06-4f85-806f-85c404829e83
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7025baa0-8f1d-48c4-823b-1f7a68901b47
+      iscommand: false
+      name: Get 1 Hour Ago
+      scriptName: get_1_hour_ago
+      type: regular
+      version: -1
+    taskid: 7025baa0-8f1d-48c4-823b-1f7a68901b47
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 270
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      created_at:
+        simple: ${date.date},${date.date_now}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Get Incidents endpoint allows you to retrieve incident details from Brandefense Issues. '
+      id: ee7a45d9-a4f2-40ca-88b0-7da64bbb3425
+      iscommand: false
+      name: Branddefense_get_incidents
+      scriptName: branddefense_get_incidents
+      type: regular
+      version: -1
+    taskid: ee7a45d9-a4f2-40ca-88b0-7da64bbb3425
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 520
+        }
+      }
+  "3":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "8"
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incident_code:
+        simple: ${branddefense_all_incidents.branddefense_incidents.results.[0].code}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dc8e0921-78de-4b3a-8dea-125b81b6b761
+      iscommand: false
+      name: Get Specific Incident Details
+      scriptName: branddefense_get_specific_incident
+      type: regular
+      version: -1
+    taskid: dc8e0921-78de-4b3a-8dea-125b81b6b761
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+  "4":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incident_code:
+        simple: ${branddefense_all_incidents.branddefense_incidents.results.[0].code}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fde7ce8d-e15c-4e83-88bc-2d73c39d0ce0
+      iscommand: false
+      name: Get Incident Indicators
+      scriptName: branddefense_get_incident_indicators
+      type: regular
+      version: -1
+    taskid: fde7ce8d-e15c-4e83-88bc-2d73c39d0ce0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 970
+        }
+      }
+  "5":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      branddefenseincidentcode:
+        simple: ${branddefense_all_incidents.branddefense_incidents.results.[0].code}
+      name:
+        simple: Branddefense Incident - ${branddefense_all_incidents.branddefense_incidents.results.[0].title} - ${branddefense_all_incidents.branddefense_incidents.results.[0].code}
+      type:
+        simple: branddefense
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.create.inc
+      id: c2b85f2a-67d0-4944-8a00-84ee565bc0ed
+      iscommand: true
+      name: Create Incident
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: c2b85f2a-67d0-4944-8a00-84ee565bc0ed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6f88f24f-2dd0-416e-87d4-70c293eee658
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 6f88f24f-2dd0-416e-87d4-70c293eee658
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1890
+        }
+      }
+  "9":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 292b0a59-4d0e-494b-847c-3d42740fc46a
+      iscommand: true
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 292b0a59-4d0e-494b-847c-3d42740fc46a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1630
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1905,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

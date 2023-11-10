@@ -1,0 +1,274 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Ana Otomatik Aksiyon Al
+inputs: []
+name: Ana Otomatik Aksiyon Al
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 76f2fcb2-498c-484d-87b2-5a24fdfd573a
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 76f2fcb2-498c-484d-87b2-5a24fdfd573a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": -35
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4172a2c9-7f72-41b2-8785-8b4f853ce2f6
+      iscommand: false
+      name: Ana IP Block Action
+      playbookId: Ana IP Block Action
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 4172a2c9-7f72-41b2-8785-8b4f853ce2f6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fd1489d7-b665-41a0-890f-69647f00e00d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: fd1489d7-b665-41a0-890f-69647f00e00d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1010
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de3043ab-18a5-4cbd-867a-1230ad05e944
+      iscommand: false
+      name: Anaplaybook AD User Disable
+      playbookId: Anaplaybook AD User Disable
+      type: playbook
+      version: -1
+      description: ''
+    taskid: de3043ab-18a5-4cbd-867a-1230ad05e944
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b3956402-ffa5-4092-822a-15b16469975e
+      iscommand: false
+      name: Anaplaybook URL Action
+      playbookId: Anaplaybook URL Action
+      type: playbook
+      version: -1
+      description: ''
+    taskid: b3956402-ffa5-4092-822a-15b16469975e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 924a2bb4-6a7d-4291-87c3-67c8ffa5aeaa
+      iscommand: false
+      name: Ana Bildirim Otomasyon
+      playbookId: Ana Bildirim Otomasyon
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 924a2bb4-6a7d-4291-87c3-67c8ffa5aeaa
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.name}
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              simple: lists.B-Block_IP_Rule
+      label: IP Block
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      Automations:
+      - "6"
+      IP Block:
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 19f1bfcf-317d-43a5-825c-825681a013b3
+      iscommand: false
+      name: Evaluate
+      type: condition
+      version: -1
+    taskid: 19f1bfcf-317d-43a5-825c-825681a013b3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 130
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1110,
+        "width": 1670,
+        "x": 50,
+        "y": -35
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

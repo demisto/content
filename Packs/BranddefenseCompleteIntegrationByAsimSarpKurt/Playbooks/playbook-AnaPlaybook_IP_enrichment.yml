@@ -1,0 +1,158 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: AnaPlaybook_IP_enrichment
+inputs: []
+name: AnaPlaybook_IP_enrichment
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 32ea9fea-12ba-4b0b-8227-dfc2b9120450
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 32ea9fea-12ba-4b0b-8227-dfc2b9120450
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 50
+        }
+      }
+  "37":
+    continueonerrortype: ""
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e96728ea-bc6f-4bb3-88b8-a43c05b92a09
+      iscommand: false
+      name: Source IP Enrichment
+      playbookId: Source IP Enrichment
+      type: playbook
+      version: -1
+      description: ''
+    taskid: e96728ea-bc6f-4bb3-88b8-a43c05b92a09
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 200
+        }
+      }
+  "38":
+    continueonerrortype: ""
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9a9f4332-66c3-43a5-8ebe-b04924b36422
+      iscommand: false
+      name: Destination IP Enrichment
+      playbookId: Destination IP Enrichment
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 9a9f4332-66c3-43a5-8ebe-b04924b36422
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 370
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 58171ea3-8001-4606-8d4b-8252b9e5c790
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 58171ea3-8001-4606-8d4b-8252b9e5c790
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 540
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 555,
+        "width": 380,
+        "x": 710,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

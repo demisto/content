@@ -1,0 +1,540 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook runs a QRadar query and return its results to the context.
+id: QRadarFullSearch_sourceip_activity
+inputs:
+- description: How much time to wait before a timeout occurs (minutes)
+  key: timeout
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "600"
+- description: Polling frequency - how often the polling command should run (minutes)
+  key: interval
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "1"
+- description: The query expressions in AQL
+  key: query_expression
+  playbookInputQuery:
+  required: true
+  value:
+    simple: select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where ( "username"='${incident.username}'  ) order by "startTime" desc LIMIT 998 last 30 minutes
+- description: Range of results to return (e.g. 0-20)
+  key: range
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Table headers
+  key: headers
+  playbookInputQuery:
+  required: false
+  value: {}
+name: QRadarFullSearch_sourceip_activity
+outputs:
+- contextPath: QRadar.Search.Result
+  description: The result of the search
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Start of playbook
+      id: ebd107e5-abf9-4902-8e10-0178a34ee218
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: ebd107e5-abf9-4902-8e10-0178a34ee218
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      headers:
+        simple: ${inputs.headers}
+      query_expression:
+        simple: ${inputs.query_expression}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a search in QRadar using the search query
+      id: 06f866c0-dea8-485a-810e-4feee406d2de
+      iscommand: true
+      name: Run QRadar search
+      script: '|||qradar-searches'
+      type: regular
+      version: -1
+    taskid: 06f866c0-dea8-485a-810e-4feee406d2de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "2":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      headers:
+        simple: ${inputs.headers}
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets search object to initialize polling playbook
+      id: 22086c0b-f43c-4f19-81c1-1c9752efe7d5
+      iscommand: true
+      name: Get QRadar search
+      script: '|||qradar-get-search'
+      type: regular
+      version: -1
+    taskid: 22086c0b-f43c-4f19-81c1-1c9752efe7d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "4":
+    continueonerror: true
+    continueonerrortype: ""
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Events that contain the same Source IP for the related offense for Last 2 Hours
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      headers:
+        simple: ${inputs.headers}
+      range:
+        simple: ${inputs.range}
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: executes qradar-get-search-results to get the search results
+      id: 002ea839-b95b-44f0-836c-3b3301dc9912
+      iscommand: true
+      name: Get QRadar search results
+      script: '|||qradar-get-search-results'
+      tags:
+      - SIEMResults
+      type: regular
+      version: -1
+    taskid: 002ea839-b95b-44f0-836c-3b3301dc9912
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1300
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook is done
+      id: 701a0263-8a65-4ae1-8d96-5f86f2f91dfd
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 701a0263-8a65-4ae1-8d96-5f86f2f91dfd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 1570
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: QRadar.Search.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: COMPLETED
+      label: "yes"
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "180"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the search is completed
+      id: 3ff00459-56d6-4a49-81b3-120a076f00c3
+      iscommand: false
+      name: Is search completed?
+      type: condition
+      version: -1
+    taskid: 3ff00459-56d6-4a49-81b3-120a076f00c3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 760
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: inList
+                    right:
+                      value:
+                        simple: QRadar,QRadar_v2,QRadar v3
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 80e8c4b2-6932-45eb-84b6-ecd1fc1f1764
+      iscommand: false
+      name: Is QRadar enabled?
+      type: condition
+      version: -1
+    taskid: 80e8c4b2-6932-45eb-84b6-ecd1fc1f1764
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      seconds:
+        simple: "120"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: e24858ae-0955-4261-81f2-008a522c8f90
+      iscommand: false
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: e24858ae-0955-4261-81f2-008a522c8f90
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 960
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: QRadar.Search.Status
+          operator: isEqualString
+          right:
+            value:
+              simple: COMPLETED
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "180"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the search is completed
+      id: 17cadd56-7b30-4771-8ca0-b36d0ee33cdb
+      iscommand: false
+      name: Is search completed?
+      type: condition
+      version: -1
+    taskid: 17cadd56-7b30-4771-8ca0-b36d0ee33cdb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1170
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      query_expression:
+        simple: select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where ( "username"='${incident.sourceip}'  ) order by "startTime" desc LIMIT 15 last 30 minutes
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Creates a new asynchronous Ariel search. Returns the search ID. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
+      id: ccd197cb-8b82-40ca-8191-60313c1aeb42
+      iscommand: true
+      name: QRadar Create Search
+      script: QRadar v3|||qradar-search-create
+      type: regular
+      version: -1
+    taskid: ccd197cb-8b82-40ca-8191-60313c1aeb42
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 360
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "60"
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Retrieves search results.
+      id: 05c89ec5-572c-426d-8eeb-492a2be1ef0b
+      iscommand: true
+      name: Get The search
+      script: QRadar v3|||qradar-search-results-get
+      type: regular
+      version: -1
+    taskid: 05c89ec5-572c-426d-8eeb-492a2be1ef0b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 530
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Polling command to search for events of a specific offense.
+      id: f9d55c43-eb9e-4a12-8c09-e6531573aad3
+      iscommand: true
+      name: deneme
+      script: QRadar v3|||qradar-search-retrieve-events
+      type: regular
+      version: -1
+    taskid: f9d55c43-eb9e-4a12-8c09-e6531573aad3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 810
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "7_5_#default#": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1585,
+        "width": 1410,
+        "x": -190,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

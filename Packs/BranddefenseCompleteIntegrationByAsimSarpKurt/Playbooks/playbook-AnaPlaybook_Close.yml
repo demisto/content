@@ -1,0 +1,435 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: AnaPlaybook_Close
+inputs:
+- description: ""
+  key: ""
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.musterisecimi}
+name: AnaPlaybook_Close
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7039fc34-aaab-430a-8228-c88d6b9e2352
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7039fc34-aaab-430a-8228-c88d6b9e2352
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -130
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1a328f6c-5e6a-4101-832b-6ced158825f0
+      iscommand: false
+      name: False Positive
+      playbookId: False Positive
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 1a328f6c-5e6a-4101-832b-6ced158825f0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fb061ee8-6c1e-42b6-82f1-38be03510fd5
+      iscommand: false
+      name: Incident Response
+      playbookId: Incident Response
+      type: playbook
+      version: -1
+      description: ''
+    taskid: fb061ee8-6c1e-42b6-82f1-38be03510fd5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4ac80c4b-c696-478d-8833-7f73b3531c69
+      iscommand: false
+      name: True Positive
+      playbookId: True Positive
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 4ac80c4b-c696-478d-8833-7f73b3531c69
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Kapatılsın - Olay Hatalı Bir Alarmdan (False Positive) Kaynaklanıyor
+        - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: False Positive - Tuning
+      label: False Positive
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Kapatılsın - Olay Doğru Bir Alarmdan (True Positive) Kaynaklanıyor
+      label: True Positive
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Müdahale Gerçekleştirilsin (Olay müdahale taleplerinizi 0531 221 22 81 numaralı telefondan 7/24 olarak yapabilirsiniz)
+      label: Olay Müdahale
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Otomatik aksiyon al - Incident tipine göre alınacak aksyionun bilgisi
+      label: Aksiyon Alindi
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Aksiyon Alindi:
+      - "6"
+      False Positive:
+      - "1"
+      Olay Müdahale:
+      - "2"
+      True Positive:
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7b40691a-8d8a-419a-8e25-47d79ad9b1a6
+      iscommand: false
+      name: Müşteri Seçimi
+      type: condition
+      version: -1
+    taskid: 7b40691a-8d8a-419a-8e25-47d79ad9b1a6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 195
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b3ab6d4c-d3e0-431d-85fc-6dd5206f0f0e
+      iscommand: false
+      name: Playbook End
+      type: title
+      version: -1
+      description: ''
+    taskid: b3ab6d4c-d3e0-431d-85fc-6dd5206f0f0e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 36049646-8e12-46fb-8f25-9e3e77183c61
+      iscommand: false
+      name: 'Aksiyon Alindi '
+      type: title
+      version: -1
+      description: ''
+    taskid: 36049646-8e12-46fb-8f25-9e3e77183c61
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 370
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: BildirimOtomasyonu
+      label: "yes"
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 023ffcbb-05b3-4bcb-83c4-2575bd537021
+      iscommand: false
+      name: Bildirim Otomasyonu mu?
+      type: condition
+      version: -1
+    taskid: 023ffcbb-05b3-4bcb-83c4-2575bd537021
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 20
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: eadd5873-2f8f-4487-877e-54ae9fb6f335
+      iscommand: true
+      name: Resolved
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: eadd5873-2f8f-4487-877e-54ae9fb6f335
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 300
+        }
+      }
+  "10":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closing_reason_id:
+        simple: "3"
+      offense_id:
+        simple: ${incident.alertid}
+      status:
+        simple: CLOSED
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Updates an offense.
+      id: ba440228-bc7b-4561-8d22-7a6638c5c29e
+      iscommand: true
+      name: QRadar Close Offense - True Positive
+      script: QRadar v3|||qradar-offense-update
+      type: regular
+      version: -1
+    taskid: ba440228-bc7b-4561-8d22-7a6638c5c29e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 145
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 1362.5,
+        "x": 40,
+        "y": -130
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

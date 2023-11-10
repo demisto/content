@@ -1,0 +1,310 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Incident Response
+inputs: []
+name: Incident Response
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 51956099-682d-4109-82fb-23231d6d2029
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 51956099-682d-4109-82fb-23231d6d2029
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Investigation Notları
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Incident Investigation Sürecini Gerçekleştir
+      totalanswers: 0
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: Investigation Tamamlandı mı?
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 24b19a59-56f4-4e8b-8855-fc5196f96a78
+      iscommand: false
+      name: Incident Response Team Manually Review the Incident
+      type: collection
+      version: -1
+    taskid: 24b19a59-56f4-4e8b-8855-fc5196f96a78
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: "1"
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      label: condition-1
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ebd82819-c03a-4bb6-8515-4c3eacbdb9d3
+      iscommand: false
+      name: No QRadar Integration
+      type: condition
+      version: -1
+    taskid: ebd82819-c03a-4bb6-8515-4c3eacbdb9d3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 720
+        }
+      }
+  "3":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "2"
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closing_reason_id:
+        simple: "3"
+      offense_id:
+        simple: ${incident.alertid}
+      status:
+        simple: CLOSED
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates an offense.
+      id: 3c113741-00d0-444b-8cbe-3d2b44da26de
+      iscommand: true
+      name: QRadar Close Offense - Resolved
+      script: '|||qradar-offense-update'
+      type: regular
+      version: -1
+    taskid: 3c113741-00d0-444b-8cbe-3d2b44da26de
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cc:
+        simple: mghanalist@barikat.com.tr
+      htmlBody:
+        simple: "<div class=\"table-wrap\">\n\t<div>\n\t\t<table class=\"wrapped investigationTable\" style=\"width:99%;border-collapse: collapse;\">\n\t\t\n\t\t<style>\n\t\ttr:nth-child(even) {background-color: #f2f2f2;}\n\t\t</style>\n\t\t<tr>\n\t\t\t<td style=\"text-align:center;background-color:#b3d4ff;border: 1px solid #C1C7D0;padding: 12px 10px\" colspan=\"2\">\n\t\t\t<p style=\"color:#120a8f\"><span><strong>Incident Closed: RESOLVED</strong></span></p></td>\n\t\t</tr>\n\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incident ID</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.id}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>SIEM Alert ID</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.alertid}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>SIEM Address</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.alertlink}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incident Name</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.name}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incident Type</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.type}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Severity</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.severity}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Customer Name</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.account}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incident Source</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceBrand}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incdient Date&Time</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.starttime}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Analyst</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.owner}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Source User Name</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceusername}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Source IP</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceip}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Destination IP</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.destinationip}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Customer Response</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${Incident Form.Answers.name} - ${incident.customerresponse}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\" ><p style=\"color:#120a8f\"><span><strong>Incident Detail</strong></span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.l1notes}</span></p></td>\n\t\t</tr>\n\t</tbody>\n</table>\n\t</div>\n</div>"
+      subject:
+        simple: ${incident.name} Incident Closed.
+      to:
+        simple: ${lists.MusteriMailList}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: a49ff734-3700-404e-8b16-1d0622fd5620
+      iscommand: true
+      name: Inform the Customer (Resolved)
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: a49ff734-3700-404e-8b16-1d0622fd5620
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 970
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: b5904024-0cc9-4381-8887-b7ab2bfa954b
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: b5904024-0cc9-4381-8887-b7ab2bfa954b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 54912efd-465e-42d8-8445-6e7a859f2b94
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 54912efd-465e-42d8-8445-6e7a859f2b94
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1540
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1555,
+        "width": 790,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,328 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: False Positive
+inputs: []
+name: False Positive
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7916c4c9-0da0-42b1-84e3-6cc0a79c4cd7
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7916c4c9-0da0-42b1-84e3-6cc0a79c4cd7
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: "1"
+          operator: isEqualString
+          right:
+            value:
+              simple: "1"
+      label: condition-1
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1988f5c9-93f8-47b0-88be-8c0f1ab65818
+      iscommand: false
+      name: No Qradar Integration
+      type: condition
+      version: -1
+    taskid: 1988f5c9-93f8-47b0-88be-8c0f1ab65818
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "1"
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closing_reason_id:
+        simple: "2"
+      offense_id:
+        simple: ${incident.alertid}
+      status:
+        simple: CLOSED
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Updates an offense.
+      id: 6ccc1278-d7bc-4f03-8366-ba097037cdbd
+      iscommand: true
+      name: QRadar Close Offense - False Positive
+      script: QRadar v3|||qradar-offense-update
+      type: regular
+      version: -1
+    taskid: 6ccc1278-d7bc-4f03-8366-ba097037cdbd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cc:
+        simple: mghanalist@barikat.com.tr
+      htmlBody:
+        simple: "<div class=\"table-wrap\">\n\t<div>\n\t\t<table class=\"wrapped investigationTable\" style=\"width:99%;border-collapse: collapse;\">\n\t\t\n\t\t<style>\n\t\ttr:nth-child(even) {background-color: #f2f2f2;}\n\t\t</style>\n\t\t<tr>\n\t\t\t<td style=\"text-align:center;background-color:#b3d4ff;border: 1px solid #C1C7D0;padding: 12px 10px\" colspan=\"2\">\n\t\t\t<p style=\"color:#120a8f\"><span><strong>Incident Closed: RESOLVED</strong></span></p></td>\n\t\t</tr>\n\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incident ID</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.id}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>SIEM Alert ID</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.alertid}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>SIEM Address</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.alertlink}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incident Name</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.name}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incident Type</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.type}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Severity</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.severity}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Customer Name</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.account}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incident Source</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceBrand}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Incdient Date&Time</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.starttime}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Analyst</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.owner}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Source User Name</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceusername}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Source IP</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.sourceip}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Destination IP</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.destinationip}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px;width:30%;\"><p style=\"color:#120a8f\"><span><strong>Customer Response</strong></span></p></td>\n\t\t\t<td style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${Incident Form.Answers.name} - ${incident.customerresponse}</span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\" ><p style=\"color:#120a8f\"><span><strong>Incident Detail</strong></span></p></td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td colspan=\"2\" style=\"border: 1px solid #C1C7D0;padding: 12px 10px\"><p><span>${incident.l1notes}</span></p></td>\n\t\t</tr>\n\t</tbody>\n</table>\n\t</div>\n</div>"
+      subject:
+        simple: ${incident.name} incident closed.
+      to:
+        simple: ${lists.MusteriMailList}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: a75ebbeb-bfcc-4c48-88a4-c377911ea23c
+      iscommand: true
+      name: Müşteriye Bildir
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: a75ebbeb-bfcc-4c48-88a4-c377911ea23c
+    timertriggers:
+    - action: stop
+      fieldname: awaitingcustomer
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: False Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 1c41b664-24de-4296-8a12-eb90335573b9
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 1c41b664-24de-4296-8a12-eb90335573b9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4fcbc8e7-8600-4c58-843c-e13560cb3bc6
+      iscommand: false
+      name: Playbook End
+      type: title
+      version: -1
+      description: ''
+    taskid: 4fcbc8e7-8600-4c58-843c-e13560cb3bc6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: containsGeneral
+          right:
+            value:
+              simple: Tuning
+      label: Tuning Required
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      Tuning Required:
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 302fe5fd-6102-45b9-8c5b-d54b1d413995
+      iscommand: false
+      name: Does the Rule Require Tuning?
+      type: condition
+      version: -1
+    taskid: 302fe5fd-6102-45b9-8c5b-d54b1d413995
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: "${incident.alertid} id'li offense'in tetiklenmesine sebebiyet veren kuralı/kuralların incelenmesini ve tune edilmesini rica ederiz. \nAlarm linki: \n${incident.alertlink}"
+      subject:
+        simple: ${incident.alertid}'li kuralın düzenlenmesi
+      to:
+        simple: consultant@barikat.com.tr
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Mail Sender (New)
+      description: Send an email
+      id: b8df1257-d924-451b-805c-0242a763e79e
+      iscommand: true
+      name: Inform the Consultant
+      script: Mail Sender (New)|||send-mail
+      type: regular
+      version: -1
+    taskid: b8df1257-d924-451b-805c-0242a763e79e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

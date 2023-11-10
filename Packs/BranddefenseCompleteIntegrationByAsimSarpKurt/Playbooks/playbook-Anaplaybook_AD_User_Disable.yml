@@ -1,0 +1,205 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Anaplaybook AD User Disable
+inputs: []
+name: Anaplaybook AD User Disable
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3b0fa8c3-45c7-4322-804b-990559b76531
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 3b0fa8c3-45c7-4322-804b-990559b76531
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 80
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      username:
+        complex:
+          accessor: events}
+          root: ${incident.labels
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: Account Name:\s+(.*?)Account Domain
+              unpack_matches: {}
+            operator: RegexExtractAll
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Active Directory Query v2
+      description: Disables an Active Directory user account.
+      id: d329fc19-421c-491e-8a80-59234c39b808
+      iscommand: true
+      name: Get User
+      script: Active Directory Query v2|||ad-disable-account
+      type: regular
+      version: -1
+    taskid: d329fc19-421c-491e-8a80-59234c39b808
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 130
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      username:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Active Directory Query v2
+      description: Disables an Active Directory user account.
+      id: 37d10044-857a-4fb1-8897-e76d767ce49b
+      iscommand: true
+      name: Disable AD Account
+      script: Active Directory Query v2|||ad-disable-account
+      type: regular
+      version: -1
+    taskid: 37d10044-857a-4fb1-8897-e76d767ce49b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 320
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1f44a74d-42ce-438d-8817-4105a9051172
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 1f44a74d-42ce-438d-8817-4105a9051172
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 600
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      username:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Active Directory Query v2
+      description: Expires the password of an Active Directory user.
+      id: 21dc83fd-116f-47fc-8bbb-4e45bca72281
+      iscommand: true
+      name: User Expire Password
+      script: Active Directory Query v2|||ad-expire-password
+      type: regular
+      version: -1
+    taskid: 21dc83fd-116f-47fc-8bbb-4e45bca72281
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 310
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 585,
+        "width": 960,
+        "x": 670,
+        "y": 80
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

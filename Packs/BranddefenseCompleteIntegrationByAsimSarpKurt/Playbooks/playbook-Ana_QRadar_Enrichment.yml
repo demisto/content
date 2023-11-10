@@ -1,0 +1,887 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Ana_QRadar_Enrichment
+inputs: []
+name: Ana_QRadar_Enrichment
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8c84607c-08ff-49fc-8447-fe56d4207d51
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 8c84607c-08ff-49fc-8447-fe56d4207d51
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      events_limit:
+        simple: "10"
+      offense_id:
+        simple: ${incident.alertid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Polling command to search for events of a specific offense.
+      id: 8fa691c0-fc04-4790-8f06-1201556c18ed
+      iscommand: true
+      name: QRadar Create Search for Raw Payload and Offense Categories
+      script: QRadar v3|||qradar-search-retrieve-events
+      type: regular
+      version: -1
+    taskid: 8fa691c0-fc04-4790-8f06-1201556c18ed
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1430,
+          "y": 1390
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9202d951-7069-40f8-86f7-fe0912163268
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 9202d951-7069-40f8-86f7-fe0912163268
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1080
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a110d0ba-c28d-49a0-8d61-a67f82d46e95
+      iscommand: false
+      name: QRadar AQL Search
+      type: title
+      version: -1
+      description: ''
+    taskid: a110d0ba-c28d-49a0-8d61-a67f82d46e95
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 440
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.name}
+          operator: containsGeneral
+          right:
+            value:
+              simple: Stopped Sending Events
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ff130bda-e0b0-4ceb-8d3c-aa937d9c94fa
+      iscommand: false
+      name: Does alarm type includes Log Source Stopped Sending Events?
+      type: condition
+      version: -1
+    taskid: ff130bda-e0b0-4ceb-8d3c-aa937d9c94fa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 585
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query_expression:
+        simple: select qidname(qid) as 'Event Name', categoryname(category) as 'Low Level Category' from events where (logsourcename(logsourceid)='${incident.logsource}') ORDER BY starttime desc limit 998 last 60 MINUTES
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Creates a new asynchronous Ariel search. Returns the search ID. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
+      id: 31c272a2-c08b-440d-8606-14d528d0f377
+      iscommand: true
+      name: Create Search last 1 hour log source activity
+      script: QRadar v3|||qradar-search-create
+      type: regular
+      version: -1
+    taskid: 31c272a2-c08b-440d-8606-14d528d0f377
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1020
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: Log Source
+      output:
+        simple: ${incident.logsourcename.[0]}
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      logsourcename:
+        complex:
+          accessor: log_sources}
+          root: ${incident.labels
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '"name":"([^\"]+)'
+              unpack_matches: {}
+            operator: RegexExtractAll
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: split
+          - operator: FirstArrayElement
+          - args:
+              chars:
+                value:
+                  simple: '"['
+            operator: StripChars
+          - args:
+              chars:
+                value:
+                  simple: ']"'
+            operator: StripChars
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 2929c5e5-9e90-46af-825d-cfadc00376fb
+      iscommand: true
+      name: Map Log Source Name
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 2929c5e5-9e90-46af-825d-cfadc00376fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1595,
+          "y": 835
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Retrieves search results.
+      id: cd89cc89-e9c2-46bc-8bf9-2f59bfd21238
+      iscommand: true
+      name: QRadar Get Search Results
+      script: QRadar v3|||qradar-search-results-get
+      type: regular
+      version: -1
+    taskid: cd89cc89-e9c2-46bc-8bf9-2f59bfd21238
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1185
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dd9e9fe8-19f0-495c-8c04-5cf0b024570e
+      iscommand: false
+      name: Retrieve Events From the Log Source in Error for 1 Hour
+      type: title
+      version: -1
+      description: ''
+    taskid: dd9e9fe8-19f0-495c-8c04-5cf0b024570e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1595,
+          "y": 680
+        }
+      }
+  "12":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query_expression:
+        simple: select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where ( "username"='${incident.sourceusername}'  ) order by "startTime" desc LIMIT 20 last 120 minutes
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Creates a new asynchronous Ariel search. Returns the search ID. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
+      id: 1f581aec-bda0-4dce-8fa1-4a028d081cd4
+      iscommand: true
+      name: Create Search 120 Min Activity for Related User
+      script: QRadar v3|||qradar-search-create
+      type: regular
+      version: -1
+    taskid: 1f581aec-bda0-4dce-8fa1-4a028d081cd4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 530
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: inList
+                    right:
+                      value:
+                        simple: QRadar,QRadar_v2,QRadar v3
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 8fbcbc4a-51db-4b4c-8651-b5bfc12a9aae
+      iscommand: false
+      name: Is QRadar enabled?
+      type: condition
+      version: -1
+    taskid: 8fbcbc4a-51db-4b4c-8651-b5bfc12a9aae
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 200
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    evidencedata:
+      customfields: {}
+      description:
+        simple: kamurna
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Retrieves search results.
+      id: 719193b3-daf0-44ea-8d0b-d485d47233b1
+      iscommand: true
+      name: Qradar Get Search Result for User Activity
+      script: QRadar v3|||qradar-search-results-get
+      type: regular
+      version: -1
+    taskid: 719193b3-daf0-44ea-8d0b-d485d47233b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 740
+        }
+      }
+  "15":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      query_expression:
+        simple: select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where ( "sourceip"='${incident.sourceip}'  ) order by "startTime" desc LIMIT 15 last 5 minutes
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Creates a new asynchronous Ariel search. Returns the search ID. Search status and results can be polled by sending the search ID to the 'qradar-search-status-get' and 'qradar-search-results-get' commands. Accepts SELECT query expressions only.
+      id: 68e88ab9-bab0-4775-83d4-837fe6704abf
+      iscommand: true
+      name: Create Search 120 Min Activity for Related Source IP
+      script: QRadar v3|||qradar-search-create
+      type: regular
+      version: -1
+    taskid: 68e88ab9-bab0-4775-83d4-837fe6704abf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1440,
+          "y": 940
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Source IP Activity
+    fieldMapping:
+    - incidentfield: qradar_payload
+      output:
+        simple: ${QRadar.Search.Result}
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      range:
+        simple: 0-10
+      search_id:
+        simple: ${QRadar.Search.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: QRadar v3
+      description: Retrieves search results.
+      id: 509ba7df-9160-4d1e-801f-1f8aad8fb9e8
+      iscommand: true
+      name: Qradar Get Search Result for Source IP Events
+      script: QRadar v3|||qradar-search-results-get
+      type: regular
+      version: -1
+    taskid: 509ba7df-9160-4d1e-801f-1f8aad8fb9e8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1430,
+          "y": 1170
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9614b0d1-d839-4d98-8c3b-eeffbc6673bf
+      iscommand: false
+      name: done
+      type: title
+      version: -1
+      description: ''
+    taskid: 9614b0d1-d839-4d98-8c3b-eeffbc6673bf
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1380
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+      - "22"
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0a15ff96-91fb-400a-8aff-f789b7d02b8c
+      iscommand: false
+      name: QRadar Enrichment via AQL
+      type: title
+      version: -1
+      description: ''
+    taskid: 0a15ff96-91fb-400a-8aff-f789b7d02b8c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 200
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.sourceip}
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9df3db7c-043f-45de-8230-684fbfa95bac
+      iscommand: false
+      name: Is there a Source IP
+      type: condition
+      version: -1
+    taskid: 9df3db7c-043f-45de-8230-684fbfa95bac
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 380
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.sourceip}
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ac372fba-2ea4-4c09-80df-f99b1777284c
+      iscommand: false
+      name: Is there a Source Username
+      type: condition
+      version: -1
+    taskid: ac372fba-2ea4-4c09-80df-f99b1777284c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 390
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where ( "sourceip"='${incident.sourceip}'  ) order by "startTime" desc LIMIT 15 last 30 minutes
+      range:
+        simple: 1-5
+      timeout:
+        simple: "600"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook runs a QRadar query and return its results to the context.
+      id: eb3859bd-21b0-43d2-8386-06334ad596e3
+      iscommand: false
+      name: QRadarFullSearch_sourceip_activity
+      playbookId: QRadarFullSearch_sourceip_activity
+      type: playbook
+      version: -1
+    taskid: eb3859bd-21b0-43d2-8386-06334ad596e3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 700
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where ( "username"='incident.sourceusername'  ) order by "startTime" desc LIMIT 30 last 30 minutes
+      timeout:
+        simple: "600"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook runs a QRadar query and return its results to the context.
+      id: 1b8980b7-8b83-4a33-8841-f428ecdd5b11
+      iscommand: false
+      name: QRadarFullSearch_user_activity
+      playbookId: QRadarFullSearch_user_activity
+      type: playbook
+      version: -1
+    taskid: 1b8980b7-8b83-4a33-8841-f428ecdd5b11
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 690
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.destinationip}
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 86f3f341-566e-4ca7-8c07-5ff0ef6776a5
+      iscommand: false
+      name: Is there a Destination IP?
+      type: condition
+      version: -1
+    taskid: 86f3f341-566e-4ca7-8c07-5ff0ef6776a5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 390
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      interval:
+        simple: "1"
+      query_expression:
+        simple: select QIDNAME(qid) as 'Event Name',logsourcename(logSourceId) as 'Log Source',"eventCount" as 'Event Count',"startTime" as 'Time',categoryname(category) as 'Low Level Category',"sourceIP" as 'Source IP',"sourcePort" as 'Source Port',"destinationIP" as 'Destination IP',"destinationPort" as 'Destination Port',"userName" as 'Username',"magnitude" as 'Magnitude' from events where ( "destinationip"='${incident.destinationip}'  ) order by "startTime" desc LIMIT 30 last 30 minutes
+      timeout:
+        simple: "600"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook runs a QRadar query and return its results to the context.
+      id: a8e0727a-5364-463e-8273-aa8c9eb0bd54
+      iscommand: false
+      name: QRadarFullSearch_destinationip_activity
+      playbookId: QRadarFullSearch_destinationip_activity
+      type: playbook
+      version: -1
+    taskid: a8e0727a-5364-463e-8273-aa8c9eb0bd54
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 680
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_2_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 3630,
+        "x": -1440,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

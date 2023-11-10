@@ -1,0 +1,807 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: ana_playbook
+inputs: []
+name: ana_playbook
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "48"
+      - "49"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5dc0cd19-22da-4df1-87f2-db1023867ee6
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5dc0cd19-22da-4df1-87f2-db1023867ee6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -720
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.linkedCount
+          operator: greaterThan
+          right:
+            value:
+              simple: "0"
+      label: "yes"
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "50"
+      "yes":
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4e6d4926-a364-4ed0-83e7-e393ffa5e00f
+      iscommand: false
+      name: Is this Incident linked to a previous one?
+      type: condition
+      version: -1
+    taskid: 4e6d4926-a364-4ed0-83e7-e393ffa5e00f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -440
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0e075e52-2aa9-4ee4-8f11-e7d3db5c19d9
+      iscommand: false
+      name: MTTD/MTTR Started
+      type: title
+      version: -1
+      description: ''
+    taskid: 0e075e52-2aa9-4ee4-8f11-e7d3db5c19d9
+    timertriggers:
+    - action: start
+      fieldname: mttr
+    - action: start
+      fieldname: mttd
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 385
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Enrich:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 469ab798-de4c-4722-8da2-55ffb576b709
+      iscommand: false
+      name: AnaPlaybook_Incident_Handling
+      playbookId: AnaPlaybook_Incident_Handling
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 469ab798-de4c-4722-8da2-55ffb576b709
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 084226ea-7267-430e-8f76-546bbc8eb4b7
+      iscommand: false
+      name: Close
+      type: title
+      version: -1
+      description: ''
+    taskid: 084226ea-7267-430e-8f76-546bbc8eb4b7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1800
+        }
+      }
+  "35":
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Source IPs:
+        simple: ${sourceiplist}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 97366424-7193-4588-862b-3792c01a59d4
+      iscommand: false
+      name: Ana Enrichment Playbook
+      playbookId: Ana Enrichment Playbook
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 97366424-7193-4588-862b-3792c01a59d4
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Kapatılsın - Olay Hatalı Bir Alarmdan (False Positive) Kaynaklanıyor
+        - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Kapatılsın - Olay Doğru Bir Alarmdan (True Positive) Kaynaklanıyor
+        - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Olay Müdahale Gerçekleştirilsin (Olay müdahale taleplerinizi 0531 221 22 81 numaralı telefondan 7/24 olarak yapabilirsiniz)
+        - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: False Positive - Tuning
+      label: Close
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: Otomatik aksiyon al - Incident tipine göre alınacak aksyionun bilgisi
+        - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: FullOtomatikAksiyon
+        - left:
+            iscontext: true
+            value:
+              simple: ${incident.musterisecimi}
+          operator: isEqualString
+          right:
+            value:
+              simple: BildirimOtomasyonu
+      label: Aksyion Al
+    continueonerrortype: ""
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Aksyion Al:
+      - "42"
+      Close:
+      - "38"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d2d7149c-5dca-4303-8923-fa695b2bccd8
+      iscommand: false
+      name: Incident Handling Sonucu
+      type: condition
+      version: -1
+    taskid: d2d7149c-5dca-4303-8923-fa695b2bccd8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1050
+        }
+      }
+  "38":
+    continueonerrortype: ""
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d2f9cdd0-4ffb-448c-83d2-7e22212b8ded
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: d2f9cdd0-4ffb-448c-83d2-7e22212b8ded
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1375
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 51d9a8d3-36ec-46fc-8463-9a81dc787475
+      iscommand: false
+      name: AnaPlaybook_Close
+      playbookId: AnaPlaybook_Close
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 51d9a8d3-36ec-46fc-8463-9a81dc787475
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1535
+        }
+      }
+  "40":
+    continueonerrortype: ""
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db46d8e3-328e-49f9-8469-6feabb3ff9c1
+      iscommand: false
+      name: Incident Handling
+      type: title
+      version: -1
+      description: ''
+    taskid: db46d8e3-328e-49f9-8469-6feabb3ff9c1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "42":
+    continueonerrortype: ""
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2d3ffa19-6b7f-4592-8694-40d81c81d625
+      iscommand: false
+      name: Aksiyon Al
+      type: title
+      version: -1
+      description: ''
+    taskid: 2d3ffa19-6b7f-4592-8694-40d81c81d625
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1215
+        }
+      }
+  "43":
+    continueonerrortype: ""
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b7142192-642c-4c07-8bb4-007921b446ba
+      iscommand: false
+      name: Ana Otomatik Aksiyon Al
+      playbookId: Ana Otomatik Aksiyon Al
+      type: playbook
+      version: -1
+      description: ''
+    taskid: b7142192-642c-4c07-8bb4-007921b446ba
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1360
+        }
+      }
+  "44":
+    continueonerrortype: ""
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cd60ddd3-5b79-41bd-8d52-286532700e41
+      iscommand: false
+      name: AnaPlaybook_ClosingLinkIncidents
+      playbookId: AnaPlaybook_ClosingLinkIncidents
+      type: playbook
+      version: -1
+      description: ''
+    taskid: cd60ddd3-5b79-41bd-8d52-286532700e41
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+  "45":
+    continueonerrortype: ""
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1686f5d1-bebc-40b5-820e-fc324ac2b25d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 1686f5d1-bebc-40b5-820e-fc324ac2b25d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 560
+        }
+      }
+  "46":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.sourceip
+          operator: containsGeneral
+          right:
+            value:
+              simple: '['
+        - left:
+            iscontext: true
+            value:
+              simple: incident.sourceip
+          operator: containsGeneral
+          right:
+            value:
+              simple: ']'
+        - left:
+            iscontext: true
+            value:
+              simple: incident.sourceip
+          operator: containsGeneral
+          right:
+            value:
+              simple: '"'
+      label: Multiple Source IP
+    continueonerrortype: ""
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      Multiple Source IP:
+      - "47"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6f0f1ddd-ab81-4a1a-89d9-20e4b0e1ba65
+      iscommand: false
+      name: Multiple Source IP Control
+      type: condition
+      version: -1
+    taskid: 6f0f1ddd-ab81-4a1a-89d9-20e4b0e1ba65
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -50
+        }
+      }
+  "47":
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: B-MultiIPAbuseCheck
+      output:
+        simple: "1"
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 55108778-d354-40ff-897c-11782382b8cf
+      iscommand: false
+      name: Check Multiple Source IPs and Discriminate Risky Scores
+      scriptName: B-MultiIPAbuse
+      type: regular
+      version: -1
+    taskid: 55108778-d354-40ff-897c-11782382b8cf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 160
+        }
+      }
+  "48":
+    continueonerrortype: ""
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listData:
+        simple: ${incident.alertid}
+      listName:
+        simple: B-LastOffenseID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.set
+      id: 53570e7c-9371-46a5-87f5-4fe245d32ab8
+      iscommand: true
+      name: AddTolist LastOffenseID
+      script: Builtin|||setList
+      type: regular
+      version: -1
+    taskid: 53570e7c-9371-46a5-87f5-4fe245d32ab8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 892.5,
+          "y": -240
+        }
+      }
+  "49":
+    continueonerrortype: ""
+    id: "49"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listData:
+        simple: ${incident.id}
+      listName:
+        simple: B-LastIncidentID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.set
+      id: 8b57d2aa-fcf0-45d4-8445-fd09d8dc4845
+      iscommand: true
+      name: AddTolist LastIncidentID
+      script: Builtin|||setList
+      type: regular
+      version: -1
+    taskid: 8b57d2aa-fcf0-45d4-8445-fd09d8dc4845
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1322.5,
+          "y": -240
+        }
+      }
+  "50":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.name
+          operator: containsGeneral
+          right:
+            value:
+              simple: Branddefense Incident
+      label: "yes"
+    continueonerrortype: ""
+    id: "50"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "51"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b244fbbd-2272-4442-81c0-1a6c3598445d
+      iscommand: false
+      name: Does Incident Name Contain Branddefense?
+      type: condition
+      version: -1
+    taskid: b244fbbd-2272-4442-81c0-1a6c3598445d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -250
+        }
+      }
+  "51":
+    continueonerrortype: ""
+    id: "51"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7100624f-3037-4c20-8fd8-78d843f96ff7
+      iscommand: false
+      name: branddefense_enrichment
+      playbookId: branddefense_enrichment
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 7100624f-3037-4c20-8fd8-78d843f96ff7
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": -170
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2585,
+        "width": 1892.5,
+        "x": -190,
+        "y": -720
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

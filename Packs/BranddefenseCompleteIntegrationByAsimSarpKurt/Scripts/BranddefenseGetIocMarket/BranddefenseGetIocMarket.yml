@@ -1,0 +1,25 @@
+args:
+- description: The required ioc_type parameter allows you to select Indicators of Compromise (IoCs) types from the threat lists.
+  name: ioc_type
+commonfields:
+  id: branddefense_get_ioc_market
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.80014
+enabled: true
+name: branddefense_get_ioc_market
+outputs:
+- contextPath: branddefense_ioc
+  description: hash,domain,url veya ip address girilmeli
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

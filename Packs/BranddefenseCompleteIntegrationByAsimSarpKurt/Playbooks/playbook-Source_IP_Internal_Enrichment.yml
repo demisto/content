@@ -1,0 +1,307 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: |-
+  Enrich IP addresses using one or more integrations.
+
+  - Resolve IP addresses to hostnames (DNS).
+  - Provide threat information.
+  - Separate internal and external addresses.
+id: Source IP Internal Enrichment
+inputs:
+- description: The IP address to enrich.
+  key: Source IP
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: sourceip}
+      root: ${incident
+      transformers:
+      - operator: uniq
+- description: 'A CSV list of IP address ranges (in CIDR notation). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  key: InternalRange
+  playbookInputQuery:
+  required: false
+  value:
+    simple: inputs.InternalRange
+- description: Whether to convert the IP address to a hostname using a DNS query (True/False).
+  key: ResolveIP
+  playbookInputQuery:
+  required: true
+  value:
+    complex:
+      root: inputs.ResolveIP
+- description: |-
+    Define if you would like to use the !IP command.
+    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
+    Possible values: True / False.
+  key: UseReputationCommand
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "False"
+name: Source IP Internal Enrichment
+outputs:
+- contextPath: IP
+  description: The IP address objects.
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, and Vendor.
+  type: unknown
+- contextPath: Endpoint
+  description: The endpoint's object.
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich.
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint operating system.
+  type: string
+- contextPath: Endpoint.IP
+  description: A list of endpoint IP addresses.
+- contextPath: Endpoint.MAC
+  description: A list of endpoint MAC addresses.
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name.
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ea65a2c3-979b-486f-8369-c7c054e54ae3
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ea65a2c3-979b-486f-8369-c7c054e54ae3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 102.5,
+          "y": 49
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e284e536-9bfe-4f01-85ad-9ea1fdaa74d2
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: e284e536-9bfe-4f01-85ad-9ea1fdaa74d2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1260
+        }
+      }
+  "28":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Source IP
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determine whether the playbook's input contains at least one IP address.
+      id: 83fe4181-ba53-4b14-842a-2319ed966d0f
+      iscommand: false
+      name: Are there any IP addresses?
+      type: condition
+      version: -1
+    taskid: 83fe4181-ba53-4b14-842a-2319ed966d0f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 102.5,
+          "y": 195
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.ResolveIP
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the "ResolveIP" parameter is set to "True".
+      id: 584e46df-91be-45d6-8629-5861b5ef4e83
+      iscommand: false
+      name: Resolve the IP address?
+      type: condition
+      version: -1
+    taskid: 584e46df-91be-45d6-8629-5861b5ef4e83
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 102.5,
+          "y": 800
+        }
+      }
+  "35":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      ip:
+        complex:
+          accessor: sourceip}
+          root: ${incident
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Convert the IP address to a hostname using DNS query.
+      id: a1e9b6d1-e692-4d14-8b80-6d5ab449d384
+      iscommand: false
+      name: IP to Hostname (DNS)
+      scriptName: IPToHost
+      type: regular
+      version: -1
+    taskid: a1e9b6d1-e692-4d14-8b80-6d5ab449d384
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 970
+        }
+      }
+  "39":
+    continueonerrortype: ""
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 094fd111-4d0f-4dd3-804c-7f201ba1eebf
+      iscommand: false
+      name: No External IP Address
+      type: title
+      version: -1
+      description: ''
+    taskid: 094fd111-4d0f-4dd3-804c-7f201ba1eebf
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 970
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_39_#default#": 0.35,
+      "34_35_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1276,
+        "width": 1440,
+        "x": -600,
+        "y": 49
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

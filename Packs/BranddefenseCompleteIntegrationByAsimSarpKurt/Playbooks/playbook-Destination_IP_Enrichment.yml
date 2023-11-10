@@ -1,0 +1,313 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Destination IP Enrichment
+inputs: []
+name: Destination IP Enrichment
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2593c078-b1eb-45a2-8899-1791941bc12c
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 2593c078-b1eb-45a2-8899-1791941bc12c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${incident.destinationip}
+          operator: isEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b3ac4f1b-c975-4f27-8b33-c6c05106c1e1
+      iscommand: false
+      name: Is Destination IP empty?
+      type: condition
+      version: -1
+    taskid: b3ac4f1b-c975-4f27-8b33-c6c05106c1e1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 210
+        }
+      }
+  "2":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      destinationip:
+        complex:
+          accessor: events}
+          root: ${incident.labels
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: destinationip":"([^\"]+)
+              unpack_matches: {}
+            operator: RegexExtractAll
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: a74ee22e-e1dc-4cd4-8ad3-5548b5404c80
+      iscommand: true
+      name: Map Destination IP
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: a74ee22e-e1dc-4cd4-8ad3-5548b5404c80
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.destinationip
+                    operator: IsInCidrRanges
+                    right:
+                      value:
+                        simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+                root: incident.destinationip
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      - "4"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ce96c539-e232-4df7-8939-06cab2dcc40f
+      iscommand: false
+      name: Is Destination IP address internal ?
+      type: condition
+      version: -1
+    taskid: ce96c539-e232-4df7-8939-06cab2dcc40f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 595
+        }
+      }
+  "4":
+    continueonerror: true
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: destinationip_abuseip_totalreport
+      output:
+        simple: ${AbuseIPDB.[1].IP.TotalReports}
+    - incidentfield: destinationip_abuseipconfidence
+      output:
+        simple: ${AbuseIPDB.[1].IP.AbuseConfidenceScore}
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        simple: ${incident.destinationip}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AbuseIPDB
+      description: Checks the specified IP address against the AbuseIP database.
+      id: e2c89d15-9a21-44e5-8638-c4d96d4dc897
+      iscommand: true
+      name: Abuse IPDB Dest IP Enrichment
+      script: AbuseIPDB|||ip
+      type: regular
+      version: -1
+    taskid: e2c89d15-9a21-44e5-8638-c4d96d4dc897
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 915
+        }
+      }
+  "5":
+    continueonerror: true
+    continueonerrortype: ""
+    fieldMapping:
+    - incidentfield: destinationip_virustotalmaliciousreport
+      output:
+        simple: ${VirusTotal.IP.attributes.last_analysis_stats.malicious}
+    - incidentfield: destinationip_virustotalgeolocation
+      output:
+        simple: ${IP.Geo.Country}
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        simple: ${incident.destinationip}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VirusTotal (API v3)
+      description: Checks the reputation of an IP address.
+      id: 038a1b3a-a713-4029-8af4-9d4caab80376
+      iscommand: true
+      name: VT Dest IP Enrichment
+      script: VirusTotal (API v3)|||ip
+      type: regular
+      version: -1
+    taskid: 038a1b3a-a713-4029-8af4-9d4caab80376
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 915,
+          "y": 915
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 14b3891d-923a-4e43-8094-e66a812a01d5
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 14b3891d-923a-4e43-8094-e66a812a01d5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1200
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1215,
+        "width": 1245,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
