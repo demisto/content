@@ -227,9 +227,8 @@
   - | 
     if [[ "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
       rm -rf ./Packs
-      echo "copying production Packs folder"
+      echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/content_production/Packs to ./Packs"
       cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
-      rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
       git status
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
