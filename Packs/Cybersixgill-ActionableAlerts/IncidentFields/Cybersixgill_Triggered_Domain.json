@@ -1,17 +1,12 @@
 {
     "id": "incident_triggereddomain",
-    "version": 1,
-    "cacheVersn": 0,
+    "version": -1,
     "modified": "2023-11-09T22:08:00.46683194+05:30",
     "name": "Triggered domain",
-    "prevName": "Triggered domain",
     "ownerOnly": false,
-    "placeholder": "",
-    "template": "",
     "description": "Triggered domain",
     "cliName": "triggereddomain",
     "type": "shortText",
-    "orgType": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -20,7 +15,7 @@
     "useAsKpi": false,
     "locked": false,
     "system": false,
-    "content": false,
+    "content": true,
     "group": 0,
     "hidden": false,
     "openEnded": false,
@@ -32,5 +27,6 @@
     "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
-    "threshold": 72
+    "threshold": 72,
+    "fromVersion": "6.10.0"
 }
