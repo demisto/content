@@ -193,7 +193,7 @@
   - section_start "Getting last bucket upload commit" --collapsed
   - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
   - gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
-  - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json" | jq -r ".\"commit\"")
+  - export LAST_UPLOAD_COMMIT=d4d42d27b021473bd2adf55e9ae75fa4ae74be78
   - section_end "Getting last bucket upload commit"
 
 .neo4j-setup: &neo4j-setup
@@ -227,9 +227,6 @@
   - | 
     if [[ "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
       rm -rf ./Packs
-      cd ${CI_PROJECT_DIR}/artifacts/content_production
-      git status
-      cd -
       echo "copying production Packs folder"
       cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
       rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
