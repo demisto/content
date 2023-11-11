@@ -11,7 +11,6 @@ from typing import Any
 
 import gitlab
 import requests
-from dateutil.relativedelta import relativedelta
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
 from gitlab.v4.objects import ProjectPipelineJob
 from slack_sdk import WebClient
@@ -405,7 +404,8 @@ def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
 def construct_coverage_slack_msg() -> list[dict[str, Any]]:
     coverage_today = get_total_coverage(filename=(ROOT_ARTIFACTS_FOLDER / "coverage_report" / "coverage-min.json").as_posix())
     coverage_yesterday = get_total_coverage(date=datetime.now() - timedelta(days=1))
-    coverage_last_month = get_total_coverage(date=datetime.now() - relativedelta(months=-1))
+    # The artifacts are kept for 30 days, so we can get the coverage for the last month.
+    coverage_last_month = get_total_coverage(date=datetime.now() - timedelta(days=30))
     color = 'good' if coverage_today >= coverage_yesterday else 'danger'
     title = (f'Content code coverage: {coverage_today:.3f}% (Yesterday: {coverage_yesterday:.3f}%, '
              f'Last month: {coverage_last_month:.3f}%)')
