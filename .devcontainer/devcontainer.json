@@ -71,7 +71,8 @@
 				"ms-python.debugpy",
 				"EditorConfig.EditorConfig",
 				"DavidAnson.vscode-markdownlint",
-				"ms-vscode.powershell"
+				"ms-vscode.powershell",
+                "ms-python.mypy-type-checker"
 			]
 		}
 	},

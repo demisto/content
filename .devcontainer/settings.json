@@ -1,9 +1,9 @@
 {
     "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
     "python.linting.enabled": true,
-    "python.linting.mypyEnabled": true,
     "python.linting.flake8Enabled": false,
-    "python.linting.mypyArgs": [
+    "mypy-type-checker.enabled": true,
+    "mypy-type-checker.args": [
         "--follow-imports=silent",
         "--ignore-missing-imports",
         "--show-column-numbers",
@@ -15,5 +15,5 @@
     "python.testing.pytestArgs": [
         "-v"
     ],
-    "python.testing.cwd": "${workspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
+    "python.testing.cwd": "${workspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld",
 }
