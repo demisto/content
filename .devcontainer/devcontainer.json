@@ -47,7 +47,27 @@
 					"toversion",
 					"marketplacev",
 					"ciac",
-					"whois"
+					"whois",
+                    "venv",
+                    "demistomock",
+                    "dind",
+                    "mypy",
+                    "MYPYPATH",
+                    "PYTHONPATH",
+                    "cortexxsoarext",
+                    "devcontainers",
+					"eamodio",
+					"azuretools",
+					"pypoetry",
+					"njpwerner",
+					"vscodeintellicode",
+                    "charliermarsh",
+					"autodocstring",
+					"Expt",
+					"mikestead",
+					"ryanluker",
+					"debugpy",
+					"Anson"
 				]
 			},
 			"extensions": [
