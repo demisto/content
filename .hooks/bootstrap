@@ -46,7 +46,6 @@ else
     else
         echo "Skipping install of pre-commit hook as it already exists."
         echo "If you want to re-install: 'rm ${GIT_HOOKS_DIR}/pre-commit' and then run this script again."
-        exit 1
     fi
 fi
 
