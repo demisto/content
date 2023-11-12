@@ -3,65 +3,77 @@ commonfields:
   id: Azure Firewall
   version: -1
 configuration:
-- display: Resource Group Name.
+- display: Default Resource Group Name
   name: resource_group
   required: true
   type: 14
-- display: Client ID.
+  section: Connect
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
+- display: Client ID
   defaultvalue: 'f5b37a76-f937-4c57-a9b5-31dab1c7e236'
   name: client_id
   type: 14
   required: false
-- displaypassword: Subscription ID.
+  section: Connect
+- displaypassword: Default Subscription ID
   name: subscription_id
   required: true
   type: 9
   hiddenusername: true
-- displaypassword: Tenant ID.
+  section: Connect
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
+- displaypassword: Tenant ID
   name: tenant_id
   type: 9
   hiddenusername: true
   required: false
-- displaypassword: Client Secret.
+  section: Connect
+- displaypassword: Client Secret
   name: client_secret
   type: 9
   hiddenusername: true
   required: false
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   type: 14
   required: false
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   type: 14
   hiddenusername: true
   required: false
+  section: Connect
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
   required: false
-- display: API Version.
-  name: api_version
-  required: true
-  defaultvalue: '2021-03-01'
-  type: 0
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service, with built-in high availability and unrestricted cloud scalability.
 display: Azure Firewall
 name: Azure Firewall
@@ -90,6 +102,10 @@ script:
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: List Azure firewalls in the specified resource group or subscription.
     name: azure-firewall-list
     outputs:
@@ -120,6 +136,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Retrieve Azure firewall information.
     name: azure-firewall-get
     polling: true
@@ -152,6 +172,10 @@ script:
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: List the collection rules in the firewall or policy. One of the arguments 'firewall_name' or 'policy' must be provided.
     name: azure-firewall-rule-collection-list
     outputs:
@@ -179,6 +203,10 @@ script:
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: List rules in the firewall or in the policy. One of the arguments 'firewall_name' or 'policy' must be provided.
     name: azure-firewall-rule-list
     outputs:
@@ -203,6 +231,10 @@ script:
     - description: The name of the rule to retrieve.
       name: rule_name
       required: true
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Retrieve rule information. One of the arguments 'firewall_name' or 'policy' must be provided.
     name: azure-firewall-rule-get
     outputs:
@@ -293,6 +325,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Create a firewall policy. This command only creates the policy resource. In order to attach the policy to a firewall, run the 'azure-firewall-policy-attach' command.
     name: azure-firewall-policy-create
     polling: true
@@ -337,6 +373,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Update the policy resource. The command will update the provided arguments.
     polling: true
     name: azure-firewall-policy-update
@@ -365,6 +405,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Retrieve policy information.
     polling: true
     name: azure-firewall-policy-get
@@ -380,6 +424,10 @@ script:
       isArray: true
       name: policy_names
       required: true
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Delete policy resource.
     name: azure-firewall-policy-delete
   - arguments:
@@ -397,6 +445,10 @@ script:
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: List the policy in the resource group or subscription.
     name: azure-firewall-policy-list
     outputs:
@@ -420,6 +472,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Attach a policy to a firewall. The policy and firewall have to belong to the same tier.
     polling: true
     name: azure-firewall-policy-attach
@@ -444,6 +500,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Remove a policy from the firewall. This command will detach the policy and firewall, but will not delete the policy.
     polling: true
     name: azure-firewall-policy-detach
@@ -527,6 +587,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Create a network rule collection in a firewall or policy. The command will return firewall or policy rule collection resource information. One of the arguments 'firewall_name' or 'policy'  must be provided.
     polling: true
     name: azure-firewall-network-rule-collection-create
@@ -544,6 +608,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Delete a network rule collection from the firewall or policy. One of the arguments 'firewall_name' or 'policy'  must be provided.
     polling: true
     name: azure-firewall-network-rule-collection-delete
@@ -607,6 +675,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Create a network rule in the firewall or policy rule collection. One of the arguments 'firewall_name' or 'policy'  must be provided.
     polling: true
     name: azure-firewall-network-rule-create
@@ -664,6 +736,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Update the network rule in the firewall. The provided arguments will replace the existing rule configuration. One of the arguments 'firewall_name' or 'policy'  must be provided. The command will not replace the rule source or destination types.
     polling: true
     name: azure-firewall-network-rule-update
@@ -685,6 +761,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Delete a network rule from the collection. One of the arguments 'firewall_name' or 'policy'  must be provided.
     polling: true
     name: azure-firewall-network-rule-delete
@@ -710,6 +790,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Update a network rule collection in a firewall or policy. The command will update the provided arguments. One of the arguments 'firewall_name' or 'policy'  must be provided. The command will return firewall or policy rule collection resource information.
     polling: true
     name: azure-firewall-network-rule-collection-update
@@ -759,6 +843,10 @@ script:
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Retrieve service tags information.
     name: azure-firewall-service-tag-list
   - arguments:
@@ -813,6 +901,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Create an IP group.
     polling: true
     name: azure-firewall-ip-group-create
@@ -842,6 +934,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Update an IP group. Add or remove IP addresses from the group.
     polling: true
     name: azure-firewall-ip-group-update
@@ -870,6 +966,10 @@ script:
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: List IP groups in a resource group or subscription.
     name: azure-firewall-ip-group-list
     outputs:
@@ -899,6 +999,10 @@ script:
     - defaultValue: '60'
       description: Indicates the time in seconds until the polling sequence times out.
       name: timeout
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Retrieve IP group information.
     polling: true
     name: azure-firewall-ip-group-get
@@ -917,9 +1021,75 @@ script:
       isArray: true
       name: ip_group_names
       required: true
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: resource_group_name
+      description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
     description: Delete an IP group resource.
     name: azure-firewall-ip-group-delete
-  dockerimage: demisto/crypto:1.0.0.79610
+  - name: azure-firewall-subscriptions-list
+    description: List all subscriptions for a tenant.
+    outputs:
+    - contextPath: AzureFirewall.Subscription.authorizationSource
+      description: The authorization source of the request.
+      type: String
+    - contextPath: AzureFirewall.Subscription.displayName
+      description: The subscription display name.
+      type: String
+    - contextPath: AzureFirewall.Subscription.id
+      description: The fully qualified ID for the subscription. For example, /subscriptions/8d65815f-a5b6-402f-9298-045155da7d74.
+      type: String
+    - contextPath: AzureFirewall.Subscription.managedByTenants
+      description: An array containing the tenants managing the subscription.
+      type: Unknown
+    - contextPath: AzureFirewall.Subscription.state
+      description: The subscription state. Possible values are Enabled, Warned, PastDue, Disabled, and Deleted.
+      type: Unknown
+    - contextPath: AzureFirewall.Subscription.subscriptionId
+      description: The subscription ID.
+      type: String
+    - contextPath: AzureFirewall.Subscription.subscriptionPolicies
+      description: The subscription policies.
+      type: Unknown
+    - contextPath: AzureFirewall.Subscription.tags
+      description: The tags attached to the subscription.
+      type: Object
+    - contextPath: AzureFirewall.Subscription.tenantId
+      description: The subscription tenant ID.
+      type: String
+  - name: azure-firewall-resource-group-list
+    description: List all resource groups for a subscription.
+    arguments:
+    - name: subscription_id
+      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - name: limit
+      description: Limit on the number of resource groups to return.
+      defaultValue: 50
+    - name: tag
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+    outputs:
+    - contextPath: AzureFirewall.ResourceGroup.id
+      description: The ID of the resource group.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.location
+      description: The location of the resource group.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.managedBy
+      description: The ID of the resource that manages this resource group.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.name
+      description: The name of the resource group.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.properties.provisioningState
+      description: The provisioning state.
+      type: String
+    - contextPath: AzureFirewall.ResourceGroup.tags
+      description: The tags attached to the resource group.
+      type: Object
+    - contextPath: AzureFirewall.ResourceGroup.type
+      description: The type of the resource group.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.80214
   runonce: false
   script: '-'
   subtype: python3
@@ -927,3 +1097,6 @@ script:
 fromversion: 6.1.0
 tests:
 - No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect
