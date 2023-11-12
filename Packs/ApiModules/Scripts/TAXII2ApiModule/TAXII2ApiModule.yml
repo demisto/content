@@ -8,10 +8,12 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common TAXII 2 code that will be appended into each TAXII 2 integration when it's deployed
+comment: Common TAXII 2 code that will be appended into each TAXII 2 integration when it's deployed.
 system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
 dockerimage: demisto/taxii2:1.0.0.23423
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
