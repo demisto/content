@@ -9,10 +9,11 @@ from distutils.util import strtobool
 from pathlib import Path
 from typing import Any
 
-import gitlab
 import requests
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
+from gitlab.client import Gitlab
 from gitlab.v4.objects import ProjectPipelineJob
+from junitparser import JUnitXml, TestSuite
 from slack_sdk import WebClient
 from slack_sdk.web import SlackResponse
 
@@ -20,7 +21,7 @@ from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, get_instance_directories, \
     get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX, TEST_MODELING_RULES_REPORT_FILE_NAME, \
-    get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS
+    get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
@@ -134,7 +135,6 @@ def test_modeling_rules_results(artifact_folder: Path,
                                                                              failed_test_to_jira_mapping.get(modeling_rule)))
 
     if failed_test_suites:
-
         if (artifact_folder / TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED).exists():
             title_suffix = ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS
             color = 'warning'
@@ -178,10 +178,10 @@ def slack_link(url: str, text: str) -> str:
 
 
 def test_playbooks_results_to_slack_msg(instance_role: str,
-                                        succeeded_tests: list[str],
-                                        failed_tests: list[str],
-                                        skipped_integrations: list[str],
-                                        skipped_tests: list[str],
+                                        succeeded_tests: set[str],
+                                        failed_tests: set[str],
+                                        skipped_integrations: set[str],
+                                        skipped_tests: set[str],
                                         playbook_to_jira_mapping: dict[str, Any],
                                         test_playbook_tickets_converted: bool,
                                         title: str,
@@ -223,6 +223,25 @@ def split_results_file(tests_data: str | None) -> list[str]:
     return list(filter(None, tests_data.split('\n'))) if tests_data else []
 
 
+def get_playbook_tests_data(artifact_folder: Path) -> tuple[set[str], set[str], set[str], set[str]]:
+    succeeded_tests = set()
+    failed_tests = set()
+    skipped_tests = set()
+    skipped_integrations = set(split_results_file(get_artifact_data(artifact_folder, 'skipped_integrations.txt')))
+    xml = JUnitXml.fromfile(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME)
+    for test_suite in xml.iterchildren(TestSuite):
+        properties = get_properties_for_test_suite(test_suite)
+        if playbook_id := properties.get("playbook_id"):
+            if test_suite.failures or test_suite.errors:
+                failed_tests.add(playbook_id)
+            elif test_suite.skipped:
+                skipped_tests.add(playbook_id)
+            else:
+                succeeded_tests.add(playbook_id)
+
+    return succeeded_tests, failed_tests, skipped_tests, skipped_integrations
+
+
 def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str) -> list[dict[str, Any]]:
 
     test_playbook_to_jira_mapping = read_test_playbook_to_jira_mapping(artifact_folder)
@@ -230,11 +249,7 @@ def test_playbooks_results(artifact_folder: Path, pipeline_url: str, title: str)
 
     content_team_fields = []
     for instance_role, instance_directory in get_instance_directories(artifact_folder).items():
-        succeeded_tests = split_results_file(get_artifact_data(instance_directory, 'succeeded_tests.txt'))
-        failed_tests = split_results_file(get_artifact_data(instance_directory, 'failed_tests.txt'))
-        skipped_tests = split_results_file(get_artifact_data(instance_directory, 'skipped_tests.txt'))
-        skipped_integrations = split_results_file(get_artifact_data(instance_directory, 'skipped_integrations.txt'))
-
+        succeeded_tests, failed_tests, skipped_tests, skipped_integrations = get_playbook_tests_data(instance_directory)
         content_team_fields += test_playbooks_results_to_slack_msg(instance_role, succeeded_tests, failed_tests,
                                                                    skipped_integrations, skipped_tests,
                                                                    test_playbook_to_jira_mapping, test_playbook_tickets_converted,
@@ -384,7 +399,7 @@ def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any
     return []
 
 
-def collect_pipeline_data(gitlab_client: gitlab.Gitlab,
+def collect_pipeline_data(gitlab_client: Gitlab,
                           project_id: str,
                           pipeline_id: str) -> tuple[str, list[ProjectPipelineJob]]:
     project = gitlab_client.projects.get(int(project_id))
@@ -435,7 +450,7 @@ def main():
     server_url = options.url
     ci_token = options.ci_token
     computed_slack_channel = options.slack_channel
-    gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
+    gitlab_client = Gitlab(server_url, private_token=ci_token)
     slack_token = options.slack_token
     slack_client = WebClient(token=slack_token)
 
