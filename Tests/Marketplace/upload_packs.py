@@ -944,7 +944,7 @@ def sign_and_zip_pack(pack, signature_key, delete_test_playbooks=False):
 
 
 def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
-                                       packs_for_current_marketplace_dict):
+                                       packs_dict):
     """
     Uploads packs with mandatory dependencies zip for all packs
     Args:
@@ -952,17 +952,17 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
         storage_base_path (str): The upload destination in the target bucket for all packs (in the format of
                                  <some_path_in_the_target_bucket>/content/Packs).
         storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
-        packs_for_current_marketplace_dict (dict): Dict of packs relevant for current marketplace as
+        packs_dict (dict): Dict of packs relevant for current marketplace as
         {pack_name: pack_object}
 
     """
     logging.info("Starting to collect pack with dependencies zips")
-    for pack_name, pack in packs_for_current_marketplace_dict.items():
+    for pack_name, pack in packs_dict.items():
         try:
             if (pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name]) or pack.hidden:
                 # avoid trying to upload dependencies zip for failed or hidden packs
                 continue
-            pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in
+            pack_and_its_dependencies = [packs_dict.get(dep_name) for dep_name in
                                          pack.all_levels_dependencies] + [pack]
             pack_or_dependency_was_uploaded = any(dep_pack.status == PackStatus.SUCCESS.name for dep_pack in
                                                   pack_and_its_dependencies)
@@ -1134,6 +1134,8 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-ast', '--artifacts-folder-server-type', help="The artifacts folder server type",
+                        required=True)
     parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
@@ -1205,9 +1207,8 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
-    artifact_folder_path = Path(packs_artifacts_path).parent
-    uploaded_packs_dir = Path(artifact_folder_path / f'uploaded_packs-{"id_set" if id_set else "graph"}')
-    markdown_images_data = Path(artifact_folder_path / BucketUploadFlow.MARKDOWN_IMAGES_ARTIFACT_FILE_NAME)
+    uploaded_packs_dir = Path(option.artifacts_folder_server_type) / f'uploaded_packs-{"id_set" if id_set else "graph"}'
+    markdown_images_data = Path(option.artifacts_folder_server_type) / BucketUploadFlow.MARKDOWN_IMAGES_ARTIFACT_FILE_NAME
 
     uploaded_packs_dir.mkdir(parents=True, exist_ok=True)
     # Relevant when triggering test upload flow
@@ -1244,9 +1245,8 @@ def main():
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload, storage_base_path
     )
 
-    packs_deleted_from_index: set[str] = delete_from_index_packs_not_in_marketplace(index_folder_path,
-                                                                                    all_content_packs,
-                                                                                    private_packs)
+    delete_from_index_packs_not_in_marketplace(index_folder_path, all_content_packs, private_packs)
+
     if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
@@ -1260,26 +1260,7 @@ def main():
     # packs that depends on new packs that are not in the previous index.zip
     packs_with_missing_dependencies = []
 
-    # pack relevant for the current marketplace this upload is done for
-    packs_for_current_marketplace_dict: dict[str, Pack] = {}
-
-    # starting iteration over packs
-    # in this loop, we load the user metadata for each pack, and filter out the packs that are not relevant for
-    # this current marketplace.
-    for pack in packs_list:
-        task_status = pack.load_user_metadata()
-        if not task_status:
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
-        if marketplace not in pack.marketplaces or pack.name in packs_deleted_from_index:
-            logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
-            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-        else:
-            packs_for_current_marketplace_dict[pack.name] = pack
+    all_packs_dict = {p.name: p for p in all_content_packs}  # temporary var to replace packs_for_current_marketplace_dict
 
     # iterating over packs that are for this current marketplace
     # we iterate over all packs (and not just for modified packs) for several reasons -
@@ -1287,7 +1268,14 @@ def main():
     # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
     # changelog, etc.
     pack: Pack
-    for pack in list(packs_for_current_marketplace_dict.values()):
+    for pack in packs_list:
+
+        task_status = pack.load_user_metadata()
+        if not task_status:
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
+            pack.cleanup()
+            continue
+
         task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name  # type: ignore[misc]
@@ -1298,28 +1286,12 @@ def main():
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
             continue
 
-        # detect if the pack is modified and return modified RN files
-        task_status, modified_rn_files_paths = pack.detect_modified(content_repo, index_folder_path,
-                                                                    current_commit_hash, previous_commit_hash)
-
-        if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
-        # This is commented out because we are not using the returned modified files and not skipping the
-        # packs in this phase (CIAC-3755). TODO - Will handle this in the refactor task - CIAC-3559.
-        # task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
-
-        # if not task_status:
-        #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
-        #     continue
-
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
                                                                     current_commit_hash,
                                                                     statistics_handler,
-                                                                    packs_for_current_marketplace_dict, marketplace)
+                                                                    all_packs_dict,
+                                                                    marketplace)
 
         if is_missing_dependencies:
             # If the pack is dependent on a new pack, therefore it is not yet in the index.zip as it might not have
@@ -1335,7 +1307,7 @@ def main():
         task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
             index_folder_path,
             build_number,
-            modified_rn_files_paths,
+            diff_files_list,
             marketplace, id_set,
             is_override=override_all_packs
         )
@@ -1374,12 +1346,6 @@ def main():
                 pack.cleanup()
                 continue
 
-        task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name  # type: ignore[misc]
@@ -1394,7 +1360,7 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_upload and exists_in_index and pack not in packs_with_missing_dependencies:
+        if skipped_upload and pack not in packs_with_missing_dependencies:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
             continue
@@ -1408,7 +1374,7 @@ def main():
     for pack in packs_with_missing_dependencies:
         task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
                                               build_number, current_commit_hash, statistics_handler,
-                                              packs_for_current_marketplace_dict, marketplace,
+                                              all_packs_dict, marketplace,
                                               format_dependencies_only=True)
 
         if not task_status:
@@ -1459,7 +1425,7 @@ def main():
     if is_create_dependencies_zip and marketplace == XSOAR_MP:
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
-                                           packs_for_current_marketplace_dict)
+                                           all_packs_dict)
 
     markdown_images_dict = download_markdown_images_from_artifacts(
         markdown_images_data, storage_bucket=storage_bucket, storge_base_path=storage_base_path)

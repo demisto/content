@@ -239,7 +239,7 @@ def get_indicator_reputation(client: Client, args_type: str, type_name: str, arg
 def create_or_query(delimiter_str: str, param_name: str, wrapper: str = '"') -> str:
     if not delimiter_str:
         return ''
-    arr = delimiter_str.split(',')
+    arr = argToList(delimiter_str)
     query = ''
     for item in arr:
         query += f'{param_name}={wrapper}{item}{wrapper} OR '
@@ -263,7 +263,7 @@ def get_file_indicators(client: Client, args: dict):
 
 
 def tc_delete_group_command(client: Client, args: dict) -> Any:  # pragma: no cover
-    group_ids = args.get('groupID').split(',')  # type: ignore
+    group_ids = argToList(args.get('groupID'))
     success = []
     fail = []
     for id in group_ids:
@@ -443,26 +443,35 @@ def fetch_incidents(client: Client, *args) -> str:
     fields = set_fields(argToList(params.get('fields')))
     max_fetch = params.get('max_fetch', '200')
     group_type = params.get('group_type', ['Incident'])
-    last_run = demisto.getLastRun()
-    last_run = last_run.get('last')
-    demisto.debug(f'[ThreatConnect] last run: {last_run}')
-    if not last_run:
-        last_run = f"{params.get('first_fetch') or '3 days'} ago"
-        last_run = dateparser.parse(last_run)
 
-    last_run = str(last_run)
+    last_run = demisto.getLastRun()
+    demisto.debug(f'[ThreatConnect] last run: {last_run}')
+
+    last_fetch_time = last_run.get('last_time')
+    last_fetch_id = int(last_run.get('last_id', 0))
+    if not last_fetch_time:
+        last_fetch_time = f"{params.get('first_fetch') or '3 days'} ago"
+        last_fetch_time = dateparser.parse(last_fetch_time)
+    last_fetch_time = str(last_fetch_time)
+
     response = list_groups(client, {}, group_type=group_type, fields=fields, return_raw=True, tag=tags,
-                           status=status, from_date=last_run, limit=max_fetch, sort='&sorting=dateAdded%20ASC')
+                           status=status, from_date=last_fetch_time, limit=max_fetch, sort='&sorting=dateAdded%20ASC')
     incidents: list = []
-    incidents.extend(
-        detection_to_incident(incident, incident.get('dateAdded'))
-        for incident in response
-    )
+    for incident in response:
+        try:
+            threatconnect_id = int(incident.get('id'))
+            if threatconnect_id > last_fetch_id:
+                last_fetch_id = threatconnect_id
+                incidents.append(detection_to_incident(incident, incident.get('dateAdded')))
+        except (TypeError, ValueError):
+            demisto.debug(f'Failed parsing the incident id received from threat connect; {incident.get("id")=}')
+
+    demisto.debug(f'{incidents=}')
     demisto.incidents(incidents)
-    set_last = get_last_run_time(response, last_run)
-    demisto.debug(f'Setting last run to: {set_last}')
-    demisto.setLastRun({'last': set_last})
-    return set_last
+    set_last_fetch_time = get_last_run_time(response, last_fetch_time)
+    demisto.debug(f'Setting last run to: last_time: {set_last_fetch_time}, last_id: {last_fetch_id}')
+    demisto.setLastRun({'last_time': set_last_fetch_time, 'last_id': last_fetch_id})
+    return set_last_fetch_time
 
 
 def tc_fetch_incidents_command(client: Client, args: dict) -> None:  # pragma: no cover
@@ -540,7 +549,7 @@ def tc_get_events(client: Client, args: dict) -> None:  # pragma: no cover
 
 
 def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no cover
-    tags = args.get('tag')
+    tags = argToList(args.get('tag'))
     status = args.get('status', 'Needs Review')
     owner_name = args.get('owner_name', '')
     group_type = 'Event'
@@ -548,7 +557,7 @@ def tc_create_event_command(client: Client, args: dict) -> None:  # pragma: no c
     name = args.get('name')
     tags_list = []
     if tags:
-        for tag in tags.split(','):
+        for tag in tags:
             tags_list.append({'name': tag})
 
     payload = json.dumps({
@@ -636,7 +645,7 @@ def list_groups(client: Client, args: dict, group_id: str = '', from_date: str =
         tql_prefix = '?tql='
         include_security_labels = 'True'
     if tag:
-        tags = tag.split(',')
+        tags = argToList(tag)
         for tag_to_find in tags:
             tag += f' AND tag like "%{tag_to_find}%"'
         tql_prefix = '?tql='
@@ -1010,7 +1019,7 @@ def tc_create_incident_command(client: Client, args: dict) -> None:  # pragma: n
 def create_group(client: Client, args: dict, name: str = '', event_date: str = '', group_type: str = '',
                  status: str = 'New', description: str = '', security_labels: str = '',
                  tags: list = [], first_seen: str = ''):  # pragma: no cover
-    tags = args.get('tags', tags)
+    tags = argToList(args.get('tags', tags))
     security_labels = args.get('securityLabel', security_labels)
     description = args.get('description', description)
     status = args.get('status', status)
@@ -1026,7 +1035,7 @@ def create_group(client: Client, args: dict, name: str = '', event_date: str = '
     }
     if tags:
         tmp = []
-        for tag in tags.split(','):  # type: ignore
+        for tag in tags:
             tmp.append({'name': tag})
         payload['tags'] = {
             "data": tmp
@@ -1058,7 +1067,7 @@ def create_group(client: Client, args: dict, name: str = '', event_date: str = '
 def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indicator: str = '', confidence: str = '0',
                              description: str = '', tags: list = [],
                              indicator_type: str = '') -> Any:  # pragma: no cover # noqa
-    tags = args.get('tags', tags)
+    tags = argToList(args.get('tags', tags))
     description = args.get('description', description)
     confidence = args.get('confidence', confidence)
     rating = args.get('rating', rating)
@@ -1066,7 +1075,7 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
     indicator_type = args.get('indicatorType', indicator_type)
     if tags:
         tmp = []
-        for tag in tags.split(','):  # type: ignore
+        for tag in tags:
             tmp.append({'name': tag})
         tags = tmp  # type: ignore
 
@@ -1116,7 +1125,8 @@ def tc_update_indicator_command(client: Client, args: dict, rating: str = None, 
     indicator = args.get('indicator', indicator)
     if args.get('tags', tags):
         tmp = []
-        for tag in args.get('tags', tags).split(','):
+        tags_list = argToList(args.get('tags', tags))
+        for tag in tags_list:
             tmp.append({'name': tag})
         payload['tags'] = {'data': tmp, 'mode': mode}
     if args.get('securityLabel', security_labels):
@@ -1217,7 +1227,8 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
     payload = {}
     if args.get('tags', tags):
         tmp = []
-        for tag in args.get('tags', tags).split(','):
+        tags = argToList(args.get('tags', tags))
+        for tag in tags:
             tmp.append({'name': tag})
         payload['tags'] = {'data': tmp, 'mode': mode}
     if args.get('security_label', security_labels):
@@ -1236,7 +1247,8 @@ def tc_update_group(client: Client, args: dict, attribute_value: str = '', attri
     if attribute_value and attribute_type:
         payload['attributes'] = {"data": [{"type": attribute_type, "value": attribute_value}], 'mode': mode}
     if args.get('custom_field', custom_field):
-        for field in args.get('custom_field', custom_field).split(','):
+        c_field = argToList(args.get('custom_field', custom_field))
+        for field in c_field:
             custom = field.split('=')
             payload[custom[0]] = custom[1]
     if not group_id:
@@ -1590,9 +1602,9 @@ def get_group_security_labels(client: Client, args: dict) -> None:  # pragma: no
 
 def add_group_tag(client: Client, args: dict):  # pragma: no cover
     group_id = args.get('group_id')
-    tags: str = args.get('tag_name')  # type: ignore
+    tags: str = argToList(args.get('tag_name'))  # type: ignore
     tc_update_group(client, args, raw_data=True, tags=tags, group_id=group_id)  # type: ignore
-    return_results(f'The tag {tags.split(",")} was added successfully to group {group_id}')
+    return_results(f'The tag {tags} was added successfully to group {group_id}')
 
 
 COMMANDS = {
