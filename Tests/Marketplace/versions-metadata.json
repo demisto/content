@@ -14,6 +14,26 @@
       "core_packs_file": "corepacks-8.5.0.json",
       "core_packs_file_is_locked": false,
       "file_version": "1"
+    },
+    "6.10.0": {
+      "core_packs_file": "corepacks-6.10.0.json",
+      "core_packs_file_is_locked": true,
+      "file_version": "1"
+    },
+    "6.11.0": {
+      "core_packs_file": "corepacks-6.11.0.json",
+      "core_packs_file_is_locked": true,
+      "file_version": "1"
+    },
+    "6.12.0": {
+      "core_packs_file": "corepacks-6.12.0.json",
+      "core_packs_file_is_locked": true,
+      "file_version": "1"
+    },
+    "6.13.0": {
+      "core_packs_file": "corepacks-6.13.0.json",
+      "core_packs_file_is_locked": false,
+      "file_version": "1"
     }
   }
 }
