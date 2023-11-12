@@ -263,6 +263,4 @@ def test_create_test_incident_from_json_command(mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'path', 'name': 'fileName'})
     set_context_mock = mocker.patch.object(CreateIncidents, 'set_integration_context')
     CreateIncidents.create_test_incident_from_json_command(args)
-    a = set_context_mock.call_args_list[0][0][0]['incidents']
     assert 'entry_id_attachment' in set_context_mock.call_args_list[0][0][0]['incidents'][0]
-
