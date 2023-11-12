@@ -88,7 +88,7 @@ def test_get_profile_id_custom(requests_mock: Any) -> None:
     from BinalyzeAIR import Client
     mock_response = util_load_json('test_data/profile_id.json')
     requests_mock.get('https://nonexistent-domain.com/api/public/acquisitions/profiles?'
-                      'filter[name]=profile_name&filter[organizationIds]=0',
+                      'filter[name]=profile&filter[organizationIds]=0',
                       json=mock_response)
     client: Client = Client(
         base_url='https://nonexistent-domain.com',
