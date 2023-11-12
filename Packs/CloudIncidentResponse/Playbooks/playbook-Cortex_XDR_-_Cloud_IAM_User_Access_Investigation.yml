@@ -101,57 +101,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    fieldMapping:
-    - incidentfield: Source IP
-      output:
-        complex:
-          root: inputs.ExternalIP
-    - incidentfield: Detected User
-      output:
-        complex:
-          root: inputs.Username
-    - incidentfield: Destination Hostname
-      output:
-        complex:
-          root: inputs.Hostname
-    - incidentfield: Alert Name
-      output:
-        complex:
-          root: inputs.Alert_Name
-    - incidentfield: Description
-      output:
-        complex:
-          root: inputs.AlertDescription
-    - incidentfield: ASN
-      output:
-        complex:
-          root: IP
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: IP.Address
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.ExternalIP
-                iscontext: true
-          accessor: ASN
-    - incidentfield: IP Reputation
-      output:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.ExternalIP
-                iscontext: true
-          accessor: Score
     skipunavailable: false
     quietmode: 2
     isoversize: false
