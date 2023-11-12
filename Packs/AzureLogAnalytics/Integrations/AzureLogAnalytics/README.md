@@ -37,6 +37,7 @@ In the self-deployed mode you can authenticate, by using one of the following fl
 ### Authentication Code flow
 
 ---
+
 1. In the instance configuration, select the **Use a self-deployed Azure application - Authorization Code flow** checkbox.
 2. Enter your client ID in the **ID \ Client ID** parameter (credentials username). 
 3. Enter your client secret in the **Key / Client Secret** parameter (credentials password).
@@ -113,7 +114,7 @@ Executes an Analytics query for data.
 | query | The query to execute. | Required | 
 | timespan | The timespan over which to query data. This is an ISO8601 time period value. This timespan is applied in addition to any timespans specified in the query expression. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. Default is 10. | Optional | 
-| workspace_id | The Workspace ID. Note: This argument will override the instance parameter ‘Default Workspace ID'. | Optional | 
+| workspace_id | The Workspace ID. Note: This argument will override the instance parameter 'Default Workspace ID'. | Optional | 
 
 
 #### Context Output
@@ -160,9 +161,11 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-log-analytics-test```
 
 #### Human Readable Output
+
 ```✅ Success!```
 
 
@@ -181,9 +184,9 @@ Gets the saved searches of the Log Analytics workspace.
 | --- | --- | --- |
 | limit | The maximum number of saved searches to return. Default is 50. | Optional | 
 | page | The page number from which to start a search. Default is 0. | Optional | 
-| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
-| workspace_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'. | Optional | 
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional | 
 
 
 #### Context Output
@@ -231,9 +234,9 @@ Gets a specified saved search from the Log Analytics workspace.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | saved_search_id | The ID of the saved search. | Required | 
-| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
-| workspace_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'. | Optional | 
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional | 
 
 
 #### Context Output
@@ -285,9 +288,9 @@ Creates or updates a saved search from the Log Analytics workspace.
 | function_parameters | The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'. For more examples and proper syntax, refer to <https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions>. | Optional | 
 | query | The query expression for the saved search. | Required | 
 | tags | The tags attached to the saved search. Value should be in the following format: 'name=value;name=value'. | Optional | 
-| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
-| workspace_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'. | Optional | 
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional | 
 
 
 #### Context Output
@@ -337,9 +340,9 @@ Deletes a specified saved search in the Log Analytics workspace.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | saved_search_id | The ID of the saved search. | Required | 
-| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
-| workspace_name | The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'. | Optional | 
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional | 
 
 #### Context Output
 
@@ -379,6 +382,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Authorization instructions
+>
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
@@ -429,8 +433,8 @@ Gets workspaces in a resource group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
-| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional | 
 
 #### Context Output
 
@@ -489,7 +493,7 @@ List all resource groups for a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
 | limit | Limit on the number of resource groups to return. Default is 50. | Optional | 
 | tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
 
@@ -538,11 +542,14 @@ Run a search job to fetch records from large datasets into a new search results 
 | --- | --- | --- |
 | table_name | The name of the table to add. | Required | 
 | limit | Maximum number of records in the result set, up to one million records. Default is 50. | Optional | 
-| query | Log query written in KQL format to retrieve data. Search job queries must always start with a table name. For the proper syntax, see https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator | Required | 
+| query | Log query written in KQL format to retrieve data. Search job queries must always start with a table name. For the proper syntax, see <https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator> | Required | 
 | start_search_time | Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is 1 day ago. | Optional | 
 | end_search_time | End of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is now. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
 | interval | The interval in seconds between each poll. Default is 60. | Optional | 
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional | 
 | first_run | This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. This argument is for a developer, not for a user. Default is True. | Optional | 
 | hide_polling_output | Hide the polling message and only print the final status at the end. This argument is for a developer, not for a user. | Optional | 
 
@@ -576,7 +583,10 @@ Gets a Log Analytics workspace table.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_name | The name of the table. Example value: AuditLogs_SRCH. | Optional | 
+| table_name | The name of the table. Example value: AuditLogs_SRCH. | Optional |
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional | 
 
 #### Context Output
 
@@ -725,6 +735,9 @@ Delete a Log Analytics workspace table. We recommend you delete the search job w
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | table_name | The name of the table. Example value: AuditLogs_SRCH. | Optional | 
+| subscription_id | The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
+| resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional | 
+| workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional |
 
 #### Context Output
 
