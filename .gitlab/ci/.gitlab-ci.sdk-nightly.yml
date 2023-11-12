@@ -250,6 +250,18 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
       export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
 
+    - section_start "End to End Tests"  --collapsed
+    - |
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
+      echo "Server URL: $DEMISTO_BASE_URL"
+      unset DEMISTO_API_KEY # a temporary fix 
+      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+    - section_end "End to End Tests"
+
     - section_start "Install Packs and Test-Module" --collapsed
     - cat "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
