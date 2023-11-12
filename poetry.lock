@@ -1375,13 +1375,13 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.21.0"
+version = "1.22.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.11"
 files = [
-    {file = "demisto_sdk-1.21.0-py3-none-any.whl", hash = "sha256:d02ec005ce63c07f34af0b5cc2a2d371d75bef5d4e2ad27f9b0f93a4be82cb9f"},
-    {file = "demisto_sdk-1.21.0.tar.gz", hash = "sha256:1288b3801e88a55e2d47bc20d8bc0eb246ba596c1e3e0de4444e1859782f9418"},
+    {file = "demisto_sdk-1.22.0-py3-none-any.whl", hash = "sha256:347de0f59386ed82c945197a7ab239661a77e4f0505a0245bab9f34b4ba14902"},
+    {file = "demisto_sdk-1.22.0.tar.gz", hash = "sha256:be234367d29dfc4361fdbdfd64ccae9840992a52c333dee465bf259355e5424e"},
 ]
 
 [package.dependencies]
@@ -1414,7 +1414,7 @@ klara = ">=0.6.3,<0.7.0"
 mergedeep = ">=1.3.4,<2.0.0"
 more-itertools = ">=9.0.0,<10.0.0"
 mypy = ">=0.982,<0.983"
-neo4j = ">=5.5.0,<6.0.0"
+neo4j = ">=5.14.0,<6.0.0"
 networkx = ">=2.7.1,<3.0.0"
 nltk = ">=3.7,<4.0"
 ordered-set = ">=4.1.0,<5.0.0"
@@ -3511,12 +3511,12 @@ PyOpenSSL = "*"
 
 [[package]]
 name = "neo4j"
-version = "5.11.0"
+version = "5.14.1"
 description = "Neo4j Bolt driver for Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "neo4j-5.11.0.tar.gz", hash = "sha256:81d425ef9a53279c6909ec8d33e7dc913acc840292f0f3a047f3c3c5b74bccb5"},
+    {file = "neo4j-5.14.1.tar.gz", hash = "sha256:3200be8550ed16622b2fadf4f749d08b9982989c4bfce6f99ab693f104104cb4"},
 ]
 
 [package.dependencies]
@@ -3525,6 +3525,7 @@ pytz = "*"
 [package.extras]
 numpy = ["numpy (>=1.7.0,<2.0.0)"]
 pandas = ["numpy (>=1.7.0,<2.0.0)", "pandas (>=1.1.0,<3.0.0)"]
+pyarrow = ["pyarrow (>=1.0.0)"]
 
 [[package]]
 name = "networkx"
@@ -7094,6 +7095,7 @@ files = [
     {file = "z3-solver-4.12.2.0.tar.gz", hash = "sha256:65ab47a0a8ef0bfb80db0670775beb11b32c3c0ae4b35943e44121f4af7ef411"},
     {file = "z3_solver-4.12.2.0-py2.py3-none-macosx_10_16_x86_64.whl", hash = "sha256:127b7c3fcadd61415320ef1b469c22464d3270d25a63c9eb5ee31a0859910826"},
     {file = "z3_solver-4.12.2.0-py2.py3-none-macosx_11_0_arm64.whl", hash = "sha256:f605de84f87cff04de8339a6d007c80167606a4e6904d6ace8208b066f22f4be"},
+    {file = "z3_solver-4.12.2.0-py2.py3-none-manylinux2014_aarch64.whl", hash = "sha256:4d252abdeab222f241d273df012f96fb8e5754a60734508c85c791ac5096bdf5"},
     {file = "z3_solver-4.12.2.0-py2.py3-none-manylinux2014_x86_64.whl", hash = "sha256:03921d3021cb6e5dbeaeb94634132a5fbf5403748aa21774efac4047e633af1e"},
     {file = "z3_solver-4.12.2.0-py2.py3-none-win32.whl", hash = "sha256:ea1688e64aada67ec720e2f148c5c41fece2870c55a2901dda36f6b4bb9aec7e"},
     {file = "z3_solver-4.12.2.0-py2.py3-none-win_amd64.whl", hash = "sha256:553af6a989d8943d9a556c4f83ea54b2afc8b4fd58230e97fcc526dc3f97249a"},
@@ -7164,4 +7166,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "22319811c3f818fe649b357698ab7bd09a496ed271a8568df1cb99ae3678d9c8"
+content-hash = "826475b9265e3daa84d07a8128f357386f055a3bea693ed0e54c2f3133c19d17"
