@@ -28,6 +28,8 @@ MSG_DICT = {
     "verify_dependency": "verified the new dependency is in the pack metadata",
     "verify_new_image": "verified the new image was uploaded",
     "verify_hidden_dependency": "verified the hidden dependency pack not in metadata.json",
+    "verify_new_xsoar_pack": "verified the new XSOAR only pack is NOT in the index and that version 1.0.0 zip DOES NOT exists "
+                             "under the pack path in XSIAM bucket",
 }
 
 
