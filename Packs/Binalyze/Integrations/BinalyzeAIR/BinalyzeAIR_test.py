@@ -103,7 +103,7 @@ def test_air_acquire_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_acquire_command
     args: Dict[str, Any] = {
         'hostname': 'endpointhostname',
-        'profile': "profile_name",
+        'profile': "quick",
         'case_id': 'case_id will be here',
         'organization_id': 0
     }
