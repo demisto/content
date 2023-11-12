@@ -1,7 +1,7 @@
 import json
 import io
 from collections import namedtuple
-
+from CommonServerPython import DemistoException
 import CreateIncidents
 
 import pytest
@@ -232,3 +232,18 @@ def test_create_test_incident_command_happy(mocker, incidents, attachment, expec
                                                             'attachment_paths': attachment})
     assert type(parse_mock.call_args[0][0]) == list
     assert len(parse_mock.call_args[0][0]) == expected
+
+
+ARGS = [{'incident_entry_id': 'entry_id', 'incident_raw_json': '{"name": "incident}'},
+        {'incident_entry_id': '', 'incident_raw_json': ''}]
+@pytest.mark.parametrize('args', ARGS)
+def test_create_test_incident_from_json_command(args):
+    """
+    Given:
+    When: creating a new incident from file
+    Then: Makes sure client fails with correct error
+    """
+
+    with pytest.raises(DemistoException) as e:
+        CreateIncidents.create_test_incident_from_json_command(args)
+    assert str(e.value) == 'Please insert entry_id or incident_raw_json, and not both'
