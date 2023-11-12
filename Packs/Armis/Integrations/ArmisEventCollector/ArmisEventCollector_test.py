@@ -202,7 +202,8 @@ class TestHelperFunction:
         case_events_with_different_time,
         case_empty_event_list
     ])
-    def test_dedup_events(self, events, events_last_fetch_ids, unique_id_key, expected_result):
+    def test_dedup_events(self, events, events_last_fetch_ids,
+                          unique_id_key, expected_result):
         """
         Given:
             - Case 1: All events from the current fetch cycle have the same timestamp.
@@ -216,8 +217,9 @@ class TestHelperFunction:
             - Case 2: Return list of dedup event and new list of 'new_ids' for next run.
             - Case 3: Return empty list and the unchanged list of 'events_last_fetch_ids' for next run.
         """
+        event_order_by = "time"
         from ArmisEventCollector import dedup_events
-        assert dedup_events(events, events_last_fetch_ids, unique_id_key) == expected_result
+        assert dedup_events(events, events_last_fetch_ids, unique_id_key, event_order_by) == expected_result
 
     def test_fetch_by_event_type(self, mocker, dummy_client):
         """
@@ -259,25 +261,34 @@ class TestHelperFunction:
     # test_add_time_to_events parametrize arguments
     case_one_event = (
         [{'time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'}
-         ], [{'time': '2023-01-01T01:00:10.123456+00:00', '_time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'}]
+         ], [{'time': '2023-01-01T01:00:10.123456+00:00', '_time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'}],
+        'events'
     )
 
     case_two_events = (
         [{'time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'},
             {'time': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}],
         [{'time': '2023-01-01T01:00:10.123456+00:00', '_time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'},
-         {'time': '2023-01-01T01:00:20.123456+00:00', '_time': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}]
+         {'time': '2023-01-01T01:00:20.123456+00:00', '_time': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}],
+        'events'
     )
     case_empty_event: tuple = (
-        [], []
+        [], [], 'events'
+    )
+    case_devices_events: tuple = (
+        [{'lastSeen': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'},
+            {'lastSeen': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}],
+        [{'lastSeen': '2023-01-01T01:00:10.123456+00:00', '_time': '2023-01-01T01:00:10.123456+00:00', 'unique_id': '1'},
+         {'lastSeen': '2023-01-01T01:00:20.123456+00:00', '_time': '2023-01-01T01:00:20.123456+00:00', 'unique_id': '2'}],
+        'devices'
     )
 
-    @pytest.mark.parametrize('events, expected_result', [
+    @pytest.mark.parametrize('events, expected_result, eventType', [
         case_one_event,
         case_two_events,
         case_empty_event,
     ])
-    def test_add_time_to_events(self, events, expected_result):
+    def test_add_time_to_events(self, events, expected_result, eventType):
         """
         Given:
             - Case 1: One event with valid time attribute.
@@ -289,7 +300,7 @@ class TestHelperFunction:
             - Add _time attribute to each event with a valid time attribute.
         """
         from ArmisEventCollector import add_time_to_events
-        add_time_to_events(events)
+        add_time_to_events(events, eventType)
         assert events == expected_result
 
     def test_events_to_command_results(self):
