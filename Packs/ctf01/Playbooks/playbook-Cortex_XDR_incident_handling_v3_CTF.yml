@@ -16,23 +16,6 @@ inputs:
     complex:
       accessor: xdrincidentid
       root: incident
-- description: This input indicates whether the playbook will link similar incidents. To link similar incidents, specify Yes/No.
-  key: LinkSimilarIncidents
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "Yes"
-- description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
-  key: Hunting
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "Yes"
-- description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list is not provided, will use the default list provided in the IsIPInRanges."
-  key: InternalRange
-  playbookInputQuery:
-  required: false
-  value: {}
 - description: |-
     A comma-separated list of names of critical users in the organization.
     This will affect the calculated severity of the incident.
@@ -51,45 +34,12 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \w{6}\d{1}.
-  key: InternalHostRegex
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: The organizations internal domain name. This is provided for the IsInternalHostName script that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com).
-  key: InternalDomainName
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: Timestamp in relative date format for query device control events from Cortex XDR.
-  key: TimeStamp
-  playbookInputQuery:
-  required: false
-  value:
-    simple: 10 days
 - description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
   key: AutoRemediation
   playbookInputQuery:
   required: false
   value:
     simple: "False"
-- description: XDR instance domain
-  key: XDRDomain
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: xdrurl
-      root: incident
-      transformers:
-      - args:
-          delimiter:
-            value:
-              simple: /
-          fields:
-            value:
-              simple: "3"
-        operator: Cut
 - description: |-
     Possible values: True/False.  Default: True.
     Should the given indicators be automatically blocked, or should the user be given the option to choose?
