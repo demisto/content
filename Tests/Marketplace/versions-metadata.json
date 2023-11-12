@@ -23,7 +23,7 @@
     "6.11.0": {
       "core_packs_file": "corepacks-6.11.0.json",
       "core_packs_file_is_locked": true,
-      "file_version": "1"
+      "file_version": "2"
     },
     "6.12.0": {
       "core_packs_file": "corepacks-6.12.0.json",
