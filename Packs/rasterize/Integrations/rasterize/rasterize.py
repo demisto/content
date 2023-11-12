@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import base64
 import os
+import pychrome
 import re
 import subprocess
 import tempfile
@@ -75,6 +76,40 @@ class RasterizeType(Enum):
     PNG = 'png'
     PDF = 'pdf'
     JSON = 'json'
+
+
+def pychrome_screenshot_image(url, max_page_load_time):
+    tab = browser.new_tab()
+
+    # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
+
+    tab.start()
+    tab.call_method("Network.enable")
+    tab.call_method("Page.navigate", url=url)
+    tab.wait(max_page_load_time)
+
+    try:
+        return tab.Page.captureScreenshot()
+    finally:
+        tab.stop()
+        browser.close_tab(tab)
+
+def pychrome_screenshot_pdf(url, max_page_load_time):
+    tab = browser.new_tab()
+
+    # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
+
+    tab.start()
+    tab.call_method("Network.enable")
+    tab.call_method("Page.navigate", url=url)
+    tab.wait(max_page_load_time)
+
+    try:
+        return tab.Page.printToPDF()
+
+    finally:
+        tab.stop()
+        browser.close_tab(tab)
 
 
 def check_width_and_height(width: int, height: int) -> tuple[int, int]:
@@ -264,30 +299,38 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     """
     demisto.debug(f'Rasterizing using mode: {r_mode}')
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
-    rasterize_funcs: tuple[Callable, ...] = ()
-    if r_mode == RasterizeMode.WEBDRIVER_PREFERED:
-        rasterize_funcs = (rasterize_webdriver, rasterize_headless_cmd)
-    elif r_mode == RasterizeMode.WEBDRIVER_ONLY:
-        rasterize_funcs = (rasterize_webdriver,)
-    elif r_mode == RasterizeMode.HEADLESS_CLI_PREFERED:
-        rasterize_funcs = (rasterize_headless_cmd, rasterize_webdriver)
-    elif r_mode == RasterizeMode.HEADLESS_CLI_ONLY:
-        rasterize_funcs = (rasterize_headless_cmd,)
-    else:  # should never happen as we use an enum
-        demisto.error(f'Unknown rasterize mode: {r_mode}')
-        raise ValueError(f'Unknown rasterize mode: {r_mode}')
+    # rasterize_funcs: tuple[Callable, ...] = ()
+    # if r_mode == RasterizeMode.WEBDRIVER_PREFERED:
+    #     rasterize_funcs = (rasterize_webdriver, rasterize_headless_cmd)
+    # elif r_mode == RasterizeMode.WEBDRIVER_ONLY:
+    #     rasterize_funcs = (rasterize_webdriver,)
+    # elif r_mode == RasterizeMode.HEADLESS_CLI_PREFERED:
+    #     rasterize_funcs = (rasterize_headless_cmd, rasterize_webdriver)
+    # elif r_mode == RasterizeMode.HEADLESS_CLI_ONLY:
+    #     rasterize_funcs = (rasterize_headless_cmd,)
+    # else:  # should never happen as we use an enum
+    #     demisto.error(f'Unknown rasterize mode: {r_mode}')
+    #     raise ValueError(f'Unknown rasterize mode: {r_mode}')
     try:
-        for i, r_func in enumerate(rasterize_funcs):  # type: ignore[var-annotated]
-            try:
-                return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
-                              offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen,
-                              include_url=include_url)
-            except Exception as ex:
-                if i < (len(rasterize_funcs) - 1):
-                    demisto.info(f'Failed rasterize preferred option trying second option. Exception: {ex}')
-                else:
-                    demisto.info(f'Failed rasterizing using all available options. Raising last exception: {ex}')
-                    raise
+        # for i, r_func in enumerate(rasterize_funcs):  # type: ignore[var-annotated]
+        #     try:
+        #         return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
+        #                       offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen,
+        #                       include_url=include_url)
+        #     except Exception as ex:
+        #         if i < (len(rasterize_funcs) - 1):
+        #             demisto.info(f'Failed rasterize preferred option trying second option. Exception: {ex}')
+        #         else:
+        #             demisto.info(f'Failed rasterizing using all available options. Raising last exception: {ex}')
+        #             raise
+
+        if r_type == RasterizeType.PNG:
+            return pychrome_screenshot_image(path, max_page_load_time=page_load_time)
+        if r_type == RasterizeType.PDF:
+            return pychrome_screenshot_pdf(path, max_page_load_time=page_load_time)
+        # return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
+        #                 offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen,
+        #                 include_url=include_url)
     except (InvalidArgumentException, NoSuchElementException) as ex:
         if 'invalid argument' in str(ex):
             err_msg = URL_ERROR_MSG + str(ex)
