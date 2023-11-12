@@ -154,7 +154,9 @@ def get_incidents_from_file(client: Client, incidents_path: str, attachment_path
     return ready_incidents
 
 
-def parse_incidents(incidents: List[dict], attachment_path: List[str] = None, attachment_entry_ids: List[str] = None) -> List[dict]:
+def parse_incidents(incidents: List[dict],
+                    attachment_path: List[str] = None,
+                    attachment_entry_ids: List[str] = None) -> List[dict]:
     """
     This function will take a list of incidents and make them in the format of XSoar format,
      as a preparation for the fetch command.
@@ -183,7 +185,6 @@ def parse_incidents(incidents: List[dict], attachment_path: List[str] = None, at
                                                                               'name': attachment.get('name')})
 
         ready_incidents.append(parsed_incident)
-        print(ready_incidents)
     return ready_incidents
 
 
