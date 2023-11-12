@@ -79,6 +79,7 @@ class RasterizeType(Enum):
 
 
 def pychrome_screenshot_image(url, max_page_load_time):
+    browser = pychrome.Browser(url="http://127.0.0.1:5557")
     tab = browser.new_tab()
 
     # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
@@ -95,6 +96,7 @@ def pychrome_screenshot_image(url, max_page_load_time):
         browser.close_tab(tab)
 
 def pychrome_screenshot_pdf(url, max_page_load_time):
+    browser = pychrome.Browser(url="http://127.0.0.1:5557")
     tab = browser.new_tab()
 
     # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
