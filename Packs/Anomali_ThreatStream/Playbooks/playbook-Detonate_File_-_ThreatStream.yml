@@ -13,9 +13,9 @@ tasks:
       id: 56650d59-750f-49e8-8323-9a38636631f6
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -30,6 +30,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: e58d872c-656f-4687-8279-50ff40cb4009
@@ -87,6 +92,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 1d556414-5fc2-441e-856c-27d1d0b0c207
@@ -95,10 +105,10 @@ tasks:
       id: 1d556414-5fc2-441e-856c-27d1d0b0c207
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -110,12 +120,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 124792e1-e06a-4d0c-8dd4-2fd5fc125aee
+    taskid: 39618343-4c2f-4f51-8a4d-fe7abe769f56
     type: regular
     task:
-      id: 124792e1-e06a-4d0c-8dd4-2fd5fc125aee
+      id: 39618343-4c2f-4f51-8a4d-fe7abe769f56
       version: -1
       name: ThreatStream Get Report
       description: Returns a report of the file or URL that was submitted to the sandbox.
@@ -128,7 +143,9 @@ tasks:
       - "6"
     scriptarguments:
       report_id:
-        simple: ${ThreatStream.Analysis.ReportID}
+        complex:
+          root: ThreatStream.Analysis
+          accessor: ReportID
     separatecontext: false
     view: |-
       {
@@ -140,6 +157,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 832bc14a-ab8f-4bd3-8acf-78789433ee61
@@ -157,7 +179,6 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      append: {}
       key:
         simple: File
       value:
@@ -174,6 +195,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
     taskid: 9f3fb5f2-6b4e-4694-8db1-df2211b2b0fd
@@ -198,8 +224,6 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
       Ids:
         complex:
           root: ThreatStream
@@ -221,6 +245,7 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
+      max: 0
     view: |-
       {
         "position": {
@@ -231,6 +256,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: abdd7f0e-18af-4a32-8bd2-be620253a970
@@ -267,6 +297,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: 75b5f3a3-d25a-45d4-8477-76e6473d06fd
@@ -306,12 +341,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 78cece2d-336e-41e1-89c8-a70deb8350ff
+    taskid: 581863d9-b542-4154-866c-ea88744f6482
     type: regular
     task:
-      id: 78cece2d-336e-41e1-89c8-a70deb8350ff
+      id: 581863d9-b542-4154-866c-ea88744f6482
       version: -1
       name: ThreatStream Upload File
       description: Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
@@ -324,7 +364,8 @@ tasks:
       - "15"
     scriptarguments:
       detail:
-        simple: ${inputs.Tags}
+        complex:
+          root: inputs.Tags
       premium_sandbox:
         simple: ${inputs.PremiumSandbox}
       report_platform:
@@ -334,7 +375,9 @@ tasks:
       submission_type:
         simple: file
       submission_value:
-        simple: ${inputs.File.EntryID}
+        complex:
+          root: inputs.File
+          accessor: EntryID
     separatecontext: false
     view: |-
       {
@@ -346,6 +389,11 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -367,30 +415,37 @@ inputs:
       root: File
   required: false
   description: File object of the file to detonate.
+  playbookInputQuery:
 - key: VM
   value: {}
   required: false
   description: The VM to use (string)
+  playbookInputQuery:
 - key: SubmissionClassification
   value: {}
   required: false
   description: Classification of the Sandbox submission.
+  playbookInputQuery:
 - key: PremiumSandbox
   value: {}
   required: false
   description: Specifies if the premium sandbox should be used for detonation.
+  playbookInputQuery:
 - key: Tags
   value: {}
   required: false
   description: A CSV list of tags applied to this sample.
+  playbookInputQuery:
 - key: Interval
   value: {}
   required: false
   description: Polling frequency - how often the polling command should run (minutes).
+  playbookInputQuery:
 - key: Timeout
   value: {}
   required: false
   description: Amount of time to wait before a timeout occurs (minutes).
+  playbookInputQuery:
 outputs:
 - contextPath: File.Malicious
   description: The file malicious description.
@@ -435,4 +490,6 @@ outputs:
   description: The actual score.
   type: number
 tests:
-- No test
+- ThreatStream-Test
+contentitemexportablefields:
+  contentitemfields: {}
