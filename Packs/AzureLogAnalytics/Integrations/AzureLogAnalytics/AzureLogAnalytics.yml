@@ -516,7 +516,7 @@ script:
       required: true
     - description: Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
       name: start_search_time
-      defaultValue: 1 day ago
+      defaultValue: 1 day
     - description: End of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
       name: end_search_time
       defaultValue: now

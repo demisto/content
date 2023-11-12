@@ -543,7 +543,7 @@ Run a search job to fetch records from large datasets into a new search results 
 | table_name | The name of the table to add. | Required | 
 | limit | Maximum number of records in the result set, up to one million records. Default is 50. | Optional | 
 | query | Log query written in KQL format to retrieve data. Search job queries must always start with a table name. For the proper syntax, see <https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator> | Required | 
-| start_search_time | Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is 1 day ago. | Optional | 
+| start_search_time | Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is 1 day. | Optional | 
 | end_search_time | End of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is now. | Optional | 
 | timeout | The timeout in seconds until polling ends. Default is 600. | Optional | 
 | interval | The interval in seconds between each poll. Default is 60. | Optional | 
