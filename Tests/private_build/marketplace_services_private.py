@@ -672,7 +672,7 @@ class Pack:
 
         return tags
 
-    def _parse_pack_metadata(self):
+    def _parse_pack_metadata(self, build_number, commit_hash):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
@@ -684,13 +684,49 @@ class Pack:
 
         """
         pack_metadata = {
+            Metadata.NAME: self._display_name or self._pack_name,
+            Metadata.ID: self._pack_name,
+            Metadata.DESCRIPTION: self._description or self._pack_name,
             Metadata.CREATED: self._create_date,
             Metadata.UPDATED: self._update_date,
+            Metadata.LEGACY: self._legacy,
+            Metadata.SUPPORT: self._support_type,
+            Metadata.SUPPORT_DETAILS: self._support_details,
+            Metadata.EULA_LINK: self._eula_link,
+            Metadata.AUTHOR: self._author,
+            Metadata.AUTHOR_IMAGE: self._author_image,
+            Metadata.CERTIFICATION: self._certification,
+            Metadata.PRICE: self._price,
+            Metadata.SERVER_MIN_VERSION: self.user_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
+            Metadata.CURRENT_VERSION: self.user_metadata.get(Metadata.CURRENT_VERSION, ''),
+            Metadata.VERSION_INFO: build_number,
+            Metadata.COMMIT: commit_hash,
             Metadata.DOWNLOADS: self._downloads_count,
             Metadata.TAGS: list(self._tags or []),
+            Metadata.MODULES: list(self._modules or []),
+            Metadata.CATEGORIES: self._categories,
+            Metadata.CONTENT_ITEMS: self._content_items,
+            Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
+            Metadata.USE_CASES: self._use_cases,
+            Metadata.KEY_WORDS: self._keywords,
+            Metadata.DEPENDENCIES: self._parsed_dependencies,
+            Metadata.EXCLUDED_DEPENDENCIES: self.user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, []),
+            Metadata.MARKETPLACES: self._marketplaces,
+            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
+
+        if self._is_private_pack:
+            pack_metadata.update({
+                Metadata.PREMIUM: self._is_premium,
+                Metadata.VENDOR_ID: self._vendor_id,
+                Metadata.PARTNER_ID: self._partner_id,
+                Metadata.PARTNER_NAME: self._partner_name,
+                Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
+                Metadata.PREVIEW_ONLY: self._preview_only,
+                Metadata.DISABLE_MONTHLY: self._disable_monthly,
+            })
 
         return pack_metadata
 
@@ -2472,7 +2508,7 @@ class Pack:
             pack_dependencies_by_download_count
         )
 
-    def format_metadata(self, index_folder_path, packs_dependencies_mapping,
+    def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
                         statistics_handler, packs_dict=None, marketplace='xsoar',
                         format_dependencies_only=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
@@ -2508,9 +2544,9 @@ class Pack:
             self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict, marketplace,
                                           statistics_handler, format_dependencies_only)
 
-            formatted_metadata = self._parse_pack_metadata()
+            formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
-            json_write(metadata_path, formatted_metadata, update=True)  # writing back parsed metadata
+            json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
 
             logging.success(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.")
             task_status = True
@@ -3796,22 +3832,16 @@ def load_json(file_path: str) -> dict:
         return {}
 
 
-def json_write(file_path: str, data: list | dict, update: bool = False):
+def json_write(file_path: str, data: list | dict):
     """ Writes given data to a json file
 
     Args:
         file_path: The file path
         data: The data to write
-        update: Whether to update the json file object with data
-    """
-    if update:
-        metadata_obj = load_json(file_path=file_path)
-        metadata_obj.update(data)
-    else:
-        metadata_obj = data
 
+    """
     with open(file_path, "w") as f:
-        f.write(json.dumps(metadata_obj, indent=4))
+        f.write(json.dumps(data, indent=4))
 
 
 def init_storage_client(service_account=None):

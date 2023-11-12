@@ -297,7 +297,7 @@ class TestMetadataParsing:
         """
         return Pack(pack_name="Test Pack Name", pack_path="dummy_path")
 
-    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack, dummy_pack_metadata):
+    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack: Pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
         dummy_pack._description = 'Description of test pack'
@@ -308,35 +308,15 @@ class TestMetadataParsing:
         dummy_pack._is_modified = False
         dummy_pack._enhance_pack_attributes(index_folder_path="", dependencies_metadata_dict={},
                                             statistics_handler=None, marketplace='xsoar')
-        parsed_metadata = dummy_pack._parse_pack_metadata(build_number="dummy_build_number", commit_hash="dummy_commit")
+        parsed_metadata = dummy_pack._parse_pack_metadata()
 
-        assert parsed_metadata['name'] == 'Test Pack Name'
-        assert parsed_metadata['id'] == 'Test Pack Name'
-        assert parsed_metadata['description'] == 'Description of test pack'
         assert 'created' in parsed_metadata
         assert 'updated' in parsed_metadata
-        assert parsed_metadata['legacy']
-        assert parsed_metadata['support'] == 'xsoar'
-        assert parsed_metadata['supportDetails']['url'] == 'https://test.com'
-        assert parsed_metadata['supportDetails']['email'] == 'test@test.com'
-        assert parsed_metadata['author'] == 'Cortex XSOAR'
-        assert 'authorImage' in parsed_metadata
-        assert 'certification' in parsed_metadata
-        assert parsed_metadata['price'] == 0
-        assert parsed_metadata['serverMinVersion'] == '6.0.0'
-        assert parsed_metadata['currentVersion'] == '2.3.0'
-        assert parsed_metadata['versionInfo'] == "dummy_build_number"
-        assert parsed_metadata['commit'] == "dummy_commit"
         assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", PackTags.NEW, PackTags.USE_CASE}
         assert len(parsed_metadata['tags']) == 4
-        assert parsed_metadata['categories'] == ["Messaging"]
-        assert 'contentItems' in parsed_metadata
         assert 'integrations' in parsed_metadata
-        assert parsed_metadata['useCases'] == ["Some Use Case"]
-        assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
         assert parsed_metadata['downloads'] == 10
         assert parsed_metadata['searchRank'] == 20
-        assert 'dependencies' in parsed_metadata
 
     def test_enhance_pack_attributes(self, dummy_pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.

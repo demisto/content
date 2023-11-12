@@ -1287,8 +1287,7 @@ def main():
             continue
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
-                                                                    packs_dependencies_mapping, build_number,
-                                                                    current_commit_hash,
+                                                                    packs_dependencies_mapping,
                                                                     statistics_handler,
                                                                     all_packs_dict,
                                                                     marketplace)
