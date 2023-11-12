@@ -94,7 +94,7 @@ def test_get_profile_id_custom(requests_mock: Any) -> None:
         base_url='https://nonexistent-domain.com',
         verify=False
     )
-    result = client.get_profile_id("profile_name", 0)
+    result = client.get_profile_id("profile", 0)
     expected_mocked_profile_id = mock_response.get('result', {}).get('entities', {})[0].get('_id', None)
     assert expected_mocked_profile_id == result
 
