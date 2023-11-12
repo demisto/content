@@ -7,7 +7,7 @@ from collections import namedtuple
 
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -94,8 +94,7 @@ def _add_attachments(client, incident: dict):
         })
 
 
-
-def create_test_incident_from_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def create_test_incident_from_file_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     This function will get the incidents and save the formatted incidents to instance context, for the fetch.
     """
@@ -108,6 +107,7 @@ def create_test_incident_from_file_command(client: Client, args: Dict[str, Any])
                                               client=client)
     set_integration_context({'incidents': ready_incidents})
     return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from file.')
+
 
 def create_test_incident_from_json_command(args):
     """
