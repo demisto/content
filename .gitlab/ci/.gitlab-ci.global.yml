@@ -229,6 +229,7 @@
       rm -rf ./Packs
       echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/content_production/Packs to ./Packs"
       cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
+      rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
       git status
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
@@ -511,7 +512,6 @@ cloning-content-repo-last-upload-commit:
     expire_in: 30 days
     paths:
       - ${CI_PROJECT_DIR}/artifacts/*
-      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
   before_script:
     - source .gitlab/helper_functions.sh
