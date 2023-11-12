@@ -231,7 +231,7 @@ def main():
     )
 
     # Get the first host by the ami env
-    hosts, _ = XSOARBuild.get_servers(ami_env=options.ami_env)
+    hosts = XSOARBuild.get_servers(ami_env=options.ami_env)
     internal_ip = hosts[0]
     username, password = extract_credentials_from_secret(options.secret)
     server = XSOARServer(internal_ip=internal_ip, user_name=username, password=password, build_number=options.build_number)

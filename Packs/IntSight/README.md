@@ -1,3 +1,5 @@
+Note: Support for this Pack was moved to Partner starting November 09, 2023. In case of any issues arise, please contact the Partner directly at <support@rapid7.com>.
+
 # Rapid7 Threat Command Pack
 Rapid7 Threat Command content pack is designed to help users manage alerts, CVEs, IOCs, and assets by accounts and MSSP accounts.
 

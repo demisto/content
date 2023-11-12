@@ -344,14 +344,14 @@
                 "vulnerabilityExceptionId": 1
             }
         ],
-        "hostName": "ec2-34-255-72-253.eu-west-1.compute.amazonaws.com",
+        "hostName": "ec2-1.eu.compute-1.amazonaws.com",
         "hostNames": [
             {
                 "name": "EC2AMAZ-ICVJCRK",
                 "source": "dce"
             },
             {
-                "name": "ec2-34-255-72-253.eu-west-1.compute.amazonaws.com",
+                "name": "ec2-1.eu.compute-1.amazonaws.com",
                 "source": "user"
             }
         ],
