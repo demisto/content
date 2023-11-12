@@ -11282,6 +11282,8 @@ def replace_spaces_in_credential(credential):
                       lambda match: match.group(0).replace(' ', '\n'), credential)
     return credential
 
+# bla bla comment
+
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
