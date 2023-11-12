@@ -809,7 +809,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: www.txttesturl.com
+              simple: demisto.com
       - - operator: containsGeneral
           left:
             value:
