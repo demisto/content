@@ -93,7 +93,7 @@ tasks:
       id: 6858b2fe-7399-44d8-894a-68f05cd01cad
       version: -1
       name: Cortex XDR - Isolate Endpoint
-      description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+      description: This playbook accepts a Cortex XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
       playbookName: Cortex XDR - Isolate Endpoint
       type: playbook
       iscommand: false
