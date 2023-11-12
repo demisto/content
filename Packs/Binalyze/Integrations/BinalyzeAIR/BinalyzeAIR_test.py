@@ -83,7 +83,7 @@ def test_get_profile_id_preset() -> None:
     preset_profiles = ["browsing-history", "compromise-assessment", "event-logs", "full", "memory-ram-pagefile", "quick"]
     mocked_profile = "full"
     result = client.get_profile_id(mocked_profile, 1)
-    if mock_profile in preset_profiles:
+    if mocked_profile in preset_profiles:
         assert result == mocked_profile
 
 
