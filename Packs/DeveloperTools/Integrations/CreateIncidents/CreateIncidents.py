@@ -25,7 +25,7 @@ class Client(BaseClient):
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
         super().__init__(base_url, headers=headers, verify=self.verify, proxy=self.proxy)
 
-    def http_request(self, file_path: str, response_type: str = 'json') -> Union[dict, str, list]:
+    def http_request(self, file_path: str, response_type: str = 'json') -> Union[dict, str, list]: # pragma: no cover
         try:
             data = self._http_request(
                 method='GET',
