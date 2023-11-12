@@ -338,7 +338,9 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
     demisto.debug(f'XSOAR Mirroring: Fetching incidents since last fetch: {last_fetch}')
 
-    incidents, last_fetched_incidents = get_and_dedup_incidents(client, last_fetched_incidents, query, max_results, last_fetch)
+    incidents, last_fetched_incidents, last_fetched_incident_time = get_and_dedup_incidents(client, last_fetched_incidents, query,
+                                                                                            max_results, last_fetch)
+    demisto.debug("last_fetched_incident_time: {last_fetched_incident_time}")
     if fetch_incident_history:
         integration_context = get_integration_context()
         incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
@@ -392,11 +394,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
-        incident_created_time = dateparser.parse(incident.get('created'))  # type: ignore[arg-type]
+        # incident_created_time = dateparser.parse(incident.get('created'))  # type: ignore[arg-type]
 
         # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:  # type: ignore[operator]
-            latest_created_time = incident_created_time
+        if last_fetched_incident_time > latest_created_time:  # type: ignore[operator]
+            latest_created_time = last_fetched_incident_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': (latest_created_time)  # type: ignore[operator]
@@ -802,7 +804,8 @@ def update_remote_system_command(client: Client, args: dict[str, Any], mirror_ta
 
 
 def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
-                            query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict]]:
+                            query: str, max_results: int, last_fetch: Union[str, int]) -> tuple[list[dict], list[dict],
+                                                                                                Optional[datetime]]:
     """ get incidents and dedup the incidents response.
 
     Cases:
@@ -825,7 +828,7 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
     Returns:
         tuple[list[dict], list[str]: The list of dedup incidents and ID list of incidents of current fetch.
     """
-    last_fatched_incident = dateparser.parse(str(last_fetch))
+    last_fetched_incident_time = dateparser.parse(str(last_fetch))
 
     new_incidents: list = []
     page = 0
@@ -846,7 +849,7 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
             if len(new_incidents) >= max_results:
                 break
             incident_id = incident.get("id")
-            incident_creation_time = dateparser.parse(incident.get("created", last_fatched_incident))
+            incident_creation_time = dateparser.parse(incident.get("created", last_fetched_incident_time))
             if incident_creation_time:
                 timezone_offset = incident_creation_time.utcoffset()
                 if timezone_offset:
@@ -855,7 +858,7 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
             demisto.debug(f"{incident_id} incident_creation_time: {incident_creation_time}")
             if incident_id not in last_fetched_incidents:
                 # Case 3: The last fetched incident with the different timestamp then the previous incident.
-                if last_fatched_incident and incident_creation_time and last_fatched_incident < incident_creation_time:
+                if last_fetched_incident_time and incident_creation_time and last_fetched_incident_time < incident_creation_time:
                     demisto.debug(f"XSOAR Mirroring: reset the last_fetched_incidents list with id {incident_id}")
                     last_fetched_incidents = [incident_id]
                 # Case 2: The last fetched incident with the same timestamp as the previous incident.
@@ -863,10 +866,10 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
                     demisto.debug(f"XSOAR Mirroring: attached id {incident_id} to the last_fetched_incidents list")
                     last_fetched_incidents.append(incident_id)
                 new_incidents.append(incident)
-                last_fatched_incident = incident_creation_time
+                last_fetched_incident_time = incident_creation_time
         page += 1
         demisto.debug(f"new_incidents: {new_incidents}")
-    return new_incidents, last_fetched_incidents
+    return new_incidents, last_fetched_incidents, last_fetched_incident_time
 
 
 def main() -> None:  # pragma: no cover
