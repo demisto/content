@@ -592,17 +592,13 @@ class RecoClient(BaseClient):
                 }
             }
         }
-        try:
-            response = self._http_request(
-                method="POST",
-                url_suffix="/asset-management",
-                timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
-                data=json.dumps(params),
-            )
-            return extract_response(response)
-        except Exception as e:
-            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
-            raise e
+        response = self._http_request(
+            method="POST",
+            url_suffix="/asset-management",
+            timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
+            data=json.dumps(params),
+        )
+        return extract_response(response)
 
     def get_sensitive_assets_information(self,
                                          asset_name: str | None,
