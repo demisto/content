@@ -46,11 +46,11 @@ def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: list[FeedIn
 
 
 @pytest.fixture()
-def available_indicators(xsoar_ng_client: XsoarNGApiClient) -> list[str]:
+def available_indicators(xsoar_saas_client) -> list[str]:
     """
     Gets the available indicators in XSOAR-NG.
     """
-    return [indicator.get("value") for indicator in xsoar_ng_client.list_indicators().get("iocObjects")]
+    return [indicator.get("value") for indicator in xsoar_saas_client.list_indicators().get("iocObjects")]
 
 
 @contextmanager
@@ -269,7 +269,7 @@ def get_fetched_incident(
                 xsoar_ng_client.delete_incidents(incident_ids_to_remove)
 
 
-def test_edl(request: SubRequest, xsoar_ng_client: XsoarNGApiClient, available_indicators: list[str]):
+def test_edl(request: SubRequest, xsoar_saas_client, available_indicators: list[str]):
     """
     Given:
         - indicators in xsoar-ng
@@ -284,7 +284,7 @@ def test_edl(request: SubRequest, xsoar_ng_client: XsoarNGApiClient, available_i
         [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]
     ]
 
-    with create_indicators(xsoar_ng_client, indicators=feed_indicators):
+    with create_indicators(xsoar_saas_client, indicators=feed_indicators):
         integration_params = get_integration_params(
             request.config.option.integration_secrets_path, instance_name="edl_e2e_instance"
         )
@@ -292,7 +292,7 @@ def test_edl(request: SubRequest, xsoar_ng_client: XsoarNGApiClient, available_i
         password = integration_params["credentials"]["password"]
 
         with create_integration_instance(
-            xsoar_ng_client,
+            xsoar_saas_client,
             integration_params=integration_params,
             integration_id="EDL",
             is_long_running=True,
@@ -302,7 +302,7 @@ def test_edl(request: SubRequest, xsoar_ng_client: XsoarNGApiClient, available_i
         ) as edl_instance_response:
             instance_name = edl_instance_response.get("name")
 
-            edl_response = xsoar_ng_client.do_long_running_instance_request(
+            edl_response = xsoar_saas_client.do_long_running_instance_request(
                 instance_name, username=username, password=password
             )
             assert edl_response.text, f'could not get indicators from url={edl_response.request.url} from ' \
@@ -311,7 +311,7 @@ def test_edl(request: SubRequest, xsoar_ng_client: XsoarNGApiClient, available_i
 
 
 def test_taxii2_server(
-    request: SubRequest, xsoar_ng_client: XsoarNGApiClient, available_indicators: list[str]
+    request: SubRequest, xsoar_saas_client, available_indicators: list[str]
 ):
     """
     Given:
@@ -333,12 +333,12 @@ def test_taxii2_server(
         FeedIndicator(value=value, type=_type, score=score) for value, _type, score in
         [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]
     ]
-    with create_indicators(xsoar_ng_client, indicators=feed_indicators):
+    with create_indicators(xsoar_saas_client, indicators=feed_indicators):
         integration_params = get_integration_params(
             request.config.option.integration_secrets_path, instance_name="taxii2server-e2e"
         )
         with create_integration_instance(
-            xsoar_ng_client,
+            xsoar_saas_client,
             integration_params=integration_params,
             integration_id="TAXII2 Server",
             is_long_running=True,
@@ -350,7 +350,7 @@ def test_taxii2_server(
             username = integration_params["credentials"]["identifier"]
             password = integration_params["credentials"]["password"]
             headers = {"Accept": "application/taxii+json;version=2.1"}
-            response = xsoar_ng_client.do_long_running_instance_request(
+            response = xsoar_saas_client.do_long_running_instance_request(
                 instance_name,
                 url_suffix="/threatintel/collections",
                 headers=headers,
@@ -366,7 +366,7 @@ def test_taxii2_server(
             collection_id = collections[0]["id"]
 
             # get the actual indicators from the collection
-            response = xsoar_ng_client.do_long_running_instance_request(
+            response = xsoar_saas_client.do_long_running_instance_request(
                 instance_name,
                 url_suffix=f"/threatintel/collections/{collection_id}/objects",
                 headers=headers,
@@ -376,11 +376,11 @@ def test_taxii2_server(
 
             indicators = get_json_response(response).get("objects")
             assert indicators, f'could not get indicators from url={response.request.url} with available ' \
-                f'indicators={[indicator.get("value") for indicator in xsoar_ng_client.list_indicators()]}, ' \
+                f'indicators={[indicator.get("value") for indicator in xsoar_saas_client.list_indicators()]}, ' \
                 f'status code={response.status_code}, response={indicators}'
 
 
-def test_slack_ask(request: SubRequest, xsoar_ng_client: XsoarNGApiClient):
+def test_slack_ask(request: SubRequest, xsoar_saas_client):
     """
     Given:
         - playbook that runs slack-ask (runs SlackAskV2 and then answers the slack ask with the slack V3 integration)
@@ -397,7 +397,7 @@ def test_slack_ask(request: SubRequest, xsoar_ng_client: XsoarNGApiClient):
     )
 
     with create_integration_instance(
-        xsoar_ng_client,
+        xsoar_saas_client,
         integration_params=integration_params,
         integration_id="SlackV3",
         is_long_running=True,
@@ -407,22 +407,22 @@ def test_slack_ask(request: SubRequest, xsoar_ng_client: XsoarNGApiClient):
     ):
         playbook_id_name = "TestSlackAskE2E"
         with create_playbook(
-            xsoar_ng_client,
-            playbook_path="Tests/tests_end_to_end/xsoar_ng/TestSlackAskE2E.yml",
+            xsoar_saas_client,
+            playbook_path="Tests/tests_end_to_end/content/xsoar_saas/TestSlackAskE2E.yml",
             playbook_id=playbook_id_name,
             playbook_name=playbook_id_name
-        ), create_incident(xsoar_ng_client, playbook_id=playbook_id_name) as incident_response:
+        ), create_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:
             # make sure the playbook finished successfully
             assert is_playbook_state_as_expected(
-                xsoar_ng_client, incident_id=incident_response.id, expected_states={"completed"}
+                xsoar_saas_client, incident_id=incident_response.id, expected_states={"completed"}
             )
 
-            context = xsoar_ng_client.get_investigation_context(incident_response.investigation_id)
+            context = xsoar_saas_client.get_investigation_context(incident_response.investigation_id)
             # make sure the context is populated with thread id(s) from slack ask
             assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
 
 
-def test_qradar_mirroring(request: SubRequest, xsoar_ng_client: XsoarNGApiClient):
+def test_qradar_mirroring(request: SubRequest, xsoar_saas_client):
     """
     Given:
         - a QRadar offense that is fetched through the integration that is in "OPENED" state.
@@ -440,7 +440,7 @@ def test_qradar_mirroring(request: SubRequest, xsoar_ng_client: XsoarNGApiClient
         "integrationInstanceName", f'e2e-test-{integration_params.get("name", "Qradar-v3")}'
     )
     with create_integration_instance(
-        xsoar_ng_client,
+        xsoar_saas_client,
         integration_params=integration_params,
         integration_id="QRadar v3",
         is_long_running=True,
@@ -448,7 +448,7 @@ def test_qradar_mirroring(request: SubRequest, xsoar_ng_client: XsoarNGApiClient
     ):
         incidents_type = integration_params["incident_type"]
         with get_fetched_incident(
-            xsoar_ng_client,
+            xsoar_saas_client,
             source_instance_name=instance_name,
             # get the incident created in the last minute
             from_date=(datetime.utcnow() - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%S"),
@@ -463,11 +463,11 @@ def test_qradar_mirroring(request: SubRequest, xsoar_ng_client: XsoarNGApiClient
             assert investigation_id, f'investigation ID is empty in {qradar_incident_response}'
 
             # close the qradar offense
-            _, context = xsoar_ng_client.run_cli_command(
+            _, context = xsoar_saas_client.run_cli_command(
                 f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED",
                 investigation_id=investigation_id
             )
             assert context.get("QRadar", {}).get("Offense", {}).get("Status") == "CLOSED"
 
             # make sure the incident gets closed after closing it in Qradar
-            assert is_incident_state_as_expected(xsoar_ng_client, incident_id, expected_state="closed")
+            assert is_incident_state_as_expected(xsoar_saas_client, incident_id, expected_state="closed")

@@ -62,7 +62,7 @@ def xsiam_client(request) -> XsiamApiClient:
 
 
 @pytest.fixture(scope="module")
-def xsoar_ng_client(request) -> XsoarNGApiClient:
+def xsoar_saas_client(request) -> XsoarNGApiClient:
     xsoar_ng_url, api_key, api_key_id = get_cloud_machine_credentials(request)
 
     xsoar_client_config = XsoarNGApiClientConfig(

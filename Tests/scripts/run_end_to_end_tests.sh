@@ -10,7 +10,7 @@ fi
 if [[ "${SERVER_TYPE}" == "XSIAM" ]]; then
   test_path="./Tests/tests_end_to_end/content/xsiam"
 elif [[ "${SERVER_TYPE}" == "XSOAR SAAS" ]]; then
-  test_path="./Tests/tests_end_to_end/content/xsoar_ng"
+  test_path="./Tests/tests_end_to_end/content/xsoar_saas"
 fi
 
 if [[ -n "$test_path" ]]; then
