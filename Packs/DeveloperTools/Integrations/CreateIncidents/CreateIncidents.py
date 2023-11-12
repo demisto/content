@@ -67,6 +67,8 @@ def fetch_incidents_command(client):
     for incident in incidents:
         if 'attachment' in incident:
             _add_attachments(client, incident)
+        if 'entry_id_attachment' in incident:
+            incident.setdefault('attachment', []).extend(incident['entry_id_attachment'])
 
     # clear the integration contex from already seen incidents
     set_integration_context({'incidents': []})
@@ -92,6 +94,7 @@ def _add_attachments(client, incident: dict):
         })
 
 
+
 def create_test_incident_from_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     This function will get the incidents and save the formatted incidents to instance context, for the fetch.
@@ -110,9 +113,9 @@ def create_test_incident_from_json_command(args):
     """
     This function will get the incidents and save the formatted incidents to instance context, for the fetch.
     """
-    incidents_entry_id = args.get('entry_id')
+    incidents_entry_id = args.get('incident_entry_id')
     incidents_json = args.get('incident_raw_json')
-    if not (incidents_entry_id or incidents_json) or (incidents_entry_id and incidents_json):
+    if (not incidents_entry_id and not incidents_json) or (incidents_entry_id and incidents_json):
         raise DemistoException('Please insert entry_id or incident_raw_json, and not both')
 
     if incidents_entry_id:
@@ -159,7 +162,6 @@ def parse_incidents(incidents: List[dict], attachment_path: List[str] = None, at
      The actual file is added at the fetch command.
     """
     ready_incidents = []
-    attachments = []
 
     for incident in incidents:
         parsed_incident = {
@@ -172,16 +174,16 @@ def parse_incidents(incidents: List[dict], attachment_path: List[str] = None, at
             parsed_incident['labels'] = incident.get('labels')
 
         if attachment_path:
-            parsed_incident['attachment'] = attachments.extend(attachment_path)
+            parsed_incident['attachment'] = attachment_path
 
         if attachment_entry_ids:
             for attachment_entry_id in attachment_entry_ids:
                 attachment = demisto.getFilePath(attachment_entry_id)
-                attachments.append({'path': attachment.get('file'),
-                                    'name': attachment.get('name')})
-
+                parsed_incident.setdefault('entry_id_attachment', []).append({'path': attachment.get('file'),
+                                                                              'name': attachment.get('name')})
 
         ready_incidents.append(parsed_incident)
+        print(ready_incidents)
     return ready_incidents
 
 
