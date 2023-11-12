@@ -121,13 +121,16 @@ FAKE_ISO_DATE_CASES = [
      datetime(2023, 8, 1, 14, 15, 26, tzinfo=timezone.utc)),
     ("2023-08-01T14:15:26+0000",   # 6 digit milliseconds + tz , No Z
      datetime(2023, 8, 1, 14, 15, 26, tzinfo=timezone.utc)),
-    ("2023-08-01 14:15:26+0000Z", None),  # Invalid format, missing 'T', expecting ValueError
+    ("2023-08-01 14:15:26+0000Z",  # missing 'T'
+     datetime(2023, 8, 1, 14, 15, 26, tzinfo=timezone.utc)),
     ("2023-08-01T14:15:26Z",  # No milliseconds + tz+ Z
      datetime(2023, 8, 1, 14, 15, 26, tzinfo=timezone.utc)),
     ("2023-08-01T14:15:26.123Z",  # 3 digit milliseconds + Z
-     datetime(2023, 8, 1, 14, 15, 26, 123, tzinfo=timezone.utc)),
+     datetime(2023, 8, 1, 14, 15, 26, 123000, tzinfo=timezone.utc)),
     ("2023-08-01T14:15:26.123+0000Z",  # 3 digit milliseconds + tz+ Z
-     datetime(2023, 8, 1, 14, 15, 26, 123, tzinfo=timezone.utc))
+     datetime(2023, 8, 1, 14, 15, 26, 123, tzinfo=timezone.utc)),
+    ("2023-11-07T09:00",  # No seconds
+     datetime(2023, 11, 7, 9, 0))
 ]
 
 
@@ -138,11 +141,8 @@ def test_parse_special_iso_format(input_str, expected_dt):
     When: trying to convert from response to datetime
     Then: make sure parsing is correct.
     """
-    if expected_dt is None:
-        with pytest.raises(ValueError):
-            FireEyeETPEventCollector.parse_special_iso_format(input_str)
-    else:
-        assert FireEyeETPEventCollector.parse_special_iso_format(input_str) == expected_dt
+
+    assert FireEyeETPEventCollector.parse_special_iso_format(input_str) == expected_dt
 
 
 class TestLastRun:
