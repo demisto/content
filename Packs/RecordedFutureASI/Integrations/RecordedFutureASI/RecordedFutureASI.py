@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerUserPython import *  # noqa
 from CommonServerPython import *
 
 import time
