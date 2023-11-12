@@ -5580,10 +5580,6 @@
             "integrations": "Netcraft V2",
             "playbookID": "Test - Netcraft",
             "timeout": 2400
-        },
-        {
-            "integrations": "AWS - Athena",
-            "playbookID": "Athena-Test"
         }
     ],
     "skipped_tests": {
