@@ -230,7 +230,6 @@
       echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/content_production/Packs to ./Packs"
       cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
       chmod -R 755 ./Packs
-      rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
       git status
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
