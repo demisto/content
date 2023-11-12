@@ -236,6 +236,8 @@ def test_create_test_incident_command_happy(mocker, incidents, attachment, expec
 
 ARGS = [{'incident_entry_id': 'entry_id', 'incident_raw_json': '{"name": "incident}'},
         {'incident_entry_id': '', 'incident_raw_json': ''}]
+
+
 @pytest.mark.parametrize('args', ARGS)
 def test_create_test_incident_from_json_command(args):
     """
