@@ -19,6 +19,17 @@
   - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
   - section_end "Upload Entities to Cortex XSOAR"
 
+.run_test_content:
+  - section_start "Run test-content" --collapsed
+  - |
+    if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
+    fi
+  - |
+    ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
+  - rm -f Tests/conf.json
+  - section_end "Run test-content"
+
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
@@ -274,7 +285,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - echo "Done sleeping!"
     - section_end "Wait Until Server Ready"
 
-    - !reference [.run_tests]
+    - !reference [.run_test_content]
 
     - section_start "Cleanup env results from artifacts folder" --collapsed
     - |
@@ -368,13 +379,22 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
     - section_end "Test Modeling Rules"
 
+    - section_start "End to End Tests" --collapsed
+    - |
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+      echo "Server URL: $DEMISTO_BASE_URL"
+      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+    - section_end "End to End Tests"
+
     - section_start "Install Packs" --collapsed
     - cat "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt" 
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs"
 
-    - !reference [.run_tests]
+    - !reference [.run_test_content]
 
     - section_start "Cleanup env results from artifacts folder" --collapsed
     - |
@@ -438,6 +458,15 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
     - !reference [.export_cloud_machine_constants]
 
+    - section_start "End to End Tests" --collapsed
+    - |
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+      echo "Server URL: $DEMISTO_BASE_URL"
+      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
+    - section_end "End to End Tests"
+
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
@@ -450,7 +479,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs"
 
-    - !reference [.run_tests]
+    - !reference [.run_test_content]
 
     - section_start "Cleanup env results from artifacts folder" --collapsed
     - |
