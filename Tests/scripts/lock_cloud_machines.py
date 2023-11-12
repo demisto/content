@@ -49,7 +49,7 @@ def get_queue_locks_details(storage_client: storage.Client, bucket_name: str, pr
     Returns: list of dicts with the job-id and the time_created of the lock file.
 
     """
-    blobs = storage_client.list_blobs(bucket_name)
+    blobs = storage_client.list_blobs(bucket_name, timeout=100)
     files = []
     found = False
     for blob in blobs:
