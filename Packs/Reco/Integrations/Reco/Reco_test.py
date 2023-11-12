@@ -868,3 +868,4 @@ def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> No
     res = get_user_context_by_email_address(reco_client, "john@acme.com")
     assert res.outputs_prefix == "Reco.User"
     assert res.outputs.get("email_account") != ""
+    assert res.outputs.get("email_account") == "john@acme.com"
