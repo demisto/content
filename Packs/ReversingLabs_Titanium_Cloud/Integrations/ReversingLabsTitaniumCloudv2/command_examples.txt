@@ -23,3 +23,15 @@
 !reversinglabs-titaniumcloud-yara-retro-hunt-actions yara_retro_action="CHECK STATUS" ruleset_name=SuperHunt
 !reversinglabs-titaniumcloud-yara-retro-matches-feed time_format=timestamp time_value=1686063146
 !reversinglabs-titaniumcloud-yara-ruleset-actions ruleset_name=SuperHunt yara_action="GET RULESET INFO"
+!reversinglabs-titaniumcloud-domain-report domain=bloom-artists.com
+!reversinglabs-titaniumcloud-domain-downloaded-files domain=bloom-artists.com classification=MALICIOUS result_limit=10 results_per_page=3
+!reversinglabs-titaniumcloud-domain-urls result_limit=10 results_per_page=3 domain=bloom-artists.com
+!reversinglabs-titaniumcloud-domain-to-ip results_per_page=3 domain=bloom-artists.com result_limit=10
+!reversinglabs-titaniumcloud-domain-related-domains domain=smsv4.ufcfan.org result_limit=10 results_per_page=3
+!reversinglabs-titaniumcloud-ip-report ip=5.42.64.70
+!reversinglabs-titaniumcloud-ip-downloaded-files ip=61.253.71.111 result_limit=10 results_per_page=3 classification=KNOWN
+!reversinglabs-titaniumcloud-ip-urls ip=61.253.71.111 result_limit=10 results_per_page=3
+!reversinglabs-titaniumcloud-ip-to-domain results_per_page=3 ip=61.253.71.111 result_limit=10
+!reversinglabs-titaniumcloud-network-reputation network_locations=http://43.138.221.139/jquery-3.3.1.min.js,61.253.71.111,bloom-artists.com
+!reversinglabs-titaniumcloud-network-reputation-override set_overrides_list="http://163.197.220.144/5x8x,url,suspicious|http://163.197.220.144/j.ad,url,known" remove_overrides_list="http://43.138.221.139/jquery-3.3.1.min.js,url"
+!reversinglabs-titaniumcloud-network-reputation-overrides-list result_limit=10
