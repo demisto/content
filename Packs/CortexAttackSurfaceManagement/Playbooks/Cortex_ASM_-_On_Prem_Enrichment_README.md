@@ -1,7 +1,9 @@
 Given an IP address, port, and protocol of a service, this playbook enriches on-prem integrations to find the related firewall rule and other related information.
 
 Conditions:
-This is currently limited to standalone firewalls for PAN-OS.
+- Multiple integration instances configured at the same time are not supported (Panorama or standalone NGFW).
+- !pan-os-security-policy-match fails if any firewall is disconnected (Panorama).
+- Matching on different rules for different firewalls not supported (Panorama).
 
 ## Dependencies
 
@@ -22,8 +24,9 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* pan-os-list-rules
 * pan-os-security-policy-match
+* pan-os-platform-get-device-groups
+* pan-os-list-rules
 * pan-os-show-device-version
 
 ## Playbook Inputs

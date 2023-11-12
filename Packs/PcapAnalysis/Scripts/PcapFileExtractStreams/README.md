@@ -27,6 +27,7 @@ Extract payloads of each stream from a pcap file.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
+| PCAPStream.entry_id | The entry ID of the pcap file parsed. | string |
 | PCAPStream.protocol | Protocol. | string |
 | PCAPStream.client_ip | Client IP address. | string |
 | PCAPStream.client_port | Client port number. | number |

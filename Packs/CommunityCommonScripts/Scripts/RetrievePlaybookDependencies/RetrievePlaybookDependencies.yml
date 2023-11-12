@@ -1,0 +1,37 @@
+args:
+- description: Name of Playbook.
+  name: playbook_name
+  required: true
+- auto: PREDEFINED
+  default: true
+  defaultValue: "false"
+  description: Set 'true' to get a generated markdown list of results.
+  name: Markdown
+  predefined:
+  - "true"
+  - "false"
+  type: textArea
+comment: Retrieves all Playbook (and Sub-Playbook) Names, Integrations, Automation Scripts and Commands (not using-brand), and lists for a provided Playbook name.
+commonfields:
+  id: RetrievePlaybookDependencies
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.78960
+enabled: true
+name: RetrievePlaybookDependencies
+outputs:
+- contextPath: RetrievePlaybookDependencies
+  description: The automations (sorted into base and custom scripts), commands, integrations, lists, and un-branded commands a playbook and its sub-playbooks use.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 600ns
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
