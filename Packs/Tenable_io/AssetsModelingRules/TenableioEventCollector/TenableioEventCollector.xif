@@ -1,4 +1,4 @@
-[MODEL: model=Endpoint, dataset=tenable_io_raw]
+[MODEL: model=Endpoint, dataset=tenable_io_assets_raw]
 filter xsiam_type = "vulnerability"
 | alter XDM.Endpoint.Target.host.hostname=replace(json_extract(asset,"$.hostname"),"\"",""),
         XDM.Endpoint.Target.host.ipv4_addresses=arraycreate(replace(json_extract(asset,"$.ipv4"),"\"","")),
@@ -13,7 +13,7 @@ filter xsiam_type = "vulnerability"
         XDM.Endpoint.threat.original_threat_id=json_extract_scalar(plugin,"$.id"),
         XDM.Endpoint.observation_timestamp=indexed;
 
-[MODEL: dataset=tenable_io_raw, model=Audit]
+[MODEL: dataset=tenable_io_assets_raw, model=Audit]
 filter xsiam_type = "audit_log"
 | alter XDM.Audit.TriggeredBy.identity.uuid=json_extract_scalar(actor, "$.id"),
       XDM.Audit.TriggeredBy.identity.name=json_extract_scalar(actor, "$.name"),
