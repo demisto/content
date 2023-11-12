@@ -1,4 +1,5 @@
-from typing import Generator, NamedTuple
+from typing import NamedTuple
+from collections.abc import Generator
 import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -400,6 +401,20 @@ def organize_of_events(
 
 
 """ FETCH EVENTS """
+
+
+def get_events_command_new(
+    client: Client, args: dict[str, str], last_run_model: LastRun,
+) -> tuple[list[str], LastRun]:
+    '''
+    
+    '''
+    start_date, end_date = get_start_and_ent_date(
+        args=args, start_date=last_run_model.start_date
+    )
+
+
+    ...
 
 
 def get_events_command(
