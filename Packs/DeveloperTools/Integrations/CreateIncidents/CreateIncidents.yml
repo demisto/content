@@ -63,7 +63,7 @@ script:
       required: false
     - description: 'The paths of the files to be added to incidents as attachment. Would be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml'
       name: attachment_paths
-    description: Creates incidents from json files provided, and stores it in the instance context.
+    description: Creates incidents from json file, and stores it in the instance context.
     name: create-test-incident-from-raw-json
   dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
