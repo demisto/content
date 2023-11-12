@@ -3796,7 +3796,7 @@ def load_json(file_path: str) -> dict:
         return {}
 
 
-def json_write(file_path: str, data: list | dict, update: bool = False):
+def json_write(file_path: str, data: dict, update: bool = False):
     """ Writes given data to a json file
 
     Args:

@@ -1372,7 +1372,7 @@ def main():
     # updating them with the new data for the new packs that were added to the index.zip
     for pack in packs_with_missing_dependencies:
         task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
-                                              build_number, current_commit_hash, statistics_handler,
+                                              statistics_handler,
                                               all_packs_dict, marketplace,
                                               format_dependencies_only=True)
 
