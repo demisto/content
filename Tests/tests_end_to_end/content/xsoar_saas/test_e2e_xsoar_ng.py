@@ -1,13 +1,14 @@
 from datetime import timedelta
 from datetime import datetime
 from contextlib import contextmanager
+from typing import Dict
 
 import pytest
 from _pytest.fixtures import SubRequest
 import requests
 from demisto_client.demisto_api import IncidentWrapper
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
-from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClient
+from demisto_sdk.commands.common.clients import XsoarSaasClient
 from demisto_client.demisto_api.rest import ApiException
 from demisto_sdk.utils.utils import retry
 from Tests.tools import get_integration_params
@@ -19,12 +20,12 @@ install_logging('e2e-xsoar-ng.log', logger=logging)
 
 
 @contextmanager
-def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: list[FeedIndicator]):
+def save_indicators(xsoar_saas_client: XsoarSaasClient, indicators: list[FeedIndicator]):
     """
     Creates indicators in XSOAR-NG.
 
     Args:
-        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        xsoar_saas_client (XsoarSaasClient): xsoar-saas client.
         indicators (List[FeedIndicator]]): the indicators to create
 
     """
@@ -32,7 +33,8 @@ def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: list[FeedIn
     try:
         for indicator in indicators:
             try:
-                response = xsoar_ng_client.create_indicator(indicator.value, indicator_type=indicator.type, score=indicator.score)
+                response = xsoar_saas_client.create_indicator(
+                    indicator.value, indicator_type=indicator.type, score=indicator.score)
                 if created_indicator_id := response.get("id"):
                     logging.info(f'Created indicator {indicator}')
                     indicators_to_remove.append(created_indicator_id)
@@ -41,12 +43,12 @@ def create_indicators(xsoar_ng_client: XsoarNGApiClient, indicators: list[FeedIn
                     raise
         yield
     finally:
-        xsoar_ng_client.delete_indicators(indicators_to_remove)
+        xsoar_saas_client.delete_indicators(indicators_to_remove)
         logging.info(f'Deleted indicators {indicators}')
 
 
 @pytest.fixture()
-def available_indicators(xsoar_saas_client) -> list[str]:
+def available_indicators(xsoar_saas_client: XsoarSaasClient) -> list[str]:
     """
     Gets the available indicators in XSOAR-NG.
     """
@@ -54,8 +56,8 @@ def available_indicators(xsoar_saas_client) -> list[str]:
 
 
 @contextmanager
-def create_integration_instance(
-    xsoar_ng_client: XsoarNGApiClient,
+def save_integration_instance(
+    xsoar_saas_client: XsoarSaasClient,
     integration_params: dict,
     integration_id: str,
     is_long_running: bool = False,
@@ -65,7 +67,7 @@ def create_integration_instance(
     Creates an integration instance
 
     Args:
-        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        xsoar_saas_client (XsoarNGApiClient): xsoar-saas client.
         integration_params (dict): the integration instance data.
         integration_id (str): name of the integration ID to create the instance
         is_long_running (bool): whether the integration is long-running or not.
@@ -77,7 +79,7 @@ def create_integration_instance(
     created_instance_uuid = ""
     name = instance_name or f"end-to-end-{integration_id}"
     try:
-        response = xsoar_ng_client.create_integration_instance(
+        response = xsoar_saas_client.create_integration_instance(
             _id=integration_id,
             name=name,
             integration_instance_config=integration_params,
@@ -90,19 +92,19 @@ def create_integration_instance(
         yield response
     finally:
         if created_instance_uuid:
-            xsoar_ng_client.delete_integration_instance(created_instance_uuid)
+            xsoar_saas_client.delete_integration_instance(created_instance_uuid)
             logging.info(f'Deleted integration instance {integration_id} with name {name}')
 
 
 @contextmanager
-def create_incident(
-    xsoar_ng_client: XsoarNGApiClient, name: str | None = None, playbook_id: str | None = None
+def save_incident(
+    xsoar_saas_client: XsoarSaasClient, name: str | None = None, playbook_id: str | None = None
 ) -> IncidentWrapper:
     """
     Creates an incident in XSOAR-NG.
 
     Args:
-        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        xsoar_saas_client (XsoarSaasClient): xsoar-saas client.
         name (dict): the name of the incident.
         playbook_id (str): playbook ID that the incident will be attached to.
 
@@ -112,7 +114,7 @@ def create_incident(
     incident_id = None
     incident_name = name or f'end-to-end-{playbook_id}-incident'
     try:
-        response = xsoar_ng_client.create_incident(
+        response = xsoar_saas_client.create_integration_instance(
             incident_name, should_create_investigation=True, attached_playbook_id=playbook_id
         )
         logging.info(f'Created incident {incident_name} that will run the playbook {playbook_id}')
@@ -120,61 +122,70 @@ def create_incident(
         yield response
     finally:
         if incident_id:
-            xsoar_ng_client.delete_incidents(incident_id)
+            xsoar_saas_client.delete_incidents(incident_id)
             logging.info(f'Removed incident {incident_name}')
 
 
 @contextmanager
-def create_playbook(xsoar_ng_client: XsoarNGApiClient, playbook_path: str, playbook_id: str, playbook_name: str):
+def save_playbook(xsoar_saas_client: XsoarSaasClient, playbook_path: str, playbook_id: str, playbook_name: str):
     """
     Creates a playbook in XSOAR-NG.
 
     Args:
-        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        xsoar_saas_client (XsoarSaasClient): xsoar-saas client.
         playbook_path (dict): path to the playbook yml
         playbook_id (str): the ID of the playbook
         playbook_name (str): the name of the playbook
     """
     try:
-        xsoar_ng_client.client.import_playbook(playbook_path)
+        xsoar_saas_client.client.import_playbook(playbook_path)
         logging.info(f'Created playbook {playbook_id}')
         yield
     finally:
-        xsoar_ng_client.delete_playbook(playbook_name, playbook_id)
+        xsoar_saas_client.delete_playbook(playbook_name, playbook_id)
         logging.info(f'Deleted playbook {playbook_id}')
 
 
 @retry(times=10, delay=30)
-def is_playbook_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_states: set[str]) -> bool:
+def is_playbook_state_as_expected(xsoar_saas_client: XsoarSaasClient, incident_id: str, expected_states: set[str]) -> bool:
     """
     Validates whether playbook has reached into an expected state
 
     Args:
-        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        xsoar_saas_client (XsoarSaasClient): xsoar-ng client.
         incident_id (dict): the incident ID that the playbook is attached to.
         expected_states (Set[str]): the expected states that the playbook can reach which are valid
 
     Returns:
         bool: True if the playbook reached to the expected state, raises exception if not.
     """
-    playbook_status_raw_response = xsoar_ng_client.get_playbook_state(incident_id)
+    playbook_status_raw_response = xsoar_saas_client.get_playbook_state(incident_id)
     _playbook_status = playbook_status_raw_response.get("state", "").lower()
     if _playbook_status in expected_states:
         return True
     playbook_id = playbook_status_raw_response.get("playbookId")
     if _playbook_status == "failed":
-        playbook_failure_reason = xsoar_ng_client.get_playbook_failure_by_incident(incident_id)
+        playbook_failure_reason = xsoar_saas_client.get_incident_playbook_failure(incident_id)
         raise Exception(f'playbook {playbook_id} failed because of {playbook_failure_reason} and its state is {_playbook_status}')
     raise Exception(f'the status of the playbook {playbook_id} is {_playbook_status}')
 
 
+def get_integration_instance_name(integration_params: Dict, default: str) -> str:
+    """
+    Gets an instance name for the integration.
+    """
+    return integration_params.pop(
+        "integrationInstanceName", f'e2e-test-{integration_params.get("name", default)}'
+    )
+
+
 @retry(times=30, delay=5)
-def is_incident_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id: str, expected_state: str = "closed") -> bool:
+def is_incident_state_as_expected(xsoar_saas_client: XsoarSaasClient, incident_id: str, expected_state: str = "closed") -> bool:
     """
     Validates whether an incident has reached into an expected state
 
     Args:
-        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        xsoar_saas_client (XsoarSaasClient): xsoar-saas client.
         incident_id (dict): the incident ID
         expected_state (str): the expected state that the incident should be
 
@@ -188,7 +199,7 @@ def is_incident_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id
         3: "acknowledged"  # archived
     }
 
-    incident_response = xsoar_ng_client.search_incidents(incident_ids=incident_id)
+    incident_response = xsoar_saas_client.search_incidents(incident_ids=incident_id)
     # status 2 means the incident is closed.
     incident = incident_response["data"][0]
     incident_status = incident_status.get(incident.get("status"))
@@ -199,7 +210,7 @@ def is_incident_state_as_expected(xsoar_ng_client: XsoarNGApiClient, incident_id
 
 @contextmanager
 def get_fetched_incident(
-    xsoar_ng_client: XsoarNGApiClient,
+    xsoar_saas_client: XsoarSaasClient,
     source_instance_name: str,
     incident_ids: list | str | None = None,
     from_date: str | None = None,
@@ -212,7 +223,7 @@ def get_fetched_incident(
     Queries for a fetched incident against several filters and bring it back.
 
     Args:
-        xsoar_ng_client (XsoarNGApiClient): xsoar-ng client.
+        xsoar_saas_client (XsoarNGApiClient): xsoar-saas client.
         source_instance_name (str): the instance name that fetched the incident
         incident_ids (dict): the incident ID(s) to filter against them
         from_date (str): from which date to start querying the incident search
@@ -227,7 +238,7 @@ def get_fetched_incident(
     """
     @retry(times=30, delay=3)
     def _get_fetched_incident():
-        _found_incidents = xsoar_ng_client.search_incidents(
+        _found_incidents = xsoar_saas_client.search_incidents(
             incident_ids, from_date=from_date, incident_types=incident_types, source_instance_name=source_instance_name, size=1
         )
         if data := _found_incidents.get("data"):
@@ -253,7 +264,7 @@ def get_fetched_incident(
         if should_start_investigation:
             incident_id = incident.get("id")
             assert incident_id, f'Could not find incident ID from response {incident}'
-            start_investigation_response = xsoar_ng_client.start_incident_investigation(incident_id)
+            start_investigation_response = xsoar_saas_client.start_incident_investigation(incident_id)
             incident["investigationId"] = start_investigation_response.get("response", {}).get("id")
 
         logging.info(f'Found the following incident {incident.get("name")}')
@@ -262,14 +273,14 @@ def get_fetched_incident(
     finally:
         if should_remove_fetched_incidents:
             # removes all the fetched incidents found with the filters
-            incidents_to_remove = xsoar_ng_client.search_incidents(
+            incidents_to_remove = xsoar_saas_client.search_incidents(
                 incident_ids, from_date=from_date, incident_types=incident_types
             )
             if incident_ids_to_remove := [_incident.get("id") for _incident in incidents_to_remove.get("data", [])]:
-                xsoar_ng_client.delete_incidents(incident_ids_to_remove)
+                xsoar_saas_client.delete_incidents(incident_ids_to_remove)
 
 
-def test_edl(request: SubRequest, xsoar_saas_client, available_indicators: list[str]):
+def test_edl(request: SubRequest, xsoar_saas_client: XsoarSaasClient, available_indicators: list[str]):
     """
     Given:
         - indicators in xsoar-ng
@@ -284,21 +295,19 @@ def test_edl(request: SubRequest, xsoar_saas_client, available_indicators: list[
         [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]
     ]
 
-    with create_indicators(xsoar_saas_client, indicators=feed_indicators):
+    with save_indicators(xsoar_saas_client, indicators=feed_indicators):
         integration_params = get_integration_params(
             request.config.option.integration_secrets_path, instance_name="edl_e2e_instance"
         )
         username = integration_params["credentials"]["identifier"]
         password = integration_params["credentials"]["password"]
 
-        with create_integration_instance(
+        with save_integration_instance(
             xsoar_saas_client,
             integration_params=integration_params,
             integration_id="EDL",
             is_long_running=True,
-            instance_name=integration_params.pop(
-                "integrationInstanceName", f'e2e-test-{integration_params.get("name", "EDL")}'
-            )
+            instance_name=get_integration_instance_name(integration_params, default="EDL")
         ) as edl_instance_response:
             instance_name = edl_instance_response.get("name")
 
@@ -311,7 +320,7 @@ def test_edl(request: SubRequest, xsoar_saas_client, available_indicators: list[
 
 
 def test_taxii2_server(
-    request: SubRequest, xsoar_saas_client, available_indicators: list[str]
+    request: SubRequest, xsoar_saas_client: XsoarSaasClient, available_indicators: list[str]
 ):
     """
     Given:
@@ -333,18 +342,16 @@ def test_taxii2_server(
         FeedIndicator(value=value, type=_type, score=score) for value, _type, score in
         [("1.1.1.1", "IP", 0), ("2.2.2.2", "IP", 0), ("3.3.3.3", "IP", 0)]
     ]
-    with create_indicators(xsoar_saas_client, indicators=feed_indicators):
+    with save_indicators(xsoar_saas_client, indicators=feed_indicators):
         integration_params = get_integration_params(
             request.config.option.integration_secrets_path, instance_name="taxii2server-e2e"
         )
-        with create_integration_instance(
+        with save_integration_instance(
             xsoar_saas_client,
             integration_params=integration_params,
             integration_id="TAXII2 Server",
             is_long_running=True,
-            instance_name=integration_params.pop(
-                "integrationInstanceName", f'e2e-test-{integration_params.get("name", "TAXII2-Server")}'
-            )
+            instance_name=get_integration_instance_name(integration_params, default="TAXII2-Server")
         ) as taxii2_instance_response:
             instance_name = taxii2_instance_response.get("name")
             username = integration_params["credentials"]["identifier"]
@@ -376,11 +383,10 @@ def test_taxii2_server(
 
             indicators = get_json_response(response).get("objects")
             assert indicators, f'could not get indicators from url={response.request.url} with available ' \
-                f'indicators={[indicator.get("value") for indicator in xsoar_saas_client.list_indicators()]}, ' \
-                f'status code={response.status_code}, response={indicators}'
+                f'indicators={available_indicators}, status code={response.status_code}, response={indicators}'
 
 
-def test_slack_ask(request: SubRequest, xsoar_saas_client):
+def test_slack_ask(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
     """
     Given:
         - playbook that runs slack-ask (runs SlackAskV2 and then answers the slack ask with the slack V3 integration)
@@ -396,22 +402,20 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client):
         request.config.option.integration_secrets_path, instance_name="slack-e2e-instance"
     )
 
-    with create_integration_instance(
+    with save_integration_instance(
         xsoar_saas_client,
         integration_params=integration_params,
         integration_id="SlackV3",
         is_long_running=True,
-        instance_name=integration_params.pop(
-            "integrationInstanceName", f'e2e-test-{integration_params.get("name", "SlackV3")}'
-        )
+        instance_name=get_integration_instance_name(integration_params, default="SlackV3")
     ):
         playbook_id_name = "TestSlackAskE2E"
-        with create_playbook(
+        with save_playbook(
             xsoar_saas_client,
             playbook_path="Tests/tests_end_to_end/content/xsoar_saas/TestSlackAskE2E.yml",
             playbook_id=playbook_id_name,
             playbook_name=playbook_id_name
-        ), create_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:
+        ), save_incident(xsoar_saas_client, playbook_id=playbook_id_name) as incident_response:
             # make sure the playbook finished successfully
             assert is_playbook_state_as_expected(
                 xsoar_saas_client, incident_id=incident_response.id, expected_states={"completed"}
@@ -422,7 +426,7 @@ def test_slack_ask(request: SubRequest, xsoar_saas_client):
             assert context.get("Slack", {}).get("Thread"), f'thread IDs do not exist in context {context}'
 
 
-def test_qradar_mirroring(request: SubRequest, xsoar_saas_client):
+def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClient):
     """
     Given:
         - a QRadar offense that is fetched through the integration that is in "OPENED" state.
@@ -436,10 +440,9 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client):
     integration_params = get_integration_params(
         request.config.option.integration_secrets_path, instance_name="qradar-e2e-instance"
     )
-    instance_name = integration_params.pop(
-        "integrationInstanceName", f'e2e-test-{integration_params.get("name", "Qradar-v3")}'
-    )
-    with create_integration_instance(
+    instance_name = get_integration_instance_name(integration_params, default="Qradar-v3")
+
+    with save_integration_instance(
         xsoar_saas_client,
         integration_params=integration_params,
         integration_id="QRadar v3",

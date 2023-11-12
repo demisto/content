@@ -2,11 +2,7 @@ import os
 
 import pytest
 
-from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import (
-    XsiamApiClient,
-    XsiamApiClientConfig
-)
-from demisto_sdk.commands.test_content.xsoar_tools.xsoar_client import XsoarNGApiClientConfig, XsoarNGApiClient
+from demisto_sdk.commands.common.clients import XsoarSaasClient, XsoarSaasClientConfig, get_client_from_config, XsiamClient, XsiamClientConfig
 
 from Tests.configure_and_test_integration_instances import CloudBuild
 
@@ -46,28 +42,16 @@ def get_cloud_machine_credentials(request):
 
 
 @pytest.fixture(scope="module")
-def xsiam_client(request) -> XsiamApiClient:
-
+def xsiam_client(request) -> XsiamClient:
     xsiam_url, api_key, api_key_id = get_cloud_machine_credentials(request)
-
-    # initialize xsiam client
-    xsiam_client_cfg = XsiamApiClientConfig(
-        base_url=xsiam_url,
-        api_key=api_key,
-        auth_id=api_key_id,
-        token='test',
-        collector_token='test'
+    return get_client_from_config(
+        XsiamClientConfig(base_api_url=xsiam_url, api_key=api_key, auth_id=api_key_id, token='test', collector_token='test')
     )
-    return XsiamApiClient(xsiam_client_cfg)
 
 
 @pytest.fixture(scope="module")
-def xsoar_saas_client(request) -> XsoarNGApiClient:
-    xsoar_ng_url, api_key, api_key_id = get_cloud_machine_credentials(request)
-
-    xsoar_client_config = XsoarNGApiClientConfig(
-        base_url=xsoar_ng_url,
-        api_key=api_key,
-        auth_id=api_key_id
+def xsoar_saas_client(request) -> XsoarSaasClient:
+    xsoar_saas_url, api_key, api_key_id = get_cloud_machine_credentials(request)
+    return get_client_from_config(
+        XsoarSaasClientConfig(base_api_url=xsoar_saas_url, api_key=api_key, auth_id=api_key_id)
     )
-    return XsoarNGApiClient(xsoar_client_config)
