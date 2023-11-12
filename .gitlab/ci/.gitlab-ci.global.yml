@@ -515,6 +515,7 @@ cloning-content-repo-last-upload-commit:
     when: always
   before_script:
     - source .gitlab/helper_functions.sh
+    - *setup-network-certs
     - *create_artifacts_and_server_type_instance_folders
     - *get_last_upload_commit
   variables:
