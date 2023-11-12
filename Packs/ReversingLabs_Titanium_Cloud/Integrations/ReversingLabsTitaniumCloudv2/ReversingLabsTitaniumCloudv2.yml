@@ -543,7 +543,192 @@ script:
     - contextPath: ReversingLabs.url_analyses_feed_from_date
       description: The URL analyses feed from date.
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.73689
+  - name: reversinglabs-titaniumcloud-domain-report
+    description: Returns a domain analysis report.
+    arguments:
+    - name: domain
+      description: Domain string.
+      required: true
+    outputs:
+    - contextPath: ReversingLabs.domain_report
+      description: The domain analysis report.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-domain-downloaded-files
+    description: Returns a list of files downloaded from a domain.
+    arguments:
+    - name: domain
+      description: Domain string.
+      required: true
+      default: true
+    - name: classification
+      description: Return only files of this classification.
+      auto: PREDEFINED
+      predefined:
+        - 'MALICIOUS'
+        - 'SUSPICIOUS'
+        - 'KNOWN'
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.domain_downloaded_files
+      description: The list of files downloaded from a domain.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-domain-urls
+    description: Returns a list of URL-s associated with the requested domain.
+    arguments:
+    - name: domain
+      description: Domain string.
+      required: true
+      default: true
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.domain_urls
+      description: The list of URL-s associated with the requested domain.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-domain-to-ip
+    description: Returns a list of IP addresses resolved from a domain.
+    arguments:
+    - name: domain
+      description: Domain string.
+      required: true
+      default: true
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.domain_to_ip
+      description: The list of IP addresses resolved from the domain.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-domain-related-domains
+    description: Returns a list of domains related to the submitted domain.
+    arguments:
+    - name: domain
+      description: Domain string.
+      required: true
+      default: true
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.domain_related_domains
+      description: The list of domains related to the submitted domain.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-ip-report
+    description: Returns an IP address analysis report.
+    arguments:
+    - name: ip
+      description: IP address.
+      required: true
+    outputs:
+    - contextPath: ReversingLabs.ip_report
+      description: The IP address analysis report.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-ip-downloaded-files
+    description: Returns a list of files downloaded from an IP address.
+    arguments:
+    - name: ip
+      description: IP address.
+      required: true
+    - name: classification
+      description: Return only files of this classification.
+      auto: PREDEFINED
+      predefined:
+        - 'MALICIOUS'
+        - 'SUSPICIOUS'
+        - 'KNOWN'
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.ip_downloaded_files
+      description: The list of files downloaded from an IP address.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-ip-urls
+    description: Returns a list of URL-s associated with an IP address.
+    arguments:
+    - name: ip
+      description: IP address.
+      required: true
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.ip_urls
+      description: The list of URL-s associated with an IP address.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-ip-to-domain
+    description: Returns a list of IP to domain mappings.
+    arguments:
+    - name: ip
+      description: IP address.
+      required: true
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+    - name: results_per_page
+      description: Number of results returned per request.
+      defaultValue: 1000
+    outputs:
+    - contextPath: ReversingLabs.ip_to_domain
+      description: The list of IP to domain mappings.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-network-reputation
+    description: Returns network reputation for requested network locations.
+    arguments:
+    - name: network_locations
+      description: A comma-separated list of network locations. The list should have no spaces.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: ReversingLabs.network_reputation
+      description: Network reputation.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-network-reputation-override
+    description: Sets and removes user-requested network reputation overrides.
+    arguments:
+    - name: set_overrides_list
+      description: Network locations whose reputations should be overriden. The locations should be written as a string in the following format - 'network_location,location_type,new_classification|network_location,location_type,new_classification|network_location,location_type,new_classification'.
+      required: false
+    - name: remove_overrides_list
+      description: Network locations whose reputation overrides should be removed. The locations should be written as a string in the following format - 'network_location,location_type|network_location,location_type|network_location,location_type'.
+      required: false
+    outputs:
+    - contextPath: ReversingLabs.network_reputation_override
+      description: Network reputation user override.
+      type: Unknown
+  - name: reversinglabs-titaniumcloud-network-reputation-overrides-list
+    description: Lists the active network reputation overrides.
+    arguments:
+    - name: result_limit
+      description: Maximum number of returned results.
+      defaultValue: 50000
+      required: false
+    outputs:
+    - contextPath: ReversingLabs.network_reputation_overrides_list
+      description: Network reputation overrides list.
+      type: Unknown
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.80178
   runonce: false
   script: '-'
   subtype: python3
