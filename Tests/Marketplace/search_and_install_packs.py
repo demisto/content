@@ -41,6 +41,7 @@ PACKS_DIR = "Packs"
 PACK_METADATA_FILE = Pack.USER_METADATA
 GITLAB_PACK_METADATA_URL = f'{{gitlab_url}}/api/v4/projects/{CONTENT_PROJECT_ID}/repository/files/{PACKS_DIR}%2F{{pack_id}}%2F{PACK_METADATA_FILE}'  # noqa: E501
 
+BATCH_SIZE = 10
 
 @lru_cache
 def get_env_var(var_name: str) -> str:
@@ -469,7 +470,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      production_bucket: bool,
                                      commit_hash: str,
                                      multithreading: bool = True,
-                                     batch_packs_install_request_body: list | None = None,
+                                     list_packs_and_its_dependency_install_request_body: list | None = None,
                                      ) -> bool:
     """
     Update 'packs_to_install' (a pointer to a list that's reused and updated by the function on every iteration)
@@ -492,7 +493,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
             If 'pack_api_data' is not provided, will be used for fetching 'pack_metadata.json' file from GitLab.
         multithreading (bool): Whether to install packs in parallel or not.
             If false - install all packs in one batch.
-        batch_packs_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
+        list_packs_and_its_dependency_install_request_body (list | None, None): A list of pack batches (lists) to use in installation requests.
             Each list contain one pack and its dependencies.
     # Returns: True if we succeeded to get the dependencies, False otherwise.
     """
@@ -536,8 +537,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
     with lock:
         if not multithreading:
-            if batch_packs_install_request_body is None:
-                batch_packs_install_request_body = []
+            if list_packs_and_its_dependency_install_request_body is None:
+                list_packs_and_its_dependency_install_request_body = []
             if pack_and_its_dependencies := {
                 p['id']: p
                 for p in current_packs_to_install
@@ -550,7 +551,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
                     for pack in list(pack_and_its_dependencies.values())
                 ]
                 packs_to_install.extend([pack['id'] for pack in pack_and_its_dependencies_as_list])
-                batch_packs_install_request_body.append(pack_and_its_dependencies_as_list)
+                list_packs_and_its_dependency_install_request_body.append(pack_and_its_dependencies_as_list)
 
         else:  # multithreading
             for pack in current_packs_to_install:
@@ -766,7 +767,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     packs_to_install: list = []  # Packs we want to install, to avoid duplications
     installation_request_body: list = []  # Packs to install, in the request format
-    batch_packs_install_request_body: list = []  # List of lists of packs to install if not using multithreading .
+    list_packs_and_its_dependency_install_request_body: list = []  # List of lists of packs to install if not using multithreading .
     # Each list contain one pack and its dependencies.
     collected_dependencies: list = []  # List of packs that are already in the list to install.
     master_commit_hash = get_env_var("LAST_UPLOAD_COMMIT")
@@ -781,7 +782,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         'collected_dependencies': collected_dependencies,
         'production_bucket': production_bucket,
         'multithreading': multithreading,
-        'batch_packs_install_request_body': batch_packs_install_request_body,
+        'list_packs_and_its_dependency_install_request_body': list_packs_and_its_dependency_install_request_body,
         'commit_hash': master_commit_hash,
     }
 
@@ -790,8 +791,10 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         for pack_id in pack_ids:
             success &= search_pack_and_its_dependencies(pack_id=pack_id, **kwargs)
 
+        batch_packs_install_request_body = create_batches(list_packs_and_its_dependency_install_request_body)
+
     else:
-        with ThreadPoolExecutor(max_workers=15) as pool:
+        with ThreadPoolExecutor(max_workers=50) as pool:
             futures = [
                 pool.submit(
                     search_pack_and_its_dependencies, pack_id=pack_id, **kwargs
@@ -813,3 +816,17 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
         success &= pack_success
 
     return packs_to_install, success
+
+def create_batches(list_packs_and_its_dependency_install_request_body):
+    batch_install = []
+    batch_packs_install_request_body = []
+    for packs_to_install_body in list_packs_and_its_dependency_install_request_body:
+        if len(batch_install) + len(packs_to_install_body) < BATCH_SIZE:
+            batch_install.extend(packs_to_install_body)
+        else:
+            if batch_install:
+                batch_packs_install_request_body.append(batch_install)
+            batch_install = packs_to_install_body
+    batch_packs_install_request_body.append(batch_install)
+
+    return batch_packs_install_request_body

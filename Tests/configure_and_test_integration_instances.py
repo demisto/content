@@ -357,6 +357,8 @@ class Build(ABC):
         for server in self.servers:
             try:
                 hostname = self.cloud_machine if self.is_cloud else ''
+                multithreading = False if self.is_cloud else multithreading
+
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids=pack_ids,
                                                                           client=server.client,
                                                                           hostname=hostname,
