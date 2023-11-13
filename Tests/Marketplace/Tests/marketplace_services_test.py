@@ -306,14 +306,16 @@ class TestMetadataParsing:
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
+        dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
+        dummy_pack._certification = Metadata.CERTIFIED
         dummy_pack._enhance_pack_attributes(index_folder_path="", dependencies_metadata_dict={},
-                                            statistics_handler=None, marketplace='xsoar')
+                                            statistics_handler=None)
         parsed_metadata = dummy_pack._parse_pack_metadata()
 
         assert 'created' in parsed_metadata
         assert 'updated' in parsed_metadata
-        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", PackTags.NEW, PackTags.USE_CASE}
-        assert len(parsed_metadata['tags']) == 4
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", PackTags.NEW}
+        assert len(parsed_metadata['tags']) == 3
         assert 'integrations' in parsed_metadata
         assert parsed_metadata['downloads'] == 10
         assert parsed_metadata['searchRank'] == 20
@@ -324,82 +326,22 @@ class TestMetadataParsing:
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
+        dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
+
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None, marketplace='xsoar'
+            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
         assert dummy_pack.create_date
         assert dummy_pack.update_date
-        assert dummy_pack._legacy
-        assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
-        assert dummy_pack._support_details['url'] == 'https://test.com'
-        assert dummy_pack._support_details['email'] == 'test@test.com'
-        assert dummy_pack._author == Metadata.XSOAR_AUTHOR
-        assert dummy_pack._certification == Metadata.CERTIFIED
-        assert dummy_pack._price == 0
-        assert dummy_pack._use_cases == ["Some Use Case"]
-        assert dummy_pack._tags == {"tag number one", "Tag number two", PackTags.NEW, PackTags.USE_CASE}
-        assert dummy_pack._categories == ["Messaging"]
-        assert dummy_pack._keywords == ["dummy keyword", "Additional dummy keyword"]
-
-    def test_enhance_pack_attributes_empty_input(self, dummy_pack):
-        """ Test for empty pack_metadata.json and validating that support, support details and author are set correctly
-            to XSOAR defaults value of Metadata class.
-        """
-
-        dummy_pack._displayed_integration_images = []
-        dummy_pack._user_metadata = {}
-        dummy_pack._is_modified = False
-        dummy_pack._enhance_pack_attributes(
-            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None, marketplace='xsoar'
-        )
-
-        assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
-        assert dummy_pack._support_details['url'] == Metadata.XSOAR_SUPPORT_URL
-        assert dummy_pack._certification == Metadata.CERTIFIED
-        assert dummy_pack._author == Metadata.XSOAR_AUTHOR
-
-    @pytest.mark.parametrize("raw_price,expected", [("120", 120), (120, 120), ("FF", 0)])
-    def test_convert_price(self, raw_price, expected, mocker):
-        """ Price field is not mandatory field and needs to be set to integer value.
-
-        """
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        assert convert_price("pack_name", raw_price) == expected
-
-    def test_use_case_tag_added_to_tags(self, dummy_pack_metadata, dummy_pack):
-        """
-           Given:
-               - Pack metadata file with use case.
-           When:
-               - Running parse_pack_metadada
-           Then:
-               - Ensure the `Use Case` tag was added to tags.
-
-       """
-        dummy_pack._use_cases = ['Phishing']
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
-
-        assert PackTags.USE_CASE in tags
-
-    @pytest.mark.parametrize('is_feed_pack', [True, False])
-    def test_tim_tag_added_to_tags(self, dummy_pack_metadata, dummy_pack, is_feed_pack):
-        """ Test 'TIM' tag is added if is_feed_pack is True
-        """
-        dummy_pack.is_feed = is_feed_pack
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
-
-        if is_feed_pack:
-            assert PackTags.TIM in tags
-        else:
-            assert PackTags.TIM not in tags
+        assert dummy_pack._tags == {"tag number one", "Tag number two", PackTags.NEW}
 
     def test_new_tag_added_to_tags(self, dummy_pack_metadata, dummy_pack):
         """ Test 'New' tag is added
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
+        tags = dummy_pack._collect_pack_tags_by_statistics([])
 
         assert PackTags.NEW in tags
 
@@ -408,126 +350,15 @@ class TestMetadataParsing:
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
         dummy_pack._tags = {PackTags.NEW}
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
+        tags = dummy_pack._collect_pack_tags_by_statistics([])
 
         assert PackTags.NEW not in tags
-
-    def test_section_tags_added(self, dummy_pack_metadata, dummy_pack):
-        """
-        Given:
-            Pack
-        When:
-            Parsing a pack metadata
-        Then:
-            add the 'Featured' landingPage section tag and raise the searchRank
-        """
-        section_tags = {
-            "sections": [
-                "Trending",
-                "Featured",
-                "Getting Started"
-            ],
-            "Featured": [
-                "Test Pack Name"
-            ]
-        }
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, section_tags, [], 'xsoar')
-        assert 'Featured' in tags
-
-    @pytest.mark.parametrize('pack_metadata,marketplace,expected_result',
-                             [({'tags': ['tag1', 'marketplacev2:tag2']}, 'xsoar', {'tag1'}),
-                              ({'tags': ['tag1', 'marketplacev2:tag2']}, 'marketplacev2', {'tag1', 'tag2'}),
-                              ({'tags': ['marketplacev2:tag2']}, 'xsoar', set()),
-                              ({'tags': ['tag1', 'marketplacev2,xsoar:tag2']}, 'xsoar', {'tag1', 'tag2'})])
-    def test_get_tags_by_marketplace(self, dummy_pack, pack_metadata, marketplace, expected_result):
-        """
-        Given:
-            Pack, metadata and a marketplace
-        When:
-            Getting tags by marketplace
-        Then:
-            Validating the output
-        """
-        output = dummy_pack._get_tags_by_marketplace(pack_metadata, marketplace)
-        assert output == expected_result
 
 
 class TestParsingInternalFunctions:
     """ Test class for internal functions that are used in _parse_pack_metadata static method.
 
     """
-
-    @pytest.mark.parametrize("support_url, support_email",
-                             [("", ""), (None, None), (None, ""), ("", None)])
-    def test_empty_create_support_section_with_xsoar_support(self, support_url, support_email):
-        """ Test the case when support type is set to xsoar and returns XSOAR support default details.
-        Currently is only returned url field. May include XSOAR support email in the future.
-        """
-        support_details = Pack._create_support_section(support_type="xsoar", support_url=support_url,
-                                                       support_email=support_email)
-        expected_result = {'url': Metadata.XSOAR_SUPPORT_URL}
-
-        assert support_details == expected_result
-
-    @pytest.mark.parametrize("support_type,support_url, support_email",
-                             [
-                                 ("partner", "", ""), ("partner", None, None),
-                                 ("partner", None, ""), ("partner", "", None),
-                                 ("developer", "", ""), ("developer", None, None),
-                                 ("developer", None, ""), ("developer", "", None),
-                                 ("nonsupported", "", ""), ("nonsupported", None, None),
-                                 ("nonsupported", None, ""), ("nonsupported", "", None)
-                             ])
-    def test_empty_create_support_section_with_other_support(self, support_type, support_url, support_email):
-        """ Tests case when support is set to non xsoar, one of following: partner, developer or nonsupported.
-            Expected not do override the url with XSOAR default support url and email if it be included eventually.
-
-        """
-        support_details = Pack._create_support_section(support_type=support_type, support_url=support_url,
-                                                       support_email=support_email)
-
-        assert support_details == {}
-
-    @pytest.mark.parametrize("author", [None, "", Metadata.XSOAR_AUTHOR])
-    def test_get_author_xsoar_support(self, author):
-        """ Tests case when support is set to xsoar. Expected result should be Cortex XSOAR.
-        """
-        result_author = Pack._get_author(support_type="xsoar", author=author)
-
-        assert result_author == Metadata.XSOAR_AUTHOR
-
-    @pytest.mark.parametrize("author, expected", [("", ""), ("dummy_author", "dummy_author")])
-    def test_get_author_non_xsoar_support(self, author, expected):
-        """ Test case when support is set to non xsoar, in that case partner. Expected behavior is not to override
-        author str that was received as input.
-        """
-        result_author = Pack._get_author(support_type="partner", author=author)
-
-        assert result_author == expected
-
-    @pytest.mark.parametrize("support_type, certification", [("xsoar", None), ("xsoar", ""), ("xsoar", "verified")])
-    def test_get_certification_xsoar_support(self, support_type, certification):
-        """ Tests case when support is set to xsoar. Expected result should be certified certification.
-        """
-        result_certification = Pack._get_certification(support_type=support_type, certification=certification)
-
-        assert result_certification == Metadata.CERTIFIED
-
-    @pytest.mark.parametrize("support_type, certification", [("community", None), ("developer", "")])
-    def test_get_certification_non_xsoar_support_empty(self, support_type, certification):
-        """ Tests case when support is set to non xsoar. Expected result should empty certification string.
-        """
-        result_certification = Pack._get_certification(support_type=support_type, certification=certification)
-
-        assert result_certification == ""
-
-    def test_get_certification_non_xsoar_support(self):
-        """ Tests case when support is set to partner with certified value.
-            Expected result should be certified certification.
-        """
-        result_certification = Pack._get_certification(support_type="partner", certification="certified")
-
-        assert result_certification == Metadata.CERTIFIED
 
     @pytest.mark.parametrize("pack_integration_images, display_dependencies_images, expected", [
         ([], [], []),

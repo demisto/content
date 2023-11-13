@@ -556,122 +556,6 @@ class Pack:
     def _clean_release_notes(release_notes_lines):
         return re.sub(r'<\!--.*?-->', '', release_notes_lines, flags=re.DOTALL)
 
-    def _parse_pack_dependencies(self, dependencies_metadata_dict):
-        """ Parses user defined dependencies and returns dictionary with relevant data about each dependency pack.
-
-        Args:
-            first_level_dependencies (dict): first lever dependencies that were retrieved
-            from user pack_metadata.json file.
-            dependencies_metadata_dict (dict): dict of pack dependencies data.
-
-        Returns:
-            dict: parsed dictionary with pack dependency data.
-        """
-        parsed_result = {}
-
-        first_level_dependencies = self.user_metadata.get(Metadata.DEPENDENCIES, {})
-        for dependency_id, dependency_data in dependencies_metadata_dict.items():
-            if dependency_id in self.user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, []):
-                continue
-            parsed_result[dependency_id] = {
-                "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
-                "minVersion": dependency_data.get(Metadata.CURRENT_VERSION, Pack.PACK_INITIAL_VERSION),
-                "author": dependency_data.get('author', ''),
-                "name": dependency_data.get('name') if dependency_data.get('name') else dependency_id,
-                "certification": dependency_data.get('certification', 'certified')
-            }
-
-        return parsed_result
-
-    @staticmethod
-    def _create_support_section(support_type, support_url=None, support_email=None):
-        """ Creates support dictionary that is part of metadata.
-
-        In case of support type xsoar, adds default support url. If support is xsoar and support url is defined and
-        doesn't match xsoar default url, warning is raised.
-
-        Args:
-            support_type (str): support type of pack.
-            support_url (str): support full url.
-            support_email (str): support email address.
-
-        Returns:
-            dict: supported data dictionary.
-        """
-        support_details = {}
-
-        if support_url:  # set support url from user input
-            support_details['url'] = support_url
-        elif support_type == Metadata.XSOAR_SUPPORT:  # in case support type is xsoar, set default xsoar support url
-            support_details['url'] = Metadata.XSOAR_SUPPORT_URL
-        # add support email if defined
-        if support_email:
-            support_details['email'] = support_email
-
-        return support_details
-
-    @staticmethod
-    def _get_author(support_type, author=None):
-        """ Returns pack author. In case support type is xsoar, more additional validation are applied.
-
-        Args:
-            support_type (str): support type of pack.
-            author (str): author of the pack.
-
-        Returns:
-            str: returns author from the input.
-        """
-        if support_type == Metadata.XSOAR_SUPPORT and not author:
-            return Metadata.XSOAR_AUTHOR  # returned xsoar default author
-        elif support_type == Metadata.XSOAR_SUPPORT and author != Metadata.XSOAR_AUTHOR:
-            logging.warning(f"{author} author doest not match {Metadata.XSOAR_AUTHOR} default value")
-            return author
-        else:
-            return author
-
-    @staticmethod
-    def _get_certification(support_type, certification=None):
-        """ Returns pack certification.
-
-        In case support type is xsoar or partner, CERTIFIED is returned.
-        In case support is not xsoar or partner but pack_metadata has certification field, certification value will be
-        taken from pack_metadata defined value.
-        Otherwise empty certification value (empty string) will be returned
-
-        Args:
-            support_type (str): support type of pack.
-            certification (str): certification value from pack_metadata, if exists.
-
-        Returns:
-            str: certification value
-        """
-        if support_type in [Metadata.XSOAR_SUPPORT, Metadata.PARTNER_SUPPORT]:
-            return Metadata.CERTIFIED
-        elif certification:
-            return certification
-        else:
-            return ""
-
-    def _get_tags_from_landing_page(self, landing_page_sections: dict) -> set:
-        """
-        Build the pack's tag list according to the user metadata and the landingPage sections file.
-        Args:
-            landing_page_sections (dict): landingPage sections and the packs in each one of them.
-
-        Returns:
-            set: Pack's tags.
-
-        """
-
-        tags = set()
-        sections = landing_page_sections.get('sections', []) if landing_page_sections else []
-
-        for section in sections:
-            if self._pack_name in landing_page_sections.get(section, []):
-                tags.add(section)
-
-        return tags
-
     def _parse_pack_metadata(self):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
@@ -687,7 +571,7 @@ class Pack:
             Metadata.CREATED: self._create_date,
             Metadata.UPDATED: self._update_date,
             Metadata.DOWNLOADS: self._downloads_count,
-            Metadata.TAGS: list(self._tags or []),
+            Metadata.TAGS: list(self._tags) or [],
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
         }
@@ -2350,6 +2234,7 @@ class Pack:
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
+            self._tags = user_metadata.get(Metadata.TAGS) or {}
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
@@ -2362,15 +2247,8 @@ class Pack:
         finally:
             return task_status
 
-    def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs, marketplace):
-        tags = self._get_tags_by_marketplace(user_metadata, marketplace)
-        tags |= self._get_tags_from_landing_page(landing_page_sections)
-        tags |= {PackTags.TIM} if self._is_feed else set()
-        tags |= {PackTags.USE_CASE} if self._use_cases else set()
-        tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
-        tags |= {PackTags.FILTER} if self._contains_filter else set()
-        tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {PackTags.DATA_SOURCE} if self._is_data_source and marketplace == XSIAM_MP else set()
+    def _collect_pack_tags_by_statistics(self, trending_packs):
+        tags = set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
@@ -2387,20 +2265,7 @@ class Pack:
 
         return tags
 
-    def _get_tags_by_marketplace(self, user_metadata: dict, marketplace: str):
-        """ Returns tags in according to the current marketplace"""
-        tags = []
-        for tag in user_metadata.get('tags', []):
-            if ':' in tag:
-                tag_data = tag.split(':')
-                if marketplace in tag_data[0].split(','):
-                    tags.append(tag_data[1])
-            else:
-                tags.append(tag)
-
-        return set(input_to_list(input_data=tags))
-
-    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict, marketplace,
+    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
                                  statistics_handler=None, format_dependencies_only=False):
         """ Enhances the pack object with attributes for the metadata file
 
@@ -2413,49 +2278,14 @@ class Pack:
             dict: parsed pack metadata.
 
         """
-        landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
         trending_packs = None
         pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
         if not format_dependencies_only:
-            # ===== Pack Regular Attributes =====
-            self._support_type = self.user_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
-            self._support_details = self._create_support_section(
-                support_type=self._support_type, support_url=self.user_metadata.get(Metadata.URL),
-                support_email=self.user_metadata.get(Metadata.EMAIL)
-            )
-            self._author = self._get_author(
-                support_type=self._support_type, author=self.user_metadata.get(Metadata.AUTHOR, ''))
-            self._certification = self._get_certification(
-                support_type=self._support_type, certification=self.user_metadata.get(Metadata.CERTIFICATION)
-            )
-            self._legacy = self.user_metadata.get(Metadata.LEGACY, True)
             self._create_date = self._get_pack_creation_date(index_folder_path)
             self._update_date = self._get_pack_update_date(index_folder_path)
-            self._use_cases = input_to_list(input_data=self.user_metadata.get(Metadata.USE_CASES),
-                                            capitalize_input=True)
-            self._categories = input_to_list(input_data=self.user_metadata.get(Metadata.CATEGORIES),
-                                             capitalize_input=True)
-            self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
-        self._parsed_dependencies = self._parse_pack_dependencies(dependencies_metadata_dict)
-
-        # ===== Pack Private Attributes =====
-        if not format_dependencies_only:
-            self._is_private_pack = Metadata.PARTNER_ID in self.user_metadata
-            self._is_premium = self._is_private_pack
-            self._preview_only = get_valid_bool(self.user_metadata.get(Metadata.PREVIEW_ONLY, False))
-            self._price = convert_price(pack_id=self._pack_name, price_value_input=self.user_metadata.get('price'))
-            if self._is_private_pack:
-                self._vendor_id = self.user_metadata.get(Metadata.VENDOR_ID, "")
-                self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
-                self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
-                self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
-                self._disable_monthly = self.user_metadata.get(Metadata.DISABLE_MONTHLY, False)
-                # Currently all content packs are legacy.
-                # Since premium packs cannot be legacy, we directly set this attribute to false.
-                self._legacy = False
 
         # ===== Pack Statistics Attributes =====
-        if not self._is_private_pack and statistics_handler:  # Public Content case
+        if statistics_handler:  # Public Content case
             self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
                 self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
                 self._displayed_images_dependent_on_packs
@@ -2463,7 +2293,7 @@ class Pack:
             self._downloads_count = self._pack_statistics_handler.download_count
             trending_packs = statistics_handler.trending_packs
             pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-        self._tags = self._collect_pack_tags(self.user_metadata, landing_page_sections, trending_packs, marketplace)
+        self._tags |= self._collect_pack_tags_by_statistics(trending_packs)
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
@@ -2505,7 +2335,7 @@ class Pack:
             dependencies_metadata_dict, is_missing_dependencies = self._load_pack_dependencies_metadata(
                 index_folder_path, packs_dict)
 
-            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict, marketplace,
+            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict,
                                           statistics_handler, format_dependencies_only)
 
             formatted_metadata = self._parse_pack_metadata()
