@@ -517,12 +517,12 @@
         "description": "Configure 'Agari Phishing Defense' to block IOCs as part of the investigation."
         },
         {
-        "name": "SecurityAndCompliance",
+        "name": "SecurityAndComplianceV2",
         "action": {
-          "existing": "Configure 'Security And Compliance' to manage and interact with Microsoft security and compliance content search.",
-          "new": "Configure 'Security And Compliance' to manage and interact with Microsoft security and compliance content search."
+          "existing": "Configure 'Security And Compliance v2' to manage and interact with Microsoft security and compliance content search.",
+          "new": "Configure 'Security And Compliance v2' to manage and interact with Microsoft security and compliance content search."
           },
-        "description": "Configure 'Security And Compliance' to manage and interact with Microsoft security and compliance content search."
+        "description": "Configure 'Security And Compliance v2' to manage and interact with Microsoft security and compliance content search."
         },
         {
         "name": "VirusTotal - Private API",
