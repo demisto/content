@@ -38,7 +38,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: Get samples from either private or public reports
+      description: Get samples from either private or public reports.
       name: subset
       predefined:
       - owned
