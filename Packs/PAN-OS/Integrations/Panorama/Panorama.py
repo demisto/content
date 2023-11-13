@@ -901,8 +901,8 @@ def export_tsf_command(args: dict):
     """
     if job_id := args.get('job_id'):
         job_status = dict_safe_get(
-                get_tsf_export_status(job_id),
-                ['response', 'result', 'job', 'status']
+            get_tsf_export_status(job_id),
+            ['response', 'result', 'job', 'status']
         )
         return PollResult(
             response=download_tsf(job_id),
@@ -910,19 +910,14 @@ def export_tsf_command(args: dict):
         )
     else:  # either no polling is required or this is the first run
         result = start_tsf_export()
-        job_id = dict_safe_get(result, ['response', 'result', 'job'], '')
-        if job_id:
-            context_output = {
-                'JobID': job_id,
-                'Status': 'Pending'
-            }
-            continue_to_poll = True
-        else:  # no job ID which is unexpected
+        job_id = dict_safe_get(result, ['response', 'result', 'job'])
+
+        if not job_id:
             raise DemistoException("Failed to start tech support file export.")
 
         return PollResult(
             response=download_tsf(job_id),
-            continue_to_poll=continue_to_poll,
+            continue_to_poll=True,
             args_for_next_run={
                 'job_id': job_id,
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
