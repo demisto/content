@@ -755,6 +755,12 @@ def module_test():
 
 def main():  # pragma: no cover
     try:
+        # os.system('/start_chrome_headless.sh')
+        import shlex
+        subprocess.call(shlex.split('/start_chrome_headless.sh'))
+    except Exception as ex:
+        demisto.info(f'Exception running chrome headless, {ex}')
+    try:
         with open(DRIVER_LOG, 'w'):
             pass  # truncate the log file
         if demisto.command() == 'test-module':
