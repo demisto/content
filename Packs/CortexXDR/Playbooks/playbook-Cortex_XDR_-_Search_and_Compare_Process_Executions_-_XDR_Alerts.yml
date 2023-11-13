@@ -283,12 +283,6 @@ tasks:
                 root: StringSimilarity
                 accessor: StringA
             iscontext: true
-          right:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Alert
-                accessor: actor_process_command_line
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -311,7 +305,7 @@ tasks:
     task:
       id: c9e637c7-6530-464d-8585-355124ad2f7c
       version: -1
-      name: Set findings - cmd
+      name: Set findings
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -324,11 +318,18 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: 'Findings.cmd '
+        simple: Findings
       value:
         complex:
-          root: StringSimilarity
-          accessor: StringA
+          root: PaloAltoNetworksXDR
+          accessor: Alert
+          transformers:
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -346,49 +347,17 @@ tasks:
       output:
         complex:
           root: PaloAltoNetworksXDR.Alert
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Alert.action_process_image_command_line
-                iscontext: true
-              right:
-                value:
-                  simple: StringSimilarity.string_A
-                iscontext: true
           accessor: action_process_image_name
     - incidentfield: Affected Hosts
       output:
         complex:
-          root: PaloAltoNetworksXQL.GenericQuery.results
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: PaloAltoNetworksXQL.GenericQuery.results.cmd
-                iscontext: true
-              right:
-                value:
-                  simple: StringSimilarity.string_A
-                iscontext: true
-              ignorecase: true
-          accessor: hostname
+          root: PaloAltoNetworksXDR.Alert
+          accessor: agent_hostname
     - incidentfield: Affected Users
       output:
         complex:
-          root: PaloAltoNetworksXQL.GenericQuery.results
-          filters:
-          - - operator: in
-              left:
-                value:
-                  simple: PaloAltoNetworksXQL.GenericQuery.results.cmd
-                iscontext: true
-              right:
-                value:
-                  simple: StringSimilarity.string_A
-                iscontext: true
-              ignorecase: true
-          accessor: username
+          root: PaloAltoNetworksXDR.Alert
+          accessor: actor_effective_username
     skipunavailable: false
     quietmode: 0
     isoversize: false
