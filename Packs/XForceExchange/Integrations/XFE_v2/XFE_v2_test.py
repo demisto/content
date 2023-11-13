@@ -535,7 +535,7 @@ def test_file_connections(requests_mock):
     assert relations.get('EntityA') == MOCK_HASH
     assert relations.get('EntityAType') == 'File'
     assert relations.get('EntityB') == 'badur'
-    assert relations.get('EntityBType') == 'STIX Malware'
+    assert relations.get('EntityBType') == 'Malware'
 
 
 def test_whois(requests_mock):

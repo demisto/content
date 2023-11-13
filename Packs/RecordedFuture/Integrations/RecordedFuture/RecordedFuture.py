@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 """Recorded Future Integration for Demisto."""
 
 import copy
@@ -480,9 +482,11 @@ def main() -> None:  # pragma: no cover
         base_url = demisto_params.get('server_url', '').rstrip('/')
         verify_ssl = not demisto_params.get('insecure', False)
         proxy = demisto_params.get('proxy', False)
-
+        api_token = demisto_params.get("token_credential", {}).get("password") or demisto_params.get("token")
+        if not api_token:
+            return_error('Please provide a valid API token')
         headers = {
-            'X-RFToken': demisto_params['token'],
+            'X-RFToken': api_token,
             'X-RF-User-Agent': (
                 f'RecordedFuture.py/{__version__} ({platform.platform()}) '
                 f'XSOAR/{__version__} '

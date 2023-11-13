@@ -79,8 +79,8 @@ def test_prepare_filters_for_get_indicators(expected, args, mocker):
     """Test case scenario for successful execution of prepare_filters_for_get_indicators function."""
     from FeedCyCognito import prepare_body_filters_for_get_indicators
 
-    with mocker.patch('time.time', return_value=CURRENT_TIME):
-        assert prepare_body_filters_for_get_indicators(**args) == expected
+    mocker.patch('time.time', return_value=CURRENT_TIME)
+    assert prepare_body_filters_for_get_indicators(**args) == expected
 
 
 @pytest.mark.parametrize("err_msg, args", [
