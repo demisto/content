@@ -311,7 +311,7 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the image/pdf file.
       type: string
-  dockerimage: tkatzirpanw/chromium-headless:0.1
+  dockerimage: tkatzirpanw/chromium-headless:0.2
   runonce: false
   script: '-'
   subtype: python3
