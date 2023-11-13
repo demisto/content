@@ -10,8 +10,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* fireeye
 * Fireeye
+* fireeye
 
 ### Scripts
 
@@ -19,9 +19,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* fe-submit-url
-* fe-submit-result
 * fe-submit-url-status
+* fe-submit-url
+* fe-submit-url-result
 
 ## Playbook Inputs
 
