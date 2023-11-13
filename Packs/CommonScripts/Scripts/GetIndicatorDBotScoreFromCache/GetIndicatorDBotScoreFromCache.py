@@ -66,5 +66,5 @@ def main():
         return_results(not_found_values_entry)
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins":  # pragma: no cover
     main()
