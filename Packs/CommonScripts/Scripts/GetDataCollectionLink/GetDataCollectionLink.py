@@ -2,6 +2,40 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from base64 import b64encode
 from typing import Any, Dict
+from distutils.version import LooseVersion
+
+
+def is_machine_saas() -> bool:
+    """
+    Checks if the instance is SaaS by checking the demistoVersion.
+    """
+    demisto_version = demisto.demistoVersion()
+    if demisto_version["platform"] == "x2":
+        return True
+    else:
+        return LooseVersion(demisto_version["version"]) >= LooseVersion("8.0.0")
+
+
+def generate_url(server_url: str, encoded_task: str, encoded_user: str) -> str:
+    """Generates a data collection URL.
+
+    Args:
+        server_url: The Demisto server URL.
+        encoded_task: The encoded task ID.
+        encoded_user: The encoded user ID.
+
+    Returns:
+        The data collection URL.
+    """
+    if is_machine_saas():
+        try:
+            otp = execute_command("generateOTP", {})
+        except Exception as err:
+            if "Unsupported Command" in str(err):
+                return f"{server_url}/#/external/form/{encoded_task}/{encoded_user}"
+            raise err
+        return f"{server_url}/external/form/{encoded_task}/{encoded_user}?otp={otp}"
+    return f"{server_url}/#/external/form/{encoded_task}/{encoded_user}"
 
 
 def encode_string(value: str) -> str:
@@ -19,11 +53,13 @@ def get_data_collection_url(task_id: str, users: List[str]) -> List[Dict[str, st
 
     for user in users:
         encoded_user = encode_string(user)
-        urls.append({
-            'user': user,
-            'task': task,
-            'url': f'{server_url}/#/external/form/{encoded_task}/{encoded_user}'
-        })
+        urls.append(
+            {
+                "user": user,
+                "task": task,
+                "url": generate_url(server_url, encoded_task, encoded_user),
+            }
+        )
     return urls
 
 

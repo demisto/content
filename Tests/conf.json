@@ -3277,12 +3277,14 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar Indicator Hunting Test",
+            "instance_names": "QRadar_20",
             "timeout": 12000,
             "fromversion": "6.0.0"
         },
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar - Get Offense Logs Test",
+            "instance_names": "QRadar_20",
             "timeout": 600,
             "fromversion": "6.0.0"
         },
@@ -3483,6 +3485,11 @@
             "playbookID": "Code42 File Search Test",
             "integrations": "Code42",
             "fromversion": "5.0.0"
+        },
+        {
+            "playbookID": "Code42 Suspicious Activity Action v2 - Test",
+            "integrations": "Code42",
+            "fromversion": "6.10.0"
         },
         {
             "playbookID": "FetchIndicatorsFromFile-test",
@@ -3858,6 +3865,7 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
+            "instance_names": "QRadar_20",
             "fromversion": "6.0.0",
             "timeout": 600,
             "is_mockable": false
@@ -5569,6 +5577,11 @@
             "integrations": "Forcepoint Security Management Center",
             "playbookID": "ForcepointSecurityManagementCenter_test",
             "is_mockable": false
+        },
+        {
+            "integrations": "Netcraft V2",
+            "playbookID": "Test - Netcraft",
+            "timeout": 2400
         }
     ],
     "skipped_tests": {

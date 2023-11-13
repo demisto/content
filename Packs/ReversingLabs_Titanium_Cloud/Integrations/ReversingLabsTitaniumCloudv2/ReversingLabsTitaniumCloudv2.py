@@ -1,12 +1,14 @@
+from copy import deepcopy
 from CommonServerPython import *
 from ReversingLabs.SDK.ticloud import FileReputation, AVScanners, FileAnalysis, RHA1FunctionalSimilarity, \
     RHA1Analytics, URIStatistics, URIIndex, AdvancedSearch, ExpressionSearch, FileDownload, FileUpload, \
     URLThreatIntelligence, AnalyzeURL, DynamicAnalysis, CertificateAnalytics, YARAHunting, YARARetroHunting, \
-    ReanalyzeFile, ImpHashSimilarity
+    ReanalyzeFile, ImpHashSimilarity, DomainThreatIntelligence, IPThreatIntelligence, NetworkReputation, \
+    NetworkReputationUserOverride
 from ReversingLabs.SDK.helper import NotFoundError
 
 
-VERSION = "v2.3.0"
+VERSION = "v2.4.0"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumCloud {VERSION}"
 
 TICLOUD_URL = demisto.params().get("base")
@@ -1397,7 +1399,7 @@ def url_downloaded_files_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1439,7 +1441,7 @@ def url_latest_analyses_feed_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1492,7 +1494,7 @@ def url_analyses_feed_from_date_command():
         )
     except NotFoundError:
         return_results("No results were found for this input.")
-        sys.exit()
+        return
     except Exception as e:
         return_error(str(e))
 
@@ -1519,6 +1521,742 @@ def url_analyses_feed_from_date_output(response, start_time):
     )
 
     return results, file_results
+
+
+def create_domain_ti_object():
+    """Creates a DomainThreatIntelligence object."""
+    domain_ti = DomainThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    return domain_ti
+
+
+def bold_classification(input_list, key, value):
+    for obj in input_list:
+        if obj.get(key) == value:
+            obj[key] = f"**{value}**"
+    return input_list
+
+
+def domain_report_command():
+    domain_ti = create_domain_ti_object()
+
+    domain = demisto.getArg("domain")
+
+    try:
+        response = domain_ti.get_domain_report(domain=domain)
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        return
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+
+    results = domain_report_output(response_json=response_json, domain=domain)
+    return_results(results)
+
+
+def domain_report_output(response_json, domain):
+    last_dns_records = response_json.get("rl", {}).get("last_dns_records", [])
+    dns_records_table = tableToMarkdown(name="Last DNS records", t=last_dns_records)
+    dns_records_time = response_json.get("rl", {}).get("last_dns_records_time")
+
+    markdown = f"""## ReversingLabs Domain Report for {domain}\n {dns_records_table}
+    \n**Last DNS records time**: {dns_records_time}
+    """
+
+    top_threats = response_json.get("rl", {}).get("top_threats", [])
+    if top_threats:
+        threats_table = tableToMarkdown(
+            name="Top threats",
+            t=top_threats
+        )
+        markdown = f"{markdown}\n {threats_table}"
+
+    third_party = response_json.get("rl", {}).get("third_party_reputations")
+    if third_party:
+        third_party_statistics = third_party.get("statistics")
+
+        markdown = f"""{markdown}\n ### Third party statistics\n **CLEAN**: {third_party_statistics.get("clean")}
+        **MALICIOUS**: {third_party_statistics.get("malicious")}
+        **UNDETECTED**: {third_party_statistics.get("undetected")}
+        **TOTAL**: {third_party_statistics.get("total")}
+        """
+
+        tp_sources = deepcopy(third_party.get("sources"))
+        tp_sources = bold_classification(tp_sources, "detection", "malicious")
+        sources_table = tableToMarkdown(
+            name="Third party sources",
+            t=tp_sources,
+        )
+        markdown = f"{markdown}\n {sources_table}"
+
+    files_statistics = response_json.get("rl", {}).get("downloaded_files_statistics")
+    markdown = f"""{markdown}\n ### Downloaded files statistics\n **KNOWN**: {files_statistics.get("known")}
+    **MALICIOUS**: {files_statistics.get("malicious")}
+    **SUSPICIOUS**: {files_statistics.get("suspicious")}
+    **UNKNOWN**: {files_statistics.get("unknown")}
+    **TOTAL**: {files_statistics.get("total")}
+    """
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"domain_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def domain_downloaded_files_command():
+    domain_ti = create_domain_ti_object()
+
+    domain = demisto.getArg("domain")
+    classification = demisto.getArg("classification")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = domain_ti.get_downloaded_files_aggregated(
+            domain=domain,
+            classification=classification,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = domain_downloaded_files_output(response=response, domain=domain)
+    return_results(results)
+
+
+def domain_downloaded_files_output(response, domain):
+    files_table = tableToMarkdown(
+        name="Downloaded files",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs Files downloaded from domain {domain}\n {files_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"domain_downloaded_files": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def domain_urls_command():
+    domain_ti = create_domain_ti_object()
+
+    domain = demisto.getArg("domain")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = domain_ti.urls_from_domain_aggregated(
+            domain=domain,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = domain_urls_output(response=response, domain=domain)
+    return_results(results)
+
+
+def domain_urls_output(response, domain):
+    urls_table = tableToMarkdown(
+        name="URL list",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs URL-s associated with domain {domain}\n {urls_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"domain_urls": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def domain_to_ip_command():
+    domain_ti = create_domain_ti_object()
+
+    domain = demisto.getArg("domain")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = domain_ti.domain_to_ip_resolutions_aggregated(
+            domain=domain,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = domain_to_ip_output(response=response, domain=domain)
+    return_results(results)
+
+
+def domain_to_ip_output(response, domain):
+    ip_table = tableToMarkdown(
+        name="IP address list",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs IP addresses resolved from domain {domain}\n {ip_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"domain_to_ip": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def domain_related_domains_command():
+    domain_ti = create_domain_ti_object()
+
+    domain = demisto.getArg("domain")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = domain_ti.related_domains_aggregated(
+            domain=domain,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = domain_related_domains_output(response=response, domain=domain)
+    return_results(results)
+
+
+def domain_related_domains_output(response, domain):
+    domain_table = tableToMarkdown(
+        name="Domain list",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs domains related to domain {domain}\n {domain_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.Domain(
+        domain=domain,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"domain_related_domains": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def create_ip_ti_object():
+    """Creates an IPThreatIntelligence object."""
+    ip_ti = IPThreatIntelligence(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    return ip_ti
+
+
+def ip_report_command():
+    ip_ti = create_ip_ti_object()
+
+    ip = demisto.getArg("ip")
+
+    try:
+        response = ip_ti.get_ip_report(ip_address=ip)
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        return
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = ip_report_output(response_json=response_json, ip=ip)
+    return_results(results)
+
+
+def ip_report_output(response_json, ip):
+    files_statistics = response_json.get("rl", {}).get("downloaded_files_statistics")
+
+    markdown = f"""## ReversingLabs IP address report for {ip}\n ### Downloaded files statistics\n **KNOWN**: {
+    files_statistics.get("known")}
+    **MALICIOUS**: {files_statistics.get("malicious")}
+    **SUSPICIOUS**: {files_statistics.get("suspicious")}
+    **UNKNOWN**: {files_statistics.get("unknown")}
+    **TOTAL**: {files_statistics.get("total")}
+    """
+
+    third_party = response_json.get("rl", {}).get("third_party_reputations")
+    if third_party:
+        third_party_statistics = third_party.get("statistics")
+
+        markdown = f"""{markdown}\n ### Third party statistics\n **CLEAN**: {third_party_statistics.get("clean")}
+        **MALICIOUS**: {third_party_statistics.get("malicious")}
+        **UNDETECTED**: {third_party_statistics.get("undetected")}
+         **TOTAL**: {third_party_statistics.get("total")}
+        """
+
+        tp_sources = deepcopy(third_party.get("sources"))
+        tp_sources = bold_classification(tp_sources, "detection", "malicious")
+        sources_table = tableToMarkdown(
+            name="Third party sources",
+            t=tp_sources
+        )
+        markdown = f"{markdown}\n {sources_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"ip_report": response_json},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def ip_downloaded_files_command():
+    ip_ti = create_ip_ti_object()
+
+    ip = demisto.getArg("ip")
+    classification = demisto.getArg("classification")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = ip_ti.get_downloaded_files_aggregated(
+            ip_address=ip,
+            classification=classification,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = ip_downloaded_files_output(response=response, ip=ip)
+    return_results(results)
+
+
+def ip_downloaded_files_output(response, ip):
+    readable = deepcopy(response)
+    readable = bold_classification(readable, "classification", "MALICIOUS")
+    files_table = tableToMarkdown(
+        name="Downloaded files",
+        t=readable
+    )
+
+    markdown = f"## ReversingLabs Files downloaded from IP address {ip}\n {files_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"ip_downloaded_files": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def ip_urls_command():
+    ip_ti = create_ip_ti_object()
+
+    ip = demisto.getArg("ip")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = ip_ti.urls_from_ip_aggregated(
+            ip_address=ip,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = ip_urls_output(response=response, ip=ip)
+    return_results(results)
+
+
+def ip_urls_output(response, ip):
+    urls_table = tableToMarkdown(
+        name="URL list",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs URL-s associated with IP address {ip}\n {urls_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"ip_urls": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def ip_to_domain_command():
+    ip_ti = create_ip_ti_object()
+
+    ip = demisto.getArg("ip")
+    limit = int(demisto.getArg("result_limit"))
+    per_page = int(demisto.getArg("results_per_page"))
+
+    try:
+        response = ip_ti.ip_to_domain_resolutions_aggregated(
+            ip_address=ip,
+            results_per_page=per_page,
+            max_results=limit
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    results = ip_to_domain_output(response=response, ip=ip)
+    return_results(results)
+
+
+def ip_to_domain_output(response, ip):
+    domain_table = tableToMarkdown(
+        name="Domain list",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs IP to domain mappings for IP address {ip}\n {domain_table}"
+
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="ReversingLabs TitaniumCloud v2",
+        score=0,
+        reliability=RELIABILITY
+    )
+
+    indicator = Common.IP(
+        ip=ip,
+        dbot_score=dbot_score
+    )
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"ip_to_domain": response},
+        readable_output=markdown,
+        indicator=indicator
+    )
+
+    return results
+
+
+def network_reputation_command():
+    net_reputation = NetworkReputation(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    network_locations = argToList(demisto.getArg("network_locations"))
+
+    try:
+        response = net_reputation.get_network_reputation(
+            network_locations=network_locations
+        )
+    except NotFoundError:
+        return_results("No results were found for this input.")
+        return
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = network_reputation_output(response_json=response_json, network_locations=network_locations)
+    return_results(results)
+
+
+def network_reputation_output(response_json, network_locations):
+    entries = deepcopy(response_json.get("rl").get("entries"))
+    entries = bold_classification(entries, "classification", "malicious")
+
+    for entry in entries:
+        tp_reputations = entry.get("third_party_reputations")
+        if tp_reputations:
+            entry["third_party_reputations_malicious"] = tp_reputations.get("malicious")
+            entry["third_party_reputations_clean"] = tp_reputations.get("clean")
+            entry["third_party_reputations_undetected"] = tp_reputations.get("undetected")
+            entry["third_party_reputations_total"] = tp_reputations.get("total")
+            del entry["third_party_reputations"]
+
+    entries_table = tableToMarkdown(
+        name="Network locations",
+        t=entries
+    )
+
+    network_locations = ", ".join(network_locations)
+    markdown = f"## ReversingLabs Reputation for the following network locations: {network_locations}\n {entries_table}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"network_reputation": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def create_net_rep_override_obj():
+    """Creates an NetworkReputationUserOverride object."""
+    net_rep_override = NetworkReputationUserOverride(
+        host=TICLOUD_URL,
+        username=USERNAME,
+        password=PASSWORD,
+        user_agent=USER_AGENT,
+        proxies=PROXIES,
+        verify=VERIFY_CERTS
+    )
+
+    return net_rep_override
+
+
+def create_override_payload(piped_string, action=None):
+    """A function for creating the Network Reputation User Override objects."""
+    split_by_pipe = piped_string.split("|")
+    list_of_dicts = []
+
+    for one_location in split_by_pipe:
+        values_list = one_location.split(",")
+        location_dict = {
+            "network_location": values_list[0],
+            "type": values_list[1]
+        }
+        if action == "set_override":
+            location_dict["classification"] = values_list[2]
+        list_of_dicts.append(location_dict)
+
+    return list_of_dicts
+
+
+def network_reputation_override_command():
+    net_rep_override = create_net_rep_override_obj()
+
+    set_override_str = demisto.getArg("set_overrides_list")
+    remove_override_str = demisto.getArg("remove_overrides_list")
+
+    set_list = create_override_payload(piped_string=set_override_str, action="set_override") if set_override_str else []
+    remove_list = create_override_payload(piped_string=remove_override_str) if remove_override_str else []
+
+    try:
+        response = net_rep_override.reputation_override(
+            override_list=set_list,
+            remove_overrides_list=remove_list
+        )
+    except Exception as e:
+        return_error(str(e))
+
+    response_json = response.json()
+    results = network_reputation_override_output(response_json=response_json)
+
+    return_results(results)
+
+
+def network_reputation_override_output(response_json):
+    created_overrides = response_json.get("rl", {}).get("user_override", {}).get("created_overrides")
+    removed_overrides = response_json.get("rl", {}).get("user_override", {}).get("removed_overrides")
+    invalid = response_json.get("rl", {}).get("user_override", {}).get("invalid_network_locations")
+
+    markdown = "## ReversingLabs Network reputation user override"
+
+    if created_overrides:
+        created_overrides_table = tableToMarkdown(
+            name="Created overrides",
+            t=created_overrides
+        )
+
+        markdown = f"{markdown}\n {created_overrides_table}"
+
+    if removed_overrides:
+        removed_overrides_table = tableToMarkdown(
+            name="Removed overrides",
+            t=removed_overrides
+        )
+
+        markdown = f"{markdown}\n {removed_overrides_table}"
+
+    if invalid:
+        invalid_table = tableToMarkdown(
+            name="Invalid network locations",
+            t=invalid
+        )
+
+        markdown = f"{markdown}\n {invalid_table}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"network_reputation_override": response_json},
+        readable_output=markdown
+    )
+
+    return results
+
+
+def network_reputation_overrides_list_command():
+    net_rep_override = create_net_rep_override_obj()
+
+    limit = int(demisto.getArg("result_limit"))
+
+    try:
+        response = net_rep_override.list_overrides_aggregated(max_results=limit)
+    except Exception as e:
+        return_error(str(e))
+
+    results = network_reputation_overrides_list_output(response=response)
+    return_results(results)
+
+
+def network_reputation_overrides_list_output(response):
+    entries_table = tableToMarkdown(
+        name="Network location list",
+        t=response
+    )
+
+    markdown = f"## ReversingLabs Network reputation active user overrides list\n {entries_table}"
+
+    results = CommandResults(
+        outputs_prefix="ReversingLabs",
+        outputs={"network_reputation_overrides_list": response},
+        readable_output=markdown
+    )
+
+    return results
 
 
 def main():
@@ -1601,6 +2339,42 @@ def main():
 
     elif command == "reversinglabs-titaniumcloud-url-analyses-feed-from-date":
         url_analyses_feed_from_date_command()
+
+    elif command == "reversinglabs-titaniumcloud-domain-report":
+        domain_report_command()
+
+    elif command == "reversinglabs-titaniumcloud-domain-downloaded-files":
+        domain_downloaded_files_command()
+
+    elif command == "reversinglabs-titaniumcloud-domain-urls":
+        domain_urls_command()
+
+    elif command == "reversinglabs-titaniumcloud-domain-to-ip":
+        domain_to_ip_command()
+
+    elif command == "reversinglabs-titaniumcloud-domain-related-domains":
+        domain_related_domains_command()
+
+    elif command == "reversinglabs-titaniumcloud-ip-report":
+        ip_report_command()
+
+    elif command == "reversinglabs-titaniumcloud-ip-downloaded-files":
+        ip_downloaded_files_command()
+
+    elif command == "reversinglabs-titaniumcloud-ip-urls":
+        ip_urls_command()
+
+    elif command == "reversinglabs-titaniumcloud-ip-to-domain":
+        ip_to_domain_command()
+
+    elif command == "reversinglabs-titaniumcloud-network-reputation":
+        network_reputation_command()
+
+    elif command == "reversinglabs-titaniumcloud-network-reputation-override":
+        network_reputation_override_command()
+
+    elif command == "reversinglabs-titaniumcloud-network-reputation-overrides-list":
+        network_reputation_overrides_list_command()
 
     else:
         return_error(f"Command {command} does not exist")

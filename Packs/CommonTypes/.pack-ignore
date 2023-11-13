@@ -288,14 +288,8 @@ ignore=BA101
 [file:layoutscontainer-HostV2.json]
 ignore=BA101
 
-[file:incidentfield-Tool_Usage_Found.json]
-ignore=IF115
-
-[file:incidentfield-Affected_Hosts.json]
-ignore=IF115
-
-[file:incidentfield-Affected_Users.json]
-ignore=IF115
+[file:incidentfield-Number_Of_Found_Related_Alerts.json]
+ignore=IF100
 
 [known_words]
 SysAid
