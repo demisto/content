@@ -119,7 +119,7 @@ def check_pivotable_ssl_email(
             emails = ssl_info.get("email")
             for email in emails:
                 count = int(email.get("count") or 0)
-                if max_count >= count >= 1:
+                if max_property_count >= count >= 1:
                     pivotable.append(
                         {"count": count, "value": email.get("value")})
     except Exception as e:

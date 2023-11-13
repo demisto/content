@@ -83,9 +83,7 @@ def http_request(method, params=None):
         else:
             response = api.iris_investigate(**params).response()
     except Exception as e:
-        message = e.reason if hasattr(e, 'reason') else e.message
-        error_message = f"error for request: {params} status code: {e.code} reason: {message}"
-        demisto.error(error_message)
+        demisto.error(str(e))
         raise
 
     return response
@@ -839,7 +837,6 @@ def create_indicator_from_dt_domain(domain: Dict[str, Any], source: str) -> Dict
     """
     ip_addresses = domain.get("ip") or []
     ip_country_code = ip_addresses[0].get('country_code', {}).get('value') if len(ip_addresses) else ''
-    ssl_email = [ssl_email for ssl_email in domain.get('ssl_email')]
     domain_age = 0
 
     first_seen = domain.get('first_seen', {}).get('value') or ""
@@ -909,7 +906,8 @@ def fetch_domains_from_dt_api(search_type: str, search_value: str) -> List[Dict[
     Returns:
         List[Dict[str, Any]]: DomainTools Iris response
     """
-    dt_query = domain_pivot({search_type: search_value})
+    search_data = {search_type: search_value}
+    dt_query = domain_pivot(search_data)
     dt_results = dt_query['results']
     while dt_query['has_more_results']:
         search_data['position'] = dt_query['position']
@@ -1578,7 +1576,6 @@ def test_module():
         raise
 
 
-
 def fetch_domains():
     # iris search hash
     monitor_domain_by_search_hash = demisto.params().get("monitor_iris_search_hash", ) or "Import Indicators Only"
@@ -1586,8 +1583,6 @@ def fetch_domains():
     # iris tags
     monitor_domain_by_iris_tags = demisto.params().get("monitor_iris_tags") or "Import Indicators Only"
     iris_tags = demisto.params().get("domaintools_iris_tags") or False
-
-    fetch_limit = arg_to_number(demisto.params().get('max_fetch', 2))
 
     iris_search_hash_params = {
         "import_only": monitor_domain_by_search_hash == "Import Indicators Only",
