@@ -444,7 +444,7 @@ class TestQRadarv2:
         assert res[0]['id'] == 1928
 
         # flatten properties check
-        assert res[0]['Unified Name'] == 'ec2-44-234-115-112.us-west-2.compute.amazonaws.com'
+        assert res[0]['Unified Name'] == 'ec2.eu.compute-1.amazonaws.com'
 
         # simplify interfaces check
         assert len(res_interfaces) == 3
