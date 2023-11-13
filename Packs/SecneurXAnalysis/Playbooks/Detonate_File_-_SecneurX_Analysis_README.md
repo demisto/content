@@ -59,7 +59,7 @@ This playbook does not use any scripts.
 | SecneurXAnalysis.Report.FileDeleted | List of File deletions observed in the analyzed sample | string |
 | SecneurXAnalysis.Report.FileModified | List of File changes observed in the analyzed sample | string |
 | SecneurXAnalysis.Report.IOC | List of IOC's observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.Status | Analysis queued sample state | String |
+| SecneurXAnalysis.Report.Status | Analysis queued sample state. | String |
 
 ## Playbook Image
 
