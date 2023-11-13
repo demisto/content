@@ -57,6 +57,13 @@ repos:
     language: script
     pass_filenames: false
 
+  - id: pwsh-test-in-docker
+    name: pwsh-test-in-docker
+    description: run powershell tests
+    entry: pwsh
+    args: ['-Command', 'Invoke-Pester', "-Configuration", '@{Run=@{Exit=$true}; Output=@{Verbosity="Detailed"}}']
+    files: .*Tests\.ps1$
+
 - repo: https://github.com/demisto/demisto-sdk
   rev: ""
   hooks:
