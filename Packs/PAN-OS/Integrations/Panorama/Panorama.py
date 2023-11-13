@@ -901,8 +901,8 @@ def export_tsf_command(args: dict):
     """
     if job_id := args.get('job_id'):
         job_status = dict_safe_get(
-                get_tsf_export_status(job_id),
-                ['response', 'result', 'job', 'status']
+            get_tsf_export_status(job_id),
+            ['response', 'result', 'job', 'status']
         )
         return PollResult(
             response=download_tsf(job_id),
