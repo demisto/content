@@ -16,7 +16,7 @@ Follow the below steps:
 Note:
 Make sure that the time zone of the logs are set to UTC.
 
-For additional information, refer to the official ManageEngine [documentation](https://www.manageengine.com/products/self-service-password/kb/siem-system-integration.html)
+For additional information, refer to the official ManageEngine [documentation](https://www.manageengine.com/products/self-service-password/kb/siem-system-integration.html).
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
