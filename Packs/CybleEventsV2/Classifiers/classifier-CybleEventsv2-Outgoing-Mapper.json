@@ -1,0 +1,22 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "CybleEventsv2-Outgoing-Mapper",
+    "mapping": {
+        "Cyble Vision Alert V2": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "id": {
+                    "simple": "eventid"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "CybleEventsv2-Outgoing-Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

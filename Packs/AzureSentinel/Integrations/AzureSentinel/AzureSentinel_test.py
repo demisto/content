@@ -1256,8 +1256,6 @@ class TestHappyPath:
     @pytest.mark.parametrize('args, client, expected_result', [  # disable-secrets-detection
         ({'last_fetch_ids': [], 'min_severity': 3, 'last_incident_number': 1}, mock_client(),
          {'last_fetch_ids': ['inc_ID'], 'last_incident_number': 2}),  # case 1
-        ({'last_fetch_ids': ['inc_ID'], 'min_severity': 3, 'last_incident_number': 2}, mock_client(),
-         {'last_fetch_ids': [], 'last_incident_number': 2})  # case 2
     ])
     def test_process_incidents(self, args, client, expected_result):
         """
@@ -1274,13 +1272,12 @@ class TestHappyPath:
         """
         # prepare
         raw_incidents = [MOCKED_RAW_INCIDENT_OUTPUT.get('value')[0]]
-        last_fetch_ids = args.get('last_fetch_ids')
         min_severity = args.get('min_severity')
         last_incident_number = args.get('last_incident_number')
         latest_created_time = dateparser.parse('2020-02-02T14:05:01.5348545Z')
 
         # run
-        next_run, _ = process_incidents(raw_incidents, last_fetch_ids, min_severity, latest_created_time,
+        next_run, _ = process_incidents(raw_incidents, min_severity, latest_created_time,
                                         last_incident_number)
 
         # validate
@@ -1322,6 +1319,37 @@ class TestHappyPath:
         assert 'properties/createdTimeUtc ge' in call_args.get('params').get('$filter')
         assert call_args.get('params').get('$orderby') == 'properties/createdTimeUtc asc'
 
+    def test_last_run_in_fetch_incidents_duplicates(self, mocker):
+        """
+        Scenario: Update the last run when duplicates are found.
+        Given:
+            - AzureSentinel client, last_run dictionary, first_fetch_time, and a minimum severity.
+
+            The last_run dictionary mimics a last_run dict from a previous version of the integration, containing an
+            empty 'last_fetch_ids' array with the previous detected incident, and has the same incident ID from the API.
+
+        When:
+            - Calling the fetch_incidents command.
+
+        Then:
+            - Validate that the incidents was deduped and not processed.
+        """
+        # prepare
+        client = mock_client()
+        last_run = {'last_fetch_time': '2022-03-16T13:01:08Z',
+                    'last_fetch_ids': ['inc_name']}
+        first_fetch_time = '3 days'
+        minimum_severity = 0
+
+        process_mock = mocker.patch('AzureSentinel.process_incidents', return_value=({}, []))
+        mocker.patch.object(client, 'http_request', return_value=MOCKED_INCIDENTS_OUTPUT)
+
+        # run
+        fetch_incidents(client, last_run, first_fetch_time, minimum_severity)
+
+        # validate
+        assert not process_mock.call_args[0][0]
+
     @pytest.mark.parametrize('min_severity, expected_incident_num', [(1, 2), (3, 1)])
     def test_last_fetched_incident_for_various_severity_levels(self, mocker, min_severity, expected_incident_num):
         """
@@ -1341,7 +1369,6 @@ class TestHappyPath:
 
         # run
         next_run, incidents = process_incidents(raw_incidents=raw_incidents,
-                                                last_fetch_ids=[],
                                                 min_severity=min_severity,
                                                 latest_created_time=latest_created_time,
                                                 last_incident_number=1)
@@ -1650,13 +1677,19 @@ def test_update_remote_incident(mocker, incident_status, close_incident_in_remot
     assert mock_update_status.called == expected_update_call
 
 
-@pytest.mark.parametrize('delta, close_ticket_param, to_close', [
-    ({'classification': 'FalsePositive'}, True, True),
-    ({'classification': 'FalsePositive'}, False, False),
-    ({}, True, False),
-    ({}, False, False)
+@pytest.mark.parametrize('delta, data, close_ticket_param, to_close', [
+    ({'classification': 'FalsePositive'}, {}, True, True),
+    ({'classification': 'FalsePositive'}, {}, False, False),
+    ({}, {}, True, False),
+    ({}, {}, False, False),
+    # Closing after classification is already present in the data.
+    ({}, {'classification': 'FalsePositive'}, True, True),
+    # Closing after reopened, before data update
+    ({}, {'classification': 'FalsePositive', 'status': 'Closed'}, True, True),
+    # Closing after reopened, after data update
+    ({}, {'classification': 'FalsePositive', 'status': 'Active'}, True, True)
 ])
-def test_close_incident_in_remote(mocker, delta, close_ticket_param, to_close):
+def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_close):
     """
     Given
         - one of the close parameters
@@ -1666,45 +1699,55 @@ def test_close_incident_in_remote(mocker, delta, close_ticket_param, to_close):
         - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
     """
     mocker.patch.object(demisto, 'params', return_value={'close_ticket': close_ticket_param})
-    assert close_incident_in_remote(delta) == to_close
+    assert close_incident_in_remote(delta, data) == to_close
 
 
-@pytest.mark.parametrize("data, delta, mock_response, close_ticket", [
-    (
-        {'title': 'New Title', 'severity': 2, 'status': 1},
-        {'title': 'New Title'},
-        {'title': 'New Title', 'severity': 'Medium', 'status': 'Active'},
+@pytest.mark.parametrize("data, delta, mocked_fetch_data, expected_response, close_ticket", [
+    (   # Update description of active incident.
+        {'title': 'Title', 'description': 'old desc', 'severity': 2, 'status': 1},
+        {'title': 'Title', 'description': 'new desc'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Medium', 'status': 'Active'},
+        {'title': 'Title', 'description': 'new desc', 'severity': 'Medium', 'status': 'Active'},
         False
     ),
-    (
-        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
-        {'title': 'New Title', 'classification': 'Undetermined'},
-        {'title': 'New Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+    (   # Update description and classification and close incident.
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
+        {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     ),
-    (
-        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
-        {'title': 'New Title', 'classification': 'Undetermined'},
-        {'title': 'New Title', 'severity': 'Low', 'status': 'Active'},
+    (   # Update description and classification of active incident without closing. Result in description update only.
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
+        {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Active'},
         False
+    ),
+    (   # Update title and close incident with classification already in data. Result in closing with classification.
+        {'title': 'Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+        {'title': 'Title'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+        True
     )
 ])
-def test_update_incident_request(mocker, data, delta, mock_response, close_ticket):
+def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, close_ticket):
     """
     Given
-        - data
-        - delta
+        - data: The incident data before the update in xsoar.
+        - delta: The changes in the incident made in xsoar.
+        - mocked fetched current data: The incident data before the update in sentinel.
     When
         - running update_incident_request
     Then
         - Ensure the client.http_request was called with the expected data
     """
     client = mock_client()
-    mock_response = {'etag': None, 'properties': mock_response}
-    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    mocker.patch.object(client, 'http_request', return_value=mocked_fetch_data)
 
     update_incident_request(client, 'id-incident-1', data, delta, close_ticket)
-    assert client.http_request.call_args[1]['data'] == mock_response
+    assert client.http_request.call_args[1]['data'].get('properties') == expected_response
 
 
 @pytest.mark.parametrize("args", [

@@ -42,7 +42,7 @@ script:
       name: username
       required: true
     - auto: PREDEFINED
-      description: Fetch logs from this time until now
+      description: Fetch logs from this time until now.
       name: from
       predefined:
       - 10_seconds_ago
@@ -60,214 +60,214 @@ script:
     - defaultValue: '50'
       description: The maximum number of authentication logs to return.
       name: limit
-    description: Returns authentication logs associated with a user. Limited to 30 at a time
+    description: Returns authentication logs associated with a user. Limited to 30 at a time.
     name: duoadmin-get-authentication-logs-by-user
     outputs:
     - contextPath: DuoAdmin.UserDetails.auth_logs.result
-      description: Result of the authentication attempt
+      description: Result of the authentication attempt.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.event_type
-      description: Type of activity logged
+      description: Type of activity logged.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.reason
-      description: Reason for the authentication attempt result
+      description: Reason for the authentication attempt result.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.ip
-      description: The GeoIP location of the access device. IP field
+      description: The GeoIP location of the access device. IP field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.hostname
-      description: The GeoIP location of the access device. Hostname field
+      description: The GeoIP location of the access device. Hostname field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.location.city
-      description: The GeoIP location of the access device. City field
+      description: The GeoIP location of the access device. City field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.location.state
-      description: The GeoIP location of the access device. State field
+      description: The GeoIP location of the access device. State field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.access_device.location.country
-      description: The GeoIP location of the access device. Country field
+      description: The GeoIP location of the access device. Country field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.ip
-      description: The GeoIP location of the authentication device. IP field
+      description: The GeoIP location of the authentication device. IP field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.hostname
-      description: The GeoIP location of the authentication device. Hostname field
+      description: The GeoIP location of the authentication device. Hostname field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.location.city
-      description: The GeoIP location of the authentication device. City field
+      description: The GeoIP location of the authentication device. City field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.location.state
-      description: The GeoIP location of the authentication device. State field
+      description: The GeoIP location of the authentication device. State field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.auth_device.location.country
-      description: The GeoIP location of the authentication device. Country field
+      description: The GeoIP location of the authentication device. Country field.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.timestamp
-      description: Timestamp of the event
+      description: Timestamp of the event.
       type: date
     - contextPath: DuoAdmin.UserDetails.auth_logs.application.name
-      description: Name of the application accessed
+      description: Name of the application accessed.
       type: string
     - contextPath: DuoAdmin.UserDetails.auth_logs.factor
-      description: The authentication factor
+      description: The authentication factor.
       type: string
   - arguments:
-    - description: user to dissociate a device from
+    - description: user to dissociate a device from.
       name: username
       required: true
-    - description: the device id to dissociate
+    - description: the device id to dissociate.
       name: device_id
       required: true
-    description: Dissociates a device from a user
+    description: Dissociates a device from a user.
     name: duoadmin-dissociate-device-from-user
   - arguments:
-    - description: the id of the token to delete
+    - description: the id of the token to delete.
       name: token_id
       required: true
-    description: Delete a u2f token
+    description: Delete a u2f token.
     name: duoadmin-delete-u2f-token
-  - description: Return usernames and their user id
+  - description: Return usernames and their user id.
     name: duoadmin-get-users
     outputs:
     - contextPath: DuoAdmin.UserDetails.username
-      description: Username
+      description: Username.
       type: string
     - contextPath: DuoAdmin.UserDetails.user_id
-      description: 'User Id '
+      description: 'User Id.'
       type: string
     - contextPath: DuoAdmin.UserDetails.status
-      description: Status
+      description: Status.
       type: string
     - contextPath: DuoAdmin.UserDetails.is_enrolled
-      description: is_enrolled
+      description: is_enrolled.
       type: boolean
     - contextPath: DuoAdmin.UserDetails.last_login
-      description: Last_login
+      description: Last_login.
       type: date
     - contextPath: DuoAdmin.UserDetails.realname
-      description: Real Name
+      description: Real Name.
       type: string
     - contextPath: DuoAdmin.UserDetails.email
-      description: Email
+      description: Email.
       type: string
     - contextPath: DuoAdmin.UserDetails.phones
-      description: Phone numbers
+      description: Phone numbers.
     arguments: []
   - arguments:
-    - description: Username
+    - description: Username.
       name: username
       required: true
-    description: Return devices associated with a user
+    description: Return devices associated with a user.
     name: duoadmin-get-devices-by-user
     outputs:
     - contextPath: DuoAdmin.UserDetails.phones.phone_id
-      description: Device Id
+      description: Device Id.
       type: string
     - contextPath: DuoAdmin.UserDetails.phones.number
-      description: Device number
+      description: Device number.
       type: string
     - contextPath: DuoAdmin.UserDetails.phones.platform
-      description: Device platform
+      description: Device platform.
       type: string
     - contextPath: DuoAdmin.UserDetails.phones.last_seen
-      description: Last time the device was used
+      description: Last time the device was used.
       type: date
   - arguments:
-    - description: username
+    - description: username.
       name: username
       required: true
-    description: Returns a list of U2F tokens associated with the given username
+    description: Returns a list of U2F tokens associated with the given username.
     name: duoadmin-get-u2f-tokens-by-user
     outputs:
     - contextPath: DuoAdmin.UserDetails.u2ftokens
-      description: The list of  tokens
+      description: The list of  tokens.
       type: Unknown
-  - description: Returns all existing devices
+  - description: Returns all existing devices.
     name: duoadmin-get-devices
     outputs:
     - contextPath: DuoAdmin.Phones.phone_id
-      description: Device Id
+      description: Device Id.
       type: Unknown
     - contextPath: DuoAdmin.Phones.number
-      description: Device number
+      description: Device number.
       type: Unknown
     - contextPath: DuoAdmin.Phones.platform
-      description: Device platform
+      description: Device platform.
       type: Unknown
     - contextPath: DuoAdmin.Phones.last_seen
-      description: Last time the device was used
+      description: Last time the device was used.
       type: Unknown
     - contextPath: DuoAdmin.Phones.users
-      description: Users associated with this device
+      description: Users associated with this device.
       type: Unknown
     arguments: []
   - arguments:
-    - description: Username
+    - description: Username.
       name: username
       required: true
-    - description: Device Id
+    - description: Device Id.
       name: device_id
       required: true
-    description: Associates a device to a user
+    description: Associates a device to a user.
     name: duoadmin-associate-device-to-user
   - arguments: []
-    description: Returns administrator accounts
+    description: Returns administrator accounts.
     name: duoadmin-get-admins
     outputs:
     - contextPath: DuoAdmin.UserDetails.admin_id
-      description: Admin_id
+      description: Admin_id.
       type: string
     - contextPath: DuoAdmin.UserDetails.admin_units
-      description: Admin Units
+      description: Admin Units.
     - contextPath: DuoAdmin.UserDetails.created
-      description: Created
+      description: Created.
       type: date
     - contextPath: DuoAdmin.UserDetails.email
-      description: Email
+      description: Email.
       type: string
     - contextPath: DuoAdmin.UserDetails.last_login
-      description: Last Login
+      description: Last Login.
       type: date
     - contextPath: DuoAdmin.UserDetails.name
-      description: Name
+      description: Name.
       type: string
     - contextPath: DuoAdmin.UserDetails.phone
-      description: Phone
+      description: Phone.
     - contextPath: DuoAdmin.UserDetails.role
-      description: Admin Role
+      description: Admin Role.
       type: string
     - contextPath: DuoAdmin.UserDetails.status
-      description: Admin Status
+      description: Admin Status.
       type: string
   - arguments: []
-    description: Retrieves the information from the bypass code table
+    description: Retrieves the information from the bypass code table.
     name: duoadmin-get-bypass-codes
     outputs:
     - contextPath: DuoAdmin.UserDetails.bypass_code_id
-      description: Bypass Code Id
+      description: Bypass Code Id.
       type: unknown
     - contextPath: DuoAdmin.UserDetails.admin_email
-      description: Admin Email
+      description: Admin Email.
       type: string
     - contextPath: DuoAdmin.UserDetails.created
-      description: Bypass Created
+      description: Bypass Created.
       type: date
     - contextPath: DuoAdmin.UserDetails.expiration
-      description: Bypass Expiration
+      description: Bypass Expiration.
     - contextPath: DuoAdmin.UserDetails.reuse_count
-      description: Bypass Reuse Count
+      description: Bypass Reuse Count.
     - contextPath: DuoAdmin.UserDetails.user.username
-      description: Username
+      description: Username.
     - contextPath: DuoAdmin.UserDetails.user.created
-      description: Created
+      description: Created.
     - contextPath: DuoAdmin.UserDetails.user.email
-      description: Email
+      description: Email.
     - contextPath: DuoAdmin.UserDetails.user.last_login
-      description: Last Login
+      description: Last Login.
     - contextPath: DuoAdmin.UserDetails.user.status
-      description: Status
+      description: Status.
     - contextPath: DuoAdmin.UserDetails.user.user_id
-      description: User Id
+      description: User Id.
   - arguments:
     - description: The id of the admin.
       name: admin_id
@@ -324,7 +324,7 @@ script:
     outputs: []
     description: Modify the user account.
     name: duoadmin-modify-user
-  dockerimage: demisto/vendors-sdk:1.0.0.74116
+  dockerimage: demisto/vendors-sdk:1.0.0.80194
   script: ''
   type: python
   subtype: python3
