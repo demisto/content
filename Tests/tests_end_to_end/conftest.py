@@ -2,7 +2,9 @@ import os
 
 import pytest
 
-from demisto_sdk.commands.common.clients import XsoarSaasClient, XsoarSaasClientConfig, get_client_from_config, XsiamClient, XsiamClientConfig
+from demisto_sdk.commands.common.clients import (
+    XsoarSaasClient, XsoarSaasClientConfig, get_client_from_config, XsiamClient, XsiamClientConfig
+)
 
 from Tests.configure_and_test_integration_instances import CloudBuild
 
