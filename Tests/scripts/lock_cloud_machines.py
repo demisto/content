@@ -55,11 +55,12 @@ def get_queue_locks_details(storage_client: storage.Client, bucket_name: str, pr
     files = []
     found = False
     for blob in blobs:
+        logging.debug(f'blob.name = {blob.name}')
         if blob.name.startswith(prefix):
-            logging.debug(f'blob.name = {blob.name}')
             found = True
             files.append({'name': blob.name.strip(prefix), 'time_created': blob.time_created})
         elif found:
+            logging.debug('found = true')
             break
     return files
 
