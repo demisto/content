@@ -10,7 +10,7 @@ description: |-
   -QRadar
   -Azure Log Analytics
   -PAN-OS
-  -XDR By Palo Alto Networks
+  -XDR / Core By Palo Alto Networks.
 starttaskid: "0"
 tasks:
   "0":
@@ -156,7 +156,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 400
         }
       }
@@ -219,7 +219,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 530
         }
       }
@@ -257,7 +257,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 1050
         }
       }
@@ -299,7 +299,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 1625
         }
       }
@@ -337,7 +337,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 1215
         }
       }
@@ -368,7 +368,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 920
         }
       }
@@ -381,12 +381,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 0c346c23-69f5-4e9c-8350-2ab4c133f5fe
+    taskid: 0506de8c-0534-4fae-8513-3c734bb4c00a
     type: title
     task:
-      id: 0c346c23-69f5-4e9c-8350-2ab4c133f5fe
+      id: 0506de8c-0534-4fae-8513-3c734bb4c00a
       version: -1
-      name: Related alerts from XDR
+      name: Related alerts from XDR / Core
       type: title
       iscommand: false
       brand: ""
@@ -394,13 +394,14 @@ tasks:
     nexttasks:
       '#none#':
       - "72"
+      - "84"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 400
+          "x": 1270,
+          "y": 410
         }
       }
     note: false
@@ -491,7 +492,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 170
         }
       }
@@ -582,7 +583,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1600,
+          "x": 2070,
           "y": 1390
         }
       }
@@ -656,7 +657,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
+          "x": 1050,
           "y": 930
         }
       }
@@ -725,8 +726,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 530
+          "x": 1050,
+          "y": 550
         }
       }
     note: false
@@ -942,7 +943,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
+          "x": 1050,
           "y": 800
         }
       }
@@ -1141,6 +1142,178 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 3a2b054d-f7b4-4576-8d76-2bc32cf07f96
+    type: condition
+    task:
+      id: 3a2b054d-f7b4-4576-8d76-2bc32cf07f96
+      version: -1
+      name: Is Cortex Core integration enabled and user name is defined?
+      description: Checks if Cortex XDR integration is enabled and the user name is defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Core - IR
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRUsernameField
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 0adef6b2-c579-4948-8bbc-73f122ed38c6
+    type: title
+    task:
+      id: 0adef6b2-c579-4948-8bbc-73f122ed38c6
+      version: -1
+      name: Cortex Core
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 9605cc83-3071-40c2-82b7-db1775a8863f
+    type: playbook
+    task:
+      id: 9605cc83-3071-40c2-82b7-db1775a8863f
+      version: -1
+      name: Get entity alerts by MITRE tactics
+      playbookName: Get entity alerts by MITRE tactics
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      EntityID:
+        complex:
+          root: inputs.Username
+      EntityType:
+        complex:
+          root: inputs.XDRUsernameField
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntCredentialAccessTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      RunAll:
+        simple: "true"
+      timeRange:
+        simple: 20 days
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1157,12 +1330,13 @@ view: |-
       "72_28_#default#": 0.1,
       "72_77_yes": 0.67,
       "74_28_#default#": 0.14,
-      "74_75_yes": 0.47
+      "74_75_yes": 0.47,
+      "84_28_#default#": 0.1
     },
     "paper": {
       "dimensions": {
         "height": 2040,
-        "width": 2140,
+        "width": 2610,
         "x": -160,
         "y": -155
       }
@@ -1287,7 +1461,7 @@ outputs:
   description: The result of the Azure Log Analytics search.
   type: unknown
 - contextPath: QRadar.Search.Result
-  description: 'The result of the QRadar search '
+  description: 'The result of the QRadar search.'
 - contextPath: Splunk.Result
   description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
 - contextPath: NumOfFailedLogon
@@ -1300,3 +1474,5 @@ quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

@@ -6,7 +6,7 @@ Supported Integrations:
 -QRadar
 -Azure Log Analytics
 -PAN-OS
--XDR By Palo Alto Networks
+-XDR / Core By Palo Alto Networks.
 
 ## Dependencies
 
@@ -14,8 +14,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* SIEM - Search for Failed logins
 * Okta - User Investigation
+* Get entity alerts by MITRE tactics
+* SIEM - Search for Failed logins
 * Cortex XDR - Get entity alerts by MITRE tactics
 
 ### Integrations
@@ -24,9 +25,9 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* CountArraySize
 * MathUtil
 * Set
-* CountArraySize
 
 ### Commands
 
@@ -73,7 +74,7 @@ This playbook does not use any integrations.
 | UserApplication |  Applications used by the user from Okta. | unknown |
 | NumOfOktaFailedLogon | Number of failed login from Okta. | unknown |
 | AzureFailedLogonLogs | The result of the Azure Log Analytics search. | unknown |
-| QRadar.Search.Result | The result of the QRadar search  | unknown |
+| QRadar.Search.Result | The result of the QRadar search. | unknown |
 | Splunk.Result | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | unknown |
 | NumOfFailedLogon | Number of failed login. | unknown |
 | NumOfFailedLogonASN | Number of failed login from ASN by all users. | unknown |
