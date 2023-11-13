@@ -571,7 +571,7 @@ class Pack:
             Metadata.CREATED: self._create_date,
             Metadata.UPDATED: self._update_date,
             Metadata.DOWNLOADS: self._downloads_count,
-            Metadata.TAGS: list(self._tags) or [],
+            Metadata.TAGS: list(self._tags or []),
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
         }
