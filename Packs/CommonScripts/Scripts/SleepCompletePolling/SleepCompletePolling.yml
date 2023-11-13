@@ -1,19 +1,17 @@
 commonfields:
-  id: Sleepp
+  id: SleepCompletePolling
   version: -1
-name: Sleepp
+name: SleepCompletePolling
 script: ''
 type: javascript
 tags:
 - Utility
-comment: Sleep for X seconds
+comment: Immediately completes the polling sleep of a polling Sleep execution.
 enabled: true
 args:
 - name: seconds
   required: true
   default: true
-  description: Amount of seconds to sleep
+  description: Amount of seconds to sleep.
 scripttarget: 0
-polling: true
-timeout: 1h40m0s
 fromversion: 5.0.0

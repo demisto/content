@@ -1,20 +1,15 @@
-if (args.polling_callback) {
-    // Polling runs once
-        return 'Slept for ' + args.seconds + ' seconds';
-}
+polling_threshold = 300;
 
-polling_threshold = args.polling_threshold || 60
-
-if (parseInt(args.seconds) >= parseInt(polling_threshold)) {
+if (parseInt(args.seconds) >= polling_threshold &&
+    (isDemistoVersionGE('8.0.0') || getDemistoVersion().platform === 'x2')) {
     // Polling implementation
-    args.polling_callback = true;
     return {
         Type: entryTypes.note,
         Contents: 'Sleep will complete in ' + args.seconds + ' seconds',
-        PollingCommand: 'Sleepp',
+        PollingCommand: 'SleepCompletePolling',
         NextRun: args.seconds,
         PollingArgs: args,
-        Timeout: String(parseInt(args.seconds) + 10)
+        Timeout: String(parseInt(args.seconds) + 60)
     }
 }
 
