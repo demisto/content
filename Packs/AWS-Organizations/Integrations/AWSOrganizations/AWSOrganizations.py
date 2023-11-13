@@ -2,12 +2,12 @@ from CommonServerPython import *  # noqa: E402
 import demistomock as demisto  # noqa: E402
 from AWSApiModule import *
 from typing import TYPE_CHECKING
+from botocore.paginate import Paginator
 
 # The following imports are used only for type hints and autocomplete.
 # They are not used at runtime, and are not in the docker image.
 if TYPE_CHECKING:
     from mypy_boto3_organizations import *
-    from botocore.paginate import Paginator
 
 ''' CONSTANTS '''
 
@@ -18,7 +18,7 @@ MAX_PAGINATION = 20
 ''' HELPER FUNCTIONS '''
 
 
-def create_client_session(args: dict, params: dict) -> 'OrganizationsClient':
+def create_client(args: dict, params: dict) -> 'OrganizationsClient':
     '''Creates the AWS Organizations client and initiates a session.'''
 
     aws_access_key_id = dict_safe_get(params, ('credentials', 'identifier'))
@@ -98,6 +98,16 @@ def next_token_output_dict(outputs_prefix: str, next_token: str | None, page_out
             page_outputs,
         'AWS.Organizations(true)': {f'{outputs_prefix}NextToken': next_token},
     }
+
+
+def dict_values_to_str(d: dict, *keys) -> dict:
+    '''Converts values in a dict to strings and returns the dict.
+        Used mainly when a client function output contains a datetime.
+    '''
+    for key in keys:
+        if key in d:
+            d[key] = str(d[key])
+    return d
 
 
 ''' COMMAND FUNCTIONS '''
@@ -205,10 +215,6 @@ def organization_unit_get_command(args: dict, aws_client: 'OrganizationsClient')
 
 def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
-    def JoinedTimestamp_to_str(account) -> dict:
-        account['JoinedTimestamp'] = str(account.get('JoinedTimestamp', ''))
-        return account
-
     def response_to_readable(accounts) -> str:
         return tableToMarkdown(
             'AWS Organization Accounts',
@@ -226,7 +232,10 @@ def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
             AccountId=args['account_id']
         )
 
-        account = JoinedTimestamp_to_str(description.get('Account', {}))
+        account = dict_values_to_str(
+            description.get('Account', {}),
+            'JoinedTimestamp'
+        )
 
         return CommandResults(
             readable_output=response_to_readable(account),
@@ -245,7 +254,10 @@ def account_list_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
             page_size=args.get('page_size'),
         )
 
-        accounts = list(map(JoinedTimestamp_to_str, accounts))
+        accounts = [
+            dict_values_to_str(account, 'JoinedTimestamp')
+            for account in accounts
+        ]
 
         return CommandResults(
             outputs=next_token_output_dict(
@@ -289,7 +301,7 @@ def main():
     params = demisto.params()
     args = demisto.args()
 
-    aws_client = create_client_session(args, params)
+    aws_client = create_client(args, params)
 
     demisto.debug(f'Command being called is {command}')
 

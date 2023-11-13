@@ -13,7 +13,7 @@ Manage Amazon Web Services accounts and their resources.
     | Role Session Duration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | False | 
     | Access Key |  | False |
     | Secret Key |  | False |
-    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
+    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -217,7 +217,7 @@ This command can be called only from the organization's management account or by
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_unit_id | The unique identifier (ID) of the organizational unit that to retrieve details about. | Required | 
+| organization_unit_id | The unique identifier (ID) of the organizational unit to retrieve details about. | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
