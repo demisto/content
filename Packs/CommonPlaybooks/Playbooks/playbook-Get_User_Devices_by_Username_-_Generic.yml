@@ -2085,10 +2085,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: ffca4e76-501e-47d2-8ac0-66973cd15498
+    taskid: 69282860-ecd4-45b7-8ba3-7ff339cfe7e1
     type: regular
     task:
-      id: ffca4e76-501e-47d2-8ac0-66973cd15498
+      id: 69282860-ecd4-45b7-8ba3-7ff339cfe7e1
       version: -1
       name: Set XDREndpoints
       description: |-
@@ -2108,7 +2108,7 @@ tasks:
       key:
         simple: XDREndpoints
       value:
-        simple: '${PaloAltoNetworksXDR.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: '''', OS: val[''os_type''], Integration: ''Cortex XDR - IR''}}'
+        simple: '${PaloAltoNetworksXDR.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: val[''mac_address''], OS: val[''os_type''], Integration: ''Cortex XDR - IR''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2273,10 +2273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 1497e644-070b-440d-8a6a-5d238a793c8c
+    taskid: baa6ebfb-b39f-4b7a-80cf-89ac44b6969e
     type: regular
     task:
-      id: 1497e644-070b-440d-8a6a-5d238a793c8c
+      id: baa6ebfb-b39f-4b7a-80cf-89ac44b6969e
       version: -1
       name: Set XDREndpoints
       description: |-
@@ -2296,14 +2296,14 @@ tasks:
       key:
         simple: XDREndpoints
       value:
-        simple: '${Core.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: '''', OS: val[''os_type''], Integration: ''Cortex Core - IR''}}'
+        simple: '${Core.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: val[''mac_address''], OS: val[''os_type''], Integration: ''Cortex Core - IR''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 900,
-          "y": 1275
+          "y": 1265
         }
       }
     note: false
