@@ -34,7 +34,7 @@ def save_indicators(client: XsoarClient, indicators: list[FeedIndicator]):
         yield
     finally:
         client.delete_indicators(indicators_to_remove)
-        logging.info(f'Deleted indicators {indicators}')
+        logging.info(f'Deleted indicators {indicators_to_remove}')
 
 
 @contextmanager
@@ -80,13 +80,13 @@ def save_integration_instance(
 
 @contextmanager
 def save_incident(
-    xsoar_saas_client: XsoarClient, name: str | None = None, playbook_id: str | None = None
+    client: XsoarClient, name: str | None = None, playbook_id: str | None = None
 ) -> IncidentWrapper:
     """
     Creates an incident
 
     Args:
-        xsoar_saas_client (XsoarClient): xsoar client (saas/on-prem/xsiam).
+        client (XsoarClient): xsoar client (saas/on-prem/xsiam).
         name (dict): the name of the incident.
         playbook_id (str): playbook ID that the incident will be attached to.
 
@@ -96,7 +96,7 @@ def save_incident(
     incident_id = None
     incident_name = name or f'end-to-end-{playbook_id}-incident'
     try:
-        response = xsoar_saas_client.create_incident(
+        response = client.create_incident(
             incident_name, should_create_investigation=True, attached_playbook_id=playbook_id
         )
         logging.info(f'Created incident {incident_name} that will run the playbook {playbook_id}')
@@ -104,7 +104,7 @@ def save_incident(
         yield response
     finally:
         if incident_id:
-            xsoar_saas_client.delete_incidents(incident_id)
+            client.delete_incidents(incident_id)
             logging.info(f'Removed incident {incident_name}')
 
 
@@ -260,3 +260,4 @@ def get_fetched_incident(
             )
             if incident_ids_to_remove := [_incident.get("id") for _incident in incidents_to_remove.get("data", [])]:
                 client.delete_incidents(incident_ids_to_remove)
+                logging.info(f'Removed successfully incidents {incident_ids_to_remove}')
