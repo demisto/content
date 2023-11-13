@@ -2549,10 +2549,7 @@ class Pack:
             datetime: Pack created date.
         """
         created_time = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-        metadata_path = os.path.join(index_folder_path, pack_name, Pack.METADATA)
-        logging.info(f"{metadata_path} - exists: {os.path.exists(metadata_path)}")
-        metadata = load_json(metadata_path)
-        logging.info(f"Pack: {pack_name}, {metadata.get(Metadata.CREATED)=}")
+        metadata = load_json(os.path.join(index_folder_path, pack_name, Pack.METADATA))
 
         if metadata:
             if metadata.get(Metadata.CREATED):
@@ -2560,7 +2557,6 @@ class Pack:
             else:
                 raise Exception(f'The metadata file of the {pack_name} pack does not contain "{Metadata.CREATED}" time')
 
-        logging.info(f"{created_time=}")
         return created_time
 
     def _get_pack_update_date(self, index_folder_path):
