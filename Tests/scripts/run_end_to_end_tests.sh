@@ -22,7 +22,7 @@ if [[ -n "$test_path" ]]; then
     IFS=', ' read -r -a CLOUD_CHOSEN_MACHINE_ID_ARRAY <<< "${CLOUD_CHOSEN_MACHINE_IDS}"
     for CLOUD_CHOSEN_MACHINE_ID in "${CLOUD_CHOSEN_MACHINE_ID_ARRAY[@]}"; do
       echo "Running end-to-end tests on ${CLOUD_CHOSEN_MACHINE_ID} from ${test_path}"
-      python3 -m pytest "$test_path" -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --integration_secrets_path "${SECRET_CONF_PATH}" --disable-warnings
+      python3 -m pytest "$test_path" -v --cloud_machine "${CLOUD_CHOSEN_MACHINE_ID}" --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" --integration_secrets_path "${SECRET_CONF_PATH}" --disable-warnings --junitxml=${ARTIFACTS_FOLDER_SERVER_TYPE}/end-to-end-tests-result.xml
       if [[ $? -ne 0 ]]; then
         exit_code=1
       fi
