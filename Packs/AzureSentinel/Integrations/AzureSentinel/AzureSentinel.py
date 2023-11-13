@@ -658,8 +658,6 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     The second is mandatory, so a closing request will not be sent for all mirroring requests that occur after closing an incident
     (in the case where the incident has been updated, but the status has not been changed).
     """
-    demisto.debug(f"DEBUG: delta: {delta}")
-    demisto.debug(f"DEBUG: data: {data}")
     closing_field = 'classification'
     closing_reason = delta.get(closing_field, data.get(closing_field, ''))
     return demisto.params().get('close_ticket') and bool(closing_reason)

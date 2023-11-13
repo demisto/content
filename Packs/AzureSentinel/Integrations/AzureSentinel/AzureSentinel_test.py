@@ -1683,7 +1683,11 @@ def test_update_remote_incident(mocker, incident_status, close_incident_in_remot
     ({}, {}, True, False),
     ({}, {}, False, False),
     # Closing after classification is already present in the data.
-    ({}, {'classification': 'FalsePositive'}, True, True)
+    ({}, {'classification': 'FalsePositive'}, True, True),
+    # Closing after reopened, before data update
+    ({}, {'classification': 'FalsePositive', 'status': 'Closed'}, True, True),
+    # Closing after reopened, after data update
+    ({}, {'classification': 'FalsePositive', 'status': 'Active'}, True, True)
 ])
 def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_close):
     """
