@@ -576,7 +576,7 @@ def is_iocs_to_keep_time():
     if (
         next_iocs_to_keep_time is not None
         and time_now.hour in range(1, 3)
-        and time_now > datetime.strptime(next_iocs_to_keep_time, DEMISTO_TIME_FORMAT)
+        and time_now > datetime.strptime(next_iocs_to_keep_time, DEMISTO_TIME_FORMAT).replace(tzinfo=timezone.utc):
     ):
         return True
 
