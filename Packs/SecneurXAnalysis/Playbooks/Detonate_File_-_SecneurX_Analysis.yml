@@ -1,5 +1,7 @@
 id: Detonate File - SecneurX Analysis
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Detonate File - SecneurX Analysis
 description: Detonates a file using the SecneurX Analysis Integration. Returns relevant reports to the War Room and file reputations to the context data.
 starttaskid: "0"
@@ -19,10 +21,11 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1410,
+          "x": 1450,
           "y": -20
         }
       }
@@ -81,10 +84,11 @@ tasks:
           right:
             value:
               simple: Secneurx Analysis
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1410,
+          "x": 1450,
           "y": 130
         }
       }
@@ -111,7 +115,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "3"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -124,11 +128,12 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 320
+          "x": 1700,
+          "y": 350
         }
       }
     note: false
@@ -178,11 +183,12 @@ tasks:
         complex:
           root: inputs.Reboot
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 570
+          "x": 2100,
+          "y": 730
         }
       }
     note: false
@@ -227,11 +233,12 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 770
+          "x": 2100,
+          "y": 900
         }
       }
     note: false
@@ -254,11 +261,12 @@ tasks:
       iscommand: false
       brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1470,
-          "y": 1370
+          "x": 1450,
+          "y": 1460
         }
       }
     note: false
@@ -293,11 +301,12 @@ tasks:
           root: SecneurXAnalysis.SubmitFile
           accessor: task_uuid
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 1185
+          "x": 2300,
+          "y": 1255
         }
       }
     note: false
@@ -348,6 +357,7 @@ tasks:
       dt:
         simple: SecneurXAnalysis.Verdict(val.status !== 'Completed' && val.status !== 'Failed').task_uuid
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -356,8 +366,61 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 980
+          "x": 2300,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2b8efa81-3a49-46d4-8147-2fb00d3e68c4
+    type: condition
+    task:
+      id: 2b8efa81-3a49-46d4-8147-2fb00d3e68c4
+      version: -1
+      name: 'Is the file type supported? '
+      description: 'Extension of the submitted file. Supported values are: ["sh", "js", "7z", "py", "doc", "rtf", "xls", "ppt", "pps", "ps1", "bat", "eml", "exe", "iso", "jar", "txt", "odt", "odp", "ods", "swf", "msg", "msi", "url", "pdf", "rar", "vbs", "zip", "cab", "lnk", "xml", "dll", "tar", "hta", "elf", "docx", "docm", "link", "xlsx", "xlsm", "xlsb", "pptx", "ppam", "html"].'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:SH|JS|7Z|PY|DOC|RTF|XLS|PPT|PPS|PS1|BAT|EML|EXE|ISO|JAR|TXT|ODT|ODP|ODS|SWF|MSG|MSI|URL|PDF|RAR|VBS|ZIP|CAB|INK|XML|DLL|TAR|HTA|ELF|DOCX|DOCM|LINK|XLSX|XLSM|XLSB|PPTX|PPAM|HTML)\b
+          ignorecase: true
+        - operator: match
+          left:
+            value:
+              simple: File.Extension
+          right:
+            value:
+              simple: .*(?:SH|JS|7Z|PY|DOC|RTF|XLS|PPT|PPS|PS1|BAT|EML|EXE|ISO|JAR|TXT|ODT|ODP|ODS|SWF|MSG|MSI|URL|PDF|RAR|VBS|ZIP|CAB|INK|XML|DLL|TAR|HTA|ELF|DOCX|DOCM|LINK|XLSX|XLSM|XLSB|PPTX|PPAM|HTML)\b
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 530
         }
       }
     note: false
@@ -379,9 +442,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1455,
-        "width": 740,
-        "x": 1110,
+        "height": 1545,
+        "width": 1230,
+        "x": 1450,
         "y": -20
       }
     }
