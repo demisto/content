@@ -5,12 +5,12 @@ name: Code42FileEventsToMarkdownTable
 type: python
 tags:
 - dynamic-section
-comment: Formats Code42 File Events as a markdown table for display in Code42 Alert Incidents
+comment: Formats Code42 File Events as a markdown table for display in Code42 Alert Incidents.
 enabled: true
 script: ''
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.78960
 dependson:
   must:
   - '|||code42-file-events-table'

@@ -2,7 +2,7 @@
     "name": "Claroty",
     "description": "Use the Claroty CTD to manage assets and alerts.",
     "support": "partner",
-    "currentVersion": "1.0.25",
+    "currentVersion": "1.0.26",
     "author": "Claroty",
     "url": "",
     "email": "support@claroty.com",
@@ -13,7 +13,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [
-        "Claroty"
+        "Claroty",
+        "CTD",
+        "Continuos Threat Detection"
     ],
     "githubUser": [
         "asaf96"

@@ -32,12 +32,13 @@ INVALID_DISTRIBUTION_LIST = ["invalid_distribution", 1.5, "53.5"]
 TEST_PREPARE_ARGS = [({'type': '1', 'to_ids': 0, 'from': '2', 'to': '3', 'event_id': '4', 'last': '5',
                        'include_decay_score': 0, 'include_sightings': 0, 'include_correlations': 0,
                        'enforceWarninglist': 0, 'tags': 'NOT:param3', 'value': 6, 'category': '7', 'limit': 10,
-                       'org': 7}, {'type_attribute': ['1'], 'to_ids': 0, 'date_from': '2', 'date_to': '3',
-                                   'eventid': ['4'], 'publish_timestamp': '5', 'include_decay_score': 0,
-                                   'include_sightings': 0, 'include_correlations': 0, 'enforceWarninglist': 0,
-                                   'limit': 10, 'tags': {'NOT': ['param3']}, 'org': 7, 'value': 6, 'category': '7',
-                                   'controller': 'attributes'}),
-                     ({}, {'limit': '50', 'controller': 'attributes'})  # default value
+                       'org': 7, 'with_attachments': 'true'},
+                      {'type_attribute': ['1'], 'to_ids': 0, 'date_from': '2', 'date_to': '3',
+                       'eventid': ['4'], 'publish_timestamp': '5', 'include_decay_score': 0,
+                       'include_sightings': 0, 'include_correlations': 0, 'enforceWarninglist': 0,
+                       'limit': 10, 'tags': {'NOT': ['param3']}, 'org': 7, 'value': 6, 'category': '7',
+                       'with_attachments': 1}),
+                     ({}, {'limit': '50', 'controller': 'attributes', 'with_attachments': 0})  # default value
                      ]
 
 TEST_EVENTS_INCLUDE_DETECTED_TAG = [("2", ['149', '145', '144']),  # 3 events include the detected tag
