@@ -339,6 +339,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     latest_time = last_run_latest_time or now
     kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, search_offset)
     fetch_query = build_fetch_query(params)
+    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
     if not last_run_latest_time:
         # If we are not doing pagination, then it means we are starting a new round of pagination,
         # and we need to exclude the previous fetched incidents by adding the `where not event_id in`
@@ -352,8 +353,6 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     demisto.debug(f'[SplunkPy] oneshot query args = {kwargs_oneshot}')
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)
     reader = results.JSONResultsReader(oneshotsearch_results)
-
-    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
 
     incidents = []
     notables = []
