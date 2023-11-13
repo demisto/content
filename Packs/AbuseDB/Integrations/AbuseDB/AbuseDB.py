@@ -17,7 +17,7 @@ SERVER = demisto.params().get('server')
 if not SERVER.endswith('/'):
     SERVER += '/'
 API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
-DISABLE_PRIVATE_IP_LOKKUP = argToBoolean(demisto.params().get("disable_private_ip_lookup", "False"))
+DISABLE_PRIVATE_IP_LOOKUP = argToBoolean(demisto.params().get("disable_private_ip_lookup", "False"))
 MAX_AGE = demisto.params().get('days')
 THRESHOLD = demisto.params().get('threshold')
 INSECURE = demisto.params().get('insecure')
@@ -154,7 +154,7 @@ def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
 
         if verbose:
             reports = sum([report_dict.get("categories") for report_dict in analysis.get("reports")], [])  # type: list
-            categories = set(filter(lambda category_id: category_id in CATEGORIES_NAME.keys(), reports))
+            categories = set(filter(lambda category_id: category_id in CATEGORIES_NAME, reports))
             abuse_ec["IP"]["Reports"] = {CATEGORIES_NAME[c]: reports.count(c) for c in categories}
 
         human_readable.append(abuse_ec['IP'])
@@ -182,7 +182,7 @@ def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
         ip_rep = scoreToReputation(dbot_score)
         timeline.append({
             'Value': ip_address,
-            'Message': 'AbuseIPDB marked the indicator "{}" as *{}*'.format(ip_address, ip_rep),
+            'Message': f'AbuseIPDB marked the indicator "{ip_address}" as *{ip_rep}*',
             'Category': 'Integration Update'
         })
 
@@ -239,7 +239,7 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tim
 ''' FUNCTIONS '''
 
 
-def check_ip_command(reliability, ip, override_private_lookup="False", days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD, disable_private_ip_lookup=DISABLE_PRIVATE_IP_LOKKUP):
+def check_ip_command(reliability, ip, override_private_lookup="False", days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD, disable_private_ip_lookup=DISABLE_PRIVATE_IP_LOOKUP):
     params = {
         "maxAgeInDays": days
     }
@@ -248,7 +248,7 @@ def check_ip_command(reliability, ip, override_private_lookup="False", days=MAX_
     ip_list = argToList(ip)
     entry_list = []
     private_ips = []
-    
+
     for current_ip in ip_list:
         if disable_private_ip_lookup and ipaddress.ip_address(current_ip).is_private and not argToBoolean(override_private_lookup):
             private_ips.append(current_ip)
