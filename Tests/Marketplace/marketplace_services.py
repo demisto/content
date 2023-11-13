@@ -2540,8 +2540,7 @@ class Pack:
     def _get_pack_creation_date(self, index_folder_path):
         return self._calculate_pack_creation_date(self._pack_name, index_folder_path)
 
-    @staticmethod
-    def _calculate_pack_creation_date(pack_name, index_folder_path):
+    def _calculate_pack_creation_date(self, pack_name, index_folder_path):
         """ Gets the pack created date.
         Args:
             index_folder_path (str): downloaded index folder directory path.
@@ -2549,7 +2548,10 @@ class Pack:
             datetime: Pack created date.
         """
         created_time = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-        metadata = load_json(os.path.join(index_folder_path, pack_name, Pack.METADATA))
+        metadata_path = os.path.join(index_folder_path, pack_name, Pack.METADATA)
+        logging.info(f"{metadata_path} - exists: {os.path.exists(metadata_path)}")
+        metadata = load_json(metadata_path)
+        logging.info(f"Pack: {self._pack_name}, {metadata.get(Metadata.CREATED)=}")
 
         if metadata:
             if metadata.get(Metadata.CREATED):
@@ -2557,6 +2559,7 @@ class Pack:
             else:
                 raise Exception(f'The metadata file of the {pack_name} pack does not contain "{Metadata.CREATED}" time')
 
+        logging.info(f"{created_time=}")
         return created_time
 
     def _get_pack_update_date(self, index_folder_path):
