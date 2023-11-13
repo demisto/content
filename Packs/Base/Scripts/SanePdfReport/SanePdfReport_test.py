@@ -72,7 +72,11 @@ def test_markdown_image_server(mocker, capfd):
         assert res1.status == 400
 
         # correct markdown image pat
-        conn.request("GET", "/markdown/image/1234-5678-9012-3456.png")
+        conn.request("GET", "/xsoar/markdown/image/1234-5678-9012-3456.png")     # Test for XSOAR 8
+        res2 = conn.getresponse()
+        assert res2.status == 200
+        mocker.patch.object(SanePdfReport, 'is_demisto_version_ge', return_value=False)
+        conn.request("GET", "/markdown/image/1234-5678-9012-3456.png")      # Test for XSOAR 6
         res2 = conn.getresponse()
         assert res2.status == 200
 
