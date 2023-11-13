@@ -29,7 +29,7 @@ The structure of the file should be:
 ```bash
 export DEMISTO_BASE_URL=<XSOAR_NG_API_URL>
 export DEMISTO_API_KEY=<XSOAR_NG_API_KEY>
-export XSIAM_AUTH_ID=<DEMISTO_API_KEY_ID>
-touch Tests/tests_end_to_end/xsoar_saas/integration_secrets.json  # fill up the file according to Integration Credentials section.
-python -m pytest Tests/tests_end_to_end/xsoar_saas -v --disable-warnings --integration_secrets_path <path>
+export XSIAM_AUTH_ID=<XSOAR_NG_API_KEY_ID>
+touch ~/Desktop/integration_secrets.json  # fill up the file according to Integration Credentials section not under content repo!!!!.
+python -m pytest Tests/tests_end_to_end/content/xsoar_saas -v --disable-warnings --integration_secrets_path <path>
 ```

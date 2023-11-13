@@ -13,8 +13,8 @@ In order to run the test locally it is required to set up the environment variab
 
 ### How to execute (Working directory should be content-root)
 ```bash
-export DEMISTO_BASE_URL=<XSOAR_NG_API_URL>
-export DEMISTO_API_KEY=<XSOAR_NG_API_KEY>
-export XSIAM_AUTH_ID=<DEMISTO_API_KEY_ID>
-python -m pytest Tests/tests_end_to_end/xsiam -v --disable-warnings --cloud_machine machine1 --cloud_servers_path Tests/tests_end_to_end/xsiam/test_cloud_server_path.json --cloud_servers_api_keys Tests/tests_end_to_end/xsiam/test_cloud_api_keys.json
+export DEMISTO_BASE_URL=<XSIAM_API_URL>
+export DEMISTO_API_KEY=<XSIAM_API_KEY>
+export XSIAM_AUTH_ID=<XSIAM_API_KEY_ID>
+python -m pytest Tests/tests_end_to_end/content/xsiam -v --disable-warnings
 ```
