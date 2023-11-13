@@ -3,7 +3,7 @@
 This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
-You need to configure ManageEngine ADSelfService Plus to forward Syslog messages to XSIAM.
+You need to configure ManageEngine ADSelfService Plus to forward Syslog messages to Cortex XSIAM.
 
 Follow the below steps:
 1. Log in to ADSelfService Plus as default Admin.
