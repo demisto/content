@@ -218,7 +218,7 @@ This playbook does not use any sub-playbooks.
 | UserDevices.Model | Devices models retrieved by this playbook. | unknown |
 | UserDevices.OS | Devices operating systems retrieved by this playbook. | unknown |
 | UserDevices.Integration | The integration which retrieved the devices. | unknown |
-| UserDevices.MACAddress | Devices MAC Address retrieved by this playbook. | unknown |
+| UserDevices.MACAddress | Devices MAC address retrieved by this playbook. | unknown |
 
 ## Playbook Image
 
