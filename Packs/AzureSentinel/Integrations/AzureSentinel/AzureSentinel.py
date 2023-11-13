@@ -652,11 +652,7 @@ def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> boo
     """
     Closing in the remote system should happen only when both:
         1. The user asked for it
-        2. The incident current status is not closed.
-        3. A closing reason was provided (either in the delta or before in the data).
-
-    The second is mandatory, so a closing request will not be sent for all mirroring requests that occur after closing an incident
-    (in the case where the incident has been updated, but the status has not been changed).
+        2. A closing reason was provided (either in the delta or before in the data).
     """
     closing_field = 'classification'
     closing_reason = delta.get(closing_field, data.get(closing_field, ''))
