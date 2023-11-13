@@ -1475,7 +1475,7 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "cbf1e7dbc70ae0db53b142322603a2b7fcf264c8"
+reference = "demisto_sdk_e2e_tests"
 resolved_reference = "cbf1e7dbc70ae0db53b142322603a2b7fcf264c8"
 
 [[package]]
@@ -7160,4 +7160,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "1624ffffefd4423e8bae8ee1c3a0559a2d016b52a65ad4cca7873617be3b1923"
+content-hash = "e8c7097e6e92e1df931ee5b576a4c3b26579bdd153075e7af0e53c6d4f6c7737"
