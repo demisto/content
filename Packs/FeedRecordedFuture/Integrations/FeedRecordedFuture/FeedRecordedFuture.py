@@ -163,11 +163,13 @@ class Client(BaseClient):
                     .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
 
         if service == 'connectApi':
-            response_content = gzip.decompress(response.content)
-            response_content = response_content.decode('utf-8')
+            # response_content = gzip.decompress(response.content)
+            # response_content = response_content.decode('utf-8')
             with open("response.txt", "w") as f:
                 # TODO implement solution of streaming, as can be seen below
-                f.write(response_content)
+                for chunk in response.iter_content(CHUNK_SIZE, decode_unicode=True):
+                    if chunk:
+                        f.write(chunk)
         else:
             with open("response.txt", "w") as f:
                 for chunk in response.iter_content(CHUNK_SIZE, decode_unicode=True):
