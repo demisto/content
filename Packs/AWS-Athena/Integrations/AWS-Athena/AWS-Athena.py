@@ -163,12 +163,12 @@ def main():  # pragma: no cover
         )
 
         if demisto.command() == 'test-module':
-            response = aws_client.aws_session(service=AWS_SERVICE_NAME).list_named_queries()
+            response = client.list_named_queries()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-                return 'ok'
+                result = 'ok'
 
             else:
-                return CommandResults(readable_output=f'Error: {response}')
+                result = CommandResults(readable_output=f'Error: {response}')
 
         elif demisto.command() == 'aws-athena-start-query':
             result = start_query_execution_command(args=args, client=client)
