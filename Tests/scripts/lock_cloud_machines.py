@@ -49,11 +49,14 @@ def get_queue_locks_details(storage_client: storage.Client, bucket_name: str, pr
     Returns: list of dicts with the job-id and the time_created of the lock file.
 
     """
-    blobs = storage_client.list_blobs(bucket_name, timeout=100)
+    logging.debug('get_queue_locks_details')
+
+    blobs = storage_client.list_blobs(bucket_name)
     files = []
     found = False
     for blob in blobs:
         if blob.name.startswith(prefix):
+            logging.debug(f'blob.name = {blob.name}')
             found = True
             files.append({'name': blob.name.strip(prefix), 'time_created': blob.time_created})
         elif found:
@@ -175,6 +178,8 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
     logging.debug('getting all builds in the queue')
     builds_in_queue = get_queue_locks_details(storage_client=storage_client, bucket_name=LOCKS_BUCKET,
                                               prefix=f'{gcs_locks_path}/{QUEUE_REPO}/')
+    logging.debug(f'Number of build in queue: {len(builds_in_queue)}')
+
     # sorting the files by time_created
     sorted_builds_in_queue: list[dict] = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
 
