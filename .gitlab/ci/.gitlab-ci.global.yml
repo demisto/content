@@ -229,6 +229,7 @@
       rm -rf ./Packs
       echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/content_production/Packs to ./Packs"
       cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
+      git config core.fileMode false
       chmod -R 755 ./Packs
       git status
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
