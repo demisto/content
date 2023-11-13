@@ -16,6 +16,6 @@ alter
         xdm.source.host.hostname = arrayindex(regextract(msg, "HOST=([^\]]+)"), 0),
         xdm.source.user.domain = arrayindex(regextract(msg, "DOMAIN[_\s]?NAME=([^\]]+)"), 0),
         xdm.source.user.username = if(name != null and name != "", name, login_name != null and login_name != "", login_name, null),
-        xdm.auth.auth_method = arrayindex(regextract(msg, "ACCESS_MODE=([^\]]+)"), 0),
+        xdm.auth.service = arrayindex(regextract(msg, "ACCESS_MODE=([^\]]+)"), 0),
         xdm.event.type = arrayindex(regextract(msg, "ACTION_NAME=([^\]]+)"), 0),
         xdm.target.user.username = replex(to_string(arrayindex(regextract(msg, "USERS_LIST=\[([^\]]+)"), 0)), "\"", "");
