@@ -2189,7 +2189,7 @@ tasks:
       - "64"
     scriptarguments:
       offense_id:
-        simple: "32"
+        simple: "91"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2269,7 +2269,7 @@ tasks:
       - "66"
     scriptarguments:
       query_expression:
-        simple: SELECT * FROM events WHERE INOFFENSE(32) limit 3 start 3600000
+        simple: SELECT * FROM events WHERE INOFFENSE(91) limit 3 start 3600000
     separatecontext: false
     continueonerrortype: ""
     view: |-
