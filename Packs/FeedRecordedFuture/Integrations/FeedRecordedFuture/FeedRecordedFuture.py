@@ -166,6 +166,7 @@ class Client(BaseClient):
             response_content = gzip.decompress(response.content)
             response_content = response_content.decode('utf-8')
             with open("response.txt", "w") as f:
+                # TODO implement solution of streaming, as can be seen below
                 f.write(response_content)
         else:
             with open("response.txt", "w") as f:
