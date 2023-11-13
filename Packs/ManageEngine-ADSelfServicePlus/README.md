@@ -14,7 +14,7 @@ Follow the below steps:
 5. Click **Save**.
 
 Note:
-Make sure that the time zone of the logs will be set to UTC.
+Make sure that the time zone of the logs are set to UTC.
 
 For additional information, refer to the official ManageEngine [documentation](https://www.manageengine.com/products/self-service-password/kb/siem-system-integration.html)
 
