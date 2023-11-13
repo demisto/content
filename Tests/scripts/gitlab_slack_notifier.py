@@ -390,7 +390,10 @@ def construct_slack_msg(triggering_workflow: str,
         color = 'danger'
     else:
         title += ' - Success'
-    title += f'{title_append} - @{CI_SERVER_HOST}' if CI_SERVER_HOST else ''
+        # No color is needed in case of success, as it's controlled by the color of the test failures' indicator.
+
+    title += title_append
+    title += f' - @{CI_SERVER_HOST}' if CI_SERVER_HOST else ''
     return [{
         'fallback': title,
         'color': color,
