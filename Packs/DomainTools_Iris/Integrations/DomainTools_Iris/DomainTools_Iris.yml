@@ -432,6 +432,33 @@ script:
     - contextPath: DomainTools.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code of Google Analytics.
       type: Number
+    - contextPath: DomainTools.Domains.Analytics.GA4TrackingCode
+      description: The tracking code of ga4.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.GTMTrackingCode
+      description: The tracking code of gtm.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.FBTrackingCode
+      description: The tracking code of fb.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.HotJarTrackingCode
+      description: The tracking code of Hot Jar.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.BaiduTrackingCode
+      description: The tracking code of Baidu.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.YandexTrackingCode
+      description: The tracking code of Yandex.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.MatomoTrackingCode
+      description: The tracking code of Matomo.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.StatcounterProjectTrackingCode
+      description: The tracking code of Stat Counter Project.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.StatcounterSecurityTrackingCode
+      description: The tracking code of Stat Counter Security.
+      type: Number
     - contextPath: DomainTools.WebsiteTitle
       description: The website title.
       type: Number
@@ -768,6 +795,33 @@ script:
     - contextPath: DomainTools.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code of Google Analytics.
       type: Number
+    - contextPath: DomainTools.Domains.Analytics.GA4TrackingCode
+      description: The tracking code of ga4.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.GTMTrackingCode
+      description: The tracking code of gtm.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.FBTrackingCode
+      description: The tracking code of fb.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.HotJarTrackingCode
+      description: The tracking code of Hot Jar.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.BaiduTrackingCode
+      description: The tracking code of Baidu.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.YandexTrackingCode
+      description: The tracking code of Yandex.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.MatomoTrackingCode
+      description: The tracking code of Matomo.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.StatcounterProjectTrackingCode
+      description: The tracking code of Stat Counter Project.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.StatcounterSecurityTrackingCode
+      description: The tracking code of Stat Counter Security.
+      type: Number
     - contextPath: DomainTools.WebsiteTitle
       description: The website title.
       type: Number
@@ -1101,8 +1155,35 @@ script:
     - contextPath: DomainTools.Domains.Analytics.GoogleAdsenseTrackingCode
       description: The tracking code of Google Adsense.
       type: Number
-    - contextPath: DomainTools.Domains.Analytics.GoogleAnalyticTrackingCode
+    - contextPath: DomainTools.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code of Google Analytics.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.GA4TrackingCode
+      description: The tracking code of ga4.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.GTMTrackingCode
+      description: The tracking code of gtm.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.FBTrackingCode
+      description: The tracking code of fb.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.HotJarTrackingCode
+      description: The tracking code of Hot Jar.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.BaiduTrackingCode
+      description: The tracking code of Baidu.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.YandexTrackingCode
+      description: The tracking code of Yandex.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.MatomoTrackingCode
+      description: The tracking code of Matomo.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.StatcounterProjectTrackingCode
+      description: The tracking code of Stat Counter Project.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.StatcounterSecurityTrackingCode
+      description: The tracking code of Stat Counter Security.
       type: Number
     - contextPath: DBotScore.Indicator
       description: The DBotScore indicator.
@@ -1416,8 +1497,35 @@ script:
     - contextPath: DomainTools.Domains.Analytics.GoogleAdsenseTrackingCode
       description: The tracking code of Google Adsense.
       type: Number
-    - contextPath: DomainTools.Domains.Analytics.GoogleAnalyticTrackingCode
+    - contextPath: DomainTools.Analytics.GoogleAnalyticTrackingCode
       description: The tracking code of Google Analytics.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.GA4TrackingCode
+      description: The tracking code of ga4.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.GTMTrackingCode
+      description: The tracking code of gtm.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.FBTrackingCode
+      description: The tracking code of fb.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.HotJarTrackingCode
+      description: The tracking code of Hot Jar.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.BaiduTrackingCode
+      description: The tracking code of Baidu.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.YandexTrackingCode
+      description: The tracking code of Yandex.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.MatomoTrackingCode
+      description: The tracking code of Matomo.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.StatcounterProjectTrackingCode
+      description: The tracking code of Stat Counter Project.
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.StatcounterSecurityTrackingCode
+      description: The tracking code of Stat Counter Security.
       type: Number
     - contextPath: DBotScore.Indicator
       description: The DBotScore indicator.
@@ -1950,12 +2058,6 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
-  - arguments: []
-    description: Reverse loopkup of an IP address.
-    name: reverseIP
-  - arguments: []
-    description: Reverse nameserver lookup.
-    name: reverseNameServer
   dockerimage: demisto/vendors-sdk:1.0.0.80194
   runonce: false
   script: '-'

@@ -48,7 +48,7 @@ def check_pivotable_registrant_contact_name(
     registrant_contact: Dict[str, Any], max_registrant_contact_name_count: int
 ) -> Dict[str, Any]:
     try:
-        r_contact_name = registrant_contact.get("Name", {})
+        r_contact_name = registrant_contact.get("Name") or {}
         r_contact_name_count = int(r_contact_name.get("count") or 0)
 
         if max_registrant_contact_name_count >= r_contact_name_count > 1:
@@ -65,7 +65,7 @@ def check_pivotable_registrant_org(
     registrant_contact: Dict[str, Any], max_registrant_org_count: int
 ) -> Dict[str, Any]:
     try:
-        r_contact_org = registrant_contact.get("Org", {})
+        r_contact_org = registrant_contact.get("Org") or {}
         r_contact_org_count = int(r_contact_org.get("count") or 0)
 
         if max_registrant_org_count >= r_contact_org_count > 1:
@@ -81,7 +81,7 @@ def check_pivotable_registrar(
     registrar: Dict[str, Any], max_registrar_count: int
 ) -> Dict[str, Any]:
     try:
-        registrar = registrar.get("Org", {})
+        registrar = registrar.get("Org") or {}
         registrar_count = int(registrar.get("count") or 0)
 
         if max_registrar_count >= registrar_count > 1:
@@ -329,7 +329,7 @@ def check_pivotable_domains(args: Dict[str, Any]) -> CommandResults:
         results["PivotableRegistrantOrg"]["items"] = pivotable_registrant_org_name
 
     pivotable_registrar = check_pivotable_registrar(
-        domain_identity_data.get("Registrar"), max_registrar_count)
+        domain_identity_data.get("Registrar") or {}, max_registrar_count)
 
     if pivotable_registrar is not None:
         results["PivotableRegistrar"]["pivotable"] = True

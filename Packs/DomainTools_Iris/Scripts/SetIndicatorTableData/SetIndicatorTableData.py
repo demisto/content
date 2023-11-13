@@ -94,7 +94,7 @@ def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
         domaintools_iris_indicator = {
             "type": "DomainTools Iris",
             "value": domain_name,
-            "source": "DomainTools",
+            "source": "DomainTools Iris",
             "reputation": reputation.value,
             "seenNow": "true",
             "domainage": domain_age,
@@ -136,7 +136,7 @@ def main():
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(
-            f"Failed to execute set_indicator_table_data. Error: {str(ex)}")
+            f"Failed to execute SetIndicatorTableData. Error: {str(ex)}")
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:
