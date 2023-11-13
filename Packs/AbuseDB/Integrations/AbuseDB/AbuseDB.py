@@ -121,11 +121,16 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
 
 def format_privte_ips(private_ips):
     entry = {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': private_ips,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("AbuseIPDB lookup was avoided for the following private IPs.", private_ips, headers="Private IPs", removeNull=True),
+        "ContentsFormat": formats["json"],
+        "Type": entryTypes["note"],
+        "Contents": private_ips,
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": tableToMarkdown(
+            "AbuseIPDB lookup was avoided for the following private IPs.",
+            private_ips,
+            headers="Private IPs",
+            removeNull=True,
+        ),
     }
     return entry
 
@@ -239,7 +244,15 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tim
 ''' FUNCTIONS '''
 
 
-def check_ip_command(reliability, ip, override_private_lookup="False", days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD, disable_private_ip_lookup=DISABLE_PRIVATE_IP_LOOKUP):
+def check_ip_command(
+    reliability,
+    ip,
+    override_private_lookup="False",
+    days=MAX_AGE,
+    verbose=VERBOSE,
+    threshold=THRESHOLD,
+    disable_private_ip_lookup=DISABLE_PRIVATE_IP_LOOKUP,
+):
     params = {
         "maxAgeInDays": days
     }
@@ -250,7 +263,11 @@ def check_ip_command(reliability, ip, override_private_lookup="False", days=MAX_
     private_ips = []
 
     for current_ip in ip_list:
-        if disable_private_ip_lookup and ipaddress.ip_address(current_ip).is_private and not argToBoolean(override_private_lookup):
+        if (
+            disable_private_ip_lookup
+            and ipaddress.ip_address(current_ip).is_private
+            and not argToBoolean(override_private_lookup)
+        ):
             private_ips.append(current_ip)
             continue
         params["ipAddress"] = current_ip
