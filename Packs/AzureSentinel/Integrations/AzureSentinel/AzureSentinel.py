@@ -583,8 +583,8 @@ def close_in_xsoar(entries: List, remote_incident_id: str, close_reason: str, cl
         'Type': EntryType.NOTE,
         'Contents': {
             'dbotIncidentClose': True,
-            'closeReason': f'{MIRROR_STATUS_DICT.get(close_reason, close_reason)} - Closed on Microsoft Sentinel',
-            'closeNotes': close_notes
+            'closeReason': MIRROR_STATUS_DICT.get(close_reason, close_reason),
+            'closeNotes': f'{close_notes}\nClosed on Microsoft Sentinel'
         },
         'ContentsFormat': EntryFormat.JSON
     })
