@@ -8,7 +8,7 @@ CreateIncidents fetches incident created manually.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Source URL | The base url of the source you wish to upload/ downlowd files from. | True |
+    | Source URL | The base url of the source you wish to upload/ downlowd files from. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Incident type |  | False |
@@ -39,6 +39,38 @@ Creates incidents from json files provided, and stores it in the instance contex
 There is no context output for this command.
 #### Command example
 ```!create-test-incident-from-file incidents_path=Packs/DeveloperTools/Integrations/CreateIncidents/test_data/incidents.json attachment_path="Packs/DeveloperTools/Integrations/CreateIncidents/test_data/YOU HAVE WON 10000$.eml"```
+#### Human Readable Output
+
+>Loaded 1 incidents from file.
+
+
+### create-test-incident-from-raw-json
+***
+Creates incidents from json file, and stores it in the instance context.
+
+#### Base Command
+
+`create-test-incident-from-raw-json`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | - |----------|
+| incident_raw_json | The json object that represents the incident. | Optional  | 
+| incident_entry_id | The enry ID of the json file that represents the incidents. | Optional  | 
+| attachment_paths | The paths of the files to be added to incidents as attachment. Would be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml. | Optional | 
+| attachment_entry_ids | The enry IDs of the incident attachments. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!create-test-incident-from-raw-json incident_entry_id=12@12"```
+#### Human Readable Output
+
+>Loaded 1 incidents from file.
+
+```!create-test-incident-from-raw-json incident_raw_json={'name': 'test_incident'}"```
 #### Human Readable Output
 
 >Loaded 1 incidents from file.
