@@ -21,7 +21,8 @@ from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, get_instance_directories, \
     get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX, TEST_MODELING_RULES_REPORT_FILE_NAME, \
-    get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME
+    get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
+    replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
@@ -331,7 +332,7 @@ def construct_slack_msg(triggering_workflow: str,
     if pull_request:
         content_fields.append({
             "title": "Pull Request",
-            "value": slack_link(pull_request.data['html_url'], pull_request.data['title']),
+            "value": slack_link(pull_request.data['html_url'], replace_escape_characters(pull_request.data['title'])),
             "short": False
         })
 
@@ -373,8 +374,8 @@ def construct_slack_msg(triggering_workflow: str,
     title = triggering_workflow
 
     if pull_request:
-        pr_number = pull_request.data.get('number')
-        pr_title = pull_request.data.get('title')
+        pr_number = pull_request.data['number']
+        pr_title = replace_escape_characters(pull_request.data['title'])
         title += f' (PR#{pr_number} - {pr_title})'
 
     # In case we have failed tests we override the color only in case all the pipeline jobs have passed.

@@ -200,3 +200,10 @@ def get_all_failed_results(results: dict[str, dict[str, Any]]) -> dict[str, dict
                 break
 
     return failed_results
+
+
+def replace_escape_characters(sentence: str, replace_with: str = " ") -> str:
+    escape_chars = ["\n", "\r", "\b", "\f", "\t"]
+    for escape_char in escape_chars:
+        sentence = sentence.replace(escape_char, replace_with)
+    return sentence
