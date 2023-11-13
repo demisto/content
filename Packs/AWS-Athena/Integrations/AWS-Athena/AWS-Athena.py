@@ -29,6 +29,9 @@ def parse_rows_response(rows_data: list[dict]) -> list[dict]:
     Returns:
         list[dict]: The data in a parsed and arranged format.
     """
+    if not rows_data or not rows_data[0].get('Data'):
+        return []
+
     keys: list[str] = [item['VarCharValue'] for item in rows_data[0]['Data']]
     raw_results = [item['Data'] for item in rows_data[1:]]
     result_data = []
