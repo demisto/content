@@ -110,7 +110,7 @@ def fetch_events(client: Client,
                  start_time_epoch: int,
                  events_limit: int,
                  last_run_after,
-                 last_object_ids: List[str] = None) -> List[dict]:
+                 last_object_ids: List[str] = None) -> List[dict]:  # pragma: no cover
     while True:
         events, epoch_time_to_continue_fetch = get_events_command(client=client,
                                                                   total_events_to_fetch=events_limit,
@@ -123,7 +123,7 @@ def fetch_events(client: Client,
         if sleep_time and sleep_time < FETCH_TIME_LIMIT:
             demisto.debug(f'Will try fetch again in: {sleep_time},\
                 as a result of 429 Too Many Requests HTTP status.')
-            time.sleep(sleep_time)
+            time.sleep(sleep_time)  # pylint: disable=E9003
         else:
             break
     return events
