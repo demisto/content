@@ -256,7 +256,7 @@ script:
     - contextPath: AWS.Organizations.Organization.MasterAccountEmail
       description: The email address that is associated with the Amazon Web Services account that is designated as the management account for the organization.
       type: String
-  dockerimage: demisto/boto3py3:1.0.0.80264
+  dockerimage: demisto/boto3py3:1.0.0.80307
   feed: false
   longRunning: false
   longRunningPort: false
