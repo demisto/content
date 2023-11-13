@@ -1,7 +1,6 @@
 from datetime import timedelta
 from datetime import datetime
 from contextlib import contextmanager
-from typing import Dict
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -170,7 +169,7 @@ def is_playbook_state_as_expected(xsoar_saas_client: XsoarSaasClient, incident_i
     raise Exception(f'the status of the playbook {playbook_id} is {_playbook_status}')
 
 
-def get_integration_instance_name(integration_params: Dict, default: str) -> str:
+def get_integration_instance_name(integration_params: dict, default: str) -> str:
     """
     Gets an instance name for the integration.
     """
