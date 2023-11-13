@@ -20,7 +20,7 @@ from Tests.tests_end_to_end.client_utils import (
     save_indicators
 )
 
-install_logging('e2e-xsoar-ng.log', logger=logging)
+install_logging('e2e-xsoar-saas.log', logger=logging)
 
 
 @pytest.fixture()
