@@ -3,7 +3,7 @@ from CommonServerPython import *
 import urllib3
 from typing import Any, NamedTuple
 import itertools
-
+from dateutil import parser
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -16,6 +16,7 @@ class EVENT_TYPE(NamedTuple):
     aql_query: str
     type: str
     order_by: str
+    dataset_name: str
 
 
 ''' CONSTANTS '''
@@ -28,9 +29,9 @@ API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 5000
 DEVICES_DEFAULT_MAX_FETCH = 10000
 EVENT_TYPES = {
-    'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts', 'time'),
-    'Activities': EVENT_TYPE('activityUUID', 'in:activity', 'activity', 'time'),
-    'Devices': EVENT_TYPE('id', 'in:devices', 'devices', 'firstSeen'),
+    'Alerts': EVENT_TYPE('alertId', 'in:alerts', 'alerts', 'time', 'alerts'),
+    'Activities': EVENT_TYPE('activityUUID', 'in:activity', 'activity', 'time', 'activities'),
+    'Devices': EVENT_TYPE('id', 'in:devices', 'devices', 'lastSeen', 'devices'),
 }
 DEVICES_LAST_FETCH = 'devices_last_fetch_time'
 
@@ -206,7 +207,7 @@ def are_two_datetime_equal_by_second(x: datetime, y: datetime):
         and (x.hour == y.hour) and (x.minute == y.minute) and (x.second == y.second)
 
 
-def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id_key: str):
+def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id_key: str, event_order_by: str):
     """ Dedup events response.
     Armis API V.1.8 supports time filtering in requests only up to level of seconds (and not milliseconds).
     Therefore, if there are more events with the same timestamp than in the current fetch cycle,
@@ -242,8 +243,8 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
 
     new_events: list[dict] = [event for event in events if event.get(unique_id_key) not in events_last_fetch_ids]
 
-    earliest_event_datetime = arg_to_datetime(events[0].get('time'))
-    latest_event_datetime = arg_to_datetime(events[-1].get('time'))
+    earliest_event_datetime = arg_to_datetime(events[0].get(event_order_by))
+    latest_event_datetime = arg_to_datetime(events[-1].get(event_order_by))
 
     # case 2
     if earliest_event_datetime and latest_event_datetime and\
@@ -259,11 +260,11 @@ def dedup_events(events: list[dict], events_last_fetch_ids: list[str], unique_id
         # the following timestamp format from the response: "YYYY-MM-DDTHH:MM:SS.fffff+Z"
         demisto.debug('debug-log: Dedup case 3 - Most recent event has later timestamp then other events in the response.')
 
-        latest_event_timestamp = events[-1].get('time', '')[:19]
+        latest_event_timestamp = events[-1].get(event_order_by, '')[:19]
         # itertools.takewhile is used to iterate over the list of events (from latest time to earliest)
         # and take only the events with identical latest time
         events_with_identical_latest_time = list(
-            itertools.takewhile(lambda x: x.get('time', '')[:19] == latest_event_timestamp, reversed(events)))
+            itertools.takewhile(lambda x: x.get(event_order_by, '')[:19] == latest_event_timestamp, reversed(events)))
         new_ids = [event.get(unique_id_key, '') for event in events_with_identical_latest_time]
 
         return new_events, new_ids
@@ -297,11 +298,11 @@ def fetch_by_event_type(event_type: EVENT_TYPE, events: dict, next_run: dict, cl
     demisto.debug(f'debug-log: fetched {len(response)} {event_type.type} from API')
     if response:
         new_events, next_run[last_fetch_ids] = dedup_events(
-            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key)
-        next_run[last_fetch_time] = new_events[-1].get('time') if new_events else last_run.get(last_fetch_time)
-        events.setdefault(event_type.type, []).extend(new_events)
-        demisto.debug(f'debug-log: overall {len(new_events)} {event_type.type} (after dedup)')
-        demisto.debug(f'debug-log: last {event_type.type} in list: {new_events[-1] if new_events else {}}')
+            response, last_run.get(last_fetch_ids, []), event_type.unique_id_key, event_type.order_by)
+        next_run[last_fetch_time] = new_events[-1].get(event_type.order_by) if new_events else last_run.get(last_fetch_time)
+        events.setdefault(event_type.dataset_name, []).extend(new_events)
+        demisto.debug(f'debug-log: overall {len(new_events)} {event_type.dataset_name} (after dedup)')
+        demisto.debug(f'debug-log: last {event_type.dataset_name} in list: {new_events[-1] if new_events else {}}')
     else:
         next_run.update(last_run)
 
@@ -348,7 +349,7 @@ def fetch_events(client: Client,
     return events, next_run
 
 
-def add_time_to_events(events):
+def add_time_to_events(events, event_type):
     """ Adds the _time key to the events.
 
     Args:
@@ -359,7 +360,10 @@ def add_time_to_events(events):
     """
     if events:
         for event in events:
-            event['_time'] = event.get('time')
+            if event_type == 'devices':
+                event['_time'] = event.get('lastSeen')
+            else:
+                event['_time'] = event.get('time')
 
 
 def handle_from_date_argument(from_date: str) -> datetime | None:
@@ -388,8 +392,8 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]],
     """
     if events:
         for event_type, events_list in events.items():
-            add_time_to_events(events_list)
-            demisto.debug(f'debug-log: {len(events_list)} events are about to be sent to XSIAM.')
+            add_time_to_events(events_list, event_type)
+            demisto.debug(f'debug-log: {len(events_list)} events of type: {event_type} are about to be sent to XSIAM.')
             product = f'{PRODUCT}_{event_type}' if event_type != 'alerts' else PRODUCT
             send_events_to_xsiam(
                 events_list,
@@ -454,12 +458,12 @@ def should_run_device_fetch(last_run,
     if not device_fetch_interval:
         return False
     if last_fetch_time := last_run.get(DEVICES_LAST_FETCH):
-        last_check_time = datetime.strptime(last_fetch_time, DATE_FORMAT)
+        last_fetch_datetime = parser.parse(last_fetch_time).replace(tzinfo=None)
     else:
         # first time device fetch
         return True
-    demisto.debug(f'Should run device fetch? {last_check_time=}, {device_fetch_interval=}')
-    return datetime_now - last_check_time > device_fetch_interval
+    demisto.debug(f'Should run device fetch? {last_fetch_datetime=}, {device_fetch_interval=}')
+    return datetime_now - last_fetch_datetime > device_fetch_interval
 
 
 ''' MAIN FUNCTION '''
