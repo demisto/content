@@ -69,6 +69,14 @@ configuration:
   name: fetch_closed
   type: 8
   required: false
+- additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 0
+  display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
+  name: look_back
+  type: 0
+  advanced: true
+  required: false
+
 script:
   script: ''
   type: python
@@ -1437,7 +1445,7 @@ script:
   - name: get-modified-remote-data
     arguments: []
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80014
   isfetch: true
   subtype: python3
   ismappable: true
