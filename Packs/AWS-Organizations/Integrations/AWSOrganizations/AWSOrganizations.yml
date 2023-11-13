@@ -95,7 +95,7 @@ script:
       type: String
   - name: aws-org-children-list
     arguments:
-    - description: The unique identifier (ID) for the parent root or OU whose children are to be listed.
+    - description: The unique identifier (ID) for the parent root or organizational unit (OU) whose children are to be listed.
       name: parent_id
       required: true
     - auto: PREDEFINED
@@ -127,7 +127,7 @@ script:
       description: The type of the child entity.
       type: String
     - contextPath: AWS.Organizations.Children.ParentId
-      description: The unique identifier (ID) for the parent root or OU of the child entity.
+      description: The unique identifier (ID) for the parent root or organizational unit of the child entity.
       type: String
     - contextPath: AWS.Organizations.ChildrenNextToken
       description: If not null, indicates that more output is available than is included in the current response. Use this value in the next_token argument in a subsequent call of the command to get the next part of the output.
@@ -135,7 +135,7 @@ script:
   - name: aws-org-parent-list
     arguments:
     - description: |
-        The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root.
+        The unique identifier (ID) of the organizational unit or account whose parent containers you want to list. Don't specify a root.
         This value can be retrieved by running the command "aws-org-account-list".
       name: child_id
       required: true
@@ -156,7 +156,7 @@ script:
       description: The type of the parent entity.
       type: String
     - contextPath: AWS.Organizations.Parent.ChildId
-      description: The unique identifier (ID) of the OU or account of the child of the parent entity.
+      description: The unique identifier (ID) of the organizational unit or account of the child of the parent entity.
       type: String
   - name: aws-org-organization-unit-get
     arguments:
@@ -184,7 +184,7 @@ script:
       type: String
   - name: aws-org-account-list
     arguments:
-    - description: Get a specific account by Id.
+    - description: Get a specific account by ID.
       name: account_id
     - description: The number of accounts to return.
       name: limit
@@ -199,7 +199,7 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: Lists all the accounts in the organization or a specific account by Id.
+    description: Lists all the accounts in the organization or a specific account by ID.
     outputs:
     - contextPath: AWS.Organizations.Account.Id
       description: The unique identifier (ID) of the account.

@@ -8,4 +8,4 @@ The AWS Organizations pack enables you to:
 
 #### Use Cases
 
-- **Account auditing** - Regularly list all accounts in the organization and fetch details like IAM users, roles, etc.
+**Account auditing** - Regularly list all accounts in the organization and fetch details like IAM users, roles, etc.

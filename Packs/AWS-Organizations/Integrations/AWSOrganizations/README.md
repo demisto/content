@@ -105,7 +105,7 @@ List all of the organizational units (OUs) or accounts that are contained in the
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| parent_id | The unique identifier (ID) for the parent root or OU whose children are to be listed. | Required | 
+| parent_id | The unique identifier (ID) for the parent root or organizational unit whose children are to be listed. | Required | 
 | child_type | Filters the output to include only the specified child type. Possible values are: Account, OrganizationalUnit. | Required | 
 | limit | The number of children to return. Default is 50. | Optional | 
 | page_size | The number of children to return per page. The maximum is 1000. | Optional | 
@@ -120,7 +120,7 @@ List all of the organizational units (OUs) or accounts that are contained in the
 | --- | --- | --- |
 | AWS.Organizations.Children.Id | String | The unique identifier \(ID\) of the child entity. | 
 | AWS.Organizations.Children.Type | String | The type of the child entity. | 
-| AWS.Organizations.Children.ParentId | String | The unique identifier \(ID\) for the parent root or OU of the child entity. | 
+| AWS.Organizations.Children.ParentId | String | The unique identifier \(ID\) for the parent root or organizational unit of the child entity. | 
 | AWS.Organizations.ChildrenNextToken | String | If not null, indicates that more output is available than is included in the current response. Use this value in the next_token argument in a subsequent call of the command to get the next part of the output. | 
 
 #### Command example
@@ -164,7 +164,7 @@ This command returns only the immediate parents in the hierarchy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| child_id | The unique identifier (ID) of the OU or account whose parent containers you want to list. Don't specify a root.<br/>This value can be retrieved by running the command "aws-org-account-list". | Required | 
+| child_id | The unique identifier (ID) of the organizational unit or account whose parent containers you want to list. Don't specify a root.<br/>This value can be retrieved by running the command "aws-org-account-list". | Required | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
@@ -175,7 +175,7 @@ This command returns only the immediate parents in the hierarchy.
 | --- | --- | --- |
 | AWS.Organizations.Parent.Id | String | The unique identifier \(ID\) of the parent entity. | 
 | AWS.Organizations.Parent.Type | String | The type of the parent entity. | 
-| AWS.Organizations.Parent.ChildId | String | The unique identifier \(ID\) of the OU or account of the child of the parent entity. | 
+| AWS.Organizations.Parent.ChildId | String | The unique identifier \(ID\) of the organizational unit or account of the child of the parent entity. | 
 
 #### Command example
 ```!aws-org-parent-list child_id="ou-ab12-abcd1234"```
@@ -258,7 +258,7 @@ This command can be called only from the organization's management account or by
 ### aws-org-account-list
 
 ***
-Lists all the accounts in the organization or a specific account by Id.
+Lists all the accounts in the organization or a specific account by ID.
 
 #### Base Command
 
@@ -268,7 +268,7 @@ Lists all the accounts in the organization or a specific account by Id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | Get a specific account by Id. | Optional | 
+| account_id | Get a specific account by ID. | Optional | 
 | limit | The number of accounts to return. Default is 50. | Optional | 
 | page_size | The number of accounts to return per page. The maximum is 1000. | Optional | 
 | next_token | The token denoting the next page of accounts, as given by the response of the previous run of this command under the context key "AWS.Organizations.AccountNextToken". | Optional | 
