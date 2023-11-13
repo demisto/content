@@ -197,7 +197,7 @@ configuration:
   advanced: true
   required: false
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
-display: Microsoft Sentinel_debug
+display: Microsoft Sentinel
 name: Azure Sentinel
 script:
   commands:
