@@ -8,7 +8,7 @@ You need to configure ManageEngine ADSelfService Plus to forward Syslog messages
 Follow the below steps:
 1. Log in to ADSelfService Plus as default Admin.
 2. Navigate to **Admin** → **Product Settings** → **Integration Settings**.
-3. Click the Syslog Server tile.
+3. Click the **Syslog Server** tile.
 4. Enter the details including Syslog Server Name, Port Number and Port Protocol. 
 5. Select CEF for the Syslog Standard.
 5. Click **Save**.
