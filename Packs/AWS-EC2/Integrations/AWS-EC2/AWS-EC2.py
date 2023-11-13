@@ -2,11 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
 
-import json
-import urllib3.util
-
-# Disable insecure warnings
-urllib3.disable_warnings()
+"""CONSTANTS"""
+ARN_TEMPLATE = 'arn:{partition}:ec2:{region}:{account_id}:{resource_id}'
 
 """HELPER FUNCTIONS"""
 
