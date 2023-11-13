@@ -1,5 +1,6 @@
 from CommonServerPython import *
 
+
 def main():
     url = demisto.args().get('url', None)
     include_context = demisto.args().get('include_context', None)
@@ -12,6 +13,7 @@ def main():
     parameters = ','.join(domains)
 
     return_results(demisto.executeCommand('domain', {'domain': parameters, 'include_context': include_context}))
+
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

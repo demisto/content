@@ -19,7 +19,7 @@ def test_check_tags_tags_match(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['ContentsFormat'] == formats['json']
-    assert results[0]['Contents'] == None
+    assert results[0]['Contents'] is None
     assert results[0]['HumanReadable'] == 'No matching tags found.'
     assert results[0]['EntryContext'] == {}
 
@@ -40,6 +40,6 @@ def test_check_tags_tags_dont_match(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['ContentsFormat'] == formats['json']
-    assert results[0]['Contents'] == None
+    assert results[0]['Contents'] is None
     assert results[0]['HumanReadable'] == 'No matching tags found.'
     assert results[0]['EntryContext'] == {}

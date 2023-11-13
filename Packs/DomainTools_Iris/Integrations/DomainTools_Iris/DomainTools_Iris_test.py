@@ -1,10 +1,6 @@
-import json
-import pytest
-
-from datetime import datetime
-from DomainTools_Iris import get_dbot_score, format_investigate_output, format_enrich_output
+from DomainTools_Iris import format_investigate_output, format_enrich_output
 from test_data import mock_response, expected
-from unittest import TestCase
+
 
 def write_test_data(file_path, string_to_write):
     """
@@ -21,12 +17,14 @@ def write_test_data(file_path, string_to_write):
     with open(file_path, "w") as file:
         file.write(string_to_write)
 
+
 def test_format_investigate():
     human_readable_output, context = format_investigate_output(mock_response.domaintools_response)
 
     expected_investigate_domaintools_context = expected.domaintools_investigate_context
     domaintools_context = context.get("domaintools")
     assert domaintools_context.get("Name") == expected_investigate_domaintools_context.get("domaintools", {}).get("Name")
+
 
 def test_format_enrich():
     human_readable_output, context = format_enrich_output(mock_response.domaintools_response)

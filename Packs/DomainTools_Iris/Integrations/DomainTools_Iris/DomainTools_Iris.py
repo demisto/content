@@ -3,9 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import requests
 import urllib3
-import dateparser
 import statistics
 from datetime import datetime
 from typing import Dict, Any, List
@@ -143,7 +141,10 @@ def format_contact_grid(title, contact_dict):
     email = ','.join([email['value'] for email in contact_dict.get('Email', []) if 'value' in email])
     phone = contact_dict.get('Phone', {}).get('value')
     fax = contact_dict.get('Fax', {}).get('value')
-    address = f"Street: {contact_dict.get('Street', {}).get('value')}, City: {contact_dict.get('City', {}).get('value')}, State: {contact_dict.get('State', {}).get('value')}, Postal: {contact_dict.get('Postal', {}).get('value')}, Country: {contact_dict.get('Country', {}).get('value')}"
+    address = f"Street: {contact_dict.get('Street', {}).get('value')}, " \
+              f"City: {contact_dict.get('City', {}).get('value')}, " \
+              f"State: {contact_dict.get('State', {}).get('value')}, " \
+              f"Postal: {contact_dict.get('Postal', {}).get('value')}, Country: {contact_dict.get('Country', {}).get('value')}"
 
     formatted_contact = [
         {'key': f'{title} Name', 'value': name} if name else None,
@@ -159,10 +160,10 @@ def format_contact_grid(title, contact_dict):
 
 def format_dns_grid(type, dns_dict):
     return [{
-    "type": type,
-    "ip": ','.join([ip['value'] for ip in item.get('ip', []) if ip.get('value')]),
-    "host": item.get('host', {}).get('value')
-  } for item in dns_dict]
+        "type": type,
+        "ip": ','.join([ip['value'] for ip in item.get('ip', []) if ip.get('value')]),
+        "host": item.get('host', {}).get('value')
+    } for item in dns_dict]
 
 
 def format_risk_grid(domain_risk):
@@ -339,11 +340,12 @@ def create_results(domain_result):
         'ServerType': server_type,
     }
 
-    dns = [{"type": 'DNS', "ip": ip.get('address', {}).get('value')} for ip in ip_addresses] + format_dns_grid('MX', mx_servers) + format_dns_grid('NS', name_servers)
+    dns = [{"type": 'DNS', "ip": ip.get('address', {}).get('value')} for ip in ip_addresses] + \
+        format_dns_grid('MX', mx_servers) + format_dns_grid('NS', name_servers)
     registrar = domain_result.get('registrar')
     registrant_country = domain_result.get('registrant_contact', {}).get('country', {}).get('value')
     admin_name = domain_result.get('admin_contact', {}).get('name', {}).get('value')
-    admin_email =  [email for email in domain_result.get('admin_contact', {}).get('email', [])]
+    admin_email = [email for email in domain_result.get('admin_contact', {}).get('email', [])]
     admin_phone = domain_result.get('admin_contact', {}).get('phone', {}).get('value')
     admin_country = domain_result.get('admin_contact', {}).get('country', {}).get('value')
     threat_types = format_risk_grid(domain_result.get('domain_risk', {}))
@@ -362,7 +364,7 @@ def create_results(domain_result):
     malicious_description = None
     if dbot_score_value == 3:
         malicious_description = threat_profile_evidence if threat_profile_evidence is not None and len(
-                threat_profile_evidence) else 'This domain has been profiled as a threat.'
+            threat_profile_evidence) else 'This domain has been profiled as a threat.'
 
     dbot_score = Common.DBotScore(
         indicator=domain,
@@ -374,18 +376,18 @@ def create_results(domain_result):
     )
 
     domain_indicator = Common.Domain(domain, dbot_score=dbot_score, dns=dns,
-         organization=registrant_org, creation_date=create_date,
-         expiration_date=expiration_date,
-         domain_status=domain_status,
-         registrar_name=registrar,
-         registrant_name=registrant_name,
-         registrant_country=registrant_country,
-         admin_name=admin_name, admin_email=admin_email, admin_phone=admin_phone,
-         admin_country=admin_country, tags=tags,
-         threat_types=threat_types,
-         tech_country=tech_country, tech_name=tech_name, tech_email=tech_email,
-         tech_organization=tech_org,
-         rank=rank)
+                                     organization=registrant_org, creation_date=create_date,
+                                     expiration_date=expiration_date,
+                                     domain_status=domain_status,
+                                     registrar_name=registrar,
+                                     registrant_name=registrant_name,
+                                     registrant_country=registrant_country,
+                                     admin_name=admin_name, admin_email=admin_email, admin_phone=admin_phone,
+                                     admin_country=admin_country, tags=tags,
+                                     threat_types=threat_types,
+                                     tech_country=tech_country, tech_name=tech_name, tech_email=tech_email,
+                                     tech_organization=tech_org,
+                                     rank=rank)
 
     outputs = {'domain': domain_indicator, 'domaintools': domain_tools_context}
     return outputs
@@ -445,46 +447,46 @@ def parsed_whois(domain):
 
 def profile_headers():
     return [
-            'Name',
-            'Last Enriched',
-            'Overall Risk Score',
-            'Proximity Risk Score',
-            'Threat Profile Risk Score',
-            'Threat Profile Threats',
-            'Threat Profile Evidence',
-            'Website Response Code',
-            'Tags',
-            'Registrant Name',
-            'Registrant Org',
-            'Registrant Contact',
-            'Registrar',
-            'SOA Email',
-            'SSL Certificate Email',
-            'Admin Contact',
-            'Technical Contact',
-            'Billing Contact',
-            'Email Domains',
-            'Additional Whois Emails',
-            'Domain Registrant',
-            'Registrar Status',
-            'Domain Status',
-            'Create Date',
-            'Expiration Date',
-            'IP Addresses',
-            'IP Country Code',
-            'Mail Servers',
-            'SPF Record',
-            'Name Servers',
-            'SSL Certificate',
-            'Redirects To',
-            'Redirect Domain',
-            'Google Adsense Tracking Code',
-            'Google Analytic Tracking Code',
-            'Website Title',
-            'First Seen',
-            'Server Type',
-            'Popularity'
-        ]
+        'Name',
+        'Last Enriched',
+        'Overall Risk Score',
+        'Proximity Risk Score',
+        'Threat Profile Risk Score',
+        'Threat Profile Threats',
+        'Threat Profile Evidence',
+        'Website Response Code',
+        'Tags',
+        'Registrant Name',
+        'Registrant Org',
+        'Registrant Contact',
+        'Registrar',
+        'SOA Email',
+        'SSL Certificate Email',
+        'Admin Contact',
+        'Technical Contact',
+        'Billing Contact',
+        'Email Domains',
+        'Additional Whois Emails',
+        'Domain Registrant',
+        'Registrar Status',
+        'Domain Status',
+        'Create Date',
+        'Expiration Date',
+        'IP Addresses',
+        'IP Country Code',
+        'Mail Servers',
+        'SPF Record',
+        'Name Servers',
+        'SSL Certificate',
+        'Redirects To',
+        'Redirect Domain',
+        'Google Adsense Tracking Code',
+        'Google Analytic Tracking Code',
+        'Website Title',
+        'First Seen',
+        'Server Type',
+        'Popularity'
+    ]
 
 
 def add_key_to_json(cur, to_add):
@@ -505,7 +507,6 @@ def chunks(lst, n):
 def format_enrich_output(result):
     domain = result.get('domain')
     indicators = create_results(result)
-
 
     domaintools_analytics_data = indicators.get('domaintools', {}).get('Analytics', {})
     domaintools_hosting_data = indicators.get('domaintools', {}).get('Hosting', {})
@@ -673,7 +674,7 @@ def format_contact(contact, domain, email_type):
     return contact
 
 
-def format_single_value(link_type, value, domain = None):
+def format_single_value(link_type, value, domain=None):
     if isinstance(value, str):
         return value
 
@@ -694,7 +695,7 @@ def format_guided_pivot_link(link_type, item, domain=None):
     count = item.get('count')
 
     if domain:
-        link_type ='domain'
+        link_type = 'domain'
         query = domain
 
     if 1 < int(count) < GUIDED_PIVOT_THRESHOLD:
@@ -763,7 +764,9 @@ def format_investigate_output(result):
 
     return (human_readable, indicators)
 
+
 ''' COMMANDS '''
+
 
 def domain_command():
     """
@@ -1026,7 +1029,6 @@ def domain_pivot_command():
         'adsense': 'Adsense',
         'search_hash': 'Iris Search Hash'
     }
-    current_date = datetime.utcnow()
 
     for pivot_type in available_pivots:
         if demisto.args().get(pivot_type):
@@ -1081,12 +1083,13 @@ def domain_pivot_command():
         "PivotedDomains": domain_context_list
     }
 
-    outputs = {f'DomainTools.Pivots.PivotedDomains(val.Name == obj.Name)': domain_context_list}
+    outputs = {'DomainTools.Pivots.PivotedDomains(val.Name == obj.Name)': domain_context_list}
     prune_context_data(outputs)
     headers = ['domain', 'risk_score']
 
     sorted_output = sorted(output, key=lambda x: x['risk_score'] if x['risk_score'] is not None else -1, reverse=True)
-    human_readable = tableToMarkdown(f'Domains for {search_type}: {search_value} ({count} results, {average_risk} average risk, {average_age} average age)',
+    human_readable = tableToMarkdown(f'Domains for {search_type}: {search_value} '
+                                     f'({count} results, {average_risk} average risk, {average_age} average age)',
                                      sorted_output,
                                      headers=headers)
 
@@ -1162,7 +1165,6 @@ def whois_history_command():
     return_results(results)
 
 
-
 def create_history_table(data, headers):
     table = []
     for row in data:
@@ -1195,7 +1197,14 @@ def hosting_history_command():
     )
 
     registrar_history = response.get('registrar_history', [])
-    registrar_headers = ['domain', 'date_created', 'date_expires', 'date_lastchecked', 'date_updated',  'registrar', 'registrartag']
+    registrar_headers = [
+        'domain',
+        'date_created',
+        'date_expires',
+        'date_lastchecked',
+        'date_updated',
+        'registrar',
+        'registrartag']
     registrar_table = create_history_table(registrar_history, registrar_headers)
     human_readable_registrar = tableToMarkdown(
         "Registrar History", registrar_table, headers=registrar_headers
@@ -1275,28 +1284,31 @@ def parsed_whois_command():
 
     parsed = response.get('parsed_whois', {})
     domain_indicator = Common.Domain(domain, None,
-         registrar_name=parsed.get('registrar', {}).get('name'),
-         registrar_abuse_email=parsed.get('registrar', {}).get('abuse_contact_email'),
-         registrar_abuse_phone=parsed.get('registrar', {}).get('abuse_contact_phone'),
+                                     registrar_name=parsed.get('registrar', {}).get('name'),
+                                     registrar_abuse_email=parsed.get('registrar', {}).get('abuse_contact_email'),
+                                     registrar_abuse_phone=parsed.get('registrar', {}).get('abuse_contact_phone'),
 
-         registrant_name=parsed.get('contacts', {}).get('registrant', {}).get('name'),
-         registrant_email=parsed.get('contacts', {}).get('registrant', {}).get('email'),
-         registrant_phone=parsed.get('contacts', {}).get('registrant', {}).get('phone'),
-         registrant_country=parsed.get('contacts', {}).get('registrant', {}).get('country'),
+                                     registrant_name=parsed.get('contacts', {}).get('registrant', {}).get('name'),
+                                     registrant_email=parsed.get('contacts', {}).get('registrant', {}).get('email'),
+                                     registrant_phone=parsed.get('contacts', {}).get('registrant', {}).get('phone'),
+                                     registrant_country=parsed.get('contacts', {}).get('registrant', {}).get('country'),
 
-         admin_name=parsed.get('contacts', {}).get('admin', {}).get('name'),
-         admin_email=parsed.get('contacts', {}).get('admin', {}).get('email'),
-         admin_phone=parsed.get('contacts', {}).get('admin', {}).get('phone'),
-         admin_country=parsed.get('contacts', {}).get('admin', {}).get('country'),
+                                     admin_name=parsed.get('contacts', {}).get('admin', {}).get('name'),
+                                     admin_email=parsed.get('contacts', {}).get('admin', {}).get('email'),
+                                     admin_phone=parsed.get('contacts', {}).get('admin', {}).get('phone'),
+                                     admin_country=parsed.get('contacts', {}).get('admin', {}).get('country'),
 
-         tech_country=parsed.get('contacts', {}).get('tech', {}).get('country'),
-         tech_name=parsed.get('contacts', {}).get('tech', {}).get('name'),
-         tech_organization=parsed.get('contacts', {}).get('tech', {}).get('org'),
-         tech_email=parsed.get('contacts', {}).get('tech', {}).get('email'),
-         billing = parsed.get('contacts', {}).get('billing', {}).get('name'),
-         name_servers=parsed.get('name_servers'),
-        whois_records=[Common.WhoisRecord(whois_record_value=whois_record, whois_record_date=parsed.get('updated_date'))]
-         )
+                                     tech_country=parsed.get('contacts', {}).get('tech', {}).get('country'),
+                                     tech_name=parsed.get('contacts', {}).get('tech', {}).get('name'),
+                                     tech_organization=parsed.get('contacts', {}).get('tech', {}).get('org'),
+                                     tech_email=parsed.get('contacts', {}).get('tech', {}).get('email'),
+                                     billing=parsed.get('contacts', {}).get('billing', {}).get('name'),
+                                     name_servers=parsed.get('name_servers'),
+                                     whois_records=[
+                                         Common.WhoisRecord(
+                                             whois_record_value=whois_record,
+                                             whois_record_date=parsed.get('updated_date'))]
+                                     )
 
     results = CommandResults(
         outputs_prefix='Domain',
@@ -1470,7 +1482,7 @@ def fetch_and_process_domains(iris_search_hash: Dict[str, str], iris_tags: Dict[
                 "name": incident_long_name,
                 "details": json.dumps(domains_list),
                 "occured": last_run,
-                "rawJSON": json.dumps({"sample": "sucess"}), #json.dumps({"incidents": domains_list}),
+                "rawJSON": json.dumps({"sample": "sucess"}),  # json.dumps({"incidents": domains_list}),
                 "type": INCIDENT_TYPES[incident_name],
             })
 
@@ -1524,8 +1536,6 @@ def fetch_domains():
     # iris tags
     monitor_domain_by_iris_tags = demisto.params().get("monitor_iris_tags") or "Import Indicators Only"
     iris_tags = demisto.params().get("domaintools_iris_tags") or False
-
-    fetch_limit = arg_to_number(demisto.params().get('max_fetch', 2))
 
     if False in [iris_search_hash, iris_tags]:
         demisto.incidents([])

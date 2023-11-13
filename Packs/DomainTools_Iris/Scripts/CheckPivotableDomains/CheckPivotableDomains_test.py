@@ -207,69 +207,69 @@ def test_check_pivotable_output(mocker):
     main()
 
     expected_context = {
-        "Name":"demisto.com",
-        "PivotableRegistrantContactName":{
+        "Name": "demisto.com",
+        "PivotableRegistrantContactName": {
             "pivotable": False
         },
-        "PivotableRegistrantOrg":{
+        "PivotableRegistrantOrg": {
             "pivotable": False
         },
-        "PivotableRegistrar":{
+        "PivotableRegistrar": {
             "pivotalbe": False
         },
-        "PivotableSslInfoOrganization":{
+        "PivotableSslInfoOrganization": {
             "pivotable": False
         },
-        "PivotableSslInfoHash":{
+        "PivotableSslInfoHash": {
             "pivotable": False
         },
-        "PivotableSslSubject":{
+        "PivotableSslSubject": {
             "pivotable": False
         },
-        "PivotableSslEmail":{
+        "PivotableSslEmail": {
             "pivotable": False
         },
-        "PivotableNameServerHost":{
+        "PivotableNameServerHost": {
             "pivotable": False
         },
-        "PivotableNameServerIp":{
+        "PivotableNameServerIp": {
             "pivotable": False
         },
-        "PivotableNameServerDomain":{
+        "PivotableNameServerDomain": {
             "pivotable": False
         },
-        "PivotableSoaEmail":{
+        "PivotableSoaEmail": {
             "pivotable": True,
-            "items":[
+            "items": [
                 {
-                    "count":34,
-                    "value":"it-staff-sysadmin@paloaltonetworks.com"
+                    "count": 34,
+                    "value": "it-staff-sysadmin@paloaltonetworks.com"
                 }
             ]
         },
-        "PivotableIpAddress":{
+        "PivotableIpAddress": {
             "pivotable": True,
-            "items":[
+            "items": [
                 {
-                    "count":16,
-                    "value":"34.120.160.120"
+                    "count": 16,
+                    "value": "34.120.160.120"
                 }
             ]
         },
-        "PivotableMxIp":{
-            "pivotable":False
+        "PivotableMxIp": {
+            "pivotable": False
         },
-        "PivotableMxHost":{
-            "pivotable":False
+        "PivotableMxHost": {
+            "pivotable": False
         },
-        "PivotableMxDomain":{
-            "pivotable":False
+        "PivotableMxDomain": {
+            "pivotable": False
         },
-        "PivotableGoogleAnalytics":{
-            "pivotable":False
+        "PivotableGoogleAnalytics": {
+            "pivotable": False
         },
-        "PivotableAdsense":{
-            "pivotable":False
+        "PivotableAdsense": {
+            "pivotable": False
         }
     }
 

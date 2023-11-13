@@ -183,7 +183,7 @@ def test_domain_extract_and_enrich_output(mocker):
 
     mocker.patch.object(
         demisto, "args", return_value={
-           "url": "demisto.com".encode('utf-8')
+            "url": "demisto.com".encode('utf-8')
         }
     )
 

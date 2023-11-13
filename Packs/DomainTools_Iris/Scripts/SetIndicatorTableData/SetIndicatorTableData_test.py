@@ -216,6 +216,6 @@ def test_set_indicator_table(mocker):
     assert len(results) == 1
     assert results[0]["Type"] == entryTypes["note"]
     assert results[0]["ContentsFormat"] == formats["json"]
-    assert results[0]["Contents"] == None
+    assert results[0]["Contents"] is None
     assert results[0]["HumanReadable"] == "Data for demisto.com enriched."
     assert results[0]["EntryContext"] == {}
