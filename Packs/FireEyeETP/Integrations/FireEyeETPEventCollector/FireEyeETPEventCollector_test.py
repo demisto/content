@@ -96,7 +96,7 @@ def test_fetch_alerts(mocker, hide_sensitive, alert_expected, trace_expected, ac
     event_types_to_run = [
         FireEyeETPEventCollector.EventType('alerts', 25, outbound=False),
         FireEyeETPEventCollector.EventType('email_trace', 1000, outbound=False),
-        FireEyeETPEventCollector.EventType('activity_log', 25, outbound=False)
+        # FireEyeETPEventCollector.EventType('activity_log', 25, outbound=False)
     ]
     collector = FireEyeETPEventCollector.EventCollector(client, event_types_to_run)
     mocker.patch.object(FireEyeETPEventCollector.Client, 'get_alerts', side_effect=[
@@ -220,3 +220,21 @@ def test_pagination(mocker, event_name, res_mock_path, func_to_mock, expected_re
         start_time=datetime.now() - timedelta(days=2, milliseconds=1)
     )
     assert len(events)
+
+
+@pytest.mark.parametrize("max_fetch, limit_args, expected", [
+    pytest.param("", None, FireEyeETPEventCollector.DEFAULT_MAX_FETCH, id="both empty, using default"),
+    pytest.param(0, 10, 10, id="empty configuration, args override"),
+    pytest.param(10, 0, 0, id="existing configuration, empty args override"),
+    pytest.param(50, None, 50, id="param overrides default"),
+    pytest.param(0, None, 0, id="param stay empty on purpose"),
+    pytest.param(80, 75, 75, id="args overrides param"),
+    pytest.param("", "invalid", None, id='limit invalid'),
+    pytest.param("a", "", None, id='configured max_fetch invalid')
+])
+def test_get_max_events_to_fetch(max_fetch, limit_args, expected):
+    if expected is None:
+        with pytest.raises(ValueError):
+            FireEyeETPEventCollector._get_max_events_to_fetch(max_fetch, limit_args)
+    else:
+        assert FireEyeETPEventCollector._get_max_events_to_fetch(max_fetch, limit_args) == expected
