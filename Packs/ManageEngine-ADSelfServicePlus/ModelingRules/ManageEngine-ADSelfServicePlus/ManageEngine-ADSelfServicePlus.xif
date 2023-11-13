@@ -4,7 +4,6 @@ alter msg = lowercase(msg)
         status = arrayindex(regextract(msg, "status=([^\]]+)"), 0),
         name = arrayindex(regextract(msg, "\[name=([^\]]+)"), 0),
         login_name = arrayindex(regextract(msg, "login name=([^\]]+)"), 0),
-        action_name = arrayindex(regextract(msg, "action_name=([^\]]+)"), 0),
         reason_for_restriction = arrayindex(regextract(msg, "reason_for_restriction=([^\]]+)"), 0)
 | alter
         status = if(status contains "success", "success", status contains "invalid" or status contains "denied" or status contains "failed" or status contains "incorrect" or status contains "not found" or status contains "cannot","failed", to_string(status))
