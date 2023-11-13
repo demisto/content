@@ -348,7 +348,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     elif last_fetch_query := last_run_data.get('last_fetch_query'):
         # Use the same fetch query as from the last fetch if doing pagination
         fetch_query = last_fetch_query
-
+    # TODO We also need to check if the query is using notables or not (using the fetch query)
     demisto.debug(f'[SplunkPy] fetch query = {fetch_query}')
     demisto.debug(f'[SplunkPy] oneshot query args = {kwargs_oneshot}')
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)
@@ -372,7 +372,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
 
         if incident_id not in last_run_fetched_ids:
             incident_ids_to_add.append(incident_id)
-            notables_ids_to_add.append(inc['dbotMirrorId'])
+            notables_ids_to_add.append(inc['dbotMirrorId']) # TODO Get ID from notable_incident
             incidents.append(inc)
             notables.append(notable_incident)
             extensive_log(f'[SplunkPy] - Fetched incident {item.get("event_id", incident_id)} to be created.')
