@@ -1591,7 +1591,7 @@ def test_get_remote_incident_data(mocker):
 @pytest.mark.parametrize("incident, expected_contents", [
     (
         {'ID': 'id-incident-1', 'Status': 'Closed', 'classification': 'BenignPositive'},
-        {'dbotIncidentClose': True, 'closeReason': 'Resolved - Closed on Microsoft Sentinel', 'closeNotes': ''}
+        {'dbotIncidentClose': True, 'closeReason': 'Resolved', 'closeNotes': '\nClosed on Microsoft Sentinel'}
     ),
     (
         {'ID': 'id-incident-1', 'Status': 'Active'},
