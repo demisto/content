@@ -787,7 +787,7 @@ view: |-
 inputs:
 - key: rule_name
   value:
-    simple: panorama-security-rule-test-playbook
+    simple: pan_test_rule
   required: false
   description: ""
 - key: ip
