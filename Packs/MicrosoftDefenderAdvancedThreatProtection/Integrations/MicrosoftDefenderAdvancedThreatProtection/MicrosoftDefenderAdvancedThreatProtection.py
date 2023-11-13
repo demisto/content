@@ -2918,6 +2918,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     machine_id = remove_duplicates_from_list_arg(args, 'machine_id')
     type = args.get('type', '')
     requestor = args.get('requestor', '')
+    filters = args.get('filters', '')
     limit = arg_to_number(args.get('limit', 50))
     if action_id:
         for index in range(3):
@@ -2943,7 +2944,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
             'type': type,
             'requestor': requestor
         }
-        filter_req = reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
+        filter_req = filters or reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
         response = client.get_machine_actions(filter_req, limit)
         machine_actions_list = []
         for machine_action in response['value']:
