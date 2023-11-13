@@ -755,9 +755,10 @@ def module_test():
 
 def main():  # pragma: no cover
     try:
-        # os.system('/start_chrome_headless.sh')
-        import shlex
-        subprocess.call(shlex.split('/start_chrome_headless.sh'))
+        command = ["/start_chrome_headless.sh"]
+        with open(os.devnull, "w") as fnull:
+            result = subprocess.call(command, stdout = fnull, stderr = fnull)
+            demisto.debug(f'start_chrome_headless output: {result}')
     except Exception as ex:
         demisto.info(f'Exception running chrome headless, {ex}')
     try:
