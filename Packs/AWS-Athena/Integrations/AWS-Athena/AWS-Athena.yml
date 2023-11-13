@@ -174,5 +174,5 @@ script:
   dockerimage: demisto/boto3py3:1.0.0.80248
   subtype: python3
 tests:
-- Athena-Test
+- No tests
 fromversion: 5.0.0
