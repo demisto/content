@@ -81,7 +81,7 @@ def save_integration_instance(
     try:
         response = xsoar_saas_client.create_integration_instance(
             _id=integration_id,
-            name=name,
+            instance_name=name,
             integration_instance_config=integration_params,
             integration_log_level="Verbose",
             is_long_running=is_long_running
@@ -114,7 +114,7 @@ def save_incident(
     incident_id = None
     incident_name = name or f'end-to-end-{playbook_id}-incident'
     try:
-        response = xsoar_saas_client.create_integration_instance(
+        response = xsoar_saas_client.create_incident(
             incident_name, should_create_investigation=True, attached_playbook_id=playbook_id
         )
         logging.info(f'Created incident {incident_name} that will run the playbook {playbook_id}')
