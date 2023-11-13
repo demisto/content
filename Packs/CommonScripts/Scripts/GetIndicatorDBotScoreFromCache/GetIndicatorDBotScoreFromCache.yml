@@ -1,8 +1,8 @@
 args:
-- description: The single indicator value to check
+- description: The single indicator value to check.
   name: value
-  isArray: true
   required: true
+  isArray: true
 comment: Get the overall score for the indicator as calculated by DBot.
 commonfields:
   id: GetIndicatorDBotScoreFromCache
