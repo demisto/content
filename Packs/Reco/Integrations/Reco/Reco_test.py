@@ -340,7 +340,7 @@ def get_random_user_context_response() -> GetIncidentTableResponse:
                             KeyValuePair(
                                 key="email_account",
                                 value=base64.b64encode(
-                                    "JohnDoe@gmail.com".encode(ENCODING)
+                                    "charles@corp.com".encode(ENCODING)
                                 ).decode(ENCODING),
                             ),
                             KeyValuePair(
@@ -865,7 +865,7 @@ def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> No
     requests_mock.post(
         f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
     )
-    res = get_user_context_by_email_address(reco_client, "john@acme.com")
+    res = get_user_context_by_email_address(reco_client, "charles@corp.com")
     assert res.outputs_prefix == "Reco.User"
     assert res.outputs.get("email_account") != ""
-    assert res.outputs.get("email_account") == "JohnDoe@gmail.com"
+    assert res.outputs.get("email_account") == "charles@corp.com"
