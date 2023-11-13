@@ -11,7 +11,8 @@ LAST_ALERT_IDS = 'last_alert_ids'
 LAST_AUDIT_IDS = 'last_audit_logs_ids'
 
 # Constants used in fetch-events
-MAX_ALERTS = 10000
+MAX_ALERTS_IN_PAGE = 10000
+MAX_ALERTS = 10 * MAX_ALERTS_IN_PAGE
 MAX_AUDITS = 25000
 MAX_ALERTS_LOOP = 10
 
@@ -84,7 +85,7 @@ class Client(BaseClient):
 
 def is_audit_interval(run, interval):
     # TODO: finish implementation
-    return True
+    return False
 
 
 def get_alerts_and_audit_logs(client: Client, add_audit_logs: bool, last_run: dict):
@@ -96,59 +97,60 @@ def get_alerts_and_audit_logs(client: Client, add_audit_logs: bool, last_run: di
     with concurrent.futures.ThreadPoolExecutor() as executor:
         if add_audit_logs:
             audit_logs_future = executor.submit(client.get_audit_logs)
-        alerts_future = executor.submit(get_alerts_to_limit, client, last_run)
-        try:
-            alerts = alerts_future.result()
-            if add_audit_logs:
+        alerts, last_run = get_alerts_to_limit(client, last_run)
+        if add_audit_logs:
+            try:
                 audit_logs = dedupe_audit_logs(audit_logs_future.result(), last_run.get(LAST_AUDIT_IDS), client.max_audit_logs)
-        except Exception as e:
-            demisto.error(f'Failed getting events. Error: {e}')
+            except Exception as e:
+                demisto.error(f'Failed getting audit logs. Error: {e}')
     return alerts, audit_logs
 
 
-def get_alerts_to_limit(client: Client, last_run: dict) -> list:
+def get_alerts_to_limit(client: Client, last_run: dict):
     more_events_to_fetch = True
     alerts: list = []
     events_loop_limit = MAX_ALERTS_LOOP
-    while more_events_to_fetch and events_loop_limit > 0:
-        # Fetch next batch of alerts
-        start_time = last_run.get(LAST_ALERT_TIME)
-        max_rows = min(client.max_alerts - len(alerts), MAX_ALERTS)
-        # TODO: not good - replace with paging
-        next_batch_alerts = client.get_alerts(start_time, len(alerts) + 1, max_rows)  # type: ignore
-        if next_batch_alerts:
-            alerts.extend(next_batch_alerts)
-        else:
-            more_events_to_fetch = False
-    return alerts
+    try:
+        while more_events_to_fetch and events_loop_limit > 0:
+            # Fetch next batch of alerts
+            start_time = last_run.get(LAST_ALERT_TIME)
+            max_rows = min(client.max_alerts - len(alerts), MAX_ALERTS_IN_PAGE)
+            next_batch_alerts = client.get_alerts(start_time, 1, max_rows)  # type: ignore
+            next_batch_alerts = dedupe_alerts(next_batch_alerts, last_run)
+            if next_batch_alerts:
+                last_run = update_last_run(last_run, alerts=next_batch_alerts)
+                alerts.extend(next_batch_alerts)
+                events_loop_limit -= 1
+            else:
+                more_events_to_fetch = False
+    except Exception as e:
+        demisto.error(f'Encountered error while fetching alerts - {e}')
+    return alerts, last_run
 
 
-def update_last_run(last_run, alerts, audit_logs):
+def update_last_run(last_run, alerts=None, audit_logs=None):
     """
     Update the last run object with the latest timestamp and IDs fetched
     """
     if alerts:
         last_run[LAST_ALERT_TIME] = last_alert_time = alerts[-1][ALERT_TIMESTAMP]
-        last_run[LAST_ALERT_IDS] = [alert[ALERT_ID] for alert in alerts[::-1]
-                                    if alert[ALERT_TIMESTAMP] != last_alert_time]
+        last_run[LAST_ALERT_IDS] = [alert[ALERT_ID] for alert in alerts if alert[ALERT_TIMESTAMP] == last_alert_time]
     if audit_logs:
-        last_audit_time = audit_logs[:-1]
-        last_run[LAST_AUDIT_IDS] = [audit[AUDIT_ID] for audit in audit_logs[::-1]
-                                    if audit[AUDIT_TIMESTAMP] != last_audit_time]
+        last_run[LAST_AUDIT_IDS] = [audit[AUDIT_ID] for audit in audit_logs]
     return last_run
 
 
 def dedupe_audit_logs(audit_logs, last_audit_ids, max_audit_logs):
     if audit_logs and last_audit_ids:
         last_run_ids = set(last_audit_ids)
-        audit_logs = filter(lambda audit: audit[AUDIT_ID] not in last_run_ids, audit_logs)
+        audit_logs = list(filter(lambda audit: audit[AUDIT_ID] not in last_run_ids, audit_logs))
     return audit_logs[:max_audit_logs]
 
 
 def dedupe_alerts(alerts, last_run):
     if alerts and last_run.get(LAST_ALERT_TIME) == alerts[0][ALERT_TIMESTAMP]:
         last_run_ids = set(last_run[LAST_ALERT_IDS])
-        alerts = filter(lambda alert: alert[ALERT_ID] not in last_run_ids, alerts)
+        alerts = list(filter(lambda alert: alert[ALERT_ID] not in last_run_ids, alerts))
     return alerts
 
 
@@ -189,7 +191,7 @@ def test_module(client: Client) -> str:
 def init_last_run(last_run: dict) -> dict:
     if not last_run:
         last_run = {
-            LAST_ALERT_TIME: (datetime.now() - timedelta(hours=10)).strftime(DATE_FORMAT),
+            LAST_ALERT_TIME: (datetime.now() - timedelta(days=3)).strftime(DATE_FORMAT),
             LAST_ALERT_IDS: [],
             LAST_AUDIT_IDS: [],
         }
