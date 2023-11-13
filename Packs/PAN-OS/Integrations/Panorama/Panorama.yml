@@ -3773,6 +3773,11 @@ script:
       name: device-group
     - description: Return raw XML.
       name: is_xml
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      defaultValue: "false"
     description: Runs any command supported in the API.
     name: pan-os
   - arguments:
@@ -9341,6 +9346,19 @@ script:
     - contextPath: Panorama.DeviceGroupNames
       description: The list of device groups.
       type: string
+  - name: pan-os-export-tech-support-file
+    arguments:
+    - name: interval_in_seconds
+      description: The polling interval (in seconds).
+      defaultValue: "30"
+    - name: timeout
+      description: The polling timeout (in seconds).
+      defaultValue: "1200"
+    - name: job_id
+      hidden: true
+      description: The job ID to use when polling.
+    description: Exports a tech support file (TSF).
+    polling: true
   dockerimage: demisto/pan-os-python:1.0.0.80157
   isfetch: true
   runonce: false

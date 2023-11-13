@@ -169,7 +169,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'questionable',
     'real-estate',
     'recreation-and-hobbies',
-    'reference-and-research	',
+    'reference-and-research',
     'religion',
     'search-engines',
     'sex-education',
@@ -283,7 +283,7 @@ class PanosResponse():
 
 
 def http_request(uri: str, method: str, headers: dict = {},
-                 body: dict = {}, params: dict = {}, files: dict | None = None, is_pcap: bool = False,
+                 body: dict = {}, params: dict = {}, files: dict | None = None, is_file: bool = False,
                  is_xml: bool = False) -> Any:
     """
     Makes an API call with the given arguments
@@ -303,7 +303,7 @@ def http_request(uri: str, method: str, headers: dict = {},
             'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))
 
     # if pcap download
-    if is_pcap:
+    if is_file:
         return result
     if is_xml:
         return result.text
@@ -832,6 +832,108 @@ def list_device_groups_names():
     )
 
 
+def start_tsf_export():
+    """
+    Start export of tech support file (TSF) from PAN-OS:
+    https://docs.paloaltonetworks.com/pan-os/11-0/pan-os-panorama-api/pan-os-xml-api-request-types/export-files-api/export-technical-support-data
+    """
+    params = {
+        'type': 'export',
+        'category': 'tech-support',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def get_tsf_export_status(job_id: str):
+    """
+    Get status of TSF export.
+    """
+    params = {
+        'type': 'export',
+        'category': 'tech-support',
+        'action': 'status',
+        'job-id': job_id,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+    return result
+
+
+def download_tsf(job_id: str):
+    """
+    Download an exported TSF.
+    """
+    params = {
+        'type': 'export',
+        'category': 'tech-support',
+        'action': 'get',
+        'job-id': job_id,
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params,
+        is_file=True
+    )
+    return fileResult("tech_support_file.tar.gz", result.content)
+
+
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 30)),
+    timeout=arg_to_number(demisto.args().get('timeout', 1200)),
+    requires_polling_arg=False
+)
+def export_tsf_command(args: dict):
+    """
+    Export a TSF from PAN-OS.
+    """
+    if job_id := args.get('job_id'):
+        job_status = dict_safe_get(
+                get_tsf_export_status(job_id),
+                ['response', 'result', 'job', 'status']
+        )
+        return PollResult(
+            response=download_tsf(job_id),
+            continue_to_poll=job_status != 'FIN',  # continue polling if job isn't done
+        )
+    else:  # either no polling is required or this is the first run
+        result = start_tsf_export()
+        job_id = dict_safe_get(result, ['response', 'result', 'job'], '')
+        if job_id:
+            context_output = {
+                'JobID': job_id,
+                'Status': 'Pending'
+            }
+            continue_to_poll = True
+        else:  # no job ID which is unexpected
+            raise DemistoException("Failed to start tech support file export.")
+
+        return PollResult(
+            response=download_tsf(job_id),
+            continue_to_poll=continue_to_poll,
+            args_for_next_run={
+                'job_id': job_id,
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds')),
+                'timeout': arg_to_number(args.get('timeout'))
+            },
+            partial_result=CommandResults(
+                readable_output=f'Waiting for tech support file export with job ID {job_id} to finish...'
+            )
+        )
+
+
 def device_group_test():
     """
     Test module for the Device group specified
@@ -887,23 +989,25 @@ def panorama_command(args: dict):
     Executes a command
     """
     params = {}
+
     for arg in args.keys():
         params[arg] = args[arg]
+
+    is_xml = argToBoolean(params.get("is_xml", "false"))
     params['key'] = API_KEY
 
     result = http_request(
         URL,
         'POST',
-        body=params
+        body=params,
+        is_xml=is_xml
     )
 
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Command was executed successfully.',
-    })
+    return_results(CommandResults(
+        outputs_prefix='Panorama.Command',
+        outputs=result,
+        readable_output='Command was executed successfully.'
+    ))
 
 
 @logger
@@ -4139,7 +4243,7 @@ def panorama_list_pcaps_command(args: dict):
     elif serial_number:
         params['target'] = serial_number
 
-    result = http_request(URL, 'GET', params=params, is_pcap=True)
+    result = http_request(URL, 'GET', params=params, is_file=True)
     json_result = json.loads(xml2json(result.text))['response']
     if json_result['@status'] != 'success':
         raise Exception('Request to get list of Pcaps Failed.\nStatus code: ' + str(
@@ -4247,7 +4351,7 @@ def panorama_get_pcap_command(args: dict):
     if not file_name:
         file_name = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
 
-    result = http_request(URL, 'GET', params=params, is_pcap=True)
+    result = http_request(URL, 'GET', params=params, is_file=True)
 
     # due to pcap file size limitation in the product. For more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
@@ -14677,6 +14781,8 @@ def main():  # pragma: no cover
             return_results(pan_os_delete_tag_command(args))
         elif command == 'pan-os-list-device-groups':
             return_results(list_device_groups_names())
+        elif command == 'pan-os-export-tech-support-file':
+            return_results(export_tsf_command(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
