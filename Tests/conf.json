@@ -5354,7 +5354,8 @@
                 "Whois",
                 "Rasterize"
             ],
-            "memory_threshold": 300
+            "memory_threshold": 300,
+            "toversion": "7.9.9"
         },
         {
             "playbookID": "DBotUpdateLogoURLPhishing_test"
