@@ -88,7 +88,9 @@ def ensure_chrome_running():
         demisto.info(f'Exception running chrome headless, {ex}')
 
 
-def pychrome_screenshot_image(url, max_page_load_time):
+def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time, full_screen,
+                              include_url
+                              ):
     ensure_chrome_running()
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
@@ -97,16 +99,19 @@ def pychrome_screenshot_image(url, max_page_load_time):
 
     tab.start()
     tab.call_method("Network.enable")
-    tab.call_method("Page.navigate", url=url, _timeout=max_page_load_time)
+    tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
 
     try:
+        time.sleep(wait_time)
         return base64.b64decode(tab.Page.captureScreenshot()['data'])
     finally:
         tab.stop()
         browser.close_tab(tab)
 
 
-def pychrome_screenshot_pdf(url, max_page_load_time):
+def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, full_screen,
+                            include_url
+                            ):
     ensure_chrome_running()
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
@@ -115,10 +120,14 @@ def pychrome_screenshot_pdf(url, max_page_load_time):
 
     tab.start()
     tab.call_method("Network.enable")
-    tab.call_method("Page.navigate", url=url, _timeout=max_page_load_time)
+    tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
 
     try:
-        return base64.b64decode(tab.Page.printToPDF()['data'])
+        time.sleep(wait_time)
+        header_template = ''
+        if include_url:
+            header_template = "<span class=url></span>"
+        return base64.b64decode(tab.Page.printToPDF(headerTemplate=header_template)['data'])
 
     finally:
         tab.stop()
@@ -338,9 +347,15 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
         #             raise
 
         if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
-            return pychrome_screenshot_image(path, max_page_load_time=page_load_time)
+            return pychrome_screenshot_image(path, width=width, height=height, wait_time=wait_time,
+                                             max_page_load_time=page_load_time, full_screen=full_screen,
+                                             include_url=include_url
+                                             )
         if r_type == RasterizeType.PDF or str(r_type).lower() == 'pdf':
-            return pychrome_screenshot_pdf(path, max_page_load_time=page_load_time)
+            return pychrome_screenshot_pdf(path, width=width, height=height, wait_time=wait_time,
+                                             max_page_load_time=page_load_time, full_screen=full_screen,
+                                             include_url=include_url
+                                             )
         # return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
         #                 offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen,
         #                 include_url=include_url)
