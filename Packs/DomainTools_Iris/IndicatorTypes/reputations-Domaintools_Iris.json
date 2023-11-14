@@ -15,5 +15,5 @@
     "mergeContext": false,
     "expiration": 0,
     "layout": "DomainTools Iris Layout",
-    "fromVersion": "6.9.0"
+    "fromVersion": "6.6.0"
 }

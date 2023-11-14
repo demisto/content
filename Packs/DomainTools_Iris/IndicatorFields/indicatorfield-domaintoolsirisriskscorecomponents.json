@@ -1,10 +1,10 @@
 {
-    "id": "indicator_domaintoolsriskscorecomponents",
+    "id": "indicator_domaintoolsirisriskscorecomponents",
     "version": -1,
     "modified": "2023-10-17T16:48:51.186332169Z",
-    "name": "DomainTools Risk Score Components",
+    "name": "DomainTools Iris Risk Score Components",
     "ownerOnly": false,
-    "cliName": "domaintoolsriskscorecomponents",
+    "cliName": "domaintoolsirisriskscorecomponents",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -70,6 +70,18 @@
             "fieldCalcScript": "",
             "isReadOnly": false,
             "selectValues": null
+        },
+        {
+            "key": "evidence",
+            "displayName": "Evidence",
+            "type": "shortText",
+            "required": true,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
         }
     ],
     "defaultRows": [
@@ -79,5 +91,5 @@
     ],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.9.0"
+    "fromVersion": "6.6.0"
 }
