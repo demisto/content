@@ -318,7 +318,7 @@ class TestRasterizeIncludeUrl:
         assert ("--headless" in driver.options) != include_url
 
     @pytest.mark.parametrize('include_url', [False, True])
-    def test_sanity_rasterize_with_include_url(self, mocker, include_url):
+    def test_sanity_rasterize_with_include_url(self, mocker, include_url, capfd):
         """
             Given:
                 - A parameter that mention whether to include the URL bar in the screenshot.
@@ -336,10 +336,11 @@ class TestRasterizeIncludeUrl:
         mocker.patch('builtins.open', mock_open(read_data='image_sha'))
         mocker.patch('os.remove')
 
-        image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
-                          r_mode=RasterizeMode.WEBDRIVER_ONLY,
-                          include_url=include_url)
-        assert image
+        with capfd.disabled():
+            image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
+                            r_mode=RasterizeMode.WEBDRIVER_ONLY,
+                            include_url=include_url)
+            assert image
 
 
 def test_rasterize_html_no_internet_access(mocker):

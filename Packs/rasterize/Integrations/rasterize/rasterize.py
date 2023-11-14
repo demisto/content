@@ -99,7 +99,10 @@ def pychrome_screenshot_image(url, max_page_load_time):
     tab.call_method("Network.enable")
     tab.call_method("Page.navigate", url=url)
     # tab.wait(max_page_load_time)
-    tab.wait(10)
+    if max_page_load_time < 180:
+        tab.wait(max_page_load_time)
+    else:
+        tab.wait(10)
 
     try:
         return base64.b64decode(tab.Page.captureScreenshot()['data'])
@@ -341,9 +344,9 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
         #             demisto.info(f'Failed rasterizing using all available options. Raising last exception: {ex}')
         #             raise
 
-        if r_type == RasterizeType.PNG:
+        if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
             return pychrome_screenshot_image(path, max_page_load_time=page_load_time)
-        if r_type == RasterizeType.PDF:
+        if r_type == RasterizeType.PDF or str(r_type).lower() == 'pdf':
             return pychrome_screenshot_pdf(path, max_page_load_time=page_load_time)
         # return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
         #                 offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen,
