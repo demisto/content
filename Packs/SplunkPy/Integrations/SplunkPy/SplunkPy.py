@@ -339,27 +339,24 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     latest_time = last_run_latest_time or now
     kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, search_offset)
     fetch_query = build_fetch_query(params)
-    last_fetched_notable_ids = last_run_data.get('last_fetched_notable_ids', {})
-    if not last_run_latest_time:
-        # If we are not doing pagination, then it means we are starting a new round of pagination,
-        # and we need to exclude the previous fetched incidents by adding the `where not event_id in`
-        fetch_query = f'{fetch_query} | where not event_id in ({", ".join(last_fetched_notable_ids)})' if last_fetched_notable_ids \
-            else fetch_query
-    elif last_fetch_query := last_run_data.get('last_fetch_query'):
-        # Use the same fetch query as from the last fetch if doing pagination
-        fetch_query = last_fetch_query
-    # TODO We also need to check if the query is using notables or not (using the fetch query)
+    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
+    if second_time_pagination := last_run_data.get('second_time_pagination'):
+        # code for additional pagination fetch here
+        window = f'{kwargs_oneshot.get("earliest_time")}-{kwargs_oneshot.get("latest_time")}'
+        demisto.debug(f'[SplunkPy] additional fetch for the window {window}')
+        if last_run_fetched_ids:
+            exclude_id_where = f'where not event_id in ({",".join(last_run_fetched_ids)})'
+            fetch_query = f'{fetch_query} | {exclude_id_where}'
+            kwargs_oneshot['offset'] = 0
+
     demisto.debug(f'[SplunkPy] fetch query = {fetch_query}')
     demisto.debug(f'[SplunkPy] oneshot query args = {kwargs_oneshot}')
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)
     reader = results.JSONResultsReader(oneshotsearch_results)
 
-    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
-
     incidents = []
     notables = []
     incident_ids_to_add = []
-    notables_ids_to_add = []
     num_of_dropped = 0
     for item in reader:
         if handle_message(item):
@@ -368,11 +365,11 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
         notable_incident = Notable(data=item)
         inc = notable_incident.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
         extensive_log(f'[SplunkPy] Incident data after parsing to notable: {inc}')
-        incident_id = create_incident_custom_id(inc)
+        custom_inc_id = create_incident_custom_id(inc)
+        incident_id = notable_incident.id or custom_inc_id
 
-        if incident_id not in last_run_fetched_ids:
+        if incident_id not in last_run_fetched_ids and custom_inc_id not in last_run_fetched_ids:
             incident_ids_to_add.append(incident_id)
-            notables_ids_to_add.append(inc['dbotMirrorId']) # TODO Get ID from notable_incident
             incidents.append(inc)
             notables.append(notable_incident)
             extensive_log(f'[SplunkPy] - Fetched incident {item.get("event_id", incident_id)} to be created.')
@@ -384,16 +381,11 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
     for incident_id in incident_ids_to_add:
         last_run_fetched_ids[incident_id] = current_epoch_time
-        
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {len(last_run_fetched_ids)}')
     last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
     extensive_log('[SplunkPy] Size of last_run_fetched_ids after '
                   f'removing old IDs: {len(last_run_fetched_ids)}')
     extensive_log(f'[SplunkPy] SplunkPy - incidents fetched on last run = {last_run_fetched_ids}')
-
-    for notable_id in notables_ids_to_add:
-        last_fetched_notable_ids[notable_id] = current_epoch_time
-    last_fetched_notable_ids = remove_old_incident_ids(last_fetched_notable_ids, current_epoch_time, occurred_look_behind)
 
     demisto.debug(f'SplunkPy - total number of new incidents found is: {len(incidents)}')
     demisto.debug(f'SplunkPy - total number of dropped incidents is: {num_of_dropped}')
@@ -411,41 +403,31 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     # we didn't get any new incident or get less then limit
     # so the next run earliest time will be the latest_time from this iteration
     # should also set when num_of_dropped == FETCH_LIMIT
-    # if not incidents or (len(incidents) + num_of_dropped) < FETCH_LIMIT:
-    #     next_run_earliest_time = latest_time
-    #     new_last_run = {
-    #         'time': next_run_earliest_time,
-    #         'latest_time': None,
-    #         'offset': 0,
-    #         'found_incidents_ids': last_run_fetched_ids
-    #     }
-    
     if (len(incidents) + num_of_dropped) < FETCH_LIMIT:
-            # This means that we are done with pagination, therefore, the next round should
-            # use the original fetch query, and add `where not event_id in {last_run_fetched_ids}`
-            next_run_earliest_time = latest_time
-            new_last_run = {
+        next_run_earliest_time = latest_time
+        new_last_run = {
             'time': next_run_earliest_time,
             'latest_time': None,
             'offset': 0,
-            'found_incidents_ids': last_run_fetched_ids,
-            'last_fetched_notable_ids': last_fetched_notable_ids
-            }
-
+            'found_incidents_ids': last_run_fetched_ids
+        }
     # we get limit notables from splunk
     # we should fetch the entire queue with offset - so set the offset, time and latest_time for the next run
     else:
-        # We should let the next fetch use the same query as the one in the current fetch
-        # Possible solution is to save the last query and if `latest_time != None`, use it
         new_last_run = {
             'time': occured_start_time,
             'latest_time': latest_time,
             'offset': search_offset + FETCH_LIMIT,
-            'found_incidents_ids': last_run_fetched_ids,
-            'last_fetched_notable_ids': last_fetched_notable_ids,
-            # Since the next fetch will continue the pagination, we use the same fetch query
-            'last_fetch_query': fetch_query
+            'found_incidents_ids': last_run_fetched_ids
         }
+    
+    # Need to fetch again this "window" to be sure no "late" indexed events are missed
+    if num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query:
+        new_last_run['second_time_pagination'] = True
+    # If we are in the process of checking late indexed events, and len(fetch_incidents) == FETCH_LIMIT,
+    # that means we need to continue the process of checking late indexed events
+    if len(incidents) == FETCH_LIMIT and second_time_pagination:
+         new_last_run['second_time_pagination'] = True
     demisto.debug(f'SplunkPy - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}')
 
     last_run_data.update(new_last_run)
