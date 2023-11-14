@@ -337,8 +337,13 @@ class TestRasterizeIncludeUrl:
         mocker.patch('builtins.open', mock_open(read_data='image_sha'))
         mocker.patch('os.remove')
 
-        with capfd.disabled():
-            image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
+        with capfd.disabled(), NamedTemporaryFile('w+') as f:
+            f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
+                    '</head><body><br>---------- TEST FILE ----------<br></body></html>')
+            path = os.path.realpath(f.name)
+            f.flush()
+
+            image = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG,
                             r_mode=RasterizeMode.WEBDRIVER_ONLY,
                             include_url=include_url)
             assert image
@@ -360,4 +365,5 @@ def test_rasterize_html_no_internet_access(mocker):
     mocker_output = mocker.patch('rasterize.return_results')
     rasterize_html_command()
     assert mocker_output.call_args.args[0]['File'] == 'email.png'
-    assert mock.assert_called_once_with("http://127.0.0.1:9222")
+    args, kwargs = mock.call_args
+    assert kwargs.get('url').startwith("http://127.0.0.1:9222")
