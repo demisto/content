@@ -1310,6 +1310,7 @@ def getLicenseCustomField(key):
 
     return get(contentSecrets, key)
 
+
 def setAssetsLastRun(obj):
     """(Integration only)
     Stores given object in the AssetsLastRun object
@@ -1322,5 +1323,7 @@ def setAssetsLastRun(obj):
 
     """
     return None
+
+
 def getAssetsLastRun():
     return {"lastRun": "2018-10-24T14:13:20+00:00"}
