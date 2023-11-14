@@ -1,4 +1,3 @@
-from demisto_sdk.commands.test_content.xsiam_tools.xsiam_client import XsiamApiClient
 from demisto_sdk.commands.common.clients import XsiamClient
 
 

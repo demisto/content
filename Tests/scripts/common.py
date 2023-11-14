@@ -40,6 +40,7 @@ RED_COLOR = "\033[91m"
 GREEN_COLOR = "\033[92m"
 TEST_PLAYBOOKS_REPORT_FILE_NAME = "test_playbooks_report.xml"
 TEST_MODELING_RULES_REPORT_FILE_NAME = "test_modeling_rules_report.xml"
+END_TO_END_REPORT_FILE_NAME = "end_to_end_tests_result.xml"
 
 
 def get_instance_directories(artifacts_path: Path) -> dict[str, Path]:

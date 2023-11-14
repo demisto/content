@@ -780,7 +780,7 @@ test-upload-flow:
     - section_end "Verify Created Testing Bucket"
     - job-done
 
-.server_test_playbooks_results:
+.server_test_results:
   stage: results
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
@@ -791,6 +791,7 @@ test-upload-flow:
     - .default-job-settings
   script:
     - ./Tests/scripts/test_playbooks_results.sh
+    - ./Tests/scripts/test_end_to_end_results.sh
     - job-done
   artifacts:
     when: always
@@ -798,10 +799,13 @@ test-upload-flow:
     reports:
       junit:
         - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
+        - "${ARTIFACTS_FOLDER}/end_to_end_tests_result.xml"
     paths:
       - "${ARTIFACTS_FOLDER}/test_playbooks_report.xml"
+      - "${ARTIFACTS_FOLDER}/end_to_end_tests_result.xml"
       - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
+
 
 .test_modeling_rule_results:
   stage: results
@@ -816,7 +820,7 @@ test-upload-flow:
     - ./Tests/scripts/test_modeling_rule_results.sh
     - job-done
 
-xsoar-test_playbooks_results:
+xsoar_test_results:
   variables:
     SERVER_TYPE: "XSOAR"
     PRODUCT_TYPE: "XSOAR"
@@ -824,7 +828,7 @@ xsoar-test_playbooks_results:
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
     JIRA_LABELS: '["XSOAR", "nightly"]'
-  extends: .server_test_playbooks_results
+  extends: .server_test_results
   needs:
     - job: tests_xsoar_server
     - job: xsoar_ng_server_ga
@@ -833,7 +837,7 @@ xsoar-test_playbooks_results:
     - tests_xsoar_server
     - xsoar_ng_server_ga
 
-xsiam-test_playbooks_results:
+xsiam_test_results:
   variables:
     SERVER_TYPE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
@@ -841,7 +845,7 @@ xsiam-test_playbooks_results:
     JIRA_ISSUE_TYPE: "XSOAR Dev Bug"
     JIRA_COMPONENT: "Test Failure"
     JIRA_LABELS: '["XSIAM", "nightly"]'
-  extends: .server_test_playbooks_results
+  extends: .server_test_results
   needs:
     - xsiam_server_ga
   dependencies:
