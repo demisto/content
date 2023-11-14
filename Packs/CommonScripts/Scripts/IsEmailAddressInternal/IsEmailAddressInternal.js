@@ -17,50 +17,55 @@ function escapeRegex(string) {
 
 
 function main() {
-    const email = args.email;
+    const emails = argToList(args.email);
     const domains = argToList(JSON.stringify(args.domain)).map(x => x.toLowerCase());
     const includeSubdomains = toBoolean(args.include_subdomains);
 
-    const parts = email.split('@', 2);
+    let results = [];
+    for (let i = 0; i < emails.length; i++) {
+        const parts = emails[i].split('@', 2);
 
-    let networkType = 'Unknown';
-    let inDomain = 'no';
+        let networkType = 'Unknown';
+        let inDomain = 'no';
 
-    if (parts.length > 1) {
-        const domain = parts[1].toLowerCase();
-        if (domains.includes(domain) || (includeSubdomains && new RegExp(`^(.*\\.)?(${domains.map(d => escapeRegex(d)).join('|')})`).test(domain))) {
-            inDomain = 'yes';
-            networkType = 'Internal';
+        if (parts.length > 1) {
+            const domain = parts[1].toLowerCase();
+            if (domains.includes(domain) || (includeSubdomains && new RegExp(`^(.*\\.)?(${domains.map(d => escapeRegex(d)).join('|')})`).test(domain))) {
+                inDomain = 'yes';
+                networkType = 'Internal';
+            } else {
+                networkType = 'External';
+            }
+
+            const emailDict = {
+                'Address': emails[i],
+                'Domain': domain,
+                'Username': parts[0],
+                'NetworkType': networkType
+            };
+
+            const emailObj = {
+                'Account.Email(val.Address && val.Address == obj.Address)': emailDict
+            };
+
+            results.push({
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': inDomain,
+                'HumanReadable': inDomain,
+                'EntryContext': emailObj
+            });
         } else {
-            networkType = 'External';
+            results.push({
+                Type: entryTypes.error,
+                ContentsFormat: formats.text,
+                Contents: `Email address "${emails[i]}" is not valid`
+            });
         }
-
-        const emailDict = {
-            'Address': email,
-            'Domain': domain,
-            'Username': parts[0],
-            'NetworkType': networkType
-        };
-
-        const emailObj = {
-            'Account.Email(val.Address && val.Address == obj.Address)': emailDict
-        };
-
-        return {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': inDomain,
-            'HumanReadable': inDomain,
-            'EntryContext': emailObj
-        };
-    } else {
-        return {
-            Type: entryTypes.error,
-            ContentsFormat: formats.text,
-            Contents: `Email address "${email}" is not valid`
-        };
     }
+    return results;
 }
+
 
 try {
     return main();
