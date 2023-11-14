@@ -813,24 +813,26 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     return packs_to_install, success
 
 
-def create_batches(list_packs_and_its_dependency_install_request_body: list):
+def create_batches(list_of_packs_and_its_dependency: list):
     """
-    create batches of packs to install
+    Create a list of packs batches to install
 
     Args:
-        list_packs_and_its_dependency_install_request_body (list): A list of lists contain one pack and its dependencies.
-    Returns (list):
+        list_of_packs_and_its_dependency (list): A list containing lists where each item is another list of a pack and its dependencies.
         A list of pack batches (lists) to use in installation requests in size less than BATCH_SIZE
     """
-    batch_install = []
-    batch_packs_install_request_body = []
-    for packs_to_install_body in list_packs_and_its_dependency_install_request_body:
-        if len(batch_install) + len(packs_to_install_body) < BATCH_SIZE:
-            batch_install.extend(packs_to_install_body)
-        else:
-            if batch_install:
-                batch_packs_install_request_body.append(batch_install)
-            batch_install = packs_to_install_body
-    batch_packs_install_request_body.append(batch_install)
+    batch = []
+    list_of_batches = []
 
-    return batch_packs_install_request_body
+    batch = []
+    list_of_batches = []
+    for packs_to_install_body in list_of_packs_and_its_dependency:
+        if len(batch) + len(packs_to_install_body) < BATCH_SIZE:
+            batch.extend(packs_to_install_body)
+        else:
+            if batch:
+                list_of_batches.append(batch)
+            batch = packs_to_install_body
+    list_of_batches.append(batch)
+
+    return list_of_batches
