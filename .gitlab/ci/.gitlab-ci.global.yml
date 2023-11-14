@@ -516,13 +516,8 @@ cloning-content-repo-last-upload-commit:
   before_script:
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
-    - *setup-artifactory
     - *create_artifacts_and_server_type_instance_folders
-    - *clone_and_export_variables
-    - *install_node_modules
-    - *install_venv
-    - *build_parameters
-    - *gitlab_ci_build_parameters
+    - *get_last_upload_commit
   variables:
     ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
