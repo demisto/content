@@ -78,7 +78,18 @@ class RasterizeType(Enum):
     JSON = 'json'
 
 
+def ensure_chrome_running():
+    try:
+        command = ['sh', '/start_chrome_headless.sh']
+        with open(os.devnull, "w") as fnull:
+            result = subprocess.call(command, stdout = fnull, stderr = fnull)
+            demisto.debug(f'start_chrome_headless output: {result}')
+    except Exception as ex:
+        demisto.info(f'Exception running chrome headless, {ex}')
+
+
 def pychrome_screenshot_image(url, max_page_load_time):
+    ensure_chrome_running()
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
 
@@ -98,6 +109,7 @@ def pychrome_screenshot_image(url, max_page_load_time):
 
 
 def pychrome_screenshot_pdf(url, max_page_load_time):
+    ensure_chrome_running()
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
 
@@ -754,13 +766,6 @@ def module_test():
 
 
 def main():  # pragma: no cover
-    try:
-        command = ["/start_chrome_headless.sh"]
-        with open(os.devnull, "w") as fnull:
-            result = subprocess.call(command, stdout = fnull, stderr = fnull)
-            demisto.debug(f'start_chrome_headless output: {result}')
-    except Exception as ex:
-        demisto.info(f'Exception running chrome headless, {ex}')
     try:
         with open(DRIVER_LOG, 'w'):
             pass  # truncate the log file
