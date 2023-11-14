@@ -6,8 +6,7 @@ from AzureCompute_v2 import MsGraphClient, screen_errors, assign_image_attribute
     get_all_public_ip_details_command, create_nic_command, get_single_ip_details_from_list_of_ip_details
 
 # test_create_vm_parameters data:
-CREATE_VM_PARAMS_ARGS = {"resource_group": "compute-integration",
-                         "nic_name": "test-compute-integration-nic",
+CREATE_VM_PARAMS_ARGS = {"nic_name": "test-compute-integration-nic",
                          "virtual_machine_location": "westeurope",
                          "vm_size": "Standard_D1_v2",
                          "virtual_machine_name": "TestVM",
@@ -66,14 +65,14 @@ def load_test_data(json_path):
 # test_list_vms data:
 
 
-VM_LIST_EC = {'Azure.Compute(val.Name && val.Name === obj.Name)': [
+VM_LIST_EC = {'Azure.Compute(val.Name && val.Name == obj.Name)': [
     {'Name': 'testvm', 'ID': 'vm_id', 'Size': 30, 'OS': 'Linux', 'Location': 'westeurope',
      'ProvisioningState': 'Succeeded', 'ResourceGroup': 'resource_group'},
     {'Name': 'vm2_name', 'ID': 'vm2_id', 'Size': 32, 'OS': 'Linux', 'Location': 'westeurope',
      'ProvisioningState': 'Succeeded', 'ResourceGroup': 'resource_group'}]}
 
 INTERFACE_EC = {
-    'Azure.Network.Interfaces(val.ID === obj.ID)':
+    'Azure.Network.Interfaces(val.ID && val.ID == obj.ID)':
         {
             'Name': 'nic_name',
             'ID': 'nic_id',
@@ -95,7 +94,7 @@ INTERFACE_EC = {
 }
 
 PUBLIC_IP_EC = {
-    'Azure.Network.IPConfigurations(val.PublicIPAddressID === obj.PublicIPAddressID)':
+    'Azure.Network.IPConfigurations(val.PublicIPAddressID && val.PublicIPAddressID == obj.PublicIPAddressID)':
         {
             'PublicIPAddressID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/publicIPAddresses/webserver-ip',  # noqa: E501
             'PublicConfigName': 'webserver-ip',
@@ -139,7 +138,7 @@ PUBLIC_IP_DETAILS_LIST_ENTRY_EC = {
 }
 
 MANY_PUBLIC_IP_EC = {
-    'Azure.Network.IPConfigurations(val.PublicIPAddressID === obj.PublicIPAddressID)':
+    'Azure.Network.IPConfigurations(val.PublicIPAddressID && val.PublicIPAddressID == obj.PublicIPAddressID)':
         [{
             'PublicIPAddressID': '/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/resourceGroups/fake-resource-group/providers/Microsoft.Network/publicIPAddresses/webserver-ip',  # noqa: E501
             'PublicConfigName': 'webserver-ip',
@@ -177,7 +176,7 @@ MANY_PUBLIC_IP_EC = {
 }
 
 CREATE_NIC_EC = {
-    'Azure.Network.Interfaces(val.ID && val.Name === obj.ID)':
+    'Azure.Network.Interfaces(val.ID && val.ID == obj.ID && val.Name && val.Name == obj.Name)':
         {
             'Name': 'test-nic100',
             'ID': 'nic_id',
@@ -220,44 +219,45 @@ def test_assign_image_attributes(image, expected):
     ]
 )
 def test_create_vm_parameters(args, expected_parameters):
-    assert expected_parameters == create_vm_parameters(args, client.subscription_id)
+    assert expected_parameters == create_vm_parameters(args, client.subscription_id, 'compute-integration')
 
 
 def test_list_vms_command(mocker):
     vms_data = load_test_data('./test_data/list_vms_command.json')
     mocker.patch.object(client, 'list_vms', return_value=vms_data)
-    _, ec, _ = list_vms_command(client, {'resource_group': 'resource_group'})
-    assert VM_LIST_EC == ec
+    command_results = list_vms_command(client, {'resource_group': 'resource_group'}, {})
+    assert command_results.to_context()['EntryContext'] == VM_LIST_EC
 
 
 def test_get_network_interface_command(mocker):
     interface_data = load_test_data('./test_data/get_network_interface_command.json')
     mocker.patch.object(client, 'get_network_interface', return_value=interface_data)
-    _, ec, _ = get_network_interface_command(client, {'resource_group': 'resource_group', 'nic_name': 'nic_name'})
-    assert INTERFACE_EC == ec
+    command_results = get_network_interface_command(client, {'resource_group': 'resource_group', 'nic_name': 'nic_name'}, {})
+    assert command_results.to_context()['EntryContext'] == INTERFACE_EC
 
 
 def test_get_public_ip_details_command(mocker):
     ip_data = load_test_data('./test_data/get_public_ip_details_command.json')
     mocker.patch.object(client, 'get_public_ip_details', return_value=ip_data)
-    _, ec, _ = get_public_ip_details_command(client, {'resource_group': 'fake-resource-group', 'address_name': 'webserver-ip'})
-    assert PUBLIC_IP_EC == ec
+    command_results = get_public_ip_details_command(
+        client, {'resource_group': 'fake-resource-group', 'address_name': 'webserver-ip'}, {})
+    assert command_results.to_context()['EntryContext'] == PUBLIC_IP_EC
 
 
 def test_get_public_ip_details_command_without_resource_group(mocker):
     ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
     mocker.patch.object(client, 'get_all_public_ip_details', return_value=ip_data)
-    _, ec, _ = get_public_ip_details_command(client, {'address_name': '1.1.1.1'})
-    assert PUBLIC_IP_EC == ec
+    command_results = get_public_ip_details_command(client, {'address_name': '1.1.1.1'}, {})
+    assert command_results.to_context()['EntryContext'] == PUBLIC_IP_EC
 
 
 def test_failure_get_public_ip_details_command_without_resource_group(mocker):
     ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
     mocker.patch.object(client, 'get_all_public_ip_details', return_value=ip_data)
     with pytest.raises(ValueError) as err:
-        get_public_ip_details_command(client, {'address_name': 'fake_name'})
+        get_public_ip_details_command(client, {'address_name': 'fake_name'}, {})
     if not err:
-        assert False
+        raise AssertionError
     else:
         err_msg = "'fake_name' was not found. Please try specifying the resource group the IP would be associated with."
         assert str(err.value) == err_msg
@@ -266,15 +266,15 @@ def test_failure_get_public_ip_details_command_without_resource_group(mocker):
 def test_get_all_public_ip_details_command(mocker):
     ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
     mocker.patch.object(client, 'get_all_public_ip_details', return_value=ip_data)
-    _, ec, _ = get_all_public_ip_details_command(client, None)
-    assert MANY_PUBLIC_IP_EC == ec
+    command_results = get_all_public_ip_details_command(client)
+    assert command_results.to_context()['EntryContext'] == MANY_PUBLIC_IP_EC
 
 
 def test_get_single_ip_details_from_list_of_ip_details_function():
     ip_data = load_test_data('./test_data/get_public_ip_details_command_multiple_ips.json')
     test_target = "1.1.1.1"
     ec = get_single_ip_details_from_list_of_ip_details(ip_data.get('value'), test_target)
-    assert PUBLIC_IP_DETAILS_LIST_ENTRY_EC == ec
+    assert ec == PUBLIC_IP_DETAILS_LIST_ENTRY_EC
 
 
 def test_get_single_ip_details_from_list_of_ip_details_function_is_none():
@@ -287,9 +287,9 @@ def test_get_single_ip_details_from_list_of_ip_details_function_is_none():
 def test_create_nic_command(mocker):
     nic_data = load_test_data('./test_data/create_nic_command.json')
     mocker.patch.object(client, 'create_nic', return_value=nic_data)
-    _, ec, _ = create_nic_command(client, {'resource_group': 'resource_group', 'nic_name': 'test-nic100',
-                                           'nic_location': 'eastus', 'vnet_name': 'subnet_id',
-                                           'subnet_name': 'subnet_name', 'address_assignment_method': 'Static',
-                                           'private_ip_address': '10.0.0.5', 'ip_config_name': 'ipconfig1',
-                                           'network_security_group': 'security_group_id'})
-    assert CREATE_NIC_EC == ec
+    command_results = create_nic_command(client, {'resource_group': 'resource_group', 'nic_name': 'test-nic100',
+                                                  'nic_location': 'eastus', 'vnet_name': 'subnet_id',
+                                                  'subnet_name': 'subnet_name', 'address_assignment_method': 'Static',
+                                                  'private_ip_address': '10.0.0.5', 'ip_config_name': 'ipconfig1',
+                                                  'network_security_group': 'security_group_id'}, {})
+    assert command_results.to_context()['EntryContext'] == CREATE_NIC_EC
