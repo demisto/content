@@ -3,13 +3,14 @@ import demistomock as demisto
 
 
 def prepare_mocks(mocker, values, cache):
-    def mock_search_iocs_results(values: list, cache: list) -> dict:
+    def mock_search_iocs_results(values: list[str], cache: list[str]) -> dict:
+        values_lower = [v.lower() for v in values]
         res = [{
             "value": v,
             "indicator_type": "IP",
             "score": 0,
             "expirationStatus": "inactive",
-        } for v in cache if v in values]
+        } for v in cache if v.lower() in values_lower]
         return {"iocs": res}
 
     value = ",".join(values)
@@ -116,3 +117,24 @@ def test_no_inputs_in_cache(mocker):
 
     not_found_results = return_results_calls[0][0][0]
     assert all(i in not_found_results for i in expected_not_found)
+
+
+def test_multiple_iocs_with_same_value_but_different_casing(mocker):
+    """
+    Given:
+        A single indicator value (Test.com).
+    When:
+        Running GetIndicatorDBotScoreFromCache script.
+    Then:
+        Ensure all IOCs with the same value but different casing are returned.
+    """
+    values = ["Test.com"]
+    cache = {"test.com", "TEST.com", "should_not_return_this"}
+    expected_found = {"test.com", "TEST.com"}
+    prepare_mocks(mocker, values, cache)
+
+    GetIndicatorDBotScoreFromCache.main()
+    return_results_calls = GetIndicatorDBotScoreFromCache.return_results.call_args_list
+
+    indicators_results = return_results_calls[0][0][0]["Contents"]
+    assert {i["Indicator"] for i in indicators_results} == expected_found

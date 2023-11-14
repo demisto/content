@@ -1,18 +1,18 @@
+import contextlib
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    values = argToList(demisto.args().get("value", None))
-    unique_values = list(set(values))
+    values: list[str] = argToList(demisto.args().get("value", None))
+    unique_values: set[str] = {v.lower() for v in values}  # search query is case insensitive
+
+    res = demisto.searchIndicators(
+        query=f'value:({" ".join(unique_values)})',
+        populateFields='name,score,aggregatedReliability,type,expirationStatus',
+    )
 
     return_entries = []
-    values_not_found = []
-    value_string = f'({" ".join(unique_values)})'
-    res = demisto.searchIndicators(
-        query=f'value:{value_string}',
-        populateFields='value,score,aggregatedReliability,type,expirationStatus',
-    )
 
     if 'iocs' in res and len(res['iocs']) > 0:
         for data in res['iocs']:
@@ -21,7 +21,7 @@ def main():
             reliability = data.get("aggregatedReliability")
             indicatorType = data["indicator_type"]
             expirationStatus = data.get("expirationStatus") != "active"
-            value = data['value']
+            value = data["value"]
 
             dbotscore = {
                 "Indicator": value,
@@ -33,9 +33,10 @@ def main():
             }
 
             return_entries.append(dbotscore)
-            unique_values.remove(value)
+            with contextlib.suppress(KeyError):  # for multiple IOCs with same value but different casing
+                unique_values.remove(value)
 
-    values_not_found = unique_values
+    values_not_found = list({v for v in values if v.lower() in unique_values})  # return the values with the original casing
 
     if len(return_entries) > 0:
         md = tableToMarkdown("Indicator", return_entries)

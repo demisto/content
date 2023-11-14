@@ -1,5 +1,5 @@
 args:
-- description: The single indicator value to check.
+- description: A comma-separated list of indicator values to check.
   name: value
   required: true
   isArray: true
