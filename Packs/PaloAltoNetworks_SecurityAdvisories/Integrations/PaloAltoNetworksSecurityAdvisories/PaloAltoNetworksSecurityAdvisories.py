@@ -179,8 +179,10 @@ def advisory_to_indicator(advisory_dict: dict):
                 "source": x.get('refsource')
             } for x in references]
 
-    fields['cvss'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", "")
-    fields['cvssscore'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", "")
+    impact = advisory_dict.get("impact", {})
+    cvss = impact.get("cvss", {})
+    fields['cvss'] = cvss.get("baseScore", "")
+    fields['cvssscore'] = cvss.get("baseScore", "")
     fields['cvedescription'] = advisory_dict.get("description", {}).get("description_data", [])[0].get("value", "")
     fields['cvssvector'] = advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", "")
     fields['sourceoriginalseverity'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", "")
