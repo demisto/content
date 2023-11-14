@@ -12,10 +12,11 @@ def check_pivotable_nameserver_host_or_domain(
     try:
         for ns in nameservers or []:
             prop = ns.get(key)
-            count = int(prop.get("count") or 0)
+            count = int(prop.get("count", 0)) if prop is not None else 0
 
             if max_count >= count > 1:
-                pivotable.append({"count": count, "value": prop.get("value")})
+                value = prop.get("value") if prop is not None else ''
+                pivotable.append({"count": count, "value": value})
     except Exception as e:
         demisto.info(
             f"Error in `check_pivotable_nameserver_host_or_domain`: {str(e)}")
@@ -32,7 +33,7 @@ def check_pivotable_nameserver_ip(
         for ns in nameservers:
             ips = ns.get("ip") or []
             for ip in ips:
-                count = int(ip.get("count") or 0)
+                count = int(ip.get("count") or 0) if ip is not None else 0
 
                 if max_name_server_ip_count >= count > 1:
                     pivotable.append(
@@ -46,7 +47,7 @@ def check_pivotable_nameserver_ip(
 
 def check_pivotable_registrant_contact_name(
     registrant_contact: Dict[str, Any], max_registrant_contact_name_count: int
-) -> Dict[str, Any]:
+) -> Optional[Dict[str, Any]]:
     try:
         r_contact_name = registrant_contact.get("Name") or {}
         r_contact_name_count = int(r_contact_name.get("count") or 0)
@@ -63,7 +64,7 @@ def check_pivotable_registrant_contact_name(
 
 def check_pivotable_registrant_org(
     registrant_contact: Dict[str, Any], max_registrant_org_count: int
-) -> Dict[str, Any]:
+) -> Optional[Dict[str, Any]]:
     try:
         r_contact_org = registrant_contact.get("Org") or {}
         r_contact_org_count = int(r_contact_org.get("count") or 0)
@@ -79,7 +80,7 @@ def check_pivotable_registrant_org(
 
 def check_pivotable_registrar(
     registrar: Dict[str, Any], max_registrar_count: int
-) -> Dict[str, Any]:
+) -> Optional[Dict[str, Any]]:
     try:
         registrar = registrar.get("Org") or {}
         registrar_count = int(registrar.get("count") or 0)
@@ -100,9 +101,10 @@ def check_pivotable_ssl_info(
     try:
         for ssl_info in ssl_infos:
             prop = ssl_info.get(key)
-            count = int(prop.get("count") or 0)
+            count = int(prop.get("count") or 0) if prop is not None else 0
             if max_property_count >= count > 1:
-                pivotable.append({"count": count, "value": prop.get("value")})
+                value = prop.get("value") if prop is not None else ''
+                pivotable.append({"count": count, "value": value})
     except Exception as e:
         demisto.info(f"Error in `check_pivotable_ssl_info`: {str(e)}")
         raise
@@ -116,7 +118,7 @@ def check_pivotable_ssl_email(
     pivotable = []
     try:
         for ssl_info in ssl_infos:
-            emails = ssl_info.get("email")
+            emails = ssl_info.get("email", []) if ssl_info is not None else []
             for email in emails:
                 count = int(email.get("count") or 0)
                 if max_property_count >= count >= 1:
@@ -153,10 +155,10 @@ def check_pivotable_ip_address(
     try:
         for ip in ips:
             address = ip.get("address")
-            count = int(address.get("count") or 0)
+            count = int(address.get("count", 0)) if address is not None else 0
             if max_count >= count >= 1:
                 pivotable.append(
-                    {"count": count, "value": address.get("value")})
+                    {"count": count, "value": address.get("value") if address is not None else ''})
     except Exception as e:
         demisto.info(f"Error in `check_pivotable_ip_address`: {str(e)}")
         raise
@@ -203,7 +205,7 @@ def check_pivotable_mx_host_or_domain(
 
 def check_pivotable_google_props(
     google_prop: Dict[str, Any], max_count: int
-) -> Dict[str, Any]:
+) -> Optional[Dict[str, Any]]:
     try:
         google_prop_count = int(google_prop.get("count") or 0)
         if max_count >= google_prop_count > 1:

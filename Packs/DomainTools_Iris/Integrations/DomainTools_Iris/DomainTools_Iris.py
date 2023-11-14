@@ -803,7 +803,7 @@ def get_domain_risk_score_details(domain_risk: Dict[str, Any]) -> Dict[str, Any]
     return risk_scores
 
 
-def format_attribute(attribute: List[dict], key: Optional[str] = None) -> str:
+def format_attribute(attribute: List[dict], key: Optional[str] = '') -> str:
     """Format list of attribute to str
 
     Args:
@@ -881,16 +881,16 @@ def create_indicator_from_dt_domain(domain: Dict[str, Any], source: str) -> Dict
             "firstseen": first_seen,
             "domaintoolsirisriskscore": domain.get("domain_risk", {}).get("risk_score"),
             "domaintoolsirisfirstseen": first_seen,
-            "domaintoolsiristags": format_attribute(domain.get("tags"), key="label"),
-            "additionalwhoisemails": format_attribute(domain.get("additional_whois_email"), key="value"),
-            "emaildomains": format_attribute(domain.get("email_domain"), key="value"),
-            "nameservers": format_attribute(domain.get("name_server"), key="host.value"),
-            "ipaddresses": format_attribute(domain.get("ip"), key="address.value"),
-            "mailservers": format_attribute(domain.get("mx"), key="domain.value"),
+            "domaintoolsiristags": format_attribute(domain.get("tags", []), key="label"),
+            "additionalwhoisemails": format_attribute(domain.get("additional_whois_email", []), key="value"),
+            "emaildomains": format_attribute(domain.get("email_domain", []), key="value"),
+            "nameservers": format_attribute(domain.get("name_server", []), key="host.value"),
+            "ipaddresses": format_attribute(domain.get("ip", []), key="address.value"),
+            "mailservers": format_attribute(domain.get("mx", []), key="domain.value"),
             "ipcountrycode": ip_country_code,
             "registrantorg": domain.get("registrant_org", {}).get("value") or "",
             "registrantname": domain.get("registrant_name", {}).get("value") or "",
-            "soaemail": format_attribute(domain.get("soa_email"), key="value"),
+            "soaemail": format_attribute(domain.get("soa_email", []), key="value"),
             "expirationdate": domain.get("expiration_date", {}).get("value"),
             "domaintoolsirisriskscorecomponents": riskscore_component_mapping
         }
@@ -918,7 +918,7 @@ def fetch_domains_from_dt_api(search_type: str, search_value: str) -> List[Dict[
     return dt_results
 
 
-def fetch_and_process_domains(iris_search_hash: Dict[str, str], iris_tags: Dict[str, str]) -> None:
+def fetch_and_process_domains(iris_search_hash: Dict[str, Any], iris_tags: Dict[str, Any]) -> None:
     """
     Fetch and Process Domaintools Domain by given search hash or iris tags.
     Creates incidents/indicators in XSOAR.

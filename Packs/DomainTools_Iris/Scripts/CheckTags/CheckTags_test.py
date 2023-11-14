@@ -1,4 +1,3 @@
-# from DomainToolsCheckTags.check_tags import main
 from CommonServerPython import *
 from CheckTags import main
 

@@ -18,7 +18,7 @@ def find_age(first_seen: str) -> int:
 
 def find_indicator_reputation(domain_age: int, proximity_score: int, threat_profile_score: int) -> ReputationEnum:
     proximity_score_threshold = arg_to_number(
-        demisto.args().get('proximity_score_threshold', 70))
+        demisto.args().get('proximity_score_threshold'))
     age_threshold = arg_to_number(demisto.args().get('age_threshold', 7))
     threat_profile_score_threshold = arg_to_number(
         demisto.args().get('threat_profile_score_threshold', 70))
@@ -32,7 +32,7 @@ def find_indicator_reputation(domain_age: int, proximity_score: int, threat_prof
         return ReputationEnum.GOOD
 
 
-def format_attribute(attribute: List[dict], key: Optional[str] = None) -> str:
+def format_attribute(attribute: List[dict], key: Optional[str] = '') -> str:
     """Format list of attribute to str
 
     Args:
