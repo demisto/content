@@ -895,7 +895,7 @@ script:
     - description: XDR endpoint ID to run the query on.
       isArray: true
       name: endpoint_id
-    - description: 'event log ID to search. - Windows: Event ID of the event-log - Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown 1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed login, but should include a username) 4 = Logout'
+    - description: 'event log ID to search. - Windows: Event ID of the event-log - Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown 1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed login, but should include a username) 4 = Logout.'
       isArray: true
       name: event_id
       required: true
@@ -1096,7 +1096,7 @@ script:
       description: DNS query name.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_app_id_transitions
-      description: List of application IDs action, actual activities that took place and recorded by the agent
+      description: List of application IDs action, actual activities that took place and recorded by the agent.
       type: String
     - contextPath: PaloAltoNetworksXQL.DNS.results.action_total_download
       description: Total downloads.
@@ -1553,7 +1553,7 @@ script:
     - contextPath: PaloAltoNetworksXQL.ProcessCausalityNetworkActivity.results._product
       description: The result product.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.80014
   runonce: false
   script: '-'
   subtype: python3
