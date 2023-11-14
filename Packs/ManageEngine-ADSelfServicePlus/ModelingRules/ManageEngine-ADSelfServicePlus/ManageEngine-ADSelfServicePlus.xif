@@ -18,4 +18,5 @@ alter
         xdm.source.user.username = if(name != null and name != "", name, login_name != null and login_name != "", login_name, null),
         xdm.auth.service = arrayindex(regextract(msg, "ACCESS_MODE=([^\]]+)"), 0),
         xdm.event.type = arrayindex(regextract(msg, "ACTION_NAME=([^\]]+)"), 0),
-        xdm.target.user.username = replex(to_string(arrayindex(regextract(msg, "USERS_LIST=\[([^\]]+)"), 0)), "\"", "");
+        xdm.target.user.username = replex(to_string(arrayindex(regextract(msg, "USERS_LIST=\[([^\]]+)"), 0)), "\"", ""),
+        xdm.alert.severity = cefSeverity;
