@@ -97,12 +97,12 @@ def pychrome_screenshot_image(url, max_page_load_time):
 
     tab.start()
     tab.call_method("Network.enable")
-    tab.call_method("Page.navigate", url=url)
-    # tab.wait(max_page_load_time)
-    if max_page_load_time < 180:
-        tab.wait(max_page_load_time)
-    else:
-        tab.wait(10)
+    tab.call_method("Page.navigate", url=url, _timeout=max_page_load_time)
+    # # tab.wait(max_page_load_time)
+    # if max_page_load_time < 180:
+    #     tab.wait(max_page_load_time)
+    # else:
+    #     tab.wait(10)
 
     try:
         return base64.b64decode(tab.Page.captureScreenshot()['data'])
@@ -120,9 +120,9 @@ def pychrome_screenshot_pdf(url, max_page_load_time):
 
     tab.start()
     tab.call_method("Network.enable")
-    tab.call_method("Page.navigate", url=url)
-    # tab.wait(max_page_load_time)
-    tab.wait(10)
+    tab.call_method("Page.navigate", url=url, _timeout=max_page_load_time)
+    # # tab.wait(max_page_load_time)
+    # tab.wait(10)
 
     try:
         return base64.b64decode(tab.Page.printToPDF()['data'])
