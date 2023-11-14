@@ -8,5 +8,6 @@ if [ -n "${NIGHTLY}" ]; then
 else
   summary_exit_code=0
   echo "This is not a nightly build, not running e2e test summary script"
+fi
 
 exit "${summary_exit_code}"
