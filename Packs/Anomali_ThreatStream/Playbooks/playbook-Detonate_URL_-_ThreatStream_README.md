@@ -29,7 +29,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| URL | URL to detonate. | URL | Optional |
+| URL | URL to detonate. | URL.Data | Optional |
 | Interval | How often to execute polling \(in minutes\). | 5 | Optional |
 | Timeout | The duration after which to stop polling and to resume the playbook \(in minutes\). | 120 | Optional |
 | VM | The VM to use \(string\) |  | Optional |

@@ -329,6 +329,9 @@ inputs:
   value:
     complex:
       root: URL
+      accessor: Data
+      transformers:
+      - operator: uniq
   required: false
   description: URL to detonate.
   playbookInputQuery:
