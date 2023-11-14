@@ -15,6 +15,7 @@ Follow the below steps:
 
 Note:
 Make sure that the time zone of the logs are set to UTC.
+Time parsing is based on "TIME" field (UTC epoch).
 
 For additional information, refer to the official ManageEngine [documentation](https://www.manageengine.com/products/self-service-password/kb/siem-system-integration.html).
 
