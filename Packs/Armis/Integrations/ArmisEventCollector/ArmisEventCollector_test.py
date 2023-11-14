@@ -313,16 +313,17 @@ class TestHelperFunction:
             - A command result with readable output will be printed to the war-room.
         """
         from ArmisEventCollector import CommandResults, VENDOR, PRODUCT, events_to_command_results, tableToMarkdown
-        response_with_two_events = [{'time': '2023-01-01T01:00:10.123456+00:00',
-                                     '_time': '2023-01-01T01:00:10',
-                                     'unique_id': '1'},
-                                    {'time': '2023-01-01T01:00:20.123456+00:00',
-                                     '_time': '2023-01-01T01:00:20', 'unique_id': '2'}]
+        events_fetched = {'events': [{'time': '2023-01-01T01:00:10.123456+00:00',
+                                      '_time': '2023-01-01T01:00:10',
+                                      'unique_id': '1'},
+                                     {'time': '2023-01-01T01:00:20.123456+00:00',
+                                      '_time': '2023-01-01T01:00:20', 'unique_id': '2'}]}
+        expected_events_result = events_fetched['events']
         expected_result = CommandResults(
-            raw_response=response_with_two_events,
-            readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT}_events events', t=response_with_two_events,
+            raw_response=events_fetched,
+            readable_output=tableToMarkdown(name=f'{VENDOR} {PRODUCT}_events events', t=expected_events_result,
                                             removeNull=True))
-        assert events_to_command_results(response_with_two_events, 'events').readable_output == expected_result.readable_output
+        assert events_to_command_results(events_fetched, 'events').readable_output == expected_result.readable_output
 
     @freeze_time("2023-01-01 01:00:00")
     def test_set_last_run_with_current_time_initial(self, mocker):

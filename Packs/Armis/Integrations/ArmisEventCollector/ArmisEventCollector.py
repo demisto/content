@@ -409,7 +409,7 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]],
     demisto.debug(f'debug-log: {next_run=}')
 
 
-def events_to_command_results(events: dict[str, dict[str, Any]], event_type) -> CommandResults:
+def events_to_command_results(events: dict[str, list], event_type) -> CommandResults:
     """ Return a CommandResults object with a table of fetched events.
 
     Args:
@@ -419,6 +419,7 @@ def events_to_command_results(events: dict[str, dict[str, Any]], event_type) -> 
     Returns:
         CommandResults: CommandResults containing table of fetched events.
     """
+    events = events[event_type] if events else []
     product = f'{PRODUCT}_{event_type}' if event_type != 'alerts' else PRODUCT
     return CommandResults(raw_response=events,
                           readable_output=tableToMarkdown(name=f'{VENDOR} {product} events',
@@ -534,8 +535,7 @@ def main():  # pragma: no cover
 
             if should_return_results:
 
-                command_result = events_to_command_results(events=events[event_type.dataset_name],
-                                                           event_type=event_type.dataset_name)
+                command_result = events_to_command_results(events=events, event_type=event_type.dataset_name)
                 return_results(command_result)
 
         else:
