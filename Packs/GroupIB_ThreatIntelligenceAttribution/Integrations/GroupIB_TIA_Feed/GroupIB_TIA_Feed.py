@@ -1,9 +1,3 @@
-import requests
-
-import demistomock as demisto
-import demistomock
-from CommonServerPython import *
-from CommonServerUserPython import *
 """ IMPORTS """
 
 from collections.abc import Generator
@@ -161,18 +155,18 @@ MAPPING: dict = {
                         'firstseenbysource', 'lastseenbysource'
                     ]
                 },
-                # {
-                #     "main_field": 'target.ipv4.ip', "main_field_type": 'GIB Victim IP',
-                #     "add_fields": [
-                #         'target.ipv4.asn', 'target.ipv4.countryName', 'target.ipv4.region',
-                #         *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS,
-                #         'dateBegin', 'dateEnd', *EVALUATION_FIELDS
-                #     ],
-                #     "add_fields_types": [
-                #         *IP_COMMON_FIELD_TYPES, *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES,
-                #         'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
-                #     ]
-                # }
+                {
+                    "main_field": 'target.ipv4.ip', "main_field_type": 'GIB Victim IP',
+                    "add_fields": [
+                        'target.ipv4.asn', 'target.ipv4.countryName', 'target.ipv4.region',
+                        *MALWARE_FIELDS, *THREAT_ACTOR_FIELDS,
+                        'dateBegin', 'dateEnd', *EVALUATION_FIELDS
+                    ],
+                    "add_fields_types": [
+                        *IP_COMMON_FIELD_TYPES, *MALWARE_FIELD_TYPES, *THREAT_ACTOR_FIELD_TYPES,
+                        'firstseenbysource', 'lastseenbysource', *EVALUATION_FIELD_TYPES
+                    ]
+                }
             ]
     },
     "attacks/deface": {

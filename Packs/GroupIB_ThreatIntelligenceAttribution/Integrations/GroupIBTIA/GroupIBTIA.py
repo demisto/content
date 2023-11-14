@@ -1,8 +1,3 @@
-
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 """ IMPORTS """
 
 import json
@@ -40,6 +35,9 @@ MAPPING: dict = {
                     "add_fields": ["events.cnc.ipv4.asn", "events.cnc.ipv4.countryName", "events.cnc.ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 },
+                {
+                    "main_field": "events.client.ipv4.ip",
+                }
             ]
     },
     "compromised/card": {
@@ -437,7 +435,7 @@ class Client(BaseClient):
     """
 
     def _create_update_generator(self, collection_name: str, max_requests: int,
-                                 date_from: Optional[str] = None, seq_update: Union[int, str] = None,
+                                 date_from: str | None = None, seq_update: int | str = None,
                                  limit: int = 200) -> Generator:
         """
         Creates generator of lists with feeds class objects for an update session
@@ -839,7 +837,7 @@ def parse_to_outputs(value, indicator_type, fields):
         return Common.DBotScore(
             indicator=value,
             indicator_type=type_,
-            integration_name="GIB TI",
+            integration_name="GIB TI&A",
             score=score
         )
 
@@ -1032,16 +1030,13 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
     :return: next_run will be last_run in the next fetch-incidents; incidents and indicators will be created in Demisto.
     """
     incidents = []
-    next_run: dict[str, dict[str, Union[int, Any]]] = {"last_fetch": {}}
+    next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
     for collection_name in incident_collections:
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
 
         portions = client.create_poll_generator(collection_name=collection_name, max_requests=requests_count,
                                                 last_fetch=last_fetch, first_fetch_time=first_fetch_time)
         for portion, last_fetch in portions:
-            last_test = last_fetch
-            for last in last_test:
-                set(last)
             for feed in portion:
                 mapping = MAPPING.get(collection_name, {})
                 if collection_name == "compromised/breached":
@@ -1086,7 +1081,7 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
     return next_run, incidents
 
 
-def get_available_collections_command(client: Client):
+def get_available_collections_command(client: Client, args):
     """
     Returns list of available collections to context and War Room.
 
