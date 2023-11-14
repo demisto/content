@@ -2239,12 +2239,12 @@ class Pack:
 
                     elif current_directory == PackFolders.ASSETS_MODELING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'AssetModelingRule')
-                        schema: dict[str, Any] = json.loads(content_item.get('schema') or '{}')
+                        assets_schema: dict[str, Any] = json.loads(content_item.get('schema') or '{}')
                         metadata_output = {
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
-                            'datasets': list(schema.keys()),
+                            'datasets': list(assets_schema.keys()),
                             'fromversion': self._server_min_version,
                             'toversion': metadata_toversion,
                         }
