@@ -28,9 +28,10 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
+    PackTags, PackIgnored, Changelog, SIEM_RULES_OBJECTS, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
 from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
+from demisto_sdk.commands.content_graph.common import ContentType
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -81,6 +82,7 @@ class Pack:
         self._current_version = None  # initialized in load_user_metadata function
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
+        self._dependencies = {}  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
         self._user_metadata = {}  # initialized in load_user_metadata function
         self._eula_link = None  # initialized in load_user_metadata function
@@ -556,12 +558,11 @@ class Pack:
     def _clean_release_notes(release_notes_lines):
         return re.sub(r'<\!--.*?-->', '', release_notes_lines, flags=re.DOTALL)
 
-    def _parse_pack_metadata(self):
+    def _parse_pack_metadata(self, parse_dependencies: bool = False):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
-            build_number (str): circleCI build number.
-            commit_hash (str): current commit hash.
+            parse_dependencies (bool): Whether to parse dependencies in metadata as well.
 
         Returns:
             dict: parsed pack metadata.
@@ -575,6 +576,9 @@ class Pack:
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
         }
+
+        if parse_dependencies:
+            pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
 
         return pack_metadata
 
@@ -2214,9 +2218,9 @@ class Pack:
         user_metadata = {}
 
         try:
-            user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
+            user_metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # user metadata path before parsing
             if not os.path.exists(user_metadata_path):
-                logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
+                logging.error(f"{self._pack_name} pack is missing {Pack.METADATA} file.")
                 return task_status
 
             with open(user_metadata_path) as user_metadata_file:
@@ -2235,6 +2239,7 @@ class Pack:
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
             self._tags = set(user_metadata.get(Metadata.TAGS) or [])
+            self._dependencies = user_metadata.get(Metadata.DEPENDENCIES, {})
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
@@ -2265,8 +2270,25 @@ class Pack:
 
         return tags
 
+    def remove_test_dependencies(self, remove_test_deps: bool = False):
+        """Removes test dependencies from pack dependencies property
+
+        Args:
+            remove_test_deps (bool): Whether test dependencies should be removed.
+        """
+        if not remove_test_deps:
+            return
+
+        pack_test_dependencies = []
+        with Neo4jContentGraphInterface() as interface:
+            pack_obj = interface.search(content_type=ContentType.PACK, object_id=self._pack_name)[0]
+            pack_test_dependencies = [dep.content_item_to.object_id for dep in pack_obj.depends_on if dep.is_test]
+
+        removed_test_deps = [self._dependencies.pop(d) for d in self._dependencies if d in pack_test_dependencies]
+        logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
+
     def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
-                                 statistics_handler=None, format_dependencies_only=False):
+                                 statistics_handler=None, format_dependencies_only=False, remove_test_deps=False):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
@@ -2283,6 +2305,8 @@ class Pack:
         if not format_dependencies_only:
             self._create_date = self._get_pack_creation_date(index_folder_path)
             self._update_date = self._get_pack_update_date(index_folder_path)
+
+        self.remove_test_dependencies(remove_test_deps)
 
         # ===== Pack Statistics Attributes =====
         if statistics_handler:  # Public Content case
@@ -2304,7 +2328,7 @@ class Pack:
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping,
                         statistics_handler, packs_dict=None, marketplace='xsoar',
-                        format_dependencies_only=False):
+                        format_dependencies_only=False, remove_test_deps=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -2329,16 +2353,16 @@ class Pack:
         is_missing_dependencies = False
 
         try:
-            self.set_pack_dependencies(packs_dependencies_mapping, packs_dict, marketplace=marketplace)
+            self.set_pack_dependencies(packs_dependencies_mapping, marketplace=marketplace)
 
             logging.info(f"Loading pack dependencies metadata for {self._pack_name} pack")
             dependencies_metadata_dict, is_missing_dependencies = self._load_pack_dependencies_metadata(
                 index_folder_path, packs_dict)
 
             self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict,
-                                          statistics_handler, format_dependencies_only)
+                                          statistics_handler, format_dependencies_only, remove_test_deps=remove_test_deps)
 
-            formatted_metadata = self._parse_pack_metadata()
+            formatted_metadata = self._parse_pack_metadata(parse_dependencies=remove_test_deps)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata, update=True)  # writing back parsed metadata
 
@@ -2406,7 +2430,7 @@ class Pack:
 
         return latest_changelog_released_date
 
-    def set_pack_dependencies(self, packs_dependencies_mapping, packs_dict, marketplace='xsoar'):
+    def set_pack_dependencies(self, packs_dependencies_mapping, marketplace='xsoar'):
         """
         Retrieve all pack's dependencies by merging the calculated dependencies from pack_dependencies.json file, given
         as input priorly, and the hard coded dependencies featured in the pack_metadata.json file.
@@ -2417,24 +2441,11 @@ class Pack:
             marketplace: the current marketplace this upload is for
         """
         pack_dependencies_mapping = packs_dependencies_mapping.get(self._pack_name, {})
-        first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
-        all_levels_dependencies = list(pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {}))
-        displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
-        logging.debug(f'(0) {first_level_dependencies=}')
-        logging.debug(f'(0) {all_levels_dependencies=}')
-
-        if Metadata.DISPLAYED_IMAGES not in self._user_metadata:
-            self._user_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
-
-        if Metadata.DEPENDENCIES not in self._user_metadata:
-            self._user_metadata[Metadata.DEPENDENCIES] = {}
-
-        if self._pack_name != GCPConfig.BASE_PACK:
-            # add base as a mandatory pack dependency, by design for all packs
-            first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-            all_levels_dependencies.append(GCPConfig.BASE_PACK)
-            logging.debug(f'(1) {first_level_dependencies=}')
-            logging.debug(f'(1) {all_levels_dependencies=}')
+        self._first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
+        self._all_levels_dependencies = list(pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {}))
+        self._displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
+        logging.debug(f'(0) {self._first_level_dependencies=}')
+        logging.debug(f'(0) {self._all_levels_dependencies=}')
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
@@ -2442,7 +2453,7 @@ class Pack:
         logging.debug(f'{core_packs=}')
 
         if self._pack_name in core_packs:
-            mandatory_dependencies = [k for k, v in first_level_dependencies.items()
+            mandatory_dependencies = [k for k, v in self._first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
                                       and not v.get("is_test", False)
                                       and k not in core_packs
@@ -2451,11 +2462,6 @@ class Pack:
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
-
-        self._user_metadata[Metadata.DEPENDENCIES] = first_level_dependencies
-        self._first_level_dependencies = first_level_dependencies
-        self._all_levels_dependencies = all_levels_dependencies
-        self._displayed_images_dependent_on_packs = displayed_images_dependent_on_packs
 
     def prepare_for_index_upload(self):
         """ Removes and leaves only necessary files in pack folder.
