@@ -14055,7 +14055,6 @@ def test_fetch_incidents_parameters(fetch_params):
 
 def main():  # pragma: no cover
     try:
-        demisto.info("test")
         args = demisto.args()
         params = demisto.params()
         additional_malicious = argToList(params.get('additional_malicious'))
