@@ -285,10 +285,10 @@ tasks:
     continueonerrortype: ""
   '7':
     id: '7'
-    taskid: 32b33c57-a932-4709-826d-9c9f0e2d4118
+    taskid: eb1d3ebb-47be-497e-8f40-2a725ee12697
     type: regular
     task:
-      id: 32b33c57-a932-4709-826d-9c9f0e2d4118
+      id: eb1d3ebb-47be-497e-8f40-2a725ee12697
       version: -1
       name: Get task report
       description: Results of the URL submission
@@ -300,6 +300,9 @@ tasks:
       '#none#':
       - '6'
     scriptarguments:
+      info_level:
+        complex:
+          root: inputs.Info_Level
       submissionID:
         complex:
           root: FireEyeAX.Submissions.URL
@@ -357,10 +360,10 @@ tasks:
     continueonerrortype: ""
   '9':
     id: '9'
-    taskid: 67f356ea-a925-4a06-82e4-21caefa90c3b
+    taskid: f9135ff3-abfa-4a84-8ed5-ffb206a143dd
     type: regular
     task:
-      id: 67f356ea-a925-4a06-82e4-21caefa90c3b
+      id: f9135ff3-abfa-4a84-8ed5-ffb206a143dd
       version: -1
       name: View task
       description: Get a status for a url submitted to FireEye analysis
@@ -427,6 +430,11 @@ inputs:
     simple: '30'
   required: false
   description: How long to wait before giving up waiting for results.
+  playbookInputQuery:
+- key: Info_Level
+  value: {}
+  required: false
+  description: This parameter specifies the level of information to be returned in the URL submission report. Information levels include concise (default), normal, or extended.
   playbookInputQuery:
 outputs:
 - contextPath: FireEyeAX.Submissions.URL.Key
