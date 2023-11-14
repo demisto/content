@@ -509,13 +509,10 @@ cloning-content-repo-last-upload-commit:
 #    - if: '$NIGHTLY'
   artifacts:
     expire_in: 30 days
-    paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
     when: always
   before_script:
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
-    - *setup-artifactory
     - *create_artifacts_and_server_type_instance_folders
     - *get_last_upload_commit
   variables:
