@@ -410,8 +410,8 @@ jobs-done-check-nightly:
     - xsoar-saas-prepare-testing-bucket
     - xsiam_server_ga
     - tests_xsoar_server
-    - xsoar-test_playbooks_results
-    - xsiam-test_playbooks_results
+    - xsoar_test_results
+    - xsiam_test_results
     - xsiam-test_modeling_rule_results
   tags:
     - gke
@@ -455,8 +455,8 @@ jobs-done-check-on-push:
     - xsiam_server_ga
     - tests_xsoar_server
     - xsoar_ng_server_ga
-    - xsoar-test_playbooks_results
-    - xsiam-test_playbooks_results
+    - xsoar_test_results
+    - xsiam_test_results
     - xsiam-test_modeling_rule_results
   tags:
     - gke
@@ -498,8 +498,8 @@ jobs-done-check-on-merge:
     - xsiam_server_ga
     - tests_xsoar_server
     - xsoar_ng_server_ga
-    - xsoar-test_playbooks_results
-    - xsiam-test_playbooks_results
+    - xsoar_test_results
+    - xsiam_test_results
     - xsiam-test_modeling_rule_results
   tags:
     - gke

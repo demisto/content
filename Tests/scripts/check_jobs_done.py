@@ -20,8 +20,8 @@ CONTENT_NIGHTLY_JOBS = [
     'tests_xsoar_server: [Server 6.11]',
     'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
-    'xsoar-test_playbooks_results',
-    'xsiam-test_playbooks_results',
+    'xsoar_test_results',
+    'xsiam_test_results',
     'xsiam-test_modeling_rule_results',
 ]
 
@@ -74,8 +74,8 @@ CONTENT_COMMON_JOBS = [
     'tests_xsoar_server: [Server 6.12]',
     'tests_xsoar_server: [Server Master]',
     'xsoar_ng_server_ga',
-    'xsoar-test_playbooks_results',
-    'xsiam-test_playbooks_results',
+    'xsoar_test_results',
+    'xsiam_test_results',
     'xsiam-test_modeling_rule_results',
 ]
 
