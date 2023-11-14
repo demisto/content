@@ -1,7 +1,7 @@
 id: Get User Devices by Username - Generic
 version: -1
 name: Get User Devices by Username - Generic
-description: |
+description: |-
   This playbook retrieves information on all of the associated user devices, based on the user's username.
   In order to get a generic output, the following information on all of the retrieved devices will be saved under the `UserDevices` context key:
   - Name
@@ -20,7 +20,7 @@ description: |
   - Cortex XDR IR
   - ServiceNow v2
   - Google Workspace (Gsuite)
-  - Active Directory Query v2
+  - Active Directory Query v2.
 starttaskid: "0"
 tasks:
   "0":
@@ -61,10 +61,10 @@ tasks:
       id: 92420939-e8b5-4eca-8e8a-ca4a185b06fb
       version: -1
       name: Username exists?
+      description: Checks if the username input is not empty.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "12"
@@ -179,10 +179,10 @@ tasks:
       id: 642325ab-a47b-466b-8ceb-5f6b870645dc
       version: -1
       name: Customer ID exist?
+      description: Checks if the customer ID input is not empty.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "11"
@@ -274,7 +274,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
+          "x": 1980,
           "y": 1830
         }
       }
@@ -305,7 +305,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
+          "x": 1980,
           "y": 530
         }
       }
@@ -341,7 +341,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
+          "x": 2200,
           "y": 890
         }
       }
@@ -381,7 +381,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1430,
+          "x": 1980,
           "y": 690
         }
       }
@@ -417,7 +417,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
+          "x": 2650,
           "y": 890
         }
       }
@@ -476,7 +476,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1950,
+          "x": 2500,
           "y": 530
         }
       }
@@ -489,12 +489,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: fd67527c-d621-485b-8c25-ea1f16071131
+    taskid: 169c5e7e-5e78-4951-8ccf-b4124b0390ed
     type: title
     task:
-      id: fd67527c-d621-485b-8c25-ea1f16071131
+      id: 169c5e7e-5e78-4951-8ccf-b4124b0390ed
       version: -1
-      name: Cortex XDR
+      name: Cortex XDR / Core
       type: title
       iscommand: false
       brand: ""
@@ -502,12 +502,13 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+      - "54"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 380,
+          "x": 640,
           "y": 530
         }
       }
@@ -644,7 +645,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 1450,
           "y": 530
         }
       }
@@ -683,7 +684,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 1450,
           "y": 690
         }
       }
@@ -719,7 +720,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 1450,
           "y": 890
         }
       }
@@ -750,7 +751,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1460,
           "y": 1610
         }
       }
@@ -875,10 +876,10 @@ tasks:
       id: 35f1249e-457e-4e2a-8357-d9fa3044431b
       version: -1
       name: User found?
+      description: Checks if a username was found.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "26"
@@ -984,10 +985,10 @@ tasks:
       id: 76c960de-4232-407e-88d3-3a2b4d1e54e1
       version: -1
       name: Check if any device found
+      description: Checks if any user device was found.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "29"
@@ -1209,10 +1210,10 @@ tasks:
       id: 0ad9d77f-b679-45ee-894e-7830b1502627
       version: -1
       name: CustomADAttribute exist?
+      description: Checks if a custom AD attribute was provided in the playbook input.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "34"
@@ -1411,10 +1412,10 @@ tasks:
       id: 54307288-b5f0-4a11-83ed-3744b5fe18ee
       version: -1
       name: Any results?
+      description: Checks if any result was found.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -1435,7 +1436,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
+          "x": 2200,
           "y": 1075
         }
       }
@@ -1454,10 +1455,10 @@ tasks:
       id: aeec665b-9c0d-4fe6-8150-d1a37cf235ba
       version: -1
       name: Any results?
+      description: Checks if any result was found.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -1478,7 +1479,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
+          "x": 2650,
           "y": 1075
         }
       }
@@ -1515,7 +1516,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
+          "x": 2200,
           "y": 1275
         }
       }
@@ -1552,7 +1553,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
+          "x": 2650,
           "y": 1275
         }
       }
@@ -1594,7 +1595,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
+          "x": 2200,
           "y": 1460
         }
       }
@@ -1636,7 +1637,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2100,
+          "x": 2650,
           "y": 1460
         }
       }
@@ -1688,7 +1689,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1650,
+          "x": 2200,
           "y": 1630
         }
       }
@@ -1707,10 +1708,10 @@ tasks:
       id: 10f93f62-40f7-467d-89d6-1ef8c5954712
       version: -1
       name: Any results?
+      description: Checks if there is any result.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "26"
@@ -1792,10 +1793,10 @@ tasks:
       id: edc77b8c-9115-4658-879a-fc7d39e1c36e
       version: -1
       name: Any results?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "11"
@@ -1916,10 +1917,10 @@ tasks:
       id: b256ed98-732f-4165-88a1-86d94773c72d
       version: -1
       name: Any results?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "34"
@@ -1966,10 +1967,10 @@ tasks:
       id: ff18c78e-c128-42de-8cc2-5929bd1ec9ad
       version: -1
       name: Any results?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "20"
@@ -1990,7 +1991,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
+          "x": 1450,
           "y": 1075
         }
       }
@@ -2032,7 +2033,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 1460,
           "y": 1260
         }
       }
@@ -2051,10 +2052,10 @@ tasks:
       id: 360e2e81-7171-42c4-8063-6d45e7dbc441
       version: -1
       name: Any results?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "16"
@@ -2088,10 +2089,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: ffca4e76-501e-47d2-8ac0-66973cd15498
+    taskid: 69282860-ecd4-45b7-8ba3-7ff339cfe7e1
     type: regular
     task:
-      id: ffca4e76-501e-47d2-8ac0-66973cd15498
+      id: 69282860-ecd4-45b7-8ba3-7ff339cfe7e1
       version: -1
       name: Set XDREndpoints
       description: |-
@@ -2111,13 +2112,202 @@ tasks:
       key:
         simple: XDREndpoints
       value:
-        simple: '${PaloAltoNetworksXDR.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: '''', OS: val[''os_type''], Integration: ''Cortex XDR - IR''}}'
+        simple: '${PaloAltoNetworksXDR.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: val[''mac_address''], OS: val[''os_type''], Integration: ''Cortex XDR - IR''}}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 380,
+          "y": 1265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 0eea89b2-b09a-4dae-8356-31b186e1613a
+    type: condition
+    task:
+      id: 0eea89b2-b09a-4dae-8356-31b186e1613a
+      version: -1
+      name: Cortex Core IR enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "55"
+      "yes":
+      - "56"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 1b426d46-5211-4355-8bd5-dde940087cd5
+    type: title
+    task:
+      id: 1b426d46-5211-4355-8bd5-dde940087cd5
+      version: -1
+      name: Done - Cortex Core
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: f9afe925-5210-4714-805f-e076e97c9973
+    type: regular
+    task:
+      id: f9afe925-5210-4714-805f-e076e97c9973
+      version: -1
+      name: Cortex Core - Get device details
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      username:
+        complex:
+          root: inputs.Username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 6d47d858-a121-415e-82d4-dd033b20222a
+    type: condition
+    task:
+      id: 6d47d858-a121-415e-82d4-dd033b20222a
+      version: -1
+      name: Any results?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.Endpoint.endpoint_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: baa6ebfb-b39f-4b7a-80cf-89ac44b6969e
+    type: regular
+    task:
+      id: baa6ebfb-b39f-4b7a-80cf-89ac44b6969e
+      version: -1
+      name: Set XDREndpoints
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      key:
+        simple: XDREndpoints
+      value:
+        simple: '${Core.Endpoint={Name: val[''endpoint_name''], SerialNumber: '''', ID: val[''endpoint_id''], Model: val[''endpoint_type''], MACAddress: val[''mac_address''], OS: val[''os_type''], Integration: ''Cortex Core - IR''}}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
           "y": 1265
         }
       }
@@ -2153,15 +2343,17 @@ view: |-
       "4_11_#default#": 0.15,
       "50_20_#default#": 0.19,
       "50_51_yes": 0.42,
-      "52_16_#default#": 0.21,
+      "52_16_#default#": 0.69,
       "52_53_yes": 0.37,
+      "54_55_no": 0.11,
+      "57_55_#default#": 0.69,
       "5_11_no": 0.42,
       "9_6_no": 0.18
     },
     "paper": {
       "dimensions": {
         "height": 2345,
-        "width": 3640,
+        "width": 4190,
         "x": -1160,
         "y": 120
       }
@@ -2198,8 +2390,7 @@ outputs:
 - contextPath: GSuite.MobileDevices.MobileListObjects.resourceId
   description: The unique ID the API service uses to identify the mobile device.
 - contextPath: GSuite.MobileDevices.MobileListObjects.deviceId
-  description: The serial number for a Google Sync mobile device. For Android and
-    iOS devices, this is a software-generated unique identifier.
+  description: The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier.
 - contextPath: GSuite.MobileDevices.MobileListObjects.name
   description: A list of the owner's usernames.
 - contextPath: GSuite.MobileDevices.MobileListObjects.email
@@ -2215,14 +2406,11 @@ outputs:
 - contextPath: GSuite.MobileDevices.MobileListObjects.hardwareId
   description: The IMEI/MEID unique identifier for Android hardware.
 - contextPath: GSuite.MobileDevices.MobileListObjects.firstSync
-  description: The date and time the mobile device was initially synchronized with
-    the policy settings in the Admin console.
+  description: The date and time the mobile device was initially synchronized with the policy settings in the Admin console.
 - contextPath: GSuite.MobileDevices.MobileListObjects.lastSync
-  description: The date and time the mobile device was last synchronized with the
-    policy settings in the Admin console.
+  description: The date and time the mobile device was last synchronized with the policy settings in the Admin console.
 - contextPath: GSuite.MobileDevices.MobileListObjects.userAgent
-  description: Information about the mobile device such as the operating system
-    version.
+  description: Information about the mobile device such as the operating system version.
 - contextPath: GSuite.MobileDevices.MobileListObjects.serialNumber
   description: The mobile device's serial number.
 - contextPath: GSuite.MobileDevices.MobileListObjects.imei
@@ -2425,11 +2613,9 @@ outputs:
 - contextPath: MicrosoftATP.UserMachine.Machines.ComputerDNSName
   description: The machine DNS name.
 - contextPath: MicrosoftATP.UserMachine.Machines.FirstSeen
-  description: The first date and time the machine was observed by Microsoft Defender
-    ATP.
+  description: The first date and time the machine was observed by Microsoft Defender ATP.
 - contextPath: MicrosoftATP.UserMachine.Machines.LastSeen
-  description: The last date and time the machine was observed by Microsoft Defender
-    ATP.
+  description: The last date and time the machine was observed by Microsoft Defender ATP.
 - contextPath: MicrosoftATP.UserMachine.Machines.OSPlatform
   description: The operating system platform.
 - contextPath: MicrosoftATP.UserMachine.Machines.OSVersion
@@ -2508,5 +2694,7 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
+contentitemexportablefields:
+  contentitemfields: {}

@@ -1,6 +1,6 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
 
 import time
 import urllib3
@@ -532,8 +532,10 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], is_by_host: bool,
 
 def main() -> None:
     params = demisto.params()
-    api_key = params.get('apikey')
-    project_id = params.get('project_id')
+    api_key = params.get("credentials", {}).get("password") or params.get("apikey")
+    if not api_key:
+        return_error('Please provide a valid API token')
+    project_id = params.get("project_id")
     is_by_host = params.get('issue_grouping') == 'By Host'
     expand_issues = params.get('expand_issues', False)
     incident_limit = int(params.get('max_fetch', DEFAULT_HOST_LIMIT))
