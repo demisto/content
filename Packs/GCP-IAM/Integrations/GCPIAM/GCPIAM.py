@@ -101,7 +101,7 @@ class Client:
 
         return response
 
-    def gcp_iam_project_list_request(self, parent: str, limit: int = None, page_token=None,
+    def gcp_iam_project_list_request(self, parent: str, limit: int = None, page_token: str = None,
                                      show_deleted: bool = False) -> dict:
         """
         List projects under the specified parent.
@@ -199,7 +199,7 @@ class Client:
 
         return response
 
-    def gcp_iam_folder_list_request(self, parent: str, limit: int = None, page_token=None,
+    def gcp_iam_folder_list_request(self, parent: str, limit: int = None, page_token: str = None,
                                     show_deleted: bool = False) -> dict:
         """
         List folders under the specified parent.
@@ -295,7 +295,7 @@ class Client:
 
         return response
 
-    def gcp_iam_organization_list_request(self, limit: int = None, page_token=None) -> dict:
+    def gcp_iam_organization_list_request(self, limit: int = None, page_token: str = None) -> dict:
         """
         List organization resources that are visible to the caller.
         Args:
@@ -494,7 +494,7 @@ class Client:
 
         return response
 
-    def gcp_iam_group_membership_list_request(self, group_name: str, limit: int = None, page_token=None) -> dict:
+    def gcp_iam_group_membership_list_request(self, group_name: str, limit: int = None, page_token: str = None) -> dict:
         """
         List group memberships.
         Args:
@@ -1230,7 +1230,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
         readable_header (str): Readable message header for XSOAR war room.
         limit (int): Number of elements to retrieve.
         page (int): Page number.
-        role (list): List of potential GCP IAM roles 
+        role (list): List of potential GCP IAM roles
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2970,8 +2970,8 @@ def gcp_iam_service_account_generate_access_token_command(client: Client, args: 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    service_account_email = args['service_account_email']
-    lifetime = args['lifetime']
+    service_account_email = args.get('service_account_email', '')
+    lifetime = args.get('lifetime', '')
 
     response = client.gcp_iam_service_account_generate_access_token_request(service_account_email, lifetime)
 

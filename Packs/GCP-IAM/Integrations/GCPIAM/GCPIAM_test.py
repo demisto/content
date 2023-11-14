@@ -98,7 +98,8 @@ def test_gcp_iam_project_get_command(client):
         ("projects/project-name-1", None, 2, "roles/anthosidentityservice.serviceAgent", "Current page size: 2")
     ],
 )
-def test_gcp_iam_project_iam_policy_get_command(client, project_name, roles, expected_bindings_length, expected_role, expected_readable_output):
+def test_gcp_iam_project_iam_policy_get_command(client, project_name, roles, expected_bindings_length, expected_role,
+                                                expected_readable_output):
     """
     Scenario: Retrieve the IAM access control policy for the specified project.
     Given:
