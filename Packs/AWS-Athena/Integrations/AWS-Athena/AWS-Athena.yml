@@ -127,10 +127,10 @@ script:
       description: The AWS Region, if not specified the default region will be used.
     description: Start an Athena query.
     outputs:
-    - contextPath: AWS.Athena.StartQuery.QueryExecutionId
+    - contextPath: AWS.Athena.Query.QueryExecutionId
       description: ID of the newly created query.
       type: String
-    - contextPath: AWS.Athena.StartQuery.QueryString
+    - contextPath: AWS.Athena.Query.QueryString
       description: Object size.
       type: String
   - name: aws-athena-stop-query
@@ -162,8 +162,8 @@ script:
       description: The unique ID of the query execution.
     description: Returns information about a single execution of a query if you have access to the workgroup in which the query ran.
     outputs:
-    - contextPath: AWS.Athena.QueryExecution
-      description: Query execution details.
+    - contextPath: AWS.Athena.Query
+      description: Query execution information.
       type: Dictionary
   - name: aws-athena-get-query-results
     arguments:

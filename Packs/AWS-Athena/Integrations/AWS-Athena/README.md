@@ -29,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### aws-athena-start-query
 
 ***
-Start Athena Query.
+Start an Athena query.
 
 #### Base Command
 
@@ -55,8 +55,8 @@ Start Athena Query.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Athena.StartQuery.QueryExecutionId | String | ID of the newly created query. | 
-| AWS.Athena.StartQuery.QueryString | String | Object size. | 
+| AWS.Athena.Query.QueryExecutionId | String | ID of the newly created query. | 
+| AWS.Athena.Query.QueryString | String | Object size. | 
 
 ### aws-athena-stop-query
 
@@ -103,7 +103,7 @@ Returns information about a single execution of a query if you have access to th
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Athena.QueryExecution | Dictionary | Query execution details. | 
+| AWS.Athena.Query | Dictionary | Query execution information. | 
 
 ### aws-athena-get-query-results
 

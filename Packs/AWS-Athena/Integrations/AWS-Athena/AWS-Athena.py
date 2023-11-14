@@ -73,7 +73,7 @@ def start_query_execution_command(args: dict, client):
     }
 
     return CommandResults(
-        outputs_prefix='AWS.Athena.StartQuery',
+        outputs_prefix='AWS.Athena.Query',
         outputs_key_field='QueryExecutionId',
         outputs=context_data,
         raw_response=response,
@@ -108,7 +108,7 @@ def get_query_execution_command(args: dict, client):
     response = raw_response['QueryExecution']
 
     return CommandResults(
-        outputs_prefix='AWS.Athena.QueryExecution',
+        outputs_prefix='AWS.Athena.Query',
         outputs_key_field='QueryExecutionId',
         outputs=response,
         raw_response=raw_response,
