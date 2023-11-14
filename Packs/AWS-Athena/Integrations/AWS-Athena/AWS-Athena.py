@@ -82,19 +82,19 @@ def start_query_execution_command(args: dict, client):
 
 
 def stop_query_command(args: dict, client):
-    query_execution_id = args['QueryExecutionId']
+    query_execution_id: str = args['QueryExecutionId']
     response = client.stop_query_execution(QueryExecutionId=query_execution_id)
 
     if response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
-        return CommandResults(readable_output="The query {query_execution_id} was Deleted.")
+        return CommandResults(readable_output=f"Query '{query_execution_id}' has been successfully stopped.")
 
     else:
         demisto.debug("Response:\n" + str(response))
-        return CommandResults(readable_output=f"Failed to Delete the query '{query_execution_id}'.")
+        raise DemistoException(f"Failed to stop query '{query_execution_id}'.")
 
 
 def get_query_execution_command(args: dict, client):
-    query_execution_id = args['QueryExecutionId']
+    query_execution_id: str = args['QueryExecutionId']
     raw_response = client.get_query_execution(QueryExecutionId=query_execution_id)
 
     try:
@@ -149,7 +149,7 @@ def main():  # pragma: no cover
     retries = params.get('retries', 5)
 
     try:
-        demisto.debug(f'Command being called is {command}')
+        demisto.debug(f"Command being called is '{command}'.")
 
         aws_client = AWSClient(aws_default_region=aws_default_region, aws_role_arn=aws_role_arn,
                                aws_role_session_name=aws_role_session_name, aws_role_session_duration=aws_role_session_duration,
@@ -164,6 +164,8 @@ def main():  # pragma: no cover
             role_session_name=args.get('roleSessionName'),
             role_session_duration=args.get('roleSessionDuration'),
         )
+
+        result: str | CommandResults
 
         if demisto.command() == 'test-module':
             response = client.list_named_queries()
