@@ -510,7 +510,6 @@ cloning-content-repo-last-upload-commit:
   artifacts:
     expire_in: 30 days
     paths:
-      - ${CI_PROJECT_DIR}/unit-tests
       - ${CI_PROJECT_DIR}/artifacts/*
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
     when: always
