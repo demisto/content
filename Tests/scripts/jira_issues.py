@@ -3,6 +3,7 @@ import os
 from collections import defaultdict
 from datetime import datetime, timedelta
 from distutils.util import strtobool
+from typing import Any
 
 from jira import JIRA, Issue
 from jira.client import ResultList
@@ -34,11 +35,7 @@ def generate_ticket_summary(prefix: str) -> str:
 
 
 def generate_query_by_component_and_issue_type() -> str:
-    if JIRA_LABELS:
-        jira_labels_query = " AND ".join({f"labels = \"{label}\"" for label in JIRA_LABELS})
-        jira_labels = f" AND {jira_labels_query}"
-    else:
-        jira_labels = ""
+    jira_labels = "".join(f" AND labels = \"{x}\"" for x in JIRA_LABELS) if JIRA_LABELS else ""
     return (f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" "
             f"AND component = \"{JIRA_COMPONENT}\" {jira_labels}")
 
@@ -128,3 +125,10 @@ def jira_search_all_by_query(jira_server: JIRA,
             break
 
     return issues
+
+
+def jira_ticket_to_json_data(jira_ticket: Issue) -> dict[str, Any]:
+    return {
+        "url": jira_ticket.permalink(),
+        "key": jira_ticket.key,
+    }
