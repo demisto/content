@@ -93,8 +93,7 @@ tasks:
       id: 6858b2fe-7399-44d8-894a-68f05cd01cad
       version: -1
       name: Cortex XDR - Isolate Endpoint
-      description: This playbook accepts an XDR endpoint ID and isolates it using
-        the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
+      description: This playbook accepts a Cortex XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
       playbookName: Cortex XDR - Isolate Endpoint
       type: playbook
       iscommand: false
@@ -706,9 +705,7 @@ tasks:
       id: e9267c6f-4c2d-48dd-8017-cecd3cd48a4a
       version: -1
       name: Threat Hunting - Generic
-      description: "This playbook enables threat hunting for IOCs in your enterprise.\n\
-        This playbook currently supports the following integrations:\n- Splunk\n-\
-        \ Qradar\n- Pan-os\n- Cortex data lake \n- Autofocus"
+      description: "This playbook enables threat hunting for IOCs in your enterprise.\nThis playbook currently supports the following integrations:\n- Splunk\n- Qradar\n- Pan-os\n- Cortex data lake \n- Autofocus"
       playbookName: Threat Hunting - Generic
       type: playbook
       iscommand: false
@@ -777,8 +774,7 @@ tasks:
       id: aed1591c-cd9f-42ba-84c8-51184497392e
       version: -1
       name: Collect system info
-      description: Initiates a new endpoint script execution action using a script
-        from the script library.
+      description: Initiates a new endpoint script execution action using a script from the script library.
       type: regular
       iscommand: false
       brand: ""
@@ -981,8 +977,7 @@ tasks:
       id: e48287f6-34db-41f2-8a31-925555eca04a
       version: -1
       name: Is Active Directory Query v2 enabled?
-      description: Checks if there’s an active instance of the Active Directory Query
-        v2 integration enabled.
+      description: Checks if there’s an active instance of the Active Directory Query v2 integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1128,8 +1123,7 @@ tasks:
       id: e0a94c31-eeef-4c3b-83f8-3424a3d81462
       version: -1
       name: Cortex XDR - get incident extra data
-      description: Returns additional data for the specified incident, for example,
-        related alerts, file artifacts, network artifacts, and so on.
+      description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
       script: '|||xdr-get-incident-extra-data'
       type: regular
       iscommand: true
@@ -1174,11 +1168,7 @@ tasks:
       - "78"
     scriptarguments:
       query:
-        simple: xdralerts.description:*printnightmare_exploit_patched_machine* OR
-          xdralerts.description:*printnightmare_local_exploit_patched_machine* OR
-          xdralerts.description:*printnightmare_exploit_unpatched_machine* OR xdralerts.description:*printnightmare_local_exploit_unpatched_machine*
-          OR xdralerts.description:*printnightmare_exploit.2* OR xdralerts.description:“*printnightmare_local_exploit.3*
-          OR xdralerts.description:“*printnightmare_exploit.4* OR xdralerts.description:“*printnightmare_local_exploit.2*
+        simple: xdralerts.description:*printnightmare_exploit_patched_machine* OR xdralerts.description:*printnightmare_local_exploit_patched_machine* OR xdralerts.description:*printnightmare_exploit_unpatched_machine* OR xdralerts.description:*printnightmare_local_exploit_unpatched_machine* OR xdralerts.description:*printnightmare_exploit.2* OR xdralerts.description:“*printnightmare_local_exploit.3* OR xdralerts.description:“*printnightmare_exploit.4* OR xdralerts.description:“*printnightmare_local_exploit.2*
     separatecontext: false
     view: |-
       {
@@ -1292,8 +1282,7 @@ tasks:
       id: f9cf1d24-c495-4d57-8cd5-a02ddbb851a4
       version: -1
       name: Retrieve suspicious files involved in the attack
-      description: Get files that were involved in the attack for further analysis
-        and forensics.
+      description: Get files that were involved in the attack for further analysis and forensics.
       type: regular
       iscommand: false
       brand: ""
@@ -1371,7 +1360,7 @@ tasks:
           root: PaloAltoNetworksXDR.Incident.alerts
           accessor: action_remote_ip
           transformers:
-            - operator: uniq
+          - operator: uniq
       UserVerification:
         complex:
           root: inputs.UserVerification
@@ -1461,3 +1450,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+marketplaces:
+- xsoar

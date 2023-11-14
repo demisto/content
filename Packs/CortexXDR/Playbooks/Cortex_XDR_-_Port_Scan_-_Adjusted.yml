@@ -1,7 +1,7 @@
 id: Cortex XDR - Port Scan - Adjusted
 version: -1
 name: Cortex XDR - Port Scan - Adjusted
-description: "The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n- Enrichment and investigation of the scanner and scanned hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Suspicious port scan\n- Port scan by suspicious process\n- Highly suspicious port scan\n- Port scan"
+description: "The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n- Enrichment and investigation of the scanner and scanned hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Suspicious port scan\n- Port scan by suspicious process\n- Highly suspicious port scan\n- Port scan."
 starttaskid: "0"
 tasks:
   "0":
@@ -2755,7 +2755,7 @@ outputs:
   description: Lateral Movement First Date time from the port scan alert.
   type: unknown
 - contextPath: PortScan.PortScanFirstDatetime
-  description: Port Scan First Date time
+  description: Port Scan First Date time.
   type: unknown
 tests:
 - Test XDR Playbook general commands
@@ -2764,3 +2764,5 @@ tests:
 fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields: {}
+marketplaces:
+- xsoar
