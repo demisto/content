@@ -1,5 +1,5 @@
 commonfields:
-  id: AWS - Athena
+  id: AWS - Athena - Beta
   version: -1
 name: AWS - Athena
 display: AWS - Athena
@@ -52,6 +52,18 @@ configuration:
   displaypassword: Secret Key
   required: true
   section: Connect
+- display: Access Key
+  name: access_key
+  defaultvalue: ""
+  type: 0
+  hidden: true
+  required: false
+- display: Secret Key
+  name: secret_key
+  type: 4
+  defaultvalue: ""
+  hidden: true
+  required: false
 - display: Timeout
   name: timeout
   defaultvalue: "60,10"
