@@ -1,3 +1,8 @@
+
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
 """ IMPORTS """
 
 import json
@@ -1081,7 +1086,7 @@ def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: st
     return next_run, incidents
 
 
-def get_available_collections_command(client: Client, args):
+def get_available_collections_command(client: Client):
     """
     Returns list of available collections to context and War Room.
 
