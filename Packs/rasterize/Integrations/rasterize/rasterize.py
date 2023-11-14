@@ -80,7 +80,7 @@ class RasterizeType(Enum):
 
 def ensure_chrome_running():
     try:
-        command = ['sh', '/start_chrome_headless.sh']
+        command = ['bash', '/start_chrome_headless.sh']
         with open(os.devnull, "w") as fnull:
             result = subprocess.call(command, stdout = fnull, stderr = fnull)
             demisto.debug(f'start_chrome_headless output: {result}')
