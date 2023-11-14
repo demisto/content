@@ -54,6 +54,10 @@ xql
 indicatorsvalues
 setindicators
 printerrorentry
+SSO
+RDP
+XCLOUD
+Cryptomining
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
@@ -123,3 +127,6 @@ ignore=IF115
 
 [file:CortexXDRInvestigationVerdict.yml]
 ignore=BA124
+
+[file:XDR_Last_Mirrored_In_Time.json]
+ignore=IF113
