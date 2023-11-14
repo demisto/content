@@ -14,10 +14,10 @@ args:
   - 'false'
 comment: Checks an object for an empty value and returns a pre-set default value.
 commonfields:
-  id: SetIfEmpty_test
+  id: SetIfEmpty
   version: -1
 enabled: true
-name: SetIfEmpty_test
+name: SetIfEmpty
 script: '-'
 tags:
 - transformer
