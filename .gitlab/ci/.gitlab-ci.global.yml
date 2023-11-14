@@ -517,7 +517,6 @@ cloning-content-repo-last-upload-commit:
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
     - *setup-artifactory
-    - *stop_contrib_external_build
     - *create_artifacts_and_server_type_instance_folders
     - *clone_and_export_variables
     - *install_node_modules
