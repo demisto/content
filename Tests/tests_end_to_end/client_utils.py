@@ -109,22 +109,22 @@ def save_incident(
 
 
 @contextmanager
-def save_playbook(client: XsoarClient, playbook_path: str, playbook_id: str, playbook_name: str):
+def save_playbook(xsoar_client: XsoarClient, playbook_path: str, playbook_id: str, playbook_name: str):
     """
     Saves a playbook
 
     Args:
-        client (XsoarClient): xsoar client (saas/on-prem/xsiam).
+        xsoar_client (XsoarClient): xsoar client (saas/on-prem/xsiam).
         playbook_path (dict): path to the playbook yml
         playbook_id (str): the ID of the playbook
         playbook_name (str): the name of the playbook
     """
     try:
-        client.client.import_playbook(playbook_path)
+        xsoar_client.client.import_playbook(playbook_path)
         logging.info(f'Created playbook {playbook_id}')
         yield
     finally:
-        client.delete_playbook(playbook_name, playbook_id)
+        xsoar_client.delete_playbook(playbook_name, playbook_id)
         logging.info(f'Deleted playbook {playbook_id}')
 
 
