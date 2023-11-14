@@ -818,14 +818,13 @@ def create_batches(list_of_packs_and_its_dependency: list):
     Create a list of packs batches to install
 
     Args:
-        list_of_packs_and_its_dependency (list): A list containing lists where each item is another list of a pack and its dependencies.
+        list_of_packs_and_its_dependency (list): A list containing lists
+            where each item is another list of a pack and its dependencies.
         A list of pack batches (lists) to use in installation requests in size less than BATCH_SIZE
     """
-    batch = []
-    list_of_batches = []
 
-    batch = []
-    list_of_batches = []
+    batch: list = []
+    list_of_batches: list = []
     for packs_to_install_body in list_of_packs_and_its_dependency:
         if len(batch) + len(packs_to_install_body) < BATCH_SIZE:
             batch.extend(packs_to_install_body)
