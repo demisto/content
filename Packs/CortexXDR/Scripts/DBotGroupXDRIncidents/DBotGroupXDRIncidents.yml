@@ -11,12 +11,12 @@ args:
   description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   name: fromDate
 - defaultValue: '500'
-  description: The maximum number of incidents to fetch
+  description: The maximum number of incidents to fetch.
   name: limit
 - defaultValue: Cortex XDR Incident
-  description: The Cortex XDR incident type
+  description: The Cortex XDR incident type.
   name: incidentType
-- description: Input search query from the dashboard
+- description: Input search query from the dashboard.
   name: searchQuery
 - defaultValue: '24'
   description: Period of time (in hours) before retraining the model. Default is "24".
@@ -47,4 +47,6 @@ type: python
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.80014
+marketplaces:
+- xsoar
