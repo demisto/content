@@ -612,10 +612,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 1db51b63-e952-4e31-8ba1-cb0bf482316e
+    taskid: 65920250-c97e-4ff7-8f34-4d409f651a2c
     type: condition
     task:
-      id: 1db51b63-e952-4e31-8ba1-cb0bf482316e
+      id: 65920250-c97e-4ff7-8f34-4d409f651a2c
       version: -1
       name: Check if EntryID exists
       description: Checks if the entry ID for the file to be detonated exists.
@@ -635,7 +635,8 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: inputs.File.EntryID
+              complex:
+                root: inputs.EntryID
             iscontext: true
           right:
             value: {}
@@ -656,10 +657,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 3a064600-d004-49fe-8ab8-146cdbbb3b0c
+    taskid: 4643aaf7-5f3b-4851-8773-b74b87e18603
     type: regular
     task:
-      id: 3a064600-d004-49fe-8ab8-146cdbbb3b0c
+      id: 4643aaf7-5f3b-4851-8773-b74b87e18603
       version: -1
       name: Detonate File - OPSWAT Filescan
       description: Detonates a file using the OPSWAT-Filescan Integration. Returns relevant reports to the War Room and file reputations to the context data.
@@ -673,7 +674,10 @@ tasks:
     scriptarguments:
       entry_id:
         complex:
-          root: inputs.EntryID
+          root: inputs.File
+          accessor: EntryID
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
