@@ -3,14 +3,14 @@ from typing import Dict, Any, List
 import traceback
 
 
-def get_related_indicators(addintional_indicators: Optional[List[str]] = '') -> List[str]:
+def get_related_indicators(addintional_indicators: str = '') -> List[str]:
     related_indicators = addintional_indicators.strip(
         '[]').replace('"', '').split(',')
     # Remove leading and trailing spaces from each domain
     return [indicator.strip() for indicator in related_indicators]
 
 
-def associate_indicator_to_incident(args: Dict[str, Any]) -> CommandResults:
+def associate_indicator_to_incident() -> CommandResults:
     human_readable_str = "No indicator to associate."
 
     is_associated = demisto.context().get("associatedIndicators") or False
@@ -40,7 +40,7 @@ def associate_indicator_to_incident(args: Dict[str, Any]) -> CommandResults:
 
 def main():
     try:
-        return_results(associate_indicator_to_incident(demisto.args()))
+        return_results(associate_indicator_to_incident())
     except Exception as ex:
         demisto.error(traceback.format_exc())
         return_error(

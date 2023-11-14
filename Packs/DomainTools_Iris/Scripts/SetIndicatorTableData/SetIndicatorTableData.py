@@ -18,7 +18,7 @@ def find_age(first_seen: str) -> int:
 
 def find_indicator_reputation(domain_age: int, proximity_score: int, threat_profile_score: int) -> ReputationEnum:
     proximity_score_threshold = arg_to_number(
-        demisto.args().get('proximity_score_threshold'))
+        demisto.args().get('proximity_score_threshold', 70))
     age_threshold = arg_to_number(demisto.args().get('age_threshold', 7))
     threat_profile_score_threshold = arg_to_number(
         demisto.args().get('threat_profile_score_threshold', 70))

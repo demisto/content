@@ -5,7 +5,7 @@ from CommonServerPython import *
 def test_find_age():
     create_date = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%dT%H:%M:%SZ")
     result = find_age(create_date)
-    assert result == 1
+    assert result == 2
 
 
 def test_find_indicator_reputation_bad():

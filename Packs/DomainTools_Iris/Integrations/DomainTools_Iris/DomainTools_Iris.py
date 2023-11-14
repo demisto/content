@@ -681,8 +681,8 @@ def format_list_value(link_type, list, domain=None):
 
 
 def format_guided_pivot_link(link_type, item, domain=None):
-    query = item.get('value')
-    count = item.get('count')
+    query = item.get('value', '')
+    count = item.get('count', 0)
 
     if domain:
         link_type = 'domain'
@@ -803,7 +803,7 @@ def get_domain_risk_score_details(domain_risk: Dict[str, Any]) -> Dict[str, Any]
     return risk_scores
 
 
-def format_attribute(attribute: List[dict], key: Optional[str] = '') -> str:
+def format_attribute(attribute: List[dict], key: str = '') -> str:
     """Format list of attribute to str
 
     Args:
