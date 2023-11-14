@@ -5070,7 +5070,8 @@
             "integrations": "Cortex XDR - XQL Query Engine",
             "playbookID": "Cortex XDR - XQL Query - Test",
             "fromversion": "6.2.0",
-            "memory_threshold": 90
+            "memory_threshold": 90,
+            "timeout": 500
         },
         {
             "playbookID": "ListUsedDockerImages - Test",
