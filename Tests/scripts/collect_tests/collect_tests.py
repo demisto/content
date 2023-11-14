@@ -1471,8 +1471,8 @@ if __name__ == '__main__':
     pack_to_upload = args.pack_names
     collector: TestCollector
 
-    if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
+    if os.getenv("CI_COMMIT_BRANCH") == "xsoar_8_end_to_end_tests":
+        collector = XSOARNGEndToEndTestCollector(marketplace=marketplace, graph=graph)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
