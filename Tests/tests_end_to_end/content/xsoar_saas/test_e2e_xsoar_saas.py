@@ -217,7 +217,7 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
             assert investigation_id, f'investigation ID is empty in {qradar_incident_response}'
 
             # close the qradar offense
-            _, context = xsoar_saas_client.run_cli_command(
+            context = xsoar_saas_client.run_cli_command(
                 f"!qradar-offense-update offense_id={offense_id} closing_reason_id=1 status=CLOSED",
                 investigation_id=investigation_id
             )
