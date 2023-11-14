@@ -5457,7 +5457,9 @@ def panorama_query_logs_command(args: dict):
     job_id = args.get('query_log_job_id')
     illegal_chars = {'@', '#'}
     ignored_keys = {'entry'}
-    show_detail = args.get('show-detail', 'no')
+    # We added the `or` operator in case the show-detail argument has an empty string, which can happen when
+    # updating an integration
+    show_detail = args.get('show-detail') or 'no'
 
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
