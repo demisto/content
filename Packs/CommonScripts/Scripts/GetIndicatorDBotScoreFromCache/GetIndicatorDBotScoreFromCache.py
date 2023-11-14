@@ -21,7 +21,7 @@ def main():
             reliability = data.get("aggregatedReliability")
             indicatorType = data["indicator_type"]
             expirationStatus = data.get("expirationStatus") != "active"
-            value = data["value"]
+            value: str = data["value"]
 
             dbotscore = {
                 "Indicator": value,
@@ -34,7 +34,7 @@ def main():
 
             return_entries.append(dbotscore)
             with contextlib.suppress(KeyError):  # for multiple IOCs with same value but different casing
-                unique_values.remove(value)
+                unique_values.remove(value.lower())
 
     values_not_found = list({v for v in values if v.lower() in unique_values})  # return the values with the original casing
 
