@@ -111,7 +111,7 @@ class Pack:
         self._content_commit_hash = None  # initialized in enhance_pack_attributes function
         self._preview_only = None  # initialized in enhance_pack_attributes function
         self._disable_monthly = None  # initialized in enhance_pack_attributes
-        self._tags = None  # initialized in enhance_pack_attributes function
+        self._tags = set()  # initialized in load_user_metadata function
         self._modules = None
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
@@ -2234,7 +2234,7 @@ class Pack:
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
-            self._tags = user_metadata.get(Metadata.TAGS) or {}
+            self._tags = set(user_metadata.get(Metadata.TAGS) or [])
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
@@ -2247,7 +2247,7 @@ class Pack:
         finally:
             return task_status
 
-    def _collect_pack_tags_by_statistics(self, trending_packs):
+    def _collect_pack_tags_by_statistics(self, trending_packs) -> set:
         tags = set()
 
         if self._create_date:
