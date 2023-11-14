@@ -2,7 +2,7 @@ id: Get User Devices by Username - Generic
 version: -1
 name: Get User Devices by Username - Generic
 description: |-
-  This playbook retrieves information on all of the associated user devices, based on the user's username.
+  This TEST playbook retrieves information on all of the associated user devices, based on the user's username.
   In order to get a generic output, the following information on all of the retrieved devices will be saved under the `UserDevices` context key:
   - Name
   - Serial Number
