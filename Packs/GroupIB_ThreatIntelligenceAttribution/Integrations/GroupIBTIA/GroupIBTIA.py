@@ -440,7 +440,7 @@ class Client(BaseClient):
     """
 
     def _create_update_generator(self, collection_name: str, max_requests: int,
-                                 date_from: str | None = None, seq_update: int | str = None,
+                                 date_from: str | None = None, seq_update: int | str = '',
                                  limit: int = 200) -> Generator:
         """
         Creates generator of lists with feeds class objects for an update session
