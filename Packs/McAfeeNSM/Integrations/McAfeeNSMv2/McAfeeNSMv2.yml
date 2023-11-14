@@ -868,7 +868,7 @@ script:
       description: The name of the malware.
       type: String
     - contextPath: NSM.Alerts.MalwareFile.malwareConfidence
-      description: Malware confidence
+      description: Malware confidence.
       type: String
     - contextPath: NSM.Alerts.MalwareFile.engine
       description: Malware file engine.
@@ -1226,7 +1226,7 @@ script:
       description: Attack category.
       type: String
     - contextPath: NSM.Attacks.description.definition
-      description: Attack Definition
+      description: Attack Definition.
       type: String
     - contextPath: NSM.Attacks.description.btp
       description: Benign Trigger Probability (BTP).
