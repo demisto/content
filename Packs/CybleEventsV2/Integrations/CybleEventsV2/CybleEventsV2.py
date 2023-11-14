@@ -33,7 +33,11 @@ INCIDENT_STATUS = {
     "Remediation in Progress": "REMEDIATION_IN_PROGRESS",
     "Remediation not Required": "REMEDIATION_NOT_REQUIRED"
 }
-
+SEVERITIES = {
+    "Low": "LOW",
+    "Medium": "MEDIUM",
+    "High": "HIGH"
+}
 ROUTES = {
     "services": r"/apollo/api/v1/y/services",
     "alerts-groups": r"/apollo/api/v1/y/alerts/groups",
@@ -178,13 +182,6 @@ def alert_input_structure(input_params):
             "created_at": {
                 "gte": input_params['start_date'],
                 "lte": input_params['end_date'],
-            },
-            "severity": {
-                "in": [
-                    "HIGH",
-                    "MEDIUM",
-                    "LOW"
-                ]
             },
             "status": {
                 "in": [
@@ -335,7 +332,7 @@ def test_response(client, method, base_url, token):
         raise Exception("failed to connect")
 
 
-def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, skip=True):
+def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity, skip=True):
     """
     Fetch alert details from server for creating incidents in XSOAR
     Args:
@@ -347,6 +344,7 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
         last_run: get last run details
         hide_cvv_expiry: hide expiry / cvv number from cards
         incident_collections: list of collections to be fetched
+        incident_severity: list of severities to be fetched
         skip: skip the validation for fetch incidnet
 
     Returns: events from the server
@@ -386,24 +384,35 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
 
     final_input_structure = alert_input_structure(input_params)
 
-    if "All collections" not in incident_collections and len(incident_collections) > 0:
+    if len(incident_collections) > 0 and "All collections" not in incident_collections:
 
-        to_fetch = []
+        fetch_services = []
 
         if "Darkweb Marketplaces" in incident_collections:
-            to_fetch.append("darkweb_marketplaces")
+            fetch_services.append("darkweb_marketplaces")
 
         if "Data Breaches" in incident_collections:
-            to_fetch.append("darkweb_data_breaches")
+            fetch_services.append("darkweb_data_breaches")
 
         if "Compromised Endpoints" in incident_collections:
-            to_fetch.append("stealer_logs")
+            fetch_services.append("stealer_logs")
 
         if "Compromised Cards" in incident_collections:
-            to_fetch.append("compromised_cards")
+            fetch_services.append("compromised_cards")
 
         final_input_structure['where']['service'] = {
-            "in": to_fetch
+            "in": fetch_services
+        }
+
+    if len(incident_severity) > 0 and "All severities" not in incident_severity:
+
+        fetch_severities = []
+
+        for severity in incident_severity:
+            fetch_severities.append(SEVERITIES.get(severity))
+
+        final_input_structure['where']['severity'] = {
+            "in": fetch_severities
         }
 
     all_alerts = set_request(client, method, token, final_input_structure, url)
@@ -754,6 +763,7 @@ def main():     # pragma: no cover
     demisto.debug(f'Command being called is {params}')
     mirror = params.get('mirror', False)
     incident_collections = params.get("incident_collections", [])
+    incident_severity = params.get("incident_severity", [])
 
     try:
 
@@ -773,7 +783,7 @@ def main():     # pragma: no cover
 
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
             data, next_run = cyble_events(client, 'POST', token, url, args, last_run,
-                                          hide_cvv_expiry, incident_collections, False)
+                                          hide_cvv_expiry, incident_collections, incident_severity, False)
 
             demisto.setLastRun(next_run)
             demisto.incidents(data)
@@ -816,7 +826,8 @@ def main():     # pragma: no cover
             # This is the call made when cyble-vision-v2-fetch-alerts command.
 
             url = base_url + str(ROUTES[COMMAND[demisto.command()]])
-            lst_alerts, next_run = cyble_events(client, 'POST', token, url, args, {}, hide_cvv_expiry, incident_collections, True)
+            lst_alerts, next_run = cyble_events(client, 'POST', token, url, args, {},
+                                                hide_cvv_expiry, incident_collections, incident_severity, True)
 
             markdown = tableToMarkdown('Alerts Details:', lst_alerts)
 
