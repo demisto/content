@@ -1,3 +1,4 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -6,11 +7,12 @@ from CommonServerUserPython import *
 
 import json
 from datetime import datetime, timedelta
-from typing import Dict, Generator, List, Optional, Tuple, Union
+from collections.abc import Generator
 
 import dateparser
 import urllib3
 import random
+from requests.auth import HTTPBasicAuth
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -18,9 +20,9 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAPPING: dict = {
-    "compromised/account": {
+    "compromised/account_group": {
         "date":
-            "dateDetected",
+            "dateFirstSeen",
         "name":
             "login",
         "prefix":
@@ -28,19 +30,16 @@ MAPPING: dict = {
         "indicators":
             [
                 {
-                    "main_field": "cnc.url", "main_field_type": "URL"
+                    "main_field": "events.cnc.url", "main_field_type": "URL"
                 },
                 {
-                    "main_field": "cnc.domain", "main_field_type": "Domain"
+                    "main_field": "events.cnc.domain", "main_field_type": "Domain"
                 },
                 {
-                    "main_field": "cnc.ipv4.ip", "main_field_type": "IP",
-                    "add_fields": ["cnc.ipv4.asn", "cnc.ipv4.countryName", "cnc.ipv4.region"],
+                    "main_field": "events.cnc.ipv4.ip", "main_field_type": "IP",
+                    "add_fields": ["events.cnc.ipv4.asn", "events.cnc.ipv4.countryName", "events.cnc.ipv4.region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 },
-                {
-                    "main_field": "client.ipv4.ip",
-                }
             ]
     },
     "compromised/card": {
@@ -110,28 +109,28 @@ MAPPING: dict = {
                 }
             ]
     },
-    "bp/domain": {
-        "date":
-            "ts_create",
-        "name":
-            "attrs.domain",
-        "prefix":
-            "Phishing Domain",
-        "indicators":
-            [
-                {
-                    "main_field": "attrs.domain", "main_field_type": "Domain",
-                    "add_fields": ["phishingDomain.registrar"],
-                    "add_fields_types": ["registrarname"]
-                },
-                {
-                    "main_field": "attrs.server_ip", "main_field_type": "IP",
-                    "add_fields": ["attrs.server_ip_asn", "attrs.server_ip_country_name", "attrs.server_ip_region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
-            ]
-    },
-    "osi/git_leak": {
+    # "bp/domain": {
+    #     "date":
+    #         "ts_create",
+    #     "name":
+    #         "attrs.domain",
+    #     "prefix":
+    #         "Phishing Domain",
+    #     "indicators":
+    #         [
+    #             {
+    #                 "main_field": "attrs.domain", "main_field_type": "Domain",
+    #                 "add_fields": ["phishingDomain.registrar"],
+    #                 "add_fields_types": ["registrarname"]
+    #             },
+    #             {
+    #                 "main_field": "attrs.server_ip", "main_field_type": "IP",
+    #                 "add_fields": ["attrs.server_ip_asn", "attrs.server_ip_country_name", "attrs.server_ip_region"],
+    #                 "add_fields_types": ["asn", "geocountry", "geolocation"]
+    #             }
+    #         ]
+    # },
+    "osi/git_repository": {
         "date":
             "dateDetected",
         "name":
@@ -420,11 +419,11 @@ STATUS_CODE_MSGS = {
     302: "Verify that your public IP is whitelisted by Group IB."
 }
 
-LEGACY_HEADERS = {
-    "Accept": "application/json",
-    'Connection': 'Keep-Alive',
-    'Keep-Alive': "30"
-}
+# LEGACY_HEADERS = {
+#     "Accept": "application/json",
+#     'Connection': 'Keep-Alive',
+#     'Keep-Alive': "30"
+# }
 
 TIMEOUT = 60.
 RETRIES = 4
@@ -438,7 +437,8 @@ class Client(BaseClient):
     """
 
     def _create_update_generator(self, collection_name: str, max_requests: int,
-                                 date_from: Optional[str] = None, seq_update: Union[int, str] = None) -> Generator:
+                                 date_from: Optional[str] = None, seq_update: Union[int, str] = None,
+                                 limit: int = 200) -> Generator:
         """
         Creates generator of lists with feeds class objects for an update session
         (feeds are sorted in ascending order) `collection_name` with set parameters.
@@ -461,12 +461,21 @@ class Client(BaseClient):
         while True:
             if requests_count >= max_requests:
                 break
+            session = requests.Session()
+            session.auth = HTTPBasicAuth(self._auth[0], self._auth[1])
 
-            params = {"df": date_from, "seqUpdate": seq_update}
-            params = assign_params(**params)
-            portion = self._http_request(method="GET", url_suffix=collection_name + "/updated",
-                                         params=params, timeout=TIMEOUT, retries=RETRIES,
-                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
+            session.headers["Accept"] = "*/*"
+            session.headers["User-Agent"] = f'SOAR/CortexSOAR/{self._auth[0]}/unknown'
+
+            params = {'df': date_from, 'limit': limit, 'seqUpdate': seq_update}
+            params = {key: value for key, value in params.items() if value}
+            portion = session.get(url=f'{self._base_url}{collection_name}/updated', params=params, timeout=60).json()
+
+            # params = {"df": date_from, "seqUpdate": seq_update}
+            # params = assign_params(**params)
+            # portion = self._http_request(method="GET", url_suffix=collection_name + "/updated",
+            #                              params=params, timeout=TIMEOUT, retries=RETRIES,
+            #                              status_list_to_retry=STATUS_LIST_TO_RETRY)
             if portion.get("count") == 0:
                 break
             seq_update = portion.get("seqUpdate")
@@ -477,7 +486,7 @@ class Client(BaseClient):
 
     def _create_search_generator(self, collection_name: str, max_requests: int, date_to: str = None,
                                  page: int = 0, starting_date_from: str = None,
-                                 starting_date_to: str = None) -> Generator:
+                                 starting_date_to: str = None, limit: int = 200) -> Generator:
         """
         Creates generator of lists with feeds for the search session for ingestion purpose
         (feeds are sorted in descending order) for `collection_name` with set parameters. This version solves problem
@@ -548,61 +557,61 @@ class Client(BaseClient):
                           "starting_date_to": starting_date_to, "current_date_to": date_to}
             yield data, last_fetch
 
-    def _create_legacy_generator(self, action: str, max_requests: int, last: Optional[str] = None) -> Generator:
-        """
-        Legacy generator is similar to update generator.
-
-        :param action: collection to search.
-        :param max_requests: a maximum number of requests to API.
-        :param last: identification number from which to start the session.
-        """
-        requests_count = 0
-        while True:
-            if requests_count >= max_requests:
-                break
-
-            params = {"action": action, "last": last, "module": "get", "lang": 3}
-            params = assign_params(**params)
-            portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                         headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
-            if portion.get("status") != 200:
-                if portion.get("status") in STATUS_CODE_MSGS:
-                    raise DemistoException(STATUS_CODE_MSGS[portion.get("status")])
-                else:
-                    raise DemistoException(
-                        "Something is wrong, status code {0} for request to APIv1".format(portion.get("status"))
-                    )
-            portion = portion.get("data")
-
-            if portion.get("count") == 0:
-                break
-            last = portion.get("last")
-            requests_count += 1
-
-            yield portion.get("new"), last
-
-    def _legacy_get_last(self, date_from, action):
-        """
-        Get last for a certain date.
-
-        :param action: collection to search.
-        :param date_from: date to get the "last" identifier.
-        """
-        params = {"action": "get_last", "date": date_from, "module": "get", "type": action}
-        params = assign_params(**params)
-        resp = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                  headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                  status_list_to_retry=STATUS_LIST_TO_RETRY)
-        if resp.get("status") != 200:
-            if resp.get("status") in STATUS_CODE_MSGS:
-                raise DemistoException(STATUS_CODE_MSGS[resp.get("status")])
-            else:
-                raise DemistoException(
-                    "Something is wrong, status code {0} for request to APIv1".format(resp.get("status"))
-                )
-        last = resp.get("data")
-        return last
+    # def _create_legacy_generator(self, action: str, max_requests: int, last: Optional[str] = None) -> Generator:
+    #     """
+    #     Legacy generator is similar to update generator.
+    #
+    #     :param action: collection to search.
+    #     :param max_requests: a maximum number of requests to API.
+    #     :param last: identification number from which to start the session.
+    #     """
+    #     requests_count = 0
+    #     while True:
+    #         if requests_count >= max_requests:
+    #             break
+    #
+    #         params = {"action": action, "last": last, "module": "get", "lang": 3}
+    #         params = assign_params(**params)
+    #         portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+    #                                      headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+    #                                      status_list_to_retry=STATUS_LIST_TO_RETRY)
+    #         if portion.get("status") != 200:
+    #             if portion.get("status") in STATUS_CODE_MSGS:
+    #                 raise DemistoException(STATUS_CODE_MSGS[portion.get("status")])
+    #             else:
+    #                 raise DemistoException(
+    #                     "Something is wrong, status code {0} for request to APIv1".format(portion.get("status"))
+    #                 )
+    #         portion = portion.get("data")
+    #
+    #         if portion.get("count") == 0:
+    #             break
+    #         last = portion.get("last")
+    #         requests_count += 1
+    #
+    #         yield portion.get("new"), last
+    #
+    # def _legacy_get_last(self, date_from, action):
+    #     """
+    #     Get last for a certain date.
+    #
+    #     :param action: collection to search.
+    #     :param date_from: date to get the "last" identifier.
+    #     """
+    #     params = {"action": "get_last", "date": date_from, "module": "get", "type": action}
+    #     params = assign_params(**params)
+    #     resp = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+    #                               headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+    #                               status_list_to_retry=STATUS_LIST_TO_RETRY)
+    #     if resp.get("status") != 200:
+    #         if resp.get("status") in STATUS_CODE_MSGS:
+    #             raise DemistoException(STATUS_CODE_MSGS[resp.get("status")])
+    #         else:
+    #             raise DemistoException(
+    #                 "Something is wrong, status code {0} for request to APIv1".format(resp.get("status"))
+    #             )
+    #     last = resp.get("data")
+    #     return last
 
     def create_poll_generator(self, collection_name: str, max_requests: int, **kwargs):
         """
@@ -634,10 +643,10 @@ class Client(BaseClient):
             return self._create_search_generator(collection_name=collection_name, max_requests=max_requests,
                                                  date_to=date_to, page=page, starting_date_from=starting_date_from,
                                                  starting_date_to=starting_date_to)
-        elif collection_name == "bp/domain":
-            if not last_fetch:
-                last_fetch = self._legacy_get_last(date_from=date_from, action="domain")
-            return self._create_legacy_generator(action="domain", max_requests=max_requests, last=last_fetch)
+        # elif collection_name == "bp/domain":
+        #     if not last_fetch:
+        #         last_fetch = self._legacy_get_last(date_from=date_from, action="domain")
+        #     return self._create_legacy_generator(action="domain", max_requests=max_requests, last=last_fetch)
         else:
             return self._create_update_generator(collection_name=collection_name, max_requests=max_requests,
                                                  date_from=date_from, seq_update=last_fetch)  # type: ignore
@@ -670,7 +679,7 @@ class Client(BaseClient):
             date_from, date_to, query = None, None, None
             yield portion.get('items')
 
-    def search_feed_by_id(self, collection_name: str, feed_id: str) -> Dict:
+    def search_feed_by_id(self, collection_name: str, feed_id: str) -> dict:
         """
         Searches for feed with `feed_id` in collection with `collection_name`.
 
@@ -687,34 +696,37 @@ class Client(BaseClient):
         """
         Gets list of available collections from GIB TI&A API.
         """
-        response = self._http_request(method="GET", url_suffix="sequence_list",
+
+        response = self._http_request(method="GET", url_suffix="user/granted_collections",
                                       timeout=TIMEOUT, retries=RETRIES,
                                       status_list_to_retry=STATUS_LIST_TO_RETRY)
-        buffer_list = list(response.get("list").keys())
+        buffer_list = find_element_by_key(response, 'collection')
 
-        try:
-            self._http_request(method="GET", url_suffix="compromised/breached", params={"limit": 1},
-                               timeout=TIMEOUT, retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY)
-            buffer_list.append("compromised/breached")
-        except Exception:
-            pass
-
-        # legacy collection
-        try:
-            params = {"action": "get_last", "date": datetime.now().strftime("%Y-%m-%d"),
-                      "module": "get", "type": "domain"}
-            response = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                          headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                          status_list_to_retry=STATUS_LIST_TO_RETRY)
-            last = response.get("data")
-            params = {"action": "domain", "last": last, "module": "get"}
-            portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
-                                         headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
-                                         status_list_to_retry=STATUS_LIST_TO_RETRY)
-            if portion.get("status") == 200:
-                buffer_list.append("bp/domain")
-        except Exception:
-            pass
+        # buffer_list = list(response.get("list").keys())
+        #
+        # try:
+        #     self._http_request(method="GET", url_suffix="compromised/breached", params={"limit": 1},
+        #                        timeout=TIMEOUT, retries=RETRIES, status_list_to_retry=STATUS_LIST_TO_RETRY)
+        #     buffer_list.append("compromised/breached")
+        # except Exception:
+        #     pass
+        #
+        # # legacy collection
+        # try:
+        #     params = {"action": "get_last", "date": datetime.now().strftime("%Y-%m-%d"),
+        #               "module": "get", "type": "domain"}
+        #     response = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+        #                                   headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+        #                                   status_list_to_retry=STATUS_LIST_TO_RETRY)
+        #     last = response.get("data")
+        #     params = {"action": "domain", "last": last, "module": "get"}
+        #     portion = self._http_request(method="GET", full_url="https://bt.group-ib.com",
+        #                                  headers=LEGACY_HEADERS, params=params, timeout=TIMEOUT, retries=RETRIES,
+        #                                  status_list_to_retry=STATUS_LIST_TO_RETRY)
+        #     if portion.get("status") == 200:
+        #         buffer_list.append("bp/domain")
+        # except Exception:
+        #     pass
 
         collections_list = []
         for key in MAPPING:
@@ -803,7 +815,7 @@ def transform_to_command_results(iocs, ioc_type, fields, fields_names, collectio
         output = parse_to_outputs(iocs, ioc_type, fields)
         if output:
             results = [CommandResults(
-                readable_output=tableToMarkdown("{0} indicator".format(ioc_type), {"value": iocs, **fields}),
+                readable_output=tableToMarkdown(f"{ioc_type} indicator", {"value": iocs, **fields}),
                 indicator=output,
                 ignore_auto_extract=True
             )]
@@ -827,7 +839,7 @@ def parse_to_outputs(value, indicator_type, fields):
         return Common.DBotScore(
             indicator=value,
             indicator_type=type_,
-            integration_name="GIB TI&A",
+            integration_name="GIB TI",
             score=score
         )
 
@@ -850,7 +862,7 @@ def parse_to_outputs(value, indicator_type, fields):
     return None
 
 
-def find_iocs_in_feed(feed: Dict, collection_name: str) -> List:
+def find_iocs_in_feed(feed: dict, collection_name: str) -> list:
     """
     Finds IOCs in the feed and transform them to the appropriate format to ingest them into Demisto.
 
@@ -875,7 +887,7 @@ def find_iocs_in_feed(feed: Dict, collection_name: str) -> List:
     return indicators
 
 
-def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
+def transform_some_fields_into_markdown(collection_name, feed: dict) -> dict:
     """
     Some fields can have complex nesting, so this function transforms them into an appropriate state.
 
@@ -884,21 +896,25 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
     :return: given feed with transformed fields.
     """
 
-    if collection_name == "osi/git_leak":
+    if collection_name == "osi/git_repository":
         buffer = ""
-        revisions = feed.get("revisions", [])
-        for i in revisions:
-            file = "[https://bt.group-ib.com/api/v2/osi/git_leak]({0})".format(i.get("file"))
-            file_diff = "[https://bt.group-ib.com/api/v2/osi/git_leak]({0})".format(i.get("fileDiff"))
-            info = i.get("info")
-            author_email, author_name, date = info.get("authorEmail"), info.get("authorName"), info.get("dateCreated")
-            buffer += "| {0} | {1} | {2} | {3} | {4} |\n".format(file, file_diff, author_email, author_name, date)
+        files = feed.get("files", [])
+        for i in files:
+            url = i.get("url")
+            date = i.get("dateCreated")
+            # file_diff = "[https://bt.group-ib.com/api/v2/osi/git_leak]({0})".format(i.get("fileDiff"))
+            # info = find_element_by_key(i,'revisions.info')
+            author_email = ''.join(find_element_by_key(i, 'revisions.info.authorEmail'))
+            author_name = ''.join(find_element_by_key(i, 'revisions.info.authorName'))
+            timestamp = ''.join(str(find_element_by_key(i, 'revisions.info.timestamp')))
+            # author_email, author_name, date = info.get("authorEmail"), info.get("authorName"), info.get("dateCreated")
+            buffer += f"| {url} | {author_email} | {author_name} | {date} | {timestamp} |\n"
         if buffer:
-            buffer = "| File | File Difference | Author Email | Author Name | Date Created |\n" \
+            buffer = "| URL  |   Author Email  | Author Name  | Date Created| TimeStamp    |\n" \
                      "| ---- | --------------- | ------------ | ----------- | ------------ |\n" + buffer
-            feed["revisions"] = buffer
+            feed["files"] = buffer
         else:
-            del feed["revisions"]
+            del feed["files"]
 
     elif collection_name == "osi/public_leak":
         buffer = ""
@@ -910,7 +926,7 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
             hash_ = i.get("hash")
             link = "[{0}]({0})".format(i.get("link"))
             source = i.get("source")
-            buffer += "| {0} | {1} | {2} | {3} | {4} | {5} |\n".format(author, detected, published, hash_, link, source)
+            buffer += f"| {author} | {detected} | {published} | {hash_} | {link} | {source} |\n"
         if buffer:
             buffer = "| Author | Date Detected | Date Published | Hash | Link | Source |\n" \
                      "| ------ | ------------- | -------------- | ---- |----- | ------ |\n" + buffer
@@ -925,7 +941,7 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
         for type_, sub_dict in matches.items():
             for sub_type, sub_list in sub_dict.items():
                 for value in sub_list:
-                    buffer += "| {0} | {1} | {2} |\n".format(type_, sub_type, value)
+                    buffer += f"| {type_} | {sub_type} | {value} |\n"
         if buffer:
             buffer = "| Type | Sub Type | Value |\n" \
                      "| ---- | -------- | ----- |\n" + buffer
@@ -938,7 +954,7 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
         downloaded_from = feed.get("downloadedFrom", [])
         for i in downloaded_from:
             date, url, domain, filename = i.get("date"), i.get("url"), i.get("domain"), i.get("fileName")
-            buffer += "| {0} | {1} | {2} | {3} |\n".format(url, filename, domain, date)
+            buffer += f"| {url} | {filename} | {domain} | {date} |\n"
         if buffer:
             buffer = "| URL | File Name | Domain | Date |\n| --- | --------- | ------ | ---- |\n" + buffer
             feed["downloadedFrom"] = buffer
@@ -949,13 +965,13 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
 
 
 def get_human_readable_feed(collection_name, feed):
-    return tableToMarkdown(name="Feed from {0} with ID {1}".format(collection_name, feed.get("id")),
+    return tableToMarkdown(name="Feed from {} with ID {}".format(collection_name, feed.get("id")),
                            t=feed, removeNull=True)
 
 
 def transform_function(result, previous_keys="", is_inside_list=False):
     result_dict = {}
-    additional_tables: List[Any] = []
+    additional_tables: list[Any] = []
 
     if isinstance(result, dict):
         if is_inside_list:
@@ -983,26 +999,27 @@ def transform_function(result, previous_keys="", is_inside_list=False):
 
         if additional_tables:
             additional_tables = [CommandResults(
-                readable_output=tableToMarkdown("{0} table".format(previous_keys), additional_tables, removeNull=True),
+                readable_output=tableToMarkdown(f"{previous_keys} table", additional_tables, removeNull=True),
                 ignore_auto_extract=True
             )]
 
         return result_dict, additional_tables
 
-    elif isinstance(result, (str, int, float)) or result is None:
+    elif isinstance(result, str | int | float) or result is None:
         if not is_inside_list:
             result_dict.update({previous_keys: result})
         else:
             result_dict.update({previous_keys: [result]})
 
         return result_dict, additional_tables
+    return None
 
 
 """ Commands """
 
 
-def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: str,
-                            incident_collections: List, requests_count: int) -> Tuple[Dict, List]:
+def fetch_incidents_command(client: Client, last_run: dict, first_fetch_time: str,
+                            incident_collections: list, requests_count: int) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -1015,21 +1032,24 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
     :return: next_run will be last_run in the next fetch-incidents; incidents and indicators will be created in Demisto.
     """
     incidents = []
-    next_run: Dict[str, Dict[str, Union[int, Any]]] = {"last_fetch": {}}
+    next_run: dict[str, dict[str, Union[int, Any]]] = {"last_fetch": {}}
     for collection_name in incident_collections:
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
 
         portions = client.create_poll_generator(collection_name=collection_name, max_requests=requests_count,
                                                 last_fetch=last_fetch, first_fetch_time=first_fetch_time)
         for portion, last_fetch in portions:
+            last_test = last_fetch
+            for last in last_test:
+                set(last)
             for feed in portion:
                 mapping = MAPPING.get(collection_name, {})
                 if collection_name == "compromised/breached":
-                    feed.update({"name": mapping.get("prefix", "") + ": " + ', '.join(find_element_by_key(feed,
-                                                                                                          mapping.get("name")))})
+                    feed.update({"name": mapping.get("prefix", "") + ": " + ', '.join(
+                        find_element_by_key(feed, mapping.get("name")))})
                 else:
-                    feed.update({"name": mapping.get("prefix", "") + ": " + str(find_element_by_key(feed,
-                                                                                                    mapping.get("name")))})
+                    feed.update({"name": mapping.get("prefix", "") + ": " + str(
+                        find_element_by_key(feed, mapping.get("name")))})
 
                 feed.update({"gibType": collection_name})
 
@@ -1052,7 +1072,7 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
                 assert incident_created_time is not None
                 feed.update({"relatedIndicatorsData": related_indicators_data})
                 feed.update({"systemSeverity": system_severity})
-                if collection_name in ["osi/git_leak", "osi/public_leak", "bp/phishing_kit"]:
+                if collection_name in ["osi/git_repository", "osi/public_leak", "bp/phishing_kit"]:
                     feed = transform_some_fields_into_markdown(collection_name, feed)
                 incident = {
                     "name": feed["name"],
@@ -1066,7 +1086,7 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
     return next_run, incidents
 
 
-def get_available_collections_command(client: Client, args):
+def get_available_collections_command(client: Client):
     """
     Returns list of available collections to context and War Room.
 
@@ -1090,7 +1110,7 @@ def get_info_by_id_command(collection_name: str):
     Decorator around actual commands, that returns command depends on `collection_name`.
     """
 
-    def get_info_by_id_for_collection(client: Client, args: Dict) -> List[CommandResults]:
+    def get_info_by_id_for_collection(client: Client, args: dict) -> list[CommandResults]:
         """
         This function returns additional information to context and War Room.
 
@@ -1121,7 +1141,7 @@ def get_info_by_id_command(collection_name: str):
         if "seqUpdate" in result:
             del result["seqUpdate"]
 
-        indicators: List[CommandResults] = []
+        indicators: list[CommandResults] = []
         if coll_name not in ["apt/threat_actor", "hi/threat_actor"]:
             indicators = find_iocs_in_feed(result, coll_name)
 
@@ -1137,7 +1157,7 @@ def get_info_by_id_command(collection_name: str):
         else:
             main_table_data, additional_tables = transform_function(result)
         results.append(CommandResults(
-            outputs_prefix="GIBTIA.{0}".format(MAPPING.get(coll_name, {}).get("prefix", "").replace(" ", "")),
+            outputs_prefix="GIBTIA.{}".format(MAPPING.get(coll_name, {}).get("prefix", "").replace(" ", "")),
             outputs_key_field="id",
             outputs=result,
             readable_output=get_human_readable_feed(collection_name, main_table_data),
@@ -1151,12 +1171,12 @@ def get_info_by_id_command(collection_name: str):
     return get_info_by_id_for_collection
 
 
-def global_search_command(client: Client, args: Dict):
+def global_search_command(client: Client, args: dict):
     query = str(args.get('query'))
     raw_response = client.search_by_query(query)
     handled_list = []
     for result in raw_response:
-        if result.get('apiPath') in MAPPING.keys():
+        if result.get('apiPath') in MAPPING:
             handled_list.append({'apiPath': result.get('apiPath'), 'count': result.get('count'),
                                  'GIBLink': result.get('link'),
                                  'query': result.get('apiPath') + '?q=' + query})
@@ -1181,7 +1201,7 @@ def global_search_command(client: Client, args: Dict):
     return results
 
 
-def local_search_command(client: Client, args: Dict):
+def local_search_command(client: Client, args: dict):
     query, date_from, date_to = args.get('query'), args.get('date_from', None), args.get('date_to', None)
     collection_name = str(args.get('collection_name'))
 
@@ -1252,14 +1272,14 @@ def main():
         )
 
         commands = {
-            "gibtia-get-compromised-account-info": get_info_by_id_command("compromised/account"),
+            "gibtia-get-compromised-account-info": get_info_by_id_command("compromised/account_group"),
             "gibtia-get-compromised-card-info": get_info_by_id_command("compromised/card"),
             "gibtia-get-compromised-mule-info": get_info_by_id_command("compromised/mule"),
             "gibtia-get-compromised-imei-info": get_info_by_id_command("compromised/imei"),
             "gibtia-get-compromised-breached-info": get_info_by_id_command("compromised/breached"),
             "gibtia-get-phishing-kit-info": get_info_by_id_command("attacks/phishing_kit"),
             "gibtia-get-phishing-info": get_info_by_id_command("attacks/phishing"),
-            "gibtia-get-osi-git-leak-info": get_info_by_id_command("osi/git_leak"),
+            "gibtia-get-osi-git-leak-info": get_info_by_id_command("osi/git_repository"),
             "gibtia-get-osi-public-leak-info": get_info_by_id_command("osi/public_leak"),
             "gibtia-get-osi-vulnerability-info": get_info_by_id_command("osi/vulnerability"),
             "gibtia-get-attacks-ddos-info": get_info_by_id_command("attacks/ddos"),

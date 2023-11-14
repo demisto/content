@@ -153,7 +153,7 @@ class Client(BaseClient):
         params = assign_params(fields=fields, type=record_type, template=template_id)
         data = {"info": info}
 
-        response = self._http_request('GET', 'sr/template', params=params, json_data=data, cookies=self._cookies)
+        response = self._http_request('POST', 'sr', params=params, json_data=data, cookies=self._cookies)
 
         return response
 
@@ -173,6 +173,12 @@ class Client(BaseClient):
 
         response = self._http_request('POST', f'sr/{sr_id}/attachment', files={'file': (file_name, file_data, file_type)},
                                       cookies=self._cookies, resp_type='response')
+
+        return response
+
+    def service_record_get_file_request(self, sr_id: str, file_id: str):
+
+        response = self._http_request('GET', f'sr/{sr_id}/attachment/{file_id}', cookies=self._cookies, resp_type='response')
 
         return response
 
@@ -916,6 +922,25 @@ def service_record_attach_file_command(client: Client, args: Dict[str, Any]) -> 
     return command_results
 
 
+def service_record_get_file_command(client: Client, args: Dict[str, Any]):
+    sr_id = str(args.get('id'))
+    file_id = str(args.get('file_id'))
+    file_name = str(args.get('file_name'))
+
+    response = client.service_record_get_file_request(sr_id, file_id)
+
+    if response.status_code == 200:
+        file_data = response.content
+        return_results(fileResult(file_name, file_data))
+
+        attachment_list = []
+        attachment_list.append({"file_name": file_name, "data": file_data})
+        return_results(str(attachment_list))
+    else:
+        msg = f'Error {response.status_code} occurred while try to download file from service record {sr_id}.'
+        return_error(msg)
+
+
 def service_record_delete_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     sr_id = str(args.get('id'))
     file_id = str(args.get('file_id'))
@@ -1057,6 +1082,7 @@ def main() -> None:
             'sysaid-service-record-create': service_record_create_command,
             'sysaid-service-record-delete': service_record_delete_command,
             'sysaid-service-record-attach-file': service_record_attach_file_command,
+            'sysaid-service-record-get-file': service_record_get_file_command,
             'sysaid-service-record-delete-file': service_record_delete_file_command,
             'sysaid-service-record-get': service_record_get_command,
         }

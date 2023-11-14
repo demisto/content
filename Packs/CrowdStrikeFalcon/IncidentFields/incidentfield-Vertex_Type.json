@@ -1,0 +1,31 @@
+{
+    "id": "incident_crowdstrikefalconvertextype",
+    "version": -1,
+    "modified": "2023-08-31T17:20:53.435784937Z",
+    "name": "CrowdStrike Falcon Vertex Type",
+    "ownerOnly": false,
+    "cliName": "crowdstrikefalconvertextype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CrowdStrike Falcon IOA Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

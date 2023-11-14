@@ -88,8 +88,7 @@ class DictBased:
         self.from_version: Version | NegativeInfinityType = self._calculate_from_version()
         self.to_version: Version | InfinityType = self._calculate_to_version()
         self.version_range = VersionRange(self.from_version, self.to_version)
-        self.marketplaces: tuple[MarketplaceVersions, ...] | None = \
-            tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
+        self.marketplaces: tuple[MarketplaceVersions, ...] | None = self._handle_xsoar_marketplaces()
 
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True, warning_comment: str = ''):
         """
@@ -112,6 +111,7 @@ class DictBased:
                 self.get('fromversion', warn_if_missing=False)
                 or self.get('fromVersion', warn_if_missing=False)
                 or self.get('fromServerVersion', warn_if_missing=False)
+                or self.get('serverMinVersion', warn_if_missing=False)
         ):
             return Version(value)
         return version.NegativeInfinity
@@ -125,6 +125,23 @@ class DictBased:
         ):
             return Version(value)
         return version.Infinity
+
+    def _handle_xsoar_marketplaces(self) -> tuple[MarketplaceVersions, ...] | None:
+        '''
+        If xsoar marketplace supported add xsoar_saas marketplace.
+        If xsoar_on_prem marketplace supported add xsoar marketplace.
+        '''
+        pack_marketplaces = {MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)} or None
+        if not pack_marketplaces:
+            return pack_marketplaces
+
+        if MarketplaceVersions.XSOAR in pack_marketplaces:
+            pack_marketplaces.add(MarketplaceVersions.XSOAR_SAAS)
+
+        if MarketplaceVersions.XSOAR_ON_PREM in pack_marketplaces:
+            pack_marketplaces.add(MarketplaceVersions.XSOAR)
+
+        return tuple(pack_marketplaces)
 
 
 class DictFileBased(DictBased):
@@ -166,7 +183,7 @@ class ContentItem(DictFileBased):
     def __init__(self, path: Path):
         super().__init__(path)
         self.pack_path = find_pack_folder(self.path)
-        self.deprecated = self.get('deprecated', warn_if_missing=False)
+        self.deprecated = self.get('deprecated', warn_if_missing=False) or self.get('hidden', warn_if_missing=False)
         self._tests = self.get('tests', default=(), warn_if_missing=False)
 
     @property

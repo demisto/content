@@ -97,9 +97,12 @@ script:
     - description: Who to send the fake email to.
       name: to
       required: true
+    - description: The body of the fake email that we are not actually sending.
+      name: body
+      required: true
     description: Send an email. (Doesn't actually send an email.)
     name: xet-send-mail
-  dockerimage: demisto/python3:3.10.13.74666
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   runonce: false
   script: ''

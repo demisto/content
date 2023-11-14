@@ -1254,8 +1254,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
             # preserve context dict
-            integration_context['incidents'] = remained_incidents
-            demisto.setIntegrationContext(integration_context)
+            demisto.setIntegrationContext({"incidents": remained_incidents})
 
         elif command in commands:
             return_outputs(*commands[command](client, args))

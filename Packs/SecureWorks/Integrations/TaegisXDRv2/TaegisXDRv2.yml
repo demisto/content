@@ -4,7 +4,7 @@ commonfields:
 name: TaegisXDRv2
 display: TaegisXDR v2
 category: Data Enrichment & Threat Intelligence
-description: For integration with the Secureworks Taegis XDR platform
+description: For integration with the Secureworks Taegis XDR platform.
 configuration:
 - display: Taegis Environment
   name: environment
@@ -78,57 +78,57 @@ script:
   - name: taegis-fetch-alerts
     arguments:
     - name: ids
-      description: A list of alert IDs or string of comma-separated alert IDs to return
+      description: A list of alert IDs or string of comma-separated alert IDs to return.
       isArray: true
     - name: cql_query
-      description: The Taegis CQL query to for searching Alerts
+      description: The Taegis CQL query to for searching Alerts.
     - name: limit
       default: true
-      description: Number of results to return per page
+      description: Number of results to return per page.
       defaultValue: "10"
     - name: offset
-      description: The results to start with
+      description: The results to start with.
       defaultValue: "0"
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.Alerts
-      description: List of Taegis alerts
-    description: List Taegis alerts by ID
+      description: List of Taegis alerts.
+    description: List Taegis alerts by ID.
   - name: taegis-fetch-investigation
     arguments:
     - name: id
-      description: The investigation ID to lookup
+      description: The investigation ID to lookup.
     - name: page
-      description: The page number for fetching investigations
+      description: The page number for fetching investigations.
       defaultValue: "0"
     - name: page_size
-      description: Number of investigations to return
+      description: Number of investigations to return.
       defaultValue: "10"
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: query
-      description: The Taegis query string to utilize for searching investigations
+      description: The Taegis query string to utilize for searching investigations.
       defaultValue: deleted_at is null
     - name: order_by
-      description: The field to order by when performing a search
+      description: The field to order by when performing a search.
       defaultValue: created_at
     - name: order_direction
-      description: The order direction when performing a search
+      description: The order direction when performing a search.
       defaultValue: desc
     - name: fields
-      description: The fields to return in the results
+      description: The fields to return in the results.
     outputs:
     - contextPath: TaegisXDR.Investigations
-      description: Dictionary of the located Taegis investigation
-    description: Fetch all investigations or a specific investigation
+      description: Dictionary of the located Taegis investigation.
+    description: Fetch all investigations or a specific investigation.
   - name: taegis-create-investigation
     arguments:
     - name: title
       required: true
-      description: The title of the investigation
+      description: The title of the investigation.
     - name: priority
       required: true
       default: true
@@ -138,17 +138,17 @@ script:
       - "2"
       - "3"
       - "4"
-      description: The priority of the investigation
+      description: The priority of the investigation.
       defaultValue: "2"
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     - name: alerts
-      description: A list of alert IDs or string of comma-separated alert IDs to add to the investigation during creation
+      description: A list of alert IDs or string of comma-separated alert IDs to add to the investigation during creation.
       isArray: true
     - name: keyFindings
-      description: The key findings to utilize within the Investigation
+      description: The key findings to utilize within the Investigation.
     - name: type
       auto: PREDEFINED
       predefined:
@@ -159,10 +159,10 @@ script:
       - CTU_THREAT_HUNT
       - MANAGED_XDR_ELITE_THREAT_HUNT
       - SECUREWORKS_INCIDENT_RESPONSE
-      description: The investigation type to create
+      description: The investigation type to create.
       defaultValue: SECURITY_INVESTIGATION
     - name: assigneeId
-      description: The assignee for the investigation
+      description: The assignee for the investigation.
       defaultValue: '@secureworks'
     - name: status
       auto: PREDEFINED
@@ -178,17 +178,20 @@ script:
       - CLOSED_INFORMATIONAL
       - CLOSED_NOT_VULNERABLE
       - CLOSED_THREAT_MITIGATED
-      description: The investigation status
+      description: The investigation status.
       defaultValue: OPEN
+    - name: tags
+      description: A list of tags or string of comma-separated tags to add to the investigation.
+      isArray: true
     outputs:
     - contextPath: TaegisXDR.Investigation
-      description: The investigation ID that was created
-    description: Create an Investigation within Taegis
+      description: The investigation ID that was created.
+    description: Create an Investigation within Taegis.
   - name: taegis-update-investigation
     arguments:
     - name: id
       required: true
-      description: The investigation ID to update
+      description: The investigation ID to update.
     - name: priority
       auto: PREDEFINED
       predefined:
@@ -196,9 +199,9 @@ script:
       - "2"
       - "3"
       - "4"
-      description: The priority of the investigation
+      description: The priority of the investigation.
     - name: keyFindings
-      description: The Key Findings field of the investigation
+      description: The Key Findings field of the investigation.
     - name: status
       auto: PREDEFINED
       predefined:
@@ -213,13 +216,13 @@ script:
       - CLOSED_INFORMATIONAL
       - CLOSED_NOT_VULNERABLE
       - CLOSED_THREAT_MITIGATED
-      description: New status for the investigation
+      description: New status for the investigation.
     - name: assigneeId
-      description: The auth0 ID of a user, in 'auth0|12345' format
+      description: The auth0 ID of a user, in 'auth0|12345' format.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     - name: type
       auto: PREDEFINED
       predefined:
@@ -230,185 +233,192 @@ script:
       - CTU_THREAT_HUNT
       - MANAGED_XDR_ELITE_THREAT_HUNT
       - SECUREWORKS_INCIDENT_RESPONSE
-      description: The type of investigation
+      description: The type of investigation.
     - name: title
-      description: The title of the investigation
+      description: The title of the investigation.
+    - name: serviceDeskId
+      description: A 3rd party ticket to associate with the Taegis Investigation (usually the XSOAR incident).
+    - name: serviceDeskType
+      description: The type of 3rd party ticket to associate with the Taegis Investigation (e.g. XSOAR).
+    - name: tags
+      description: A list of tags or string of comma-separated tags to add to the investigation.
+      isArray: true
     outputs:
     - contextPath: TaegisXDR.InvestigationUpdate
-      description: ID of the updated Taegis investigation
-    description: Update an existing investigation
+      description: ID of the updated Taegis investigation.
+    description: Update an existing investigation.
   - name: taegis-fetch-investigation-alerts
     arguments:
     - name: id
       required: true
-      description: The investigation ID related to the alerts
+      description: The investigation ID related to the alerts.
     - name: page
-      description: Page number of the investigation alerts
+      description: Page number of the investigation alerts.
       defaultValue: "0"
     - name: page_size
-      description: Number of alerts per investigation query
+      description: Number of alerts per investigation query.
       defaultValue: "10"
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.InvestigationAlerts
-      description: List of alerts related to a Taegis investigation
-    description: Fetch Alert IDs related to a specific investigation
+      description: List of alerts related to a Taegis investigation.
+    description: Fetch Alert IDs related to a specific investigation.
   - name: taegis-execute-playbook
     arguments:
     - name: id
       required: true
-      description: The ID of the playbook instance to execute
+      description: The ID of the playbook instance to execute.
     - name: inputs
-      description: JSON Object of optional playbook inputs
+      description: JSON Object of optional playbook inputs.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.Execution
-      description: The playbook execution ID
+      description: The playbook execution ID.
       type: string
-    description: Executes a Taegis playbook instance
+    description: Executes a Taegis playbook instance.
     execution: true
   - name: taegis-fetch-playbook-execution
     arguments:
     - name: id
       required: true
-      description: Playbook execution ID
+      description: Playbook execution ID.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.PlaybookExecution
-      description: Returns related execution information
-    description: Fetch the results of a Taegis playbook instance execution
+      description: Returns related execution information.
+    description: Fetch the results of a Taegis playbook instance execution.
   - name: taegis-fetch-comment
     arguments:
     - name: id
       required: true
-      description: The ID of the comment to fetch
+      description: The ID of the comment to fetch.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.Comment
-      description: Return the comment
-    description: Fetch comment by comment ID
+      description: Return the comment.
+    description: Fetch comment by comment ID.
   - name: taegis-fetch-comments
     arguments:
     - name: id
       required: true
-      description: The ID of the investigation related to the comments
+      description: The ID of the investigation related to the comments.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: page
-      description: The page number for fetching comments
+      description: The page number for fetching comments.
       defaultValue: "0"
     - name: page_size
-      description: Number of comments to return
+      description: Number of comments to return.
       defaultValue: "10"
     - name: order_direction
       auto: PREDEFINED
       predefined:
       - ASCENDING
       - DESCENDING
-      description: The order direction when performing a search
+      description: The order direction when performing a search.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.Comments
-      description: A list of comments to return
-    description: Fetch comments by Investigation ID
+      description: A list of comments to return.
+    description: Fetch comments by Investigation ID.
   - name: taegis-create-comment
     arguments:
     - name: comment
       required: true
-      description: The comment string to add to the parent
+      description: The comment string to add to the parent.
     - name: id
       required: true
-      description: The investigation that the comment is being added to
+      description: The investigation that the comment is being added to.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.CommentCreate
-      description: The created comment information
-    description: Create a comment on an investigation
+      description: The created comment information.
+    description: Create a comment on an investigation.
   - name: taegis-update-comment
     arguments:
     - name: id
       required: true
-      description: The ID of the comment to update
+      description: The ID of the comment to update.
     - name: comment
       required: true
-      description: String to update/replace the comment with
+      description: String to update/replace the comment with.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.CommentUpdate
-      description: The comment update results
-    description: Update an existing comment
+      description: The comment update results.
+    description: Update an existing comment.
   - name: taegis-fetch-users
     arguments:
     - name: id
-      description: The auth0 ID, in 'auth0|12345' format
+      description: The auth0 ID, in 'auth0|12345' format.
     - name: email
-      description: The email address to search for
+      description: The email address to search for.
     - name: status
-      description: Search by user status
+      description: Search by user status.
     - name: page
-      description: Page for results
+      description: Page for results.
       defaultValue: "0"
     - name: page_size
-      description: Results to return per page
+      description: Results to return per page.
       defaultValue: "10"
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.Users
-      description: The located user(s)
-    description: Fetch a user by ID or email address
+      description: The located user(s).
+    description: Fetch a user by ID or email address.
   - name: taegis-archive-investigation
     arguments:
     - name: id
       required: true
-      description: ID of investigation to update
+      description: ID of investigation to update.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.ArchivedInvestigation
-      description: The results from archiving an investigation
-    description: Archive an investigation
+      description: The results from archiving an investigation.
+    description: Archive an investigation.
   - name: taegis-unarchive-investigation
     arguments:
     - name: id
       required: true
-      description: ID of investigation to update
+      description: ID of investigation to update.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.UnarchivedInvestigation
-      description: The results from unarchiving an investigation
-    description: Unarchive an investigation
+      description: The results from unarchiving an investigation.
+    description: Unarchive an investigation.
   - name: taegis-update-alert-status
     arguments:
     - name: ids
       required: true
-      description: A list of alert IDs or string of comma-separated alert IDs to return
+      description: A list of alert IDs or string of comma-separated alert IDs to return.
       isArray: true
     - name: status
       required: true
@@ -419,87 +429,87 @@ script:
       - OPEN
       - TRUE_POSITIVE_BENIGN
       - TRUE_POSITIVE_MALICIOUS
-      description: The status to update the alert with
+      description: The status to update the alert with.
     - name: reason
-      description: A simple comment/reason for the status change
+      description: A simple comment/reason for the status change.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.AlertStatusUpdate
-      description: The result of the alert status update
-    description: Update the status of an alert
+      description: The result of the alert status update.
+    description: Update the status of an alert.
   - name: taegis-fetch-assets
     arguments:
     - name: page
-      description: Search results page number
+      description: Search results page number.
       defaultValue: "0"
     - name: page_size
-      description: The number of results per-page
+      description: The number of results per-page.
       defaultValue: "10"
     - name: endpoint_type
-      description: Filter assets by asset type
+      description: Filter assets by asset type.
     - name: host_id
-      description: Filter assets by host ID
+      description: Filter assets by host ID.
     - name: hostname
-      description: Filter assets by hostname
+      description: Filter assets by hostname.
     - name: investigation_id
-      description: Filter assets by related investigation ID
+      description: Filter assets by related investigation ID.
     - name: ip_address
-      description: Filter assets by IP address
+      description: Filter assets by IP address.
     - name: mac_address
-      description: Filter assets by MAC address
+      description: Filter assets by MAC address.
     - name: os_family
-      description: Filter assets by OS family
+      description: Filter assets by OS family.
     - name: os_version
-      description: Filter assets by OS version
+      description: Filter assets by OS version.
     - name: sensor_version
-      description: Filter assets by sensor version
+      description: Filter assets by sensor version.
     - name: username
-      description: Filter assets by username
+      description: Filter assets by username.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.Assets
-      description: A list of located assets
-    description: Fetch assets based on search criteria
+      description: A list of located assets.
+    description: Fetch assets based on search criteria.
   - name: taegis-isolate-asset
     arguments:
     - name: id
       required: true
-      description: Asset ID to isolate
+      description: Asset ID to isolate.
     - name: reason
       required: true
-      description: A reason for the isolation
+      description: A reason for the isolation.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.AssetIsolation
-      description: Results from the asset isolation
-    description: Isolate a specific asset
+      description: Results from the asset isolation.
+    description: Isolate a specific asset.
   - name: taegis-fetch-endpoint
     arguments:
     - name: id
       required: true
-      description: The endpoint ID to fetch
+      description: The endpoint ID to fetch.
     - name: tenant_id
       description: The tenant to run against if an MSP. If no tenant  provided, the tenant of the generated credentials is used.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.Endpoint
-      description: Results from fetching the endpoint information
-    description: Fetch endpoint information
+      description: Results from fetching the endpoint information.
+    description: Fetch endpoint information.
   - name: taegis-create-sharelink
     arguments:
     - name: id
       required: true
-      description: The ID of the alert, investigation, etc
+      description: The ID of the alert, investigation, etc.
     - name: type
       required: true
       auto: PREDEFINED
@@ -514,30 +524,30 @@ script:
       - connectorId
       - connectionId
       - eventId
-      description: The type of Taegis element to create the ShareLink against
+      description: The type of Taegis element to create the ShareLink against.
     - name: fields
-      description: The fields to return from the query
+      description: The fields to return from the query.
     outputs:
     - contextPath: TaegisXDR.ShareLink
-      description: Results from creating the ShareLink
-    description: Create a ShareLink to a Taegis element, such as an alert or investigation
+      description: Results from creating the ShareLink.
+    description: Create a ShareLink to a Taegis element, such as an alert or investigation.
   - name: taegis-add-evidence-to-investigation
     arguments:
     - name: id
       required: true
-      description: The investigation ID to update
+      description: The investigation ID to update.
     - name: alerts
-      description: A list of alert IDs or string of comma-separated alert IDs to add
+      description: A list of alert IDs or string of comma-separated alert IDs to add.
       isArray: true
     - name: events
-      description: A list of alert IDs or string of comma-separated event IDs to add
+      description: A list of alert IDs or string of comma-separated event IDs to add.
     - name: alert_query
-      description: A CQL query to find alerts to add to the investigation
+      description: A CQL query to find alerts to add to the investigation.
     outputs:
     - contextPath: TaegisXDR.InvestigationEvidenceUpdate
-      description: The investigation that received the update
-    description: Add alerts and events to an existing investigation
-  dockerimage: demisto/python3:3.10.13.72123
+      description: The investigation that received the update.
+    description: Add alerts and events to an existing investigation.
+  dockerimage: demisto/python3:3.10.13.75921
   isfetch: true
   runonce: false
   subtype: python3

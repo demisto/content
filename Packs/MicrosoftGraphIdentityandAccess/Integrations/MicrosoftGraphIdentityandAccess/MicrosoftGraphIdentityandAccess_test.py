@@ -144,5 +144,5 @@ def test_missing_creds_error_thrown(expected_error):
     """
     from MicrosoftGraphIdentityandAccess import Client
     with pytest.raises(DemistoException) as e:
-        Client("", False, False)
+        Client("", False, False, client_credentials=True)
     assert str(e.value.message) == expected_error

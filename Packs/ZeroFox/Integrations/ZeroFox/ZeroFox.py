@@ -9,6 +9,7 @@ from collections.abc import Callable
 from requests import Response
 from copy import deepcopy
 import urllib.parse as urlparse
+import json
 
 """ GLOBALS / PARAMS  """
 FETCH_TIME_DEFAULT = "3 days"
@@ -19,13 +20,16 @@ CLOSED_ALERT_STATUS = ["Closed", "Deleted"]
 
 
 class ZFClient(BaseClient):
-    def __init__(self, username, password, fetch_limit, *args, **kwargs):
+    def __init__(
+        self, username, password, fetch_limit, only_escalated, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.credentials = {
             "username": username,
             "password": password
         }
         self.fetch_limit = fetch_limit
+        self.only_escalated = only_escalated
 
     def api_request(
         self,
@@ -77,7 +81,7 @@ class ZFClient(BaseClient):
             url_suffix=urljoin(pref_string, url_suffix),
             headers=headers,
             params=params,
-            data=data,
+            json_data=data,
             empty_valid_codes=(200, 201),
             return_empty_response=empty_response,
             error_handler=error_handler,
@@ -161,6 +165,8 @@ class ZFClient(BaseClient):
         url_suffix: str = "/alerts/"
         if not params.get("limit"):
             params['limit'] = self.fetch_limit
+        if self.only_escalated:
+            params['escalated'] = 'true'
         response_content = self.api_request(
             "GET",
             url_suffix,
@@ -1676,6 +1682,7 @@ def main():
     FETCH_LIMIT: int = int(params.get("fetch_limit", "100"))
     USE_SSL: bool = not params.get("insecure", False)
     PROXY: bool = params.get('proxy', False)
+    ONLY_ESCALATED: bool = params.get("only_escalated", False)
 
     commands: dict[str, Callable[[ZFClient, dict[str, Any]], Any]] = {
         "get-modified-remote-data": get_modified_remote_data_command,
@@ -1710,6 +1717,7 @@ def main():
             fetch_limit=FETCH_LIMIT,
             verify=USE_SSL,
             proxy=PROXY,
+            only_escalated=ONLY_ESCALATED,
         )
 
         command = demisto.command()

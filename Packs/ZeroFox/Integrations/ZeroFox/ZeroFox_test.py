@@ -45,6 +45,7 @@ def build_zf_client() -> ZFClient:
         username='',
         password='',
         fetch_limit=FETCH_LIMIT,
+        only_escalated=False,
     )
 
 

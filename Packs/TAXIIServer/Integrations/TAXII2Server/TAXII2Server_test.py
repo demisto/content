@@ -275,6 +275,27 @@ def test_taxii20_get_server_info(mocker, taxii2_server_v20):
     assert result.outputs == integration_context['server_info']
 
 
+def test_taxii20_get_server_info_demisto_version(mocker):
+    """
+        Given
+            TAXII Server v2.0, Integration context.
+        When
+            Calling get-server-info command
+        Then
+            Validate that the correct default URL is returned
+
+    """
+    from TAXII2Server import get_server_info_command
+    integration_context = {}
+    integration_context['server_info'] = {'api_roots': ["https://www.example.com/path/to/resource?query=parameter"],
+                                          'default': "https://www.example.com/path/to/resource?query=parameter"}
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={'version': '8.1.0', 'buildNumber': '12345'})
+
+    results = get_server_info_command(integration_context=integration_context)
+
+    assert results.outputs['default'] == 'https://ext-www.example.com/path/to/resource?query=parameter'
+
+
 def test_taxii21_collection(mocker, taxii2_server_v21):
     """
         Given
@@ -505,7 +526,7 @@ def test_taxii21_objects_filtered_params(mocker, taxii2_server_v21, res_file, fi
     mocker.patch('TAXII2Server.SERVER.has_extension', has_extension)
     mocker.patch.object(uuid, 'uuid4', return_value='1ffe4bee-95e7-4e36-9a17-f56dbab3c777')
     mocker.patch.object(demisto, 'searchIndicators', return_value=iocs)
-    mocker.patch.object(demisto, 'params', return_value={'res_size': '100'})
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '7'})
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/collections/e46189b5-c5c8-5c7f-b947-183e0302b4d3/'
                                    'objects/?match[type]=file', headers=HEADERS)

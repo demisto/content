@@ -370,9 +370,9 @@ def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) 
         f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets
     )
     random_alerts_response, alert = get_alerts_and_table_response()
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/{ALERT_ID}", json=alert)
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
     requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=random_alerts_response
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response
     )
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
@@ -400,9 +400,9 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
         f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets
     )
     random_alerts_response, alert = get_alerts_and_table_response()
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/{ALERT_ID}", json=alert)
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
     requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=random_alerts_response
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response
     )
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client,
@@ -434,8 +434,8 @@ def test_fetch_incidents_without_assets_info(
         f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json={}
     )
     random_alerts_response, alert = get_alerts_and_table_response()
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/{ALERT_ID}", json=alert)
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=random_alerts_response)
+    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{ALERT_ID}", json=alert)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=random_alerts_response)
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client, last_run={}, source="GOOGLE_DRIVE", max_fetch=1
     )
@@ -475,7 +475,7 @@ def test_empty_response(requests_mock, reco_client: RecoClient) -> None:
         f"{DUMMY_RECO_API_DNS_NAME}/incident",
         json=table_empty,
     )
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=table_empty)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=table_empty)
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client, last_run={}, max_fetch=1
     )
@@ -498,7 +498,7 @@ def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
         f"{DUMMY_RECO_API_DNS_NAME}/incident",
         json=table_empty,
     )
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json=table_empty)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json=table_empty)
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client, last_run={}, max_fetch=1
     )
@@ -509,7 +509,7 @@ def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
 
 def test_invalid_response(requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json={"getTableResponse": {}})
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/table", json={
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/table", json={
         "getTableResponse": {}
     })
     last_run, fetched_incidents = fetch_incidents(
@@ -778,7 +778,7 @@ def test_change_alert_status(requests_mock, reco_client: RecoClient) -> None:
     alert_id = uuid.uuid1()
     status = 'ALERT_STATUS_CLOSED'
     requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/alert-inbox/{str(alert_id)}/status/{status}",
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{str(alert_id)}/status/{status}",
         json={},
         status_code=200,
     )

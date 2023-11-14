@@ -7,7 +7,7 @@ from BMCDiscovery import Client, \
     discovery_search_command, \
     discovery_search_custom_command, \
     discovery_scan_create_command, \
-    discovery_scan_stop_command,\
+    discovery_scan_stop_command, \
     discovery_scan_summary_command, \
     discovery_scan_results_list_command
 import os

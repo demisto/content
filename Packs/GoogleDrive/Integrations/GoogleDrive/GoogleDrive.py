@@ -7,10 +7,11 @@ import io
 import urllib3
 import uuid
 import dateparser
+import yaml
 from typing import Any
 from collections.abc import Callable
 
-from apiclient import discovery
+from apiclient import discovery, errors
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseDownload
 
@@ -18,6 +19,9 @@ from googleapiclient.http import MediaIoBaseDownload
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
+
+API_VERSION = 'v3'
+SERVICE_NAME = 'drive'
 
 MESSAGES: dict[str, str] = {
     'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
@@ -1179,11 +1183,9 @@ def file_upload_command(client: 'GSuiteClient', args: dict[str, str]) -> Command
     file_entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(file_entry_id)
 
-    version = 'v3'
-    service_name = 'drive'
     user_id = args.get('user_id') or client.user_id
     client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=user_id)
-    drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
     body: dict[str, str] = assign_params(
         parents=[args.get('parent')] if 'parent' in args else None,
         name=args.get('file_name'),
@@ -1212,9 +1214,7 @@ def file_download_command(client: 'GSuiteClient', args: dict[str, str]) -> Comma
 
     prepare_file_command_request(client, args, scopes=COMMAND_SCOPES['FILES'])
 
-    version = 'v3'
-    service_name = 'drive'
-    drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
     request = drive_service.files().get_media(fileId=args.get('file_id'))
     fh = io.BytesIO()
     downloader = MediaIoBaseDownload(fh, request)
@@ -1239,9 +1239,7 @@ def file_replace_existing_command(client: 'GSuiteClient', args: dict[str, str]) 
     file_entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(file_entry_id)
 
-    version = 'v3'
-    service_name = 'drive'
-    drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
     media = MediaFileUpload(file_path['path'])
     file = drive_service.files().update(fileId=args.get('file_id', ''),
                                         body={},
@@ -1740,12 +1738,11 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
     client.set_authorized_http(scopes=COMMAND_SCOPES['DRIVE_ACTIVITY'], subject=user_id)
     response = client.http_request(full_url=URLS['DRIVE_ACTIVITY'], method='POST', body=body)
 
-    outputs_context = []
     readable_output = ''
-
-    for activity in response.get('activities', []):
-        outputs_context.append(prepare_drive_activity_output(activity))
-
+    outputs_context = [
+        prepare_drive_activity_output(activity)
+        for activity in response.get('activities', [])
+    ]
     drive_activity_hr = prepare_drive_activity_human_readable(outputs_context)
 
     outputs: dict = {
@@ -1762,6 +1759,43 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
         outputs=outputs,
         readable_output=readable_output,
         raw_response=response,
+    )
+
+
+def copy_file_http_request(
+        client: 'GSuiteClient', file_id: str, supports_all_drives: str, copy_title: str = None, user_id: str = None
+) -> dict:
+
+    client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=(user_id or client.user_id))
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
+
+    try:
+        return drive_service.files().copy(
+            fileId=file_id,
+            supportsAllDrives=argToBoolean(supports_all_drives),
+            body={'name': copy_title} if copy_title else None,
+        ).execute()
+    except errors.HttpError as e:
+        error_dict = {
+            'Details': e.error_details,
+            'Status Code': e.resp.status,
+            'Reason': e.reason,
+        }
+        raise DemistoException(f'Unable to copy file.\n{yaml.dump(error_dict)}')
+
+
+def file_copy_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+
+    file = copy_file_http_request(client, **args)
+
+    return CommandResults(
+        outputs_prefix='GoogleDrive.File.File',
+        outputs_key_field='id',
+        outputs=file,
+        readable_output=tableToMarkdown(
+            'File copied successfully.', file,
+            headerTransform=string_to_table_header
+        ),
     )
 
 
@@ -1833,7 +1867,7 @@ def fetch_incidents(client: 'GSuiteClient', last_run: dict, params: dict, is_tes
 
 def main() -> None:  # pragma: no cover
     """
-         PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
     # Commands dictionary
@@ -1854,6 +1888,7 @@ def main() -> None:  # pragma: no cover
         'google-drive-file-download': file_download_command,
         'google-drive-file-replace-existing': file_replace_existing_command,
         'google-drive-file-delete': file_delete_command,
+        'google-drive-file-copy': file_copy_command,
 
         'google-drive-file-permissions-list': file_permission_list_command,
         'google-drive-file-permission-create': file_permission_create_command,
@@ -1885,33 +1920,33 @@ def main() -> None:  # pragma: no cover
         }
 
         # prepare client class object
-        gsuite_client = GSuiteClient(service_account_dict,
-                                     base_url='https://www.googleapis.com/', verify=verify_certificate, proxy=proxy,
-                                     headers=headers,
-                                     user_id=user_id)
+        gsuite_client = GSuiteClient(
+            service_account_dict, base_url='https://www.googleapis.com/',
+            verify=verify_certificate, proxy=proxy,
+            headers=headers, user_id=user_id
+        )
 
         # Trim the arguments
         args = GSuiteClient.strip_dict(demisto.args())
 
         # This is the call made when pressing the integration Test button.
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             result = test_module(gsuite_client, demisto.getLastRun(), params)
             return_results(result)
-        elif demisto.command() == 'fetch-incidents':
-
-            incidents, next_run = fetch_incidents(gsuite_client,
-                                                  last_run=demisto.getLastRun(),
-                                                  params=params)
-
+        elif command == 'fetch-incidents':
+            incidents, next_run = fetch_incidents(
+                gsuite_client, last_run=demisto.getLastRun(), params=params,
+            )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-
         elif command in commands:
             return_results(commands[command](gsuite_client, args))
+        else:
+            raise NotImplementedError(f'{command!r} is not a Google Drive command.')
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Error: {str(e)}')
+        return_error(f'Error: {e}')
 
 
 from GSuiteApiModule import *  # noqa: E402

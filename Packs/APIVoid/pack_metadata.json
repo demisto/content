@@ -9,7 +9,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        "Free Enricher"
+    ],
     "created": "2020-04-01T22:23:20Z",
     "useCases": [],
     "keywords": [],

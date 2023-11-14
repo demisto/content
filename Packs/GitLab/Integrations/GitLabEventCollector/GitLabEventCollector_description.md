@@ -10,3 +10,4 @@ Gitlab Events Collector
 * **Groups IDs** - A comma-separated list of group IDs.
 * **Projects IDs** - A comma-separated list of project IDs.
 * **First fetch from API time** - The time to first fetch from the API.
+* **The maximum number of events to fetch for each event type** - Each fetch will bring the `limit` number of events for each event type (audits, groups and projects) and each group/project ID. For example, if `limit` is set to 500 and groups/projects IDs are given as well, then the fetch will bring 500 audit events and 500 group/project events for each group/project ID.

@@ -1562,7 +1562,8 @@ def main():  # pragma: no cover
         if len(TOKEN) > 32 and API_KEY_SOURCE not in ['pcc', 'prismaaccessapi', 'xsoartim']:
             # the token is longer than 32 so either PPC or Prismaaccessapi needs to be set
             raise DemistoException(
-                'API Key longer than 32 chars, agent value must be selected in the intergration instance.')
+                'API Key is longer than 32 characters.\
+Select an "API Key Type" in the integration\'s instance configuration.')
 
         if command == 'test-module':
             test_module()

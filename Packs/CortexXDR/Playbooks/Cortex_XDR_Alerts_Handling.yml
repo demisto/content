@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR Alerts Handling
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation"
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation."
 starttaskid: "0"
 tasks:
   "0":
@@ -237,8 +237,7 @@ tasks:
       id: 12258730-025a-4931-8da9-9f68bfb6a32c
       version: -1
       name: Cortex XDR - get incident extra data
-      description: Returns additional data for the specified incident, for example,
-        related alerts, file artifacts, network artifacts, and so on.
+      description: Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
       script: Cortex XDR - IR|||xdr-get-incident-extra-data
       type: regular
       iscommand: true
@@ -459,6 +458,7 @@ tasks:
         complex:
           root: inputs.alert_id
     separatecontext: false
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -524,7 +524,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -940,
           "y": 920
         }
       }
@@ -581,7 +581,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -940,
           "y": 575
         }
       }
@@ -594,10 +594,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 18ea3ba1-78ee-4ce3-844b-44853df600da
+    taskid: d876d66f-ca83-4565-8c73-bfcf47d74473
     type: condition
     task:
-      id: 18ea3ba1-78ee-4ce3-844b-44853df600da
+      id: d876d66f-ca83-4565-8c73-bfcf47d74473
       version: -1
       name: Which XCLOUD alert was found?
       description: Checks which XCLOUD alert was found in the incident.
@@ -609,6 +609,8 @@ tasks:
       - "5"
       Cryptojacking:
       - "10"
+      Data Exfiltration:
+      - "17"
       IAM User Access:
       - "15"
       Token Theft:
@@ -815,11 +817,23 @@ tasks:
             value:
               simple: Remote usage of VM Service Account token
           ignorecase: true
+    - label: Data Exfiltration
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: An identity performed a suspicious download of multiple cloud storage object
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -940,
           "y": 730
         }
       }
@@ -1096,7 +1110,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1430,
+          "x": -430,
           "y": 575
         }
       }
@@ -1161,7 +1175,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -310,
+          "x": -1780,
           "y": 920
         }
       }
@@ -1245,7 +1259,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1140,
+          "x": -1360,
           "y": 920
         }
       }
@@ -1256,12 +1270,63 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: be0cb5ec-08ca-4334-8efd-9c7c004aa362
+    type: playbook
+    task:
+      id: be0cb5ec-08ca-4334-8efd-9c7c004aa362
+      version: -1
+      name: Cortex XDR - Cloud Data Exfiltration Response
+      playbookName: Cortex XDR - Cloud Data Exfiltration Response
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      alertID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: An identity performed a suspicious download of multiple cloud storage objects
+          accessor: alert_id
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -2200,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "12_10_Cryptojacking ": 0.64,
-      "12_15_IAM User Access": 0.59,
+      "12_15_IAM User Access": 0.74,
+      "12_16_Token Theft": 0.58,
       "1_11_Cloud": 0.81,
       "1_14_First SSO Access": 0.82,
       "1_7_#default#": 0.63,
@@ -1270,8 +1335,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1095,
-        "width": 3170,
-        "x": -1430,
+        "width": 3940,
+        "x": -2200,
         "y": 70
       }
     }
@@ -1305,8 +1370,7 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
   description: Calculated name of the alert.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.category
-  description: Category of the alert, for example, Spyware Detected via Anti-Spyware
-    profile.
+  description: Category of the alert, for example, Spyware Detected via Anti-Spyware profile.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip
   description: Host IP involved in the alert.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_name
@@ -1314,38 +1378,17 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.user_name
   description: User name involved with the alert.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.event_type
-  description: 'Event type: "Process Execution","Network Event","File Event","Registry
-    Event","Injection Event","Load Image Event","Windows Event Log".'
+  description: 'Event type: "Process Execution","Network Event","File Event","Registry Event","Injection Event","Load Image Event","Windows Event Log".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action
-  description: 'The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED",
-    "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1",
-    "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8",
-    "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15",
-    "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4",
-    "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23".'
+  description: 'The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED", "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1", "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8", "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15", "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4", "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
-  description: 'The action that triggered the alert: "Detected (Reported)" "Prevented
-    (Blocked)" "Detected (Post Detected)" "Detected (Scanned)" "Detected (Download)"
-    "Detected (Prompt Allow)" "Prevented (Prompt Block)" "Detected" "Prevented (Denied
-    The Session)" "Prevented (Dropped The Session)" "Prevented (Dropped The Session
-    And Sent a TCP Reset)" "Prevented (Blocked The URL)" "Prevented (Blocked The IP)"
-    "Prevented (Dropped The Packet)" "Prevented (Dropped All Packets)" "Prevented
-    (Terminated The Session And Sent a TCP Reset To Both Sides Of The Connection)"
-    "Prevented (Terminated The Session And Sent a TCP Reset To The Client)" "Prevented
-    (Terminated The Session And Sent a TCP Reset To The Server)" "Prevented (Continue)"
-    "Prevented (Block-Override)" "Prevented (Override-Lockout)" "Prevented (Override)"
-    "Prevented (Random-Drop)" "Prevented (Silently Dropped The Session With An ICMP
-    Unreachable Message To The Host Or Application)" "Prevented (Block)" "Detected
-    (Allowed The Session)" "Detected (Raised An Alert)" "Detected (Syncookie Sent)"
-    "Detected (Forward)" "Detected (Wildfire Upload Success)" "Detected (Wildfire
-    Upload Failure)" "Detected (Wildfire Upload Skip)" "Detected (Sinkhole)".'
+  description: 'The action that triggered the alert: "Detected (Reported)" "Prevented (Blocked)" "Detected (Post Detected)" "Detected (Scanned)" "Detected (Download)" "Detected (Prompt Allow)" "Prevented (Prompt Block)" "Detected" "Prevented (Denied The Session)" "Prevented (Dropped The Session)" "Prevented (Dropped The Session And Sent a TCP Reset)" "Prevented (Blocked The URL)" "Prevented (Blocked The IP)" "Prevented (Dropped The Packet)" "Prevented (Dropped All Packets)" "Prevented (Terminated The Session And Sent a TCP Reset To Both Sides Of The Connection)" "Prevented (Terminated The Session And Sent a TCP Reset To The Client)" "Prevented (Terminated The Session And Sent a TCP Reset To The Server)" "Prevented (Continue)" "Prevented (Block-Override)" "Prevented (Override-Lockout)" "Prevented (Override)" "Prevented (Random-Drop)" "Prevented (Silently Dropped The Session With An ICMP Unreachable Message To The Host Or Application)" "Prevented (Block)" "Detected (Allowed The Session)" "Detected (Raised An Alert)" "Detected (Syncookie Sent)" "Detected (Forward)" "Detected (Wildfire Upload Success)" "Detected (Wildfire Upload Failure)" "Detected (Wildfire Upload Skip)" "Detected (Sinkhole)".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_image_name
   description: Image name.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_command_line
   description: Command line.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_status
-  description: 'Signature status: "Signed" "Invalid Signature" "Unsigned" "Revoked"
-    "Signature Fail" "N/A" "Weak Hash".'
+  description: 'Signature status: "Signed" "Invalid Signature" "Unsigned" "Revoked" "Signature Fail" "N/A" "Weak Hash".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor
   description: Signature vendor name.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256
@@ -1357,31 +1400,27 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
   description: The domain related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
-  description: The country related to the artifact
+  description: The country related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
   description: The remote IP related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
-  description: 'Digital signature status of the file: "SIGNATURE_UNAVAILABLE", "SIGNATURE_SIGNED",
-    "SIGNATURE_INVALID", "SIGNATURE_UNSIGNED", "SIGNATURE_WEAK_HASH".'
+  description: 'Digital signature status of the file: "SIGNATURE_UNAVAILABLE", "SIGNATURE_SIGNED", "SIGNATURE_INVALID", "SIGNATURE_UNSIGNED", "SIGNATURE_WEAK_HASH".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_process
   description: Whether the file artifact is related to a process execution.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_name
   description: Name of the file.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict
-  description: 'The file verdict, calculated by Wildfire: "BENIGN", "MALWARE", "GRAYWARE",
-    "PHISHING", "UNKNOWN".'
+  description: 'The file verdict, calculated by Wildfire: "BENIGN", "MALWARE", "GRAYWARE", "PHISHING", "UNKNOWN".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious
   description: Whether the artifact is malicious, decided by the Wildfire verdict.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.type
-  description: 'The artifact type: "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY",
-    "HOSTNAME".'
+  description: 'The artifact type: "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY", "HOSTNAME".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
   description: SHA256 hash of the file.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name
   description: File signature vendor name.
 - contextPath: PortScan.BlockPorts
-  description: Indicates whether there's a need to block the ports used for exploitation
-    on the scanned host.
+  description: Indicates whether there's a need to block the ports used for exploitation on the scanned host.
   type: unknown
 - contextPath: PortScan.AttackerIPs
   description: Attacker IPs from the port scan alert.
@@ -1407,3 +1446,5 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+marketplaces:
+- xsoar

@@ -1628,3 +1628,144 @@ def test_get_cve_different_reliability(requests_mock, reliability, client):
     response = get_cves(client=client, args=args, reliability=reliability)[0]
 
     assert response.indicator.dbot_score.reliability == reliability
+
+
+def test_get_ci_scan_results_list_command(requests_mock):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-ci-scan-results-list' command
+    Then:
+        -  Ensure the outputs of requesting the defenders settings equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_ci_scan_results_list, PrismaCloudComputeClient
+    with open("test_data/get_ci_scan_results_list.json") as f:
+        response = json.load(f)
+
+    requests_mock.get(url=BASE_URL + '/scans', json=response)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {'verbose': 'true'}
+
+    assert get_ci_scan_results_list(client, args).raw_response == response
+
+
+def test_get_trusted_images_command(requests_mock):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-trusted-images-list' command
+    Then:
+        - Ensure the outputs of requesting trusted images equals the raw_response object which is mocked
+    """
+
+    from PaloAltoNetworks_PrismaCloudCompute import get_trusted_images, PrismaCloudComputeClient
+
+    with open("test_data/trusted_images.json") as f:
+        response = json.load(f)
+
+    requests_mock.get(url=BASE_URL + '/trust/data', json=response)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+
+    assert get_trusted_images(client).raw_response == response
+
+
+def test_update_trusted_images_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-trusted-images-update' command
+    Then:
+        - Ensure the command is called with the correct arguments
+    """
+
+    from PaloAltoNetworks_PrismaCloudCompute import update_trusted_images, PrismaCloudComputeClient
+
+    with open("test_data/trusted_images.json") as f:
+        images_list_json = json.load(f)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    http_request = mocker.patch.object(client, '_http_request')
+    args = {"images_list_json": images_list_json}
+
+    update_trusted_images(client, args)
+    http_request.assert_called_with(method='PUT', url_suffix='trust/data',
+                                    json_data=images_list_json, resp_type='response', ok_codes=(200,))
+
+
+def test_get_container_scan_results_command(requests_mock):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-container-scan-results-list' command
+    Then:
+        - Ensure the outputs of requesting container scan results equals the raw_response object which is mocked
+    """
+
+    from PaloAltoNetworks_PrismaCloudCompute import get_container_scan_results, PrismaCloudComputeClient
+
+    with open("test_data/get_container_scan_results.json") as f:
+        response = json.load(f)
+
+    requests_mock.get(url=BASE_URL + '/containers', json=response)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {}
+
+    assert get_container_scan_results(client, args).raw_response == response
+
+
+def test_get_hosts_info_command(requests_mock):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-hosts-list' command
+    Then:
+        - Ensure the outputs of requesting host info equals the raw_response object which is mocked
+    """
+
+    from PaloAltoNetworks_PrismaCloudCompute import get_hosts_info, PrismaCloudComputeClient
+
+    with open("test_data/get_hosts_info.json") as f:
+        response = json.load(f)
+
+    requests_mock.get(url=BASE_URL + '/hosts/info', json=response)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {}
+
+    assert get_hosts_info(client, args).raw_response == response
+
+
+def test_get_runtime_container_audit_events_command(requests_mock):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-runtime-container-audit-events-list' command
+    Then:
+        - Ensure the outputs of requesting runtime container audit events equals the raw_response object which is mocked
+    """
+
+    from PaloAltoNetworks_PrismaCloudCompute import get_runtime_container_audit_events, PrismaCloudComputeClient
+
+    with open("test_data/get_runtime_container_audit_events.json") as f:
+        response = json.load(f)
+
+    requests_mock.get(url=BASE_URL + '/audits/runtime/container', json=response)
+
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {}
+
+    assert get_runtime_container_audit_events(client, args).raw_response == response

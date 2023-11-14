@@ -1486,3 +1486,32 @@ There is no context output for this command.
 >|---|---|---|---|---|
 >| recreation-and-hobbies,<br/>educational-institutions,<br/>real-estate,<br/>web-advertisements,<br/>health-and-medicine,<br/>stock-advice-and-tools,<br/>travel,<br/>computer-and-internet-info,<br/>personal-sites-and-blogs,<br/>swimsuits-and-intimate-apparel,<br/>social-networking,<br/>religion,<br/>medium-risk,<br/>business-and-economy,<br/>private-ip-addresses,<br/>web-hosting,<br/>entertainment-and-arts,<br/>streaming-media,<br/>abortion,<br/>translation,<br/>internet-portals,<br/>online-storage-and-backup,<br/>job-search,<br/>motor-vehicles,<br/>web-based-email,<br/>nudity,<br/>sports,<br/>training-and-tools,<br/>government,<br/>shareware-and-freeware,<br/>legal,<br/>shopping,<br/>alcohol-and-tobacco,<br/>low-risk,<br/>auctions,<br/>high-risk,<br/>search-engines,<br/>cryptocurrency,<br/>not-resolved,<br/>society,<br/>financial-services,<br/>military,<br/>news,<br/>philosophy-and-political-advocacy,<br/>content-delivery-networks,<br/>internet-communications-and-telephony,<br/>music,<br/>home-and-garden,<br/>hunting-and-fishing,<br/>reference-and-research,<br/>dating,<br/>sex-education,<br/>games |  | hacking,<br/>extremism,<br/>weapons,<br/>command-and-control,<br/>ransomware,<br/>copyright-infringement,<br/>dynamic-dns,<br/>parked,<br/>phishing,<br/>medium-risk,<br/>unknown,<br/>abused-drugs,<br/>insufficient-content,<br/>adult,<br/>newly-registered-domain,<br/>grayware,<br/>high-risk,<br/>gambling,<br/>malware,<br/>peer-to-peer,<br/>proxy-avoidance-and-anonymizers,<br/>questionable |  |  |
 
+
+### prisma-sase-quarantine-host
+***
+Quarantine a host.
+
+
+#### Base Command
+
+`prisma-sase-quarantine-host`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
+| host_id | The host ID. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!prisma-sase-quarantine-host host_id="host_id"```
+#### Human Readable Output
+
+>### Host Quarantined
+>|host_id|
+>|---|
+>| test_host |
+>

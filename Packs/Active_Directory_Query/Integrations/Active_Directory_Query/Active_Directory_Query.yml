@@ -788,6 +788,18 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
+  - arguments:
+    - description: Username to test. By itself or formatted like SERVER_IP\\USERNAME.
+      name: username
+      required: true
+    - description: Password to test.
+      name: password
+      required: true
+    description: Test given credentials.
+    name: ad-test-credentials
+    outputs:
+    - contextPath: ActiveDirectory.ValidCredentials
+      description: List of usernames that successfully logged in.
   dockerimage: demisto/ldap:2.9.1.75534
   ismappable: true
   isremotesyncout: true

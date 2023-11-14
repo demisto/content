@@ -7,6 +7,7 @@ from blessings import Terminal
 from github import Github
 from git import Repo
 from github.Repository import Repository
+from demisto_sdk.commands.common.tools import get_pack_metadata
 
 
 from utils import (
@@ -272,6 +273,21 @@ def main():
     body = message_to_send.format(selected_reviewer=content_reviewer)
     pr.create_issue_comment(body)
     print(f'{t.cyan}Created welcome comment{t.normal}')
+
+    print('contributors.md section')
+    print(f'pack path: {pr_files[0]}')
+    ver = get_pack_metadata(pr_files[0]).get('currentVersion')
+    print(f'version is: {ver}')
+    if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR:
+        contributors_body = 'Thanks for contributing to a Cortex XSOAR supported pack. To receive credit for your generous' \
+                            ' contribution, please ask the reviewer to update your information in the pack contributors file.' \
+                            ' See more information here [link](https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)'
+    else:
+        contributors_body = f'Hi @{pr.user.login}, thanks for contributing to a Cortex XSOAR supported pack. To receive ' \
+            f'credit for your generous contribution please follow this [link]' \
+            f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson).'
+    if XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
+        pr.create_issue_comment(contributors_body)
 
 
 if __name__ == "__main__":

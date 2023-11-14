@@ -185,10 +185,12 @@ class Client:
     def unlock_configuration_service_principal(
             self,
             service_id: str,
+            lock: bool
     ):
         """
 
         Arguments:
+            lock: Whether to lock or unlock. True to lock, False to unlock.
             service_id: object id or application id of the service.
 
         Returns:
@@ -198,7 +200,7 @@ class Client:
             https://learn.microsoft.com/en-us/graph/api/application-removepassword?view=graph-rest-1.0&tabs=http
         """
         data = {"servicePrincipalLockConfiguration":
-                {"isEnabled": False,
+                {"isEnabled": lock,
                  "credentialsWithUsageSign": True,
                  "credentialsWithUsageVerify": True}
                 }
@@ -407,11 +409,12 @@ def remove_password_service_principal_command(ms_client: Client, args: dict) -> 
     )
 
 
-def unlock_configuration_service_principal_command(ms_client: Client, args: dict) -> CommandResults:
+def change_configuration_service_principal_lock_status(ms_client: Client, args: dict, lock: bool) -> CommandResults:
     """
-    Unlock configuration of a service principal.
+    Unlock / Lock configuration of a service principal.
 
     Arguments:
+        lock: in the case of locking back the configuration.
         ms_client: The Client
         args: demisto.args()
 
@@ -420,10 +423,10 @@ def unlock_configuration_service_principal_command(ms_client: Client, args: dict
     """
     object_id = args["id"]
 
-    ms_client.unlock_configuration_service_principal(object_id)
+    ms_client.unlock_configuration_service_principal(service_id=object_id, lock=lock)
 
     return CommandResults(
-        readable_output=f'The configuration of {object_id} was unlocked successfully.'
+        readable_output=f'The configuration of {object_id} was {"locked" if lock else "unlocked"} successfully.'
     )
 
 
@@ -451,7 +454,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def main():
+def main():  # pragma: no cover
     handle_proxy()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -494,7 +497,9 @@ def main():
         elif command == 'msgraph-apps-service-principal-password-remove':
             return_results(remove_password_service_principal_command(client, args))
         elif command == 'msgraph-apps-service-principal-unlock-configuration':
-            return_results(unlock_configuration_service_principal_command(client, args))
+            return_results(change_configuration_service_principal_lock_status(client, args, lock=False))
+        elif command == 'msgraph-apps-service-principal-lock-configuration':
+            return_results(change_configuration_service_principal_lock_status(client, args, lock=True))
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 

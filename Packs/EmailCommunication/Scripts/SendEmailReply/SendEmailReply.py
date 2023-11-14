@@ -812,7 +812,7 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
             # Keep track of the last processed list position
             last_thread_processed = idx
 
-    return thread_found, reply_to_message_id, outbound_only, reply_code, reply_subject, reply_recipients,\
+    return thread_found, reply_to_message_id, outbound_only, reply_code, reply_subject, reply_recipients, \
         reply_mailbox, thread_cc, thread_bcc, last_thread_processed
 
 
@@ -870,7 +870,7 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
         elif type(incident_email_threads) == list:
             # Process existing thread entries in this email chain to gather re-usable data for new message
             thread_found, reply_to_message_id, outbound_only, reply_code, reply_subject, reply_recipients, \
-                reply_mailbox, thread_cc, thread_bcc,\
+                reply_mailbox, thread_cc, thread_bcc, \
                 last_thread_processed = collect_thread_details(incident_email_threads, email_selected_thread)
 
             if thread_found is False:

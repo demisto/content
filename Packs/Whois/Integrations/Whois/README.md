@@ -21,6 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### whois
 ***
 Provides data enrichment for domains.
+This pack relies on free services for WHOIS information. As with many free services, the availability is not guaranteed. Free WHOIS providers may block or be reject queries.
 
 
 #### Base Command
