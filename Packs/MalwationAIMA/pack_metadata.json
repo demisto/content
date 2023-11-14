@@ -1,8 +1,9 @@
 {
-    "name": "MalwationAIMA",
-    "description": "Malware analysis sandbox",
+    "name": "MalwationAIMA (Deprecated)",
+    "description": "Deprecated. Use ThreatZone instead.",
     "support": "partner",
-    "currentVersion": "1.0.8",
+    "hidden": true,
+    "currentVersion": "1.0.13",
     "author": "MALWATION",
     "url": "https://malwation.com",
     "email": "info@malwation.com",

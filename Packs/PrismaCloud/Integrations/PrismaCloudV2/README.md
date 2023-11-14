@@ -24,9 +24,42 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Fetch only incidents matching these filters | Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command. | False |
     | Fetch incidents |  | False |
     | Output results of old version commands to the context data in the old format |  | False |
+    | Mirroring Direction | 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).' | False |
+    | Close Mirrored XSOAR Incident | When selected, closing and re-opening the Prisma Cloud alert is mirrored in Cortex XSOAR. | False |
+    | Close Mirrored Prisma Cloud Alert |  When selected, closing and re-opening the Cortex XSOAR incident is mirrored in Prisma Cloud. | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+### Incident Mirroring
+ 
+You can enable incident mirroring between Cortex XSOAR incidents and Prisma Cloud alerts (available from Cortex XSOAR version 6.0.0).
+
+To setup the mirroring follow these instructions:
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for **Prisma Cloud v2** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. Optional: You can go to the *Fetch only incidents matching these filters* parameter and select the query to fetch the alerts from Prisma Cloud.
+6. In the *Incident Mirroring Direction* parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Changes in Prisma Cloud Alerts (`status`, `dismissalNote`, `reason`) will be reflected in Cortex XSOAR incidents.
+    - Outgoing - Changes in Cortex XSOAR incidents will be reflected in Prisma Cloud alerts (`status`, `reason`).
+    - Incoming And Outgoing - Changes in Cortex XSOAR incidents and in Prisma Cloud alerts will be reflected in both directions.
+    - None - Turns off incident mirroring.
+7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close or reopen the Cortex XSOAR incident when the corresponding alert is closed or re-opened in Prisma Cloud.
+8. Optional: Check the *Close Mirrored Prisma Cloud Alert* integration parameter to close or reopen the Prisma Cloud alert when the corresponding Cortex XSOAR incident is closed or re-opened.
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+
+**Important Notes**
+
+- To ensure the mirroring works as expected, an incoming mapper is required, to map the expected fields in Cortex XSOAR (you can use the default mapper - *Prisma Cloud - Incoming Mapper*).
+- When *mirroring in* incidents from Prisma Cloud to Cortex XSOAR:
+  - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in Prisma Cloud that determines whether the incident was closed or re-opend is the `status` field.
+- When *mirroring out* incidents from Cortex XSOAR to Prisma Cloud:
+  - When enabling the *Close Mirrored Prisma Cloud Alert* integration parameter, the corresponding alert in Prisma Cloud will be closed with a *Dismissed* status for every reason chosen in the Cortex XSOAR incident (possible reasons are: `False Positive`, `Duplicate`, `Other` and `Resolved`). The *Reason* field of the Prisma Cloud alert will include the original reason selected in Cortex XSOAR and the close notes.
+  - When re-opening a Cortex XSOAR incident with a `Resolved` Prisma Cloud status, the incident will be re-opened, but the alert in Prisma Cloud will remain Resolved due to API limitations.  
+ 
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -613,7 +646,7 @@ There are no input arguments for this command.
 ### prisma-cloud-remediation-command-list
 
 ***
-Gets remediation command list details for the given alerts or policy. Either policy ID or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
+Generates and returns a list of remediation commands for the specified alerts and policies. Data returned for a successful call include fully constructed commands for remediation. Either a policy ID or alert IDs must be provided. The returned information can be retrieved in the UI by clicking the "Remediate" button under the "Actions" column for supported alerts. When no absolute time nor relative time arguments are provided, the default time range is all times.
 
 #### Base Command
 
@@ -680,7 +713,7 @@ Gets remediation command list details for the given alerts or policy. Either pol
 ### prisma-cloud-alert-remediate
 
 ***
-Remediates the alert with the specified ID, if that alert is associated with a remediable policy.
+Remediates the alert with the specified ID, if that alert is associated with a remediable policy. In order to check what remediation would run, use the "prisma-cloud-remediation-command-list" command first.
 
 #### Base Command
 
@@ -694,9 +727,27 @@ Remediates the alert with the specified ID, if that alert is associated with a r
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.AlertRemediation.alertId | String | The ID of the alert to which the remediation apply. | 
+| PrismaCloud.AlertRemediation.successful | Boolean | Whether the remediation was successful. | 
+| PrismaCloud.AlertRemediation.failureReason | String | The failure reason for the remediation. | 
+| PrismaCloud.AlertRemediation.errorValue | String | The error value for the remediation. | 
+
 #### Command example
 ```!prisma-cloud-alert-remediate alert_id=P-488074```
+#### Context Example
+```json
+{
+    "PrismaCloud": {
+        "AlertRemediation": {
+            "alertId": "P-488074",
+            "successful": true
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
 >Alert P-488074 remediated successfully.
@@ -1812,6 +1863,389 @@ Get resource details.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25 | rds:aaaaaaaaaaaaaa-2023-01-29-09-25 | rds:aaaaaaaaaaaaaa-2023-01-29-09-25 | [https://some_url?region=us-east-1#db-snapshots:id=rds:aaaaaaaaaaaaaa-2023-01-29-09-25](https://some_url/rds/home?region=us-east-1#db-snapshots:id=rds:aaaaaaaaaaaaaa-2023-01-29-09-25) | 111111111111 | AAAAAAA | aws | us-east-1 | AWS Virginia | Amazon RDS | Managed Database Snapshot | 2023-01-29T09:35:27Z | true | vpc-0f | ServerlessVPC | :  | A | false | false | false | true | false |
 
+### prisma-cloud-resource-list
+***
+Returns all the resource lists. Maps to the Resource Lists under Settings > Resource Lists in the Console UI.
+
+
+#### Base Command
+
+`prisma-cloud-resource-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_type | The resource list type. | Optional | 
+| limit | Maximum number of entries to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.ResourceList.id | String | Prisma Cloud resource list ID. | 
+| PrismaCloud.ResourceList.name | String | Resource list name. | 
+| PrismaCloud.ResourceList.resourceListType | String | Resource list type. | 
+| PrismaCloud.ResourceList.description | String | Resource list description. | 
+| PrismaCloud.ResourceList.lastModifiedBy | String | Resource list last modified user. | 
+| PrismaCloud.ResourceList.lastModifiedTs | Date | Resource list last modified time. | 
+| PrismaCloud.ResourceList.members | Unknown | Resource list members. | 
+
+#### Command example
+```!prisma-cloud-resource-list limit=3```
+#### Context Example
+```json
+{
+    "PrismaCloud": {
+        "ResourceList": [
+            {
+                "description": null,
+                "id": "aa11bb22",
+                "lastModifiedBy": "admin@paloaltonetworks.com",
+                "lastModifiedTs": "2021-09-20T16:23:15Z",
+                "members": [
+                    {
+                        "demo": "lab"
+                    },
+                    {
+                        "dev": "prisma"
+                    },
+                    {
+                        "env": "lab"
+                    }
+                ],
+                "name": "First",
+                "resourceListType": "TAG"
+            },
+            {
+                "description": null,
+                "id": "aa22bb11",
+                "lastModifiedBy": "admin2@paloaltonetworks.com",
+                "lastModifiedTs": "2023-03-10T04:54:34Z",
+                "members": [
+                    {
+                    }
+                ],
+                "name": "other",
+                "resourceListType": "COMPUTE_ACCESS_GROUP"
+            },
+            {
+                "description": null,
+                "id": "a3b4",
+                "lastModifiedBy": "test@paloaltonetworks.com",
+                "lastModifiedTs": "2023-07-10T22:27:55Z",
+                "members": [
+                    {
+                        "labels": [
+                            "*"
+                        ],
+                        "namespaces": [
+                            "*"
+                        ]
+                    }
+                ],
+                "name": "panw",
+                "resourceListType": "COMPUTE_ACCESS_GROUP"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>Showing 3 of 6 results:
+>### Resources Details:
+>|Name|Id|Type|Last Modified By|
+>|---|---|---|---|
+>| First | aa11bb22 | TAG | admin@paloaltonetworks.com |
+>| other | aa22bb11 | COMPUTE_ACCESS_GROUP | admin2@paloaltonetworks.com |
+>| panw | a3b4 | COMPUTE_ACCESS_GROUP | test@paloaltonetworks.com |
+
+### prisma-cloud-user-roles-list
+***
+Retrieves user roles. Maps to Settings > Access Control > Roles in the Console UI.
+
+
+#### Base Command
+
+`prisma-cloud-user-roles-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| role_id | The role id to get details of. | Optional | 
+| limit | Maximum number of entries to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.UserRoles.id | String | Prisma Cloud user roles ID. | 
+| PrismaCloud.UserRoles.name | String | User roles name. | 
+| PrismaCloud.UserRoles.resourceListIds | Unknown | User roles resource list IDs. | 
+| PrismaCloud.UserRoles.description | String | User roles description. | 
+| PrismaCloud.UserRoles.lastModifiedBy | String | User roles last modified user. | 
+| PrismaCloud.UserRoles.lastModifiedTs | Date | User roles last modified time. | 
+| PrismaCloud.UserRoles.associatedUsers | Unknown | User roles associated users. | 
+| PrismaCloud.UserRoles.restrictDismissalAccess | Boolean | Whether dismissal access is restricted for the user role. | 
+| PrismaCloud.UserRoles.roleType | String | User roles role type. | 
+| PrismaCloud.UserRoles.additionalAttributes | Unknown | User roles additional attributes. | 
+| PrismaCloud.UserRoles.codeRepositoryIds | Unknown | User roles code repository IDs. | 
+| PrismaCloud.UserRoles.accountGroupIds | Unknown | User roles account group IDs. | 
+| PrismaCloud.UserRoles.resourceLists | Unknown | User roles resource lists. | 
+| PrismaCloud.UserRoles.permissionGroup | Unknown | User roles permission group. | 
+| PrismaCloud.UserRoles.codeRepositories | Unknown | User roles code repositories. | 
+| PrismaCloud.UserRoles.accountGroups | Unknown | User roles account groups. | 
+
+#### Command example
+```!prisma-cloud-user-roles-list limit=3```
+#### Context Example
+```json
+{
+    "PrismaCloud": {
+        "UserRoles": [
+            {
+                "accountGroupIds": [],
+                "accountGroups": [],
+                "additionalAttributes": {
+                    "hasDefenderPermissions": false,
+                    "onlyAllowCIAccess": false,
+                    "onlyAllowComputeAccess": false,
+                    "onlyAllowReadAccess": false
+                },
+                "associatedUsers": [
+                    "lab",
+                    "demo"
+                ],
+                "codeRepositories": [],
+                "codeRepositoryIds": [],
+                "description": "",
+                "id": "a2b2",
+                "lastModifiedBy": "test@paloaltonetworks.com",
+                "lastModifiedTs": "2023-08-02T17:47:07Z",
+                "name": "dev-test",
+                "permissionGroup": null,
+                "resourceListIds": [],
+                "resourceLists": [],
+                "restrictDismissalAccess": true,
+                "roleType": "Developer"
+            },
+            {
+                "accountGroupIds": [],
+                "accountGroups": [],
+                "additionalAttributes": {
+                    "hasDefenderPermissions": false,
+                    "onlyAllowCIAccess": false,
+                    "onlyAllowComputeAccess": false,
+                    "onlyAllowReadAccess": false
+                },
+                "associatedUsers": [
+                    "test"
+                ],
+                "codeRepositories": [],
+                "codeRepositoryIds": [],
+                "description": "",
+                "id": "a3b3",
+                "lastModifiedBy": "admin@paloaltonetworks.com",
+                "lastModifiedTs": "2023-07-21T15:27:04Z",
+                "name": "Custom Read Only",
+                "permissionGroup": null,
+                "resourceListIds": [],
+                "resourceLists": [],
+                "restrictDismissalAccess": false,
+                "roleType": "Custom Read Only"
+            },
+            {
+                "accountGroupIds": [
+                    "aaa111",
+                    "bbb222"
+                ],
+                "accountGroups": [
+                    {
+                        "id": "aaa111",
+                        "name": "group1"
+                    },
+                    {
+                        "id": "bbb222",
+                        "name": "group2"
+                    }
+                ],
+                "additionalAttributes": {
+                    "hasDefenderPermissions": false,
+                    "onlyAllowCIAccess": false,
+                    "onlyAllowComputeAccess": false,
+                    "onlyAllowReadAccess": true
+                },
+                "associatedUsers": [
+                    "user1",
+                    "user2"
+                ],
+                "codeRepositories": [
+                    {
+                        "id": "a3c3",
+                        "name": "demo"
+                    }
+                ],
+                "codeRepositoryIds": [
+                    "a3c3"
+                ],
+                "description": "",
+                "id": "a4b4",
+                "lastModifiedBy": "test@paloaltonetworks.com",
+                "lastModifiedTs": "2023-07-18T19:27:59Z",
+                "name": "Read Only",
+                "permissionGroup": null,
+                "resourceListIds": [],
+                "resourceLists": [],
+                "restrictDismissalAccess": true,
+                "roleType": "Account Group Read Only"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>Showing 3 of 14 results:
+>### User Roles Details:
+>|Name|Id|Role Type|
+>|---|---|---|
+>| dev-test | a2b2 | Developer |
+>| Custom Read Only | a3b3 | Custom Read Only |
+>| Read Only | a4b4 | Account Group Read Only |
+
+### prisma-cloud-users-list
+***
+Lists all users and service accounts for your tenant. Maps to Settings > Access Control > Users in the Console UI.
+
+
+#### Base Command
+
+`prisma-cloud-users-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of entries to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. | Optional | 
+| usernames | Usernames to return only users associated with. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloud.Users.email | String | Prisma Cloud user email. | 
+| PrismaCloud.Users.firstName | String | User first name. | 
+| PrismaCloud.Users.lastName | String | User last name. | 
+| PrismaCloud.Users.timeZone | String | User time zone. | 
+| PrismaCloud.Users.enabled | Boolean | User enabled. | 
+| PrismaCloud.Users.lastModifiedBy | String | User last modified user. | 
+| PrismaCloud.Users.lastModifiedTs | Date | User last modified time. | 
+| PrismaCloud.Users.lastLoginTs | Date | User last login time. | 
+| PrismaCloud.Users.displayName | String | User display name. | 
+| PrismaCloud.Users.ssoBypassAllowed | Boolean | Whether SSO bypass is allowed for the user role. | 
+| PrismaCloud.Users.accessKeysAllowed | Boolean | Whether access keys are allowed for the user role. | 
+| PrismaCloud.Users.defaultRoleId | String | User default role ID. | 
+| PrismaCloud.Users.roleIds | Unknown | User role IDs. | 
+| PrismaCloud.Users.roles | Unknown | User roles. | 
+| PrismaCloud.Users.username | String | User username. | 
+| PrismaCloud.Users.type | String | User type. | 
+| PrismaCloud.Users.enableKeyExpiration | Boolean | Whether key expiration is enabled for the user role. | 
+| PrismaCloud.Users.accessKeysCount | Number | User access keys count. | 
+
+#### Command example
+```!prisma-cloud-users-list limit=2```
+#### Context Example
+```json
+{
+    "PrismaCloud": {
+        "Users": [
+            {
+                "accessKeysAllowed": false,
+                "accessKeysCount": 0,
+                "defaultRoleId": "a4b4",
+                "displayName": "User Test",
+                "email": "test@paloaltonetworks.com",
+                "enableKeyExpiration": false,
+                "enabled": true,
+                "firstName": "User",
+                "lastLoginTs": "1969-12-31T23:59:59Z",
+                "lastModifiedBy": "admin@paloaltonetworks.com",
+                "lastModifiedTs": "2020-01-21T22:35:36Z",
+                "lastName": "Test",
+                "roleIds": [
+                    "a4b4"
+                ],
+                "roles": [
+                    {
+                        "id": "a4b4",
+                        "name": "Read Only",
+                        "onlyAllowCIAccess": false,
+                        "onlyAllowComputeAccess": false,
+                        "onlyAllowReadAccess": true,
+                        "type": "Account Group Read Only"
+                    }
+                ],
+                "roles names": [
+                    "Read Only"
+                ],
+                "ssoBypassAllowed": false,
+                "timeZone": "America/New_York",
+                "type": "USER_ACCOUNT",
+                "username": "test@paloaltonetworks.com"
+            },
+            {
+                "accessKeysAllowed": false,
+                "accessKeysCount": 0,
+                "defaultRoleId": "a4b4",
+                "displayName": "User Other",
+                "email": "other@paloaltonetworks.com",
+                "enableKeyExpiration": false,
+                "enabled": true,
+                "firstName": "User",
+                "lastLoginTs": "2023-08-29T14:04:17Z",
+                "lastModifiedBy": "USER-ADD",
+                "lastModifiedTs": "2023-08-29T13:45:06Z",
+                "lastName": "Other",
+                "roleIds": [
+                    "a4b4"
+                ],
+                "roles": [
+                    {
+                        "id": "a4b4",
+                        "name": "Read Only",
+                        "onlyAllowCIAccess": false,
+                        "onlyAllowComputeAccess": false,
+                        "onlyAllowReadAccess": true,
+                        "type": "Account Group Read Only"
+                    }
+                ],
+                "roles names": [
+                    "Read Only"
+                ],
+                "ssoBypassAllowed": false,
+                "timeZone": "America/New_York",
+                "type": "USER_ACCOUNT",
+                "username": "other@paloaltonetworks.com"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>Showing 2 of 200 results:
+>### Users Details:
+>|Display Name|Email|Enabled|Username|Type|Roles Names|
+>|---|---|---|---|---|---|
+>| User Test | test@paloaltonetworks.com | true | test@paloaltonetworks.com | USER_ACCOUNT | Read Only |
+>| User Other | other@paloaltonetworks.com | true | other@paloaltonetworks.com | USER_ACCOUNT | Read Only |
 
 ### prisma-cloud-account-list
 

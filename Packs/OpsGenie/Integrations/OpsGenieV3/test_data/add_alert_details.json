@@ -1,0 +1,14 @@
+{
+    "data": {
+        "action": "Add Details",
+        "alertId": "c3426c26-a3ce-42a5-5d66-06d6el7b3b48l1691404404476",
+        "alias": "000000-a9ce-42a5-8d66-09d9ef7b3b48-000000",
+        "integrationId": "000000-eb06-4601-bfab-0000",
+        "isSuccess": true,
+        "processedAt": "2023-08-07T13:43:40.414Z",
+        "status": "Added details",
+        "success": true
+    },
+    "requestId": "c3a83h44-7690-4113-9638-00000000000",
+    "took": 0.003
+}

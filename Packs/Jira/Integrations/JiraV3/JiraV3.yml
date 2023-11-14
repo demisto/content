@@ -12,6 +12,11 @@ configuration:
   type: 0
   required: true
   additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
+- display: User name
+  name: basic_credentials
+  displaypassword: API key
+  required: false
+  type: 9
 - name: cloud_id
   display: Cloud ID
   type: 0
@@ -20,12 +25,12 @@ configuration:
 - name: callback_url
   display: Callback URL
   type: 0
-  required: true
+  required: false
 - display: Client ID
   type: 9
   name: credentials
   displaypassword: Client Secret
-  required: true
+  required: false
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents
   additionalinfo: The field that was selected in the "Issue Field to fetch by" can't be used. in the query.
@@ -45,7 +50,7 @@ configuration:
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
   name: id_offset
-  defaultvalue: 0
+  defaultvalue: '0'
   type: 0
   required: false
 - defaultvalue: 3 days
@@ -328,15 +333,9 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
-    - default: false
-      description: The query that will be used to retrieve the first issue ID in it.
-      isArray: false
+    - description: The query that will be used to retrieve the first issue ID in it.
       name: query
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the ID offset, which is the ID of the first issue that was created in the current Jira instance, or the ID of the first issue with respect to the given query argument if given. You can use its result as the initial ID when fetching incidents by the issue id field.
-    execution: false
     name: jira-get-id-offset
     outputs:
     - contextPath: Ticket.idOffSet
@@ -500,6 +499,63 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
+    - description: Deprecated. Please use issue_id or issue_key.
+      hidden: true
+      name: issueId
+    - description: The issue ID (Issue ID or key is required).
+      name: issue_id
+    - description: The issue key (Issue ID or key is required).
+      name: issue_key
+    - description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead. Use the jira-get-id-by-attribute command to get the user's name.
+      name: assignee
+    - description: The account ID of the assignee. Relevant for Jira Cloud only. Use the jira-get-id-by-attribute command to get the user's account ID.
+      name: assignee_id
+    description: Assigns an assignee to an existing issue.
+    name: jira-issue-assign
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: String
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: String
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: String
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: String
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: String
+    - contextPath: Ticket.Description
+      description: The ticket's project description.
+      type: String
+    - contextPath: Ticket.Labels
+      description: The ticket's project labels.
+      type: Array
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: String
+    - contextPath: Ticket.Priority
+      description: The ticket priority.
+      type: String
+    - contextPath: Ticket.ProjectName
+      description: The ticket project name.
+      type: String
+    - contextPath: Ticket.DueDate
+      description: The due date.
+      type: Date
+    - contextPath: Ticket.Created
+      description: The time the ticket was created.
+      type: Date
+    - contextPath: Ticket.LastSeen
+      description: The last time the ticket was viewed.
+      type: Date
+    - contextPath: Ticket.LastUpdate
+      description: The last time the ticket was updated.
+      type: Date
+  - arguments:
     - description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
       name: issue_json
     - description: Deprecated. Please use issue_json.
@@ -513,7 +569,7 @@ script:
     - description: Deprecated. Please use project_key.
       name: projectKey
       hidden: true
-    - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required)'
+    - description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required).'
       name: issue_type_name
     - description: Deprecated. Please use issue_type_name.
       name: issueTypeName
@@ -600,6 +656,7 @@ script:
       - 'true'
       - 'false'
       hidden: true
+      auto: PREDEFINED
     - auto: PREDEFINED
       defaultValue: 'false'
       description: If "true", expands the issue links (the linked issues and subtasks).
@@ -613,6 +670,7 @@ script:
       - 'true'
       - 'false'
       hidden: true
+      auto: PREDEFINED
     description: Fetches an issue from Jira.
     name: jira-get-issue
     outputs:
@@ -734,8 +792,10 @@ script:
     name: jira-oauth-complete
   - description: "Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish the process."
     name: jira-oauth-start
+    arguments: []
   - description: Use this command to test the connectivity of the Jira instance.
     name: jira-oauth-test
+    arguments: []
   - arguments:
     - description: The comment ID.
       name: comment_id
@@ -815,7 +875,7 @@ script:
       description: The scope of the field.
       type: Object
     - contextPath: Jira.IssueField.scope.type
-      description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
+      description: 'The type of scope. Valid values: PROJECT, TEMPLATE.'
       type: String
     - contextPath: Jira.IssueField.scope.project
       description: The project the item has scope in.
@@ -833,7 +893,7 @@ script:
       description: The name of the project.
       type: String
     - contextPath: Jira.IssueField.scope.project.projectTypeKey
-      description: 'The project type of the project. Valid values: software, service_desk, business'
+      description: 'The project type of the project. Valid values: software, service_desk, business.'
       type: String
     - contextPath: Jira.IssueField.scope.project.simplified
       description: Whether or not the project is simplified.
@@ -857,7 +917,7 @@ script:
       description: The description of the project category.
       type: String
     - contextPath: Jira.IssueField.scope.type
-      description: 'The type of scope. Valid values: PROJECT, TEMPLATE'
+      description: 'The type of scope. Valid values: PROJECT, TEMPLATE.'
       type: String
     - contextPath: Jira.IssueField.schema
       description: The data schema for the field.
@@ -913,7 +973,7 @@ script:
     - description: The project key or ID.
       name: project_key_id
     - auto: PREDEFINED
-      description: "The type of the board. Allowed values are: scrum, kanban, simple"
+      description: "The type of the board. Allowed values are: scrum, kanban, simple."
       name: type
       predefined:
       - 'scrum'
@@ -1180,7 +1240,7 @@ script:
       name: page
     - description: The number of requested results per page. Default value is 50.
       name: page_size
-    description: Get all epics from a specific board
+    description: Get all epics from a specific board.
     name: jira-board-epic-list
     outputs:
     - contextPath: Jira.BoardEpic.boardId
@@ -1367,6 +1427,7 @@ script:
     - contextPath: Jira.IssueLinkType.self
       description: The URL of the issue link type.
       type: String
+    arguments: []
   - arguments:
     - description: The key of the outward issue.
       name: outward_issue
@@ -1392,6 +1453,7 @@ script:
     name: get-remote-data
   - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
     name: get-mapping-fields
+    arguments: []
   - arguments:
     - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
@@ -1399,17 +1461,18 @@ script:
     name: get-modified-remote-data
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/btfl-soup:1.0.1.63668
+    arguments: []
+  dockerimage: demisto/btfl-soup:1.0.1.79197
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
-- No tests
+- JiraV3 Test
 defaultmapperin: classifier-mapper-incoming-JiraV3
 defaultmapperout: JiraV3 Outgoing Mapper
 fromversion: 6.8.0

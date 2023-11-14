@@ -1,12 +1,3 @@
-[file:playbook-feodoteackerhash_test.yml]
-ignore=auto-test
-
-[file:playbook-feodotrackeripblock_test.yml]
-ignore=auto-test
-
-[FeedFeodoTrackerIPBlocklist.yml]
-ignore=IN129
-
 [file:FeedFeodoTrackerIPBlocklist.yml]
 ignore=BA124
 

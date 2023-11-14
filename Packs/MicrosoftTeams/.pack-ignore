@@ -8,6 +8,4 @@ ignore=DS107
 aad
 membershiptype
 
-[file:ConfigureAzureApplicationAccessPolicy.yml]
-ignore=CJ105
 

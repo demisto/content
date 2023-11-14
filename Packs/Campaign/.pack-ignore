@@ -13,11 +13,8 @@ ignore=RM106
 [file:SetPhishingCampaignDetails.yml]
 ignore=SC106
 
-[file:GetCampaignLowSimilarityIncidentsInfo.yml]
-ignore=RM109
-
 [file:GetCampaignIncidentsInfo.yml]
-ignore=RM109,BA124
+ignore=BA124
 
 [file:ShowCampaignUniqueRecipients.yml]
 ignore=BA124

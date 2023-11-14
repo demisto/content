@@ -58,6 +58,7 @@ ATOMs
 Mappers
 mapper
 AlienVault
+outputted
 BitcoinAbuse
 BruteForceBlocker
 NetwitnessSearch
@@ -113,6 +114,7 @@ Classifiers
 SentinelOne
 URLs
 unisolate
+tooltip
 MSDE
 CrowdStrike
 FAQ
@@ -241,3 +243,7 @@ XSIAM
 fromversion
 xpanse
 JavaScript
+sdk
+RFC
+datetime
+HSTS

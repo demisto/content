@@ -18,12 +18,13 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | IP threshold |  | False |
     | Domain threshold |  | False |
     | File threshold |  | False |
-    | Email threshold |  | False |
+    | Email threshold | Email indicators with confidence value above this threshold are considered malicious. | False |
     | Include inactive results | Whether to include inactive indicators in reputation commands. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Create relationships | Create relationships between indicators as part of enrichment. | False |
+    | Remote API | Gather additional information about the threat model from remote APIs. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -4805,3 +4806,42 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The Attack Pattern entities with ids 2222, 1111 were associated successfully to entity id: 26769.
+
+### threatstream-add-indicator-tag
+
+***
+Add tags to the indicators
+
+#### Base Command
+
+`threatstream-add-indicator-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_ids | A comma-separated list of unique IDs of the indicator to which you are adding tags. | Required | 
+| tags | A comma-separated list of values of the tags you want to add. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### threatstream-remove-indicator-tag
+
+***
+Remove tags from the indicators
+
+#### Base Command
+
+`threatstream-remove-indicator-tag`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_ids | A comma-separated list of unique IDs of the indicator to which you are removing tags. | Required | 
+| tags | A comma-separated list of values of the tags you want to remove. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

@@ -416,6 +416,7 @@
 <h3 id="h_9023664726051543479018156">4. Submit a URL for analysis</h3>
 <hr>
 <p>Submits a URL to Cuckoo Sandbox for analysis.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <pre><code>cuckoo-create-task-from-url</code></pre>
 <h5>Input</h5>

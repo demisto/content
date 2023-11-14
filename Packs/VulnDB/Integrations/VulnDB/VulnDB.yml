@@ -10,12 +10,16 @@ configuration:
   type: 0
 - display: Client ID
   name: client_id
-  required: true
   type: 0
+  hidden: true
 - display: Client Secret
   name: client_secret
-  required: true
-  type: 0
+  type: 4
+  hidden: true
+- display: Client ID
+  name: credentials
+  type: 9
+  displaypassword: Client Secret
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -36,8 +40,8 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  type: 15
   required: false
+  type: 15
 description: Lists all of the security vulnerabilities for various products (OS,Applications) etc)
 display: VulnDB
 name: VulnDB
@@ -804,7 +808,7 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   script: '-'
   subtype: python3

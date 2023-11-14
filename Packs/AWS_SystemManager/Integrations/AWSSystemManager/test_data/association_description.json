@@ -1,0 +1,76 @@
+{
+    "AssociationDescription": {
+        "Name": "AWS",
+        "AssociationVersion": "1",
+        "Date": "2023-07-18T13:50:27.691000+03:00",
+        "LastUpdateAssociationDate": "2023-07-18T13:50:27.691000+03:00",
+        "Overview": {
+            "Status": "Pending",
+            "DetailedStatus": "Associated"
+        },
+        "DocumentVersion": "$DEFAULT",
+        "Parameters": {
+            "applications": [
+                "Enabled"
+            ],
+            "awsComponents": [
+                "Enabled"
+            ],
+            "billingInfo": [
+                "Enabled"
+            ],
+            "customInventory": [
+                "Enabled"
+            ],
+            "files": [
+                ""
+            ],
+            "instanceDetailedInformation": [
+                "Enabled"
+            ],
+            "networkConfig": [
+                "Enabled"
+            ],
+            "services": [
+                "Enabled"
+            ],
+            "windowsRegistry": [
+                ""
+            ],
+            "windowsRoles": [
+                "Enabled"
+            ],
+            "windowsUpdates": [
+                "Enabled"
+            ]
+        },
+        "AssociationId": "association_id",
+        "Targets": [
+            {
+                "Key": "InstanceIds",
+                "Values": [
+                    "instance_id",
+                    "instance_id"
+                ]
+            }
+        ],
+        "ScheduleExpression": "rate(30 minutes)",
+        "LastExecutionDate": "2023-07-25T18:51:28.607000+03:00",
+        "LastSuccessfulExecutionDate": "2023-07-25T18:51:28.607000+03:00",
+        "AssociationName": "test",
+        "ApplyOnlyAtCronInterval": false
+    },
+    "ResponseMetadata": {
+        "RequestId": "",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Thu, 17 Aug 2023 16:50:14 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "888",
+            "connection": "keep-alive",
+            "x-amzn-requestid": ""
+        },
+        "RetryAttempts": 0
+    }
+}

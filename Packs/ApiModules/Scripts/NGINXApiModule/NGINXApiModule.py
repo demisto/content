@@ -52,7 +52,7 @@ server {
 
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
-
+    $extra_headers
     # Static test file
     location = /nginx-test {
         alias /var/lib/nginx/html/index.html;
@@ -63,6 +63,7 @@ server {
     location / {
         proxy_pass http://localhost:$serverport/;
         add_header X-Proxy-Cache $upstream_cache_status;
+        $extra_headers
         # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
         proxy_cache_bypass $arg_nocache;
         proxy_read_timeout $timeout;
@@ -92,10 +93,8 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     certificate: str = params.get('certificate', '')
     private_key: str = params.get('key', '')
     timeout: str = params.get('timeout') or '3600'
-    ssl = ''
-    sslcerts = ''
+    ssl, extra_headers, sslcerts, proxy_set_range_header = '', '', '', ''
     serverport = port + 1
-    proxy_set_range_header = ''
     extra_cache_keys = []
     if (certificate and not private_key) or (private_key and not certificate):
         raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
@@ -107,6 +106,8 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
             f.write(private_key)
         ssl = 'ssl'  # to be included in the listen directive
         sslcerts = NGINX_SSL_CERTS
+        if argToBoolean(params.get("hsts_header", False)):
+            extra_headers = 'add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;'
     credentials = params.get('credentials') or {}
     if credentials.get('identifier'):
         extra_cache_keys.append("$http_authorization")
@@ -119,7 +120,8 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
     extra_cache_keys_str = ''.join(extra_cache_keys)
     server_conf = Template(template_str).safe_substitute(port=port, serverport=serverport, ssl=ssl,
                                                          sslcerts=sslcerts, extra_cache_key=extra_cache_keys_str,
-                                                         proxy_set_range_header=proxy_set_range_header, timeout=timeout)
+                                                         proxy_set_range_header=proxy_set_range_header, timeout=timeout,
+                                                         extra_headers=extra_headers)
     with open(file_path, mode='wt+') as f:
         f.write(server_conf)
 

@@ -20,5 +20,9 @@ A valid API Token for XSOAR from Recorded Future needed to fetch information.
   * Search and filter available list in Recorded Future
 * Add entity to list action
   * Add entities to lists using Recorded Future entity ids, or base your addition on freetext name and relevant entity type
+* Remove entities from list action
+  * Remove entities from lists using Recorded Future entity IDs, or base your addition on freetext name and relevant entity type.
+* Fetch entities from lists 
+  * Fetch all entities of any number of given lists. Use search command to find unique list IDs.
 
 Copyright 2020-2023 Recorded Future, Inc.

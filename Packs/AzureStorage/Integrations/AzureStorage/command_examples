@@ -6,3 +6,5 @@
 !azure-storage-blob-containers-create account_name=demistotestdonotdelete container_name=containertest
 !azure-storage-blob-containers-update account_name=demistotestdonotdelete container_name=containertest
 !azure-storage-blob-container-delete account_name=demistotestdonotdelete container_name=containertest
+!azure-storage-subscriptions-list
+!azure-storage-resource-group-list

@@ -1056,7 +1056,7 @@ def set_autoreply_command():
     file_content = ''
     if response_body_entry_id and not args.get('response-body'):
         file_entry = demisto.getFilePath(response_body_entry_id)
-        with open(file_entry['path'], 'r') as f:
+        with open(file_entry['path']) as f:
             file_content = str(f.read())
     response_body_plain_text = file_content if file_content else args.get('response-body')
     response_body_type = args.get('response-body-type')
@@ -1151,7 +1151,7 @@ def create_user(primary_email, first_name, family_name, password):
         'name': {
             'givenName': first_name,
             'familyName': family_name,
-            'fullName': '%s %s' % (first_name, family_name,),
+            'fullName': f'{first_name} {family_name}',
         },
         'password': password
     }
@@ -1190,7 +1190,8 @@ def list_labels(user_key):
     service = get_service(
         'gmail',
         'v1',
-        ['https://www.googleapis.com/auth/gmail.readonly'])
+        ['https://www.googleapis.com/auth/gmail.readonly'],
+        delegated_user=user_key)
     results = service.users().labels().list(userId=user_key).execute()
     labels = results.get('labels', [])
     return labels
@@ -1205,7 +1206,7 @@ def get_user_role_command():
         raise ValueError('Must provide Immutable GoogleApps Id')
 
     roles = get_user_role(user_key, GAPPS_ID)
-    return user_roles_to_entry('User Roles of %s:' % (user_key,), roles)
+    return user_roles_to_entry(f'User Roles of {user_key}:', roles)
 
 
 def get_user_role(user_key, customer):
@@ -1398,7 +1399,7 @@ def search_command(mailbox: str = None, only_return_account_names: bool = False)
 
     if max_results > 500:
         raise ValueError(
-            'maxResults must be lower than 500, got %s' % (max_results,))
+            f'maxResults must be lower than 500, got {max_results}')
     try:
         mails, q = search(user_id, subject, _from, to,
                           before, after, filename, _in, query,
@@ -1434,9 +1435,9 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'in': _in,
         'has': 'attachment' if has_attachments else ''
     }
-    q = ' '.join('%s:%s ' % (name, value,)
+    q = ' '.join(f'{name}:{value} '
                  for name, value in list(query_values.items()) if value != '')
-    q = ('%s %s' % (q, query,)).strip()
+    q = (f'{q} {query}').strip()
 
     command_args = {
         'userId': user_id,
@@ -1952,6 +1953,7 @@ def collect_inline_attachments(attach_cids):
             })
 
         return inline_attachment
+    return None
 
 
 def collect_manual_attachments():
@@ -2078,7 +2080,7 @@ def attachment_handler(message, attachments):
 
 def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
               transientFile, transientFileContent, transientFileCID, manualAttachObj, additional_headers,
-              templateParams, inReplyTo=None, references=None):
+              templateParams, inReplyTo=None, references=None, force_handle_htmlBody=False):
     if templateParams:
         templateParams = template_params(templateParams)
         if body:
@@ -2087,7 +2089,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
             htmlBody = htmlBody.format(**templateParams)
 
     attach_body_to = None
-    if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body]):
+    if htmlBody and not any([entry_ids, file_names, attach_cid, manualAttachObj, body, force_handle_htmlBody]):
         # if there is only htmlbody and no attachments to the mail , we would like to send it without attaching the body
         message = MIMEText(htmlBody, 'html')  # type: ignore
     elif body and not any([entry_ids, file_names, attach_cid, manualAttachObj, htmlBody]):
@@ -2122,7 +2124,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         message['References'] = header(' '.join(references))
 
     # if there are any attachments to the mail or both body and htmlBody were given
-    if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
+    if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody) or force_handle_htmlBody:
         htmlAttachments = []  # type: list
         inlineAttachments = []  # type: list
 
@@ -2179,6 +2181,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     cc = argToList(args.get('cc'))
     bcc = argToList(args.get('bcc'))
     html_body = args.get('htmlBody')
+    force_handle_htmlBody = argToBoolean(args.get('force_handle_htmlBody', False))
     reply_to = args.get('replyTo')
     attach_names = argToList(args.get('attachNames'))
     attach_cids = argToList(args.get('attachCIDs'))
@@ -2193,7 +2196,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
 
     result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
                        attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
-                       additional_headers, template_param, in_reply_to, references)
+                       additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
     rendering_body = html_body if body_type == "html" else body
 
     send_mail_result = sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, rendering_body,
@@ -2601,7 +2604,7 @@ def fetch_incidents():
 
     incidents = []
     # so far, so good
-    LOG(f'GMAIL: possible new incidents are {result}')
+    demisto.debug(f'GMAIL: possible new incidents are {result}')
     for msg in result.get('messages', []):
         msg_id = msg['id']
         if msg_id in ignore_ids:
@@ -2626,7 +2629,7 @@ def fetch_incidents():
             demisto.info(
                 f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
 
-    demisto.info('extract {} incidents'.format(len(incidents)))
+    demisto.info(f'extract {len(incidents)} incidents')
     next_page_token = result.get('nextPageToken', '')
     if next_page_token:
         # we still have more results
@@ -2695,7 +2698,7 @@ def main():  # pragma: no cover
         'gmail-forwarding-address-add': forwarding_address_add_command,
     }
     command = demisto.command()
-    LOG('GMAIL: command is %s' % (command,))
+    demisto.debug(f'GMAIL: command is {command},')
     try:
         if command == 'test-module':
             list_users(ADMIN_EMAIL.split('@')[1])
@@ -2718,8 +2721,8 @@ def main():  # pragma: no cover
     except Exception as e:
         import traceback
         if command == 'fetch-incidents':
-            LOG(traceback.format_exc())
-            LOG.print_log()
+            demisto.error(traceback.format_exc())
+            demisto.error(f'GMAIL: {str(e)}')
             raise
 
         else:

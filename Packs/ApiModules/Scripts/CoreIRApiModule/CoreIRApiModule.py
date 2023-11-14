@@ -2464,13 +2464,20 @@ def get_indicators_context(incident):
 
     file_artifacts = incident.get('file_artifacts', [])
     for file in file_artifacts:
+        file_sha = file.get('file_sha256')
         file_details = {
             'Name': file.get('file_name'),
-            'SHA256': file.get('file_sha256'),
+            'SHA256': file_sha,
         }
         remove_nulls_from_dictionary(file_details)
+        is_malicious = file.get("is_malicious")
+
         if file_details:
             file_context.append(file_details)
+            if file_sha:
+                relevant_processes = filter(lambda p: p.get("SHA256") == file_sha, process_context)
+                for process in relevant_processes:
+                    process["is_malicious"] = is_malicious
 
     return file_context, process_context, domain_context, ip_context
 
@@ -3199,31 +3206,33 @@ def decode_dict_values(dict_to_decode: dict):
                 continue
 
 
-def filter_general_fields(alert: dict) -> dict:
+def filter_general_fields(alert: dict, filter_fields: bool = True) -> dict:
     """filter only relevant general fields from a given alert.
 
     Args:
       alert (dict): The alert to filter
+      filter_fields (bool): Whether to return a subset of the fields.
 
     Returns:
       dict: The filtered alert
     """
 
-    updated_alert = {}
-    updated_event = {}
-    for field in ALERT_GENERAL_FIELDS:
-        if field in alert:
-            updated_alert[field] = alert.get(field)
-
-    event = alert.get('raw_abioc', {}).get('event', {})
-    if not event:
-        return_warning('No XDR cloud analytics event.')
+    if filter_fields:
+        result = {k: v for k, v in alert.items() if k in ALERT_GENERAL_FIELDS}
     else:
-        for field in ALERT_EVENT_GENERAL_FIELDS:
-            if field in event:
-                updated_event[field] = event.get(field)
-        updated_alert['event'] = updated_event
-    return updated_alert
+        result = alert
+
+    if not (event := alert.get('raw_abioc', {}).get('event', {})):
+        return_warning('No XDR cloud analytics event.')
+        return result
+
+    if filter_fields:
+        updated_event = {k: v for k, v in event.items() if k in ALERT_EVENT_GENERAL_FIELDS}
+    else:
+        updated_event = event
+
+    result['event'] = updated_event
+    return result
 
 
 def filter_vendor_fields(alert: dict):
@@ -3255,8 +3264,12 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     raw_response = client.get_original_alerts(alert_id_list)
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
+    processed_alerts = []
     filtered_alerts = []
-    for _i, alert in enumerate(alerts):
+
+    filter_fields_argument = argToBoolean(args.get('filter_alert_fields', True))  # default, for BC, is True.
+
+    for alert in alerts:
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
@@ -3267,18 +3280,24 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
             demisto.debug("encountered the following while decoding dictionary values, skipping")
             demisto.debug(e)
             continue
-        # remove original_alert_json field and add its content to alert.
-        alert.update(
-            alert.pop('original_alert_json', None))
-        updated_alert = filter_general_fields(alert)
-        if 'event' in updated_alert:
-            filter_vendor_fields(updated_alert)
-        filtered_alerts.append(updated_alert)
+
+        # Remove original_alert_json field and add its content to the alert body.
+        alert.update(alert.pop('original_alert_json', {}))
+
+        # Process the alert (with without filetring fields)
+        processed_alerts.append(filter_general_fields(alert, filter_fields=False))
+
+        # Create a filtered version (used either for output when filter_fields is False, or for readable output)
+        filtered_alert = filter_general_fields(alert, filter_fields=True)
+        filter_vendor_fields(filtered_alert)  # changes in-place
+
+        filtered_alerts.append(filtered_alert)
 
     return CommandResults(
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.OriginalAlert',
         outputs_key_field='internal_id',
-        outputs=filtered_alerts,
+        outputs=filtered_alerts if filter_fields_argument else processed_alerts,
+        readable_output=tableToMarkdown("Alerts", t=filtered_alerts),  # Filtered are always used for readable output
         raw_response=raw_response,
     )
 
@@ -3410,7 +3429,7 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
     reply = copy.deepcopy(raw_response)
     alerts = reply.get('alerts', [])
     filtered_alerts = []
-    for _i, alert in enumerate(alerts):
+    for alert in alerts:
         # decode raw_response
         try:
             alert['original_alert_json'] = safe_load_json(alert.get('original_alert_json', ''))
@@ -3421,7 +3440,7 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
             demisto.debug("encountered the following while decoding dictionary values, skipping")
             demisto.debug(e)
         # remove original_alert_json field and add its content to alert.
-        alert.update(alert.pop('original_alert_json', None))
+        alert.update(alert.pop('original_alert_json', {}))
         if demisto.get(alert, 'messageData.dynamicAnalysis'):
             filtered_alerts.append(demisto.get(alert, 'messageData.dynamicAnalysis'))
     if not filtered_alerts:
@@ -3686,11 +3705,12 @@ def enrich_error_message_id_group_role(e: DemistoException, type_: str | None, c
         and e.res.status_code == 500
         and 'was not found' in str(e)
     ):
+        error_message: str = ''
         pattern = r"(id|Group|Role) \\?'([/A-Za-z 0-9_]+)\\?'"
         if match := re.search(pattern, str(e)):
-            error_message = f'Error: {match[1]} {match[2]} was not found'
+            error_message = f'Error: {match[1]} {match[2]} was not found. '
 
-        return (f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}. '
+        return (f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}'
                 f'Full error message: {e}')
     return None
 
@@ -3755,7 +3775,7 @@ def list_user_groups_command(client: CoreClient, args: dict[str, str]) -> Comman
     except DemistoException as e:
         custom_message = None
         if len(group_names) > 1:
-            custom_message = ", Note: If you sent more than one group name, they may not exist either"
+            custom_message = "Note: If you sent more than one group name, they may not exist either. "
 
         if error_message := enrich_error_message_id_group_role(e=e, type_="Group", custom_message=custom_message):
             raise DemistoException(error_message)
@@ -3798,7 +3818,7 @@ def list_roles_command(client: CoreClient, args: dict[str, str]) -> CommandResul
     except DemistoException as e:
         custom_message = None
         if len(role_names) > 1:
-            custom_message = ", Note: If you sent more than one Role name, they may not exist either"
+            custom_message = "Note: If you sent more than one Role name, they may not exist either. "
 
         if error_message := enrich_error_message_id_group_role(e=e, type_="Role", custom_message=custom_message):
             raise DemistoException(error_message)
@@ -3863,12 +3883,21 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
             - limit [str]: Specifying the maximum number of risky users to return.
 
     Returns:
-        A CommandResults object
+        A CommandResults object, in case the user was not found, an appropriate message will be returend.
 
     Raises:
-        ValueError: If the API connection fails or the specified user ID is not found.
+        ValueError: If the API connection fails.
 
     """
+    def _warn_if_module_is_disabled(e: DemistoException) -> None:
+        if (
+                e is not None
+                and e.res is not None
+                and e.res.status_code == 500
+                and 'No identity threat' in str(e)
+                and "An error occurred while processing XDR public API" in e.message
+        ):
+            return_warning(f'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
 
     match command:
         case "user":
@@ -3889,16 +3918,26 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         try:
             outputs = client.risk_score_user_or_host(id_).get('reply', {})
         except DemistoException as e:
+            _warn_if_module_is_disabled(e)
             if error_message := enrich_error_message_id_group_role(e=e, type_="id", custom_message=""):
-                raise DemistoException(error_message)
-            raise
+                not_found_message = 'was not found'
+                if not_found_message in error_message:
+                    return CommandResults(readable_output=f'The {command} {id_} {not_found_message}')
+                else:
+                    raise DemistoException(error_message)
+            else:
+                raise
 
         table_for_markdown = [parse_risky_users_or_hosts(outputs, *table_headers)]  # type: ignore[arg-type]
 
     else:
         list_limit = int(args.get('limit', 50))
-        outputs = get_func().get('reply', [])[:list_limit]
 
+        try:
+            outputs = get_func().get('reply', [])[:list_limit]
+        except DemistoException as e:
+            _warn_if_module_is_disabled(e)
+            raise
         table_for_markdown = [parse_risky_users_or_hosts(user, *table_headers) for user in outputs]
 
     readable_output = tableToMarkdown(name=table_title, t=table_for_markdown, headers=table_headers)

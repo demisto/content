@@ -6,10 +6,11 @@ API Documentation:
     https://developers.virustotal.com/v3.0/reference
 """
 from collections import defaultdict
-from typing import Callable, cast
+from typing import cast
+from collections.abc import Callable
 
 from dateparser import parse
-
+import ipaddress
 
 INTEGRATION_NAME = "VirusTotal"
 COMMAND_PREFIX = "vt"
@@ -106,6 +107,7 @@ class Client(BaseClient):
     def __init__(self, params: dict):
         self.is_premium = argToBoolean(params['is_premium_api'])
         self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params['feedReliability'])
+
         super().__init__(
             'https://www.virustotal.com/api/v3/',
             verify=not argToBoolean(params.get('insecure')),
@@ -690,7 +692,7 @@ class ScoreCalculator:
             arg_name='Relationship Files Threshold',
             required=True
         )
-        self.logs = list()
+        self.logs = []
 
     def get_logs(self) -> str:
         """Returns the log string
@@ -1018,9 +1020,9 @@ class ScoreCalculator:
         files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
         total_malicious = 0
         for file in files:
-            if file_hash := file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep')))):
-                if self.file_score(file_hash, files) == Common.DBotScore.BAD:
-                    total_malicious += 1
+            if (file_hash := file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))) and (
+                    self.file_score(file_hash, files) == Common.DBotScore.BAD):
+                total_malicious += 1
 
         if total_malicious >= self.url_threshold:
             self.logs.append(
@@ -1673,17 +1675,31 @@ def merge_two_dicts(dict_a, dict_b):
 # region Reputation commands
 
 
-def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, relationships: str) -> List[CommandResults]:
+def ip_command(client: Client,
+               score_calculator: ScoreCalculator,
+               args: dict,
+               relationships: str,
+               disable_private_ip_lookup: bool
+               ) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
     """
     ips = argToList(args['ip'])
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
+    override_private_lookup = argToBoolean(args.get("override_private_lookup", "False"))
+
     for ip in ips:
         raise_if_ip_not_valid(ip)
         try:
+            if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
+                readable_output = (f'Reputation lookups have been disabled for private IP addresses.'
+                                   f'Enrichment skipped for {ip}')
+                result = CommandResults(readable_output=readable_output)
+                results.append(result)
+                execution_metrics.success += 1
+                continue
             raw_response = client.ip(ip, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
@@ -1714,7 +1730,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
     """
     files = argToList(args['file'])
     extended_data = argToBoolean(args.get('extended_data', False))
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
 
     for file in files:
@@ -1751,7 +1767,7 @@ def private_file_command(client: Client, args: dict) -> List[CommandResults]:
     1 API Call
     """
     files = argToList(args['file'])
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
 
     for file in files:
@@ -1790,7 +1806,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
     """
     urls = argToList(args['url'])
     extended_data = argToBoolean(args.get('extended_data', False))
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
     for url in urls:
         try:
@@ -1824,7 +1840,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
     """
     execution_metrics = ExecutionMetrics()
     domains = argToList(args['domain'])
-    results: List[CommandResults] = list()
+    results: List[CommandResults] = []
     for domain in domains:
         try:
             raw_response = client.domain(domain, relationships)
@@ -1899,7 +1915,7 @@ def encode_to_base64(md5: str, id_: Union[str, int]) -> str:
     Returns:
         base64 encoded of md5:id_
     """
-    return base64.b64encode(f'{md5}:{id_}'.encode('utf-8')).decode('utf-8')
+    return base64.b64encode(f'{md5}:{id_}'.encode()).decode('utf-8')
 
 
 def get_working_id(id_: str, entry_id: str) -> str:
@@ -1944,7 +1960,7 @@ def upload_file(client: Client, args: dict, private: bool = False) -> List[Comma
     upload_url = args.get('uploadURL')
     if len(entry_ids) > 1 and upload_url:
         raise DemistoException('You can supply only one entry ID with an upload URL.')
-    results = list()
+    results = []
     for entry_id in entry_ids:
         try:
             file_obj = demisto.getFilePath(entry_id)
@@ -2462,13 +2478,15 @@ def main(params: dict, args: dict, command: str):
     domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
     file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(" ", "_")
 
+    disable_private_ip_lookup = argToBoolean(params.get("disable_private_ip_lookup", "False"))
+
     demisto.debug(f'Command called {command}')
     if command == 'test-module':
         results = check_module(client)
     elif command == 'file':
         results = file_command(client, score_calculator, args, file_relationships)
     elif command == 'ip':
-        results = ip_command(client, score_calculator, args, ip_relationships)
+        results = ip_command(client, score_calculator, args, ip_relationships, disable_private_ip_lookup)
     elif command == 'url':
         results = url_command(client, score_calculator, args, url_relationships)
     elif command == 'domain':

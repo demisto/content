@@ -2,21 +2,21 @@
 
 if [ "$#" -lt "1" ]; then
   echo "Usage:
-  $0 -ct <token>
+  $0 --token <token>
 
   -r, --repo                The ci gitlab token.
   -b, --branch              The branch name.
   --exit-code               Determines if the command should fail when the branch does not exist.
-  [ -t, --token ]           Use in case that it's requierd.
-  [ -u, --user ]            Use in case that it's requierd.
-  [ -h, --host ]            The git remote host (Default is 'github.com').
+  [ -t, --token ]           Use in case that it's required.
+  [ -u, --user ]            Use in case that it's required.
+  [ -h, --host ]            The git remote host (Default is 'GitHub.com').
   "
   exit 1
 fi
 
 _host='github.com'
 _token='token'
-_uesr='user'
+_user='user'
 _ignore_error='true'
 
 # Parsing the user inputs.
@@ -40,7 +40,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
     shift;;
 
-  -u|--uesr) _uesr="$2"
+  -u|--user) _user="$2"
     shift
     shift;;
 
@@ -52,18 +52,22 @@ while [[ "$#" -gt 0 ]]; do
   esac
 done
 
-if [ "${_repo}" = "" ]; then
-    echo "you must specify a repository (--repo)"
+if [ -z "${_repo}" ]; then
+    echo "you must provide a repository (--repo)"
     exit 1
 fi
 
-if [ "${_branch}" = "" ]; then
-    echo "you must specify a branch name (--branch)"
+if [ -z "${_branch}" ]; then
+    echo "you must provide a branch name (--branch)"
     exit 1
 fi
 
+if [ -z "${_host}" ]; then
+    echo "you must provide a host (--host)"
+    exit 1
+fi
 
-git ls-remote --exit-code --heads "https://${_uesr}:${_token}@${_host}/${_repo}.git" "refs/heads/${_branch}" >> /dev/null \
+git ls-remote --exit-code --heads "https://${_user}:${_token}@${_host}/${_repo}.git" "refs/heads/${_branch}" >> /dev/null \
     && echo 'true' \
     && exit 0
 

@@ -14,34 +14,43 @@ configuration:
   section: Connect
   required: false
 - display: ''
-  displaypassword: App Token
-  name: app_token
+  displaypassword: User Token
+  name: user_token
   type: 9
   hiddenusername: true
   section: Connect
   required: false
+- display: ''
+  name: app_token
+  type: 9
+  section: Connect
+  required: false
+  displaypassword: App Token
+  hiddenusername: true
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
   type: 0
   section: Connect
   advanced: true
   required: false
-- defaultvalue: Low
-  display: Minimum incident severity by which to send messages to Slack
+- display: Minimum incident severity by which to send messages to Slack
   name: min_severity
+  type: 15
   options:
   - Unknown
   - Low
   - Medium
   - High
   - Critical
-  type: 15
   section: Collect
   advanced: true
   required: false
+  defaultvalue: Low
 - display: Types of Notifications to Send.
   name: permitted_notifications
   type: 16
+  section: Collect
+  required: false
   options:
   - incidentOpened
   - incidentChanged
@@ -53,16 +62,14 @@ configuration:
   - failedFetchIncidents
   - mentionNew
   - mentionOld
-  section: Collect
   advanced: true
   additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
-  required: false
-- defaultvalue: Unclassified
-  display: Type of incidents created in Slack
+- display: Type of incidents created in Slack
   name: incidentType
   type: 13
   section: Connect
   required: false
+  defaultvalue: Unclassified
 - display: Allow external users to create incidents via DM
   name: allow_incidents
   type: 8
@@ -72,11 +79,11 @@ configuration:
 - display: Ignore event retries
   name: ignore_event_retries
   type: 8
-  additionalinfo: In some cases, events may not be processed fast enough. If you want to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted.
-  defaultvalue: 'true'
   section: Collect
   advanced: true
   required: false
+  additionalinfo: In some cases, events may not be processed fast enough. If you want to attempt to retry the event, select `false`. Note that this can result in some responses being double-posted.
+  defaultvalue: 'true'
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -87,8 +94,9 @@ configuration:
   name: unsecure
   type: 8
   section: Connect
-  advanced: true
   required: false
+  advanced: true
+  additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
   name: mirroring
@@ -99,10 +107,10 @@ configuration:
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
   type: 8
-  additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do want to use these features, the parameter should be set to `True` to enable the long-running container.
   section: Connect
   advanced: true
   required: false
+  additionalinfo: If your organization does not require incident mirroring, or data collection, it is possible to disable the `longRunning` parameter. For those organizations who do want to use these features, the parameter should be set to `True` to enable the long-running container.
 - defaultvalue: Cortex XSOAR
   display: Bot display name in Slack
   name: bot_name
@@ -110,28 +118,28 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- defaultvalue: https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png
+- defaultvalue: 'https://avatars.slack-edge.com/2020-05-24/1142885630851_5529c7f034d9b96ec39c_512.png'
   display: Bot icon in Slack - Image URL (Cortex XSOAR icon by default)
   name: bot_icon
   type: 0
   section: Connect
   advanced: true
   required: false
-- defaultvalue: '60'
-  display: Maximum time to wait for a rate limiting call in seconds
+- display: Maximum time to wait for a rate limiting call in seconds
   name: max_limit_time
   type: 0
+  defaultvalue: '60'
   section: Connect
   advanced: true
   required: false
 - display: Number of objects to return in each paginated call
   name: paginated_count
   type: 0
-  defaultvalue: '200'
   section: Collect
   advanced: true
   required: false
-- display: Comma-separated list of tags to filter the messages sent from Cortex XSOAR.
+  defaultvalue: '200'
+- display: 'Comma-separated list of tags to filter the messages sent from Cortex XSOAR.'
   name: filtered_tags
   type: 0
   additionalinfo: Only supported in Cortex XSOAR V6.1 and above.
@@ -139,14 +147,14 @@ configuration:
   advanced: true
   required: false
 - display: ''
-  displaypassword: XSOAR API Key
   name: demisto_api_key
   type: 9
-  hiddenusername: true
-  additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
   section: Connect
   advanced: true
   required: false
+  displaypassword: XSOAR API Key
+  hiddenusername: true
+  additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
 - display: Enable DMs to the bot
   name: enable_dm
   type: 8
@@ -156,20 +164,20 @@ configuration:
   required: false
 - display: Disable Caching of Users and Channels
   name: disable_caching
-  type: 8
   additionalinfo: This parameter prevents this integration from storing Users and Channels in the integration context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
+  type: 8
   defaultvalue: 'false'
   section: Collect
   advanced: true
   required: false
 - display: Extensive Logging
   name: extensive_logging
-  additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
   type: 8
-  defaultvalue: 'false'
+  additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
   section: Connect
   advanced: true
   required: false
+  defaultvalue: 'false'
 - display: Common Channels
   name: common_channels
   type: 12
@@ -336,7 +344,7 @@ script:
     name: slack-invite-to-channel
   - arguments:
     - default: true
-      description: 'A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2..."'
+      description: 'A CSV list of usernames or email addresses to remove from the a channel. For example: "user1, user2...".'
       name: users
       required: true
     - description: The name of the channel from which to remove the users. If the name of the channel is not specified, the mirrored investigation channel is used (if the channel exists).
@@ -418,7 +426,68 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.63762
+  - arguments:
+    - description: The user id of the user.
+      name: user_id
+      required: true
+    description: Reset user session token in Slack.
+    name: slack-user-session-reset
+  - arguments:
+    - description: 'Supply this argument to only return channels with this name.'
+      name: name_filter
+    - defaultValue: public_channel
+      description: 'You can provide a comma separated list of other channels to include in your results. Possible options are: "public_channel", "private_channel", "mpim", and "im".  Including these options may require changes to your Bot''s OAuth scopes in order to read channels like private, group message, or personal messages.'
+      name: channel_types
+    - defaultValue: 'true'
+      description: Default is true (exclude archived channels). This setting allows the command to read channels that have been archived.
+      name: exclude_archived
+    - defaultValue: 100
+      description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
+      name: limit
+    - description: 'Default is the first page of results. If you have more results than your limit, you need to paginate your results with this argument.  This is found with the next_cursor attribute returned by a previous request''s response_metadata.'
+      name: cursor
+    description: 'List all of the channels in the organization workspace. This command required scopes depend on the type of channel-like object you''re working with. To use the command, you''ll need at least one of the channels:, groups:, im: or mpim: scopes corresponding to the conversation type you''re working with.'
+    name: slack-list-channels
+    outputs:
+    - contextPath: Slack.Channels.ID
+      description: The ID for the channel.
+      type: string
+    - contextPath: Slack.Channels.Name
+      description: Name of the channel.
+      type: string
+    - contextPath: Slack.Channels.Created
+      description: Epoch timestamp when the channel was created.
+      type: number
+    - contextPath: Slack.Channels.Creator
+      description: ID for the creator of the channel.
+      type: string
+    - contextPath: Slack.Channels.Purpose
+      description: The purpose, or description, of the channel.
+      type: string
+  - arguments:
+    - description: The channel ID associated with the Slack channel.
+      name: channel_id
+      required: true
+    - defaultValue: 100
+      description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
+      name: limit
+    - description: The conversation ID.
+      name: conversation_id
+    description: Fetches a conversation's history of messages and events.
+    name: slack-get-conversation-history
+  - arguments:
+    - name: channel_id
+      description: ID of the channel.
+      required: true
+    - name: thread_timestamp
+      description: The timestamp of the thread, that can be extracted using "slack-get-conversation-history" command.
+      required: true
+    - defaultValue: 100
+      name: limit
+      description: Set this argument to specify how many results to return.
+    description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
+    name: slack-get-conversation-replies
+  dockerimage: demisto/slackv3:1.0.0.79369
   longRunning: true
   runonce: false
   script: '-'

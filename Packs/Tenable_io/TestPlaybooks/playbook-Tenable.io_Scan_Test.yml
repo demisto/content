@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e5bcdce1-05b5-40be-8a73-c38ae3dbee9f
+    taskid: cad70594-65e7-4983-8d68-7edf282b4c1f
     type: start
     task:
-      id: e5bcdce1-05b5-40be-8a73-c38ae3dbee9f
+      id: cad70594-65e7-4983-8d68-7edf282b4c1f
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ed65bc4b-8534-4ee5-8eb2-9be5a3cae6d7
+    taskid: b69f20c4-3994-45ef-8930-ed1404fd2dc0
     type: regular
     task:
-      id: ed65bc4b-8534-4ee5-8eb2-9be5a3cae6d7
+      id: b69f20c4-3994-45ef-8930-ed1404fd2dc0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 175
+          "y": 195
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: bc7d35a9-3cdc-4724-8bab-0a8dbe1648d3
+    taskid: f6fbf897-9776-43f0-833d-10ab0e329430
     type: playbook
     task:
-      id: bc7d35a9-3cdc-4724-8bab-0a8dbe1648d3
+      id: f6fbf897-9776-43f0-833d-10ab0e329430
       version: -1
       name: Tenable.io Scan
       playbookName: Tenable.io Scan
@@ -85,7 +85,7 @@ tasks:
       retry-count:
         simple: "2"
       scan-id:
-        simple: "16"
+        simple: "55"
     separatecontext: true
     loop:
       iscommand: false
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 650
+          "y": 720
         }
       }
     note: false
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6174091e-cfc1-4fc4-87ea-115a501e6c53
+    taskid: 5d13467d-5039-4ceb-8d80-a11777c6c54f
     type: playbook
     task:
-      id: 6174091e-cfc1-4fc4-87ea-115a501e6c53
+      id: 5d13467d-5039-4ceb-8d80-a11777c6c54f
       version: -1
       name: GenericPolling
       description: |-
@@ -132,17 +132,7 @@ tasks:
       - "3"
     scriptarguments:
       Ids:
-        complex:
-          root: TenableIO.Scan.Id
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: TenableIO.Scan.Id
-                iscontext: true
-              right:
-                value:
-                  simple: "16"
+        simple: "55"
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -150,9 +140,9 @@ tasks:
       PollingCommandName:
         simple: tenable-io-get-scan-status
       Timeout:
-        simple: "10"
+        simple: "30"
       dt:
-        simple: TenableIO.Scan(val.Status == 'pending' || val.Status == 'running' || val.Status == 'publishing').Id
+        simple: TenableIO.Scan(val.Status != 'completed').Id
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -164,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 490
+          "y": 545
         }
       }
     note: false
@@ -176,14 +166,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 906f1daf-f844-4d7c-884a-8892b71ca63e
+    taskid: e1f6435c-3757-40d3-83c4-35ae1463ceea
     type: regular
     task:
-      id: 906f1daf-f844-4d7c-884a-8892b71ca63e
+      id: e1f6435c-3757-40d3-83c4-35ae1463ceea
       version: -1
-      name: 'tenable.io list scans '
-      description: Retrieves scans from the Tenable platform.
-      script: '|||tenable-io-list-scans'
+      name: 'Get scan status'
+      description: 'Checks the status of a specific scan using the scan ID. Possible values: "Running", "Completed", and "Empty" (Ready to run).'
+      script: '|||tenable-io-get-scan-status'
       type: regular
       iscommand: true
       brand: ""
@@ -196,7 +186,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 340
+          "y": 370
         }
       }
     note: false
@@ -206,12 +196,15 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      scanId:
+        simple: "55"
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 695,
+        "height": 765,
         "width": 380,
         "x": 50,
         "y": 50

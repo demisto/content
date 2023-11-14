@@ -4,7 +4,7 @@ BRANCH=$2
 SHOULD_CHECKOUT=$3
 
 if [[ -n $BRANCH ]]; then
-    BRANCH=$(git branch --show-current)
+  BRANCH=$(git branch --show-current 2>/dev/null) || BRANCH=$(git rev-parse --head) 
 fi
 
 # Checks if there's any diff from master
@@ -17,7 +17,11 @@ if [[ $(git diff origin/master -G"." -- ${FILE_TO_CHECK}) ]]; then
             git checkout origin/master -- ${FILE_TO_CHECK}
             exit 0
         fi
-        if [[ -z "${CIRCLECI}" ]]; then
+        if [[ -n $GITHUB_ACTIONS  ]]; then
+          # print github action annotation
+          echo "::error file=$FILE_TO_CHECK::$FILE_TO_CHECK has been changed. Merge from master"
+        fi
+        if [[ -z "${CIRCLECI}" && -f /usr/games/cowsay ]]; then
             # using printf & STDIN instead of command argument to support new lines in the message.
             # pick a ranadom cow-file
             printf "ERROR: %s has been changed.\nMerge from master" "${FILE_TO_CHECK}" | /usr/games/cowsay -n -f "$(ls /usr/share/cowsay/cows | shuf | head -1)"

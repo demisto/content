@@ -5,23 +5,25 @@ import shutil
 import subprocess
 import time
 from pathlib import Path
-from typing import Union
 from git import GitCommandError, Head, Repo
 from zipfile import ZipFile
 from packaging.version import Version
 
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
+from Utils.github_workflow_scripts.utils import get_env_var
 
 versions_dict = {}
 pack_items_dict = {}
 changed_packs = set()
 
+GITLAB_SERVER_HOST = get_env_var('CI_SERVER_HOST', 'code.pan.run')  # disable-secrets-detection
+GITLAB_PROJECT_NAMESPACE = get_env_var('CI_PROJECT_NAMESPACE', 'xsoar')  # disable-secrets-detection
 
 # HELPER FUNCTIONS
 
 
-def json_write(file_path: str, data: Union[list, dict]):
+def json_write(file_path: str, data: list | dict):
     """ Writes given data to a json file
 
     Args:
@@ -124,13 +126,13 @@ def add_changed_pack(func):
 
 
 @add_changed_pack
-def create_new_pack():
+def create_new_pack(pack_id: str):
     """
     Creates a new pack with a given pack name
     """
     content_path = Path(__file__).parent.parent.parent
-    source_path = Path(__file__).parent / 'TestUploadFlow'
-    dest_path = content_path / 'Packs' / 'TestUploadFlow'
+    source_path = Path(__file__).parent / pack_id
+    dest_path = content_path / 'Packs' / pack_id
     if dest_path.exists():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
@@ -281,7 +283,7 @@ def do_changes_on_branch(packs_path: Path):
     Makes the test changes on the created branch
     """
     # Case 1: Verify new pack - TestUploadFlow
-    new_pack_path, _, _ = create_new_pack()
+    new_pack_path, _, _ = create_new_pack(pack_id='TestUploadFlow')
 
     # Case 2: Verify modified pack - Armorblox
     modify_pack(packs_path / 'Armorblox', 'Integrations/Armorblox/Armorblox.py')
@@ -292,15 +294,14 @@ def do_changes_on_branch(packs_path: Path):
     # Case 4: Verify new version - ZeroFox
     enhance_release_notes(packs_path / 'ZeroFox')
 
-    # Case 5: Verify modified existing release notes - Box
-    update_existing_release_notes(packs_path / 'Box')
+    # Case 5: Verify modified existing release notes - BPA
+    update_existing_release_notes(packs_path / 'BPA')
 
     # Case 6: Verify pack is set to hidden - Microsoft365Defender
     set_pack_hidden(packs_path / 'Microsoft365Defender')
 
-    # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
     # Case 7: Verify changed readme - Maltiverse
-    # update_readme(packs_path / 'Maltiverse')
+    update_readme(packs_path / 'Maltiverse')
 
     # TODO: need to cause this pack to fail in another way because the current way cause validation to fail
     # Case 8: Verify failing pack - Absolute
@@ -320,6 +321,9 @@ def do_changes_on_branch(packs_path: Path):
     # case 12: Verify setting hidden dependency does not add this dependency to the metadata - MicrosoftAdvancedThreatAnalytics
     add_dependency(packs_path / 'MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
                    mandatory=False)
+
+    # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket - TestUploadFlowXSOAR
+    create_new_pack(pack_id='TestUploadFlowXSOAR')
 
     logging.info("Finished making test changes on the branch")
 
@@ -366,8 +370,9 @@ def main():
         repo.git.commit(m="Added Test file", no_verify=True)
         repo.git.push('--set-upstream',
                       f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
-                      f'code.pan.run/xsoar/content.git', branch, push_option="ci.skip")  # disable-secrets-detection
-        logging.info("Successfuly pushing the branch to Gitlab content repo")
+                      f'{GITLAB_SERVER_HOST}/{GITLAB_PROJECT_NAMESPACE}/content.git',  # disable-secrets-detection
+                      branch, push_option="ci.skip")  # disable-secrets-detection
+        logging.info("Successfully pushed the branch to GitLab content repo")
 
     except GitCommandError as e:
         logging.error(e)

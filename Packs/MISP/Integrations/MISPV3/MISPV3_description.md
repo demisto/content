@@ -24,3 +24,8 @@ Note:
 
 ### Configuration parameters
 **NOTE**: If using version 6.0.2 or lower, put your API Key in the **Password** field, leave the **User** field empty.
+
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***url***
+- ***domain***
+See the vendor’s documentation for more details.

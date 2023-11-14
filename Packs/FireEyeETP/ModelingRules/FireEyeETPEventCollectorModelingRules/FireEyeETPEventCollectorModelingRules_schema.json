@@ -1,0 +1,36 @@
+{
+    "fireeye_etp_raw": {
+        "attributes": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "_ENTRY_STATUS": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "links": {
+            "type": "string",
+            "is_array": false
+        },
+        "included": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "int",
+            "is_array": false
+        },
+        "_TIME": {
+            "type": "datetime",
+            "is_array": false
+        }
+    }
+}

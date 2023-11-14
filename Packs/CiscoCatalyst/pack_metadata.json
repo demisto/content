@@ -12,7 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Aironet"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]

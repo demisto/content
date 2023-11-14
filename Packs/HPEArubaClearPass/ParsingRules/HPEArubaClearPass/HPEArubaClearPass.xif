@@ -1,0 +1,3 @@
+[INGEST:vendor="aruba", product="clearpass", target_dataset="aruba_clearpass_raw", no_hit = keep]
+filter to_string(rt) ~= "\d{13}"
+| alter _time = to_timestamp(to_integer(rt), "MILLIS");

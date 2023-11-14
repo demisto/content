@@ -71,7 +71,7 @@ script:
     name: uptycs-get-assets
     outputs:
     - contextPath: Uptycs.Assets.id
-      description: 'Uptycs asset ID. '
+      description: Uptycs asset ID.
       type: string
     - contextPath: Uptycs.Assets.created_at
       description: Date/time that the asset was enrolled with Uptycs.
@@ -83,7 +83,7 @@ script:
       description: OS installed on the asset (Windows, Linux, Mac OS X).
       type: string
     - contextPath: Uptycs.Assets.os_version
-      description: OS version
+      description: OS version.
       type: string
     - contextPath: Uptycs.Assets.last_activity_at
       description: Date/time of the last activity on the asset.
@@ -375,41 +375,41 @@ script:
     - description: Time that the specified process was spawned.
       name: time
       required: true
-    description: get information for a particular process
+    description: get information for a particular process.
     name: uptycs-get-process-information
     outputs:
     - contextPath: Uptycs.Proc.pid
-      description: pid for the process
+      description: pid for the process.
       type: number
     - contextPath: Uptycs.Proc.upt_hostname
-      description: hostname for asset which spawned the specified process
+      description: hostname for asset which spawned the specified process.
       type: string
     - contextPath: Uptycs.Proc.upt_asset_id
-      description: asset id for asset which spawned the specified process
+      description: asset id for asset which spawned the specified process.
       type: string
     - contextPath: Uptycs.Proc.parent
-      description: pid for the parent process
+      description: pid for the parent process.
       type: number
     - contextPath: Uptycs.Proc.upt_add_time
-      description: time that the process was spawned
+      description: time that the process was spawned.
       type: date
     - contextPath: Uptycs.Proc.upt_remove_time
-      description: time that the process was removed
+      description: time that the process was removed.
       type: date
     - contextPath: Uptycs.Proc.path
-      description: path to the process binary
+      description: path to the process binary.
       type: string
     - contextPath: Uptycs.Proc.name
-      description: name of the process
+      description: name of the process.
       type: string
     - contextPath: Uptycs.Proc.cmdline
-      description: complete argv of the process
+      description: complete argv of the process.
       type: string
     - contextPath: Uptycs.Proc.pgroup
-      description: process group
+      description: process group.
       type: number
     - contextPath: Uptycs.Proc.cwd
-      description: process current working directory
+      description: process current working directory.
       type: string
   - arguments:
     - description: Only return assets with this asset_id.  Do not use arguments "asset_id" and "host_name_is" at the same time.
@@ -419,49 +419,49 @@ script:
     - defaultValue: '10'
       description: Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out).
       name: limit
-    - description: The pid for which all child processes will be found
+    - description: The pid for which all child processes will be found.
       name: parent
       required: true
-    - description: time at which the parent process was spawned
+    - description: time at which the parent process was spawned.
       name: parent_start_time
       required: true
     - description: time at which the parent process was killed, if it exists.
       name: parent_end_time
-    description: get all the child processes for a given parent process
+    description: get all the child processes for a given parent process.
     name: uptycs-get-process-child-processes
     outputs:
     - contextPath: Uptycs.Children.pid
-      description: pid of a child process
+      description: pid of a child process.
       type: number
     - contextPath: Uptycs.Children.upt_asset_id
-      description: asset id for asset which this process was run on
+      description: asset id for asset which this process was run on.
       type: string
     - contextPath: Uptycs.Children.upt_hostname
-      description: hostname for asset which spawned the specified process
+      description: hostname for asset which spawned the specified process.
       type: string
     - contextPath: Uptycs.Children.upt_add_time
-      description: time that the process was spawned
+      description: time that the process was spawned.
       type: date
     - contextPath: Uptycs.Children.upt_remove_time
-      description: time that the process was removed
+      description: time that the process was removed.
       type: date
     - contextPath: Uptycs.Children.path
-      description: path to the process binary
+      description: path to the process binary.
       type: string
     - contextPath: Uptycs.Children.parent
-      description: parent pid
+      description: parent pid.
       type: number
     - contextPath: Uptycs.Children.name
-      description: name of the process
+      description: name of the process.
       type: string
     - contextPath: Uptycs.Children.cmdline
-      description: complete argv for the process
+      description: complete argv for the process.
       type: string
     - contextPath: Uptycs.Children.pgroup
-      description: process group
+      description: process group.
       type: number
     - contextPath: Uptycs.Children.cwd
-      description: process current working directory
+      description: process current working directory.
       type: string
   - arguments:
     - description: Only return assets with this asset id.  Do not use arguments "asset_id", "host_name_is" or "host_name_like" at the same time.
@@ -481,38 +481,38 @@ script:
       name: time
     - description: 'Specifies how far back you want to look.  Format examples: 2 hours, 4 minutes, 6 month, 1 day, etc.'
       name: time_ago
-    description: find processes which are running or have run on a registered Uptycs asset
+    description: find processes which are running or have run on a registered Uptycs asset.
     name: uptycs-get-processes
     outputs:
     - contextPath: Uptycs.Process.pid
-      description: pid for a particular process
+      description: pid for a particular process.
       type: number
     - contextPath: Uptycs.Process.parent
-      description: pid for the parent of a particular process
+      description: pid for the parent of a particular process.
       type: number
     - contextPath: Uptycs.Process.upt_asset_id
-      description: uptycs asset id for the asset which is running (or ran) the process
+      description: uptycs asset id for the asset which is running (or ran) the process.
       type: string
     - contextPath: Uptycs.Process.upt_hostname
-      description: host name for the asset which is running (or ran) the process
+      description: host name for the asset which is running (or ran) the process.
       type: string
     - contextPath: Uptycs.Process.upt_time
-      description: time at which the process was spawned
+      description: time at which the process was spawned.
       type: date
     - contextPath: Uptycs.Process.name
-      description: name of the process
+      description: name of the process.
       type: string
     - contextPath: Uptycs.Process.path
-      description: path to the process binary
+      description: path to the process binary.
       type: string
     - contextPath: Uptycs.Process.cmdline
-      description: comeplete argv for the process
+      description: comeplete argv for the process.
       type: string
     - contextPath: Uptycs.Process.pgroup
-      description: process group
+      description: process group.
       type: number
     - contextPath: Uptycs.Process.cwd
-      description: process current working directory
+      description: process current working directory.
       type: string
   - arguments:
     - description: Only return assets with this asset id.  Do not use arguments "asset_id", "host_name_is" or "host_name_like" at the same time.
@@ -532,33 +532,33 @@ script:
       name: time
     - description: 'Specifies how far back you want to look.  Format examples: 2 hours, 4 minutes, 6 month, 1 day, etc.'
       name: time_ago
-    description: find processes which have opened files
+    description: find processes which have opened files.
     name: uptycs-get-process-open-files
     outputs:
     - contextPath: Uptycs.Files.pid
-      description: pid for the process which opened a file
+      description: pid for the process which opened a file.
       type: number
     - contextPath: Uptycs.Files.fd
-      description: process specific file descriptor number
+      description: process specific file descriptor number.
       type: number
     - contextPath: Uptycs.Files.upt_asset_id
-      description: Uptycs asset id for the the asset on which the file was opened
+      description: Uptycs asset id for the the asset on which the file was opened.
       type: string
     - contextPath: Uptycs.Files.upt_hostname
-      description: Host name for the asset on which the file was opened
+      description: Host name for the asset on which the file was opened.
       type: string
     - contextPath: Uptycs.Files.upt_time
-      description: time at which the file was opened
+      description: time at which the file was opened.
       type: date
     - contextPath: Uptycs.Files.path
-      description: filesystem path of the file descriptor
+      description: filesystem path of the file descriptor.
       type: string
   - arguments:
-    - description: Uptycs alert id used to identify a particular alert
+    - description: Uptycs alert id used to identify a particular alert.
       name: alert_id
       required: true
     - auto: PREDEFINED
-      description: Status of the alert can be new, assigned, resolved, or closed
+      description: Status of the alert can be new, assigned, resolved, or closed.
       name: status
       predefined:
       - open
@@ -566,34 +566,34 @@ script:
       - closed
       - resolved
       required: true
-    description: Set the status of an alert to new, assigned, resolved, or closed
+    description: Set the status of an alert to new, assigned, resolved, or closed.
     name: uptycs-set-alert-status
   - arguments:
-    - description: Uptycs asset id for the asset that the tag should be set on
+    - description: Uptycs asset id for the asset that the tag should be set on.
       name: asset_id
       required: true
-    - description: Tag key that will be set on the asset
+    - description: Tag key that will be set on the asset.
       name: tag_key
       required: true
-    - description: Tag value that will be set on the asset
+    - description: Tag value that will be set on the asset.
       name: tag_value
-    description: Sets a tag on a particular asset
+    description: Sets a tag on a particular asset.
     name: uptycs-set-asset-tag
   - arguments:
-    - description: Unique Uptycs id for the user
+    - description: Unique Uptycs id for the user.
       name: user_id
       required: true
-    description: get info for an Uptycs user
+    description: get info for an Uptycs user.
     name: uptycs-get-user-information
     outputs:
     - contextPath: Uptycs.UserInfo.id
-      description: unique Uptycs id for the user
+      description: unique Uptycs id for the user.
       type: string
     - contextPath: Uptycs.UserInfo.name
-      description: Uptycs user's name
+      description: Uptycs user's name.
       type: string
     - contextPath: Uptycs.UserInfo.email
-      description: Uptycs user's email address
+      description: Uptycs user's email address.
       type: string
   - arguments:
     - description: the specific indicator you wish to search for.  This can be an IP address, a Bad Domain, etc. as well ass any indicators you have added.
@@ -601,19 +601,19 @@ script:
     - defaultValue: '10'
       description: Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out).
       name: limit
-    description: get Uptycs threat indicators
+    description: get Uptycs threat indicators.
     name: uptycs-get-threat-indicators
   - arguments:
     - defaultValue: '10'
       description: Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out).
       name: limit
-    description: get Uptycs threat sources
+    description: get Uptycs threat sources.
     name: uptycs-get-threat-sources
   - arguments:
     - defaultValue: '10'
       description: Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out).
       name: limit
-    description: get Uptycs threat vendors
+    description: get Uptycs threat vendors.
     name: uptycs-get-threat-vendors
   - arguments:
     - description: Only return assets with this asset id.  Do not use arguments "asset_id" and "host_name_is" at the same time.
@@ -626,141 +626,141 @@ script:
     - description: pid for the parent process.
       name: parent
       required: true
-    description: get the parent process information for a particular child process
+    description: get the parent process information for a particular child process.
     name: uptycs-get-parent-information
     outputs:
     - contextPath: Uptycs.Parent.pid
-      description: pid of the process (this is the same number as the input argument 'parent')
+      description: pid of the process (this is the same number as the input argument 'parent').
       type: number
     - contextPath: Uptycs.Parent.upt_hostname
-      description: hostname for asset which spawned the specified process
+      description: hostname for asset which spawned the specified process.
       type: string
     - contextPath: Uptycs.Parent.upt_asset_id
-      description: asset id for asset which spawned the specified process
+      description: asset id for asset which spawned the specified process.
       type: string
     - contextPath: Uptycs.Parent.parent
-      description: pid for the parent process (this is the parent of the input argument 'parent')
+      description: pid for the parent process (this is the parent of the input argument 'parent').
       type: number
     - contextPath: Uptycs.Parent.upt_add_time
-      description: time that the process was spawned
+      description: time that the process was spawned.
       type: date
     - contextPath: Uptycs.Parent.upt_remove_time
-      description: time that the process was removed
+      description: time that the process was removed.
       type: date
     - contextPath: Uptycs.Parent.name
-      description: name of the process
+      description: name of the process.
       type: string
     - contextPath: Uptycs.Parent.path
-      description: path to the process binary
+      description: path to the process binary.
       type: string
     - contextPath: Uptycs.Parent.cmdline
-      description: complete argv for the process
+      description: complete argv for the process.
       type: string
     - contextPath: Uptycs.Parent.pgroup
-      description: process group
+      description: process group.
       type: number
     - contextPath: Uptycs.Parent.cwd
-      description: process current working directory
+      description: process current working directory.
       type: string
   - arguments:
     - defaultValue: Custom threat source pushed from Demisto
-      description: A short description for the threat source
+      description: A short description for the threat source.
       name: description
       required: true
     - description: entry_id for the file with threat information.  This file should be uploaded to demisto in the Playground War Room using the paperclip icon next to the CLI.
       name: entry_id
       required: true
-    - description: The name for the threat source
+    - description: The name for the threat source.
       name: name
       required: true
-    description: post a new threat source to your threat sources in Uptycs
+    description: post a new threat source to your threat sources in Uptycs.
     name: uptycs-post-threat-source
   - arguments:
     - defaultValue: '10'
       description: Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out).
       name: limit
-    description: get a list of Uptycs users
+    description: get a list of Uptycs users.
     name: uptycs-get-users
     outputs:
     - contextPath: Uptycs.Users.id
-      description: unique Uptycs id for the user
+      description: unique Uptycs id for the user.
       type: string
     - contextPath: Uptycs.Users.name
-      description: Uptycs user's name
+      description: Uptycs user's name.
       type: string
     - contextPath: Uptycs.Users.email
-      description: Uptycs user's email address
+      description: Uptycs user's email address.
       type: string
     - contextPath: Uptycs.Users.createdAt
-      description: datetime this user was added
+      description: datetime this user was added.
       type: date
     - contextPath: Uptycs.Users.updatedAt
-      description: last time this user was updated
+      description: last time this user was updated.
       type: date
     - contextPath: Uptycs.Users.admin
-      description: true if this user has admin privileges, false otherwise
+      description: true if this user has admin privileges, false otherwise.
       type: boolean
     - contextPath: Uptycs.Users.active
-      description: true if this user is currently active, false otherwise
+      description: true if this user is currently active, false otherwise.
       type: boolean
   - arguments:
     - defaultValue: '10'
       description: Limit the number of entries returned.  Use -1 to return all entries (may run slow or cause a time out).
       name: limit
-    description: get Uptycs asset groups
+    description: get Uptycs asset groups.
     name: uptycs-get-asset-groups
     outputs:
     - contextPath: Uptycs.AssetGroups.id
-      description: unique Uptycs id for a particular object group
+      description: unique Uptycs id for a particular object group.
       type: string
     - contextPath: Uptycs.AssetGroups.custom
-      description: true if this is a custom asset group, false otherwise
+      description: true if this is a custom asset group, false otherwise.
       type: boolean
     - contextPath: Uptycs.AssetGroups.createdAt
-      description: datetime the group was created
+      description: datetime the group was created.
       type: date
     - contextPath: Uptycs.AssetGroups.updatedAt
-      description: datetime the group was last updated
+      description: datetime the group was last updated.
       type: date
   - arguments:
-    - description: return a list of users with access to this asset group
+    - description: return a list of users with access to this asset group.
       name: asset_group_id
       required: true
-    description: get a list of users in a particular asset group
+    description: get a list of users in a particular asset group.
     name: uptycs-get-user-asset-groups
   - arguments:
-    - description: unique Uptycs id which identifies a specific threat indicator
+    - description: unique Uptycs id which identifies a specific threat indicator.
       name: indicator_id
       required: true
-    description: retrieve information about a specific threat indicator using a unique threat indicator id
+    description: retrieve information about a specific threat indicator using a unique threat indicator id.
     name: uptycs-get-threat-indicator
     outputs:
     - contextPath: Uptycs.ThreatIndicator.threat_source_id
-      description: unique Uptycs id which identifies the source of this specific threat indicator
+      description: unique Uptycs id which identifies the source of this specific threat indicator.
       type: string
     - contextPath: Uptycs.ThreatIndicator.threat_vendor_id
-      description: unique Uptycs id which identifies the vendor of this specific threat source
+      description: unique Uptycs id which identifies the vendor of this specific threat source.
       type: string
     - contextPath: Uptycs.ThreatIndicator.indicatorType
       description: type of threat indicator (IPv4, domain,...)
       type: string
     - contextPath: Uptycs.ThreatIndicator.indicator
-      description: threat indicator
+      description: threat indicator.
       type: string
     - contextPath: Uptycs.ThreatIndicator.createdAt
-      description: datetime the threat indicator was created
+      description: datetime the threat indicator was created.
       type: date
     - contextPath: Uptycs.ThreatIndicator.threadId
-      description: unique id for the group of threat indicators this thread indicator belongs to
+      description: unique id for the group of threat indicators this thread indicator belongs to.
       type: string
     - contextPath: Uptycs.ThreatIndicator.id
-      description: unique id for this particular threat indicator
+      description: unique id for this particular threat indicator.
       type: string
   - arguments:
-    - description: unique Uptycs id for the threat source you wish to retrive
+    - description: unique Uptycs id for the threat source you wish to retrive.
       name: threat_source_id
       required: true
-    description: retrieve information about a specific threat source
+    description: retrieve information about a specific threat source.
     name: uptycs-get-threat-source
   - arguments:
     - description: Only return assets with this asset id.  Do not use arguments "asset_id", "host_name_is" or "host_name_like" at the same time.
@@ -780,32 +780,32 @@ script:
       name: time
     - description: 'Specifies how far back you want to look.  Format examples: 2 hours, 4 minutes, 6 month, 1 day, etc.'
       name: time_ago
-    description: find process events which are running or have run on a registered Uptycs asset
+    description: find process events which are running or have run on a registered Uptycs asset.
     name: uptycs-get-process-events
     outputs:
     - contextPath: Uptycs.ProcessEvents.pid
-      description: pid for a particular process
+      description: pid for a particular process.
       type: number
     - contextPath: Uptycs.ProcessEvents.parent
-      description: pid for the parent of a particular process
+      description: pid for the parent of a particular process.
       type: number
     - contextPath: Uptycs.ProcessEvents.upt_asset_id
-      description: uptycs asset id for the asset which is running (or ran) the process
+      description: uptycs asset id for the asset which is running (or ran) the process.
       type: string
     - contextPath: Uptycs.ProcessEvents.upt_hostname
-      description: host name for the asset which is running (or ran) the process
+      description: host name for the asset which is running (or ran) the process.
       type: string
     - contextPath: Uptycs.ProcessEvents.upt_time
-      description: time at which the process was spawned
+      description: time at which the process was spawned.
       type: date
     - contextPath: Uptycs.ProcessEvents.path
-      description: path to the process binary
+      description: path to the process binary.
       type: string
     - contextPath: Uptycs.ProcessEvents.cmdline
-      description: comeplete argv for the process
+      description: comeplete argv for the process.
       type: string
     - contextPath: Uptycs.ProcessEvents.cwd
-      description: process current working directory
+      description: process current working directory.
       type: string
     - contextPath: Uptycs.ProcessEvents.ancestor_list
       description: list of ancestor processes (parent, grandparent, etc.)
@@ -821,32 +821,32 @@ script:
     - description: Time that the specified process was spawned.
       name: time
       required: true
-    description: get information for a particular process event
+    description: get information for a particular process event.
     name: uptycs-get-process-event-information
     outputs:
     - contextPath: Uptycs.ProcEvent.pid
-      description: pid for the process
+      description: pid for the process.
       type: number
     - contextPath: Uptycs.ProcEvent.upt_hostname
-      description: hostname for asset which spawned the specified process
+      description: hostname for asset which spawned the specified process.
       type: string
     - contextPath: Uptycs.ProcEvent.upt_asset_id
-      description: asset id for asset which spawned the specified process
+      description: asset id for asset which spawned the specified process.
       type: string
     - contextPath: Uptycs.ProcEvent.parent
-      description: pid for the parent process
+      description: pid for the parent process.
       type: number
     - contextPath: Uptycs.ProcEvent.upt_time
-      description: time that the process was spawned
+      description: time that the process was spawned.
       type: date
     - contextPath: Uptycs.ProcEvent.path
-      description: path to the process binary
+      description: path to the process binary.
       type: string
     - contextPath: Uptycs.ProcEvent.cmdline
-      description: comeplete argv for the process
+      description: comeplete argv for the process.
       type: string
     - contextPath: Uptycs.ProcEvent.cwd
-      description: process current working directory
+      description: process current working directory.
       type: string
     - contextPath: Uptycs.ProcEvent.ancestor_list
       description: list of ancestor processes (parent, grandparent, etc.)
@@ -871,47 +871,47 @@ script:
       name: time
     - description: 'Specifies how far back you want to look.  Format examples: 2 hours, 4 minutes, 6 month, 1 day, etc.'
       name: time_ago
-    description: find processes which opened a socket
+    description: find processes which opened a socket.
     name: uptycs-get-socket-events
     outputs:
     - contextPath: Uptycs.SocketEvents.pid
-      description: pid of process which opened a connection to a specified IP
+      description: pid of process which opened a connection to a specified IP.
       type: number
     - contextPath: Uptycs.SocketEvents.upt_hostname
-      description: hostname of the asset which ran the specified process
+      description: hostname of the asset which ran the specified process.
       type: string
     - contextPath: Uptycs.SocketEvents.upt_time
-      description: time at which the connection was opened
+      description: time at which the connection was opened.
       type: date
     - contextPath: Uptycs.SocketEvents.path
-      description: file path to the process being run
+      description: file path to the process being run.
       type: string
     - contextPath: Uptycs.SocketEvents.local_address
-      description: local IP for specified connection
+      description: local IP for specified connection.
       type: string
     - contextPath: Uptycs.SocketEvents.remote_address
-      description: remote IP for specified connection
+      description: remote IP for specified connection.
       type: string
     - contextPath: Uptycs.SocketEvents.local_port
-      description: local port for specified connection
+      description: local port for specified connection.
       type: number
     - contextPath: Uptycs.SocketEvents.remote_port
-      description: remote port for specified connection
+      description: remote port for specified connection.
       type: number
     - contextPath: Uptycs.SocketEvents.upt_asset_id
-      description: asset id for asset which ran the specified process
+      description: asset id for asset which ran the specified process.
       type: string
     - contextPath: Uptycs.SocketEvents.socket
-      description: socket used to open the connection
+      description: socket used to open the connection.
       type: number
     - contextPath: Uptycs.SocketEvents.family
-      description: network protocol
+      description: network protocol.
       type: number
     - contextPath: Uptycs.SocketEvents.action
-      description: type of socket event (accept, connect, or bind)
+      description: type of socket event (accept, connect, or bind).
       type: string
     - contextPath: Uptycs.SocketEvents.protocol
-      description: transfer protocol
+      description: transfer protocol.
       type: number
   - arguments:
     - description: Only return assets with this asset id.  Do not use arguments "asset_id" and "host_name_is" at the same time.
@@ -924,34 +924,34 @@ script:
     - description: pid for the parent process.
       name: parent
       required: true
-    - description: List of ancestor processes for specified child process
+    - description: List of ancestor processes for specified child process.
       name: child_ancestor_list
-    description: find information for parent process events which are running or have run on a registered Uptycs assert
+    description: find information for parent process events which are running or have run on a registered Uptycs assert.
     name: uptycs-get-parent-event-information
     outputs:
     - contextPath: Uptycs.ParentEvent.pid
-      description: pid of the process (this is the same number as the input argument 'parent')
+      description: pid of the process (this is the same number as the input argument 'parent').
       type: number
     - contextPath: Uptycs.ParentEvent.upt_hostname
-      description: hostname for asset which spawned the specified process
+      description: hostname for asset which spawned the specified process.
       type: string
     - contextPath: Uptycs.ParentEvent.upt_asset_id
-      description: asset id for asset which spawned the specified process
+      description: asset id for asset which spawned the specified process.
       type: string
     - contextPath: Uptycs.ParentEvent.parent
-      description: pid for the parent process (this is the parent of the input argument 'parent')
+      description: pid for the parent process (this is the parent of the input argument 'parent').
       type: number
     - contextPath: Uptycs.ParentEvent.upt_time
-      description: time that the process was spawned
+      description: time that the process was spawned.
       type: date
     - contextPath: Uptycs.ParentEvent.path
-      description: path to the parent process binary
+      description: path to the parent process binary.
       type: string
     - contextPath: Uptycs.ParentEvent.cmdline
-      description: complete argv for the parent process
+      description: complete argv for the parent process.
       type: string
     - contextPath: Uptycs.ParentEvent.cwd
-      description: parent process current working cirectory
+      description: parent process current working cirectory.
       type: string
   - arguments:
     - description: Only return assets with this asset id.  Do not use arguments "asset_id" and "host_name_is" at the same time.
@@ -964,90 +964,90 @@ script:
     - description: Time that the specified connection was opened.
       name: time
       required: true
-    description: get information for a particular socket event
+    description: get information for a particular socket event.
     name: uptycs-get-socket-event-information
     outputs:
     - contextPath: Uptycs.SocketEvents.pid
-      description: pid of process which opened a connection to a specified IP
+      description: pid of process which opened a connection to a specified IP.
       type: number
     - contextPath: Uptycs.SocketEvents.upt_hostname
-      description: hostname of the asset which ran the specified process
+      description: hostname of the asset which ran the specified process.
       type: string
     - contextPath: Uptycs.SocketEvents.upt_time
-      description: time at which the connection was opened
+      description: time at which the connection was opened.
       type: date
     - contextPath: Uptycs.SocketEvents.path
-      description: file path to the process being run
+      description: file path to the process being run.
       type: string
     - contextPath: Uptycs.SocketEvents.local_address
-      description: local IP for specified connection
+      description: local IP for specified connection.
       type: string
     - contextPath: Uptycs.SocketEvents.remote_address
-      description: remote IP for specified connection
+      description: remote IP for specified connection.
       type: string
     - contextPath: Uptycs.SocketEvents.local_port
-      description: local port for specified connection
+      description: local port for specified connection.
       type: number
     - contextPath: Uptycs.SocketEvents.remote_port
-      description: remote port for specified connection
+      description: remote port for specified connection.
       type: number
     - contextPath: Uptycs.SocketEvents.upt_asset_id
-      description: asset id for asset which ran the specified process
+      description: asset id for asset which ran the specified process.
       type: string
     - contextPath: Uptycs.SocketEvents.action
-      description: type of socket event (accept, connect, or bind)
+      description: type of socket event (accept, connect, or bind).
       type: string
     - contextPath: Uptycs.SocketEvents.family
-      description: network protocol
+      description: network protocol.
       type: number
     - contextPath: Uptycs.SocketEvents.socket
-      description: socket used to open the connection
+      description: socket used to open the connection.
       type: number
     - contextPath: Uptycs.SocketEvents.protocol
-      description: transfer protocol
+      description: transfer protocol.
       type: number
   - arguments:
     - description: Uptycs asset id for the asset you are looking for.
       name: asset_id
       required: true
-    description: Retrieve a list of tags for a particular asset
+    description: Retrieve a list of tags for a particular asset.
     name: uptycs-get-asset-tags
   - arguments:
-    - description: Only return the query with this unique id
+    - description: Only return the query with this unique id.
       name: query_id
-    - description: Only return the query with this name
+    - description: Only return the query with this name.
       name: name
-    description: Retrieve a saved query or list of all saved queries
+    description: Retrieve a saved query or list of all saved queries.
     name: uptycs-get-saved-queries
     outputs:
     - contextPath: Uptycs.SavedQueries.id
-      description: unique uptycs query id
+      description: unique uptycs query id.
       type: string
     - contextPath: Uptycs.SavedQueries.name
-      description: name of query
+      description: name of query.
       type: string
   - arguments:
-    - description: The name of the query you want to run
+    - description: The name of the query you want to run.
       name: name
-    - description: The unique id for the query you want to run
+    - description: The unique id for the query you want to run.
       name: query_id
     - description: '*realtime queries only*  This argument should be used when one wants to run a realtime query on a particular asset.'
       name: asset_id
-    - description: '*realtime queries only*  Only return assets with this hostname'
+    - description: '*realtime queries only*  Only return assets with this hostname.'
       name: host_name_is
     - description: '*realtime queries only* . Only return assets with this string in the hostname.'
       name: host_name_like
     - description: If your saved query has variable arguments, write them here in a json format where the key is the name of the variable argument and value is the value you want to use for this particular query.
       name: variable_arguments
-    description: Run a saved query
+    description: Run a saved query.
     name: uptycs-run-saved-query
     outputs:
     - contextPath: Uptycs.RunQuery
-      description: Results of executed query
+      description: Results of executed query.
       type: Unknown
   - arguments:
     - defaultValue: '""'
-      description: A short description for the query
+      description: A short description for the query.
       name: description
     - auto: PREDEFINED
       description: The type of query (global or realtime).
@@ -1059,7 +1059,7 @@ script:
     - description: The name for the query.  This should be unique to this query.
       name: name
       required: true
-    - description: The query which will be saved
+    - description: The query which will be saved.
       name: query
       required: true
     - auto: PREDEFINED
@@ -1076,22 +1076,16 @@ script:
     - defaultValue: '""'
       description: Add the query to a group of queries.
       name: grouping
-    description: Save a query to the Uptycs DB
+    description: Save a query to the Uptycs DB.
     name: uptycs-post-saved-query
     outputs:
     - contextPath: Uptycs.PostedQuery.name
-      description: name of query
+      description: name of query.
       type: string
   - arguments:
-    - default: false
-      description: Retrieve carves from a specific path
-      isArray: false
+    - description: Retrieve carves from a specific path.
       name: path
-      required: false
-      secret: false
-    deprecated: false
     description: Get the list of carves file from a specific path.
-    execution: false
     name: uptycs-get-carves
     outputs:
     - contextPath: Uptycs.Carves.id
@@ -1128,498 +1122,403 @@ script:
       description: Time at which the carve was deleted.
       type: date
   - arguments:
-    - default: false
-      description: uuid of a specific carved file. Get the id from the list of carves with the command uptycs-get-carves.
-      isArray: false
+    - description: uuid of a specific carved file. Get the id from the list of carves with the command uptycs-get-carves.
       name: carve_id
       required: true
-      secret: false
-    deprecated: false
     description: Get the url of a carved file using uuid.
-    execution: false
     name: uptycs-get-carves-link
     outputs:
     - contextPath: Uptycs.CarvesLink.url
-      description: Url of the carved file
+      description: Url of the carved file.
       type: string
   - arguments:
-    - default: false
-      description: uuid of a specific carved file to download. Get the id from the list of carves with the command uptycs-get-carves.
-      isArray: false
+    - description: uuid of a specific carved file to download. Get the id from the list of carves with the command uptycs-get-carves.
       name: carve_id
       required: true
-      secret: false
-    deprecated: false
     description: Download a carved file using uuid.
-    execution: false
     name: uptycs-get-carves-download-file
   - name: uptycs-get-asset-with-id
-    deprecated: false
     description: Get an Uptycs asset details.
-    execution: false
     arguments:
     - name: asset_id
       required: true
       description: Uptycs asset id. Get the id from the list of assets with the command uptycs-get-assets.
-      isArray: false
-      secret: false
-      default: false
     outputs:
     - contextPath: Uptycs.Asset.hostName
-      description: Hostname in Uptycs DB
+      description: Hostname in Uptycs DB.
       type: string
     - contextPath: Uptycs.Asset.location
-      description: Host location
+      description: Host location.
       type: string
     - contextPath: Uptycs.Asset.gateway
-      description: Gateway ip
+      description: Gateway ip.
       type: string
     - contextPath: Uptycs.Asset.cpuBrand
-      description: Cpu brand
+      description: Cpu brand.
       type: string
     - contextPath: Uptycs.Asset.hardwareModel
-      description: Hardware model
+      description: Hardware model.
       type: string
     - contextPath: Uptycs.Asset.hardwareVendor
-      description: Hardware vendor
+      description: Hardware vendor.
       type: string
     - contextPath: Uptycs.Asset.cores
-      description: Number of cores
+      description: Number of cores.
       type: number
     - contextPath: Uptycs.Asset.logicalCores
-      description: Number of logical cores
+      description: Number of logical cores.
       type: number
     - contextPath: Uptycs.Asset.memoryMb
-      description: Memory in Mb
+      description: Memory in Mb.
       type: number
     - contextPath: Uptycs.Asset.os
-      description: os installed on asset (Windows, Linux, Mac OS X)
+      description: os installed on asset (Windows, Linux, Mac OS X).
       type: string
     - contextPath: Uptycs.Asset.osVersion
-      description: os version
+      description: os version.
       type: string
     - contextPath: Uptycs.Asset.osFlavor
-      description: os flavor
+      description: os flavor.
       type: string
     - contextPath: Uptycs.Asset.osKey
-      description: os key
+      description: os key.
       type: string
     - contextPath: Uptycs.Asset.osqueryVersion
-      description: Uptycs osquery version
+      description: Uptycs osquery version.
       type: string
     - contextPath: Uptycs.Asset.status
-      description: status of host
+      description: status of host.
       type: string
     - contextPath: Uptycs.Asset.arch
-      description: Host cpu architecture
+      description: Host cpu architecture.
       type: string
     - contextPath: Uptycs.Asset.agentVersion
-      description: Uptycs agent version
+      description: Uptycs agent version.
       type: string
     - contextPath: Uptycs.Asset.quarantinedStatus
-      description: Uptycs agent quarantine status
+      description: Uptycs agent quarantine status.
       type: string
     - contextPath: Uptycs.Asset.osDisplay
-      description: os version detailed info
+      description: os version detailed info.
       type: string
     - contextPath: Uptycs.Asset.tags
-      description: Uptycs asset tags
+      description: Uptycs asset tags.
       type: string
     - contextPath: Uptycs.Asset.disabled
-      description: Asset disabled status
+      description: Asset disabled status.
       type: boolean
     - contextPath: Uptycs.Asset.objectGroupId
-      description: Uptycs object group id
+      description: Uptycs object group id.
       type: string
     - contextPath: Uptycs.Asset.lastEnrolledAt
-      description: Last enrolled at time
+      description: Last enrolled at time.
       type: date
     - contextPath: Uptycs.Asset.live
-      description: Asset live status
+      description: Asset live status.
       type: boolean
   - name: uptycs-get-tag
     description: Return Uptycs asset tag details.
-    deprecated: false
-    execution: false
     arguments:
     - name: tag_id
       required: true
       description: Uptycs tag id. Get the id from the list of tags with the command uptycs-get-tags.
-      isArray: false
-      secret: false
-      default: false
     outputs:
     - contextPath: Uptycs.tag.tag
-      description: Tag name in Uptycs DB
+      description: Tag name in Uptycs DB.
       type: string
     - contextPath: Uptycs.tag.resourceType
-      description: Tag resource type
+      description: Tag resource type.
       type: string
     - contextPath: Uptycs.tag.seedId
-      description: Uptycs seed id
+      description: Uptycs seed id.
       type: string
     - contextPath: Uptycs.tag.key
-      description: Tag key
+      description: Tag key.
       type: string
     - contextPath: Uptycs.tag.value
-      description: Tag value
+      description: Tag value.
       type: string
     - contextPath: Uptycs.tag.flagProfileId
-      description: Uptycs flag profile id
+      description: Uptycs flag profile id.
       type: string
     - contextPath: Uptycs.tag.customProfileId
-      description: Uptycs custom profile id
+      description: Uptycs custom profile id.
       type: string
     - contextPath: Uptycs.tag.complianceProfileId
-      description: Uptycs compliance profile id
+      description: Uptycs compliance profile id.
       type: string
     - contextPath: Uptycs.tag.processBlockRuleId
-      description: Uptycs process block rule id
+      description: Uptycs process block rule id.
       type: string
     - contextPath: Uptycs.tag.dnsBlockRuleId
-      description: Uptycs dns block rule id
+      description: Uptycs dns block rule id.
       type: string
     - contextPath: Uptycs.tag.windowsDefenderPreferenceId
-      description: Windows Defender Preference Id
+      description: Windows Defender Preference Id.
       type: string
     - contextPath: Uptycs.tag.createdBy
-      description: Id of creator
+      description: Id of creator.
       type: string
     - contextPath: Uptycs.tag.updatedBy
-      description: Id of last modifier
+      description: Id of last modifier.
       type: string
     - contextPath: Uptycs.tag.createdAt
-      description: Created at time
+      description: Created at time.
       type: date
     - contextPath: Uptycs.tag.updatedAt
-      description: Updated at time
+      description: Updated at time.
       type: date
     - contextPath: Uptycs.tag.status
-      description: Status of tag
+      description: Status of tag.
       type: string
     - contextPath: Uptycs.tag.source
-      description: Source of tag
+      description: Source of tag.
       type: string
     - contextPath: Uptycs.tag.system
-      description: Status of system
+      description: Status of system.
       type: boolean
     - contextPath: Uptycs.tag.custom
-      description: Status of custom
+      description: Status of custom.
       type: boolean
     - contextPath: Uptycs.tag.tagRuleId
-      description: Uptycs tag rule id
+      description: Uptycs tag rule id.
       type: string
   - name: uptycs-get-tags
     description: Return a list of Uptycs asset tags with details.
-    deprecated: false
-    execution: false
     arguments:
     - name: key
-      description: Uptycs tag key
-      required: false
-      isArray: false
-      secret: false
-      default: false
+      description: Uptycs tag key.
     - name: value
-      description: Uptycs tag value
-      required: false
-      isArray: false
-      secret: false
-      default: false
+      description: Uptycs tag value.
     outputs:
     - contextPath: Uptycs.tags.id
-      description: Tag id in Uptycs DB
+      description: Tag id in Uptycs DB.
       type: string
     - contextPath: Uptycs.tags.tag
-      description: Tag name in Uptycs DB
+      description: Tag name in Uptycs DB.
       type: string
     - contextPath: Uptycs.tags.resourceType
-      description: Tag resource type
+      description: Tag resource type.
       type: string
     - contextPath: Uptycs.tags.seedId
-      description: Uptycs seed id
+      description: Uptycs seed id.
       type: string
     - contextPath: Uptycs.tags.key
-      description: Uptycs tag key
+      description: Uptycs tag key.
       type: string
     - contextPath: Uptycs.tags.value
-      description: Uptycs tag value
+      description: Uptycs tag value.
       type: string
     - contextPath: Uptycs.tags.flagProfileId
-      description: Uptycs flag profile id
+      description: Uptycs flag profile id.
       type: string
     - contextPath: Uptycs.tags.customProfileId
-      description: Uptycs custom profile id
+      description: Uptycs custom profile id.
       type: string
     - contextPath: Uptycs.tags.complianceProfileId
-      description: Uptycs compliance profile id
+      description: Uptycs compliance profile id.
       type: string
     - contextPath: Uptycs.tags.processBlockRuleId
-      description: Uptycs process block rule id
+      description: Uptycs process block rule id.
       type: string
     - contextPath: Uptycs.tags.dnsBlockRuleId
-      description: Uptycs dns block rule id
+      description: Uptycs dns block rule id.
       type: string
     - contextPath: Uptycs.tags.windowsDefenderPreferenceId
-      description: Windows Defender Preference Id
+      description: Windows Defender Preference Id.
       type: string
     - contextPath: Uptycs.tags.createdBy
-      description: Id of tag creator
+      description: Id of tag creator.
       type: string
     - contextPath: Uptycs.tags.updatedBy
-      description: Id of last modifier
+      description: Id of last modifier.
       type: string
     - contextPath: Uptycs.tags.createdAt
-      description: Created at time
+      description: Created at time.
       type: date
     - contextPath: Uptycs.tags.updatedAt
-      description: Updated at time
+      description: Updated at time.
       type: date
     - contextPath: Uptycs.tags.status
-      description: status of tag
+      description: status of tag.
       type: string
     - contextPath: Uptycs.tags.source
-      description: source of tag
+      description: source of tag.
       type: string
     - contextPath: Uptycs.tags.system
-      description: system status
+      description: system status.
       type: boolean
     - contextPath: Uptycs.tags.custom
-      description: custom status
+      description: custom status.
       type: boolean
     - contextPath: Uptycs.tags.tagRuleId
-      description: Uptycs tag rule id
+      description: Uptycs tag rule id.
       type: string
   - name: uptycs-delete-tag
     description: Delete an Uptycs asset tag.
-    deprecated: false
-    execution: false
     arguments:
     - name: tag_id
       required: true
       description: Delete the tag matching this id. Get the id from the list of tags with the command uptycs-get-tags.
-      isArray: false
-      secret: false
-      default: false
   - name: uptycs-get-lookuptables
-    description: get list of uptycs look up tables
-    deprecated: false
-    execution: false
+    description: get list of uptycs look up tables.
     arguments: []
     outputs:
     - contextPath: Uptycs.lookuptables.id
-      description: Uptycs id of look up table
+      description: Uptycs id of look up table.
       type: string
     - contextPath: Uptycs.lookuptables.seedId
-      description: Uptycs seed id
+      description: Uptycs seed id.
       type: string
     - contextPath: Uptycs.lookuptables.name
-      description: Look up table name
+      description: Look up table name.
       type: string
     - contextPath: Uptycs.lookuptables.description
-      description: Description of the table
+      description: Description of the table.
       type: string
     - contextPath: Uptycs.lookuptables.active
-      description: Active status of the table
+      description: Active status of the table.
       type: boolean
     - contextPath: Uptycs.lookuptables.idField
-      description: Uptycs id field
+      description: Uptycs id field.
       type: string
     - contextPath: Uptycs.lookuptables.rowCount
-      description: Row count of table
+      description: Row count of table.
       type: number
     - contextPath: Uptycs.lookuptables.forRuleEngine
-      description: Status of flag forRuleEngine
+      description: Status of flag forRuleEngine.
       type: boolean
     - contextPath: Uptycs.lookuptables.createdBy
-      description: Id of creator
+      description: Id of creator.
       type: string
     - contextPath: Uptycs.lookuptables.updatedBy
-      description: Id of last modifier
+      description: Id of last modifier.
       type: string
     - contextPath: Uptycs.lookuptables.createdAt
-      description: Created at time
+      description: Created at time.
       type: date
     - contextPath: Uptycs.lookuptables.updatedAt
-      description: Updated at time
+      description: Updated at time.
       type: date
     - contextPath: Uptycs.lookuptables.dataLookupTable
-      description: Data look up table name
+      description: Data look up table name.
       type: string
     - contextPath: Uptycs.lookuptables.fetchRowsquery
-      description: Query used to fetch rows
+      description: Query used to fetch rows.
       type: string
   - name: uptycs-get-lookuptable
     description: Get an Uptycs lookup table details.
-    deprecated: false
-    execution: false
     arguments:
     - name: table_id
       required: true
       description: Id of table in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.
-      isArray: false
-      secret: false
-      default: false
     outputs:
     - contextPath: Uptycs.lookuptable.seedId
-      description: Uptycs seed id
+      description: Uptycs seed id.
       type: string
     - contextPath: Uptycs.lookuptable.name
-      description: Look up table name
+      description: Look up table name.
       type: string
     - contextPath: Uptycs.lookuptable.description
-      description: Description of the table
+      description: Description of the table.
       type: string
     - contextPath: Uptycs.lookuptable.active
-      description: Active status of the table
+      description: Active status of the table.
       type: boolean
     - contextPath: Uptycs.lookuptable.idField
-      description: Uptycs id field
+      description: Uptycs id field.
       type: string
     - contextPath: Uptycs.lookuptable.rowCount
-      description: Row count of table
+      description: Row count of table.
       type: number
     - contextPath: Uptycs.lookuptable.forRuleEngine
-      description: Status of flag forRuleEngine
+      description: Status of flag forRuleEngine.
       type: boolean
     - contextPath: Uptycs.lookuptable.createdBy
-      description: Id of creator
+      description: Id of creator.
       type: string
     - contextPath: Uptycs.lookuptable.updatedBy
-      description: Id of last modifier
+      description: Id of last modifier.
       type: string
     - contextPath: Uptycs.lookuptable.createdAt
-      description: Created at time
+      description: Created at time.
       type: date
     - contextPath: Uptycs.lookuptable.updatedAt
-      description: Updated at time
+      description: Updated at time.
       type: date
     - contextPath: Uptycs.lookuptable.dataLookupTable
-      description: Data look up table name
+      description: Data look up table name.
       type: string
     - contextPath: Uptycs.lookuptable.fetchRowsquery
-      description: Query used to fetch rows
+      description: Query used to fetch rows.
       type: string
   - name: uptycs-create-lookuptable
     description: Create a new Uptycs lookup table.
-    deprecated: false
-    execution: false
     arguments:
     - name: name
       required: true
       description: Name of a lookup table.
-      isArray: false
-      secret: false
-      default: false
     - name: id_field
       required: true
       description: Id field for the table. An identifier (ID) from the JSON/CSV file you want to upload. Select an ID based on the context of lookup data. For example, a domain lookup ID can be domain, or a port lookup ID can be port. This ID must be the same as defined in the JSON file to be uploaded, otherwise Uptycs does not capture the JSON data. This field is case sensitive and cannot be edited after a lookup table is saved.
-      isArray: false
-      secret: false
-      default: false
     - name: description
-      required: false
-      description: Description of a lookup table
-      isArray: false
-      secret: false
-      default: false
+      description: Description of a lookup table.
     - name: filename
       required: true
       description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
-      isArray: false
-      secret: false
-      default: false
     outputs:
     - contextPath: Uptycs.lookuptable.id
-      description: Id of lookup table in Uptycs DB
+      description: Id of lookup table in Uptycs DB.
       type: string
     - contextPath: Uptycs.lookuptable.name
-      description: Name of the created lookup table
+      description: Name of the created lookup table.
       type: string
   - name: uptycs-edit-lookuptable
     description: Edit an Uptycs lookup table.
-    deprecated: false
-    execution: false
     arguments:
     - name: table_id
       required: true
       description: Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.
-      isArray: false
-      secret: false
-      default: false
     - name: name
-      required: false
       description: Name of a lookup table.
-      isArray: false
-      secret: false
-      default: false
     - name: description
-      required: false
       description: A lookup table description.
-      isArray: false
-      secret: false
-      default: false
     - name: active
       auto: PREDEFINED
       defaultValue: true
-      required: false
       description: Enable or disable the table with a boolean flag of true or false.
-      isArray: false
-      secret: false
-      default: false
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: Uptycs.lookuptable
-      description: response
+      description: response.
       type: string
   - name: uptycs-delete-lookuptable
     description: Delete an Uptycs lookup table.
-    deprecated: false
-    execution: false
     arguments:
     - name: table_id
       required: true
       description: Table id in Uptycs DB. Get the id from the list of tables with the command uptycs-get-lookuptables.
-      isArray: false
-      secret: false
-      default: false
   - name: uptycs-delete-assets-tag
     description: Disassociate an asset with a tag.
-    deprecated: false
-    execution: false
     arguments:
     - name: asset_id
       required: true
       description: Disassociate the asset matching this asset id with the given tag_id. Get the id from the list of asset with the command uptycs-get-assets.
-      isArray: false
-      secret: false
-      default: false
     - name: tag_id
       required: true
       description: Disassociate the tag matching this id with the given asset_id. Get the id from the list of tags with the command uptycs-get-tags.
-      isArray: false
-      secret: false
-      default: false
   - name: uptycs-post-lookuptable-data
     description: Update csv data for a look up table.
-    deprecated: false
-    execution: false
     arguments:
     - name: table_id
       required: true
       description: Look up table id. Get the id from the list of tables with the command uptycs-get-lookuptables.
-      isArray: false
-      secret: false
-      default: false
     - name: filename
       required: true
       description: The name of the file being uploaded. This file should be uploaded to Cortex XSOAR in the Playground War Room using the paperclip icon next to the CLI.
-      isArray: false
-      secret: false
-      default: false
-  dockerimage: demisto/uptycs:1.0.0.63766
+  dockerimage: demisto/auth-utils:1.0.0.79567
   isfetch: true
   runonce: true
   script: '-'

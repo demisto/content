@@ -1,5 +1,5 @@
 This integration enables you to deploy and manage storage accounts and blob services.
-This integration was integrated and tested with version 2019-06-01 of Azure Storage
+This integration was integrated and tested with version 2022-09-01 of Azure Storage
 
 # Authorization
 In order to connect to the Azure Storage Accounts and the Blob Service use either the Cortex XSOAR Azure App or the Self-Deployed Azure App.
@@ -52,8 +52,8 @@ The application must have *user_impersonation* permission and must allow public 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Application ID |  | False |
-    | Subscription ID |  | True |
-    | Resource Group Name |  | True |
+    | Default Subscription ID | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. | True |
+    | Default Resource Group Name | There are two options to set the specified value, either in the configuration or directly within the commands. However, setting values in both places will cause an override by the command value. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Authentication Type | Type of authentication - can be Authorization Code flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
@@ -63,7 +63,7 @@ The application must have *user_impersonation* permission and must allow public 
     | Application redirect URI (for user-auth mode) |  | False |
     | Authorization code | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+1. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -150,6 +150,8 @@ Run this command to get the all or specific account storage details.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_name | The name of the storage account, optional. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -314,6 +316,8 @@ account storage.
 | network_ruleset_default_action | Specifies the default action of allow or deny when no other rules match. | Optional | 
 | network_ruleset_ipRules | Sets the IP ACL rules. | Optional | 
 | virtual_network_rules | Sets the virtual network rules. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -450,6 +454,8 @@ Run this command to get the blob service properties of a specific account storag
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | account_name | The name of the storage account. | Required | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -532,6 +538,8 @@ the blob service in a specific account storage
 | restore_policy_enabled | Blob restore is enabled if set to true. Possible values are: true, false. | Optional | 
 | restore_policy_min_restore_time | The minimum date and time that the restore can be started. | Optional | 
 | restore_policy_days | how long this blob can be restored. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -601,7 +609,9 @@ Run this command to create a blob container.
 | container_name | The name of the container. | Required | 
 | default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional | 
 | deny_encryption_scope_override | Block override of encryption scope from the container default. Possible values are: true, false. | Optional | 
-| public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional | 
+| public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional |
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional| 
 
 
 #### Context Output
@@ -661,7 +671,8 @@ blob container.
 | default_encryption_scope | Default the container to use specified encryption scope for all writes. | Optional | 
 | deny_encryption_scope_override | Block override of encryption scope from the container default. Possible values are: true, false. | Optional | 
 | public_access | Specifies the level of access. Possible values are: Blob, Container, None. | Optional | 
-
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 #### Context Output
 
@@ -722,6 +733,8 @@ Run this command to get the all or specific blob container details.
 | container_name | The name of the container. | Optional | 
 | include_deleted | Specifies whether include the properties for soft deleted blob containers. Possible values are: true, false. | Optional | 
 | maxpagesize | Specified maximum number of containers that can be included in the list. | Optional | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -808,6 +821,8 @@ Run this command to delete a specific blob container.
 | --- | --- | --- |
 | account_name | The name of the storage account. | Required | 
 | container_name | The name of the container. | Required | 
+|subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'.|Optional|
+resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'.|Optional|
 
 
 #### Context Output
@@ -848,3 +863,157 @@ You will be automatically redirected to a link with the following structure:
 ```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
+### azure-storage-subscriptions-list
+
+***
+Gets all subscriptions for a tenant.
+
+#### Base Command
+
+`azure-storage-subscriptions-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureStorage.Subscription.id | String | The unique identifier of the Azure storage subscription. | 
+| AzureStorage.Subscription.authorizationSource | String | The source of authorization for the Azure storage subscription. | 
+| AzureStorage.Subscription.managedByTenants | Unknown | The tenants that have access to manage the Azure storage subscription. | 
+| AzureStorage.Subscription.subscriptionId | String | The ID of the Azure storage subscription. | 
+| AzureStorage.Subscription.tenantId | String | The ID of the tenant associated with the Azure storage subscription. | 
+| AzureStorage.Subscription.displayName | String | The display name of the Azure storage subscription. | 
+| AzureStorage.Subscription.state | String | The current state of the Azure storage subscription. | 
+| AzureStorage.Subscription.subscriptionPolicies.locationPlacementId | String | The ID of the location placement policy for the Azure storage subscription. | 
+| AzureStorage.Subscription.subscriptionPolicies.quotaId | String | The ID of the quota policy for the Azure storage subscription. | 
+| AzureStorage.Subscription.subscriptionPolicies.spendingLimit | String | The spending limit policy for the Azure storage subscription. | 
+| AzureStorage.Subscription.count.type | String | The type of the Azure storage subscription count. | 
+| AzureStorage.Subscription.count.value | Number | The value of the Azure storage subscription count. | 
+
+#### Command example
+```!azure-storage-subscriptions-list```
+#### Context Example
+```json
+{
+    "AzureStorage": {
+        "Subscription": [
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Access to Azure Active Directory",
+                "id": "/subscriptions/00000000000000000000",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "00000000000000000000",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "AAD_2015-09-01",
+                    "spendingLimit": "On"
+                },
+                "tenantId": "00000000000000000"
+            },
+            {
+                "authorizationSource": "RoleBased",
+                "displayName": "Pay-As-You-Go",
+                "id": "/subscriptions/000000000000",
+                "managedByTenants": [],
+                "state": "Enabled",
+                "subscriptionId": "000000000000",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "PayAsYouGo_2014-09-01",
+                    "spendingLimit": "Off"
+                },
+                "tenantId": "00000000000000000"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Azure Storage Subscriptions list
+>|subscriptionId|tenantId|displayName|state|
+>|---|---|---|---|
+>| 00000000000000000000 | 00000000000000000 | Access to Azure Active Directory | Enabled |
+>| 000000000000 | 00000000000000000 | Pay-As-You-Go | Enabled |
+
+### azure-storage-resource-group-list
+
+***
+Gets all resource groups for a subscription.
+
+#### Base Command
+
+`azure-storage-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'. | Optional | 
+| limit | Limit on the number of resource groups to return. Default value is 50. Default is 50. | Optional | 
+| tag | A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AzureStorage.ResourceGroup.id | String | The unique identifier of the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.name | String | The name of the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.type | String | The type of the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.location | String | The location of the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.properties.provisioningState | String | The provisioning state of the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.tags.Owner | String | The owner tag of the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.tags | Unknown | The tags associated with the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.tags.Name | String | The name tag of the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.managedBy | String | The entity that manages the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.tags.aks-managed-cluster-name | String | The AKS managed cluster name tag associated with the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.tags.aks-managed-cluster-rg | String | The AKS managed cluster resource group tag associated with the Azure storage resource group. | 
+| AzureStorage.ResourceGroup.tags.type | String | The type tag associated with the Azure storage resource group. | 
+
+#### Command example
+```!azure-storage-resource-group-list```
+#### Context Example
+```json
+{
+    "AzureStorage": {
+        "ResourceGroup": [
+            {
+                "id": "/subscriptions/000000000000/resourceGroups/cloud-shell-storage-eastus",
+                "location": "eastus",
+                "name": "cloud-shell-storage-eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },
+            {
+                "id": "/subscriptions/000000000000/resourceGroups/demi",
+                "location": "centralus",
+                "name": "demisto",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                },
+                "tags": {
+                    "Owner": "Demi"
+                },
+                "type": "Microsoft.Resources/resourceGroups"
+            },  
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Resource Groups List
+>|Name|Location|Tags|
+>|---|---|---|
+>| cloud-shell-storage-eastus | eastus |  |
+>| demi | centralus | Owner: Demi |
+
+

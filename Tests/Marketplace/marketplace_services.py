@@ -7,6 +7,7 @@ import re
 import shutil
 import stat
 import subprocess
+from time import sleep
 import urllib.parse
 import warnings
 
@@ -27,9 +28,9 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
-    ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
+    XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
+from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -94,6 +95,7 @@ class Pack:
         self._reademe_images = []
         self._uploaded_integration_images = []  # the list of all integration images that were uploaded for the pack
         self._uploaded_preview_images = []  # list of all preview images that were uploaded for the pack
+        self._uploaded_dynamic_dashboard_images = []
         self._support_details = None  # initialized in enhance_pack_attributes function
         self._author = None  # initialized in enhance_pack_attributes function
         self._certification = None  # initialized in enhance_pack_attributes function
@@ -123,7 +125,6 @@ class Pack:
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = is_modified
-        self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
         self._is_data_source = False
@@ -374,9 +375,15 @@ class Pack:
 
     @property
     def uploaded_preview_images(self):
-        """ str: the list of uploaded integration images
+        """ str: the list of uploaded preview images
         """
         return self._uploaded_preview_images
+
+    @property
+    def uploaded_dynamic_dashboard_images(self):
+        """ str: the list of uploaded integration svg images for the dynamic dashboard
+        """
+        return self._uploaded_dynamic_dashboard_images
 
     @property
     def is_missing_dependencies(self):
@@ -1066,119 +1073,6 @@ class Pack:
         final_path_to_zipped_pack = f"{source_path}.zip"
         return task_status, final_path_to_zipped_pack
 
-    def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
-        """ Detects pack modified files.
-
-        The diff is done between current commit and previous commit that was saved in metadata that was downloaded from
-        index. In case that no commit was found in index (initial run), the default value will be set to previous commit
-        from origin/master.
-
-        Args:
-            content_repo (git.repo.base.Repo): content repo object.
-            index_folder_path (str): full path to downloaded index folder.
-            current_commit_hash (str): last commit hash of head.
-            previous_commit_hash (str): the previous commit to diff with.
-
-        Returns:
-            bool: whether the operation succeeded.
-            list: list of RN files that were modified.
-            bool: whether pack was modified and override will be required.
-        """
-        task_status = False
-        modified_rn_files_paths = []
-        pack_was_modified = False
-
-        try:
-            pack_index_metadata_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
-
-            if not os.path.exists(pack_index_metadata_path):
-                logging.info(f"{self._pack_name} pack was not found in index, skipping detection of modified pack.")
-                task_status = True
-                return None
-
-            with open(pack_index_metadata_path) as metadata_file:
-                downloaded_metadata = json.load(metadata_file)
-
-            previous_commit_hash = downloaded_metadata.get(Metadata.COMMIT, previous_commit_hash)
-            # set 2 commits by hash value in order to check the modified files of the diff
-            current_commit = content_repo.commit(current_commit_hash)
-            previous_commit = content_repo.commit(previous_commit_hash)
-
-            for modified_file in current_commit.diff(previous_commit):
-                if modified_file.a_path.startswith(PACKS_FOLDER):
-                    modified_file_path_parts = os.path.normpath(modified_file.a_path).split(os.sep)
-                    pack_name, entity_type_dir = modified_file_path_parts[1], modified_file_path_parts[2]
-
-                    if pack_name and pack_name == self._pack_name:
-                        if not is_ignored_pack_file(modified_file_path_parts):
-                            logging.info(f"Detected modified files in {self._pack_name} pack - {modified_file.a_path}")
-                            task_status, pack_was_modified = True, True
-                            modified_rn_files_paths.append(modified_file.a_path)
-
-                            if entity_type_dir in PackFolders.pack_displayed_items():
-                                if entity_type_dir in self._modified_files:
-                                    self._modified_files[entity_type_dir].append(modified_file.a_path)
-                                else:
-                                    self._modified_files[entity_type_dir] = [modified_file.a_path]
-
-                        else:
-                            logging.debug(f'{modified_file.a_path} is an ignored file')
-
-            task_status = True
-            if pack_was_modified:
-                # Make sure the modification is not only of release notes files, if so count that as not modified
-                pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
-                # Filter modifications in release notes config JSON file - they will be handled later on.
-                modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-            return None
-        except Exception:
-            logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
-        finally:
-            return task_status, modified_rn_files_paths
-
-    def filter_modified_files_by_id_set(self, id_set: dict, modified_rn_files_paths: list, marketplace):
-        """
-        Checks if the pack modification is relevant for the current marketplace.
-
-        This is done by searching the modified files in the id_set, if the files were not found in id_set,
-        then the modified entities probably not relevant for the current marketplace upload.
-        This check is done to identify changed items inside a pack that have both XSIAM and XSOAR entities.
-
-        Args:
-            id_set (dict): The current id set.
-            modified_rn_files_paths (list): list of paths of the pack's modified release notes files.
-
-        Returns:
-            bool: whether the operation succeeded and changes are relevant for marketplace.
-            dict: data from id set for the modified files.
-        """
-        logging.debug(f"Starting to filter modified files of pack {self._pack_name} by the id set")
-
-        task_status = False
-        modified_files_data = {}
-
-        for pack_folder, modified_file_paths in self._modified_files.items():
-            modified_entities = []
-            for path in modified_file_paths:
-                if id_set:
-                    if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
-                        logging.debug(f"The entity with the path {path} is present in the id set")
-                        modified_entities.append(id_set_entity)
-                else:
-                    if entity := get_graph_entity_by_path(Path(path), marketplace):
-                        logging.debug(f"The entity with the path {path} is present in the content graph")
-                        modified_entities.append(entity)
-
-            if modified_entities:
-                modified_files_data[pack_folder] = modified_entities
-
-        if not self._modified_files or modified_files_data or modified_rn_files_paths:
-            # The task status will be success if there are no modified files in the pack or if the modified files were found in
-            # the id-set or if there are modified old release notes files for items that are not being modified.
-            task_status = True
-
-        return task_status, modified_files_data
-
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
@@ -1215,14 +1109,13 @@ class Pack:
                 zip_to_upload_full_path = overridden_upload_path
             else:
                 version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
-                existing_files = [Path(f.name).name for f in storage_bucket.list_blobs(prefix=version_pack_path)]
 
                 if override_pack:
                     logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
                                     f"files already in storage.")
 
-                elif existing_files:
-                    logging.warning(f"The following packs already exist in the storage: {', '.join(existing_files)}")
+                else:
+                    logging.warning(f"The following packs were not modified: {self._pack_name}")
                     logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
                     return task_status, True, None
 
@@ -1555,36 +1448,48 @@ class Pack:
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def get_rn_files_names(self, modified_rn_files_paths):
+    def get_rn_files_names(self, diff_files_list):
         """
-
         Args:
             modified_rn_files_paths: a list containing all modified files in the current pack, generated
             by comparing the old and the new commit hash.
         Returns:
             The names of the modified release notes files out of the given list only,
             as in the names of the files that are under ReleaseNotes directory in the format of 'filename.md'.
-
         """
         modified_rn_files = []
-        for file_path in modified_rn_files_paths:
-            modified_file_path_parts = os.path.normpath(file_path).split(os.sep)
-            if self.RELEASE_NOTES in modified_file_path_parts:
-                modified_rn_files.append(modified_file_path_parts[-1])
+        for file_path in diff_files_list:
+            file_a_path = file_path.a_path
+            if not self.is_pack_release_notes_file(file_a_path):
+                continue
+            logging.debug(f"Found file path '{file_a_path}' as a modified release notes file of pack '{self._pack_name}'")
+            modified_file_path_parts = os.path.normpath(file_a_path).split(os.sep)
+            modified_rn_files.append(modified_file_path_parts[-1])
         return modified_rn_files
 
-    def prepare_release_notes(self, index_folder_path, build_number, modified_rn_files_paths=None,
+    def is_pack_release_notes_file(self, file_path: str):
+        """ Indicates whether a file_path is an MD release notes file of the pack or not
+        Args:
+            file_path (str): The file path.
+        Returns:
+            bool: True if the file is a release notes file or False otherwise
+        """
+        return all([
+            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name, self.RELEASE_NOTES)),
+            os.path.basename(os.path.dirname(file_path)) == self.RELEASE_NOTES,
+            os.path.basename(file_path).endswith('.md')
+        ])
+
+    def prepare_release_notes(self, index_folder_path, build_number, diff_files_list=None,
                               marketplace='xsoar', id_set=None, is_override=False):
         """
         Handles the creation and update of the changelog.json files.
-
         Args:
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
             modified_rn_files_paths (list): list of paths of the pack's modified file
             marketplace (str): The marketplace to which the upload is made.
             is_override (bool): Whether the flow overrides the packs on cloud storage.
-
         Returns:
             bool: whether the operation succeeded.
             bool: whether running build has not updated pack release notes.
@@ -1594,7 +1499,7 @@ class Pack:
         not_updated_build = False
         release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)
 
-        modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
+        diff_files_list = diff_files_list or []
         id_set = id_set if id_set else {}
         pack_versions_to_keep: list[str] = []
 
@@ -1616,7 +1521,7 @@ class Pack:
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     # Handling modified old release notes files, if there are any
-                    rn_files_names = self.get_rn_files_names(modified_rn_files_paths)
+                    rn_files_names = self.get_rn_files_names(diff_files_list)
                     modified_release_notes_lines_dict = self.get_modified_release_notes_lines(
                         release_notes_dir, new_release_notes_versions, changelog, rn_files_names)
 
@@ -1794,15 +1699,7 @@ class Pack:
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
         filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set, marketplace)
 
-        # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
-        #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
-        #     # modified files are actually relevant for the other marketplace.
-        #     logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
-        #                   f"marketplace")
-        #     return {}, True
-
         # Convert the RN dict to string
-
         final_release_notes = construct_entities_block(filtered_release_notes).strip()
         if not final_release_notes:
             final_release_notes = f"Changes are not relevant for " \
@@ -1811,25 +1708,6 @@ class Pack:
         changelog_entry[Changelog.RELEASE_NOTES] = final_release_notes
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
-
-    def are_all_changes_relevant_to_more_than_one_marketplace(self, modified_files_data):
-        """
-        Returns true if all the modified files are also relevant to another marketplace besides the current one
-         this upload is done for.
-
-        Args:
-            modified_files_data (dict): The modified files data that are given from id-set.
-
-        Return:
-            (bool) True, if all the files are relevant to more than one marketplace.
-                   False, if there is an item that is relevant only to the current marketplace.
-        """
-        modified_items = []
-
-        for entities_data in modified_files_data.values():
-            modified_items.extend([list(item.values())[0] for item in entities_data])
-
-        return all(len(item['marketplaces']) != 1 for item in modified_items)
 
     @staticmethod
     def filter_entries_by_display_name(release_notes: dict, id_set: dict, marketplace="xsoar"):
@@ -2508,6 +2386,9 @@ class Pack:
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
+
+            if 'xsoar' in self.marketplaces:
+                self.marketplaces.append('xsoar_saas')
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -3587,6 +3468,56 @@ class Pack:
 
         return True
 
+    def upload_dynamic_dashboard_images(self, storage_bucket, storage_base_path):
+        """ Uploads pack dynamic dashboard images to gcs.
+        Args:
+            storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
+            storage_base_path (str): The target destination of the upload in the target bucket.
+        Returns:
+            bool: whether the operation succeeded.
+        """
+        pack_storage_root_path = os.path.join(storage_base_path, 'images').replace("packs/", "")
+        logging.debug(f"Uploading dynamic dashboard to folder in path: {pack_storage_root_path}")
+
+        local_dynamic_dashboard_image_dir = os.path.join(PACKS_FOLDER, self.name, PackFolders.INTEGRATIONS.value)
+        if not os.path.isdir(local_dynamic_dashboard_image_dir):
+            logging.debug(f"Could not find dynamic dashboard images for pack {self.name}")
+            return True
+
+        dynamic_dashboard_image_relative_paths = glob.glob(os.path.join(local_dynamic_dashboard_image_dir, '*/*.svg'))
+        if not dynamic_dashboard_image_relative_paths:
+            logging.debug(f"Could not find dynamic dashboard images in pack {local_dynamic_dashboard_image_dir}")
+            return True
+
+        logging.debug(f"Found dynamic dashboard image: {dynamic_dashboard_image_relative_paths}")
+        for dynamic_dashboard_image in dynamic_dashboard_image_relative_paths:
+            integration_dir = Path(dynamic_dashboard_image).parts[:-1]
+            integration_yaml_path = glob.glob(os.path.join(*integration_dir, '*.yml'))
+
+            with open(integration_yaml_path[0]) as pack_file:
+                integration_yaml_content = yaml.safe_load(pack_file)
+
+            image_background: list[str] = re.findall(r'_([^_]+)\.svg$', dynamic_dashboard_image)
+            if not image_background or image_background[0].lower() not in ['dark', 'light']:
+                raise BaseException(f"Could not find background for image in path {dynamic_dashboard_image}.\nThe svg image "
+                                    "file should be named either as `<ImageName>_dark.svg` or `<ImageName>_light.svg`")
+
+            image_storage_path = os.path.join(pack_storage_root_path, image_background[0].lower(),
+                                              f"{integration_yaml_content.get('commonfields', {}).get('id', '')}.svg")
+            logging.debug(f"Uploading image in path '{dynamic_dashboard_image}' to bucket directory '{image_storage_path}'")
+            pack_image_blob = storage_bucket.blob(image_storage_path)
+
+            try:
+                with open(dynamic_dashboard_image, "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
+            except Exception as e:
+                logging.exception(f"Failed uploading {self.name} pack dynamic dashboard image. Additional info: {e}")
+                return False
+
+            self._uploaded_dynamic_dashboard_images.append(image_storage_path)
+
+        return True
+
     def copy_preview_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies pack's preview image from the build bucket to the production bucket
 
@@ -3639,6 +3570,62 @@ class Pack:
         else:
             if num_copied_images == 0:
                 logging.info(f"No added/modified preview images were detected in {self._pack_name} pack.")
+            else:
+                logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
+
+        return task_status
+
+    def copy_dynamic_dashboard_images(self, production_bucket, build_bucket, images_data, storage_base_path):
+        """ Copies pack's dynamic dashboard image from the build bucket to the production bucket
+
+        Args:
+            production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+            build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+            images_data (dict): The images data structure from Prepare Content step
+            storage_base_path (str): The target destination of the upload in the target bucket.
+        Returns:
+            bool: Whether the operation succeeded.
+
+        """
+        task_status = True
+        num_copied_images = 0
+        err_msg = f"Failed copying {self._pack_name} pack dynamic dashboard images."
+        pc_uploaded_dynamic_dashboard_images = images_data.get(self._pack_name,
+                                                               {}).get(BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES, [])
+
+        for build_bucket_image_path in pc_uploaded_dynamic_dashboard_images:
+            logging.debug(f"Found uploaded dynamic dashboard image in build bucket path: {build_bucket_image_path}")
+            build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
+
+            if not build_bucket_image_blob.exists():
+                logging.error(f"Found changed/added dynamic dashboard image in content repo but "
+                              f"'{build_bucket_image_path}' does not exist in build bucket")
+                task_status = False
+            else:
+                logging.info(f"Copying {self._pack_name} pack dynamic dashboard image: {build_bucket_image_path}")
+                try:
+                    copied_blob = build_bucket.copy_blob(
+                        blob=build_bucket_image_blob, destination_bucket=production_bucket,
+                        new_name=os.path.join(os.path.dirname(storage_base_path),
+                                              build_bucket_image_path.split("content/")[-1])
+                    )
+                    sleep(1)
+                    if not copied_blob.exists():
+                        logging.error(f"Failed to copy {self._pack_name} dynamic dashboard image: {build_bucket_image_blob.name} "
+                                      f"blob to {copied_blob.name} blob.")
+                        task_status = False
+                    else:
+                        num_copied_images += 1
+
+                except Exception as e:
+                    logging.exception(f"{err_msg}. Additional Info: {str(e)}")
+                    return False
+
+        if not task_status:
+            logging.error(err_msg)
+        else:
+            if num_copied_images == 0:
+                logging.info(f"No added/modified dynamic dashboard images were detected in {self._pack_name} pack.")
             else:
                 logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
 
@@ -3810,7 +3797,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
     if images_data:
         # adds a list with all the packs that were changed with images
         packs_results[stage].update({BucketUploadFlow.IMAGES: images_data})
-        logging.debug(f"Images data {images_data}")
+        logging.info(f"Images data {images_data}")
 
     if packs_results:
         if stage == BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING:
@@ -4166,7 +4153,7 @@ def underscore_file_name_to_dotted_version(file_name: str) -> str:
     return os.path.splitext(file_name)[0].replace('_', '.')
 
 
-def get_last_commit_from_index(service_account):
+def get_last_commit_from_index(service_account, marketplace=MarketplaceVersions.XSOAR):
     """ Downloading index.json from GCP and extract last upload commit.
 
     Args:
@@ -4175,51 +4162,14 @@ def get_last_commit_from_index(service_account):
     Returns: last upload commit.
 
     """
+    production_bucket_name = MarketplaceVersionToMarketplaceName.get(marketplace)
     storage_client = init_storage_client(service_account)
-    storage_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
+    storage_bucket = storage_client.bucket(production_bucket_name)
     index_storage_path = os.path.join('content/packs/', f"{GCPConfig.INDEX_NAME}.json")
     index_blob = storage_bucket.blob(index_storage_path)
     index_string = index_blob.download_as_string()
     index_json = json.loads(index_string)
     return index_json.get('commit')
-
-
-def get_graph_entity_by_path(entity_path: Path, marketplace):
-    with Neo4jContentGraphInterface() as content_graph_interface:
-        return content_graph_interface.search(marketplace, path=entity_path)[0]
-
-
-def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
-    """
-    Get the full entity dict from the id set of the entity given as a path, if it does not exist in the id set
-    return None. The item's path in the id set is of the yml/json file, so for integrations, scripts and playbooks this
-    function checks if there is an item in the id set that the containing folder of it's yml file is the same as the
-    containing folder of the entity path given. For all other content items, we check if the path's are identical.
-    Args:
-        entity_path: path to entity (content item)
-        pack_folder: containing folder of that item
-        id_set: id set dict
-
-    Returns:
-        id set dict entity if exists, otherwise {}
-    """
-    logging.debug(f"Checking if the entity with the path {entity_path} is present in the id set")
-
-    for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
-
-        if len(entity_path.parts) == 5:  # Content items that have a sub folder (integrations, scripts, etc)
-            if Path(list(id_set_entity.values())[0]['file_path']).parent == entity_path.parent:
-                return id_set_entity
-
-        else:  # Other content items
-            if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
-                return id_set_entity
-
-    if pack_folder == PackFolders.CLASSIFIERS.value:  # For Classifiers, check also in Mappers
-        for id_set_entity in id_set['Mappers']:
-            if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
-                return id_set_entity
-    return {}
 
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:

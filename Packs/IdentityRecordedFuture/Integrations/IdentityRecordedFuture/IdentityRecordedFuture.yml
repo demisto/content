@@ -4,7 +4,6 @@ commonfields:
 name: Recorded Future Identity
 display: Recorded Future Identity
 category: Data Enrichment & Threat Intelligence
-image:
 description: Recorded Future Identity Integration that provides access to Recorded Future Identity module data.
 configuration:
 - display: Server URL (e.g., https://api.recordedfuture.com/gw/xsoar-identity)
@@ -15,7 +14,13 @@ configuration:
 - display: API Token
   name: token
   type: 4
-  required: true
+  required: false
+  hidden: true
+- displaypassword: API Token
+  name: credential
+  type: 9
+  required: false
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: "false"
@@ -57,16 +62,16 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.78960
   commands:
   - name: recordedfuture-identity-search
-    description: Search for identities in Recorded Future Identity Dataset
+    description: Search for identities in Recorded Future Identity Dataset.
     arguments:
     - name: latest-downloaded
       defaultValue: "All time"
-      description: Time period for last downloaded time.(e.g. "7 days ago", "Three months ago", "Last Year", "All time")
+      description: Time period for last downloaded time (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
     - name: domains
-      description: Domains list separated by comma. (e.g. norsegods.online, norsegods.online ). If not specified, domains from app instance will be used.
+      description: Domains list separated by comma (e.g. norsegods.online, norsegods.online ). If not specified, domains from app instance will be used.
     - name: domain-type
       description: Type of identities to search for (Authorization or Email). If not specified use All.
       auto: PREDEFINED
@@ -108,12 +113,12 @@ script:
     arguments:
     - name: identities
       required: true
-      description: Identities for the lookup separated by comma.(e.g. "09719@norsegods.online, 1000739@norsegods.online").
+      description: Identities for the lookup separated by comma (e.g. "09719@norsegods.online, 1000739@norsegods.online").
     - name: domains
-      description: Domains list separated by comma. (e.g. norsegods.online, norsegods.online )
+      description: Domains list separated by comma (e.g. norsegods.online, norsegods.online).
     - name: first-downloaded
       defaultValue: "All time"
-      description: Time period for first downloaded time.(e.g. "7 days ago", "Three months ago", "Last Year", "All time")
+      description: Time period for first downloaded time (e.g. "7 days ago", "Three months ago", "Last Year", "All time").
     outputs:
     - contextPath: RecordedFuture.Credentials.Identities.identity.subjects
       description: Identity value.
@@ -170,7 +175,7 @@ script:
       description: Exposed secret hash value.
       type: String
     - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.effectively_clear
-      description: Exposed secret clear or not
+      description: Exposed secret clear or not.
       type: Boolean
     - contextPath: RecordedFuture.Credentials.Identities.credentials.exposed_secret.details.properties
       description: Exposed secret properties.

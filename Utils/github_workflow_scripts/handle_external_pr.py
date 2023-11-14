@@ -1,34 +1,41 @@
 #!/usr/bin/env python3
 import json
 import os
-
 from pathlib import Path
-
 import urllib3
 from blessings import Terminal
 from github import Github
 from git import Repo
 from github.Repository import Repository
+from demisto_sdk.commands.common.tools import get_pack_metadata
 
-from utils import get_env_var, timestamped_print, Checkout
-from demisto_sdk.commands.common.tools import get_pack_metadata, get_pack_name
+
+from utils import (
+    get_env_var,
+    timestamped_print,
+    Checkout,
+    load_json,
+    get_content_reviewers,
+    CONTENT_ROLES_PATH,
+    get_support_level
+)
+from demisto_sdk.commands.common.tools import get_pack_name
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-
-# Replace the Github Users of the reviewers and security reviewer according to the current contributions team
-SECURITY_REVIEWER = "efelmandar"
-REVIEWERS = ['mmhw', 'maimorag', 'anas-yousef']
 MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
-              'wizard @{selected_reviewer} will very shortly look over your proposed changes.'
+              'wizard @{selected_reviewer} will very shortly look over your proposed changes.\n' \
+              'For your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) to the contributions ' \
+              'SLAs document.'
 
 WELCOME_MSG_WITH_GFORM = 'Thank you for your contribution. Your generosity and caring are unrivaled! Make sure to ' \
                          'register your contribution by filling the [Contribution Registration]' \
                          '(https://forms.gle/XDfxU4E61ZwEESSMA) form, ' \
                          'so our content wizard @{selected_reviewer} will know the proposed changes are ready to be ' \
-                         'reviewed.'
+                         'reviewed.\nFor your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) ' \
+                         'to the contributions SLAs document.'
 
 XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
 PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
@@ -81,25 +88,6 @@ def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
     return selected_reviewer
 
 
-def get_packs_support_levels(pack_dirs: set[str]) -> set[str]:
-    """
-    Get the pack support levels from the pack metadata.
-
-    Args:
-        pack_dirs (set): paths to the packs that were changed
-    """
-    packs_support_levels = set()
-
-    for pack_dir in pack_dirs:
-        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
-            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')
-            packs_support_levels.add(pack_support_level)
-        else:
-            print(f'Could not find pack support level for pack {pack_dir}')
-
-    return packs_support_levels
-
-
 def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str) -> str:
     """
     Get The contributions' support level label.
@@ -145,13 +133,13 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
             # in marketplace contributions the name of the owner should be xsoar-contrib
             fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib'
         ):
-            packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
+            packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
         # in case we were not able to checkout correctly, fallback to the files in the master branch to retrieve support labels
         # in case those files exist.
         print(f'Received error when trying to checkout to {external_pr_branch} \n{error=}')
         print('Trying to retrieve support levels from the master branch')
-        packs_support_levels = get_packs_support_levels(pack_dirs_to_check_support_levels_labels)
+        packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
 
     print(f'{packs_support_levels=}')
     return get_highest_support_label(packs_support_levels) if packs_support_levels else ''
@@ -259,15 +247,22 @@ def main():
         pr.edit(base=new_branch_name)
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
 
-    # assign reviewers / request review from
-    content_reviewer = determine_reviewer(REVIEWERS, content_repo)
+    # Parse PR reviewers from JSON and assign them
+    # Exit if JSON doesn't exist or not parsable
+    content_roles = load_json(CONTENT_ROLES_PATH)
+    content_reviewers, security_reviewer = get_content_reviewers(content_roles)
+
+    print(f"Content Reviewers: {','.join(content_reviewers)}")
+    print(f"Security Reviewer: {security_reviewer}")
+
+    content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
 
     # Add a security architect reviewer if the PR contains security content items
     if is_requires_security_reviewer(pr_files):
-        reviewers.append(SECURITY_REVIEWER)
-        pr.add_to_assignees(SECURITY_REVIEWER)
+        reviewers.append(security_reviewer)
+        pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
 
     pr.create_review_request(reviewers=reviewers)
@@ -278,6 +273,21 @@ def main():
     body = message_to_send.format(selected_reviewer=content_reviewer)
     pr.create_issue_comment(body)
     print(f'{t.cyan}Created welcome comment{t.normal}')
+
+    print('contributors.md section')
+    print(f'pack path: {pr_files[0]}')
+    ver = get_pack_metadata(pr_files[0]).get('currentVersion')
+    print(f'version is: {ver}')
+    if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR:
+        contributors_body = 'Thanks for contributing to a Cortex XSOAR supported pack. To receive credit for your generous' \
+                            ' contribution, please ask the reviewer to update your information in the pack contributors file.' \
+                            ' See more information here [link](https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)'
+    else:
+        contributors_body = f'Hi @{pr.user.login}, thanks for contributing to a Cortex XSOAR supported pack. To receive ' \
+            f'credit for your generous contribution please follow this [link]' \
+            f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson).'
+    if XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
+        pr.create_issue_comment(contributors_body)
 
 
 if __name__ == "__main__":

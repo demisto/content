@@ -1,17 +1,17 @@
 args:
 - defaultValue: ${File}
-  description: Files
+  description: Files.
   isArray: true
   name: files
 - defaultValue: ${incident.attachment}
-  description: Attachment
+  description: Attachment.
   isArray: true
   name: attachment
 - defaultValue:
   description: The mailbox from which emails are sent from the 3rd party integration.
   name: service_mail
 - name: mail_sender_instance
-  description: Name of the mail sender instance name for transmitting emails
+  description: Name of the mail sender instance name for transmitting emails.
   defaultValue:
 - name: new_thread
   auto: PREDEFINED
@@ -19,10 +19,17 @@ args:
   - 'true'
   - 'false'
   - n/a
-  description: Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only
+  description: Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only.
   defaultValue: n/a
 - name: subject_include_incident_id
   description: Include the Incident ID within the email subject.
+  defaultValue: 'false'
+- name: reputation_calc_async
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Specify whether to calculate the reputation in an asynchronous way.
   defaultValue: 'false'
 comment: |-
   Send email reply
@@ -39,7 +46,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.78960
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:

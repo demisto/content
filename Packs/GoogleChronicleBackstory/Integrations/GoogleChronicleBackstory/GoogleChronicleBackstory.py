@@ -27,7 +27,8 @@ DEFAULT_FIRST_FETCH = "3 days"
 REGIONS = {
     "General": "",
     "Europe": "europe-",
-    "Asia": "asia-southeast1-"
+    "Asia": "asia-southeast1-",
+    "Europe-west2": "europe-west2-"
 }
 
 ISO_DATE_REGEX = (r'^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):'
@@ -42,7 +43,9 @@ CHRONICLE_OUTPUT_PATHS = {
     'Alert': 'GoogleChronicleBackstory.Alert(val.AssetName && val.AssetName == obj.AssetName)',
     'UserAlert': 'GoogleChronicleBackstory.UserAlert(val.User && val.User == obj.User)',
     'Events': 'GoogleChronicleBackstory.Events',
+    'UDMEvents': 'GoogleChronicleBackstory.Events(val.id == obj.id)',
     'Detections': 'GoogleChronicleBackstory.Detections(val.id == obj.id && val.ruleVersion == obj.ruleVersion)',
+    'CuratedRuleDetections': 'GoogleChronicleBackstory.CuratedRuleDetections(val.id == obj.id)',
     'Rules': 'GoogleChronicleBackstory.Rules(val.ruleId == obj.ruleId)',
     'Token': 'GoogleChronicleBackstory.Token(val.name == obj.name)',
     'DeleteRule': 'GoogleChronicleBackstory.DeleteRule(val.ruleId == obj.ruleId)',
@@ -51,7 +54,15 @@ CHRONICLE_OUTPUT_PATHS = {
     'RetroHunt': 'GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)',
     'ReferenceList': 'GoogleChronicleBackstory.ReferenceList(val.name == obj.name)',
     'ListReferenceList': 'GoogleChronicleBackstory.ReferenceLists(val.name == obj.name)',
-    'StreamRules': 'GoogleChronicleBackstory.StreamRules(val.id == obj.id)'
+    'StreamRules': 'GoogleChronicleBackstory.StreamRules(val.id == obj.id)',
+    'AssetAliases': 'GoogleChronicleBackstory.AssetAliases(val.asset.asset_ip_address == obj.asset.asset_ip_address '
+                    '&& val.asset.product_id == obj.asset.product_id && val.asset.mac == obj.asset.mac && '
+                    'val.asset.hostname == obj.asset.hostname)',
+    'CuratedRules': 'GoogleChronicleBackstory.CuratedRules(val.ruleId == obj.ruleId)',
+    'UserAliases': 'GoogleChronicleBackstory.UserAliases(val.user.email == obj.user.email '
+                   '&& val.user.username == obj.user.username && val.user.windows_sid == obj.user.windows_sid && '
+                   'val.user.employee_id == obj.user.employee_id && val.user.product_object_id == '
+                   'obj.user.product_object_id ) '
 }
 
 ARTIFACT_NAME_DICT = {
@@ -67,6 +78,14 @@ ASSET_IDENTIFIER_NAME_DICT = {
     'ip address': 'asset_ip_address',
     'mac address': 'mac',
     'product id': 'product_id',
+}
+
+USER_IDENTIFIER_NAME_DICT = {
+    "email": "email",
+    "username": "username",
+    "windows sid": "windows_sid",
+    "employee id": "employee_id",
+    "product object id": "product_object_id",
 }
 
 HOST_CTX_KEY_DICT = {
@@ -106,6 +125,7 @@ CONFIDENCE_LEVEL_PRIORITY = {
 
 SEVERITY_MAP = {
     'unspecified': 0,
+    'informational': 0.5,
     'low': 1,
     'medium': 2,
     'high': 3
@@ -115,6 +135,8 @@ MESSAGES = {
     "INVALID_DAY_ARGUMENT": 'Invalid preset time range value provided. Allowed values are "Last 1 day", "Last 7 days", '
                             '"Last 15 days" and "Last 30 days"',
     "INVALID_PAGE_SIZE": 'Page size should be in the range from 1 to {}.',
+    "INVALID_LIMIT_RANGE": 'Limit should be in the range from 1 to {}.',
+    "INVALID_LIMIT_TYPE": 'Limit must be a non-zero and positive numeric value.',
     "INVALID_MAX_RESULTS": 'Max Results should be in the range 1 to 10000.',
     "NO_RECORDS": 'No Records Found',
     "INVALID_RULE_TEXT": 'Invalid rule text provided. Section "meta", "events" or "condition" is missing.',
@@ -126,6 +148,11 @@ MESSAGES = {
     "INVALID_DATE": 'Invalid {} time, supported formats are: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, '
                     'N hours. E.g. 2022-05-15T12:24:36Z, 2021-18-19, 6 days, 20 hours, 01 Mar 2021,'
                     ' 01 Feb 2021 04:45:33',
+    "PROVIDE_CURATED_RULE_ID": 'Please provide at least one curated rule ID in "Detections to fetch by Rule ID or '
+                               'Version ID" field to retrieve the Curated Rule Detection alerts.',
+    "CURATED_RULE_ID_REQUIRED": 'A Curated Rule ID is required to retrieve the detections.',
+    "QUERY_REQUIRED": 'Query is required to retrieve the events.',
+    "EMPTY_ASSET_ALIASES": 'No asset aliases found for the provided asset identifier: "{}".',
 }
 FIRST_ACCESSED_TIME = 'First Accessed Time'
 LAST_ACCESSED_TIME = 'Last Accessed Time'
@@ -161,7 +188,14 @@ class Client:
         credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(service_account_credential,
                                                                                        scopes=SCOPES)
         self.http_client = credentials.authorize(get_http_client(proxy, disable_ssl))
-        self.region = params.get("region") if params.get("region") else "General"
+        region = params.get('region', '')
+        other_region = params.get('other_region', '').strip()
+        if region:
+            if other_region and other_region[-1] != '-':
+                other_region = f'{other_region}-'
+            self.region = REGIONS[region] if region.lower() != 'other' else other_region
+        else:
+            self.region = REGIONS['General']
 
 
 ''' HELPER FUNCTIONS '''
@@ -211,8 +245,8 @@ def validate_response(client, url, method='GET', body=None):
 
     :return: response
     """
-    demisto.info('[CHRONICLE DETECTIONS]: Request URL: ' + url.format(REGIONS[client.region]))
-    raw_response = client.http_client.request(url.format(REGIONS[client.region]), method, body=body)
+    demisto.info('[CHRONICLE DETECTIONS]: Request URL: ' + url.format(client.region))
+    raw_response = client.http_client.request(url.format(client.region), method, body=body)
     if not raw_response:
         raise ValueError('Technical Error while making API call to Chronicle. Empty response received')
     if raw_response[0].status == 500:
@@ -221,10 +255,12 @@ def validate_response(client, url, method='GET', body=None):
         raise ValueError('API rate limit exceeded. Reattempt will be initiated.')
     if raw_response[0].status == 400 or raw_response[0].status == 404:
         raise ValueError(
-            'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
+            'Status code: {}\nError: {}'.format(raw_response[0].status,
+                                                parse_error_message(raw_response[1], client.region)))
     if raw_response[0].status != 200:
         raise ValueError(
-            'Status code: {}\nError: {}'.format(raw_response[0].status, parse_error_message(raw_response[1])))
+            'Status code: {}\nError: {}'.format(raw_response[0].status,
+                                                parse_error_message(raw_response[1], client.region)))
     try:
         response = remove_empty_elements(json.loads(raw_response[1]))
         return response
@@ -381,6 +417,10 @@ def validate_configuration_parameters(param: Dict[str, Any]):
         raise ValueError('Please enter one or more Rule ID(s) or Version ID(s) as value of "Detections to '
                          'fetch by Rule ID or Version ID" or check the checkbox "Fetch all rules '
                          'detections" to fetch detections.')
+
+    if param.get('backstory_alert_type', 'ioc domain matches').lower() == 'curated rule detection alerts' and not \
+            detection_by_ids:
+        raise ValueError(MESSAGES['PROVIDE_CURATED_RULE_ID'])
 
     try:
         # validate service_account_credential configuration parameter
@@ -614,12 +654,56 @@ def get_default_command_args_value(args: Dict[str, Any], max_page_size=10000, da
     return start_time, end_time, page_size, reference_time
 
 
-def parse_error_message(error):
+def get_gcb_udm_search_command_args_value(args: Dict[str, Any], max_limit=1000, date_range=None):
+    """
+    Validate and return gcb-udm-search command arguments default values as per Chronicle Backstory.
+
+    :type args: dict
+    :param args: Contain all arguments for command.
+
+    :type max_limit: int
+    :param max_limit: Maximum allowed limit.
+
+    :type date_range: string
+    :param date_range: The date range to be parsed.
+
+    :return : start_time, end_time, limit, query
+    :rtype : str, str, int, str
+    """
+    query = args.get('query', '')
+    if not query:
+        raise ValueError(MESSAGES['QUERY_REQUIRED'])
+    query = urllib.parse.quote(args.get('query', ''))
+    preset_time_range = args.get('preset_time_range', None)
+    if preset_time_range:
+        preset_time_range = validate_preset_time_range(preset_time_range)
+        start_time, end_time = get_chronicle_default_date_range(preset_time_range, 'preset_time_range')
+    else:
+        if date_range is None:
+            date_range = DEFAULT_FIRST_FETCH
+        start_time, end_time = get_chronicle_default_date_range(days=date_range)
+        if args.get('start_time'):
+            start_time = arg_to_datetime(args.get('start_time'), 'start_time').strftime(DATE_FORMAT)  # type: ignore
+        if args.get('end_time'):
+            end_time = arg_to_datetime(args.get('end_time'), 'end_time').strftime(DATE_FORMAT)  # type: ignore
+
+    limit = args.get('limit', 200)
+    if not limit or not str(limit).isdigit() or int(limit) == 0:
+        raise ValueError(MESSAGES["INVALID_LIMIT_TYPE"])
+    if int(limit) > max_limit:
+        raise ValueError(MESSAGES["INVALID_LIMIT_RANGE"].format(max_limit))
+
+    return start_time, end_time, limit, query
+
+
+def parse_error_message(error, region: str):
     """
     Extract error message from error object.
 
     :type error: bytearray
     :param error: Error byte response to be parsed
+    :type region: str
+    :param region: Region value based on the location of the chronicle backstory instance.
 
     :return: error message
     :rtype: str
@@ -629,10 +713,12 @@ def parse_error_message(error):
         if isinstance(json_error, list):
             json_error = json_error[0]
     except json.decoder.JSONDecodeError:
-        demisto.debug(
-            'Invalid response received from Chronicle Search API. Response not in JSON format. Response - {}'.format(
-                error))
-        raise ValueError('Invalid response received from Chronicle Search API. Response not in JSON format.')
+        if region not in REGIONS.values() and b'404' in error:
+            error_message = 'Invalid response from Chronicle API. Check the provided "Other Region" parameter.'
+        else:
+            error_message = 'Invalid response received from Chronicle API. Response not in JSON format.'
+        demisto.debug('{} Response - {}'.format(error_message, error))
+        return error_message
 
     if json_error.get('error', {}).get('code') == 403:
         return 'Permission denied'
@@ -1236,6 +1322,59 @@ def get_list_events_hr(events):
     return hr
 
 
+def get_udm_search_events_hr(events: List) -> str:
+    """
+    Convert UDM search events response into human-readable.
+
+    :param events: List of events.
+    :type events: List
+
+    :return: Returns human-readable string for gcb-udm-search command.
+    :rtype: str
+    """
+    hr_dict = []
+    for event in events:
+        # Get queried domain, process command line, file use by process information
+        more_info = get_more_information(event)
+        security_result_list = []
+        for security_result in event.get('securityResult', []):
+            security_result_info = []
+            severity = security_result.get('severity')
+            summary = security_result.get('summary')
+            action = security_result.get('action', [])
+            rule_name = security_result.get('ruleName')
+            if severity:
+                security_result_info.append('**Severity:** {}'.format(severity))
+            if summary:
+                security_result_info.append('**Summary:** {}'.format(summary))
+            if action and isinstance(action, list):
+                security_result_info.append('**Actions:** {}'.format(', '.join(action)))
+            if rule_name:
+                security_result_info.append('**Rule Name:** {}'.format(rule_name))
+            security_result_list.append('\n'.join(security_result_info))
+        security_results = '\n\n'.join(security_result_list)
+        hr_dict.append({
+            'Event ID': event.get('metadata', {}).get('id'),
+            'Event Timestamp': event.get('metadata', {}).get('eventTimestamp', ''),
+            'Event Type': event.get('metadata', {}).get('eventType', ''),
+            'Security Results': security_results,
+            'Principal Asset Identifier': get_asset_identifier_details(event.get('principal', {})),
+            'Target Asset Identifier': get_asset_identifier_details(event.get('target', {})),
+            'Description': event.get('metadata', {}).get('description'),
+            'Product Name': event.get('metadata', {}).get('productName'),
+            'Vendor Name': event.get('metadata', {}).get('vendorName'),
+            'Queried Domain': more_info[0],
+            'Process Command Line': re.escape(more_info[1]),
+            'File In Use By Process': re.escape(more_info[2]),
+        })
+
+    hr = tableToMarkdown('Event(s) Details', hr_dict,
+                         ['Event ID', 'Event Timestamp', 'Event Type', 'Security Results', 'Principal Asset Identifier',
+                          'Target Asset Identifier', 'Description', 'Product Name', 'Vendor Name', 'Queried Domain',
+                          'File In Use By Process', 'Process Command Line'], removeNull=True)
+    return hr
+
+
 def validate_and_parse_detection_start_end_time(args: Dict[str, Any]) -> Tuple[Optional[datetime], Optional[datetime]]:
     """
     Validate and return detection_start_time and detection_end_time as per Chronicle Backstory or \
@@ -1256,6 +1395,28 @@ def validate_and_parse_detection_start_end_time(args: Dict[str, Any]) -> Tuple[O
     if list_basis and not detection_start_time and not detection_end_time:
         raise ValueError("To sort detections by \"list_basis\", either \"start_time\" or \"end_time\" argument is "
                          "required.")
+
+    if detection_start_time:
+        detection_start_time = detection_start_time.strftime(DATE_FORMAT)  # type: ignore
+    if detection_end_time:
+        detection_end_time = detection_end_time.strftime(DATE_FORMAT)  # type: ignore
+    return detection_start_time, detection_end_time
+
+
+def validate_and_parse_curatedrule_detection_start_end_time(args: Dict[str, Any]) -> Tuple[
+        Optional[datetime], Optional[datetime]]:
+    """
+    Validate and return detection_start_time and detection_end_time as per Chronicle Backstory or \
+    raise a ValueError if the given inputs are invalid.
+
+    :type args: dict
+    :param args: Contains all arguments for command.
+
+    :return : detection_start_time, detection_end_time: Detection start and End time in the format API accepts.
+    :rtype : Tuple[Optional[str], Optional[str]]
+    """
+    detection_start_time = arg_to_datetime(args.get('start_time'), 'start_time')
+    detection_end_time = arg_to_datetime(args.get('end_time'), 'end_time')
 
     if detection_start_time:
         detection_start_time = detection_start_time.strftime(DATE_FORMAT)  # type: ignore
@@ -1291,6 +1452,97 @@ def validate_and_parse_list_detections_args(args: Dict[str, Any]) -> Dict[str, A
                   'detection_end_time': detection_end_time, 'detection_for_all_versions': detection_for_all_versions}
 
     return valid_args
+
+
+def validate_and_parse_list_curatedrule_detections_args(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Return and validate page_size, detection_start_time and detection_end_time.
+
+    :type args: Dict[str, Any]
+    :param args: Contains all arguments for list-curatedrule-detections command.
+
+    :return: Dictionary containing values of page_size, detection_start_time and detection_end_time
+     or raise ValueError if the arguments are invalid.
+    :rtype: Dict[str, Any]
+    """
+    page_size = args.get('page_size', 100)
+    validate_page_size(page_size)
+    if int(page_size) > 1000:
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"].format(1000))
+
+    if not args.get('id'):
+        raise ValueError(MESSAGES["CURATED_RULE_ID_REQUIRED"])
+
+    detection_start_time, detection_end_time = validate_and_parse_curatedrule_detection_start_end_time(args)
+
+    valid_args = {'page_size': page_size, 'detection_start_time': detection_start_time,
+                  'detection_end_time': detection_end_time}
+
+    return valid_args
+
+
+def validate_list_asset_aliases_args(asset_identifier_type: Optional[str], asset_identifier: str,
+                                     page_size: Optional[int]) -> None:
+    """
+    Validate parameter for list asset aliases command.
+
+    :type asset_identifier_type: str
+    :param asset_identifier_type: Type of the asset identifier.
+
+    :type asset_identifier: str
+    :param asset_identifier: Value of the asset identifier.
+
+    :type page_size: int
+    :param page_size: Maximum number of results to return.
+    """
+    if not asset_identifier:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format('asset_identifier'))
+
+    if not asset_identifier_type:
+        raise ValueError(MESSAGES["VALIDATE_SINGLE_SELECT"].format(
+            'asset_identifier_type', ASSET_IDENTIFIER_NAME_DICT.keys()))
+
+    validate_page_size(page_size)
+    if int(page_size) > 10000 or int(page_size) < 0:  # type: ignore
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"].format('10000'))
+
+
+def validate_list_curated_rules_args(page_size: Optional[int]) -> None:
+    """
+    Validate parameter for list curated rules command.
+
+    :type page_size: int
+    :param page_size: Maximum number of results to return.
+    """
+    validate_page_size(page_size)
+    if int(page_size) > 1000 or int(page_size) < 0:  # type: ignore
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"].format('1000'))
+
+
+def validate_list_user_aliases_args(user_identifier_type: Optional[str], user_identifier: str,
+                                    page_size: Optional[int]) -> None:
+    """
+    Validate parameter for list user aliases command.
+
+    :type user_identifier_type: str
+    :param user_identifier_type: Type of the user identifier.
+
+    :type user_identifier: str
+    :param user_identifier: Value of the user identifier.
+
+    :type page_size: int
+    :param page_size: Maximum number of results to return.
+    """
+    if not user_identifier:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format('user_identifier'))
+
+    if not user_identifier_type:
+        raise ValueError(MESSAGES["VALIDATE_SINGLE_SELECT"].format(
+            'user_identifier_type', USER_IDENTIFIER_NAME_DICT.keys()))
+
+    validate_page_size(page_size)
+    if int(page_size) > 10000 or int(page_size) < 0:  # type: ignore
+        raise ValueError(MESSAGES["INVALID_PAGE_SIZE"].format('10000'))
 
 
 def get_hr_for_event_in_detection(event: Dict[str, Any]) -> str:
@@ -1407,16 +1659,57 @@ def get_list_detections_hr(detections: List[Dict[str, Any]], rule_or_version_id:
             'Alert State': detection_details[0].get('alertState', '')
         })
     rule_uri = detections[0].get('detection', {})[0].get('urlBackToProduct', '')
-    if rule_uri:
-        rule_uri = rule_uri.split('&', maxsplit=2)
-        rule_uri = '{}&{}'.format(rule_uri[0], rule_uri[1])
-    if rule_or_version_id:
+    if rule_uri and rule_or_version_id:
+        rule_uri = rule_uri.split('/')
+        rule_uri = '{}//{}/ruleDetections?ruleId={}'.format(rule_uri[0], rule_uri[2], rule_or_version_id)
         hr_title = 'Detection(s) Details For Rule: [{}]({})'. \
             format(detections[0].get('detection', {})[0].get('ruleName', ''), rule_uri)
     else:
         hr_title = 'Detection(s)'
     hr = tableToMarkdown(hr_title, hr_dict, ['Detection ID', 'Detection Type', 'Detection Time', 'Events',
                                              'Alert State'], removeNull=True)
+    return hr
+
+
+def get_list_curatedrule_detections_hr(detections: List[Dict[str, Any]], curatedrule_id: str) -> str:
+    """
+    Convert curated rule detection response into human-readable.
+
+    :param detections: List of detections.
+    :type detections: List
+
+    :param curatedrule_id: Curated Rule ID for which detections will be fetched.
+    :type curatedrule_id: str
+
+    :return: Returns human-readable string for gcb-list-curatedrule-detections command.
+    :rtype: str
+    """
+    hr_dict = []
+    for detection in detections:
+        events = get_event_list_for_detections_hr(detection.get('collectionElements', []))
+        detection_details = detection.get('detection', [{}])
+        hr_dict.append({
+            'Detection ID': "[{}]({})".format(detection.get('id', ''),
+                                              detection_details[0].get('urlBackToProduct', '')),
+            'Description': detection_details[0].get('description'),
+            'Detection Type': detection.get('type', ''),
+            'Detection Time': detection.get('detectionTime', ''),
+            'Events': get_events_hr_for_detection(events),
+            'Alert State': detection_details[0].get('alertState', ''),
+            'Detection Severity': detection_details[0].get('severity', ''),
+            'Detection Risk-Score': detection_details[0].get('riskScore', ''),
+        })
+    rule_uri = detections[0].get('detection', {})[0].get('urlBackToProduct', '')
+    if rule_uri and curatedrule_id:
+        rule_uri = rule_uri.split('/')
+        rule_uri = '{}//{}/ruleDetections?ruleId={}'.format(rule_uri[0], rule_uri[2], curatedrule_id)
+        hr_title = 'Curated Detection(s) Details For Rule: [{}]({})'.format(
+            detections[0].get('detection', {})[0].get('ruleName', ''), rule_uri)
+    else:
+        hr_title = 'Curated Detection(s)'
+    hr = tableToMarkdown(hr_title, hr_dict,
+                         ['Detection ID', 'Description', 'Detection Type', 'Detection Time', 'Events',
+                          'Alert State', 'Detection Severity', 'Detection Risk-Score'], removeNull=True)
     return hr
 
 
@@ -1452,6 +1745,45 @@ def get_events_context_for_detections(result_events: List[Dict[str, Any]]) -> Li
     return events_ec
 
 
+def get_events_context_for_curatedrule_detections(result_events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Convert events in response into Context data for events associated with a curated rule detection.
+
+    :param result_events: List of Dictionary containing list of events
+    :type result_events: List[Dict[str, Any]]
+
+    :return: list of events to populate in the context
+    :rtype: List[Dict[str, Any]]
+    """
+    events_ec = []
+    for collection_element in result_events:
+        reference = []
+        events = get_event_list_for_detections_context(collection_element)
+        for event in events:
+            event_dict = {}
+            if 'metadata' in event.keys():
+                event_dict.update(event.pop('metadata'))
+            principal_asset_identifier = get_asset_identifier_details(event.get('principal', {}))
+            target_asset_identifier = get_asset_identifier_details(event.get('target', {}))
+            if event.get('securityResult'):
+                severity = []
+                for security_result in event.get('securityResult', []):
+                    if isinstance(security_result, dict) and 'severity' in security_result:
+                        severity.append(security_result.get('severity'))
+                if severity:
+                    event_dict.update({'eventSeverity': ','.join(severity)})  # type: ignore
+            if principal_asset_identifier:
+                event_dict.update({'principalAssetIdentifier': principal_asset_identifier})
+            if target_asset_identifier:
+                event_dict.update({'targetAssetIdentifier': target_asset_identifier})
+            event_dict.update(event)
+            reference.append(event_dict)
+        collection_element_dict = {'references': reference, 'label': collection_element.get('label', '')}
+        events_ec.append(collection_element_dict)
+
+    return events_ec
+
+
 def get_context_for_detections(detection_resp: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Dict[str, str]]:
     """
     Convert detections response into Context data.
@@ -1473,6 +1805,44 @@ def get_context_for_detections(detection_resp: Dict[str, Any]) -> Tuple[List[Dic
         result_events = detection.get('collectionElements', [])
         if result_events:
             detection_dict['collectionElements'] = get_events_context_for_detections(result_events)
+
+        detection_details = detection.get('detection', {})
+        if detection_details:
+            detection_dict.update(detection_details[0])
+            detection_dict.pop('detection')
+
+        time_window_details = detection.get('timeWindow', {})
+        if time_window_details:
+            detection_dict.update({'timeWindowStartTime': time_window_details.get('startTime'),
+                                   'timeWindowEndTime': time_window_details.get('endTime')})
+            detection_dict.pop('timeWindow')
+        detections_ec.append(detection_dict)
+
+    return detections_ec, token_ec
+
+
+def get_context_for_curatedrule_detections(detection_resp: Dict[str, Any]) -> Tuple[
+        List[Dict[str, Any]], Dict[str, str]]:
+    """
+    Convert curated rule detections response into Context data.
+
+    :param detection_resp: Response fetched from the API call for curated rule detections.
+    :type detection_resp: Dict[str, Any]
+
+    :return: list of curated rule detections and token to populate context data.
+    :rtype: Tuple[List[Dict[str, Any]], Dict[str, str]]
+    """
+    detections_ec = []
+    token_ec = {}
+    next_page_token = detection_resp.get('nextPageToken')
+    if next_page_token:
+        token_ec = {'name': 'gcb-list-curatedrule-detections', 'nextPageToken': next_page_token}
+    detections = detection_resp.get('curatedRuleDetections', [])
+    for detection in detections:
+        detection_dict = detection
+        result_events = detection.get('collectionElements', [])
+        if result_events:
+            detection_dict['collectionElements'] = get_events_context_for_curatedrule_detections(result_events)
 
         detection_details = detection.get('detection', {})
         if detection_details:
@@ -1550,6 +1920,63 @@ def get_detections(client_obj, rule_or_version_id: str, page_size: str, detectio
     ec: Dict[str, Any] = {
         CHRONICLE_OUTPUT_PATHS['Detections']: parsed_ec
     }
+    if token_ec:
+        ec.update({CHRONICLE_OUTPUT_PATHS['Token']: token_ec})
+    return ec, raw_resp
+
+
+def get_curatedrule_detections(client_obj, curatedrule_id: str, page_size: str, detection_start_time: str,
+                               detection_end_time: str, page_token: str, alert_state: str, list_basis: str = None) \
+        -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Return context data and raw response for gcb-list-curatedrule-detections command.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from api.
+    :type curatedrule_id: str
+    :param curatedrule_id: curatedrule_id to fetch the detections for.
+    :type page_size: str
+    :param page_size: Number of detections to fetch at a time.
+    :type detection_start_time: str
+    :param detection_start_time: Start time of the time range to return detections for, filtering by the detection
+    field specified in the list_basis parameter.
+    :type detection_end_time: str
+    :param detection_end_time: End time of the time range to return detections for, filtering by the detection
+    field specified by the list_basis parameter.
+    :type page_token: str
+    :param page_token: The token for the page from which the detections should be fetched.
+    :type alert_state: str
+    :param alert_state: Filter detections based on whether the alert state is ALERTING or NOT_ALERTING.
+    :type list_basis: str
+    :param list_basis: Sort detections by DETECTION_TIME or by CREATED_TIME.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, raw_resp: Context data and raw response for the fetched detections
+    """
+
+    request_url = '{}/detect/curatedRules/{}/detections?pageSize={}' \
+        .format(BACKSTORY_API_V2_URL, curatedrule_id, page_size)
+
+    # Append parameters if specified
+    if detection_start_time:
+        request_url += '&startTime={}'.format(detection_start_time)
+
+    if detection_end_time:
+        request_url += '&endTime={}'.format(detection_end_time)
+
+    if alert_state:
+        request_url += '&alertState={}'.format(alert_state)
+
+    if list_basis:
+        request_url += '&listBasis={}'.format(list_basis)
+
+    if page_token:
+        request_url += '&page_token={}'.format(page_token)
+    # get list of detections from Chronicle Backstory
+    json_data = validate_response(client_obj, request_url)
+    raw_resp = deepcopy(json_data)
+    parsed_ec, token_ec = get_context_for_curatedrule_detections(json_data)
+    ec: Dict[str, Any] = {CHRONICLE_OUTPUT_PATHS['CuratedRuleDetections']: parsed_ec}
     if token_ec:
         ec.update({CHRONICLE_OUTPUT_PATHS['Token']: token_ec})
     return ec, raw_resp
@@ -1651,6 +2078,32 @@ def deduplicate_detections(detection_context: List[Dict[str, Any]], detection_id
     return new_detection_identifiers, unique_detections
 
 
+def deduplicate_curatedrule_detections(detection_context: List[Dict[str, Any]],
+                                       detection_identifiers: List[Dict[str, Any]]):
+    """
+    De-duplicates the fetched curated rule detections and creates a list of unique detections to be created.
+
+    :type detection_context: Dict[str, Any]
+    :param detection_context: Raw response of the detections fetched.
+    :type detection_identifiers: List[str]
+    :param detection_identifiers: List of dictionaries containing id of detections.
+
+    :rtype: new_detection_identifiers, unique_detections
+    :return: Returns updated list of detection identifiers and unique incidents that should be created.
+    """
+    unique_detections = []
+    new_detection_identifiers = []
+    for detection in detection_context:
+        current_detection_identifier = {'id': detection.get('id', '')}
+        new_detection_identifiers.append(current_detection_identifier)
+        if detection_identifiers and current_detection_identifier in detection_identifiers:
+            demisto.info("[CHRONICLE] Skipping insertion of current detection since it already exists."
+                         " Detection: {}".format(detection))
+            continue
+        unique_detections.append(detection)
+    return new_detection_identifiers, unique_detections
+
+
 def convert_events_to_actionable_incidents(events: list) -> list:
     """
     Convert event to incident.
@@ -1668,6 +2121,31 @@ def convert_events_to_actionable_incidents(events: list) -> list:
             'name': event['detection'][0]['ruleName'],
             'details': json.dumps(event),
             'rawJSON': json.dumps(event)
+        }
+        incidents.append(incident)
+
+    return incidents
+
+
+def convert_curatedrule_events_to_actionable_incidents(events: List) -> List:
+    """
+    Convert event from Curated Rule detection to incident.
+
+    :type events: List
+    :param events: List of events.
+
+    :rtype: List
+    :return: Returns updated list of detection identifiers and unique incidents that should be created.
+    """
+    incidents = []
+    for event in events:
+        event["IncidentType"] = "CuratedRuleDetectionAlert"
+        incident = {
+            'name': event['detection'][0]['ruleName'],
+            'occurred': event.get('detectionTime'),
+            'details': json.dumps(event),
+            'rawJSON': json.dumps(event),
+            'severity': SEVERITY_MAP.get(str(event['detection'][0].get('severity')).lower(), 0)
         }
         incidents.append(incident)
 
@@ -1700,6 +2178,64 @@ def fetch_detections(client_obj, start_time, end_time, max_fetch, detection_to_p
         detection_to_process = []
 
     return events, detection_to_process, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules
+
+
+def fetch_curatedrule_detections(client_obj, start_time, end_time, max_fetch, curatedrule_detection_to_process,
+                                 curatedrule_detection_to_pull, pending_curatedrule_id: List, alert_state,
+                                 simple_backoff_rules, fetch_detection_by_list_basis):
+    """
+    Fetch curated rule detections in given time slot.
+
+    This method calls the get_max_fetch_curatedrule_detections method.
+    If curated rule detections are more than max_fetch then it partition it into 2 part, from which
+    one part(total detection = max_fetch) will be pushed and another part(detection more than max_fetch) will be
+    kept in 'curatedrule_detection_to_process' for next cycle. If all rule_id covers, then it will return empty list.
+
+    :type client_obj: Client
+    :param client_obj: Client object.
+    :type start_time: str
+    :param start_time: Start time of request.
+    :type end_time: str
+    :param end_time: End time of request.
+    :type max_fetch: str
+    :param max_fetch: Maximum number of incidents to fetch each time.
+    :type curatedrule_detection_to_process: List
+    :param curatedrule_detection_to_process: List of curated rule detections that were pulled but not processed due to max_fetch.
+    :type curatedrule_detection_to_pull: Dict
+    :param curatedrule_detection_to_pull: Detections that are larger than max_fetch and had a next page token for fetch incident.
+    :type pending_curatedrule_id: str
+    :param pending_curatedrule_id: Curated rule id for which detections are yet to be fetched.
+    :type alert_state: str
+    :param alert_state: Alert state for which detections are yet to be fetched.
+    :type simple_backoff_rules: Dict
+    :param simple_backoff_rules: max_attempts track for 429 and 500 error.
+    :type fetch_detection_by_list_basis: str
+    :param fetch_detection_by_list_basis: Sort detections by "DETECTION_TIME" or by "CREATED_TIME".
+
+    :rtype: Tuple[List, List, Dict[str, Any], str, Dict[str, Any]]
+    :return: curatedrule_detections, curatedrule_detection_to_process, curatedrule_detection_to_pull,
+    pending_curatedrule_id, simple_backoff_rules
+    """
+    if not pending_curatedrule_id and not curatedrule_detection_to_process and not curatedrule_detection_to_pull \
+            and not simple_backoff_rules:
+        return [], curatedrule_detection_to_process, curatedrule_detection_to_pull, pending_curatedrule_id, \
+            simple_backoff_rules
+
+    # get curated rule detections using API call.
+    (curatedrule_detection_to_process, curatedrule_detection_to_pull, pending_curatedrule_id,
+     simple_backoff_rules) = get_max_fetch_curatedrule_detections(
+        client_obj, start_time, end_time, max_fetch, curatedrule_detection_to_process, curatedrule_detection_to_pull,
+        pending_curatedrule_id, alert_state, simple_backoff_rules, fetch_detection_by_list_basis)
+
+    if len(curatedrule_detection_to_process) > max_fetch:
+        curatedrule_detections, curatedrule_detection_to_process = curatedrule_detection_to_process[:max_fetch], \
+            curatedrule_detection_to_process[max_fetch:]
+    else:
+        curatedrule_detections = curatedrule_detection_to_process
+        curatedrule_detection_to_process = []
+
+    return (curatedrule_detections, curatedrule_detection_to_process, curatedrule_detection_to_pull,
+            pending_curatedrule_id, simple_backoff_rules)
 
 
 def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detection_incidents, detection_to_pull,
@@ -1787,6 +2323,116 @@ def get_max_fetch_detections(client_obj, start_time, end_time, max_fetch, detect
     return detection_incidents, detection_to_pull, pending_rule_or_version_id, simple_backoff_rules
 
 
+def get_max_fetch_curatedrule_detections(client_obj, start_time, end_time, max_fetch, curatedrule_detection_to_process,
+                                         curatedrule_detection_to_pull, pending_curatedrule_id, alert_state,
+                                         simple_backoff_rules, fetch_detection_by_list_basis):
+    """
+    Get list of curated rule detection using curatedrule_detection_to_pull and pending_curatedrule_id.
+
+    If the API responds with 429, 500 error then it will retry it for 60 times(each attempt take one minute).
+    If it responds with 400 or 404 error, then it will skip that curatedrule_id. In case of an empty response for any
+    next_page_token, it will skip that curatedrule_id.
+
+    :type client_obj: Client
+    :param client_obj: Client object.
+    :type start_time: str
+    :param start_time: Start time of request.
+    :type end_time: str
+    :param end_time: End time of request.
+    :type max_fetch: str
+    :param max_fetch: Maximum number of incidents to fetch each time.
+    :type curatedrule_detection_to_process: List
+    :param curatedrule_detection_to_process: List of curated rule detections that were pulled but not processed due to max_fetch.
+    :type curatedrule_detection_to_pull: Dict
+    :param curatedrule_detection_to_pull: Detections that are larger than max_fetch and had a next page token for fetch incident.
+    :type pending_curatedrule_id: str
+    :param pending_curatedrule_id: Curated rule id for which detections are yet to be fetched.
+    :type alert_state: str
+    :param alert_state: Alert state for which detections are yet to be fetched.
+    :type simple_backoff_rules: Dict
+    :param simple_backoff_rules: max_attempts track for 429 and 500 error.
+    :type fetch_detection_by_list_basis: str
+    :param fetch_detection_by_list_basis: Sort detections by "DETECTION_TIME" or by "CREATED_TIME".
+
+    :rtype: Tuple[List, Dict[str, Any], str, Dict[str, Any]]
+    :return: curatedrule_detection_to_process, curatedrule_detection_to_pull, pending_curatedrule_id, simple_backoff_rules
+    """
+    # loop if length of detection is less than max_fetch and if any further rule_id(with or without next_page_token)
+    # or any retry attempt remaining
+    while len(curatedrule_detection_to_process) < max_fetch and (
+            len(pending_curatedrule_id) != 0 or curatedrule_detection_to_pull or simple_backoff_rules):
+
+        next_page_token = ''
+        if curatedrule_detection_to_pull:
+            rule_id = curatedrule_detection_to_pull.get('rule_id')
+            next_page_token = curatedrule_detection_to_pull.get('next_page_token')
+        elif simple_backoff_rules:
+            rule_id = simple_backoff_rules.get('rule_id')
+            next_page_token = simple_backoff_rules.get('next_page_token')
+        else:
+            rule_id = pending_curatedrule_id.pop(0)
+        try:
+            _, raw_resp = get_curatedrule_detections(client_obj, rule_id, max_fetch, start_time, end_time,
+                                                     next_page_token, alert_state,
+                                                     list_basis=fetch_detection_by_list_basis)
+        except ValueError as e:
+            if str(e).endswith('Reattempt will be initiated.'):
+                attempts = simple_backoff_rules.get('attempts', 0)
+                if attempts < MAX_ATTEMPTS:
+                    demisto.error(
+                        f"[CHRONICLE CURATED RULE DETECTIONS] Error while fetching incidents: {str(e)} Attempt no : "
+                        f"{attempts + 1} for the curated rule_id : {rule_id} and next_page_token : {next_page_token}")
+                    simple_backoff_rules = {'rule_id': rule_id, 'next_page_token': next_page_token,
+                                            'attempts': attempts + 1}
+                else:
+                    demisto.error(f"[CHRONICLE CURATED RULE DETECTIONS] Skipping the rule_id : {rule_id} "
+                                  f"due to the maximum number of attempts ({MAX_ATTEMPTS}). "
+                                  "You'll experience data loss for the given curated rule_id. "
+                                  f"Switching to next curated rule_id.")
+                    simple_backoff_rules = {}
+                    curatedrule_detection_to_pull = {}
+                break
+
+            if str(e).startswith('Status code: 404') or str(e).startswith('Status code: 400'):
+                if str(e).startswith('Status code: 404'):
+                    demisto.error("[CHRONICLE CURATED RULE DETECTIONS] Error while fetching incidents: Rule with ID"
+                                  f" {rule_id} not found.")
+                else:
+                    demisto.error("[CHRONICLE CURATED RULE DETECTIONS] Error while fetching incidents: Rule with ID"
+                                  f" {rule_id} is invalid.")
+                curatedrule_detection_to_pull = {}
+                simple_backoff_rules = {}
+                break
+
+            demisto.error("Error while fetching incidents: " + str(e))
+            if not curatedrule_detection_to_pull:
+                pending_curatedrule_id.insert(0, rule_id)
+
+            break
+
+        if not raw_resp:
+            curatedrule_detection_to_pull = {}
+            simple_backoff_rules = {}
+            continue
+
+        curatedrule_detections: List[Dict[str, Any]] = raw_resp.get('curatedRuleDetections', [])
+
+        # Add found detection in incident list.
+        add_curatedrule_detections_in_incident_list(curatedrule_detections, curatedrule_detection_to_process)
+
+        if raw_resp.get('nextPageToken'):
+            next_page_token = str(raw_resp.get('nextPageToken'))
+            curatedrule_detection_to_pull = {'rule_id': rule_id, 'next_page_token': next_page_token}
+            simple_backoff_rules = {'rule_id': rule_id, 'next_page_token': next_page_token}
+
+        # when exact size is returned but no next_page_token
+        if len(curatedrule_detections) <= max_fetch and not raw_resp.get('nextPageToken'):
+            curatedrule_detection_to_pull = {}
+            simple_backoff_rules = {}
+
+    return curatedrule_detection_to_process, curatedrule_detection_to_pull, pending_curatedrule_id, simple_backoff_rules
+
+
 def add_detections_in_incident_list(detections: List, detection_incidents: List) -> None:
     """
     Add found detection in incident list.
@@ -1803,6 +2449,25 @@ def add_detections_in_incident_list(detections: List, detection_incidents: List)
             events_ec = get_events_context_for_detections(detection.get('collectionElements', []))
             detection['collectionElements'] = events_ec
         detection_incidents.extend(detections)
+
+
+def add_curatedrule_detections_in_incident_list(curatedrule_detections: List,
+                                                curatedrule_detection_to_process: List) -> None:
+    """
+    Add found detection in incident list.
+
+    :type curatedrule_detections: List
+    :param curatedrule_detections: List of curated detection.
+    :type curatedrule_detection_to_process: List
+    :param curatedrule_detection_to_process: List of incidents.
+
+    :rtype: None
+    """
+    if curatedrule_detections and len(curatedrule_detections) > 0:
+        for detection in curatedrule_detections:
+            events_ec = get_events_context_for_curatedrule_detections(detection.get('collectionElements', []))
+            detection['collectionElements'] = events_ec
+        curatedrule_detection_to_process.extend(curatedrule_detections)
 
 
 def get_unique_value_from_list(data: List) -> List:
@@ -2017,6 +2682,121 @@ def fetch_incidents_detection_alerts(client_obj, params: Dict[str, Any], start_t
         'detection_to_pull': detection_to_pull,
         'simple_backoff_rules': simple_backoff_rules,
         'pending_rule_or_version_id_with_alert_state': pending_rule_or_version_id_with_alert_state
+    })
+
+    return incidents
+
+
+def fetch_incidents_curatedrule_detection_alerts(client_obj, params: Dict[str, Any], start_time, end_time, time_window,
+                                                 max_fetch):
+    """Fetch incidents of curated rule detection alert type.
+
+    :type client_obj: Client
+    :param client_obj: Client object.
+    :type params: Dict
+    :param params: Configuration parameter of fetch incidents.
+    :type start_time: str
+    :param start_time: Start time of request.
+    :type end_time: str
+    :param end_time: End time of request.
+    :type time_window: str
+    :param time_window: Time delay for an event to appear in chronicle after generation.
+    :type max_fetch: str
+    :param max_fetch: Maximum number of incidents to fetch each time.
+
+    :rtype: List
+    :return: List of incidents.
+    """
+    # list of curated rule detections that were pulled but not processed due to max_fetch.
+    curatedrule_detection_to_process: List[Dict[str, Any]] = []
+    # curated rule detections that are larger than max_fetch and had a next page token for fetch incident.
+    curatedrule_detection_to_pull: Dict[str, Any] = {}
+    # max_attempts track for 429 and 500 error.
+    simple_backoff_curatedrules: Dict[str, Any] = {}
+    # curated rule_id and alert_state for which detections are yet to be fetched.
+    pending_curatedrule_id_with_alert_state: Dict[str, Any] = {}
+    curatedrule_detection_identifiers: List = []
+    curatedrule_first_fetched_time = None
+
+    last_run = demisto.getLastRun()
+    incidents = []
+
+    if last_run and 'start_time' in last_run:
+        start_time = last_run.get('start_time') or start_time
+        curatedrule_detection_identifiers = last_run.get('curatedrule_detection_identifiers',
+                                                         curatedrule_detection_identifiers)
+        curatedrule_detection_to_process = last_run.get('curatedrule_detection_to_process',
+                                                        curatedrule_detection_to_process)
+        curatedrule_detection_to_pull = last_run.get('curatedrule_detection_to_pull', curatedrule_detection_to_pull)
+        simple_backoff_curatedrules = last_run.get('simple_backoff_curatedrules', simple_backoff_curatedrules)
+        pending_curatedrule_id_with_alert_state = last_run.get('pending_curatedrule_id_with_alert_state',
+                                                               pending_curatedrule_id_with_alert_state)
+        end_time = last_run.get('curatedrule_first_fetched_time') or end_time
+
+    if params.get('fetch_detection_by_list_basis') == 'DETECTION_TIME':
+        delayed_start_time = generate_delayed_start_time(time_window, start_time)
+    else:
+        delayed_start_time = start_time
+
+    if not last_run.get('curatedrule_first_fetched_time'):
+        demisto.info("[CHRONICLE CURATED RULE DETECTIONS] Starting new time window from START-TIME :"
+                     f" {delayed_start_time} to END_TIME : {end_time}")
+
+    fetch_detection_by_alert_state = pending_curatedrule_id_with_alert_state.get('alert_state', '')
+    fetch_detection_by_list_basis = pending_curatedrule_id_with_alert_state.get('listBasis', 'CREATED_TIME')
+    # giving priority to comma separated detection ids over check box of fetch all live detections
+    if not pending_curatedrule_id_with_alert_state.get("rule_id") and not curatedrule_detection_to_pull and \
+            not curatedrule_detection_to_process and not simple_backoff_curatedrules:
+        fetch_detection_by_ids = params.get('fetch_detection_by_ids') or ""
+        if not fetch_detection_by_ids:
+            raise ValueError(MESSAGES['PROVIDE_CURATED_RULE_ID'])
+        fetch_detection_by_ids = get_unique_value_from_list(
+            [r_v_id.strip() for r_v_id in fetch_detection_by_ids.split(',')])
+
+        fetch_detection_by_alert_state = params.get('fetch_detection_by_alert_state',
+                                                    fetch_detection_by_alert_state)
+        fetch_detection_by_list_basis = params.get('fetch_detection_by_list_basis', fetch_detection_by_list_basis)
+
+        # when 1st time fetch or when pending_curatedrule_id got emptied in last sync.
+        # when curatedrule_detection_to_pull has some rule ids
+        pending_curatedrule_id_with_alert_state.update({'rule_id': fetch_detection_by_ids,
+                                                        'alert_state': fetch_detection_by_alert_state,
+                                                        'listBasis': fetch_detection_by_list_basis})
+
+    (curatedrule_detections, curatedrule_detection_to_process, curatedrule_detection_to_pull, pending_curatedrule_id,
+     simple_backoff_curatedrules) = fetch_curatedrule_detections(
+        client_obj, delayed_start_time, end_time, int(max_fetch), curatedrule_detection_to_process,
+        curatedrule_detection_to_pull, pending_curatedrule_id_with_alert_state.get('rule_id', ''),
+        pending_curatedrule_id_with_alert_state.get('alert_state', ''), simple_backoff_curatedrules,
+        pending_curatedrule_id_with_alert_state.get('listBasis'))
+
+    # The batch processing is in progress i.e. detections for pending rules are yet to be fetched
+    # so updating the end_time to the start time when considered for current batch
+    if pending_curatedrule_id or curatedrule_detection_to_pull or simple_backoff_curatedrules:
+        curatedrule_first_fetched_time = end_time
+        end_time = start_time
+    else:
+        demisto.info("[CHRONICLE CURATED RULE DETECTIONS] End of current time window from START-TIME :"
+                     f" {start_time} to END_TIME : {end_time}")
+
+    pending_curatedrule_id_with_alert_state.update({'rule_id': pending_curatedrule_id,
+                                                    'alert_state': fetch_detection_by_alert_state,
+                                                    'listBasis': fetch_detection_by_list_basis})
+
+    curatedrule_detection_identifiers, unique_detections = deduplicate_curatedrule_detections(
+        curatedrule_detections, curatedrule_detection_identifiers)
+
+    if unique_detections:
+        incidents = convert_curatedrule_events_to_actionable_incidents(unique_detections)
+
+    demisto.setLastRun({
+        'start_time': end_time,
+        'curatedrule_detection_identifiers': curatedrule_detection_identifiers,
+        'curatedrule_first_fetched_time': curatedrule_first_fetched_time,
+        'curatedrule_detection_to_process': curatedrule_detection_to_process,
+        'curatedrule_detection_to_pull': curatedrule_detection_to_pull,
+        'simple_backoff_curatedrules': simple_backoff_curatedrules,
+        'pending_curatedrule_id_with_alert_state': pending_curatedrule_id_with_alert_state
     })
 
     return incidents
@@ -3055,6 +3835,119 @@ def gcb_test_rule_stream(client_obj, rule_text, start_time, end_time, max_result
     return ec, json_data
 
 
+def gcb_list_asset_aliases(client_obj: Client, start_time: str, end_time: str, page_size: Optional[int],
+                           asset_identifier_type: Optional[str], asset_identifier: str) -> \
+        Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Return context data and raw response for gcb-asset-aliases-list command.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from API.
+
+    :type start_time: str
+    :param start_time: Start time of the window.
+
+    :type end_time: str
+    :param end_time: End time of the window.
+
+    :type page_size: int
+    :param page_size: Maximum number of results to return.
+
+    :type asset_identifier_type: str
+    :param asset_identifier_type: Type of the asset identifier.
+
+    :type asset_identifier: str
+    :param asset_identifier: Asset Identifier value.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for asset aliases.
+    """
+    request_url = "{}/alias/listassetaliases?asset.{}={}&start_time={}&end_time={}&page_size={}".format(
+        BACKSTORY_API_V1_URL, asset_identifier_type, asset_identifier, start_time, end_time, page_size)
+    json_data = validate_response(client_obj, request_url, method='GET')
+
+    # context data for the command
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['AssetAliases']: {
+            "asset": {asset_identifier_type: urllib.parse.unquote(asset_identifier),
+                      "aliases": json_data.get('aliases')}}
+    }
+    return ec, json_data
+
+
+def gcb_list_curated_rules(client_obj: Client, page_token: str, page_size: Optional[int]) -> \
+        Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Return context data and raw response for gcb-list-curatedrules command.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from API.
+
+    :type page_token: str
+    :param page_token: Page token for pagination.
+
+    :type page_size: int
+    :param page_size: Maximum number of results to return.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for asset aliases.
+    """
+    request_url = "{}/detect/curatedRules?page_size={}".format(
+        BACKSTORY_API_V2_URL, page_size)
+    if page_token:
+        request_url += "&page_token={}".format(page_token)
+    json_data = validate_response(client_obj, request_url, method='GET')
+
+    # context data for the command
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['CuratedRules']: json_data.get('curatedRules', [])
+    }
+    if json_data.get('nextPageToken'):
+        token_ec = {'name': 'gcb-list-curatedrules', 'nextPageToken': json_data.get('nextPageToken', '')}
+        ec.update({CHRONICLE_OUTPUT_PATHS['Token']: token_ec})
+    return ec, json_data
+
+
+def gcb_list_user_aliases(client_obj: Client, start_time: str, end_time: str, page_size: Optional[int],
+                          user_identifier_type: Optional[str], user_identifier: str) -> \
+        Tuple[Dict[str, Any], Dict[str, Any]]:
+    """
+    Return context data and raw response for gcb-user-aliases-list command.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from API.
+
+    :type start_time: str
+    :param start_time: Start time of the window.
+
+    :type end_time: str
+    :param end_time: End time of the window.
+
+    :type page_size: int
+    :param page_size: Maximum number of results to return.
+
+    :type user_identifier_type: str
+    :param user_identifier_type: Type of the user identifier.
+
+    :type user_identifier: str
+    :param user_identifier: User identifier value.
+
+    :rtype: Tuple[Dict[str, Any], Dict[str, Any]]
+    :return: ec, json_data: Context data and raw response for user aliases.
+    """
+    request_url = "{}/alias/listuseraliases?user.{}={}&start_time={}&end_time={}&page_size={}".format(
+        BACKSTORY_API_V1_URL, user_identifier_type, user_identifier, start_time, end_time, page_size)
+    json_data = validate_response(client_obj, request_url, method='GET')
+
+    # context data for the command
+    ec = {
+        CHRONICLE_OUTPUT_PATHS['UserAliases']: {
+            "user": {user_identifier_type: urllib.parse.unquote(user_identifier),
+                     "aliases": json_data.get('userAliases')}}
+    }
+    return ec, json_data
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
@@ -3367,6 +4260,9 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
         incidents = fetch_incidents_user_alerts(client_obj, params, start_time, end_time, time_window, max_fetch)
     elif 'detection alerts' == backstory_alert_type:
         incidents = fetch_incidents_detection_alerts(client_obj, params, start_time, end_time, time_window, max_fetch)
+    elif 'curated rule detection alerts' == backstory_alert_type:
+        incidents = fetch_incidents_curatedrule_detection_alerts(client_obj, params, start_time, end_time, time_window,
+                                                                 max_fetch)
     else:
         last_run = demisto.getLastRun()
         if last_run:
@@ -3498,6 +4394,60 @@ def gcb_list_events_command(client_obj, args: Dict[str, str]):
     return hr, ec, json_data
 
 
+def gcb_udm_search_command(client_obj, args: Dict[str, str]):
+    """
+    List all the events discovered within your enterprise for the specified query within the specified time range.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from api.
+
+    :type args: Dict[str, str]
+    :param args: It contain arguments of gcb-udm-search command.
+
+    :return: Command output.
+    :rtype: str, dict, dict
+    """
+    # retrieve arguments and validate it
+    start_time, end_time, limit, query = get_gcb_udm_search_command_args_value(args=args, date_range='3 days')
+
+    # Make a request URL
+    request_url = '{}/events:udmSearch?time_range.start_time={}&time_range.end_time={}&limit={}&query={}' \
+        .format(BACKSTORY_API_V1_URL, start_time, end_time, limit, query)
+
+    # get list of events from Chronicle Backstory
+    json_data = validate_response(client_obj, request_url)
+
+    events = json_data.get('events', [])
+    if not events:
+        hr = 'No events were found for the specified UDM search query.'
+        return hr, {}, {}
+
+    events = [event.get('udm', {}) for event in events]
+
+    # prepare alerts into human-readable
+    hr = get_udm_search_events_hr(events)
+
+    if json_data.get('moreDataAvailable', False):
+        last_event_timestamp = events[-1].get('metadata', {}).get('eventTimestamp', '')
+        hr += '\n\nMaximum number of events specified in limit has been returned. There might' \
+              ' still be more events in your Chronicle account.'
+        if not dateparser.parse(last_event_timestamp, settings={'STRICT_PARSING': True}):
+            demisto.error('Event timestamp of the last event: {} is invalid.'.format(last_event_timestamp))
+            hr += ' An error occurred while fetching the end time that could have been used to' \
+                  ' fetch next set of events.'
+        else:
+            hr += ' To fetch the next set of events, execute the command with the end time as {}.' \
+                .format(last_event_timestamp)
+
+    parsed_ec = get_context_for_events(events)
+
+    ec = {
+        CHRONICLE_OUTPUT_PATHS["UDMEvents"]: parsed_ec
+    }
+
+    return hr, ec, json_data
+
+
 def gcb_list_detections_command(client_obj, args: Dict[str, str]):
     """
     Return the Detections for a specified Rule Version.
@@ -3531,6 +4481,46 @@ def gcb_list_detections_command(client_obj, args: Dict[str, str]):
           ' in Chronicle click on its respective Detection ID.\n\nNote: If a specific version of the rule is provided' \
           ' then detections for that specific version will be fetched.'.format(detections[0].
                                                                                get('detection')[0].get('ruleName'))
+
+    next_page_token = json_data.get('nextPageToken')
+    if next_page_token:
+        hr += '\nMaximum number of detections specified in page_size has been returned. To fetch the next set of' \
+              ' detections, execute the command with the page token as {}.'.format(next_page_token)
+
+    return hr, ec, json_data
+
+
+def gcb_list_curatedrule_detections_command(client_obj, args: Dict[str, str]):
+    """
+    Return the Detections for a specified Curated Rule ID.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from API.
+
+    :type args: Dict[str, str]
+    :param args: It contain arguments of gcb-list-curatedrule-detections command.
+
+    :return: Command output.
+    :rtype: str, dict, dict
+    """
+    # retrieve arguments and validate it
+    valid_args = validate_and_parse_list_curatedrule_detections_args(args)
+
+    ec, json_data = get_curatedrule_detections(client_obj, args.get('id', ''), valid_args.get('page_size', ''),
+                                               valid_args.get('detection_start_time', ''),
+                                               valid_args.get('detection_end_time', ''), args.get('page_token', ''),
+                                               args.get('alert_state', ''), args.get('list_basis', ''))
+
+    detections = json_data.get('curatedRuleDetections', [])
+    if not detections:
+        hr = 'No Curated Detections Found'
+        return hr, {}, {}
+
+    # prepare alerts into human-readable
+    hr = get_list_curatedrule_detections_hr(detections, args.get('id', ''))
+    hr += '\nView all Curated Detections for this rule in Chronicle by clicking on {} and to view individual ' \
+          'detection in Chronicle click on its respective Detection ID.'.format(
+              detections[0].get('detection')[0].get('ruleName'))
 
     next_page_token = json_data.get('nextPageToken')
     if next_page_token:
@@ -3895,6 +4885,107 @@ def prepare_hr_for_gcb_test_rule_stream_command(detections):
     return hr
 
 
+def prepare_hr_for_gcb_list_asset_aliases_command(aliases_response: Dict[str, Any], asset_identifier: str) -> str:
+    """
+    Prepare Human Readable output from the response received.
+
+    :type aliases_response: Dict
+    :param aliases_response: Raw response received from api in json format.
+
+    :type asset_identifier: str
+    :param asset_identifier: Value of the asset identifier.
+
+    :return: Human Readable output to display.
+    :rtype: str
+    """
+    aliases = aliases_response.get('aliases', [])
+    hr_dict = []
+    if len(aliases) == 1:
+        return MESSAGES['EMPTY_ASSET_ALIASES'].format(asset_identifier)
+    for alias in aliases:
+        metadata = alias.get('metadata', {})
+        asset = alias.get('entity', {}).get('asset', {})
+        hr_dict.append({
+            'Asset ID': asset.get('assetId'),
+            'Host Name': asset.get('hostname'),
+            'IP Address': asset.get('ip'),
+            'MAC Address': asset.get('mac')[0] if asset.get('mac') else None,
+            'Start Time': metadata.get('interval', {}).get('startTime'),
+            'End Time': metadata.get('interval', {}).get('endTime')
+        })
+    hr = tableToMarkdown('Asset Aliases:', hr_dict,
+                         ['Asset ID', 'Host Name', 'IP Address', 'MAC Address', 'Start Time', 'End Time'],
+                         removeNull=True)
+    return hr
+
+
+def prepare_hr_for_gcb_list_curated_rules_command(aliases_response: Dict[str, Any]) -> str:
+    """
+    Prepare Human Readable output from the response received.
+
+    :type aliases_response: Dict
+    :param aliases_response: Raw response received from api in json format.
+
+    :return: Human Readable output to display.
+    :rtype: str
+    """
+    curated_rules = aliases_response.get('curatedRules', [])
+    hr_dict = []
+    for rule in curated_rules:
+        hr_dict.append({
+            'Rule ID': rule.get('ruleId'),
+            'Rule Name': rule.get('ruleName'),
+            'Severity': rule.get('severity'),
+            'Rule Type': rule.get('ruleType'),
+            'Rule Set': rule.get('ruleSet'),
+            'Description': rule.get('description'),
+        })
+    hr = tableToMarkdown('Curated Rules:', hr_dict,
+                         ['Rule ID', 'Rule Name', 'Severity', 'Rule Type', 'Rule Set', 'Description'],
+                         removeNull=True)
+    next_page_token = aliases_response.get('nextPageToken')
+    if next_page_token:
+        hr += '\nMaximum number of curated rules specified in page_size has been returned. To fetch the next set of' \
+              ' curated rules, execute the command with the page token as {}.'.format(next_page_token)
+
+    return hr
+
+
+def prepare_hr_for_gcb_list_user_aliases_command(aliases_response: Dict[str, Any]) -> str:
+    """
+    Prepare Human Readable output from the response received.
+
+    :type aliases_response: Dict
+    :param aliases_response: Raw response received from api in json format.
+
+    :return: Human Readable output to display.
+    :rtype: str
+    """
+    aliases = aliases_response.get('userAliases', [])
+    hr_dict = []
+    for alias in aliases:
+        metadata = alias.get('metadata', {})
+        user = alias.get('entity', {}).get('user', {})
+        asset = alias.get('entity', {}).get('asset', {})
+        hr_dict.append({
+            'User ID': user.get('userid'),
+            'Product Object ID': user.get('productObjectId'),
+            'Product Name': metadata.get('productName'),
+            'Vendor Name': metadata.get('vendorName'),
+            'Asset ID': asset.get('assetId'),
+            'IP': ', '.join(asset.get('ip')) if asset.get('ip') else None,
+            'Hostname': asset.get('hostname'),
+            'Title': user.get('title'),
+            'Company Name': user.get('companyName'),
+            'Start Time': metadata.get('interval', {}).get('startTime'),
+            'End Time': metadata.get('interval', {}).get('endTime')
+        })
+    hr = tableToMarkdown('User Aliases:', hr_dict,
+                         ['User ID', 'Product Object ID', 'Product Name', 'Vendor Name', 'Asset ID', 'IP', 'Hostname',
+                          'Title', 'Company Name', 'Start Time', 'End Time'], removeNull=True)
+    return hr
+
+
 def gcb_test_rule_stream_command(client_obj, args):
     """
     Stream results for given rule text.
@@ -3923,6 +5014,94 @@ def gcb_test_rule_stream_command(client_obj, args):
     return hr, ec, json_data
 
 
+def gcb_list_asset_aliases_command(
+        client_obj: Client, args: Dict[str, Any]) -> Tuple[str, Dict[str, Any], Dict[str, Any]]:
+    """
+    List asset aliases for the specified asset identifier.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from API.
+
+    :type args: Dict[str, Any]
+    :param args: It contains arguments for gcb-asset-aliases command.
+
+    :rtype: str, dict, dict
+    :return: Command output.
+    """
+    asset_identifier_type = ASSET_IDENTIFIER_NAME_DICT.get(args.get('asset_identifier_type', '').lower())
+    asset_identifier = urllib.parse.quote(args.get('asset_identifier', ''))
+    start_time = arg_to_datetime(args.get('start_time', '3 days'), 'start_time').strftime(DATE_FORMAT)  # type: ignore
+    end_time = arg_to_datetime(args.get('end_time', 'now'), 'end_time').strftime(DATE_FORMAT)  # type: ignore
+    page_size = args.get('page_size', '10000')
+
+    validate_list_asset_aliases_args(asset_identifier_type, asset_identifier, page_size)
+
+    page_size = arg_to_number(page_size, arg_name='page_size')
+
+    ec, json_data = gcb_list_asset_aliases(client_obj, start_time=start_time, end_time=end_time, page_size=page_size,
+                                           asset_identifier_type=asset_identifier_type,
+                                           asset_identifier=asset_identifier)
+    hr = prepare_hr_for_gcb_list_asset_aliases_command(json_data, args.get('asset_identifier', ''))
+    return hr, ec, json_data
+
+
+def gcb_list_curated_rules_command(
+        client_obj: Client, args: Dict[str, Any]) -> Tuple[str, Dict[str, Any], Dict[str, Any]]:
+    """
+    List curated rules from Google Chronicle Backstory.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from API.
+
+    :type args: Dict[str, Any]
+    :param args: It contains arguments for gcb-list-curatedrules command.
+
+    :rtype: str, dict, dict
+    :return: Command output.
+    """
+    page_token = urllib.parse.quote(args.get('page_token', ''))
+    page_size = args.get('page_size', '100')
+
+    validate_list_curated_rules_args(page_size)
+
+    page_size = arg_to_number(page_size, arg_name='page_size')
+
+    ec, json_data = gcb_list_curated_rules(client_obj, page_token, page_size)
+    hr = prepare_hr_for_gcb_list_curated_rules_command(json_data)
+    return hr, ec, json_data
+
+
+def gcb_list_user_aliases_command(
+        client_obj: Client, args: Dict[str, Any]) -> Tuple[str, Dict[str, Any], Dict[str, Any]]:
+    """
+    List user aliases for the specified user identifier.
+
+    :type client_obj: Client
+    :param client_obj: Client object which is used to get response from API.
+
+    :type args: Dict[str, Any]
+    :param args: It contains arguments for gcb-user-aliases command.
+
+    :rtype: str, dict, dict
+    :return: Command output.
+    """
+    user_identifier_type = USER_IDENTIFIER_NAME_DICT.get(args.get('user_identifier_type', '').lower())
+    user_identifier = urllib.parse.quote(args.get('user_identifier', ''))
+    start_time = arg_to_datetime(args.get('start_time', '3 days'), 'start_time').strftime(DATE_FORMAT)  # type: ignore
+    end_time = arg_to_datetime(args.get('end_time', 'now'), 'end_time').strftime(DATE_FORMAT)  # type: ignore
+    page_size = args.get('page_size', '10000')
+
+    validate_list_user_aliases_args(user_identifier_type, user_identifier, page_size)
+
+    page_size = arg_to_number(page_size, arg_name='page_size')
+
+    ec, json_data = gcb_list_user_aliases(client_obj, start_time=start_time, end_time=end_time, page_size=page_size,
+                                          user_identifier_type=user_identifier_type,
+                                          user_identifier=user_identifier)
+    hr = prepare_hr_for_gcb_list_user_aliases_command(json_data)
+    return hr, ec, json_data
+
+
 def main():
     """PARSE AND VALIDATE INTEGRATION PARAMS."""
     # supported command list
@@ -3948,7 +5127,12 @@ def main():
         'gcb-list-reference-list': gcb_list_reference_list_command,
         'gcb-get-reference-list': gcb_get_reference_list_command,
         'gcb-update-reference-list': gcb_update_reference_list_command,
-        'gcb-test-rule-stream': gcb_test_rule_stream_command
+        'gcb-test-rule-stream': gcb_test_rule_stream_command,
+        'gcb-list-assetaliases': gcb_list_asset_aliases_command,
+        'gcb-list-curatedrules': gcb_list_curated_rules_command,
+        'gcb-list-useraliases': gcb_list_user_aliases_command,
+        'gcb-list-curatedrule-detections': gcb_list_curatedrule_detections_command,
+        'gcb-udm-search': gcb_udm_search_command,
     }
     # initialize configuration parameter
     proxy = demisto.params().get('proxy')

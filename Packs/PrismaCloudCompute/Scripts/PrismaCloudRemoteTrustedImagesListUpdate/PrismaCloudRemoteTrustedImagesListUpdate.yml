@@ -1,0 +1,30 @@
+commonfields:
+  id: PrismaCloudRemoteTrustedImagesListUpdate
+  version: -1
+name: PrismaCloudRemoteTrustedImagesListUpdate
+script: ''
+type: python
+tags: []
+comment: Gets the existing "Trusted Images" results from Prisma Cloud Compute and updates the relevant trust group with the images stored in the given internal list.
+enabled: true
+args:
+- name: list_name
+  required: true
+  description: The name of the Cortex XSOAR internal list to use in order to update the remote trust images list.
+- name: trusted_group_id
+  required: true
+  description: The trusted group which should be updated with the images of the given list. In order to get the trusted groups ID, either use the Prisma Cloud UI (the ID would be the group name) or use the "prisma-cloud-compute-trusted-images-list" command.
+- name: current_trusted_images
+  required: true
+  description: The current state of the trusted images in Prisma Cloud. Can be retrieved with the "prisma-cloud-compute-trusted-images-list" command.
+subtype: python3
+dependson:
+  must:
+  - '|||prisma-cloud-compute-trusted-images-update'
+runonce: false
+dockerimage: demisto/python3:3.10.13.75921
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

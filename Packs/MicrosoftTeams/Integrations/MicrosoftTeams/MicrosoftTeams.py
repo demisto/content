@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
+from enum import Enum
 import re
 import time
 from distutils.util import strtobool
@@ -17,9 +18,16 @@ from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicKey
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
+
+
+class FormType(Enum):  # Used for 'send-message', and by the MicrosoftTeamsAsk script
+    PREDEFINED_OPTIONS = 'predefined-options'
+    OPEN_ANSWER = 'open-answer'
+
 
 ''' GLOBAL VARIABLES'''
 EXTERNAL_FORM_URL_DEFAULT_HEADER = 'Microsoft Teams Form'
@@ -93,6 +101,9 @@ MAX_ITEMS_PER_RESPONSE = 50
 EXTERNAL_FORM = "external/form"
 MAX_SAMPLES = 10
 
+TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
+REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
+
 
 class Handler:
     @staticmethod
@@ -132,18 +143,11 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
     """
     try:
         response: dict = resp_err.json()
+        demisto.debug(f"Error response from {api=}: {response=}")
         if api == 'graph':
-
-            # AADSTS50173 points to password change https://login.microsoftonline.com/error?code=50173.
-            # In that case, the integration context should be overwritten
-            # and the user should execute the auth process from the beginning.
-            if "AADSTS50173" in response.get('error_description', ''):
-                integration_context: dict = get_integration_context()
-                integration_context['current_refresh_token'] = ''
-                set_integration_context(integration_context)
-                raise ValueError(
-                    "The account password has been changed or reset. Please regenerate the 'Authorization code' "
-                    "parameter and then run !microsoft-teams-auth-test to re-authenticate")
+            error_codes = response.get("error_codes", [""])
+            if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                reset_graph_auth(error_codes, response.get('error_description', ''))
 
             error = response.get('error', {})
             err_str = (f"{error.get('code', '')}: {error.get('message', '')}" if isinstance(error, dict)
@@ -158,6 +162,26 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
         raise ValueError
     except ValueError:
         return resp_err.text
+
+
+def reset_graph_auth(error_codes: list, error_desc: str):
+    """
+    Reset the Graph API authorization in the integration context.
+    This function clears the current authorization data and informs the user to regenerate the Authorization code.
+    :raises DemistoException: Raised with a message instructing the user to regenerate the authorization code.
+    """
+    integration_context: dict = get_integration_context()
+
+    integration_context['current_refresh_token'] = ''
+    integration_context['graph_access_token'] = ''
+    integration_context['graph_valid_until'] = ''
+    set_integration_context(integration_context)
+
+    demisto.debug(f"Detected Error: {error_codes}, Successfully reset the current_refresh_token and graph_access_token.")
+    re_search = re.search(REGEX_SEARCH_ERROR_DESC, error_desc)
+    err_str = re_search['desc'] if re_search else ""
+    raise DemistoException(f"{err_str} Please regenerate the 'Authorization code' "
+                           "parameter and then run !microsoft-teams-auth-test to re-authenticate")
 
 
 def translate_severity(severity: str) -> float:
@@ -343,7 +367,7 @@ def get_team_member_id(requested_team_member: str, integration_context: dict) ->
     raise ValueError(f'Team member {requested_team_member} was not found')
 
 
-def create_adaptive_card(body: list, actions: list = None) -> dict:
+def create_adaptive_card(body: list, actions: list | None = None) -> dict:
     """
     Creates Microsoft Teams adaptive card object given body and actions
     :param body: Adaptive card data
@@ -468,27 +492,73 @@ def process_ask_user(message: str) -> dict:
     message_object: dict = json.loads(message)
     text: str = message_object.get('message_text', '')
     entitlement: str = message_object.get('entitlement', '')
+    form_type: FormType = FormType(message_object.get('form_type', FormType.PREDEFINED_OPTIONS.value))
     options: list = message_object.get('options', [])
     investigation_id: str = message_object.get('investigation_id', '')
     task_id: str = message_object.get('task_id', '')
-    body = [
-        {
+
+    body: list[dict] = []
+    actions: list[dict] = []
+
+    if form_type == FormType.PREDEFINED_OPTIONS:
+        body.append({
             'type': 'TextBlock',
-            'text': text
-        }
-    ]
-    actions = []
-    for option in options:
+            'text': text,
+        })
+
+        for option in options:
+            actions.append({
+                'type': 'Action.Submit',
+                'title': option,
+                'data': {
+                    'response': option,
+                    'entitlement': entitlement,
+                    'investigation_id': investigation_id,
+                    'task_id': task_id
+                }
+            })
+
+    elif form_type == FormType.OPEN_ANSWER:
+        body.extend([
+            {
+                'type': 'TextBlock',
+                'text': 'Form',
+                'id': 'Title',
+                'spacing': 'Medium',
+                'horizontalAlignment': 'Center',
+                'size': 'Medium',
+                'weight': 'Bolder',
+                'color': 'Accent'
+            },
+            {
+                'type': 'Container',
+                'items': [
+                    {
+                        'type': 'TextBlock',
+                        'text': text,
+                        'wrap': True,
+                        'spacing': 'Medium',
+                    },
+                    {
+                        'type': 'Input.Text',
+                        'placeholder': 'Enter an answer',
+                        'id': 'response',
+                        'isMultiline': True,
+                    }
+                ]
+            },
+        ])
+
         actions.append({
             'type': 'Action.Submit',
-            'title': option,
+            'title': 'Submit',
             'data': {
-                'response': option,
                 'entitlement': entitlement,
                 'investigation_id': investigation_id,
                 'task_id': task_id
             }
         })
+
     return create_adaptive_card(body, actions)
 
 
@@ -629,10 +699,7 @@ def http_request(
     Returns:
         Union[dict, list]: The response in list or dict format.
     """
-    if api == 'graph':
-        access_token = get_graph_access_token()
-    else:  # Bot Framework API
-        access_token = get_bot_access_token()
+    access_token = get_graph_access_token() if api == 'graph' else get_bot_access_token()  # Bot Framework API
 
     headers: dict = {
         'Authorization': f'Bearer {access_token}',
@@ -807,7 +874,9 @@ def validate_auth_header(headers: dict) -> bool:
         demisto.info('Authorization header validation - failed to verify endorsements')
         return False
 
-    public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    public_key = RSAAlgorithm.from_jwk(json.dumps(key_object))
+    public_key: RSAPublicKey = cast(RSAPublicKey, public_key)
+
     options = {
         'verify_aud': False,
         'verify_exp': True,
@@ -1978,6 +2047,7 @@ def send_message():
                 'type': 'message',
                 'attachments': [adaptive_card]
             }
+            demisto.debug(f"The following Adaptive Card will be used:\n{json.dumps(adaptive_card)}")
         else:
             # Sending regular message
             formatted_message: str = urlify_hyperlinks(message, external_form_url_header)
@@ -2543,10 +2613,7 @@ def long_running_loop():
             port_mapping: str = PARAMS.get('longRunningPort', '')
             port: int
             if port_mapping:
-                if ':' in port_mapping:
-                    port = int(port_mapping.split(':')[1])
-                else:
-                    port = int(port_mapping)
+                port = int(port_mapping.split(':')[1]) if ':' in port_mapping else int(port_mapping)
             else:
                 raise ValueError('No port mapping was provided')
             Thread(target=channel_mirror_loop, daemon=True).start()
@@ -2579,7 +2646,7 @@ def long_running_loop():
         except SSLError as e:
             ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
             demisto.error(ssl_err_message)
-            raise ValueError(ssl_err_message)
+            raise ValueError(ssl_err_message) from e
         except Exception as e:
             error_message = str(e)
             demisto.error(f'An error occurred in long running loop: {error_message} - {format_exc()}')
@@ -2701,10 +2768,11 @@ def main():   # pragma: no cover
     }
 
     ''' EXECUTION '''
+    command: str = demisto.command()
+
     try:
         support_multithreading()
         handle_proxy()
-        command: str = demisto.command()
         LOG(f'Command being called is {command}')
         if command in commands:
             commands[command]()
@@ -2718,5 +2786,5 @@ def main():   # pragma: no cover
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
-if __name__ == 'builtins':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

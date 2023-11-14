@@ -8,7 +8,7 @@ ignore=BA113,BA112
 ignore=BA113
 
 [file:ManageOOOusers.yml]
-ignore=CJ105,BA124
+ignore=BA124
 
 [file:README.md]
 ignore=RM106

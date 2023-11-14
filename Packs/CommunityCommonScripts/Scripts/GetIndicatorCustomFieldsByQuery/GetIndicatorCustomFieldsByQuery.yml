@@ -1,0 +1,23 @@
+commonfields:
+  id: GetIndicatorCustomFieldsByQuery
+  version: -1
+name: GetIndicatorCustomFieldsByQuery
+script: ''
+type: python
+tags: []
+comment: Returns indicator custom fields into the context by the given query.
+enabled: true
+args:
+- name: query
+  description: The complete XSOAR indicator query.
+outputs:
+- contextPath: GetIndicatorFieldsByQuery
+  description: The matched indicator value, type, and custom fields.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.12.66339
+runas: DBotWeakRole
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

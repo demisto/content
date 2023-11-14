@@ -1,9 +1,7 @@
 id: Endpoint Enrichment - Generic v2.1
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+  contentitemfields: {}
 name: Endpoint Enrichment - Generic v2.1
 description: |-
   Enrich an endpoint by hostname using one or more integrations.
@@ -14,8 +12,8 @@ description: |-
   - Cylance Protect v2
   - CrowdStrike Falcon
   - ExtraHop Reveal(x)
-
-  - Endpoint reputation using !endpoint command
+  - Cortex XDR / Core (endpoint enrichment, reputation and risk)
+  - Endpoint reputation using !endpoint command.
 starttaskid: "0"
 tasks:
   "0":
@@ -67,6 +65,7 @@ tasks:
       - "19"
       - "20"
       - "30"
+      - "40"
     separatecontext: false
     view: |-
       {
@@ -85,10 +84,10 @@ tasks:
     continueonerrortype: ""
   "3":
     id: "3"
-    taskid: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
+    taskid: ddba13dd-92fc-47a3-8ffe-b849c626eb22
     type: condition
     task:
-      id: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
+      id: ddba13dd-92fc-47a3-8ffe-b849c626eb22
       version: -1
       name: Is there an endpoint to enrich?
       description: Checks whether there is at least one endpoint to enrich (by hostname).
@@ -109,7 +108,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               simple: inputs.Hostname
@@ -146,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1470
+          "y": 1090
         }
       }
     note: false
@@ -262,14 +261,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 216aed2b-2f34-4c5e-8c54-60b978218896
+    taskid: 42f088e2-cb74-485a-8318-0dae68cde0f0
     type: condition
     task:
-      id: 216aed2b-2f34-4c5e-8c54-60b978218896
+      id: 42f088e2-cb74-485a-8318-0dae68cde0f0
       version: -1
       name: Is CrowdStrike Falcon enabled?
       description: Checks if there is an active instance of the CrowdStrike Falcon Host integration enabled.
-      scriptName: Exists
       type: condition
       iscommand: false
       brand: ""
@@ -315,7 +313,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -613,6 +611,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "30":
     id: "30"
     taskid: ec344482-77f7-42b5-8ee4-34317afd1179
@@ -747,7 +746,7 @@ tasks:
       id: cb25c554-4bce-4f19-8bf1-974a6a51c57d
       version: -1
       name: is Mcafee ePolicy Orchestrator v2 enabled
-      description: "Gets a value and returns it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and returns it. This is to be used in playbook conditional tasks - get a value from alert field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -916,10 +915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 79880978-7c28-4aaf-83b3-7f8ea42da67f
+    taskid: fa1f603c-6fd1-4351-8741-59e7735c0429
     type: regular
     task:
-      id: 79880978-7c28-4aaf-83b3-7f8ea42da67f
+      id: fa1f603c-6fd1-4351-8741-59e7735c0429
       version: -1
       name: Check Reputation
       description: Returns information about an endpoint.
@@ -958,10 +957,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 84483658-9591-43b1-8cc6-89df338d6bd8
+    taskid: d61c7516-0a1b-4bce-8d01-489c74d9d260
     type: regular
     task:
-      id: 84483658-9591-43b1-8cc6-89df338d6bd8
+      id: d61c7516-0a1b-4bce-8d01-489c74d9d260
       version: -1
       name: Crowdstrike Search device
       description: Searches for a device that matches the query.
@@ -992,7 +991,320 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 2
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 284d5ea3-58c1-4a0f-87c4-5c395d75a65c
+    type: condition
+    task:
+      id: 284d5ea3-58c1-4a0f-87c4-5c395d75a65c
+      version: -1
+      name: Is Cortex XDR enabled?
+      description: Checks if there is an active instance of the Cortex XDR integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "41"
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3140,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 12dd4de8-094d-4760-8284-22e212b5b76d
+    type: title
+    task:
+      id: 12dd4de8-094d-4760-8284-22e212b5b76d
+      version: -1
+      name: Cortex XDR / Core IR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3460,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: e9a3bc82-f45c-41af-83d8-c0abc2f61a1c
+    type: regular
+    task:
+      id: e9a3bc82-f45c-41af-83d8-c0abc2f61a1c
+      version: -1
+      name: Cortex XDR Search device
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      endpoint_id_list:
+        complex:
+          root: inputs.EndpointID
+          transformers:
+          - operator: uniq
+      hostname:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+      ip_list:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3310,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 7036bd6a-33c9-44da-8087-f9b8173cdbe4
+    type: regular
+    task:
+      id: 7036bd6a-33c9-44da-8087-f9b8173cdbe4
+      version: -1
+      name: Cortex XDR get endpoint risk score
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||xdr-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      host_id:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3710,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 180545ff-78b8-4227-82ac-87e2855d8539
+    type: condition
+    task:
+      id: 180545ff-78b8-4227-82ac-87e2855d8539
+      version: -1
+      name: Is Cortex Core - IR integration enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "44"
+      - "45"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4220,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 6592c599-a3b8-4ce3-8840-b0077e5602ac
+    type: regular
+    task:
+      id: 6592c599-a3b8-4ce3-8840-b0077e5602ac
+      version: -1
+      name: Core IR Search device
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      endpoint_id_list:
+        complex:
+          root: inputs.EndpointID
+          transformers:
+          - operator: uniq
+      hostname:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+      ip_list:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4220,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 8c8575da-152b-4542-81e8-83e161c686f4
+    type: regular
+    task:
+      id: 8c8575da-152b-4542-81e8-83e161c686f4
+      version: -1
+      name: Core IR get endpoint risk score
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      host_id:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4730,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Host Risk Level
+      output:
+        complex:
+          root: Core.RiskyHost
+          accessor: risk_level
+    - incidentfield: Host Risk Reasons
+      output:
+        complex:
+          root: Core.RiskyHost.reasons
+          accessor: description
+    skipunavailable: true
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
@@ -1007,6 +1319,7 @@ view: |-
       "33_4_#default#": 0.2,
       "36_37_yes": 0.49,
       "36_4_#default#": 0.13,
+      "39_4_#default#": 0.1,
       "3_1_yes": 0.3,
       "3_24_yes": 0.41,
       "3_4_#default#": 0.12,
@@ -1015,8 +1328,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1455,
-        "width": 4010,
+        "height": 1075,
+        "width": 6110,
         "x": -1000,
         "y": 80
       }
@@ -1055,7 +1368,7 @@ inputs:
 outputs:
 - contextPath: Endpoint
   description: The endpoint object of the endpoint that was enriched.
-  type: unknown
+  type: string
 - contextPath: Endpoint.Hostname
   description: The hostnames of the endpoints that were enriched.
   type: string
@@ -1064,14 +1377,16 @@ outputs:
   type: string
 - contextPath: Endpoint.IP
   description: A list of the IP addresses of the endpoints.
+  type: string
 - contextPath: Endpoint.MAC
   description: A list of the MAC addresses of the endpoints that were enriched.
+  type: string
 - contextPath: Endpoint.Domain
   description: The domain names of the endpoints that were enriched.
   type: string
 - contextPath: CylanceProtectDevice
   description: The device information about the hostname that was enriched using Cylance Protect v2.
-  type: unknown
+  type: string
 - contextPath: ExtraHop.Device.Macaddr
   description: The MAC Address of the device.
   type: String
@@ -1152,180 +1467,382 @@ outputs:
   type: string
 - contextPath: Endpoint.IPAddress
   description: The endpoint IP address.
+  type: string
 - contextPath: Endpoint.ID
   description: The endpoint ID.
+  type: string
 - contextPath: Endpoint.Status
   description: The endpoint status.
+  type: string
 - contextPath: Endpoint.IsIsolated
   description: The endpoint isolation status.
+  type: string
 - contextPath: Endpoint.MACAddress
   description: The endpoint MAC address.
+  type: string
 - contextPath: Endpoint.Vendor
   description: The integration name of the endpoint vendor.
+  type: string
 - contextPath: Endpoint.Relationships
   description: The endpoint relationships of the endpoint that was enriched.
-  type: unknown
+  type: string
 - contextPath: Endpoint.Processor
   description: The model of the processor.
+  type: string
 - contextPath: Endpoint.Processors
   description: The number of processors.
+  type: string
 - contextPath: Endpoint.Memory
   description: Memory on this endpoint.
+  type: string
 - contextPath: Endpoint.Model
   description: The model of the machine or device.
+  type: string
 - contextPath: Endpoint.BIOSVersion
   description: The endpoint's BIOS version.
+  type: string
 - contextPath: Endpoint.OSVersion
   description: The endpoint's operation system version.
+  type: string
 - contextPath: Endpoint.DHCPServer
   description: The DHCP server of the endpoint.
+  type: string
 - contextPath: McAfee.ePO.Endpoint
   description: The endpoint that was enriched.
-  type: unknown
+  type: string
 - contextPath: Endpoint.Groups
   description: Groups for which the computer is listed as a member.
+  type: string
 - contextPath: ActiveDirectory.ComputersPageCookie
   description: An opaque string received in a paged search, used for requesting subsequent entries.
+  type: string
 - contextPath: ActiveDirectory.Computers.dn
   description: The computer distinguished name.
+  type: string
 - contextPath: ActiveDirectory.Computers.memberOf
   description: Groups for which the computer is listed.
+  type: string
 - contextPath: ActiveDirectory.Computers.name
   description: The computer name.
+  type: string
 - contextPath: CrowdStrike.Device
   description: The information about  the endpoint.
-  type: unknown
+  type: string
 - contextPath: ActiveDirectory.Computers
   description: The information about the hostname that was enriched using Active Directory.
-  type: unknown
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_total_size
-  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed.
-    installed.
+  description: The size, in bytes, of the system volume of the endpoint on which the sensor is installed. installed.
+  type: number
 - contextPath: CarbonBlackEDR.Sensor.emet_telemetry_path
   description: The path of the EMET telemetry associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.os_environment_display_string
   description: Human-readable string of the installed OS.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_version
   description: The EMET version associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_dump_flags
   description: The flags of the EMET dump associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.clock_delta
   description: The clock delta associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.supports_cblr
   description: Whether the sensor supports Carbon Black Live Response (CbLR).
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.sensor_uptime
   description: The uptime of the process.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.last_update
   description: When the sensor was last updated.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.physical_memory_size
   description: The size in bytes of physical memory.
+  type: number
 - contextPath: CarbonBlackEDR.Sensor.build_id
-  description: The sensor version installed on this endpoint. From the /api/builds/
-    endpoint.
+  description: The sensor version installed on this endpoint. From the /api/builds/ endpoint.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.uptime
   description: Endpoint uptime in seconds.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.is_isolating
   description: Boolean representing sensor-reported isolation status.
+  type: boolean
 - contextPath: CarbonBlackEDR.Sensor.event_log_flush_time
   description: |-
     If event_log_flush_time is set, the server will instruct the sensor to immediately
     send all data before this date, ignoring all other throttling mechanisms.
     To force a host current, set this value to a value far in the future.
     When the sensor has finished sending its queued data, this value will be null.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.computer_dns_name
   description: The DNS name of the endpoint on which the sensor is installed.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_report_setting
   description: The report setting of the EMET associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.id
   description: The ID of this sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_process_count
   description: The number of EMET processes associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_is_gpo
   description: Whether the EMET is a GPO.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.power_state
   description: The sensor power state.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.network_isolation_enabled
   description: Boolean representing the network isolation request status.
+  type: boolean
 - contextPath: CarbonBlackEDR.Sensor.systemvolume_free_size
   description: The amount of free bytes on the system volume.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.status
   description: The sensor status.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.num_eventlog_bytes
   description: The number of event log bytes.
+  type: number
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_message
   description: Human-readable string indicating the sensor’s self-reported status.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.build_version_string
   description: Human-readable string of the sensor version.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.computer_sid
   description: Machine SID of this host.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.next_checkin_time
-  description: Next expected communication from this computer in server-local time
-    and zone.
+  description: Next expected communication from this computer in server-local time and zone.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.node_id
   description: The node ID associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.cookie
   description: The cookie associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.emet_exploit_action
   description: The EMET exploit action associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.computer_name
   description: NetBIOS name of this computer.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.license_expiration
   description: When the license of the sensor expires.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.supports_isolation
   description: Whether the sensor supports isolation.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.parity_host_id
   description: The ID of the parity host associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.supports_2nd_gen_modloads
   description: Whether the sensor support modload of 2nd generation.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.network_adapters
   description: A pipe-delimited list of IP,MAC pairs for each network interface.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.sensor_health_status
   description: Self-reported health score, from 0 to 100. Higher numbers indicate a better health status.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.registration_time
   description: Time this sensor was originally registered in server-local time and zone.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.restart_queued
   description: Whether a restart of the sensor is queued.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.notes
   description: The notes associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.num_storefiles_bytes
   description: Number of storefiles bytes associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.os_environment_id
   description: The ID of the OS environment of the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.shard_id
   description: The ID of the shard associated with the sensor.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.boot_id
   description: A sequential counter of boots since the sensor was installed.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.last_checkin_time
   description: Last communication with this computer in server-local time and zone.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.os_type
   description: The operating system type of the computer.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.group_id
   description: The sensor group ID this sensor is assigned to.
+  type: string
 - contextPath: CarbonBlackEDR.Sensor.uninstall
   description: When set, indicates that the sensor will be directed to uninstall on next check-in.
-sourceplaybookid: Endpoint Enrichment - Generic v2.1
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint
+  description: The endpoint object of the endpoint that was enriched.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
+  description: The endpoint ID.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_name
+  description: The endpoint name.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_type
+  description: The endpoint type.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
+  description: The status of the endpoint.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.os_type
+  description: The endpoint OS type.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.ip
+  description: A list of IP addresses.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.users
+  description: A list of users.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.domain
+  description: The endpoint domain.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.alias
+  description: The endpoint's aliases.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.first_seen
+  description: First seen date/time in Epoch (milliseconds).
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.last_seen
+  description: Last seen date/time in Epoch (milliseconds).
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.content_version
+  description: Content version.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.installation_package
+  description: Installation package.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.active_directory
+  description: Active directory.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.install_date
+  description: Install date in Epoch (milliseconds).
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_version
+  description: Endpoint version.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.group_name
+  description: The name of the group to which the endpoint belongs.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Endpoint.count
+  description: Number of endpoints returned.
+  type: number
+- contextPath: Account
+  description: The account object of the endpoint that was enriched.
+  type: string
+- contextPath: Account.Username
+  description: The username in the relevant system.
+  type: string
+- contextPath: Account.Domain
+  description: The domain of the account.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost
+  description: The endpoint object.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.type
+  description: Form of identification element.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.id
+  description: Identification value of the type field.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.score
+  description: The score assigned to the host.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons
+  description: The endpoint risk objects.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date created
+  description: Date when the incident was created.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.description
+  description: Description of the incident.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.severity
+  description: The severity of the incident.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.status
+  description: The incident status.
+  type: string
+- contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.points
+  description: The score.
+  type: string
+- contextPath: Core.Endpoint
+  description: The endpoint object.
+  type: unknown
+- contextPath: Core.Endpoint.endpoint_id
+  description: The endpoint ID.
+- contextPath: Core.Endpoint.endpoint_name
+  description: The endpoint name.
+- contextPath: Core.Endpoint.endpoint_type
+  description: The endpoint type.
+- contextPath: Core.Endpoint.endpoint_status
+  description: The status of the endpoint.
+- contextPath: Core.Endpoint.os_type
+  description: The endpoint OS type.
+- contextPath: Core.Endpoint.ip
+  description: A list of IP addresses.
+- contextPath: Core.Endpoint.users
+  description: A list of users.
+- contextPath: Core.Endpoint.domain
+  description: The endpoint domain.
+- contextPath: Core.Endpoint.alias
+  description: The endpoint's aliases.
+- contextPath: Core.Endpoint.first_seen
+  description: First seen date/time in Epoch (milliseconds).
+- contextPath: Core.Endpoint.last_seen
+  description: Last seen date/time in Epoch (milliseconds).
+- contextPath: Core.Endpoint.content_version
+  description: Content version.
+- contextPath: Core.Endpoint.installation_package
+  description: Installation package.
+- contextPath: Core.Endpoint.active_directory
+  description: Active directory.
+- contextPath: Core.Endpoint.install_date
+  description: Install date in Epoch (milliseconds).
+- contextPath: Core.Endpoint.endpoint_version
+  description: Endpoint version.
+- contextPath: Core.Endpoint.is_isolated
+  description: Whether the endpoint is isolated.
+- contextPath: Core.Endpoint.group_name
+  description: The name of the group to which the endpoint belongs.
+- contextPath: Core.RiskyHost
+  description: The risky host object.
+  type: unknown
+- contextPath: Core.RiskyHost.type
+  description: Form of identification element.
+- contextPath: Core.RiskyHost.id
+  description: Identification value of the type field.
+- contextPath: Core.RiskyHost.score
+  description: The score assigned to the host.
+- contextPath: Core.RiskyHost.reasons
+  description: The reasons for the risk level.
+  type: unknown
+- contextPath: Core.RiskyHost.reasons.date created
+  description: Date when the incident was created.
+- contextPath: Core.RiskyHost.reasons.description
+  description: Description of the incident.
+- contextPath: Core.RiskyHost.reasons.severity
+  description: The severity of the incident.
+- contextPath: Core.RiskyHost.reasons.status
+  description: The incident status.
+- contextPath: Core.RiskyHost.reasons.points
+  description: The score.
 tests:
-- Field polling test
-- test-domain-indicator
-- Calculate Severity - Generic v2 - Test
-- Wait Until Datetime - Test
-- Calculate Severity - Standard - Test
-- Extract Indicators From File - Generic v2 - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- IP Enrichment - Generic v2 - Test
-- Get endpoint details - Generic - test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Generic Polling Test
-- Send Investigation Summary Reports - Test
-- Detonate File - No Files test
-- Test Convert file hash to corresponding hashes
-- Detonate File - Generic Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Retrieve File from Endpoint - Generic V2 Test
-- Isolate and unisolate endpoint - test
-- Block IP - Generic V3_Test
+- Endpoint Enrichment - Generic v2.1.6.8 - Test
 fromversion: 6.8.0
+system: true

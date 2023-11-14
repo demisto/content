@@ -1,0 +1,42 @@
+{
+    "Malwarebytes": {
+        "integration_description_images": [
+            {
+                "original_markdown_url": "https://user-images.githubusercontent.com/48316606/image1.png",
+                "final_dst_image_path": "https://storage.googleapis.com/marketplace-v2-dist/content/packs/Malwarebytes/integration_description_images/image1.png",
+                "relative_image_path": "Malwarebytes/integration_description_images/image1.png",
+                "image_name": "image1.png"
+            },
+            {
+                "original_markdown_url": "https://user-images.githubusercontent.com/48316606/image2.png",
+                "final_dst_image_path": "https://storage.googleapis.com/marketplace-v2-dist/content/packs/Malwarebytes/integration_description_images/image2.png",
+                "relative_image_path": "Malwarebytes/integration_description_images/image2.png",
+                "image_name": "image2.png"
+            },
+            {
+                "original_markdown_url": "https://user-images.githubusercontent.com/48316606/image3.jpg",
+                "final_dst_image_path": "https://storage.googleapis.com/marketplace-v2-dist/content/packs/Malwarebytes/integration_description_images/image3.jpg",
+                "relative_image_path": "Malwarebytes/integration_description_images/image3.jpg",
+                "image_name": "image3.jpg"
+            }
+        ],
+        "readme_images": [
+            {
+                "original_markdown_url": "https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/image4.png",
+                "final_dst_image_path": "https://storage.googleapis.com/marketplace-v2-dist/content/packs/Malwarebytes/readme_images/image4.png",
+                "relative_image_path": "Malwarebytes/readme_images/image4.png",
+                "image_name": "image4.png"
+            }
+        ]
+    },
+    "pack_2": {
+        "readme_images": [
+        {
+            "original_markdown_url": "https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/image5.png",
+            "final_dst_image_path": "https://storage.googleapis.com/marketplace-v2-dist/content/packs/Malwarebytes/readme_images/image5.png",
+            "relative_image_path": "Malwarebytes/readme_images/image4.png",
+            "image_name": "image5.png"
+        }
+    ]},
+    "pack_3" : {}
+}

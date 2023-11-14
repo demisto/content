@@ -13,15 +13,6 @@ ignore=RM106
 [file:playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category_README.md]
 ignore=RM106
 
-[file:playbook-PAN-OS_Create_Or_Edit_Rule_Test.yml]
-ignore=auto-test
-
-[file:playbook-Endpoint_Malware_Investigation_-_Generic_-_Test.yml]
-ignore=auto-test
-
-[file:PCAP_Parsing_And_Indicator_Enrichment_Test.yml]
-ignore=auto-test
-
 [file:playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category.yml]
 ignore=PB121
 

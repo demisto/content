@@ -15,6 +15,10 @@
         "device": {
             "type": "string",
             "is_array": false
+        },
+        "triggeredComponents": {
+            "type": "string",
+            "is_array": false
         }
     }
 }

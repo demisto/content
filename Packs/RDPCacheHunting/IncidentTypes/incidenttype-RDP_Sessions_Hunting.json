@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#CFD0D0",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "RDP Sessions Hunting",
+    "layout": "RDP Sessions",
+    "locked": false,
+    "name": "RDP Sessions Hunting",
+    "onChangeRepAlg": 0,
+    "playbookId": "RDP Bitmap Cache - Detect and Hunt",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.9.0"
+}

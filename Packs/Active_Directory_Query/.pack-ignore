@@ -11,7 +11,7 @@ ignore=BA101
 ignore=BA101
 
 [file:IAMInitADUser.yml]
-ignore=CJ105,BA124
+ignore=BA124
 
 [known_words]
 ldap

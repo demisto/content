@@ -1,4 +1,4 @@
-#adding so null don't get seen as variable.
+# adding so null don't get seen as variable.
 null = None
 false = False
 
@@ -1103,3 +1103,275 @@ LIST_ALERTS_RESULTS = [
         "tags": null
     }
 ]
+
+ATTACK_SURFACE_RULES_RESULTS = [
+    {
+        "attack_surface_rule_id": "SchneiderElectricEcoStruxureITGateway",
+        "attack_surface_rule_name": "Schneider Electric EcoStruxure IT Gateway",
+        "category": "Attack Surface Reduction",
+        "created": 1689003841000,
+        "description": "Schneider Electric EcoStruxure IT Gateway is a network management and monitoring solution used by organizations to monitor and manage their critical IT infrastruture on-premise, in the cloud, and at the edge. EcoStruxure provides visibility and information about resources across an organization regardless of vendor. This issue specifically identifies the EcoStruxure IT Gateway, the web management login portal EcoStruxure. The EcoStruxure IT Gateway is intended to be accessed from within a secure network and should not be exposed to the Internet. Version number of EcoStruxure is not identified through this policy.",
+        "enabled_status": "On",
+        "knowledge_base_link": null,
+        "modified": 1688074708000,
+        "modified_by": null,
+        "priority": "High",
+        "remediation_guidance": ""
+    },
+    {
+        "attack_surface_rule_id": "Section889Violation",
+        "attack_surface_rule_name": "Section 889 Violation",
+        "category": "Attack Surface Reduction",
+        "created": 1689003841000,
+        "description": "Section 889 of the 2019 NDAA prohibits executive agencies from using equipment or services from five organizations: Huawei, Hikvision, Hytera, Dahua, and ZTE. This policy alerts you to usages of such equipment on your network. This policy does not have an Cortex Xpanse-defined default priority \u2013 customers enabling this rule can choose any default priority.\nNote: Other brands that utilize Dahua hardware / firmware may also be identified through this policy.",
+        "enabled_status": "On",
+        "knowledge_base_link": null,
+        "modified": 1688074708000,
+        "modified_by": null,
+        "priority": "High",
+        "remediation_guidance": "Investigate the devices that have been flagged under this policy and work with the owner of the affected assets to remove them from your network.\nFor clarification, Section 889 of the 2019 NDAA prohibits executive agencies from using equipment or services that have been flagged under this policy. (Huawei, Hikvision, Hytera, Dahua, ZTE)"
+    }
+]
+
+TAG_APPLY_RESULTS = "Assignment operation: True"
+TAG_REMOVE_RESULTS = "Removal operation: True"
+
+LIST_INCIDENTS_RESULTS = [{
+    "aggregated_score": 75,
+    "alert_categories": null,
+    "alert_count": 4,
+    "alerts_grouping_status": "Enabled",
+    "assigned_user_mail": null,
+    "assigned_user_pretty_name": null,
+    "creation_time": 1688705047063,
+    "critical_severity_alert_count": 0,
+    "description": "'Google WebFramework Angular at suppliers.expander.expanse.co:443' detected by ASM on 3 hosts ",
+    "detection_time": null,
+    "high_severity_alert_count": 0,
+    "host_count": 3,
+    "hosts": [
+        "1.1.1.1:null",
+    ],
+    "incident_id": "5471",
+    "incident_name": null,
+    "incident_sources": [
+        "ASM"
+    ],
+    "low_severity_alert_count": 4,
+    "manual_description": null,
+    "manual_score": null,
+    "manual_severity": null,
+    "med_severity_alert_count": 0,
+    "modification_time": 1689048065832,
+    "notes": null,
+    "original_tags": [
+        "BU:Prod Ev2 Branch"
+    ],
+    "resolve_comment": "",
+    "resolved_timestamp": null,
+    "rule_based_score": 75,
+    "severity": "low",
+    "starred": false,
+    "status": "new",
+    "tags": [],
+    "user_count": 0,
+    "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=5471",
+    "xpanse_risk_score": 75
+}]
+
+INCIDENT_GET_RESULTS = {
+    "aggregated_score": 825,
+    "alert_categories": null,
+    "alert_count": 2,
+    "alerts": [
+        {
+            "alert_id": "113716",
+            "description": "This issue flags on-premises Microsoft Exchange Servers that are known to be below the current up-to-date secured versions suggested by Microsoft.",
+            "name": "Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443",
+            "resolution_status": "STATUS_020_UNDER_INVESTIGATION"
+        },
+        {
+            "alert_id": "89896",
+            "description": "The X-XSS-Protection header is used to reduce the risk of cross-site scripting attacks. Not including it could make your website less secure.",
+            "name": "Missing X-Xss-Protection at 1.1.1.1:443",
+            "resolution_status": "STATUS_010_NEW"
+        }
+    ],
+    "alerts_grouping_status": "Disabled",
+    "assigned_user_mail": "cs@acme.com",
+    "assigned_user_pretty_name": "User One",
+    "creation_time": 1671912678672,
+    "critical_severity_alert_count": 0,
+    "description": "'Insecure Microsoft Exchange Server (15.0.1497.36) at 1.1.1.1:443' along with 1 other alerts",
+    "detection_time": null,
+    "high_severity_alert_count": 1,
+    "host_count": 1,
+    "hosts": [
+        "1.1.1.1:null"
+    ],
+    "incident_id": "71",
+    "incident_name": null,
+    "incident_sources": [
+        "ASM"
+    ],
+    "is_blocked": false,
+    "low_severity_alert_count": 0,
+    "manual_description": null,
+    "manual_score": null,
+    "manual_severity": null,
+    "med_severity_alert_count": 1,
+    "modification_time": 1696275576460,
+    "notes": null,
+    "original_tags": [
+        "BU:Xpanse VanDelay Demo 3"
+    ],
+    "resolve_comment": null,
+    "resolved_timestamp": null,
+    "rule_based_score": 825,
+    "severity": "high",
+    "starred": True,
+    "status": "under_investigation",
+    "tags": [
+        "AR:Registered to You"
+    ],
+    "user_count": 0,
+    "xdr_url": "https://exp-test.crtx.eu.paloaltonetworks.com/incident-view?caseId=71",
+    "xpanse_risk_explainer": {
+        "cves": [
+            {
+                "confidence": "High",
+                "cveId": "CVE-2021-26855",
+                "cvssScore": 9.800000190734863,
+                "epssScore": 0.9749900102615356,
+                "exploitMaturity": "Weaponized",
+                "matchType": "ExactVersionMatch",
+                "mostRecentReportedExploitDate": "2023-10-12",
+                "reportedExploitInTheWild": True
+            },
+            {
+                "confidence": "High",
+                "cveId": "CVE-2021-34473",
+                "cvssScore": 9.800000190734863,
+                "epssScore": 0.9732999801635742,
+                "exploitMaturity": "Weaponized",
+                "matchType": "ExactVersionMatch",
+                "mostRecentReportedExploitDate": "2023-10-12",
+                "reportedExploitInTheWild": True
+            },
+            {
+                "confidence": "High",
+                "cveId": "CVE-2021-34523",
+                "cvssScore": 9.800000190734863,
+                "epssScore": 0.9726300239562988,
+                "exploitMaturity": "Weaponized",
+                "matchType": "ExactVersionMatch",
+                "mostRecentReportedExploitDate": "2023-10-12",
+                "reportedExploitInTheWild": True
+            }
+        ],
+        "riskFactors": [
+            {
+                "attributeId": "misconfiguration",
+                "attributeName": "Misconfiguration",
+                "issueTypes": [
+                    {
+                        "displayName": "Insecure Microsoft Exchange Server",
+                        "issueTypeId": "InsecureMicrosoftExchangeServer"
+                    },
+                    {
+                        "displayName": "Missing X-XSS-Protection Header",
+                        "issueTypeId": "MissingXXssProtectionHeader"
+                    }
+                ]
+            },
+            {
+                "attributeId": "critical_system",
+                "attributeName": "Critical System",
+                "issueTypes": [
+                    {
+                        "displayName": "Insecure Microsoft Exchange Server",
+                        "issueTypeId": "InsecureMicrosoftExchangeServer"
+                    }
+                ]
+            },
+            {
+                "attributeId": "potential_data_loss",
+                "attributeName": "Potential Data Loss",
+                "issueTypes": [
+                    {
+                        "displayName": "Insecure Microsoft Exchange Server",
+                        "issueTypeId": "InsecureMicrosoftExchangeServer"
+                    }
+                ]
+            }
+        ],
+        "versionMatched": True
+    },
+    "xpanse_risk_score": 825
+}
+
+INCIDENT_UPDATE_RESULTS = "Update operation successful: True"
+
+ALERT_UPDATE_RESULTS = "Updated alerts: [602]"
+
+IP_RESULTS = [{
+    "asm_ids": [
+        "4b1f3765-de40-3a1a-8535-667420408fd9"
+    ],
+    "ip": "1.1.1.1",
+    "asset_explainers": [],
+    "asset_type": "DOMAIN",
+    "domain": "*.acme.com",
+    "domain_details": {
+        "admin": {},
+        "alignedRegistrar": "MarkMonitor",
+        "collectionTime": 1695942091000,
+        "creationDate": 785376000000,
+        "dnssec": null,
+        "domainName": "acme.com",
+        "domainStatuses": [
+            "clientUpdateProhibited",
+            "clientTransferProhibited",
+            "clientDeleteProhibited"
+        ],
+        "dropped": false,
+        "nameServers": [],
+        "registrant": {},
+        "registrar": {},
+        "registryDomainId": null,
+        "registryExpiryDate": 1732060800000,
+        "reseller": null,
+        "retrievedDate": 1696075229360,
+        "tech": {},
+        "updatedDate": 1666137600000
+    },
+    "first_observed": 1679457579382,
+    "last_observed": 1697361335282,
+    "name": "*.acme.com",
+            "recent_ips": [
+                {
+                    "firstObserved": 1692418207732,
+                    "id": "218b3cc9-2d26-3a17-aadd-9eac08cc30ec",
+                    "ip": "1.1.1.1",
+                    "ipv6": null,
+                    "lastObserved": 1697361335282,
+                    "provider": {
+                        "additionalProviderInfo": null,
+                        "cdn": false,
+                        "displayName": "Amazon Web Services",
+                        "isCdn": false,
+                        "legacyName": "AWS",
+                        "name": "AWS"
+                    },
+                    "source": {
+                        "name": "DOMAIN_RESOLUTION"
+                    }
+                }
+    ],
+    "service_type": [
+                "HttpServer"
+    ],
+    "tags": [
+                "BU:Xpanse VanDelay Demo 3"
+    ]
+}]

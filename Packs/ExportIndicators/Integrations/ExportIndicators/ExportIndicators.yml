@@ -102,6 +102,12 @@ configuration:
   - regex
   type: 15
   required: false
+- additionalinfo: When set to true and certificate & private key are provided will add the HSTS header to all requests.
+  display: Add HSTS header
+  name: hsts_header
+  type: 8
+  required: false
+  defaultvalue: 'false'
 - additionalinfo: For use with PAN-OS URL format - if selected will strip the port from URLs. If not selected - URLs with ports will be ignored.
   display: PAN-OS URL Format Port Strip
   name: strip_port
@@ -113,12 +119,12 @@ configuration:
   type: 8
   required: false
 - additionalinfo: For use with Symantec ProxySG format - set the default category for the output.
-  defaultvalue: bc_category
   display: Symantec ProxySG Default Category
   name: category_default
   type: 0
   required: false
-- additionalinfo: For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, will list all existing categories.
+  defaultvalue: bc_category
+- additionalinfo: "For use with Symantec ProxySG format - set the categories that should be listed in the output. If not set, will list all existing categories."
   display: Symantec ProxySG Listed Categories
   name: category_attribute
   type: 0

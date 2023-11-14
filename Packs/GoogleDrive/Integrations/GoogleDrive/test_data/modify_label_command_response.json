@@ -1,0 +1,20 @@
+{
+    "kind": "drive#modifyLabelsResponse",
+    "modifiedLabels": [
+        {
+            "fields": {
+                "5B6668EE11": {
+                    "id": "5B6668EE11",
+                    "kind": "drive#labelField",
+                    "selection": [
+                        "9451C6F0E3"
+                    ],
+                    "valueType": "selection"
+                }
+            },
+            "id": "vFmXsMA1fQMz1BdE59YSkisZV4DiKdpxxLQRNNEbbFcb",
+            "kind": "drive#label",
+            "revisionId": "5"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+{
+    "details": "Windows Executables",
+    "disabled": false,
+    "expiration": 0,
+    "file": false,
+    "id": "Windows Executables",
+    "locked": false,
+    "mergeContext": false,
+    "regex": "[^\\\\][a-zA-Z0-9-_]+\\.(sh|exe|ps1|bat|vbs|js|py|cmd|dll)",
+    "system": false,
+    "updateAfter": 0,
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

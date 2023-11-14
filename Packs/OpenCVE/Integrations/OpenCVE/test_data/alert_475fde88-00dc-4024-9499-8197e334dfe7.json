@@ -1,0 +1,1 @@
+[{"cve": "CVE-2021-28478", "type": "summary", "details": {"old": "Microsoft SharePoint Spoofing Vulnerability This CVE ID is unique from CVE-2021-26418, CVE-2021-31172.", "new": "Microsoft SharePoint Server Spoofing Vulnerability"}}, {"cve": "CVE-2021-28478", "type": "cvss", "details": {"old": {"v2": 5.8, "v3": 7.1}, "new": {"v2": 5.8, "v3": 7.6}}}]

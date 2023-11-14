@@ -1,10 +1,13 @@
+[file:Cortex_ASM_-_ASM_Alert.yml]
+ignore=PB105
+
 [file:incidentfield-ASM_-_Alert_Summary.json]
 ignore=IF100
 
 [file:incidentfield-ASM_-_Playbook_Stage.json]
 ignore=IF100
 
-[file:Cortex_ASM_-_ASM_Alert.yml]
+[file:Cortex_ASM_-_ServiceNow_Notification.yml]
 ignore=PB121
 
 [file:Cortex_ASM_-_Tenable.io_Enrichment.yml]
@@ -41,3 +44,7 @@ ReportHeader
 RCS
 SNMP
 NMAP
+ml
+vpc
+Prisma
+ITSM

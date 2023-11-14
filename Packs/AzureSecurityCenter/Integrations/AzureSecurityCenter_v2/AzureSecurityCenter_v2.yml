@@ -7,8 +7,8 @@ configuration:
   display: Microsoft Azure Management URL
   name: server_url
   type: 0
-
   required: false
+  section: Connect
 - display: ID (received from the admin consent - see Detailed Instructions (?)
   name: auth_id
   type: 4
@@ -19,6 +19,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   type: 4
@@ -29,6 +30,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   type: 4
@@ -39,6 +41,7 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -51,59 +54,78 @@ configuration:
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   type: 14
   required: false
+  section: Connect
 - display: Default subscription ID to use
   name: default_sub_id
   type: 4
   hidden: true
   required: false
-- displaypassword: Default subscription ID to use
+- displaypassword: Default subscription ID
   name: credentials_default_sub_id
   hiddenusername: true
   type: 9
   required: false
+  section: Connect
+- additionalinfo: This parameter can be overridden by the resource_group_name argument in any command.
+  display: Default Resource Group Name
+  name: resource_group_name
+  type: 0
+  required: false
+  section: Connect
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
-  display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
   required: false
-- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
-  displaypassword: Azure Managed Identities Client ID.
-  name: managed_identities_client_id
-  hiddenusername: true
+  display: Use Azure Managed Identities
+  section: Connect
+- name: managed_identities_client_id
   type: 9
   required: false
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  hiddenusername: true
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- display: Use a self-deployed Azure Application
+  section: Connect
+  advanced: true
+- additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+  display: Use a self-deployed Azure Application
   name: self_deployed
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: Unified security management and advanced threat protection across hybrid cloud workloads.
 display: Microsoft Defender for Cloud
 name: Azure Security Center v2
 script:
   commands:
   - arguments:
-    - description: The name of the resource group within the user's subscription. The name is case insensitive.
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
-    - description: OData filter
+    - description: OData filter.
       name: filter
-    - description: OData select
+    - description: OData select.
       name: select
-    - description: OData expand
+    - description: OData expand.
       name: expand
     - description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
       name: subscription_id
@@ -129,7 +151,7 @@ script:
       description: The alert ID.
       type: string
   - arguments:
-    - description: The name of the resource group within the user's subscription. The name is case insensitive.
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
@@ -199,7 +221,7 @@ script:
       description: Objects that are related to the alert.
       type: string
   - arguments:
-    - description: The name of the resource group within the user's subscription. The name is case insensitive.
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
@@ -214,8 +236,11 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - dismiss
+      - activate
 #        - reactivate
+      - dismiss
+      - in_progress
+      - resolve
     description: Update an alert's state.
     name: azure-sc-update-alert
     outputs:
@@ -226,12 +251,11 @@ script:
       description: The alert ID.
       type: string
   - arguments:
-    - description: Resource group name
+    - description: "Resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: true
     - default: true
       defaultValue: current
-      description: Name of the Advanced Threat Detection setting, default is 'current'.
+      description: Name of the Advanced Threat Detection setting.
       name: setting_name
     - description: The storage name in your Azure account.
       name: storage_account
@@ -254,9 +278,8 @@ script:
       description: Indicates whether the Advanced Threat Protection is enabled.
       type: string
   - arguments:
-    - description: Name of the resource group.
+    - description: "Name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: true
     - defaultValue: current
       description: Name of the Advanced Threat Detection setting. The default setting's name is 'current'.
       name: setting_name
@@ -337,7 +360,7 @@ script:
   - arguments:
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location.
       name: asc_location
-    - description: The name of the resource group within the user's subscription. The name is case insensitive.
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
     - description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
       name: subscription_id
@@ -389,10 +412,10 @@ script:
     description: The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
     name: azure-sc-list-location
   - name: azure-get-secure-score
-    description: Retrieve the Secure Score for the provided subscription and score name
+    description: Retrieve the Secure Score for the provided subscription and score name.
     arguments:
     - name: secure_score_name
-      description: description
+      description: description.
       defaultValue: ascScore
       predefined:
       - ""
@@ -417,7 +440,33 @@ script:
     - contextPath: Azure.Securescore.weight
       description: The relative weight for each subscription.
       type: String
-  dockerimage: demisto/crypto:1.0.0.64970
+  - description: Run this command if for some reason you need to rerun the authentication process.
+    execution: false
+    name: azure-sc-auth-reset
+    arguments: []
+  - name: azure-resource-group-list
+    description: List all resource groups for a subscription.
+    arguments:
+    - name: subscription_id
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
+    - name: limit
+      description: Limit on the number of resource groups to return.
+      defaultValue: 50
+    - name: tag
+      description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
+    outputs:
+    - contextPath: Azure.ResourceGroupName.name
+      description: Resource group name.
+      type: String
+    - contextPath: Azure.ResourceGroupName.location
+      description: Resource group location.
+      type: String
+    - contextPath: Azure.ResourceGroupName.tags
+      description: Resource group tags.
+      type: Unknown
+    - contextPath: Azure.ResourceGroupName.properties.provisioningState
+      description: Resource group provisioning state.
+  dockerimage: demisto/crypto:1.0.0.80214
   runonce: false
   script: '-'
   type: python
@@ -425,3 +474,6 @@ script:
 tests:
 - Azure SecurityCenter - Test
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect

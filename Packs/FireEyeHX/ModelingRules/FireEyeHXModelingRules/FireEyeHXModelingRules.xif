@@ -66,6 +66,7 @@ filter cefVersion = null
         registryEvent_process = json_extract_scalar(event_values, "$['registryEvent/process']"),
         registryEvent_processPath = json_extract_scalar(event_values, "$['registryEvent/processPath']"),
         registryEvent_ppath = json_extract_scalar(event_values, "$['registryEvent/ppath']")
+| alter md5values = arraymap(md5values -> [], trim("@element", "\""))
 | alter
         xdm.event.type = coalesce(event_type, json_extract_scalar(condition, "$.event_type")),
         xdm.observer.unique_identifier = json_extract_scalar(appliance, "$._id"),
@@ -109,7 +110,7 @@ filter cefVersion = null
         xdm.observer.name = source,
         xdm.observer.type = subtype,
         xdm.event.outcome = resolution,
-        xdm.target.file.md5 = to_string(coalesce(md5values,fileWriteEvent_md5));
+        xdm.target.file.md5 = arraystring(arraydistinct(arrayconcat(md5values, arraycreate(fileWriteEvent_md5))), ",");
 // Syslog CEF logs
 filter cefVersion != null
 | alter

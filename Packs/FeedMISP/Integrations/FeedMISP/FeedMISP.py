@@ -254,10 +254,7 @@ def get_ip_type(ip_attribute: Dict[str, Any]) -> str:
         ip_attribute: the ip attribute
     Returns: FeedIndicatorType
     """
-    if ':' in ip_attribute['value']:
-        return FeedIndicatorType.IPv6
-    else:
-        return FeedIndicatorType.IP
+    return FeedIndicatorType.ip_to_indicator_type(ip_attribute['value'])
 
 
 def get_attribute_indicator_type(attribute: Dict[str, Any]) -> Optional[str]:

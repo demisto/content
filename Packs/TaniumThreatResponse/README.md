@@ -9,7 +9,7 @@ Perform the following steps to configure the Socket Receiver:
 1. Go to **Modules** > **Connect**.
 2. Enter a name and description for the connection.
 3. From the **Source** dropdown, select **Event**.
-4. From the **Event Group** dropdown, select **Tanium Threat Response**.
+4. From the **Event Group** dropdown, select **Tanium Threat Response** or **Tanium Detect**..
 5. Select **Match Alerts Raw**.
 6. From the **Destination** dropdown, select **Socket Receiver**.
 7. Specify a unique name for the **Destination Name**.
@@ -24,6 +24,7 @@ More information can be found [here](https://docs.tanium.com/threat_response/thr
 <u>**Note:**</u>
 Make sure to send the log in UTC time. 
 Don't modify the value type of the "Timestamp" field. This field is set to UTC by default.
+The supported time format is yyyy-MM-ddThh:mm:ss.nnnZ (2022-01-01T10:00:00.000Z). The relevant field is "Timestamp".
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
@@ -37,6 +38,6 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** > **Configuration** > **Data Broker** > **Broker VMs**. 
 2. Go to the apps tab and add the **Syslog** app. If it already exists, click the **Syslog** app and then click **Configure**.
 3. Click **Add New**.
-4. When configuring the Syslog Collector, set the following values **(not relevant for CEF and LEEF formats)**:
+4. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - tanium
    - product as product - threat_response

@@ -1,6 +1,9 @@
 import os
 import pytest
-from handle_external_pr import is_requires_security_reviewer, SECURITY_CONTENT_ITEMS
+from handle_external_pr import (
+    is_requires_security_reviewer,
+    SECURITY_CONTENT_ITEMS
+)
 
 
 @pytest.mark.parametrize(

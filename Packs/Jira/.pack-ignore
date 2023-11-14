@@ -38,3 +38,8 @@ ignore=MR108
 [file:JiraEventCollector_1_3.yml]
 ignore=MR108
 
+[file:Jira_Issue_Key.json]
+ignore=IF100
+
+[file:Jira_Issue_Type.json]
+ignore=IF100

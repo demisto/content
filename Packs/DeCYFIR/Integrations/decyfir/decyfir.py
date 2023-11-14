@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Dict, List
+from typing import Any
 
 ''' IMPORTS '''
 
@@ -19,7 +19,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 500
 DEFAULT_INDICATORS_THRESHOLD = 65
 
-# PROD_API_PATH: str = 'https://decyfir.cyfirma.com/core/api-ua/v2/alerts'
 API_PATH_SUFFIX: str = '/core/api-ua/v2/alerts'
 
 LABEL_DECYFIR = "DeCYFIR"
@@ -119,14 +118,16 @@ class Client(BaseClient):
         else:
             return IncidentSeverity.UNKNOWN
 
-    def request_decyfir_api(self, category, category_type, api_param_query):
+    def request_decyfir_api(self, category, category_type, api_param_query) -> list[dict]:
         response = self._http_request(
             url_suffix=f"{API_PATH_SUFFIX}" + f"/{category}?" + f"type={category_type}" + api_param_query,
             resp_type='response',
             method='GET')
 
-        if response.status_code == 200:
-            return response.json() if response.content else []
+        if response.status_code == 200 and response.content:
+            return response.json()
+
+        return []
 
     def get_decyfir_data(self, after_val: int, decyfir_api_key: str, incident_type: str, max_fetch):
 
@@ -167,49 +168,49 @@ class Client(BaseClient):
 
         return return_data
 
-    def prepare_incident_json(self, source_brand: str, alert_type: str, alert_subtype: str, name: str, date_val: str,
-                              severity: int, details: str, record_id: str) -> Dict[str, Any]:
+    def prepare_incident_json(self, alert_type: str, alert_subtype: str, name: str, date_val: str,
+                              severity: int, details: dict, record_id: str) -> dict[str, Any]:
 
         occurred_date = dateparser.parse(date_val)
         occurred = occurred_date.strftime(DATE_FORMAT) if isinstance(occurred_date, datetime) else None
 
+        decyfir_data_details = []
+
+        for key, value in details.items():
+            if key != 'uid' and value is not None and value != 'null':
+                key = str(key).replace("_", " ").capitalize()
+                decyfir_data_details.append({"fields": key, "values": value})
+
         return_data = {
-            "type": "" + f"{alert_type}",
+            "type": f"{alert_type}",
             "name": name,
             "occurred": occurred,
             "severity": severity,
-            "details": details,
-            "rawJSON": details,
-            "decyfirsubcategory": alert_subtype,
-            "decyfircategory": alert_type,
+            "rawJSON": str(json.dumps(details)),
             "category": alert_type,
+            "subcategory": alert_subtype,
             "dbotMirrorId": record_id,
             "sourceBrand": LABEL_DECYFIR,
             "labels": [
                 {
-                    "type": "decyfircategory",
-                    "value": alert_type
-                },
-                {
-                    "type": "decyfirsubcategory",
-                    "value": alert_subtype
-                },
-                {
-                    "type": "incident_source_from",
-                    "value": source_brand
+                    "type": "Description",
+                    "value": details.get('description')
                 }
-            ]
+            ],
+            "customFields": {
+                "decyfirdatadetails": decyfir_data_details
+            }
         }
 
         return return_data
 
-    def prepare_incidents_for_attack_surface(self, json_data, alert_type: str, alert_subtype: str) -> List[dict]:
+    def prepare_incidents_for_attack_surface(self, json_data, alert_type: str, alert_subtype: str) -> list[dict]:
         try:
             incidents_json = []
             for json_ in json_data:
                 severity = self.get_severity(json_.get("risk_score"))
                 ip = json_.get("ip")
-                details = str(json.dumps(json_))
+                details = dict(json_)
                 date_val = json_.get("alert_created_date")
                 uid = json_.get("uid")
 
@@ -218,15 +219,15 @@ class Client(BaseClient):
                     domain = json_.get("sub_domain")
                 domain = domain + ", " + json_.get("top_domain") if domain else json_.get("top_domain")
 
-                name = "DOMAIN : {}".format(domain) if domain else ""
+                name = f"DOMAIN : {domain}" if domain else ""
 
                 if ip:
-                    name = name + "\n IP: {}".format(ip) if name else "IP: {}".format(ip)
+                    name = name + f"\n IP: {ip}" if name else f"IP: {ip}"
 
                 if not name:
                     name = "Asset: {}".format(json_.get("asset_name")) if json_.get("asset_name") else ""
 
-                incident_json = self.prepare_incident_json(LABEL_DECYFIR, alert_type, alert_subtype,
+                incident_json = self.prepare_incident_json(alert_type, alert_subtype,
                                                            name, date_val, severity, details, uid)
                 incidents_json.append(incident_json)
 
@@ -234,17 +235,17 @@ class Client(BaseClient):
         except Exception as e:
             raise DemistoException(str(e))
 
-    def prepare_incidents_for_digital_risk(self, json_data, alert_type: str, alert_subtype: str) -> List:
+    def prepare_incidents_for_digital_risk(self, json_data, alert_type: str, alert_subtype: str) -> list:
         try:
             incidents_json = []
             for json_ in json_data:
                 severity = self.get_severity(json_.get("risk_score"))
                 date_val = json_.get("alert_created_date")
-                details = str(json.dumps(json_))
+                details = dict(json_)
                 name: str = json_.get("title")
                 uid = json_.get("uid")
 
-                incident_json = self.prepare_incident_json(LABEL_DECYFIR, alert_type, alert_subtype,
+                incident_json = self.prepare_incident_json(alert_type, alert_subtype,
                                                            name, date_val, severity, details, uid)
                 incidents_json.append(incident_json)
 
@@ -254,7 +255,7 @@ class Client(BaseClient):
 
     def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents):
         try:
-            return_data: List[dict] = []
+            return_data: list[dict] = []
 
             # Attack Surface
             # Open Ports

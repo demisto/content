@@ -1,0 +1,152 @@
+{
+    "EVENTS_GET_LAST_TIME_EVENT_1": [
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:19Z"
+        },
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:20Z"
+        }
+    ],
+    "EVENTS_GET_LAST_TIME_EVENT_2": [
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:19Z"
+        },
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:20Z"
+        }
+    ],
+    "EVENTS_GET_LAST_TIME_EVENT_3": [
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:19Z"
+        },
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:19Z"
+        }
+    ],
+    "EVENTS_GENERATE_ID_FOR_EVENT_1": [{
+        "messageID": "<11111.11111.11111.1111@mx.test.com>",
+        "subject": "test-test2 - 1111",
+        "size": 3000
+    }],
+    "EVENTS_GENERATE_ID_FOR_EVENT_2": [{
+        "mailID": "test12345",
+        "reason": "0000000000000"
+    }],
+    "EVENTS_GET_EVENT_IDS_WITH_DUPLICATION_RISK": [
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "messageID": "<22222.22222.22222.2222@mx.test.com>",
+            "subject": "test1-test2 - 2222",
+            "size": 4000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "messageID": "<33333.33333.33333.3333@mx.test.com>",
+            "subject": "test2-test2 - 3333",
+            "size": 5000,
+            "genTime": "2023-07-14T10:00:18Z"
+        }
+    ],
+    "EVENTS_DEDUPLICATE_1": [
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "messageID": "<22222.22222.22222.2222@mx.test.com>",
+            "subject": "test1-test2 - 2222",
+            "size": 4000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "messageID": "<33333.33333.33333.3333@mx.test.com>",
+            "subject": "test2-test2 - 3333",
+            "size": 5000,
+            "genTime": "2023-07-14T10:00:18Z"
+        }
+    ],
+    "EVENTS_DEDUPLICATE_2": [
+        {
+            "messageID": "<11111.11111.11111.1111@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "messageID": "<22222.22222.22222.2222@mx.test.com>",
+            "subject": "test1-test2 - 2222",
+            "size": 4000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "messageID": "<33333.33333.33333.3333@mx.test.com>",
+            "subject": "test2-test2 - 3333",
+            "size": 5000,
+            "genTime": "2023-07-14T10:00:18Z"
+        }
+    ],
+    "EVENTS_CALCULATE_LAST_RUN": [
+        {
+            "mailID": "<33333.33333.33333.3333@mx.test.com>",
+            "subject": "test-test2 - 1111",
+            "size": 3000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "mailID": "<44444.44444.44444.4444@mx.test.com>",
+            "subject": "test1-test2 - 2222",
+            "size": 4000,
+            "genTime": "2023-07-15T10:00:18Z"
+        },
+        {
+            "mailID": "<55555.55555.55555.5555@mx.test.com>",
+            "subject": "test2-test2 - 3333",
+            "size": 5000,
+            "genTime": "2023-07-14T10:00:18Z"
+        }
+    ],
+    "EVENTS_NO_EVENTS": []
+}

@@ -77,10 +77,24 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- defaultvalue: 'true'
-  display: Fetch incidents
+- display: IOM fetch query
+  name: iom_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: "Use the Falcon Query Language. For more information, refer to the integration docs."
+- display: IOA fetch query
+  name: ioa_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
+  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs."
+- display: Fetch incidents
   name: isFetch
   type: 8
+  defaultvalue: 'true'
   section: Collect
   required: false
 - display: Incident type
@@ -91,6 +105,8 @@ configuration:
 - display: Mirroring Direction
   name: mirror_direction
   type: 15
+  section: Collect
+  required: false
   additionalinfo: 'Choose the direction to mirror the detection: Incoming (from CrowdStrike Falcon to Cortex XSOAR), Outgoing (from Cortex XSOAR to CrowdStrike Falcon), or Incoming and Outgoing (to/from CrowdStrike Falcon and Cortex XSOAR).'
   defaultvalue: None
   options:
@@ -98,8 +114,6 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-  section: Collect
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -114,32 +128,34 @@ configuration:
   required: false
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
+  display: 'Close Mirrored XSOAR Incident'
   name: close_incident
   type: 8
   section: Collect
   advanced: true
   required: false
 - defaultvalue: 'false'
-  display: Close Mirrored CrowdStrike Falcon Incident or Detection
+  display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
   type: 8
-  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
   section: Collect
   advanced: true
   required: false
+  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
 - additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
   defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
   type: 16
+  section: Collect
+  advanced: true
+  required: false
   options:
   - IDP Detection
   - Endpoint Incident
   - Endpoint Detection
-  section: Collect
-  advanced: true
-  required: false
+  - Indicator of Misconfiguration
+  - Indicator of Attack
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -392,7 +408,7 @@ script:
       - 'false'
     - description: Username to assign the detections to. (This is usually the user’s email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive.
       name: username
-    description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place.
+    description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place. Note that IDP detections are not supported.
     name: cs-falcon-resolve-detection
   - arguments:
     - description: The host agent ID (AID) of the host to contain. Get an agent ID from a detection.
@@ -412,7 +428,7 @@ script:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
       defaultValue: false
-    - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
+    - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.).
       name: host_ids
       required: true
     - description: The type of command to run.
@@ -423,7 +439,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: read
-      description: 'The scope to run the command for. Possible values are: "read", "write", and "admin". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.)'
+      description: 'The scope to run the command for. Possible values are: "read", "write", and "admin". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.).'
       name: scope
       predefined:
       - read
@@ -491,7 +507,7 @@ script:
     - description: The file entry ID to upload.
       name: entry_id
       required: true
-    description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command.)
+    description: Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command.).
     name: cs-falcon-upload-file
   - arguments:
     - description: The ID of the file to delete. (The ID of the file can be retrieved by running the 'cs-falcon-list-files' command).
@@ -500,7 +516,7 @@ script:
     description: Deletes a file based on the provided ID. Can delete only one file at a time.
     name: cs-falcon-delete-file
   - arguments:
-    - description: A comma-separated list of file IDs to get. (The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.)
+    - description: A comma-separated list of file IDs to get. (The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.).
       name: file_id
       required: true
     description: Returns files based on the provided IDs. These files are used for the RTR 'put' command.
@@ -531,7 +547,7 @@ script:
       description: The full name of the file.
       type: String
     - contextPath: CrowdStrike.File.Permission
-      description: 'The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins'
+      description: 'The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins.'
       type: String
     - contextPath: CrowdStrike.File.SHA256
       description: The SHA-256 hash of the file.
@@ -595,7 +611,7 @@ script:
       description: The size of the file in bytes.
       type: Number
   - arguments:
-    - description: A comma-separated list of script IDs to return. (The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.)
+    - description: A comma-separated list of script IDs to return. (The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.).
       name: script_id
       required: true
     description: Returns custom scripts based on the provided ID. Used for the RTR 'runscript' command.
@@ -641,7 +657,7 @@ script:
       description: Whether the user has write access to the script.
       type: Boolean
   - arguments:
-    - description: The script ID to delete. (Script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.)
+    - description: The script ID to delete. (Script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.).
       name: script_id
       required: true
     description: Deletes a custom-script based on the provided ID. Can delete only one script at a time.
@@ -692,7 +708,7 @@ script:
   - arguments:
     - description: The name of the script to run.
       name: script_name
-    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.).
       name: host_ids
       required: true
     - description: The PowerShell script code to run.
@@ -1290,7 +1306,7 @@ script:
       description: The identity of the user/process who last updated the IOC.
       type: string
     - contextPath: CrowdStrike.NextPageToken
-      description: A pagination token used with the limit parameter to manage pagination of results
+      description: A pagination token used with the limit parameter to manage pagination of results.
   - arguments:
     - auto: PREDEFINED
       description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". Either ioc_id or ioc_type and value must be provided.'
@@ -1408,6 +1424,8 @@ script:
     - description: List of tags to apply to the indicator.
       isArray: true
       name: tags
+    - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      name: file_name
     description: Uploads an indicator for CrowdStrike to monitor.
     name: cs-falcon-upload-custom-ioc
     outputs:
@@ -1453,6 +1471,9 @@ script:
     - contextPath: CrowdStrike.IOC.Platforms
       description: The platforms of the IOC.
       type: Unknown
+    - contextPath: CrowdStrike.IOC.Filename
+      description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
   - arguments:
     - description: The ID of the IOC to update. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
@@ -1488,6 +1509,8 @@ script:
       name: source
     - description: A meaningful description of the indicator. Limited to 200 characters.
       name: description
+    - description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      name: file_name
     description: Updates an indicator for CrowdStrike to monitor.
     name: cs-falcon-update-custom-ioc
     outputs:
@@ -1527,6 +1550,10 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.IOC.Filename
+      description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
+      type: string
+
   - arguments:
     - description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
@@ -2274,7 +2301,7 @@ script:
     - description: The ID of the host group.
       name: host_group_id
       required: true
-    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.).
       isArray: true
       name: host_ids
       required: true
@@ -2309,7 +2336,7 @@ script:
     - description: The ID of the host group.
       name: host_group_id
       required: true
-    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.)
+    - description: A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.).
       isArray: true
       name: host_ids
       required: true
@@ -2421,6 +2448,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2452,6 +2481,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2468,6 +2499,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2481,6 +2514,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2499,6 +2534,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2509,6 +2546,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2532,6 +2571,8 @@ script:
     - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       name: queue_offline
       defaultValue: false
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
@@ -2613,7 +2654,7 @@ script:
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
   - arguments:
-    - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'
+    - description: Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'.
       name: filter
     - description: Unique agent identifier (AID) of a sensor.
       name: aid
@@ -2638,7 +2679,7 @@ script:
     - description: Type of host a sensor is running on.
       name: host_type
       isArray: true
-    - description: Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10
+    - description: Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10.
       name: last_seen_within
     - auto: PREDEFINED
       description: Indicates if the vulnerability is suppressed by a suppression rule.
@@ -2820,12 +2861,10 @@ script:
     - description: Deprecated. Use cve instead.
       name: cve_id
       isArray: true
-      required: false
       deprecated: true
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve
       isArray: true
-      required: false
       default: true
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
@@ -3852,7 +3891,7 @@ script:
       description: A unique identifier for the scan profile used in the scan.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.host_id
-      description: A unique identifier for the host that was scanned
+      description: A unique identifier for the host that was scanned.
       type: String
     - contextPath: CrowdStrike.ODSScanHost.host_scan_id
       description: A unique identifier for the scan that was performed on the host.
@@ -3870,10 +3909,10 @@ script:
       description: The number of files that were skipped during the scan.
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.status
-      description: The status of the scan. (e.g., "completed", "pending", "cancelled", "running", or "failed")
+      description: The status of the scan. (e.g., "completed", "pending", "cancelled", "running", or "failed").
       type: String
     - contextPath: CrowdStrike.ODSScanHost.severity
-      description: A severity score assigned to the scan, ranging from 0 to 100
+      description: A severity score assigned to the scan, ranging from 0 to 100.
       type: Number
     - contextPath: CrowdStrike.ODSScanHost.started_on
       description: The date and time when the scan was started.
@@ -4276,7 +4315,6 @@ script:
       auto: PREDEFINED
     - description: The key to sort by.
       name: sort_key
-      required: false
       predefined:
       - RISK_SCORE
       - PRIMARY_DISPLAY_NAME
@@ -4286,7 +4324,6 @@ script:
       auto: PREDEFINED
     - description: The sort order.
       name: sort_order
-      required: false
       predefined:
       - 'DESCENDING'
       - 'ASCENDING'
@@ -4294,19 +4331,15 @@ script:
       defaultValue: ASCENDING
     - description: Comma separated list of entity IDs to look for.
       name: entity_id
-      required: false
       isArray: true
     - description: Primary display name to filter by.
       name: primary_display_name
-      required: false
       isArray: true
     - description: Secondary display name to filter by.
       name: secondary_display_name
-      required: false
       isArray: true
     - description: The maximum risk score severity to filter by.
       name: max_risk_score_severity
-      required: false
       predefined:
       - 'NORMAL'
       - 'MEDIUM'
@@ -4314,7 +4347,6 @@ script:
       auto: PREDEFINED
     - description: The minimum risk score severity to filter by.
       name: min_risk_score_severity
-      required: false
       predefined:
       - 'NORMAL'
       - 'MEDIUM'
@@ -4322,61 +4354,349 @@ script:
       auto: PREDEFINED
     - description: Whether to get only enabled or disabled identity entities.
       name: enabled
-      required: false
       predefined:
       - 'true'
       - 'false'
       auto: PREDEFINED
     - description: Filter by email.
       name: email
-      required: false
     - description: The hash for the next page.
       name: next_token
-      required: false
-    - description:  The maximum number of items to fetch per page. The maximum value allowed is 1000.
+    - description: The maximum number of items to fetch per page. The maximum value allowed is 1000.
       name: page_size
-      required: false
       defaultValue: 50
-    - description: The page number. Default is 1. 
+    - description: The page number. Default is 1.
       name: page
-      required: false
     - description: The maximum number of identity entities to list.
       name: limit
-      required: false
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
-      - contextPath: CrowdStrike.IDPEntity.IsHuman
-        description: Whether the identity entity is human made.
-        type: Boolean
-      - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
-        description: Whether the identity entity is programmatic made.
-        type: Boolean
-      - contextPath: CrowdStrike.IDPEntity.IsAdmin
-        description: Whether the identity entity is admin made.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
-        description: The identity entity primary display name.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
-        description: The identity entity risk factor type.
-        type: Unknown
-      - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
-        description: The identity entity risk factor severity.
-        type: Unknown
-      - contextPath: CrowdStrike.IDPEntity.RiskScore
-        description: The identity entity risk score.
-        type: Number
-      - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
-        description: The identity entity risk score severity.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
-        description: The identity entity secondary display name.
-        type: String
-      - contextPath: CrowdStrike.IDPEntity.EmailAddresses
-        description: The identity entity email address.
-        type: String
-  dockerimage: demisto/py3-tools:1.0.0.64927
+    - contextPath: CrowdStrike.IDPEntity.IsHuman
+      description: Whether the identity entity is human made.
+      type: Boolean
+    - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+      description: Whether the identity entity is programmatic made.
+      type: Boolean
+    - contextPath: CrowdStrike.IDPEntity.IsAdmin
+      description: Whether the identity entity is admin made.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+      description: The identity entity primary display name.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+      description: The identity entity risk factor type.
+      type: Unknown
+    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+      description: The identity entity risk factor severity.
+      type: Unknown
+    - contextPath: CrowdStrike.IDPEntity.RiskScore
+      description: The identity entity risk score.
+      type: Number
+    - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+      description: The identity entity risk score severity.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+      description: The identity entity secondary display name.
+      type: String
+    - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+      description: The identity entity email address.
+      type: String
+  - arguments:
+    - description: Comma-separated list of policy IDs to look for.
+      name: policy_ids
+      isArray: true
+      required: true
+    description: Given a CSV list of policy IDs, returns detailed policy information.
+    name: cs-falcon-cspm-list-policy-details
+    outputs:
+    - contextPath: CrowdStrike.CSPMPolicy.ID
+      description: The policy ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicy.CreatedAt
+      description: The creation date.
+      type: Date
+    - contextPath: CrowdStrike.CSPMPolicy.UpdatedAt
+      description: The update date.
+      type: Date
+    - contextPath: CrowdStrike.CSPMPolicy.DeletedAt
+      description: The deletion date.
+      type: Date
+    - contextPath: CrowdStrike.CSPMPolicy.description
+      description: The policy description.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.policy_statement
+      description: The policy statement.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.policy_remediation
+      description: The policy remediation.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_service_subtype
+      description: The cloud service subtype.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_document
+      description: The cloud document.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.mitre_attack_cloud_matrix
+      description: URL to the MITRE attack tactics.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.mitre_attack_cloud_subtype
+      description: URL to the MITRE attack techniques.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.alert_logic
+      description: The alert logic.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.api_command
+      description: The API command.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cli_command
+      description: The CLI command.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_platform_type
+      description: The cloud platform type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_service_type
+      description: The cloud service type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.default_severity
+      description: The default severity.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.cis_benchmark_ids
+      description: The CIS benchmark IDs.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicy.nist_benchmark_ids
+      description: The NIST benchmark IDs.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicy.pci_benchmark_ids
+      description: The pci benchmark IDs.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicy.policy_type
+      description: The policy type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.tactic_url
+      description: The tactic URL.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.technique_url
+      description: The technique URL.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.tactic
+      description: The tactic used.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.technique
+      description: The technique used.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.tactic_id
+      description: The tactic ID.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.technique_id
+      description: The technique ID.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.attack_types
+      description: The attack types.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicy.asset_type_id
+      description: The asset type ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicy.cloud_asset_type
+      description: The cloud asset type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicy.is_remediable
+      description: Whether the policy is remediable or not..
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicy.is_enabled
+      description: Whether the policy is enabled or not.
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicy.account_scope
+      description: The account scope.
+      type: String
+  - arguments:
+    - description: The policy ID to look for its settings.
+      name: policy_id
+    - description: The cloud provider.
+      name: cloud_platform
+      defaultValue: 'aws'
+      predefined:
+      - 'aws'
+      - 'gcp'
+      - 'azure'
+      auto: PREDEFINED
+    - description: Service type to filter by.
+      name: service
+    - description: The maximum number of entities to list.
+      name: limit
+      defaultValue: 50
+    description: Returns information about current policy settings.
+    name: cs-falcon-cspm-list-service-policy-settings
+    outputs:
+    - contextPath: CrowdStrike.CSPMPolicySetting.is_remediable
+      description: Whether the policy setting is remediable or not.
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicySetting.created_at
+      description: The creation date.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.updated_at
+      description: The update date.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_id
+      description: The policy ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.name
+      description: The policy setting name.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_type
+      description: The policy type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_service_subtype
+      description: The cloud service subtype.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_service
+      description: The cloud service.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_service_friendly
+      description: The cloud friendly service.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_asset_type
+      description: The cloud asset type.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_asset_type_id
+      description: The cloud asset type ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.cloud_provider
+      description: The cloud provider.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.default_severity
+      description: The default severity.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_timestamp
+      description: The policy timestamp.
+      type: Date
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings
+      description: An array that holds policy settings.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.account_id
+      description: The account ID correlated to the policy.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.regions
+      description: The regions in which the policy is configured at.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.severity
+      description: The severity of the policy.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.enabled
+      description: Whether the policy settings are enabled or not.
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicySetting.policy_settings.tag_excluded
+      description: Whether the tag is excluded or not.
+      type: Boolean
+    - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark
+      description: An array of CIS benchmark details.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark.id
+      description: The CIS benchmark ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark.benchmark_short
+      description: The CIS benchmark shortname.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.cis_benchmark.recommendation_number
+      description: The CIS benchmark recommendation number.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark
+      description: An array of PCI benchmark details.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark.id
+      description: The PCI benchmark ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark.benchmark_short
+      description: The PCI benchmark shortname.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.pci_benchmark.recommendation_number
+      description: The PCI benchmark recommendation number.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark
+      description: An array of NIST benchmark details.
+      type: Array
+    - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark.id
+      description: The NIST benchmark ID.
+      type: Integer
+    - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark.benchmark_short
+      description: The NIST benchmark shortname.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.nist_benchmark.recommendation_number
+      description: The NIST benchmark recommendation number.
+      type: String
+    - contextPath: CrowdStrike.CSPMPolicySetting.attack_types
+      description: The attack types.
+      type: Array
+  - arguments:
+    - description: Policy ID to be updated.
+      name: policy_id
+      required: true
+    - description: Cloud Account ID to impact.
+      name: account_id
+    - description: Flag indicating if this policy is enabled.
+      name: enabled
+      defaultValue: 'true'
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    - description: List of regions where this policy is enforced.
+      name: regions
+      isArray: true
+    - description: Policy severity value.
+      name: severity
+      predefined:
+      - 'critical'
+      - 'high'
+      - 'medium'
+      - 'informational'
+      auto: PREDEFINED
+    - description: Tag exclusion flag.
+      name: tag_excluded
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    description: Updates a policy setting - can be used to override policy severity or to disable a policy entirely.
+    name: cs-falcon-cspm-update-policy_settings
+  - arguments:
+    - description: IDs of the alerts to update.
+      name: ids
+      isArray: true
+      required: true
+    - description: Assign the specified detections to a user based on their username.
+      name: assign_to_name
+    - description: Assign the specified detections to a user based on their UUID.
+      name: assign_to_uuid
+    - description: Appends a new comment to any existing comments for the specified detections.
+      name: append_comment
+    - description: Add a tag to the specified detections.
+      name: add_tag
+    - description: Remove a tag from the specified detections.
+      name: remove_tag
+    - description: Update status of the alert to the specified value.
+      name: update_status
+      predefined:
+      - 'new'
+      - 'in_progress'
+      - 'closed'
+      - 'reopened'
+      auto: PREDEFINED
+    - description: Whether to unassign any assigned users to the specified detections.
+      name: unassign
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    - description: If true, displays the detection in the UI.
+      name: show_in_ui
+      predefined:
+      - 'false'
+      - 'true'
+      auto: PREDEFINED
+    description: Perform actions on alerts.
+    name: cs-falcon-resolve-identity-detection
+  dockerimage: demisto/py3-tools:1.0.0.79870
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -10,6 +10,7 @@ from EWSv2 import fetch_last_emails
 from exchangelib.errors import UnauthorizedError
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
+import demistomock as demisto
 
 
 class TestNormalCommands:
@@ -194,6 +195,98 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
     assert len(x) == expected_result
 
 
+def test_fetch_last_emails_fail(mocker):
+    """
+    This UT is added due to the following issue: XSUP-28730
+    where an ErrorMimeContentConversionFailed exception is raised if there was a corrupt object in the stream of
+    results returned from the fetch process (exchangelib module behavior).
+    If such exception is encountered, it would be handled internally so that the integration would not crash.
+
+    Given:
+        - First exception raised is ErrorMimeContentConversionFailed
+        - Second exception raised is ValueError
+
+    When:
+        - Iterating over mail objects when fetching last emails
+
+    Then:
+        - Catch ErrorMimeContentConversionFailed, print relevant debug message
+          for encountered corrupt object and continue iteration to next object
+        - Catch ValueError, and raise it forward
+    """
+    from EWSv2 import ErrorMimeContentConversionFailed
+
+    class MockObject:
+        def filter(self, datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            return [Message(), Message(), Message(), Message(), Message()]
+
+    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
+    EWSv2.MAX_FETCH = 1
+    client = TestNormalCommands.MockClient()
+
+    mocker.patch('EWSv2.isinstance', side_effect=[ErrorMimeContentConversionFailed(AttributeError()), ValueError()])
+
+    with pytest.raises(ValueError) as e:
+        fetch_last_emails(client, since_datetime='since_datetime')
+        assert str(e) == 'Got an error when pulling incidents. You might be using the wrong exchange version.'
+
+
+def test_fetch_last_emails_object_stream_behavior(mocker):
+    """
+    This UT is added due to the following issue: XSUP-28730
+    where an ErrorMimeContentConversionFailed exception is raised if there was a corrupt object in the stream of
+    results returned from the fetch process (exchangelib module behavior).
+    If such exception is encountered, it would be handled internally so that the integration would not crash
+
+    Given:
+        - A stream of 3 fetched objects, where objects in indexes 0,2 are valid message objects
+          and the object in index 1 is an exception object (corrupt object)
+
+    When:
+        - Iterating over mail objects when fetching last emails
+
+    Then:
+        - Iterate over the fetched objects
+        - Catch the corrupt object object, print relevant debug message
+          and continue iteration to next object
+        - Assert only valid objects are in the result
+    """
+    from EWSv2 import ErrorMimeContentConversionFailed
+
+    class MockObject:
+        def filter(self, datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            return [Message(), Message(), Message()]
+
+    mocker.patch.object(EWSv2, 'get_folder_by_path', return_value=MockObject())
+    EWSv2.MAX_FETCH = 3
+    client = TestNormalCommands.MockClient()
+
+    mocker.patch('EWSv2.isinstance', side_effect=[True, ErrorMimeContentConversionFailed(AttributeError()), True])
+
+    x = fetch_last_emails(client, since_datetime='since_datetime')
+    assert len(x) == 2
+
+
 def test_dateparser():
     """Test that dateparser works fine. See: https://github.com/demisto/etc/issues/39240 """
     now = datetime.datetime.now()
@@ -360,11 +453,34 @@ def test_send_mail(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    results = send_email(to="test@gmail.com", subject="test", replyTo="test1@gmail.com")
+    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
-    assert send_email_mocker.call_args.kwargs.get('reply_to') == 'test1@gmail.com'
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
+    }
+
+
+def test_send_mail_with_from_arg(mocker):
+    """
+    Given -
+        to, subject and replyTo arguments to send an email.
+
+    When -
+        trying to send an email
+
+    Then -
+        verify the context output is returned correctly and that the 'to' and 'replyTo' arguments were sent
+        as a list of strings.
+    """
+    from EWSv2 import send_email
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
+    results = send_email({'to': "test@gmail.com", 'subject': "test", 'replyTo': "test1@gmail.com", "from": "somemail@what.ever"})
+    assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
+    assert send_email_mocker.call_args.kwargs.get('reply_to') == ['test1@gmail.com']
+    assert results[0].get('Contents') == {
+        'from': 'somemail@what.ever', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
 
 
@@ -382,7 +498,7 @@ def test_send_mail_with_trailing_comma(mocker):
     from EWSv2 import send_email
     mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
     send_email_mocker = mocker.patch.object(EWSv2, 'send_email_to_mailbox')
-    results = send_email(to="test@gmail.com,", subject="test")
+    results = send_email({'to': "test@gmail.com,", 'subject': "test"})
     assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
     assert results[0].get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
@@ -494,6 +610,36 @@ def test_list_parse_item_as_dict():
     assert len(effetive_right_res) == 2
 
 
+def test_parse_item_as_dict_with_empty_field():
+    """
+    Given -
+        a Message where effective rights is None and other fields are false\empty strings.
+
+    When -
+        running the parse_item_as_dict function.
+
+    Then -
+        effective rights field was removed from response other empty\negative fields aren't.
+    """
+    from EWSv2 import parse_item_as_dict
+
+    message = Message(subject='message4',
+                      message_id='message4',
+                      text_body='Hello World',
+                      body='',
+                      datetime_received=EWSDateTime(2021, 7, 14, 13, 10, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_sent=EWSDateTime(2021, 7, 14, 13, 9, 00, tzinfo=EWSTimeZone('UTC')),
+                      datetime_created=EWSDateTime(2021, 7, 14, 13, 11, 00, tzinfo=EWSTimeZone('UTC')),
+                      effective_rights=None,
+                      is_read=False
+                      )
+
+    return_value = parse_item_as_dict(message, False)
+    assert 'effective_rights' not in return_value
+    assert return_value['body'] == ''
+    assert return_value['is_read'] is False
+
+
 def test_get_entry_for_object_empty():
     from EWSv2 import get_entry_for_object
     obj = {}
@@ -504,3 +650,17 @@ def test_get_entry_for_object():
     from EWSv2 import get_entry_for_object
     obj = {"a": 1, "b": 2}
     assert get_entry_for_object("test", "keyTest", obj)['HumanReadable'] == '### test\n|a|b|\n|---|---|\n| 1 | 2 |\n'
+
+
+def test_get_time_zone(mocker):
+    """
+    When -
+        trying to send/reply an email we check the XOSAR user time zone
+
+    Then -
+        verify that info returns
+    """
+    from EWSv2 import get_time_zone
+    mocker.patch.object(demisto, 'callingContext', new={'context': {'User': {'timeZone': 'Asia/Jerusalem'}}})
+    results = get_time_zone()
+    assert results.key == 'Asia/Jerusalem'

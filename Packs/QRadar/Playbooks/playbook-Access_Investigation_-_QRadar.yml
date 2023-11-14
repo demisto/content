@@ -3,7 +3,7 @@ version: -1
 name: Access Investigation - QRadar
 fromversion: 5.0.0
 description: |-
-  This playbook uses the QRadar integration to investigate an access incident by gathering user and IP information.
+  Deprecated. No available replacement. This playbook uses the QRadar integration to investigate an access incident by gathering user and IP information.
 
   The playbook then interacts with the user that triggered the incident to confirm whether or not they initiated the access action.
 starttaskid: "0"
@@ -542,3 +542,4 @@ inputs: []
 outputs: []
 tests:
   - No test
+deprecated: true

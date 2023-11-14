@@ -1,9 +1,7 @@
 id: SafeBreach - Rerun Single Insight
 version: -1
 name: SafeBreach - Rerun Single Insight
-description: This is a sub-playbook that reruns a single insight using a specified
-  Insight Id as input. It is used to run insights one by one iteratively as part of
-  the main rerun playbook - "SafeBreach Rerun Insights".
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,8 +39,7 @@ tasks:
       id: 7e533299-05f4-44a9-8554-3c1fdc539e78
       version: -1
       name: Rerun single insight
-      description: Reruns a specific SafeBreach Insight related simulations in your
-        environment.
+      description: Reruns a specific SafeBreach Insight related simulations in your environment.
       script: SafeBreach v2|||safebreach-rerun-insight
       type: regular
       iscommand: true
@@ -265,4 +262,5 @@ outputs:
 quiet: true
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
+deprecated: true

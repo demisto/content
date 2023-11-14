@@ -25,6 +25,9 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 
 Returns enriched data for Domains, URLs, and IP addresses.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
+
 ##### Base Command
 
 `whois`

@@ -1,6 +1,15 @@
 {
-    "CONTRIBUTION_REVIEWERS": ["mmhw", "maimorag", "anas-yousef"],
-    "CONTRIBUTION_TL": "dorschw",
-    "CONTRIBUTION_SECURITY_REVIEWER": "efelmandar",
-    "ON_CALL_DEVS": ["epintzov", "mlainer"]
+    "CONTRIBUTION_REVIEWERS": [
+        "MosheEichler",
+        "sapirshuker",
+        "ilappe"
+    ],
+    "CONTRIBUTION_TL": "omerKarkKatz",
+    "CONTRIBUTION_SECURITY_REVIEWER": "melamedbn",
+    "ON_CALL_DEVS": [
+        "tkatzir",
+        "mgalitzki"
+    ],
+    "DOC_REVIEWER": "ShirleyDenkberg",
+    "TIM_REVIEWER": "MLainer1"
 }

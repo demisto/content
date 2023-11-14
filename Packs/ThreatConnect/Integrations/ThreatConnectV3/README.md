@@ -93,6 +93,8 @@ Searches for an indicator of type IP address.
 ***
 Searches for an indicator of type URL.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 #### Base Command
 
 `url`
@@ -549,6 +551,8 @@ Associates an indicator with an existing incident. The indicator must exist befo
 
 ***
 Searches for an indicator of type domain.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 #### Base Command
 

@@ -432,7 +432,7 @@ script:
       description: The revision ID provided by Confluence to be used as a revision in Synchrony.
       type: String
     - contextPath: ConfluenceCloud.Content.version.contentTypeModified
-      description: True if the content type is modified in the version. (e.g., page to blog)
+      description: True if the content type is modified in the version. (e.g., page to blog).
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version._links.self
       description: Link to the new version of the content.
@@ -1207,7 +1207,7 @@ script:
       description: The revision ID provided by Confluence to be used as a revision in Synchrony.
       type: String
     - contextPath: ConfluenceCloud.Content.version.contentTypeModified
-      description: True if the content type is modified in the version. (e.g., page to blog)
+      description: True if the content type is modified in the version. (e.g., page to blog).
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version._links.self
       description: Link to the new version of the content.
@@ -1499,7 +1499,7 @@ script:
       description: The revision ID provided by Confluence to be used as a revision in Synchrony.
       type: String
     - contextPath: ConfluenceCloud.Content.version.contentTypeModified
-      description: True if the content type is modified in the version. (e.g., page to blog)
+      description: True if the content type is modified in the version. (e.g., page to blog).
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version._links.self
       description: Link to the new version of the content.
@@ -1767,7 +1767,7 @@ script:
       description: The revision ID provided by Confluence to be used as a revision in Synchrony.
       type: String
     - contextPath: ConfluenceCloud.Content.version.contentTypeModified
-      description: True if the content type is modified in the version. (e.g., page to blog)
+      description: True if the content type is modified in the version. (e.g., page to blog).
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version._links.self
       description: Link to the new version of the content.
@@ -1915,7 +1915,7 @@ script:
     - contextPath: ConfluenceCloud.Group._links.self
       description: Link to the group.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.78960
   runonce: false
   script: '-'
   subtype: python3

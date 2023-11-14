@@ -1,0 +1,30 @@
+{
+    "total": 1,
+    "size": 1,
+    "data": [
+        {
+            "eventSeverity": 7,
+            "incidentFirstSeen": 1646092830000,
+            "incidentReso": 1,
+            "incidentRptIp": "incidentRptIp",
+            "incidentLastSeen": 1646147610000,
+            "incidentSrc": "incidentSrc",
+            "count": 40322,
+            "attackTechnique": "attackTechnique",
+            "eventType": "PH_RULE_EXCESS_DNS_QUERY",
+            "phIncidentCategory": 4,
+            "incidentClearedTime": 0,
+            "incidentTarget": "",
+            "attackTactic": "attackTactic",
+            "phSubIncidentCategory": "phSubIncidentCategory",
+            "eventSeverityCat": "MEDIUM",
+            "incidentDetail": "incidentDetail",
+            "incidentRptDevName": "incidentRptDevName",
+            "eventName": "eventName",
+            "incidentId": 1,
+            "incidentStatus": 0,
+            "customer": "Super"
+        }
+    ],
+    "start": 0
+}

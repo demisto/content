@@ -54,6 +54,8 @@
 <h3 id="h_53523308371535891435690">1. Upload a file</h3>
 <hr>
 <p>Upload a file or Web URL for dynamic analysis using the specified Analyzer Profile. You can only submit a single file or Web URL in each command.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+</p>
 <h5>Base Command</h5>
 <p><code>atd-file-upload</code></p>
 <h5>Input</h5>
