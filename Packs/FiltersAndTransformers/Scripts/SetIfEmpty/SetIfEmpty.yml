@@ -1,6 +1,7 @@
 args:
 - description: The object value to check, if empty.
   name: value
+  isArray: true
 - description: The new value to return if the original value was empty.
   name: defaultValue
 - auto: PREDEFINED
@@ -13,19 +14,17 @@ args:
   - 'false'
 comment: Checks an object for an empty value and returns a pre-set default value.
 commonfields:
-  id: SetIfEmpty
+  id: SetIfEmpty_test
   version: -1
 enabled: true
-name: SetIfEmpty
+name: SetIfEmpty_test
 script: '-'
-subtype: python3
 tags:
 - transformer
 - general
 - entirelist
 timeout: '0'
-type: python
+type: javascript
 fromversion: 5.0.0
 tests:
 - SetIfEmpty - non-ascii chars - Test
-dockerimage: demisto/python3:3.10.12.63474

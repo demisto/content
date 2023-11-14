@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: SetAndHandleEmpty
 fromversion: 5.0.0
-type: python
+type: javascript
 tags:
 - Utility
 comment: |-
@@ -43,7 +43,5 @@ args:
   defaultValue: "false"
 scripttarget: 0
 script: '-'
-subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
 tests:
 - SetAndHandleEmpty test

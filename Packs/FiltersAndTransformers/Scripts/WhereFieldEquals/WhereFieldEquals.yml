@@ -3,6 +3,7 @@ args:
   description: The list to apply the transformer to.
   name: value
   required: true
+  isArray: true
 - description: The attribute in the collection items to check equality against `equalTo`.
   name: field
   required: true
@@ -28,13 +29,11 @@ enabled: true
 name: WhereFieldEquals
 fromversion: 5.5.0
 script: '-'
-subtype: python3
 tags:
 - transformer
 - general
 - entirelist
 timeout: '0'
-type: python
-dockerimage: demisto/python3:3.10.12.63474
+type: javascript
 tests:
 - Email Address Enrichment - Generic v2.1 - Test
