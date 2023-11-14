@@ -868,7 +868,7 @@ script:
       description: The name of the malware.
       type: String
     - contextPath: NSM.Alerts.MalwareFile.malwareConfidence
-      description: Malware confidence
+      description: Malware confidence.
       type: String
     - contextPath: NSM.Alerts.MalwareFile.engine
       description: Malware file engine.
@@ -1226,7 +1226,7 @@ script:
       description: Attack category.
       type: String
     - contextPath: NSM.Attacks.description.definition
-      description: Attack Definition
+      description: Attack Definition.
       type: String
     - contextPath: NSM.Attacks.description.btp
       description: Benign Trigger Probability (BTP).
@@ -2045,7 +2045,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.80014
 fromversion: 6.5.0
 tests:
 - Test_McAfeeNSMv2_using_v9
