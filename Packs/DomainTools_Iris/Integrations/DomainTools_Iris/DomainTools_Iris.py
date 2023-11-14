@@ -858,7 +858,8 @@ def create_indicator_from_dt_domain(domain: Dict[str, Any], source: str) -> Dict
         "proximity": domain_risk_score_details["proximity_risk_score"],
         "malware": domain_risk_score_details["threat_profile_malware_risk_score"],
         "phishing": domain_risk_score_details["threat_profile_phishing_risk_score"],
-        "spam": domain_risk_score_details["threat_profile_spam_risk_score"]
+        "spam": domain_risk_score_details["threat_profile_spam_risk_score"],
+        "evidence": domain_risk_score_details["threat_profile_evidence"]
     }
 
     raw_json_indicator = {
@@ -891,7 +892,7 @@ def create_indicator_from_dt_domain(domain: Dict[str, Any], source: str) -> Dict
             "registrantname": domain.get("registrant_name", {}).get("value") or "",
             "soaemail": format_attribute(domain.get("soa_email"), key="value"),
             "expirationdate": domain.get("expiration_date", {}).get("value"),
-            "domaintoolsriskscorecomponents": riskscore_component_mapping
+            "domaintoolsirisriskscorecomponents": riskscore_component_mapping
         }
     }
 
@@ -1576,6 +1577,7 @@ def test_module():
         raise
 
 
+
 def fetch_domains():
     # iris search hash
     monitor_domain_by_search_hash = demisto.params().get("monitor_iris_search_hash", ) or "Import Indicators Only"
@@ -1583,6 +1585,8 @@ def fetch_domains():
     # iris tags
     monitor_domain_by_iris_tags = demisto.params().get("monitor_iris_tags") or "Import Indicators Only"
     iris_tags = demisto.params().get("domaintools_iris_tags") or False
+
+    fetch_limit = arg_to_number(demisto.params().get('max_fetch', 2))
 
     iris_search_hash_params = {
         "import_only": monitor_domain_by_search_hash == "Import Indicators Only",

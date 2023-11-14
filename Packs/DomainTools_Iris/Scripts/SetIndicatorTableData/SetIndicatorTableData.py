@@ -43,7 +43,7 @@ def format_attribute(attribute: List[dict], key: Optional[str] = None) -> str:
         str: The string formatted attribute
     """
     formatted_str = []
-    for attr in attribute:
+    for attr in attribute or []:
         if isinstance(attr, dict):
             keys = key.split(".")
             value = attr[keys[0]][keys[1]] if len(keys) > 1 else attr[keys[0]]
@@ -85,10 +85,11 @@ def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
             reputation = ReputationEnum.UNKNOWN
 
         riskscore_component_mapping = {
-            "proximity": "ProximityRiskScore",
-            "malware": "MalwareRiskScore",
-            "phishing": "PhishingRiskScore",
-            "spam": "SpamRiskScore"
+            "proximity": domaintools_analytics_data.get("ProximityRiskScore") or "",
+            "malware": domaintools_analytics_data.get("MalwareRiskScore") or "",
+            "phishing": domaintools_analytics_data.get("PhishingRiskScore") or "",
+            "spam": domaintools_analytics_data.get("SpamRiskScore") or "",
+            "evidence": domaintools_analytics_data.get("ThreatProfileRiskScore", {}).get("Evidence") or ""
         }
 
         domaintools_iris_indicator = {
@@ -114,10 +115,7 @@ def set_indicator_table_data(args: Dict[str, Any]) -> CommandResults:
             "registrantname": domaintools_identity_data.get("RegistrantName"),
             "soaemail": format_attribute(domaintools_identity_data.get("SOAEmail"), key="value"),
             "expirationdate": domaintools_identity_data.get("Registration", {}).get("ExpirationDate"),
-            "domaintoolsriskscorecomponents": {
-                key: domaintools_analytics_data.get(val, "")
-                for key, val in riskscore_component_mapping.items()
-            },
+            "domaintoolsirisriskscorecomponents": riskscore_component_mapping
         }
 
         demisto.info(
