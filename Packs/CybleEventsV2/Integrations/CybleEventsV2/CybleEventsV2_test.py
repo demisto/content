@@ -189,8 +189,10 @@ def test_get_alert(requests_mock):
     url = "https://test.com/apollo/api/v1/y/alerts"
 
     collections = ["random_collections", "Darkweb Marketplaces", "Data Breaches", "Compromised Endpoints", "Compromised Cards"]
+    incident_severity = ["Low", "Medium", "High"]
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {}, False, collections, False)
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {},
+                                  False, collections, incident_severity, False)
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -223,11 +225,13 @@ def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
     url = "https://test.com/apollo/api/v1/y/alerts"
 
     collections = ["random_collections", "Darkweb Marketplaces", "Data Breaches", "Compromised Endpoints", "Compromised Cards"]
+    incident_severity = ["Low", "Medium", "High"]
 
     with capfd.disabled(), pytest.raises(ValueError,
                                          match="The limit argument should contain a positive number,"
                                                f" up to 1000, limit: {limit}"):
-        cyble_events(client, 'POST', "some_random_token", url, args, {}, False, collections, True)
+        cyble_events(client, 'POST', "some_random_token", url, args, {},
+                     False, collections, incident_severity, True)
 
 
 def test_limit_validate_input(capfd):
@@ -341,7 +345,8 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
 
     with capfd.disabled(), pytest.raises(ValueError,
                                          match=f"The parameter from has a negative value, from: {args.get('from')}'"):
-        cyble_events(client, 'POST', "some_random_token", url, args, {}, True, "random_collections", True)
+        cyble_events(client, 'POST', "some_random_token", url, args, {},
+                     True, [], [], True)
 
 
 def test_get_alert_fetch(requests_mock):
@@ -369,7 +374,8 @@ def test_get_alert_fetch(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {}, False, "random_collections", False)
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {},
+                                  False, [], [], False)
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -400,7 +406,8 @@ def test_get_alert_fetch2(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {}, False, "random_collections", True)
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {},
+                                  False, [], [], True)
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -431,7 +438,8 @@ def test_get_alert_output(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {}, False, "random_collections", False)
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {},
+                                  False, [], [], False)
 
     assert isinstance(response, list)
     assert response[0]['alert_group_id'] == '00000000-0000-0000-0000-000000000000'
@@ -516,7 +524,8 @@ def test_update_incident(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'PUT', "some_random_token", url, args, {}, False, "random_collections", False)
+    response, next = cyble_events(client, 'PUT', "some_random_token", url, args, {},
+                                  False, [], [], False)
 
     assert isinstance(response, list)
     assert len(response) == 1
