@@ -23,7 +23,7 @@ configuration:
   type: 15
 - defaultvalue: 10000
   section: Collect
-  display: Max events number per fetch
+  display: Max number of events per fetch
   name: max_events_per_fetch
   required: false
   type: 0
@@ -37,7 +37,7 @@ configuration:
   required: false
   type: 8
   section: Connect
-description: This is the Hello World event collector integration for XSIAM.
+description: This is the Hello World event collector integration for Cortex XSIAM.
 display: HelloWorld Event Collector
 name: HelloWorldEventCollector
 script:
@@ -63,13 +63,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum results to return.
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: true
       secret: false
     - default: false
-      description: From date to get events from.
+      description: Date from which to get events.
       name: from_date
       required: false
     deprecated: false
