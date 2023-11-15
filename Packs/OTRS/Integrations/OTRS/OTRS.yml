@@ -371,9 +371,9 @@ script:
       - 3Normal
       - 4High
       - 5VeryHigh
-    - auto: PREDEFINED
-      description: Wether to change the lock state of the ticket.
+    - description: Wether to change the lock state of the ticket.
       name: lock
+      auto: PREDEFINED
       predefined:
       - lock
       - unlock
@@ -383,7 +383,7 @@ script:
       name: article_body
     - description: Queue that the ticket to update is in.
       name: queue
-    - description: Ticket Type of the ticket to update.
+    - description: 'Ticket Type of the ticket to update.'
       name: type
     - description: 'Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2.'
       name: dynamic_fields
@@ -450,7 +450,7 @@ script:
     - contextPath: OTRS.Ticket.Article.Body
       description: Ticket article body.
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.79373
+  dockerimage: demisto/pyotrs:1.0.0.80173
   isfetch: true
   runonce: false
   script: '-'
@@ -459,7 +459,6 @@ script:
   isremotesyncin: true
   isremotesyncout: true
   ismappable: false
-
 tests:
 - OTRS Test
 fromversion: 5.0.0
