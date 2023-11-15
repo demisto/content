@@ -247,22 +247,22 @@ def merge_options(default_options, user_options):
 #     return driver
 
 
-def find_zombie_processes():
-    """find zombie proceses
-    Returns:
-        ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
-    """
-    ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
-                                     stderr=subprocess.STDOUT, universal_newlines=True)
-    lines = ps_out.splitlines()
-    pid = str(os.getpid())
-    zombies = []
-    if len(lines) > 1:
-        for line in lines[1:]:
-            pinfo = line.split()
-            if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
-                zombies.append(pinfo[0])
-    return zombies, ps_out
+# def find_zombie_processes():
+#     """find zombie proceses
+#     Returns:
+#         ([process ids], raw ps output) -- return a tuple of zombie process ids and raw ps output
+#     """
+#     ps_out = subprocess.check_output(['ps', '-e', '-o', 'pid,ppid,state,stime,cmd'],
+#                                      stderr=subprocess.STDOUT, universal_newlines=True)
+#     lines = ps_out.splitlines()
+#     pid = str(os.getpid())
+#     zombies = []
+#     if len(lines) > 1:
+#         for line in lines[1:]:
+#             pinfo = line.split()
+#             if pinfo[2] == 'Z' and pinfo[1] == pid:  # zombie process
+#                 zombies.append(pinfo[0])
+#     return zombies, ps_out
 
 
 # def quit_driver_and_display_and_reap_children(driver, display):
