@@ -485,6 +485,7 @@ outputs:
   description: The name of the registrar, such as "GoDaddy".
   type: string
 tests:
-- No tests (auto formatted)
-contentitemexportablefields:
-  contentitemfields: {}
+- Domain Enrichment - Generic v2 - Test
+marketplaces:
+- xsoar
+- marketplacev2
