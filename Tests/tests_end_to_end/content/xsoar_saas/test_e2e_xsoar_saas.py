@@ -207,7 +207,6 @@ def test_qradar_mirroring(request: SubRequest, xsoar_saas_client: XsoarSaasClien
             # get the incident created in the last minute
             from_date=(datetime.utcnow() - timedelta(minutes=1)).strftime("%Y-%m-%dT%H:%M:%S"),
             incident_types=incidents_type,
-            should_skip_if_not_found=True
         ) as qradar_incident_response:
 
             offense_id = qradar_incident_response.get("CustomFields", {}).get("idoffense")

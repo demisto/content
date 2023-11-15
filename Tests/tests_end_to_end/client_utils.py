@@ -199,7 +199,6 @@ def get_fetched_incident(
     incident_types: list | str | None = None,
     should_start_investigation: bool = True,
     should_remove_fetched_incidents: bool = True,
-    should_skip_if_not_found: bool = False
 ):
     """
     Queries for a fetched incident against several filters and bring it back.
@@ -213,7 +212,6 @@ def get_fetched_incident(
         should_start_investigation (bool): whether investigation should be started when finding the relevant incident
                                            (means that the playbook attached to the incident will start running).
         should_remove_fetched_incidents (bool): whether to remove all the fetched incidents during teardown.
-        should_skip_if_not_found (bool): whether to skip the test if an incident couldn't be fetched
 
     Yields:
         dict: a fetched incident that was found.
@@ -230,13 +228,7 @@ def get_fetched_incident(
         )
 
     try:
-        try:
-            found_incidents = _get_fetched_incident()
-        except Exception:
-            if should_skip_if_not_found:
-                pytest.skip(f'Could not find any incident from {source_instance_name}, skipping the test')
-            raise
-
+        found_incidents = _get_fetched_incident()
         amount_of_found_incidents = len(found_incidents)
         assert amount_of_found_incidents == 1, f'Found {amount_of_found_incidents} incidents'
         incident = found_incidents[0]
