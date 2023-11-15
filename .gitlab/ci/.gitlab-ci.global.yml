@@ -233,7 +233,7 @@
       cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
       ls -la
       ls -la ./Packs/PAN-OS/Integrations/Panorama
-      chmod 777 ./Packs/*
+      chmod 777 ./Packs
       ls -la
       ls -la ./Packs/PAN-OS/Integrations/Panorama
       git status
