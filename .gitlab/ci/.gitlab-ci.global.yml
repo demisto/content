@@ -268,7 +268,6 @@
     - DEEPEN_LENGTH=${DEEPEN_LENGTH:-50}
     - HEAD_REF=origin/master
     - BASE_REF=$(git rev-parse HEAD)
-    - git fetch --progress --depth=1 origin "+refs/heads/$BASE_REF:refs/heads/$BASE_REF"
     - |
       while [ -z "$( git merge-base "$BASE_REF" "$HEAD_REF" )" ]; do
         echo "Fetching with depth $DEEPEN_LENGTH..."
