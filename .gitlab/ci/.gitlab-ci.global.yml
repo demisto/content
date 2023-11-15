@@ -270,6 +270,7 @@
 
 .default-after-script:
   - source .gitlab/helper_functions.sh
+  - rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
   - *setup-network-certs
   - *setup-artifactory
   - *install_node_modules
