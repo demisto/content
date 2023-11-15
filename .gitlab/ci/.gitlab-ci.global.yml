@@ -271,7 +271,7 @@
     - |
       while [ -z "$( git merge-base "$BASE_REF" "$HEAD_REF" )" ]; do
         echo "Fetching with depth $DEEPEN_LENGTH..."
-        git fetch -q --deepen="$DEEPEN_LENGTH" origin "$BASE_REF" "$HEAD_REF";
+        git fetch -q --deepen="$DEEPEN_LENGTH" origin;
       done
 
 .default-after-script:
