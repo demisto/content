@@ -229,7 +229,11 @@
       rm -rf ./Packs
       echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/content_production/Packs to ./Packs"
       cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
-      chmod +x ./Packs/*
+      ls -la
+      ls -la ./Packs/PAN-OS/Integrations/Panorama
+      chmod g+w ./Packs/*
+      ls -la
+      ls -la ./Packs/PAN-OS/Integrations/Panorama
       git status
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
