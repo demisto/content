@@ -5455,7 +5455,7 @@ def panorama_query_logs_command(args: dict):
     job_id = args.get('query_log_job_id')
     illegal_chars = {'@', '#'}
     ignored_keys = {'entry'}
-    # Any value other than 'yes' will act as 'no'
+    # The API refers to any value other than 'yes' as 'no'.
     show_detail = args.get('show-detail', 'no') or 'no'
 
     if not job_id:
