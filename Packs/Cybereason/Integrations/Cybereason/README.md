@@ -1413,7 +1413,7 @@ Gets the malop guid from the INBOX
 | Cybereason.Inbox | Unknown | The inbox | 
 
 #### Command example
-```!cybereason-query-inbox guid=`AABA0-8czlyrr62Wx``
+```!cybereason-query-inbox guid=AABA0-8czlyrr62Wx```
 #### Context Example
 ```json
 {
@@ -1497,7 +1497,7 @@ Gets the connection associated with a malops
 | Cybereason.Connection | Unknown | The malop connection | 
 
 #### Command example
-```!cybereason-malop-connection malopGuids=`AABA0-8czlyrr62Wx``
+```!cybereason-malop-connection malopGuids=AABA0-8czlyrr62Wx```
 #### Context Example
 ```json
 {
