@@ -7,12 +7,10 @@ args:
   description: Attachment.
   isArray: true
   name: attachment
-- defaultValue:
-  description: The mailbox from which emails are sent from the 3rd party integration.
+- description: The mailbox from which emails are sent from the 3rd party integration.
   name: service_mail
 - name: mail_sender_instance
   description: Name of the mail sender instance name for transmitting emails.
-  defaultValue:
 - name: new_thread
   auto: PREDEFINED
   predefined:
@@ -46,7 +44,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.78960
+dockerimage: demisto/python3:3.10.13.80014
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
@@ -55,3 +53,4 @@ contentitemexportablefields:
 tags: []
 scripttarget: 0
 runas: DBotWeakRole
+runonce: false
