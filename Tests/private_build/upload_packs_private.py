@@ -10,7 +10,7 @@ from typing import Any
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json, \
+from Tests.private_build.marketplace_services_private import init_storage_client, Pack, load_json, \
     get_content_git_client, get_recent_commits_data
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \

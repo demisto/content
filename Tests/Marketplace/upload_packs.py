@@ -1169,7 +1169,7 @@ def option_handler():
                         required=False)
     parser.add_argument('-sb', '--storage_base_path', help="Storage base path of the directory to upload to.",
                         required=False)
-    parser.add_argument('-rt', '--remove_test_playbooks', type=str2bool,
+    parser.add_argument('-rt', '--remove_test_deps', type=str2bool,
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
@@ -1203,7 +1203,7 @@ def main():
     signature_key = option.key_string
     packs_dependencies_mapping = load_json(option.pack_dependencies) if option.pack_dependencies else {}
     storage_base_path = option.storage_base_path
-    remove_test_playbooks = option.remove_test_playbooks
+    remove_test_deps = option.remove_test_deps
     is_bucket_upload_flow = option.bucket_upload
     private_bucket_name = option.private_bucket_name
     ci_branch = option.ci_branch
@@ -1294,11 +1294,10 @@ def main():
             continue
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
-                                                                    packs_dependencies_mapping, build_number,
-                                                                    current_commit_hash,
+                                                                    packs_dependencies_mapping,
                                                                     statistics_handler,
                                                                     all_packs_dict,
-                                                                    marketplace)
+                                                                    marketplace, remove_test_deps=remove_test_deps)
 
         if is_missing_dependencies:
             # If the pack is dependent on a new pack, therefore it is not yet in the index.zip as it might not have
@@ -1328,7 +1327,7 @@ def main():
             pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name  # type: ignore[misc]
             continue
 
-        sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
+        sign_and_zip_pack(pack, signature_key, delete_test_playbooks=True)
         shutil.copyfile(pack.zip_path, uploaded_packs_dir / f"{pack.name}.zip")
         task_status, skipped_upload, _ = pack.upload_to_storage(pack.zip_path, pack.latest_version, storage_bucket,
                                                                 pack.is_modified,
@@ -1374,7 +1373,7 @@ def main():
     # updating them with the new data for the new packs that were added to the index.zip
     for pack in packs_with_missing_dependencies:
         task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
-                                              build_number, current_commit_hash, statistics_handler,
+                                              statistics_handler,
                                               all_packs_dict, marketplace,
                                               format_dependencies_only=True)
 
