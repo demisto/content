@@ -1,22 +1,31 @@
 {
-    "description": "",
-    "feed": false,
-    "id": "classifier-mapper-incoming-Cybersixgill-Actionable-Alerts",
-    "mapping": {
-        "Cybersixgill Actionable Alerts": {
-            "dontMapEventToLabels": true,
-            "internalMapping": {
-                "Suspicious domain": {
-                    "simple": "additional_info.tables.suspicious_domain"
-                },
-                "Triggered domain": {
-                    "simple": "additional_info.tables.triggered_domain"
-                }
-            }
-        }
-    },
-    "name": "classifier-mapper-incoming-Cybersixgill-Actionable-Alerts",
-    "type": "mapping-incoming",
-    "version": -1,
+	"description": "",
+	"feed": false,
+	"id": "classifier-mapper-incoming-Cybersixgill-Actionable-Alerts",
+	"mapping": {
+		"Cybersixgill Actionable Alerts": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Cybersixgill CVSS 2.0": {
+					"simple": "additional_info.nvd.v3.current"
+				},
+				"Cybersixgill CVSS 3.1": {
+					"simple": "additional_info.nvd.v2.current"
+				},
+				"Cybersixgill DVE Score": {
+					"simple": "additional_info.score.current"
+				},
+				"Suspicious domain": {
+					"simple": "additional_info.tables.suspicious_domain"
+				},
+				"Triggered domain": {
+					"simple": "additional_info.tables.triggered_domain"
+				}
+			}
+		}
+	},
+	"name": "classifier-mapper-incoming-Cybersixgill-Actionable-Alerts",
+	"type": "mapping-incoming",
+	"version": -1,
     "fromVersion": "6.10.0"
 }

@@ -130,11 +130,6 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
         content_item['content'] = f'https://portal.cybersixgill.com/#/cve/{cve_id}'
         additional_info = item_info.get("additional_info", {})
         incident['CustomFields']['cve'] = cve_id
-        cybersixgillcvss31 = additional_info.get("nvd", {}).get("v3", {}).get("current")
-        cybersixgillcvss20 = additional_info.get("nvd", {}).get("v2", {}).get("current")
-        incident['CustomFields']['cybersixgillcvss31'] = cybersixgillcvss31 or -1
-        incident['CustomFields']['cybersixgillcvss20'] = cybersixgillcvss20 or -1
-        incident['CustomFields']['cybersixgilldvescore'] = additional_info.get("score", {}).get("current")
         attributes = []
         for attribute in additional_info.get("attributes", []):
             if attribute.get("value", False):
