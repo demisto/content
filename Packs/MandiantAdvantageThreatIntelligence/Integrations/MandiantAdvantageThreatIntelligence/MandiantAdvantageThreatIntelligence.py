@@ -857,7 +857,6 @@ def create_base_indicator(
     }  # filter none and redacted values
     indicator_obj = {
         "value": raw_indicator.get("value"),
-        "rawJSON": raw_indicator,
         "score": get_verdict(raw_indicator.get("mscore")),
         "type": indicator_type,
         "fields": fields,
@@ -1305,14 +1304,14 @@ def fetch_campaign(client: MandiantClient, args: dict = None):
 def fetch_reputation(client: MandiantClient, args: dict = None):
     args = args if args else {}
     input_type: str = demisto.command()
-    indicator_value: str = str(args.get(input_type))
+    indicator_values: list[str] = argToList(str(args.get(input_type)))
 
     if input_type == "cve":
-        indicators_list = [client.get_indicator_info(indicator_value, "Vulnerability")]
+        indicators_list = [client.get_indicator_info(i, "Vulnerability") for i in indicator_values]
     else:
-        indicators_list = client.get_indicators_by_value(
-            indicator_value=indicator_value
-        )
+        indicators_list = []
+        for i in indicator_values:
+            indicators_list.extend(client.get_indicators_by_value(i))
 
     indicators = [
         MAP_INDICATORS_FUNCTIONS[input_type](client, indicator)
@@ -1322,17 +1321,8 @@ def fetch_reputation(client: MandiantClient, args: dict = None):
     demisto.createIndicators(indicators)
 
     if indicators:
-        table = {
-            'Value': indicators[0]['value'],
-            'MScore': indicators[0]["rawJSON"].get("mscore", ''),
-            'Last Seen': indicators[0]["rawJSON"].get("last_seen", '')
-        }
-        indicator_type = indicators[0]["rawJSON"]["type"].lower()
-
-        markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {indicators[0]["value"]}\n'
-                                   f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/'
-                                   f'{indicator_type}/{indicators[0]["value"]})',
-                                   table)
+        markdown = tableToMarkdown('Mandiant Advantage Threat Intelligence',
+                                   indicators)
 
         return CommandResults(
             readable_output=markdown,
@@ -1340,7 +1330,7 @@ def fetch_reputation(client: MandiantClient, args: dict = None):
             outputs_prefix=f"MANDIANTTI.{input_type.upper()}",
             ignore_auto_extract=True)
     else:
-        return f"No indicators found matching value {indicator_value}"
+        return f"No indicators found matching value {indicator_values}"
 
 
 """ COMMAND FUNCTIONS """
