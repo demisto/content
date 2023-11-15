@@ -31,7 +31,6 @@ from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPCo
     PackTags, PackIgnored, Changelog, SIEM_RULES_OBJECTS, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
 from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
-from demisto_sdk.commands.content_graph.common import ContentType
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -566,7 +565,6 @@ class Pack:
 
         Returns:
             dict: parsed pack metadata.
-
         """
         pack_metadata = {
             Metadata.CREATED: self._create_date,
@@ -2270,25 +2268,17 @@ class Pack:
 
         return tags
 
-    def remove_test_dependencies(self, remove_test_deps: bool = False):
-        """Removes test dependencies from pack dependencies property
+    def remove_test_dependencies(self):
+        """Removes test dependencies from pack dependencies property"""
 
-        Args:
-            remove_test_deps (bool): Whether test dependencies should be removed.
-        """
-        if not remove_test_deps:
-            return
-
-        pack_test_dependencies = []
-        with Neo4jContentGraphInterface() as interface:
-            pack_obj = interface.search(content_type=ContentType.PACK, object_id=self._pack_name)[0]
-            pack_test_dependencies = [dep.content_item_to.object_id for dep in pack_obj.depends_on if dep.is_test]
+        pack_dependencies = [dep for dep in self._first_level_dependencies
+                             if not self._first_level_dependencies[dep].get("is_test", False)]
 
         removed_test_deps = []
-        for test_dep in pack_test_dependencies:
-            if test_dep in self._dependencies:
-                self._dependencies.pop(test_dep)
-                removed_test_deps.append(test_dep)
+        for dep in self._dependencies:
+            if dep not in pack_dependencies:
+                self._dependencies.pop(dep)
+                removed_test_deps.append(dep)
         logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
 
     def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
@@ -2296,13 +2286,12 @@ class Pack:
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
+            index_folder_path (str): downloaded index folder directory path.
             dependencies_metadata_dict (dict): mapping of pack dependencies metadata, for first level dependencies.
+            statistics_handler (StatisticsHandler): The marketplace statistics handler.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
             dependencies or not.
-
-        Returns:
-            dict: parsed pack metadata.
-
+            remove_test_deps (bool): Whether to remove test dependencies.
         """
         trending_packs = None
         pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
@@ -2310,7 +2299,8 @@ class Pack:
             self._create_date = self._get_pack_creation_date(index_folder_path)
             self._update_date = self._get_pack_update_date(index_folder_path)
 
-        self.remove_test_dependencies(remove_test_deps)
+        if remove_test_deps:
+            self.remove_test_dependencies()
 
         # ===== Pack Statistics Attributes =====
         if statistics_handler:  # Public Content case
@@ -2333,24 +2323,22 @@ class Pack:
     def format_metadata(self, index_folder_path, packs_dependencies_mapping,
                         statistics_handler, packs_dict=None, marketplace='xsoar',
                         format_dependencies_only=False, remove_test_deps=False):
-        """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
+        """ Formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
         Args:
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
-            build_number (str): circleCI build number.
-            commit_hash (str): current commit hash.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
             packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_name: pack_object}.
             marketplace (str): Marketplace of current upload.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
+            remove_test_deps (bool): Whether to remove test dependencies.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
             bool: True is returned in pack is missing dependencies.
-
         """
         task_status = False
         packs_dict = packs_dict if packs_dict else {}
@@ -2441,7 +2429,6 @@ class Pack:
         This is done for both first level dependencies and the all levels dependencies.
         Args:
             packs_dependencies_mapping: the calculated dependencies from pack_dependencies.json file
-            packs_dict (dict): Dict of packs relevant for current marketplace as {pack_name: pack_object}
             marketplace: the current marketplace this upload is for
         """
         pack_dependencies_mapping = packs_dependencies_mapping.get(self._pack_name, {})
