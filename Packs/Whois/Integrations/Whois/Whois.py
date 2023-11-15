@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Type
 import urllib
 
 
-RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 3
+RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
 
