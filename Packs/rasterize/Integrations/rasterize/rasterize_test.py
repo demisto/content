@@ -1,5 +1,5 @@
 from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
-                       RasterizeMode, RasterizeType, init_driver, rasterize_html_command)
+                       RasterizeMode, RasterizeType, rasterize_html_command)
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -38,7 +38,7 @@ def test_rasterize_email_pdf(r_mode, caplog):
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=False,
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF,
                   r_mode=r_mode)
         caplog.clear()
 
@@ -49,7 +49,7 @@ def test_rasterize_email_pdf_offline(caplog):
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=True)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF)
         caplog.clear()
 
 
@@ -59,7 +59,7 @@ def test_rasterize_no_defunct_processes(caplog):
                 '</head><body><br>---------- TEST FILE ----------<br></body></html>')
         path = os.path.realpath(f.name)
         f.flush()
-        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF, offline_mode=False)
+        rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PDF)
         process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                    universal_newlines=True)
         processes_str, _ = process.communicate()

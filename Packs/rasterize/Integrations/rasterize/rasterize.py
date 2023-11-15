@@ -1,3 +1,5 @@
+# Open Issue: Should we keep the "old" selenium? e.g. offline_mode
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -11,14 +13,14 @@ import time
 import traceback
 from enum import Enum
 from io import BytesIO
-from pathlib import Path
+# from pathlib import Path
 
 import numpy as np
 from pdf2image import convert_from_path
 from PIL import Image
 from PyPDF2 import PdfReader
-from selenium import webdriver
-from pyvirtualdisplay import Display
+# from selenium import webdriver
+# from pyvirtualdisplay import Display
 from selenium.common.exceptions import (InvalidArgumentException,
                                         NoSuchElementException,
                                         TimeoutException)
@@ -302,7 +304,7 @@ def find_zombie_processes():
 
 
 def rasterize(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
-              offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
+              max_page_load_time: int = 180, full_screen: bool = False,
               r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED, include_url: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
@@ -517,8 +519,8 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
 
 #     Args:
 #         driver: The driver session.
-#         include_url: when set to True, will take the screenshot of the linux machine's display using the ImageMagick's import tool
-#                      to include the url bar in the image.
+#         include_url: when set to True, will take the screenshot of the linux machine's display using the ImageMagick's import
+#                      tool to include the url bar in the image.
 
 #     Returns:
 #         The readed .png file of the image.
