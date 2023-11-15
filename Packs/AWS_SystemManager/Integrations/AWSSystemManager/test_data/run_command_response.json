@@ -1,0 +1,55 @@
+{
+    "Command": {
+        "CommandId": "command_id_test",
+        "DocumentName": "AWS-",
+        "DocumentVersion": "$DEFAULT",
+        "Comment": "",
+        "ExpiresAfter": "2023-09-04T13:29:18.209000+03:00",
+        "Parameters": {},
+        "InstanceIds": [
+            "i-"
+        ],
+        "Targets": [],
+        "RequestedDateTime": "2023-09-04T11:29:18.209000+03:00",
+        "Status": "Pending",
+        "StatusDetails": "Pending",
+        "OutputS3Region": "OutputS3Region",
+        "OutputS3BucketName": "",
+        "OutputS3KeyPrefix": "",
+        "MaxConcurrency": "50",
+        "MaxErrors": "0",
+        "TargetCount": 1,
+        "CompletedCount": 0,
+        "ErrorCount": 0,
+        "DeliveryTimedOutCount": 0,
+        "ServiceRole": "",
+        "NotificationConfig": {
+            "NotificationArn": "",
+            "NotificationEvents": [],
+            "NotificationType": ""
+        },
+        "CloudWatchOutputConfig": {
+            "CloudWatchLogGroupName": "",
+            "CloudWatchOutputEnabled": false
+        },
+        "TimeoutSeconds": 3600,
+        "AlarmConfiguration": {
+            "IgnorePollAlarmFailure": false,
+            "Alarms": []
+        },
+        "TriggeredAlarms": []
+    },
+    "ResponseMetadata": {
+        "RequestId": "",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Mon, 04 Sep 2023 08:29:18 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "",
+            "connection": "keep-alive",
+            "x-amzn-requestid": ""
+        },
+        "RetryAttempts": 0
+    }
+}

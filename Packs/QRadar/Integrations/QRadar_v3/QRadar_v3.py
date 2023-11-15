@@ -82,11 +82,15 @@ MIRRORED_OFFENSES_FINISHED_CTX_KEY = 'mirrored_offenses_finished'
 MIRRORED_OFFENSES_FETCHED_CTX_KEY = 'mirrored_offenses_fetched'
 
 LAST_MIRROR_KEY = 'last_mirror_update'
+LAST_MIRROR_CLOSED_KEY = 'last_mirror_closed_update'
+
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 NAME_AND_GROUP_REGEX = re.compile(r'^[\w-]+$')
 ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
+
+DEFAULT_EVENTS_COLUMNS = """QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime"""  # noqa: E501
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -348,6 +352,8 @@ class QueryStatus(str, Enum):
     SUCCESS = 'success'
     PARTIAL = 'partial'
 
+
+FIELDS_MIRRORING = 'id,start_time,event_count,last_persisted_time,close_time'
 
 ''' CLIENT CLASS '''
 
@@ -969,7 +975,8 @@ def insert_to_updated_context(context_data: dict,
                                  'samples': context_data.get('samples', [])})
 
     if should_update_last_mirror:
-        new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0))})
+        new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0)),
+                                 LAST_MIRROR_CLOSED_KEY: int(context_data.get(LAST_MIRROR_CLOSED_KEY, 0))})
     return new_context_data, version
 
 
@@ -1728,7 +1735,7 @@ def test_module_command(client: Client, params: dict) -> str:
                 offenses_per_fetch=1,
                 user_query=params.get('query', ''),
                 fetch_mode=params.get('fetch_mode', ''),
-                events_columns=params.get('events_columns', ''),
+                events_columns=params.get('events_columns') or DEFAULT_EVENTS_COLUMNS,
                 events_limit=0,
                 ip_enrich=ip_enrich,
                 asset_enrich=asset_enrich,
@@ -2112,6 +2119,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
     print_debug_msg(f'{waiting_for_update=}')
     last_fetch_key = context_data.get(LAST_FETCH_KEY, 'Missing')
     last_mirror_update = context_data.get(LAST_MIRROR_KEY, 0)
+    last_mirror_update_closed = context_data.get(LAST_MIRROR_CLOSED_KEY, 0)
     concurrent_mirroring_searches = get_current_concurrent_searches(context_data)
     samples = context_data.get('samples', [])
     sample_length = 0
@@ -2123,6 +2131,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
                     f"\n Offenses ids waiting for update: {not_updated_ids}"
                     f"\n Concurrent mirroring events searches: {concurrent_mirroring_searches}"
                     f"\n Last Fetch Key {last_fetch_key}, Last mirror update {last_mirror_update}, "
+                    f"Last mirror update closed: {last_mirror_update_closed}, "
                     f"sample length {sample_length}")
     return set(not_updated_ids + finished_queries_ids)
 
@@ -2187,7 +2196,7 @@ def long_running_execution_command(client: Client, params: dict):
     ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
     offenses_per_fetch = int(params.get('offenses_per_fetch'))  # type: ignore
     user_query = params.get('query', '')
-    events_columns = params.get('events_columns', '')
+    events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     incident_type = params.get('incident_type')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
@@ -2675,7 +2684,7 @@ def qradar_search_create_command(client: Client, params: dict, args: dict) -> Co
         CommandResults.
     """
     offense_id = args.get('offense_id', '')
-    events_columns = args.get('events_columns', params.get('events_columns'))
+    events_columns = args.get('events_columns', params.get('events_columns')) or DEFAULT_EVENTS_COLUMNS
     events_limit = args.get('events_limit', params.get('events_limit'))
     fetch_mode = args.get('fetch_mode', params.get('fetch_mode'))
     start_time = args.get('start_time')
@@ -3480,7 +3489,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     offense_last_update = get_time_parameter(offense.get('last_persisted_time'))
     mirror_options = params.get('mirror_options')
     context_data, context_version = get_integration_context_with_version()
-    events_columns = params.get('events_columns', '')
+    events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     fetch_mode = params.get('fetch_mode', '')
     print_context_data_stats(context_data, f"Starting Get Remote Data For "
@@ -3522,7 +3531,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
 
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
-                int(num_events) > (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
+                int(num_events) >= (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
             print_debug_msg(f'Events were already fetched {num_events} for offense {offense_id}, '
                             f'and are more than the events limit, {events_limit}. '
                             f'Not fetching events again.')
@@ -3540,7 +3549,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
             print_context_data_stats(context_data, f"Get Remote Data events End for id {offense_id}")
             if status != QueryStatus.SUCCESS.value:
                 # we raise an exception because we don't want to change the offense until all events are fetched.
-                print_debug_msg(f'Events not mirrored yet for offense {offense_id}')
+                print_debug_msg(f'Events not mirrored yet for offense {offense_id}. Status: {status}')
                 raise DemistoException(f'Events not mirrored yet for offense {offense_id}')
             offense['events'] = events
 
@@ -3570,7 +3579,8 @@ def add_modified_remote_offenses(client: Client,
                                  version: str,
                                  mirror_options: str,
                                  new_modified_records_ids: set[str],
-                                 current_last_update: str,
+                                 new_last_update_modified: int,
+                                 new_last_update_closed: int,
                                  events_columns: str,
                                  events_limit: int,
                                  fetch_mode: str
@@ -3583,7 +3593,8 @@ def add_modified_remote_offenses(client: Client,
         version: The version of the context data to update.
         mirror_options: The mirror options for the integration.
         new_modified_records_ids: The new modified offenses ids.
-        current_last_update: The current last mirror update.
+        new_last_update_modified: The current last mirror update modified.
+        new_last_update_closed: The current last mirror update.
         events_columns: The events_columns param.
         events_limit: The events_limit param.
 
@@ -3635,7 +3646,7 @@ def add_modified_remote_offenses(client: Client,
         new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
         new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
 
-    new_context_data.update({LAST_MIRROR_KEY: current_last_update})
+    new_context_data.update({LAST_MIRROR_KEY: new_last_update_modified, LAST_MIRROR_CLOSED_KEY: new_last_update_closed})
     print_context_data_stats(new_context_data, "Get Modified Remote Data - After update")
     safely_update_context_data(
         new_context_data, version, offense_ids=changed_ids_ctx, should_update_last_mirror=True
@@ -3694,29 +3705,49 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     """
     ctx, ctx_version = get_integration_context_with_version()
     remote_args = GetModifiedRemoteDataArgs(args)
+
     highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     fetch_mode = params.get('fetch_mode', '')
     range_ = f'items=0-{limit - 1}'
-    last_update_time = ctx.get(LAST_MIRROR_KEY, 0)
-    if not last_update_time:
-        last_update_time = remote_args.last_update
-    last_update = get_time_parameter(last_update_time, epoch_format=True)
+    last_update_modified = ctx.get(LAST_MIRROR_KEY, 0)
+    if not last_update_modified:
+        # This is the first mirror. We get the last update of the latest incident with a window of 5 minutes
+        last_update = dateparser.parse(remote_args.last_update)
+        if not last_update:
+            last_update = datetime.now()
+        last_update -= timedelta(minutes=5)
+        last_update_modified = int(last_update.timestamp() * 1000)
+    last_update_closed = ctx.get(LAST_MIRROR_CLOSED_KEY, last_update_modified)
+    assert isinstance(last_update_modified, int)
+    assert isinstance(last_update_closed, int)
+    filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update_modified}'
+    filter_closed = f'id <= {highest_fetched_id} AND status=closed AND close_time > {last_update_closed}'
+    print_debug_msg(f'Filter to get modified offenses is: {filter_modified}')
+    print_debug_msg(f'Filter to get closed offenses is: {filter_closed}')
     # if this call fails, raise an error and stop command execution
-    offenses = client.offenses_list(range_=range_,
-                                    filter_=f'id <= {highest_fetched_id} AND ((status!=closed AND last_persisted_time >= {last_update}) OR (status=closed AND close_time > {last_update}))',  # noqa: E501
-                                    sort='+last_persisted_time',
-                                    fields='id,start_time,event_count,last_persisted_time')
-    new_modified_records_ids = {str(offense.get('id')) for offense in offenses if 'id' in offense}
-    current_last_update = last_update if not offenses else int(offenses[-1].get('last_persisted_time'))
-    print_debug_msg(f'Last update: {last_update}, current last update: {current_last_update}')
-    events_columns = params.get('events_columns', '')
+    offenses_modified = client.offenses_list(range_=range_,
+                                             filter_=filter_modified,
+                                             sort='+last_persisted_time',
+                                             fields=FIELDS_MIRRORING)
+    offenses_closed = client.offenses_list(range_=range_,
+                                           filter_=filter_closed,
+                                           sort='+close_time',
+                                           fields=FIELDS_MIRRORING)
+    if offenses_modified:
+        last_update_modified = int(offenses_modified[-1].get('last_persisted_time'))
+    if offenses_closed:
+        last_update_closed = int(offenses_closed[-1].get('close_time'))
+    new_modified_records_ids = {str(offense.get('id')) for offense in offenses_modified + offenses_closed if 'id' in offense}
+    print_debug_msg(f'Last update modified: {last_update_modified}, Last update closed: {last_update_closed}')
+    events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
 
     new_modified_records_ids = add_modified_remote_offenses(client=client, context_data=ctx, version=ctx_version,
                                                             mirror_options=params.get('mirror_options', ''),
                                                             new_modified_records_ids=new_modified_records_ids,
-                                                            current_last_update=current_last_update,
+                                                            new_last_update_modified=last_update_modified,
+                                                            new_last_update_closed=last_update_closed,
                                                             events_columns=events_columns,
                                                             events_limit=events_limit,
                                                             fetch_mode=fetch_mode,

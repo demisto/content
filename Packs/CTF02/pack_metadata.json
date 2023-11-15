@@ -1,0 +1,26 @@
+{
+    "name": "Capture The Flag - 02",
+    "description": "XSOAR's Capture the flag (CTF)",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "serverMinVersion": "8.2.0",
+    "categories": [
+        "Utilities"
+    ],
+    "videos": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "dependencies": {
+        "ctf01": {
+            "mandatory": true,
+            "display_name": "Capture The Flag - 01"
+        }
+    }
+    }

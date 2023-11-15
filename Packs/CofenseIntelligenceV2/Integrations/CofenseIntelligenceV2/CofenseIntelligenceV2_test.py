@@ -31,7 +31,7 @@ DOMAIN_RELATIONSHIP = [
      'name': 'related-to', 'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}
 ]
 
-FILE_RELATIONSHIP = [
+FILE_RELATIONSHIP_MD5 = [
     {'brand': 'Cofense Intelligence', 'entityA': 'md5', 'entityAFamily': 'Indicator', 'entityAType': 'File',
      'entityB': 'com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
@@ -42,6 +42,21 @@ FILE_RELATIONSHIP = [
      'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': 'md5', 'entityAFamily': 'Indicator', 'entityAType': 'File',
+     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}
+]
+
+FILE_RELATIONSHIP_SHA256 = [
+    {'brand': 'Cofense Intelligence', 'entityA': 'sha256', 'entityAFamily': 'Indicator', 'entityAType': 'File',
+     'entityB': 'com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'sha256', 'entityAFamily': 'Indicator', 'entityAType': 'File',
+     'entityB': '127.0.0.1', 'entityBFamily': 'Indicator', 'entityBType': 'IP', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'sha256', 'entityAFamily': 'Indicator', 'entityAType': 'File',
+     'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
+     'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
+    {'brand': 'Cofense Intelligence', 'entityA': 'sha256', 'entityAFamily': 'Indicator', 'entityAType': 'File',
      'entityB': 'md5', 'entityBFamily': 'Indicator', 'entityBType': 'File', 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'}
 ]
@@ -247,14 +262,14 @@ def test_check_ip_command(mocker):
     assert IP_RELATIONSHIP == (response[0].to_context())['Relationships']
 
 
-def test_check_md5_command(mocker):
+def test_check_file_command_with_md5_hash(mocker):
     """
-    Test case scenario for file command.
+    Test case scenario for file command when md5 hash is provided as argument.
 
     Given:
         - file command args
     When:
-        - run check_md5_command
+        - run check_file_command
     Then:
         - Verify response outputs
         - verify response readable output
@@ -263,12 +278,40 @@ def test_check_md5_command(mocker):
     test_data = util_load_json('test_data/test_search_file.json')
     return_value = test_data.get('file_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
-    response = check_md5_command(client, mock_args, mock_params)
-    mock_outputs = test_data.get('mock_output')
-    mock_readable_outputs = test_data.get('mock_readable')
+    response = check_file_command(client, mock_args, mock_params)
+    mock_outputs = test_data.get('mock_output_md5')
+    mock_readable_outputs = test_data.get('mock_readable_md5')
     assert mock_outputs == str(response[0].outputs)
     assert mock_readable_outputs == response[0].readable_output
-    assert FILE_RELATIONSHIP == (response[0].to_context())['Relationships']
+    assert FILE_RELATIONSHIP_MD5 == (response[0].to_context())['Relationships']
+    assert response[0].indicator.md5 == mock_args['file']
+    assert response[0].indicator.sha256 != mock_args['file']
+
+
+def test_check_file_command_with_sha256_hash(mocker):
+    """
+    Test case scenario for file command when sha256 hash is provided as argument.
+
+    Given:
+        - file command args
+    When:
+        - run check_file_command
+    Then:
+        - Verify response outputs
+        - verify response readable output
+    """
+    mock_args = {'file': 'sha256'}
+    test_data = util_load_json('test_data/test_search_file.json')
+    return_value = test_data.get('file_search_response')
+    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    response = check_file_command(client, mock_args, mock_params)
+    mock_outputs = test_data.get('mock_output_sha256')
+    mock_readable_outputs = test_data.get('mock_readable_sha256')
+    assert mock_outputs == str(response[0].outputs)
+    assert mock_readable_outputs == response[0].readable_output
+    assert FILE_RELATIONSHIP_SHA256 == (response[0].to_context())['Relationships']
+    assert response[0].indicator.sha256 == mock_args['file']
+    assert response[0].indicator.md5 != mock_args['file']
 
 
 def test_check_domain_command(mocker):

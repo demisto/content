@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 import urllib3
 import urllib.parse
-from typing import Dict
 from enum import Enum
 from string import Template
 import bz2
@@ -162,7 +161,7 @@ class Client(BaseClient):
 
         return result_json, res.status_code
 
-    def _post_dlp_api_call(self, url_suffix: str, payload: Dict = None):
+    def _post_dlp_api_call(self, url_suffix: str, payload: dict = None):
         """
         Makes a POST HTTP(s) call to the DLP API
         Args:
@@ -329,7 +328,7 @@ def convert_to_human_readable(data_patterns):
         detections = k.get('Detections', [])
         if detections:
             for detection in detections:
-                col = 'Detection {}'.format(index)
+                col = f'Detection {index}'
                 if col not in headers:
                     headers.append(col)
                 match[col] = detection
@@ -363,12 +362,12 @@ def test(client):
     if status_code in [200, 204]:
         return_results("ok")
     else:
-        raise DemistoException("Integration test failed: Unexpected status ({})".format(status_code))
+        raise DemistoException(f"Integration test failed: Unexpected status ({status_code})")
 
 
 def print_debug_msg(msg: str):
     """
-    Prints a message to debug with QRadarMsg prefix.
+    Prints a message to debug with PAN-DLP-Msg prefix.
     Args:
         msg (str): Message to be logged.
 
@@ -499,7 +498,7 @@ def fetch_notifications(client: Client, regions: str):
         print_debug_msg(f"Skipped {len(incidents)} incidents because of reset")
 
 
-def long_running_execution_command(client: Client, params: Dict):
+def long_running_execution_command(client: Client, params: dict):
     """
     Long running execution of fetching incidents from Palo Alto Networks Enterprise DLP.
     Will continue to fetch in an infinite loop.
@@ -569,7 +568,7 @@ def slack_bot_message_command(args: dict, params: dict):
     )
 
 
-def fetch_incidents_command() -> List[Dict]:
+def fetch_incidents_command() -> List[dict]:
     """
     Fetch incidents implemented, for mapping purposes only.
     Returns list of samples saved by long running execution.
@@ -596,10 +595,9 @@ def reset_last_run_command() -> str:
 def main():
     """ Main Function"""
     try:
-        demisto.info('Command is %s' % (demisto.command(),))
+        demisto.info(f'Command is {demisto.command()}')
         params = demisto.params()
-        print_debug_msg('Received parameters')
-        print_debug_msg(params)
+        print_debug_msg(f'Received parameters: {",".join(params.keys())}.')
         credentials = params.get('credentials')
 
         client = Client(BASE_URL, credentials, params.get('insecure'), params.get('proxy'))

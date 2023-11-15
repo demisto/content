@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
 from CommonServerUserPython import *
 
-from typing import Optional
+from typing import Optional, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
 import re
 import copy
@@ -271,7 +271,7 @@ class Taxii2FeedClient:
         self.default_api_root = default_api_root
         self.update_custom_fields = update_custom_fields
 
-    def init_server(self, version=TAXII_VER_2_0):
+    def init_server(self, version=TAXII_VER_2_1):
         """
         Initializes a server in the requested version
         :param version: taxii version key (either 2.0 or 2.1)
@@ -302,16 +302,16 @@ class Taxii2FeedClient:
         if not self.server:
             self.init_server()
         try:
-            # disable logging as we might receive client error and try 2.1
+            # disable logging as we might receive client error and try 2.0
             logging.disable(logging.ERROR)
-            # try TAXII 2.0
+            # try TAXII 2.1
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
-            if "406 Client Error" not in str(e) and "version=2.1" not in str(e):
+            if "406 Client Error" not in str(e) and "version=2.0" not in str(e):
                 raise e
-            # switch to TAXII 2.1
-            self.init_server(version=TAXII_VER_2_1)
+            # switch to TAXII 2.0
+            self.init_server(version=TAXII_VER_2_0)
             self.set_api_root()
         finally:
             # enable logging
@@ -416,23 +416,27 @@ class Taxii2FeedClient:
 
     @staticmethod
     def parse_report_relationships(report_obj: dict[str, Any],
-                                   id_to_object: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+                                   id_to_object: dict[str, dict[str, Any]]) -> Tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         obj_refs = report_obj.get('object_refs', [])
         relationships: list[dict[str, Any]] = []
+        obj_refs_excluding_relationships_prefix = []
+
         for related_obj in obj_refs:
             # relationship-- objects ref handled in parse_relationships
-            if not related_obj.startswith('relationship--') and (entity_b_obj := id_to_object.get(related_obj, {})):
-                entity_b_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_obj.get('type', ''), '')
-                relationships.append(
-                    EntityRelationship(
-                        name='related-to',
-                        entity_a=report_obj.get('name'),
-                        entity_a_type=ThreatIntel.ObjectsNames.REPORT,
-                        entity_b=entity_b_obj.get('name'),
-                        entity_b_type=entity_b_type
-                    ).to_indicator()
-                )
-        return relationships
+            if not related_obj.startswith('relationship--'):
+                obj_refs_excluding_relationships_prefix.append(related_obj)
+                if (entity_b_obj := id_to_object.get(related_obj, {})):
+                    entity_b_type = STIX_2_TYPES_TO_CORTEX_TYPES.get(entity_b_obj.get('type', ''), '')
+                    relationships.append(
+                        EntityRelationship(
+                            name='related-to',
+                            entity_a=report_obj.get('name'),
+                            entity_a_type=ThreatIntel.ObjectsNames.REPORT,
+                            entity_b=entity_b_obj.get('name'),
+                            entity_b_type=entity_b_type
+                        ).to_indicator()
+                    )
+        return relationships, obj_refs_excluding_relationships_prefix
 
     @staticmethod
     def get_ioc_type(indicator: str, id_to_object: dict[str, dict[str, Any]]) -> str:
@@ -619,10 +623,11 @@ class Taxii2FeedClient:
         tags = list((set(report_obj.get('labels', []))).union(set(self.tags)))
         fields['tags'] = list(set(list(fields.get('tags', [])) + tags))
 
+        relationships, obj_refs_excluding_relationships_prefix = self.parse_report_relationships(report_obj, self.id_to_object)
+        report['relationships'] = relationships
+        if obj_refs_excluding_relationships_prefix:
+            fields['Report Object References'] = [{'objectstixid': object} for object in obj_refs_excluding_relationships_prefix]
         report["fields"] = fields
-
-        report['relationships'] = self.parse_report_relationships(report_obj, self.id_to_object)
-
         return [report]
 
     def parse_threat_actor(self, threat_actor_obj: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1251,10 +1256,11 @@ class Taxii2FeedClient:
         :param page_size: size of the request page
         """
         get_objects = self.collection_to_fetch.get_objects
-        if 'relationship' not in self.objects_to_fetch and \
-                len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
-            self.objects_to_fetch.append('relationship')
-        kwargs['type'] = self.objects_to_fetch
+        if self.objects_to_fetch:
+            if 'relationship' not in self.objects_to_fetch and \
+                    len(self.objects_to_fetch) > 1:  # when fetching one type no need to fetch relationship
+                self.objects_to_fetch.append('relationship')
+            kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
             return v20.as_pages(get_objects, per_request=page_size, **kwargs)
         return v21.as_pages(get_objects, per_request=page_size, **kwargs)

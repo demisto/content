@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex ASM - Detect Service EXPANDR-3350-RCS](../doc_files/Cortex_ASM_-_Detect_Service.png)
+![Cortex ASM - Detect Service](../doc_files/Cortex_ASM_-_Detect_Service.png)

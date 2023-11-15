@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from base64 import b64decode
-from typing import Any, Dict, List
+from typing import Any
 
 
 ''' CONSTANTS '''
@@ -16,7 +16,7 @@ CHUNK6 = "j8pLznBeKioqJ3QFt+aaGdwNNoCNOF/82HRe4KDrfd13rHZ+E5Vcxb1SU8h/PfwsrzPwnP
 IMAGE_HEADER = "data:image/png;base64," + CHUNK1 + CHUNK2 + CHUNK3 + CHUNK4 + CHUNK5 + CHUNK6
 
 
-def build_report(template: List[Dict], alert_id: str, report_type: str) -> Dict:
+def build_report(template: list[dict], alert_id: str, report_type: str) -> dict:
     """Take a JSON template input and return a PDF Summary Report
 
     Args:
@@ -53,7 +53,7 @@ def build_report(template: List[Dict], alert_id: str, report_type: str) -> Dict:
     return file_entry
 
 
-def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
+def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
     """Build a template to be used to create Summary report
 
     Args:
@@ -293,11 +293,43 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
                     "classes": "striped stackable",
                 },
             },
+            # Attack surface rule information
+            {
+                "type": "header",
+                "data": "Remediation Guidance",
+                "layout": {
+                    "rowPos": 12,
+                    "columnPos": 1,
+                    "style": {
+                        "textAlign": "left",
+                        "fontSize": 16,
+                        "color": "black",
+                        "background-color": "white",
+                        "border-bottom": "5px solid #00cc66ff",
+                    },
+                },
+            },
+            {
+                "type": "text",
+                "data": args.get('asm_remediation_guidance'),
+                "layout": {
+                    "rowPos": 13,
+                    "columnPos": 1,
+                    "style": {
+                        "textAlign": "left",
+                        "display": "flex",
+                        "alignItems": "center",
+                        "padding": "5px",
+                        "fontSize": 12,
+                    },
+                },
+            },
+            # Remediation Taken
             {
                 "type": "header",
                 "data": "Remediation Taken",
                 "layout": {
-                    "rowPos": 12,
+                    "rowPos": 14,
                     "columnPos": 1,
                     "style": {
                         "textAlign": "left",
@@ -312,13 +344,13 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
                 "type": "table",
                 "data": remediation,
                 "layout": {
-                    "rowPos": 13,
+                    "rowPos": 15,
                     "columnPos": 1,
                     "tableColumns": [
-                        "Action",
-                        "ActionTimestamp",
-                        "Outcome",
-                        "OutcomeTimestamp",
+                        "action",
+                        "actiontimestamp",
+                        "outcome",
+                        "outcometimestamp",
                     ],
                     "classes": "striped stackable",
                 },
@@ -328,7 +360,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
                 "type": "header",
                 "data": "Evidence and Investigation Artifacts",
                 "layout": {
-                    "rowPos": 14,
+                    "rowPos": 16,
                     "columnPos": 1,
                     "style": {
                         "textAlign": "left",
@@ -340,7 +372,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
             }
         ]
 
-        placeholder = 15
+        placeholder = 17
         optional_order = ["asm_remediation_path_rule", "asm_service_owner", "asm_notification",
                           "asm_data_collection", "asm_private_ip", "asm_cloud", "asm_tags", "asm_system_ids"]
     elif args.get('report_type') == "analysis":
@@ -546,12 +578,43 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
                     "classes": "striped stackable",
                 },
             },
+            # Attack surface rule information
+            {
+                "type": "header",
+                "data": "Remediation Guidance",
+                "layout": {
+                    "rowPos": 12,
+                    "columnPos": 1,
+                    "style": {
+                        "textAlign": "left",
+                        "fontSize": 16,
+                        "color": "black",
+                        "background-color": "white",
+                        "border-bottom": "5px solid #00cc66ff",
+                    },
+                },
+            },
+            {
+                "type": "text",
+                "data": args.get('asm_remediation_guidance'),
+                "layout": {
+                    "rowPos": 13,
+                    "columnPos": 1,
+                    "style": {
+                        "textAlign": "left",
+                        "display": "flex",
+                        "alignItems": "center",
+                        "padding": "5px",
+                        "fontSize": 12,
+                    },
+                },
+            },
             # Evidence
             {
                 "type": "header",
                 "data": "Evidence and Investigation Artifacts",
                 "layout": {
-                    "rowPos": 12,
+                    "rowPos": 14,
                     "columnPos": 1,
                     "style": {
                         "textAlign": "left",
@@ -563,7 +626,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
             },
         ]
 
-        placeholder = 13
+        placeholder = 15
         optional_order = ["asm_service_owner", "asm_private_ip", "asm_cloud", "asm_tags", "asm_system_ids"]
 
     optional_template = optional_report_fields(placeholder, optional_order, args)
@@ -571,7 +634,7 @@ def build_template(args: Dict[str, Any]) -> List[Dict[str, Any]]:
     return template
 
 
-def optional_report_fields(placeholder: int, optional_order: list, args: Dict) -> list:
+def optional_report_fields(placeholder: int, optional_order: list, args: dict) -> list:
     """Gets last report positional value, order of optional fields and Demisto.args()
     to determine what to append to report template.
     Args:
@@ -596,20 +659,20 @@ def optional_report_fields(placeholder: int, optional_order: list, args: Dict) -
             "header": "Notifications Sent",
             "description": "This section contains the notification sent from the playbook (email or ticketing system).",
             "columns": [
-                "Type",
-                "Value",
-                "URL",
-                "Timestamp"
+                "type",
+                "value",
+                "url",
+                "timestamp"
             ]
         },
         "asm_data_collection": {
             "header": "Data Collected from Owner",
             "description": "This section contains information on the data collection task completed in the playbook.",
             "columns": [
-                "Options",
-                "Selected",
-                "Answerer",
-                "Timestamp"
+                "options",
+                "selected",
+                "answerer",
+                "timestamp"
             ]
         },
         "asm_system_ids": {
@@ -617,9 +680,9 @@ def optional_report_fields(placeholder: int, optional_order: list, args: Dict) -
             "description": "This section contains any related system records from other IT/Security systems"
                            "as well as links where available.",
             "columns": [
-                "Type",
-                "ID",
-                "Link"
+                "type",
+                "id",
+                "link"
             ]
         },
         "asm_tags": {
@@ -627,20 +690,20 @@ def optional_report_fields(placeholder: int, optional_order: list, args: Dict) -
             "description": "Any related tags or labels found in other IT/Security systems during "
                            "the investigation are recorded here.",
             "columns": [
-                "Key",
-                "Value",
-                "Source"
+                "key",
+                "value",
+                "source"
             ]
         },
         "asm_cloud": {
             "header": "Cloud Asset Information",
             "description": "Any additional cloud details discovered during the investigation are lists in this section.",
             "columns": [
-                "Provider",
-                "Organization",
-                "Project",
-                "Region",
-                "Other"
+                "provider",
+                "organization",
+                "project",
+                "region",
+                "other"
             ]
         },
         "asm_private_ip": {
@@ -648,18 +711,18 @@ def optional_report_fields(placeholder: int, optional_order: list, args: Dict) -
             "description": "Any identified private IP addresses that are known to be related to "
                            "the asset being investigated are recorded here.",
             "columns": [
-                "Source",
-                "IP"
+                "source",
+                "ip"
             ]
         },
         "asm_service_owner": {
             "header": "Service Owner Information",
             "description": "This section contains all potential service owners identified during the investigation.",
             "columns": [
-                "Name",
-                "Email",
-                "Source",
-                "Timestamp"
+                "name",
+                "email",
+                "source",
+                "timestamp"
             ]
         },
     }
@@ -730,7 +793,7 @@ def RPR_criteria(criteria: Any) -> Any:
         return None
 
 
-def service_format(service_raw: Dict[str, Any]) -> List:
+def service_format(service_raw: dict[str, Any]) -> list:
     """Gets raw service information and formats key information for table.
     Args:
         service_raw (Dict): raw response from services API.  Blank indicators error.
@@ -746,35 +809,35 @@ def service_format(service_raw: Dict[str, Any]) -> List:
     service_details = [
         {
             "Field": "Service Type",
-            "Value": service_raw.get("service_type", "N/A")
+            "Value": service_raw.get("service_type", "n/a")
         },
         {
             "Field": "Service Name",
-            "Value": service_raw.get("service_name", "N/A")
+            "Value": service_raw.get("service_name", "n/a")
         },
         {
             "Field": "Active Classifications",
-            "Value": service_raw.get("active_classifications", "N/A")
+            "Value": service_raw.get("active_classifications", "n/a")
         },
         {
             "Field": "Business Units",
-            "Value": service_raw.get("business_units", "N/A")
+            "Value": service_raw.get("business_units", "n/a")
         },
         {
             "Field": "Provider",
-            "Value": service_raw.get("externally_detected_providers", "N/A")
+            "Value": service_raw.get("externally_detected_providers", "n/a")
         },
         {
             "Field": "IP Addresses",
-            "Value": service_raw.get("ip_address", "N/A")
+            "Value": service_raw.get("ip_address", "n/a")
         },
         {
             "Field": "Port",
-            "Value": service_raw.get("port", "N/A")
+            "Value": service_raw.get("port", "n/a")
         },
         {
             "Field": "Protocol",
-            "Value": service_raw.get("protocol", "N/A")
+            "Value": service_raw.get("protocol", "n/a")
         },
         {
             "Field": "First Observed",
@@ -802,7 +865,7 @@ def service_format(service_raw: Dict[str, Any]) -> List:
     return service_details
 
 
-def asset_format(asset_raw: Dict[str, Any]) -> List:
+def asset_format(asset_raw: dict[str, Any]) -> list:
     """Gets raw asset information and formats key information for table.
     Args:
         asset_raw (Dict): raw response from asset API.  Blank indicators error.
@@ -846,7 +909,7 @@ def asset_format(asset_raw: Dict[str, Any]) -> List:
         })
 
     if len(asset_raw.get("details", {}).get("ip_ranges", {}).keys()) > 0:
-        for k in asset_raw.get("details", {}).get("ip_ranges", {}).keys():
+        for k in asset_raw.get("details", {}).get("ip_ranges", {}):
             first_ip = f'{asset_raw.get("details", {}).get("ip_ranges").get(k).get("FIRST_IP")}'
             last_ip = f'{asset_raw.get("details", {}).get("ip_ranges").get(k).get("LAST_IP")}'
             asset_details.append({

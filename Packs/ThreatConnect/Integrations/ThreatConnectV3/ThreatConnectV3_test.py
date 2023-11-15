@@ -1,5 +1,8 @@
-from ThreatConnectV3 import Client, Method, create_or_query, create_context, get_last_run_time, list_groups
+import dateparser
+from ThreatConnectV3 import Client, Method, create_or_query, create_context, get_last_run_time, list_groups, fetch_incidents
 from freezegun import freeze_time
+import pytest
+import demistomock as demisto
 
 client = Client('test', 'test', 'test', False)
 
@@ -15,13 +18,69 @@ def test_create_header():
 def test_create_or_query():
     assert create_or_query('1,2,3,4,5', 'test') == 'test="1" OR test="2" OR test="3" OR test="4" OR test="5" '
     assert create_or_query('1,2,3,4,5', 'test', '') == 'test=1 OR test=2 OR test=3 OR test=4 OR test=5 '
+    assert create_or_query([1, 2, 3, 4, 5], 'test') == 'test="1" OR test="2" OR test="3" OR test="4" OR test="5" '
 
 
-def test_get_last_run_time():
-    groups = [{'dateAdded': '2022-08-04T12:35:33Z'}, {'dateAdded': '2022-09-06T12:35:33Z'},
-              {'dateAdded': '2022-03-06T12:35:33Z'}, {'dateAdded': '2022-09-06T12:36:33Z'},
-              {'dateAdded': '2022-08-06T11:35:33Z'}, ]
-    assert get_last_run_time(groups) == '2022-09-06T12:36:33'
+@pytest.fixture
+def groups_fixture() -> list:
+    return [{'dateAdded': '2022-08-04T12:35:33Z', 'id': 1}, {'dateAdded': '2022-09-06T12:35:33Z', 'id': 2},
+            {'dateAdded': '2022-03-06T12:35:33Z', 'id': 3}, {'dateAdded': '2022-09-06T12:36:33Z', 'id': 3},
+            {'dateAdded': '2022-08-06T11:35:33Z', 'id': 4}]
+
+
+@pytest.mark.parametrize('last_run, expected_result', [('2022-07-04T12:35:33', '2022-09-06T12:36:33'),
+                                                       ('2023-07-04T12:35:33', '2023-07-04T12:35:33')])
+def test_get_last_run_time(last_run, expected_result, groups_fixture):
+    """
+    Given:
+        - a response containing groups with last_run time and the previos last run_time.
+    When:
+        - Checking for the next last_run.
+    Then:
+        - Validate that the correct last run is set.
+    """
+    assert get_last_run_time(groups_fixture, last_run) == expected_result
+
+
+def test_get_last_run_no_groups():
+    """
+    Given:
+        - no grops were found.
+    When:
+        - checking for the next last_run.
+    Then:
+        - validate that the last run remains as it was before in the previos round.
+    """
+    assert get_last_run_time([], '2022-07-04T12:35:33') == '2022-07-04T12:35:33'
+
+
+def test_fetch_incidents_first_run(mocker):
+    """
+    Given:
+        - getLastRun is empty (first run)
+    When:
+        - calling fetch_events
+    Then:
+        - Validate that the last run is set properly
+    """
+    import ThreatConnectV3
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(dateparser, 'parse', return_value=dateparser.parse('2022-08-04T12:35:33'))
+    mocker.patch.object(ThreatConnectV3, 'list_groups', return_value=[])
+    assert fetch_incidents(client) == '2022-08-04T12:35:33'
+
+
+def test_fetch_incidents_not_first_run(mocker, groups_fixture):
+    import ThreatConnectV3
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_time': '2021-08-04T12:35:33', 'last_id': 1})
+    mocker.patch.object(ThreatConnectV3, 'list_groups', return_value=groups_fixture)
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    fetch_incidents(client, {})
+    incidents = demisto.incidents.call_args[0][0]
+
+    assert len(incidents) == 3
+    demisto.setLastRun.assert_called_with({'last_time': '2022-09-06T12:36:33', 'last_id': 4})
 
 
 def test_create_context():  # type: ignore # noqa

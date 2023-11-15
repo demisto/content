@@ -10,38 +10,49 @@ Supported integrations for this playbook:
 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Domain - Cisco Stealthwatch
-* Block Domain - Trend Micro Apex One
+
 * Block Domain - Zscaler
-* Block Domain - External Dynamic List
 * Block Domain - Proofpoint Threat Response
 * Block Domain - Symantec Messaging Gateway
+* Block Domain - External Dynamic List
+* Block Domain - Trend Micro Apex One
 * Block Domain - FireEye Email Security
+* Block Domain - Cisco Stealthwatch
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Domain | The Domain to block. |  | Optional |
 | DomainBlackListID | The Domain List ID to add the Domain to.<br/>product: Proofpoint Threat Response |  | Optional |
+| Tag | Tag to assign a domain to the External Dynamic List.<br/>sub-playbook: Block Domain - External Dynamic List |  | Optional |
+| Expiration | The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z.<br/>Products: <br/>Trend Micro Apex One<br/>Proofpoint Threat Response |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Block Domain - Generic v2](../doc_files/Block_Domain_-_Generic_v2.png)

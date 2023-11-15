@@ -1,9 +1,9 @@
 Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings.
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
-**Note::** 
+**Note:** 
+- Currently, this integration does not work with Cortex XSOAR 8.2 and up without using an engine.
 - The integration has the ability to run built-in Cortex XSOAR commands, through a mirrored channel. Make sure to pass the command in the chat exactly as typed in the CORTEX XSOAR CLI. For example: `!DeleteContext all=yes`. Use the command `mirror-investigation` to mirror/create a mirrored channel.
-
 - For use cases where it is only needed to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
 
 ## Integration Architecture
@@ -691,7 +691,11 @@ Retrieves a list of members from a channel.
 ### microsoft-teams-chat-create
 ***
 Creates a new chat. 
-Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, it will be returned.
+
+
+Notes:
+- Only one oneOnOne chat can exist between two members. If a oneOnOne chat already exists, it will be returned.
+- This command works with the consent user, not with the bot. Which means, the chat is created between the consent user and the user provided in the command's argument.
 
 
 ##### Base Command
@@ -699,12 +703,13 @@ Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat a
 `microsoft-teams-chat-create`
 
 ##### Required Permissions
-`Chat.Create` - Delegated, Application
-`Chat.ReadWrite` - Delegated
-`TeamsAppInstallation.ReadWriteForChat` - Delegated
-`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated
-`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application               
-`TeamsAppInstallation.ReadWriteForChat.All` - Application
+`Chat.Create` - Delegated, Application<br>
+`Chat.ReadWrite` - Delegated<br>
+`TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
+`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated<br>
+`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application<br>           
+`TeamsAppInstallation.ReadWriteForChat.All` - Application<br>
+`AppCatalog.Read.All` - Application<br>
 
 ##### Input
 
@@ -742,18 +747,22 @@ Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat a
 ***
 Sends a new chat message in the specified chat.
 
+Note:
+
+This command works with the consent user, not with the bot. Which means, the message is sent to the given chat by the consent user, not the bot.
 
 ##### Base Command
 
 `microsoft-teams-message-send-to-chat`
 
 ##### Required Permissions
-`ChatMessage.Send` - Delegated
-`Chat.ReadWrite` - Delegated
-`TeamsAppInstallation.ReadWriteForChat` - Delegated
-`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated
-`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application               
-`TeamsAppInstallation.ReadWriteForChat.All` - Application
+`ChatMessage.Send` - Delegated<br>
+`Chat.ReadWrite` - Delegated<br>
+`TeamsAppInstallation.ReadWriteForChat` - Delegated<br>
+`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated<br>
+`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application<br>               
+`TeamsAppInstallation.ReadWriteForChat.All` - Application<br>
+`AppCatalog.Read.All` - Application
 
 ##### Input
 

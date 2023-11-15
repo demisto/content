@@ -266,6 +266,7 @@
 <h3>2. domain</h3>
 <hr>
 <p>Lookup a FQDN indicator in SlashNext Threat Intelligence database.</p>
+<p>Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.</p>
 <h5>Base Command</h5>
 <p>
   <code>domain</code>

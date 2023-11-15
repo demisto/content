@@ -1,0 +1,323 @@
+id: Stamus Networks - Get Extra Data
+version: -1
+name: Stamus Networks - Get Extra Data
+description: Get Extra Information from a Declaration of Compromise
+fromversion: "6.9.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2748770b-db10-492a-8d38-5c7973bade90
+    type: start
+    task:
+      id: 2748770b-db10-492a-8d38-5c7973bade90
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: af372da4-9b8f-4cf0-8e48-f4cfca8eedb1
+    type: regular
+    task:
+      id: af372da4-9b8f-4cf0-8e48-f4cfca8eedb1
+      version: -1
+      name: Get Event
+      description: '[Get base events including protocol metadata that can be used as IOCs.]'
+      script: '|||stamus-get-doc-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        simple: ${incident.dbotMirrorId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ad2be62a-9ca9-4bed-857c-ef05560502ee
+    type: regular
+    task:
+      id: ad2be62a-9ca9-4bed-857c-ef05560502ee
+      version: -1
+      name: Get Host Information
+      description: '[Get host-id informations]'
+      script: '|||stamus-get-host-insight'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+      - "8"
+    scriptarguments:
+      ip:
+        simple: ${incident.stamustarget}
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1f1dbec6-3073-4e54-87b4-b8981fa4a6b6
+    type: regular
+    task:
+      id: 1f1dbec6-3073-4e54-87b4-b8981fa4a6b6
+      version: -1
+      name: Get By IOC (event by source ip)
+      description: '[Get events with IOC key/value filter]'
+      script: '|||stamus-check-ioc'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      indicator_key:
+        simple: src_ip
+      indicator_value:
+        simple: ${StamusIntegration.RelatedEvents.src_ip}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 12c9eb19-e96b-47f6-8b4f-47232395acfb
+    type: regular
+    task:
+      id: 12c9eb19-e96b-47f6-8b4f-47232395acfb
+      version: -1
+      name: Quarantine EDR
+      description: '[Trigger Quarantine on EDR]'
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 3e883fee-f4e5-4c0d-8b79-0b0385109651
+    type: regular
+    task:
+      id: 3e883fee-f4e5-4c0d-8b79-0b0385109651
+      version: -1
+      name: Send Event to SIEM
+      description: '[Send event to SIEM]'
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8e53acab-c40b-4d0d-862d-f06e4ec62bfc
+    type: title
+    task:
+      id: 8e53acab-c40b-4d0d-862d-f06e4ec62bfc
+      version: -1
+      name: Get Event Details
+      type: title
+      iscommand: false
+      brand: ""
+      description: '[Get Metadata associated to event]'
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 51e46a4c-ff68-4883-8251-1676f59ec87a
+    type: title
+    task:
+      id: 51e46a4c-ff68-4883-8251-1676f59ec87a
+      version: -1
+      name: Get Host Details
+      type: title
+      iscommand: false
+      brand: ""
+      description: '[Get information about asset from Host Insight]'
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 2c2a86ca-b9ce-453a-821b-f31b892a11fc
+    type: regular
+    task:
+      id: 2c2a86ca-b9ce-453a-821b-f31b892a11fc
+      version: -1
+      name: Enrich Incident
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      stamushostfirstseen:
+        simple: ${StamusIntegration.HostInsights.host_id.first_seen}
+      stamushostlastseen:
+        simple: ${StamusIntegration.HostInsights.host_id.last_seen}
+      hostnames:
+        simple: ${StamusIntegration.HostInsights.host_id.hostname.host}
+      deviceusername:
+        simple: ${StamusIntegration.HostInsights.host_id.username.user}
+      stamushostroles:
+        simple: ${StamusIntegration.HostInsights.host_id.roles.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)

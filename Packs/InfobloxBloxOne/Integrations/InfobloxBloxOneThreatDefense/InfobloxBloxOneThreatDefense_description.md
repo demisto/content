@@ -22,3 +22,5 @@ To create a service API key, complete the following:
 
 5. In the API Access Key Generated dialog, click **Copy** to copy the key and save it in a place where you can locate the key in the future.
 
+
+Notice: Submitting indicators using the **bloxone-td-lookalike-domain-list** command of this integration might make the indicator data publicly available.  See the vendor’s documentation for more details.

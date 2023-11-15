@@ -34,6 +34,7 @@ class Client(BaseClient):
     """
     Client to use in the Fidelis Endpoint integration. Overrides BaseClient
     """
+
     def __init__(self, server_url: str, username: str, password: str, verify: bool, proxy: bool):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         token = self._generate_token(username, password)

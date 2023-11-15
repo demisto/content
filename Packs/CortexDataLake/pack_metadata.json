@@ -16,12 +16,6 @@
         "CDL",
         "Cortex Data Lake XSOAR Connector"
     ],
-    "dependencies": {
-        "GetLicenseID": {
-            "mandatory": true,
-            "name": "Get License ID"
-        }
-    },
     "marketplaces": [
         "xsoar"
     ]

@@ -16,5 +16,5 @@ ignore=BA124
 [file:MicrosoftCloudAppSecurity.yml]
 ignore=MR108,PR101
 
-
-
+[known_words]
+GCC

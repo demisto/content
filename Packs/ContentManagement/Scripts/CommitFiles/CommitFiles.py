@@ -1,10 +1,11 @@
+from pathlib import Path
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import os
 import io
 from os.path import exists
-from typing import Dict
 from contextlib import redirect_stderr, redirect_stdout
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
@@ -18,7 +19,7 @@ PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
               '{}\n\n' \
               '---'
 
-file_path_to_sha: Dict[str, str] = {}
+file_path_to_sha: dict[str, str] = {}
 
 files_path = []
 
@@ -36,7 +37,7 @@ class ContentFile:  # pragma: no cover
 
         # read the file from entry id
         file_object = demisto.getFilePath(file['EntryID'])
-        with open(file_object['path'], 'r') as f:
+        with open(file_object['path']) as f:
             file_contents = f.read()
 
         self.file_text = file_contents
@@ -133,6 +134,22 @@ def does_file_exist(branch_name: str, content_file: ContentFile) -> bool:
     return False
 
 
+def searched_file_path(branch_name: str, content_file: ContentFile) -> bool:
+    full_path = Path(content_file.path_to_file, content_file.file_name)
+
+    if str(full_path) in files_path:  # the files list, check if the file already exists in the list
+        return True
+    # try to get the file from branch
+    response = execute_command('azure-devops-file-list',
+                               args={'branch_name': branch_name.split('/')[-1], 'recursion_level': 'Full'})
+    files_set = {file["path"] for file in response.get("value", [])}
+    for file in files_set:
+        if str(full_path) in file:
+            files_path.append(str(full_path))
+            return True
+    return False
+
+
 def commit_content_item_bitbucket(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List):
     commit_args = {"message": f"Added {content_file.file_name}",
                    "file_name": f"{content_file.path_to_file}/{content_file.file_name}",
@@ -154,6 +171,45 @@ def commit_content_item_bitbucket(branch_name: str, content_file: ContentFile, n
     except DemistoException as e:
         raise DemistoException(f'Failed to execute bitbucket-commit-create command. Error: {e}, '
                                f'{traceback.format_exc()}')
+
+
+def commit_content_item_azure_devops(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List):
+    file_args = {"commit_comment": f"{content_file.file_name} was added.",
+                 "file_path": f"{content_file.path_to_file}/{content_file.file_name}",
+                 "branch_name": f"{branch_name}",
+                 "file_content": f"{content_file.file_text}"}
+
+    file_exists = searched_file_path(branch_name, content_file)
+
+    # don't commit pack_metadata.json if already exists in the branch
+    if file_exists and content_file.file_name == 'pack_metadata.json':
+        return
+    response = demisto.executeCommand('azure-devops-branch-list', args={})
+    branches_list = response[0].get("Contents", {}).get("value", []) if response and isinstance(response, list) else []
+    for branch in branches_list:
+        if branch["name"] == branch_name:
+            branch_id = branch["objectId"]
+            break
+    else:
+        raise DemistoException('Failed to find a corresponding branch id to the given branch name.')
+    file_args["branch_id"] = branch_id
+
+    if file_exists:
+        # update existing file
+        file_args['commit_comment'] = f'{content_file.file_name} was updated.'
+        modified_files.append(content_file.file_name)
+        command_to_execute = 'azure-devops-file-update'
+    else:
+        # new file added
+        new_files.append(content_file.file_name)
+        command_to_execute = 'azure-devops-file-create'
+
+    try:
+        demisto.executeCommand(command_to_execute, args=file_args)
+    except DemistoException as e:
+        raise DemistoException(
+            f'Failed to execute azure-devops-file-update or azure-devops-file-create commands. Error: {e}, '
+        ) from e
 
 
 def split_yml_file(content_file: ContentFile):  # pragma: no cover
@@ -186,19 +242,18 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
     elif script_type == 'powershell':
         script_extention = 'ps1'
 
-    with redirect_stdout(output_capture):
-        with redirect_stderr(output_capture):
-            yml_splitter.extract_to_package_format()
+    with redirect_stdout(output_capture), redirect_stderr(output_capture):
+        yml_splitter.extract_to_package_format()
 
     yml_file_path = f'{base_name}/{base_name}.yml'
     script_file_path = f'{base_name}/{base_name}.{script_extention}'
     path_to_file = os.path.join(content_file.path_to_file, base_name)
 
     # read the py and yml files content
-    with open(yml_file_path, 'r') as f:
+    with open(yml_file_path) as f:
         yml_txt = f.read()
 
-    with open(script_file_path, 'r') as f:
+    with open(script_file_path) as f:
         script_txt = f.read()
 
     # create the yml file
@@ -218,7 +273,7 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
     # create the description file
     description_file_path = f'{base_name}/{base_name}_description.md'
     if exists(description_file_path):
-        with open(description_file_path, 'r') as f:
+        with open(description_file_path) as f:
             description_txt = f.read()
 
         description_file = ContentFile()
@@ -236,8 +291,12 @@ def commit_git(git_integration: str, branch_name: str, content_file: ContentFile
         commit_content_item_gitlab(branch_name, content_file, new_files, modified_files)
     elif git_integration == 'GitHub':
         commit_content_item(branch_name, content_file, new_files, modified_files)
-    else:  # git_integration == 'Bitbucket'
+    elif git_integration == 'Bitbucket':
         commit_content_item_bitbucket(branch_name, content_file, new_files, modified_files)
+    elif git_integration == 'AzureDevOps':
+        commit_content_item_azure_devops(branch_name, content_file, new_files, modified_files)
+    else:
+        raise DemistoException(f"Unexpected {git_integration=}. Possible values: Gitlab, GitHub, Bitbucket and AzureDevOps.")
 
 
 ''' MAIN FUNCTION '''
@@ -281,7 +340,6 @@ def main():
 
             else:
                 commit_git(git_integration, branch_name, content_file, new_files, modified_files)
-
         incident_url = demisto.demistoUrls().get('investigation')
 
         # create the PR text

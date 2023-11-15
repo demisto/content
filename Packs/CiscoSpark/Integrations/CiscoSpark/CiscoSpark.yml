@@ -9,7 +9,7 @@ description: Send messages, create rooms and more, via the Cisco Spark API.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: https://api.ciscospark.com
+  defaultvalue: https://webexapis.com
   type: 0
   required: true
 - display: API Key
@@ -49,65 +49,65 @@ script:
     outputs:
     - contextPath: CiscoSpark.People
       description: The list of people.
-    description: List people
+    description: List people.
   - name: cisco-spark-create-person
     arguments:
     - name: emails
-      description: Email addresses of the person (comma separated)
+      description: Comma-separated list of mail addresses of the person.
       isArray: true
     - name: displayName
-      description: Full name of the person
+      description: Full name of the person.
     - name: firstName
-      description: First name of the person
+      description: First name of the person.
     - name: lastName
-      description: Last name of the person
+      description: Last name of the person.
     - name: avatar
-      description: URL to the person's avatar in PNG format
+      description: URL to the person's avatar in PNG format.
     - name: orgId
-      description: ID of the organization to which this person belongs
+      description: ID of the organization to which this person belongs.
     - name: roles
-      description: Roles of the person (comma separated)
+      description: Comma-separated list of roles of the person.
       isArray: true
     - name: licenses
-      description: Licenses allocated to the person
+      description: Licenses allocated to the person.
       isArray: true
     description: Create a new user account for a given organization. Only an admin can create a new user account.
   - name: cisco-spark-get-person-details
     arguments:
     - name: personId
       required: true
-      description: The person ID
+      description: The person ID.
     description: Shows details for a person, by ID.
   - name: cisco-spark-update-person
     arguments:
     - name: emails
-      description: Email addresses of the person (comma separated)
+      description: Comma-separated list of email addresses of the person.
       isArray: true
     - name: displayName
-      description: Full name of the person
+      description: Full name of the person.
     - name: firstName
-      description: First name of the person
+      description: First name of the person.
     - name: lastName
-      description: Last name of the person
+      description: Last name of the person.
     - name: avatar
-      description: URL to the person's avatar in PNG format
+      description: URL to the person's avatar in PNG format.
     - name: orgId
-      description: ID of the organization to which this person belongs
+      description: ID of the organization to which this person belongs.
     - name: roles
-      description: Roles of the person (comma separated)
+      description: Comma-separated list of roles of the person.
       isArray: true
     - name: licenses
-      description: Licenses allocated to the person (comma separated)
+      description: Comma-separated list of licenses allocated to the person.
       isArray: true
     - name: personId
       required: true
-      description: The person ID
+      description: The person ID.
     description: Update details for a person, by ID. Only an admin can update a person details.
   - name: cisco-spark-delete-person
     arguments:
     - name: personId
       required: true
-      description: The person ID
+      description: The person ID.
     description: Remove a person from the system. Only an admin can remove a person.
   - name: cisco-spark-get-own-details
     arguments: []
@@ -316,7 +316,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Set to true to make the person a team moderator
+      description: Set to true to make the person a team moderator.
     description: Add someone to a team by Person ID or email address; optionally making them a moderator.
   - name: cisco-spark-get-team-membership-details
     arguments:
@@ -335,7 +335,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Set to true to make the person a team moderator
+      description: Set to true to make the person a team moderator.
     description: Updates a team membership, by ID.
   - name: cisco-spark-delete-team-membership
     arguments:
@@ -368,7 +368,7 @@ script:
     - name: filter
       description: The filter that defines the webhook scope.
     - name: secret
-      description: Secret used to generate payload signature
+      description: Secret used to generate payload signature.
     description: Creates a webhook.
   - name: cisco-spark-get-webhook-details
     arguments:

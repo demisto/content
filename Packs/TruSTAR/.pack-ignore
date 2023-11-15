@@ -4,3 +4,5 @@ ignore=RM104
 [file:TruSTAR_V2.yml]
 ignore=BA108,BA109
 
+[known_words]
+Splunk

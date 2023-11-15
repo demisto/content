@@ -408,8 +408,10 @@ def main():
     params = demisto.params()
     # Remove trailing slash to prevent wrong URL path to service
     api_url = params['api_url']
-    client_id = params['client_id']
-    client_secret = params['client_secret']
+    client_id = params.get('credentials', {}).get('identifier') or params.get('client_id')
+    client_secret = params.get('credentials', {}).get('password') or params.get('client_secret')
+    if not (client_id and client_secret):
+        return_error('Please provide a Client ID and Secret')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     dbot_score_reliability = params['integration_reliability']

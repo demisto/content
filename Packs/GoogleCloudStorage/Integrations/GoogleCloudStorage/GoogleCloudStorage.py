@@ -1,10 +1,11 @@
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 ''' IMPORTS '''
 
 from google.cloud import storage
-from typing import Any, Dict
+from typing import Any
 import requests
 import traceback
 import urllib3
@@ -83,7 +84,7 @@ def ec_key(path, *merge_by):
             js_condition += ' && '
         js_condition += 'val.{0} && val.{0} === obj.{0}'.format(key)
 
-    return '{}({})'.format(path, js_condition)
+    return f'{path}({js_condition})'
 
 
 def reformat_datetime_str(dt_str):
@@ -103,7 +104,7 @@ def human_readable_table(title, contents):
     def header_transform(header):
         return re.sub(r'([a-z])([A-Z])', '\\1 \\2', header)
 
-    first_dict: Dict[str, Any] = {}
+    first_dict: dict[str, Any] = {}
     if isinstance(contents, list) and contents:
         first_dict = contents[0]
     elif isinstance(contents, dict):
@@ -122,9 +123,9 @@ def format_error(exc):
         class_name = exc.__class__.__name__
         details = str(exc)
         if isinstance(exc, BaseException) and details:
-            msg = '{}: {}'.format(class_name, details)
+            msg = f'{class_name}: {details}'
         else:
-            msg += ' ({})'.format(details if details else class_name)
+            msg += f' ({details if details else class_name})'
 
     return msg
 
@@ -189,8 +190,13 @@ def gcs_create_bucket(client, args):
     bucket_name = args['bucket_name']
     bucket_acl = args.get('bucket_acl', '')
     default_object_acl = args.get('default_object_acl', '')
+    location = args.get('location')
+    uniform_bucket_level_access = argToBoolean(args.get('uniform_bucket_level_access'))
 
-    bucket = client.create_bucket(bucket_name)
+    bucket = client.create_bucket(bucket_name, location=location)
+    if uniform_bucket_level_access:
+        bucket.iam_configuration.uniform_bucket_level_access_enabled = True
+        bucket.patch()
     if bucket_acl:
         bucket.acl.save_predefined(bucket_acl)
     if default_object_acl:

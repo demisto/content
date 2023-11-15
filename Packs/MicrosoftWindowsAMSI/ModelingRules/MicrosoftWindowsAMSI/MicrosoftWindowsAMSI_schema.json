@@ -1,0 +1,64 @@
+{
+    "microsoft_amsi_raw": {        
+        "event_data": {
+            "type": "string",
+            "is_array": false
+        },
+        "event_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "provider_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "record_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "os_subtype": {
+            "type": "string",
+            "is_array": false
+        },
+        "process_cmd": {
+            "type": "string",
+            "is_array": false
+        },
+        "process_md5": {
+            "type": "string",
+            "is_array": false
+        },
+        "process_path": {
+            "type": "string",
+            "is_array": false
+        },
+        "process_sha256": {
+            "type": "string",
+            "is_array": false
+        },
+        "process_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "process_pid": {
+            "type": "string",
+            "is_array": false
+        },
+        "process_thread_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "message": {
+            "type": "string",
+            "is_array": false
+        },
+        "log_level": {
+            "type": "string",
+            "is_array": false
+        },
+        "opcode": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

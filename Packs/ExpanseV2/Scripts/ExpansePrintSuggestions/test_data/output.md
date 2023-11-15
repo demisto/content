@@ -83,6 +83,6 @@ The enrichment correlates asset information from Prisma Cloud inventory, searchi
 |Cloud Type|Service|Region Id|Account Name|Account Id|Resource Type|Resource Name|Ip|Fqdn|Rrn|Id|
 |---|---|---|---|---|---|---|---|---|---|---|
 | aws | Amazon Elastic Load Balancing | us-west-2 | aws-user-personal | 12345 | Managed Load Balancer | application-lb |  | application-lb-654321.us-west-2.elb.amazonaws.com | rrn::managedLb:us-west-2:12345:b38d940663c047b02c2116be49695cf353976dff:arn%3Aaws%3Aelasticloadbalancing%3Aus-east-1%3A12345%3Aloadbalancer%2Fapp%2Fapplication-lb%2F1398164320221c02 | arn:aws:elasticloadbalancing:us-west-2:12345:loadbalancer/app/application-lb/1398164320221c02 |
-| aws | Amazon EC2 | us-west-2 | aws-user-personal | 12345 | Instance | testvm | 198.51.101.1 | ec2-198-51-101-1.us-west-2.compute.amazonaws.com | rrn::instance:us-west-2:12345:9db2db5fdba47606863c8da86d3ae594fb5aee2b:i-999999999 | i-3219831792378 |
+| aws | Amazon EC2 | us-west-2 | aws-user-personal | 12345 | Instance | testvm | 198.51.101.1 | ec2.us.compute-1.amazonaws.com | rrn::instance:us-west-2:12345:9db2db5fdba47606863c8da86d3ae594fb5aee2b:i-999999999 | i-3219831792378 |
 
 

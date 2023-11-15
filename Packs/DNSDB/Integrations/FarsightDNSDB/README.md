@@ -1,14 +1,76 @@
-<!-- HTML_DOC -->
-<p>This integration uses Farsight Security’s DNSDB solution to interactively lookup rich, historical DNS information – either as playbook tasks or through API calls in the War Room – to access rdata and rrset records.</p>
-<h2><strong>To set up Farsight Security DNSDB to work with Cortex XSOAR:</strong></h2>
-<p>User will need DNSDB’s API key and service URL for connecting to the Cortex XSOAR server.</p>
-<h2><strong>To set up the integration on Cortex XSOAR:</strong></h2>
-<ol>
-<li>Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</li>
-<li>Locate the DNSDB integration by searching for ‘Farsight DNSDB’ using the search box on the top of the page.</li>
-<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following DNSDB and Cortex XSOAR specific settings:<br> <strong>Name</strong>: A textual name for the integration instance.<br> <strong>API Key</strong>: The API key that user gets from Farsight Security.<br> <strong>DNSDB Service URL</strong>: The service URL for Farsight DNSDB.<br> <strong>Use system proxy settings</strong>: Select whether or not to communicate via the system proxy server.<br> <strong>Cortex XSOAR engine</strong>: If relevant, select the engine that acts as a proxy to the server.<br> Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Cortex XSOAR server from accessing the remote networks.<br> For more information on Cortex XSOAR engines see:<br> <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Engines">https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Engines</a>
-</li>
-<li>Press the ‘Test’ button to validate connection.</li>
-<li>After completing the test successfully, press the ‘Done’ button.</li>
-</ol>
-<p> </p>
+This integration uses Farsight Security’s DNSDB solution to interactively lookup rich, historical DNS information – either as playbook tasks or through API calls in the War Room – to access rdata and rrset records.
+
+**To set up Farsight Security DNSDB to work with Cortex XSOAR:**
+----------------------------------------------------------------
+
+User will need DNSDB’s API key and service URL for connecting to the Cortex XSOAR server.
+
+## Configure Farsight DNSDB on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Farsight DNSDB.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | DNSDB Service URL | True |
+    | API Key | True |
+    | Use system proxy settings | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Commands
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### dnsdb-rdata
+
+***
+Lookup rdata records
+
+#### Base Command
+
+`dnsdb-rdata`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | query type. Possible values are: name, ip, raw. | Required | 
+| value | query value. | Required | 
+| limit | Limit the number of returned records. Default is 100. | Optional | 
+| time_first_before | Filter results for entries seen for first time before (seconds). | Optional | 
+| time_last_before | Filter results for entries seen last time before (seconds). | Optional | 
+| time_first_after | filter results for entries seen first time after (seconds). | Optional | 
+| time_last_after | filter results for entries seen last time after (seconds). | Optional | 
+| rrtype | query rrtype. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### dnsdb-rrset
+
+***
+Lookup rrser records
+
+#### Base Command
+
+`dnsdb-rrset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| owner | Owner name to query. | Required | 
+| rrtype | rrtype value to query. | Optional | 
+| bailiwick | Bailiwick value to query. | Optional | 
+| limit | Limit the number of returned records. Default is 100. | Optional | 
+| time_first_before | Filter results for entries seen for first time before (seconds). | Optional | 
+| time_first_after | Filter results for entries seen for first time after (seconds). | Optional | 
+| time_last_before | Filter results for entries seen for last time before (seconds). | Optional | 
+| time_last_after | Filter results for entries seen for last time after (seconds). | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

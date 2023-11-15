@@ -1,0 +1,11 @@
+[MODEL: dataset = "digital_guardian_arc_raw"]
+alter
+    xdm.alert.original_alert_id = inc_id,
+    xdm.alert.name = dg_name,
+    xdm.alert.severity = inc_sev,
+    xdm.alert.description = dg_description,
+    xdm.target.user.username = inc_assign,
+    xdm.event.type = dg_utype,
+    xdm.source.user.username = inc_creator,
+    xdm.alert.subcategory = inc_state,
+    xdm.event.id = dg_guid;

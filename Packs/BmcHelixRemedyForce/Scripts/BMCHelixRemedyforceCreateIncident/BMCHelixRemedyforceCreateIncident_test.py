@@ -2,7 +2,7 @@ import json
 from unittest.mock import patch
 
 from CommonServerPython import *
-from BMCHelixRemedyforceCreateIncident import remove_extra_space_from_args, main,\
+from BMCHelixRemedyforceCreateIncident import remove_extra_space_from_args, main, \
     ERROR_MESSAGES, get_field_id
 
 DUMMY_COMMAND_RESPONSE = [{"Contents": {}}]

@@ -48,14 +48,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "39"
+      - "46"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1620,
-          "y": 820
+          "y": 825
         }
       }
     note: false
@@ -169,8 +169,7 @@ tasks:
           right:
             value:
               complex:
-                root: LogonLogs.client.geographicalContext
-                accessor: country
+                root: LogonCountries
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -180,7 +179,7 @@ tasks:
       {
         "position": {
           "x": 1620,
-          "y": 1160
+          "y": 1300
         }
       }
     note: false
@@ -217,7 +216,7 @@ tasks:
       {
         "position": {
           "x": 1830,
-          "y": 1335
+          "y": 1475
         }
       }
     note: false
@@ -254,7 +253,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": 1335
+          "y": 1475
         }
       }
     note: false
@@ -598,7 +597,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": 1580
+          "y": 1660
         }
       }
     note: false
@@ -819,7 +818,7 @@ tasks:
       {
         "position": {
           "x": 2250,
-          "y": 995
+          "y": 960
         }
       }
     note: false
@@ -850,7 +849,7 @@ tasks:
       {
         "position": {
           "x": 1040,
-          "y": 830
+          "y": 825
         }
       }
     note: false
@@ -1002,7 +1001,7 @@ tasks:
       {
         "position": {
           "x": 1040,
-          "y": 985
+          "y": 960
         }
       }
     note: false
@@ -1033,7 +1032,7 @@ tasks:
         simple: ' SuspiciousUserAgent'
       value:
         complex:
-          root: countrysuccessLogs.client.userAgent
+          root: OktaUserAgentLogs.client.userAgent
           accessor: rawUserAgent
           transformers:
           - operator: uniq
@@ -1372,7 +1371,7 @@ tasks:
       {
         "position": {
           "x": 1620,
-          "y": 985
+          "y": 1125
         }
       }
     note: false
@@ -1440,7 +1439,7 @@ tasks:
       {
         "position": {
           "x": -1480,
-          "y": 275
+          "y": 265
         }
       }
     note: false
@@ -1629,6 +1628,47 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 7b87796a-14dc-4b4c-8840-5080191f1ee6
+    type: regular
+    task:
+      id: 7b87796a-14dc-4b4c-8840-5080191f1ee6
+      version: -1
+      name: Set the country from which the user logged in
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      key:
+        simple: LogonCountries
+      value:
+        complex:
+          root: LogonLogs.client.geographicalContext
+          accessor: country
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -1649,7 +1689,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2525,
+        "height": 2605,
         "width": 4110,
         "x": -1480,
         "y": -880
@@ -1665,7 +1705,9 @@ inputs:
 - key: LoginCountry
   value: {}
   required: false
-  description: The Country from which the user logged in.
+  description: |-
+    The Country code from which the user logged in.
+    Country Code Alpha 2 (Example: US)
   playbookInputQuery:
 - key: ASN
   value: {}
@@ -1699,6 +1741,9 @@ outputs:
   type: unknown
 - contextPath: NumOfFailedLogonASN
   description: Number of failed login from ASN by all users.
+  type: unknown
+- contextPath: LogonCountries
+  description: The countries from which the user logged in.
   type: unknown
 quiet: true
 tests:

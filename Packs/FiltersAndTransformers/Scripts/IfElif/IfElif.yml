@@ -1,0 +1,40 @@
+commonfields:
+  id: If-Elif
+  version: -1
+name: If-Elif
+script: ''
+type: python
+tags:
+- transformer
+- general
+comment: A transformer for if-elif-else logic.
+enabled: true
+args:
+- name: value
+  description: The object from which to grab values, for the full context use "${.}".
+  required: true
+- name: conditions
+  description: |-
+    A JSON formatted list, where all but the last items are dictionaries with the keys "condition" (holding a boolean expression) and "return" (holding the value to return if "condition" is true).
+    The last dictionary can have the key "default" which can hold any valid JSON object to return if no "condition" was true.
+    For more information: https://xsoar.pan.dev/docs/reference/scripts/if-elif
+  required: true
+  type: textArea
+- name: flags
+  description: Flags to control comparison and regular expression behavior.
+  isArray: true
+  auto: PREDEFINED
+  predefined:
+  - case_insensitive
+  - list_compare
+  - regex_dot_all
+  - regex_multiline
+  - regex_full_match
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.13.74666
+runas: DBotWeakRole
+fromversion: 6.9.0
+tests:
+- If-Elif Test

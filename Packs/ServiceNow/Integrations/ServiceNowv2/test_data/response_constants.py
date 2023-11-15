@@ -1,6 +1,3 @@
-from CommonServerPython import timedelta
-from datetime import datetime
-
 RESPONSE_TICKET = {
     'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',
     'sys_updated_on': '2020-04-02 14:03:31',
@@ -89,7 +86,7 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '', 'due_date': '',
     'sys_mod_count': '8', 'reopen_count': '', 'sys_tags': '', 'escalation': '0', 'upon_approval': '',
     'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
-    }]
+}]
 }
 
 USER_RESPONSE = {
@@ -121,7 +118,7 @@ RESPONSE_CLOSING_TICKET_MIRROR_CLOSED = {'result': [{
     'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '', 'due_date': '',
     'sys_mod_count': '8', 'reopen_count': '', 'sys_tags': '', 'escalation': '0', 'upon_approval': '',
     'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
-    }]
+}]
 }
 
 RESPONSE_CLOSING_TICKET_MIRROR_RESOLVED = {'result': [{
@@ -149,7 +146,7 @@ RESPONSE_CLOSING_TICKET_MIRROR_RESOLVED = {'result': [{
     'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '', 'due_date': '',
     'sys_mod_count': '8', 'reopen_count': '', 'sys_tags': '', 'escalation': '0', 'upon_approval': '',
     'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
-    }]
+}]
 }
 
 RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM = {'result': [{
@@ -177,7 +174,7 @@ RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM = {'result': [{
     'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '', 'due_date': '',
     'sys_mod_count': '8', 'reopen_count': '', 'sys_tags': '', 'escalation': '0', 'upon_approval': '',
     'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
-    }]
+}]
 }
 
 RESPONSE_GET_ATTACHMENT = {'result': [{
@@ -3217,38 +3214,38 @@ MIRROR_COMMENTS_RESPONSE = {'result': [{
     'sys_created_by': 'admin', 'element': 'comments'}]}
 
 RESPONSE_COMMENTS_DISPLAY_VALUE = {
-        'result': {'sys_created_on': {'display_value': '2022-11-21 20:59:49', 'value': '2022-11-21 19:59:49'},
-                   'sys_created_by': {'display_value': 'admin', 'value': 'admin'},
-                   'sys_id': {'display_value': '123456789', 'value': '123456789'},
-                   'urgency': {'display_value': '3 - Low', 'value': '3'},
-                   'severity': {'display_value': '3 - Low', 'value': '3'},
-                   'comments': {'display_value':
-                                '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment'
-                                '\n\n Mirrored from Cortex XSOAR\n\n'
-                                '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n',
-                                'value': ''}}}
+    'result': {'sys_created_on': {'display_value': '2022-11-21 20:59:49', 'value': '2022-11-21 19:59:49'},
+               'sys_created_by': {'display_value': 'admin', 'value': 'admin'},
+               'sys_id': {'display_value': '123456789', 'value': '123456789'},
+               'urgency': {'display_value': '3 - Low', 'value': '3'},
+               'severity': {'display_value': '3 - Low', 'value': '3'},
+               'comments': {'display_value':
+                            '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment'
+                            '\n\n Mirrored from Cortex XSOAR\n\n'
+                            '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n',
+                            'value': ''}}}
 
 RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS = {
-        'result': {'sys_created_on': {'display_value': '2022-11-21 09:59:49', 'value': '2022-11-21 08:59:49'},
-                   'sys_created_by': {'display_value': 'admin', 'value': 'admin'},
-                   'sys_id': {'display_value': '123456789', 'value': '123456789'},
-                   'urgency': {'display_value': '3 - Low', 'value': '3'},
-                   'severity': {'display_value': '3 - Low', 'value': '3'},
-                   'comments': {'display_value': '', 'value': ''}}}
+    'result': {'sys_created_on': {'display_value': '2022-11-21 09:59:49', 'value': '2022-11-21 08:59:49'},
+               'sys_created_by': {'display_value': 'admin', 'value': 'admin'},
+               'sys_id': {'display_value': '123456789', 'value': '123456789'},
+               'urgency': {'display_value': '3 - Low', 'value': '3'},
+               'severity': {'display_value': '3 - Low', 'value': '3'},
+               'comments': {'display_value': '', 'value': ''}}}
 
 RESPONSE_MIRROR_FILE_ENTRY = [
     {'Contents': '', 'ContentsFormat': 'text', 'Type': 3, 'File': 'test.txt',
      'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'}]
 
 RESPONSE_ASSIGNMENT_GROUP = {'result': {'parent': '', 'manager':
-    {'link': 'https://dev59633.service-now.com/api/now/table/sys_user/b6b364e253131300e321ddeeff7b121b',
-     'value': 'b6b364e253131300e321ddeeff7b121b'}, 'roles': '', 'sys_mod_count': '0', 'active': 'true',
-                                       'description': '', 'source': '', 'sys_updated_on': '2020-07-11 09:50:32',
-                                       'sys_tags': '', 'type': '', 'sys_id': '679434f053231300e321ddeeff7b12d8',
-                                       'sys_updated_by': 'admin', 'cost_center': '', 'default_assignee': '',
-                                       'sys_created_on': '2020-07-11 09:50:32', 'name': 'Help Desk',
-                                       'exclude_manager': 'false', 'email': '', 'include_members': 'false',
-                                       'sys_created_by': 'admin'}}
+                                        {'link': 'https://dev59633.service-now.com/api/now/table/sys_user/b6b364e253131300e321ddeeff7b121b',
+                                         'value': 'b6b364e253131300e321ddeeff7b121b'}, 'roles': '', 'sys_mod_count': '0', 'active': 'true',
+                                        'description': '', 'source': '', 'sys_updated_on': '2020-07-11 09:50:32',
+                                        'sys_tags': '', 'type': '', 'sys_id': '679434f053231300e321ddeeff7b12d8',
+                                        'sys_updated_by': 'admin', 'cost_center': '', 'default_assignee': '',
+                                        'sys_created_on': '2020-07-11 09:50:32', 'name': 'Help Desk',
+                                        'exclude_manager': 'false', 'email': '', 'include_members': 'false',
+                                        'sys_created_by': 'admin'}}
 
 
 RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR = [{'Contents': '', 'ContentsFormat': 'text', 'Type': 3,

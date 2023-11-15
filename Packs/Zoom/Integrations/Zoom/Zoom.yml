@@ -7,99 +7,126 @@ configuration:
   name: url
   type: 0
   defaultvalue: "https://api.zoom.us/v2/"
-  required: false
+  required: true
 - display: Account ID (OAuth)
   name: account_id
   type: 0
-  required: false
+  required: true
 - display: Client ID (OAuth)
   name: credentials
   type: 9
   displaypassword: Client Secret (OAuth)
+  required: true
+- display: Bot JID
+  name: botJID
+  type: 0
   required: false
-- name: creds_api_key
-  displaypassword: API Key (JWT-Deprecated.)
+  hiddenpassword: true
+  additionalinfo: The BotJID in the Chat subscription section on the Features page
+    of your App Dashboard.
+- display: Bot Client ID ((Team Chat App))
+  name: bot_credentials
   type: 9
-  additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
+  displaypassword: Bot Client Secret (Team Chat App)
+- name: secret_token
+  type: 9
   hiddenusername: true
   required: false
-- name: creds_api_secret
-  displaypassword: API Secret (JWT-Deprecated.)
+  displaypassword: Secret Token(Team Chat App)
+  additionalinfo: You must provide this token for mirror-investigation.
+- name: verification_token
   type: 9
-  additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
   hiddenusername: true
   required: false
-- display: API Key (JWT-Deprecated.)
-  name: apiKey
-  type: 4
-  additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
-  hidden: true
+  displaypassword: Verification Token(Team Chat App)
+  additionalinfo: Token to verify the messages from Zoom.
+- display: Long running instance
+  name: longRunning
+  section: Collect
+  type: 8
+- defaultvalue: 'false'
+  display: Enable Incident Mirroring
+  name: mirroring
+  type: 8
+  section: Collect
+  additionalinfo: You most enable or run mirror-investigation.
+- display: Listen Port
+  name: longRunningPort
+  type: 0
+  section: Collect
   required: false
-- display: API Secret (JWT-Deprecated.)
-  name: apiSecret
-  type: 4
-  additionalinfo: This authentication method will be deprecated by Zoom in June 2023.
-  hidden: true
-  required: false
+  additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - display: Use system proxy settings
   name: proxy
   type: 8
-  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-description: Use the Zoom integration manage your Zoom users and meetings
+- display: Certificate (Required for HTTPS)
+  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are supported only using engine.
+  name: certificate
+  type: 12
+  section: Connect
+  advanced: true
+  required: false
+- display: Private Key (Required for HTTPS)
+  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.
+  name: key
+  type: 14
+  section: Connect
+  advanced: true
+  required: false
+description: Use the Zoom integration to manage your Zoom users and meetings.
 display: Zoom
 name: Zoom
 script:
   commands:
   - arguments:
-    - description: First name of the new user
+    - description: First name of the new user.
       name: first_name
       required: true
-    - description: Last name of the new user
+    - description: Last name of the new user.
       name: last_name
       required: true
-    - description: The email of the new user
+    - description: The email of the new user.
       name: email
       required: true
     - auto: PREDEFINED
       defaultValue: Basic
-      description: >
-        The type of the newly created user.  Note: the old type "pro" in now called "Licensed", and the type "Corporate" is not sopprted in Zoom v2 and above.
+      description: 'The type of the newly created user.  Note: The old type "pro" is now called "Licensed", and the type "Corporate" is not supprted in Zoom v2 and above .'
       name: user_type
       predefined:
       - Basic
       - Licensed
       - pro
       - Corporate
-    description: Create a new user in zoom account
+    description: Create a new user in zoom account.
     execution: true
     name: zoom-create-user
     outputs:
     - contextPath: Zoom.User.id
-      description: The ID of the created user
+      description: The ID of the created user.
       type: string
     - contextPath: Zoom.User.first_name
-      description: First name of the created user
+      description: First name of the created user.
       type: string
     - contextPath: Zoom.User.last_name
-      description: Last name for the created user
+      description: Last name for the created user.
       type: string
     - contextPath: Zoom.User.email
-      description: Email of the created user
+      description: Email of the created user.
       type: string
     - contextPath: Zoom.User.created_at
       description: Created date of the user. Note that this field does not appear in zoom v2 and above.
       type: date
     - contextPath: Zoom.User.type
-      description: The type of the user
+      description: The type of the user.
       type: number
   - arguments:
     - auto: PREDEFINED
       defaultValue: Instant
-      description: The type of the meeting
+      description: The type of the meeting.
       name: type
       predefined:
       - Instant
@@ -108,9 +135,8 @@ script:
       required: true
     - description: >
         For recurring meetings only.
-        Select the final date on which the meeting will recur before it is canceled
-
-        For example: 2017-11-25T12:00:00Z
+        Select the final date on which the meeting will recur before it is canceled.
+        For example: 2017-11-25T12:00:00Z.
       name: end_date_time
     - description: >
         For recurring meetings only.
@@ -124,16 +150,15 @@ script:
 
         State the day in a month, the meeting should recur. The value range is from 1 to 31. Default = 1.
       name: monthly_day
-    - description: >
+    - description: >-
         For recurring meetings with Monthly recurrence_type only.
-
         State the week of the month when the meeting should recur. If you use this field, you must also use the monthly_week_day field to state the day of the week when the meeting should recur.
-        Allowed: -1 (for last week of the month) ┃1┃2┃3┃4
+        Allowed: -1 (for last week of the month) ┃1┃2┃3┃4.
       name: monthly_week
     - description: >
         For recurring meetings with Monthly recurrence_type only.
 
-        State a specific day in a week when the monthly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7
+        State a specific day in a week when the monthly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7.
 
         To use this field, you must also use the monthly_week field.
       name: monthly_week_day
@@ -172,7 +197,7 @@ script:
         Note that the Cloud option is available for zoom paid customers only.
     - name: encryption_type
       defaultValue: enhanced_encryption
-      description: The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee
+      description: The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee.
       auto: PREDEFINED
       predefined:
       - enhanced_encryption
@@ -209,10 +234,10 @@ script:
       description: If true, only authenticated users can join the meeting.
     - name: user
       required: true
-      description: email address or id of user for meeting
+      description: Email address or ID of the user for the meeting.
     - name: topic
       required: true
-      description: The topic of the meeting
+      description: The topic of the meeting.
     - name: waiting_room
       auto: PREDEFINED
       predefined:
@@ -223,41 +248,41 @@ script:
       description: Meeting start time. When using a format like “yyyy-MM-ddTHH:mm:ssZ”, always use GMT time. When using a format like “yyyy-MM-ddTHH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
     - name: timezone
       description: "Timezone to format start_time. For example, “America/Los_Angeles”. For scheduled meetings only. "
-    description: Create a new zoom meeting (scheduled ,instant, or recurring)
+    description: Create a new Zoom meeting (scheduled, instant, or recurring).
     name: zoom-create-meeting
     outputs:
     - contextPath: Zoom.Meeting.join_url
-      description: Join url for the meeting
+      description: Join the URL for the meeting.
       type: string
     - contextPath: Zoom.Meeting.id
-      description: Meeting id of the new meeting that is created
+      description: Meeting ID of the new meeting that is created.
       type: string
     - contextPath: Zoom.Meeting.start_url
-      description: The URL to start the meeting
+      description: The URL to start the meeting.
       type: string
     - contextPath: Zoom.Meeting.uuid
-      description: Unique meeting ID of the new meeting that is created
+      description: Unique meeting ID of the new meeting that is created.
       type: string
     - contextPath: Zoom.Meeting.status
-      description: The status of the meeting
+      description: The status of the meeting.
       type: string
     - contextPath: Zoom.Meeting.start_time
-      description: The time that the meeting will start at
+      description: The time that the meeting will start at.
       type: Date
     - contextPath: Zoom.Meeting.host email
-      description: The email of the host of this meeting
+      description: The email of the host of this meeting.
       type: string
     - contextPath: Zoom.Meeting.topic
-      description: The topic of the meeting
+      description: The topic of the meeting.
       type: string
     - contextPath: Zoom.Meeting.duration
-      description: The duratian of the meeting
+      description: The duratian of the meeting.
       type: number
     - contextPath: Zoom.Meeting.created_at
-      description: The time that this meeting was created
+      description: The time that this meeting was created.
       type: Date
     - contextPath: Zoom.Meeting.type
-      description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
+      description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8.
       type: number
   - arguments:
     - description: Meeting ID of the recorded meeting.
@@ -270,43 +295,43 @@ script:
       predefined:
       - "false"
       - "true"
-    description: Get meeting record and save as file in the warroom
+    description: Get the meeting record and save it as a file in the War Room.
     name: zoom-fetch-recording
     outputs:
     - contextPath: File.SHA256
-      description: Attachment's SHA256
+      description: Attachment's SHA256.
       type: Unknown
     - contextPath: File.SHA1
-      description: Attachment's SHA1
+      description: Attachment's SHA1.
       type: Unknown
     - contextPath: File.MD5
-      description: Attachment's MD5
+      description: Attachment's MD5.
       type: Unknown
     - contextPath: File.Name
-      description: Attachment's Name
+      description: Attachment's name.
       type: Unknown
     - contextPath: File.Info
-      description: Attachment's Info
+      description: Attachment's info.
       type: Unknown
     - contextPath: File.Size
-      description: Attachment's Size (In Bytes)
+      description: Attachment's size (in bytes).
       type: Unknown
     - contextPath: File.Extension
-      description: Attachment's Extension
+      description: Attachment's extension.
       type: Unknown
     - contextPath: File.Type
-      description: Attachment's Type
+      description: Attachment's type.
       type: Unknown
     - contextPath: File.EntryID
-      description: Attachment's EntryID
+      description: Attachment's entryID.
       type: Unknown
     - contextPath: File.SSDeep
-      description: Attachment's SSDeep hash
+      description: Attachment's SSDeep hash.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
       defaultValue: active
-      description: Which status of users to list
+      description: Which status of users to list.
       name: status
       predefined:
       - active
@@ -327,84 +352,83 @@ script:
     - name: limit
       description: The total amunt of results to show.
     - name: user_id
-      description: A user ID. this is for a singel user
+      description: A user ID. This is for a single user.
       type: string
     - name: role_id
-      description: >
+      description: >-
         Filter the response by a specific role.
-
-        For example: role_id=0 (Owner), role_id=2 (Member)
+        For example: role_id=0 (Owner), role_id=2 (Member).
     description: List the existing users
     name: zoom-list-users
     outputs:
     - contextPath: Zoom.Metadata.Count
-      description: Total page count available
+      description: Total page count available.
       type: number
     - contextPath: Zoom.Metadata.Number
-      description: Current page number
+      description: Current page number.
       type: number
     - contextPath: Zoom.Metadata.Size
-      description: Number of results in current page
+      description: Number of results in current page.
       type: number
     - contextPath: Zoom.Metadata.Total
-      description: Total number of records
+      description: Total number of records.
       type: number
     - contextPath: Zoom.User.id
-      description: ID of the user
+      description: ID of the user.
       type: string
     - contextPath: Zoom.User.first_name
-      description: First name of user
+      description: First name of the user.
       type: string
     - contextPath: Zoom.User.last_name
-      description: Last name of user
+      description: Last name of the user.
       type: string
     - contextPath: Zoom.User.email
-      description: Email of user
+      description: Email of the user.
       type: string
     - contextPath: Zoom.User.type
-      description: Type of user
+      description: Type of user.
       type: number
     - contextPath: Zoom.User.created_at
-      description: Date when user was created
+      description: Date when the user was created.
       type: date
     - contextPath: Zoom.User.dept
-      description: Department for user
+      description: Department for the user.
       type: string
     - contextPath: Zoom.User.verified
-      description: Is the user verified
+      description: Is the user verified.
       type: number
     - contextPath: Zoom.User.last_login_time
-      description: Last login time of the user
+      description: Last login time of the user.
       type: date
     - contextPath: Zoom.User.timezone
-      description: Default timezone for the user
+      description: Default timezone for the user.
       type: string
     - contextPath: Zoom.User.pmi
-      description: PMI of user
+      description: Personal meeting ID of the user.
       type: string
     - contextPath: Zoom.User.group_ids
-      description: Groups user belongs to
+      description: Groups the user belongs to.
       type: string
   - arguments:
     - default: true
-      description: The user ID or email to delete
+      description: The user ID or email to delete.
       name: user
       required: true
     - auto: PREDEFINED
       defaultValue: disassociate
-      description: The action to take
+      description: The action to take.
       name: action
       predefined:
       - disassociate
       - delete
-    description: Delete a user from Zoom
+    description: Delete a user from Zoom.
     execution: true
     name: zoom-delete-user
   - name: zoom-meeting-get
     arguments:
     - name: meeting_id
       required: true
-      description: The id of the existing meeting
+      description: The ID of the existing meeting.
       type: string
     - name: occurrence_id
       description: Provide this field to view meeting details of a particular occurrence of the recurring meeting.
@@ -418,39 +442,39 @@ script:
       defaultValue: true
     outputs:
     - contextPath: Zoom.Meeting.join_url
-      description: Join url for the meeting
+      description: Join URL for the meeting.
       type: string
     - contextPath: Zoom.Meeting.id
-      description: Meeting id of the new meeting that is created
+      description: Meeting ID of the new meeting that is created.
       type: string
     - contextPath: Zoom.Meeting.start_url
-      description: The URL to start the meeting
+      description: The URL to start the meeting.
       type: string
     - contextPath: Zoom.Meeting.uuid
-      description: Unique meeting ID of the new meeting that is created
+      description: Unique meeting ID of the new meeting that is created.
       type: string
     - contextPath: Zoom.Meeting.status
-      description: The status of the meeting
+      description: The status of the meeting.
       type: string
     - contextPath: Zoom.Meeting.start_time
-      description: The time that the meeting will start at
+      description: The time that the meeting will start.
       type: Date
     - contextPath: Zoom.Meeting.host email
-      description: The email of the host of this meeting
+      description: The email of the host of this meeting.
       type: string
     - contextPath: Zoom.Meeting.topic
-      description: The topic of the meeting
+      description: The topic of the meeting.
       type: string
     - contextPath: Zoom.Meeting.duration
-      description: The duratian of the meeting
+      description: The duratian of the meeting.
       type: number
     - contextPath: Zoom.Meeting.created_at
-      description: The time that this meeting was created
+      description: The time that this meeting was created.
       type: Date
     - contextPath: Zoom.Meeting.type
-      description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
+      description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8.
       type: number
-    description: Get the information of an existing zoom meeting
+    description: Get the information of an existing Zoom meeting.
   - name: zoom-meeting-list
     arguments:
     - name: user_id
@@ -484,46 +508,46 @@ script:
       defaultValue: '"scheduled"'
     outputs:
     - contextPath: Zoom.Metadata.Total
-      description: Total number of records
+      description: Total number of records.
       type: number
     - contextPath: Zoom.Meeting.page_size
-      description: The size of the page returned from the API
+      description: The size of the page returned from the API.
       type: number
     - contextPath: Zoom.Meeting.total_records
       description: The total records in the API for this request.
       type: number
     - contextPath: Zoom.Meeting.join_url
-      description: Join url for the meeting
+      description: Join URL for the meeting.
       type: string
     - contextPath: Zoom.Meeting.id
-      description: Meeting id of the new meeting that is created
+      description: Meeting ID of the new meeting that is created.
       type: string
     - contextPath: Zoom.Meeting.start_url
-      description: The URL to start the meeting
+      description: The URL to start the meeting.
       type: string
     - contextPath: Zoom.Meeting.uuid
-      description: Unique meeting ID of the new meeting that is created
+      description: Unique meeting ID of the new meeting that is created.
       type: string
     - contextPath: Zoom.Meeting.status
-      description: The status of the meeting
+      description: The status of the meeting.
       type: string
     - contextPath: Zoom.Meeting.start_time
-      description: The time that the meeting will start at
+      description: The time that the meeting will start.
       type: Date
     - contextPath: Zoom.Meeting.host email
-      description: The email of the host of this meeting
+      description: The email of the host of this meeting.
       type: string
     - contextPath: Zoom.Meeting.topic
-      description: The topic of the meeting
+      description: The topic of the meeting.
       type: string
     - contextPath: Zoom.Meeting.duration
-      description: The duratian of the meeting
+      description: The duratian of the meeting.
       type: number
     - contextPath: Zoom.Meeting.created_at
-      description: The time that this meeting was created
+      description: The time that this meeting was created.
       type: Date
     - contextPath: Zoom.Meeting.type
-      description: The ty pe of this meeting
+      description: The type of this meeting.
     description: >
       Show all the meetings of a given user.
       Note: only scheduled and unexpired meetings will appear.
@@ -663,7 +687,7 @@ script:
         Who can add new channel members:
         * 1 - All channel members can add new members.
         * 2 - Only channel owner and administrators can add new members.
-        Note: This setting can only be modified by the channel owner. Default: 1 
+        Note: This setting can only be modified by the channel owner. Default: 1 .
       name: add_member_permissions
       auto: PREDEFINED
       predefined:
@@ -673,14 +697,14 @@ script:
         The channel members' posting permissions:
         * 1 — All chat channel members can post to the channel.
         * 2 — Only the channel owner and administrators can post to the channel.
-        * 3 — Only the channel owner, administrators and certain members can post to the channel. Default: 1 
+        * 3 — Only the channel owner, administrators and certain members can post to the channel. Default: 1 .
       name: posting_permissions
       auto: PREDEFINED
       predefined:
       - All members can post
       - Only the owner and admins can post
       - Only the owner, admins and certain members can post
-    - description: Whether new channel members can view messages and files previously posted in the channel
+    - description: Whether new channel members can view messages and files previously posted in the channel.
       name: new_members_can_see_prev_msgs
       auto: PREDEFINED
       predefined:
@@ -738,10 +762,8 @@ script:
     execution: true
     name: zoom-delete-channel
   - name: zoom-update-channel
-    description: >
-      Update an existing channel in a Zoom account.
-      Use the command zoom-list-account-public-channels in order to fetch the channel ID by the channel name.
-      "Need to provide at least one of the following arguments:  posting_permissions or channnel_name."
+    description: >-
+      Update an existing channel in a Zoom account. Use the command zoom-list-account-public-channels in order to fetch the channel ID by the channel name. "Need to provide at least one of the following arguments:  posting_permissions or channnel_name.".
     execution: true
     arguments:
     - description: The channel ID.
@@ -855,7 +877,7 @@ script:
       Sends chat messages on Zoom to either an individual user who is in your contact list or to a channel of which you are a member.  Use the command zoom-list-users to get the user id by the user email (for to_contact).
       Use the command zoom-list-user-channels in order to fetch the channel ID by the channel name (for to_channel).
       In order to send a message, you need to provide at least a message (message text) and to_contact (contact to send) or to_channel (channel to send to), but not both of them.
-      In order to send a style message you need to provide is-markdown=true and the message can contain a markdown format
+      In order to send a style message you need to provide is-markdown=true and the message can contain a markdown format.
       If you are using mention markdown in a message, provide the email address in the at_contact argument.
     arguments:
     - name: user_id
@@ -882,7 +904,7 @@ script:
         | FontColor | [#<rgb>](text)|
         | FontSize  | [s|m|l](text)|
         | BackgroundColor| [#<rgb>bg](text)|
-        | Mention | @<text>  if mention is not @all please provide argument at_contact= email|
+        | Mention | @<text>  if mention is not @all please provide argument at_contact= email|.
     - name: message
       description: |-
         The message to be sent. Maximum of 1024 characters.
@@ -895,7 +917,7 @@ script:
         | FontColor | [#<rgb>](text)|
         | FontSize  | [s|m|l](text)|
         | BackgroundColor| [#<rgb>bg](text)|
-        | Mention | @<text>  if mention is not @all please provide argument at_contact= email|
+        | Mention | @<text>  if mention is not @all please provide argument at_contact= email|.
       required: true
       type: string
     - name: entry_ids
@@ -1160,10 +1182,10 @@ script:
       description: The message content.
     - contextPath: Zoom.ChatMessage.messages.reply_main_message_id
       type: string
-      description: The unique identifier of a reply message. (Returned only for reply messages)
+      description: The unique identifier of a reply message. (Returned only for reply messages.) 
     - contextPath: Zoom.ChatMessage.messages.reply_main_message_timestamp
       type: integer
-      description: The timestamp of when the reply message was sent. (Returned only for reply messages)
+      description: The timestamp of when the reply message was sent. (Returned only for reply messages.) 
     - contextPath: Zoom.ChatMessage.messages.sender
       type: string
       description: The email address of the message sender. Empty if the sender does not belong to the same account as the current user or is not a contact.
@@ -1175,7 +1197,7 @@ script:
       description: The display name of the message sender.
     - contextPath: Zoom.ChatMessage.messages.status
       type: enum
-      description: Indicates the status of the message. Allowed values Deleted, Edited, Normal. (Returned only when include_deleted_and_edited_message query parameter is set to true)
+      description: Indicates the status of the message. Allowed values Deleted, Edited, Normal. (Returned only when include_deleted_and_edited_message query parameter is set to true.) 
     - contextPath: Zoom.ChatMessage.messages.timestamp
       type: integer
       description: The timestamp of the message in microseconds.
@@ -1197,8 +1219,69 @@ script:
     - contextPath: Zoom.ChatMessage.at_items.start_position
       type: integer
       description: The start position of the mention.
-
-  dockerimage: demisto/pyjwt3:1.0.0.67573
+  - arguments:
+    - description: The name of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists).
+      name: channel
+    - description: The ID of the channel to archive. If not provided, the mirrored investigation channel is archived (if the channel exists).
+      name: channel_id
+    description: Delete a mirrored Zoom channel.
+    name: close-channel
+  - name: send-notification
+    description: Send a message using a chatbot app.
+    arguments:
+    - name: message
+      description: the message.
+      required: true
+      type: string
+    - name: to
+      description: The user ID, JID or email to whom to send the message. You must provide this parameter or the channel_id parameter.
+      type: string
+    - name: channel_id
+      description: The ID or the JID of the channel to which to send the message. You must provide this parameter or the to parameter.
+      type: string
+    - name: channel
+      type: string
+      description: The channel name can be provided only if the channel is part of a mirroring incident, instead of the channel JID  .
+    - name: visible_to_user
+      description: The UserID that allows a chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message.
+      type: string
+    - name: zoom_ask
+      description: The message as a JSON for asking questions to the user.
+      type: boolean
+    outputs: []
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the channel is auto-closed when an investigation is closed. 
+      name: autoclose
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: Both
+      description: The mirroring direction.
+      name: direction
+      predefined:
+      - Both
+      - FromDemisto
+      - ToDemisto
+    - description: The name of the channel. The default is "incident-<incidentID>".
+      name: channelName
+    description: Mirrors the investigation between Zoom and the Cortex XSOAR War Room.
+    name: mirror-investigation
+  runonce: false
+  longRunning: true
+  longRunningPort: true
+  dockerimage: demisto/fastapi:1.0.0.79757
   script: "-"
   subtype: python3
   type: python

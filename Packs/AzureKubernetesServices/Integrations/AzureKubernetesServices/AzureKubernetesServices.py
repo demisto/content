@@ -57,6 +57,7 @@ class AKSClient:
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.management_azure,
             command_prefix="azure-ks",
+            azure_cloud=azure_cloud,
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id

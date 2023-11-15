@@ -22,7 +22,8 @@
           "type": "string",
           "is_array": false
       }
-  },"salesforce_login_raw": {
+  },
+  "salesforce_login_raw": {
       "_USER_ID_": {
           "type": "string",
           "is_array": false
@@ -68,8 +69,13 @@
       },"_LOGIN_KEY_": {
           "type": "string",
           "is_array": false
-      }
-  },"salesforce_eventlogfile_raw": {
+      },
+        "_AUTHENTICATION_METHOD_REFERENCE_": {
+        "type": "string",
+        "is_array": false
+        }
+  },
+  "salesforce_eventlogfile_raw": {
       "_METHOD_": {
           "type": "string",
           "is_array": false
@@ -200,6 +206,14 @@
           "type": "string",
           "is_array": false
       },"_FILE_PREVIEW_TYPE_": {
+          "type": "string",
+          "is_array": false
+      },
+        "_USER_ID_": {
+          "type": "string",
+          "is_array": false
+      },
+        "_EVENT_TYPE_": {
           "type": "string",
           "is_array": false
       }

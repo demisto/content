@@ -3,7 +3,7 @@
     "description": "Deprecated. Vendor has declared end of life for this integration. No available replacement.",
     "support": "partner",
     "hidden": true,
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Phish.AI",
     "url": "",
     "email": "info@phish.ai",

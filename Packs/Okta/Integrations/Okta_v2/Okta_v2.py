@@ -173,6 +173,13 @@ class Client(BaseClient):
             url_suffix=uri,
         )
 
+    def expire_password(self, user_id):
+        uri = f'users/{user_id}/lifecycle/expire_password'
+        return self._http_request(
+            method="POST",
+            url_suffix=uri
+        )
+
     def add_user_to_group(self, user_id, group_id):
         uri = f'groups/{group_id}/users/{user_id}'
         return self._http_request(
@@ -804,6 +811,30 @@ def set_password_command(client, args):
     )
 
 
+def expire_password_command(client, args):
+    user_id = client.get_user_id(args.get('username'))
+
+    if not (args.get('username') or user_id):
+        raise Exception("You must supply either 'Username' or 'userId")
+
+    raw_response = client.expire_password(user_id)
+    user_context = client.get_users_context(raw_response)
+
+    if argToBoolean(args.get('temporary_password', True)):
+        client.set_temp_password(user_id)
+
+    readable_output = tableToMarkdown('Okta Expired Password', raw_response, removeNull=True)
+    outputs = {
+        'Account(val.ID && val.ID === obj.ID)': createContext(user_context, removeNull=True)
+    }
+
+    return (
+        readable_output,
+        outputs,
+        raw_response
+    )
+
+
 def add_user_to_group_command(client, args):
     group_id = args.get('groupId')
     user_id = args.get('userId')
@@ -919,7 +950,14 @@ def get_user_command(client, args):
     if not (args.get('username') or args.get('userId')):
         raise Exception("You must supply either 'Username' or 'userId")
     user_term = args.get('userId') if args.get('userId') else args.get('username')
-    raw_response = client.get_user(user_term)
+
+    try:
+        raw_response = client.get_user(user_term)
+    except Exception as e:
+        if '404' in str(e):
+            return (f'User {args.get("username")} was not found.', {}, {})
+        raise e
+
     verbose = args.get('verbose')
 
     user_context = client.get_users_context(raw_response)
@@ -1346,6 +1384,7 @@ def main():
         'okta-unsuspend-user': unsuspend_user_command,
         'okta-reset-factor': reset_factor_command,
         'okta-set-password': set_password_command,
+        'okta-expire-password': expire_password_command,
         'okta-add-to-group': add_user_to_group_command,
         'okta-remove-from-group': remove_from_group_command,
         'okta-get-groups': get_groups_for_user_command,

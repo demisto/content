@@ -1,0 +1,18 @@
+commonfields:
+  id: RSA_GetRawLog
+  version: -1
+dockerimage: demisto/python3:3.10.13.73190
+enabled: true
+name: RSA_GetRawLog
+comment: Use this script to get RAW log.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+type: python
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)

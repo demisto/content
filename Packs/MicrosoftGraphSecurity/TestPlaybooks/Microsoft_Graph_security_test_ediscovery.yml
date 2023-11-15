@@ -1,0 +1,1735 @@
+id: MSG-ediscovery-tpb
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
+name: MSG-ediscovery-tpb
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0b114d81-f367-49cd-8bf9-b5d597025902
+    type: start
+    task:
+      id: 0b114d81-f367-49cd-8bf9-b5d597025902
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4b3f0f3e-b338-4ab4-8d06-110b40000b9c
+    type: regular
+    task:
+      id: 4b3f0f3e-b338-4ab4-8d06-110b40000b9c
+      version: -1
+      name: GetRandomString
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5c854d13-d4e4-4c1d-8f95-5de944449e00
+    type: regular
+    task:
+      id: 5c854d13-d4e4-4c1d-8f95-5de944449e00
+      version: -1
+      name: Create Case
+      description: Create a new eDiscovery case. This command only creates an eDiscovery
+        (Premium) case using the new case format. To learn more about the new case
+        format in eDiscovery, see https://learn.microsoft.com/en-us/microsoft-365/compliance/advanced-ediscovery-new-case-format.
+        After the custodian object is created, the custodian's userSource needs to
+        be created to reference their mailbox and OneDrive for Business site.
+      script: '|||msg-create-ediscovery-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      description:
+        simple: Some description
+      display_name:
+        complex:
+          root: GeneratedUUID
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Case DisplayName :'
+              suffix: {}
+      external_id:
+        simple: someid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d769d18b-1667-44c1-8f57-818a2a06c2c7
+    type: condition
+    task:
+      id: d769d18b-1667-44c1-8f57-818a2a06c2c7
+      version: -1
+      name: Check Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.CaseStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.CreatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.Description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.DisplayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.ExternalId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ab50ec56-2310-4ab0-8c02-e4f823c1d8f5
+    type: regular
+    task:
+      id: ab50ec56-2310-4ab0-8c02-e4f823c1d8f5
+      version: -1
+      name: SetIDToContext
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: CaseID
+      value:
+        simple: ${MsGraph.eDiscoveryCase.CaseId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 38ed1c36-f002-4058-8590-cc3936f3a56b
+    type: regular
+    task:
+      id: 38ed1c36-f002-4058-8590-cc3936f3a56b
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: MsGraph
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: afd3542f-7afa-4e75-860c-7813555dbec8
+    type: regular
+    task:
+      id: afd3542f-7afa-4e75-860c-7813555dbec8
+      version: -1
+      name: Update case
+      description: Update an eDiscovery case.
+      script: '|||msg-update-ediscovery-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      description:
+        simple: new description
+      display_name:
+        complex:
+          root: GeneratedUUID
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'New Display Name:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0dc85033-c840-4b97-81c0-f2e68ab6004d
+    type: regular
+    task:
+      id: 0dc85033-c840-4b97-81c0-f2e68ab6004d
+      version: -1
+      name: Close case
+      description: Close an eDiscovery case. Before you can delete a case, you must
+        first delete all holds listed on the holds page of the case. That includes
+        deleting holds with a status of Off. Default hold policies can only be deleted
+        when the hold is turned off. You must close an active case to turn off any
+        default hold policies in the case. Once the holds are turned off for default
+        hold policies, they can be deleted.
+      script: '|||msg-close-ediscovery-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d5c12a32-b7a1-40c7-86a4-c0618df9abbe
+    type: regular
+    task:
+      id: d5c12a32-b7a1-40c7-86a4-c0618df9abbe
+      version: -1
+      name: List cases
+      description: Lists edicovery cases.
+      script: '|||msg-list-ediscovery-cases'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 566bf00a-1e43-4f37-84fa-166f59285d59
+    type: condition
+    task:
+      id: 566bf00a-1e43-4f37-84fa-166f59285d59
+      version: -1
+      name: Check updated and closed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.CaseStatus
+            iscontext: true
+          right:
+            value:
+              simple: closed
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.DisplayName
+            iscontext: true
+          right:
+            value:
+              simple: New Display Name
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.ClosedDateTime
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCase.CaseId
+            iscontext: true
+          right:
+            value:
+              simple: CaseID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3ea947a5-805e-4e33-80ba-8b6c1f3d8130
+    type: regular
+    task:
+      id: 3ea947a5-805e-4e33-80ba-8b6c1f3d8130
+      version: -1
+      name: Reopen case
+      description: Reopen an eDiscovery case. When you reopen an eDiscovery (Premium)
+        case, any holds that were in place when the case was closed won't be automatically
+        reinstated. After the case is reopened, you'll have to go to the Holds tab
+        and turn on the previous holds. To turn on a hold, select it to display the
+        flyout page, and then set the Status toggle to On.
+      script: '|||msg-reopen-ediscovery-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 374c69a8-cb99-4477-88c8-615bb31f7308
+    type: regular
+    task:
+      id: 374c69a8-cb99-4477-88c8-615bb31f7308
+      version: -1
+      name: Create Custodian
+      description: Create a new ediscoveryCustodian object. After the custodian object
+        is created, you will need to create the custodian's userSource to reference
+        their mailbox and OneDrive for Business site.
+      script: '|||msg-create-ediscovery-custodian'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      email:
+        simple: testbox2@demistodev.onmicrosoft.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 71036db2-f8de-4fa4-8cc6-656d1103aed3
+    type: regular
+    task:
+      id: 71036db2-f8de-4fa4-8cc6-656d1103aed3
+      version: -1
+      name: DeleteCase
+      description: Delete an eDiscovery case. Before you can delete a case, you must
+        first delete all holds listed on the holds page of the case. That includes
+        deleting holds with a status of Off. Default hold policies can only be deleted
+        when the hold is turned off. You must close an active case to turn off any
+        default hold policies in the case. Once the holds are turned off for default
+        hold policies, they can be deleted.
+      script: '|||msg-delete-ediscovery-case'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: de3a9692-06a0-45f1-86b7-6cdc00d679b7
+    type: title
+    task:
+      id: de3a9692-06a0-45f1-86b7-6cdc00d679b7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 93950fdf-e81b-4c56-86bf-add286c2155a
+    type: condition
+    task:
+      id: 93950fdf-e81b-4c56-86bf-add286c2155a
+      version: -1
+      name: Check Custodian Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCustodian.CustodianId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCustodian.CustodianStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCustodian.CreatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCustodian.Email
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCustodian.HoldStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoveryCustodian.LastModifiedDateTime
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0e4ab759-e5bf-4837-8ccd-9262d071ec9e
+    type: regular
+    task:
+      id: 0e4ab759-e5bf-4837-8ccd-9262d071ec9e
+      version: -1
+      name: Add User Source
+      description: Create a new userSource object associated with an eDiscovery custodian.
+        Use the msg-list-ediscovery-custodians command in order to get all available
+        custodians.
+      script: '|||msg-create-ediscovery-custodian-user-source'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      custodian_id:
+        simple: ${MsGraph.eDiscoveryCustodian.CustodianId}
+      email:
+        simple: testbox2@demistodev.onmicrosoft.com
+      included_sources:
+        simple: mailbox, site
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 19b6d837-9067-43df-8450-a6ded491fd72
+    type: regular
+    task:
+      id: 19b6d837-9067-43df-8450-a6ded491fd72
+      version: -1
+      name: List user sources
+      description: Get a list of the userSource objects associated with an eDiscoveryCustodian.
+        Use the msg-list-ediscovery-custodians command in order to get all available
+        custodians.
+      script: '|||msg-list-ediscovery-custodian-user-sources'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      custodian_id:
+        simple: ${MsGraph.eDiscoveryCustodian.CustodianId}
+      user_source_id:
+        simple: ${MsGraph.CustodianUserSource.UserSourceId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e9c5ed4e-67d6-4cf5-863a-93997c190011
+    type: condition
+    task:
+      id: e9c5ed4e-67d6-4cf5-863a-93997c190011
+      version: -1
+      name: Check Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianUserSource.CreatedBy.User.DisplayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianUserSource.CreatedBy.User.UserPrincipalName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianUserSource.CreatedBy.Application.DisplayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianUserSource.HoldStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianUserSource.CreatedDateTime
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: e356aaaf-db8c-438c-8968-30e24bdc8f79
+    type: regular
+    task:
+      id: e356aaaf-db8c-438c-8968-30e24bdc8f79
+      version: -1
+      name: Create Site Source
+      description: Create a new siteSource object associated with an eDiscovery custodian.
+        Use the msg-list-ediscovery-custodians command in order to get all available
+        custodians.
+      script: '|||msg-create-ediscovery-custodian-site-source'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      custodian_id:
+        simple: ${MsGraph.eDiscoveryCustodian.CustodianId}
+      site:
+        simple: https://demistodev.sharepoint.com/sites/site_test_1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: cbf9119d-e2a4-48dd-8a4e-5f69b468dde8
+    type: regular
+    task:
+      id: cbf9119d-e2a4-48dd-8a4e-5f69b468dde8
+      version: -1
+      name: List Site Source
+      description: Get a list of the siteSource objects associated with an eDiscoveryCustodian.
+        Use the msg-list-ediscovery-custodians command in order to get all available
+        custodians.
+      script: '|||msg-list-ediscovery-custodian-site-sources'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      custodian_id:
+        simple: ${MsGraph.eDiscoveryCustodian.CustodianId}
+      site_source_id:
+        simple: ${MsGraph.CustodianSiteSource.SiteSourceId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 66cae361-e419-42f6-8e01-39526a502b63
+    type: condition
+    task:
+      id: 66cae361-e419-42f6-8e01-39526a502b63
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianSiteSource.Site.WebUrl
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianSiteSource.SiteSourceId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianSiteSource.DisplayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianSiteSource.CreatedBy.User.UserPrincipalName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianSiteSource.Site.CreatedDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.CustodianSiteSource.HoldStatus
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 9fdd9d32-3e98-43fb-832d-0edb0aa5d04d
+    type: regular
+    task:
+      id: 9fdd9d32-3e98-43fb-832d-0edb0aa5d04d
+      version: -1
+      name: release custodian
+      description: Release a custodian from a case. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/manage-new-custodians#release-a-custodian-from-a-case.
+      script: '|||msg-release-ediscovery-custodian'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      custodian_id:
+        simple: ${MsGraph.eDiscoveryCustodian.CustodianId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: f3cc2549-7742-4041-821c-5693d4e43642
+    type: regular
+    task:
+      id: f3cc2549-7742-4041-821c-5693d4e43642
+      version: -1
+      name: activate custodian
+      description: Activate a custodian that has been released from a case to make
+        them part of the case again. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/ediscovery-manage-new-custodians?view=o365-worldwide#re-activate-custodian.
+      script: '|||msg-activate-ediscovery-custodian'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      custodian_id:
+        simple: ${MsGraph.eDiscoveryCustodian.CustodianId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: f46ab915-6748-45a0-88da-0f660b99815f
+    type: regular
+    task:
+      id: f46ab915-6748-45a0-88da-0f660b99815f
+      version: -1
+      name: apply hold
+      description: "Start the process of applying hold on eDiscovery custodians.\nAvailable
+        return statuses: \nnotApplied - The custodian is not on Hold (all sources
+        in it are not on hold).\napplied - The custodian is on Hold (all sources are
+        on hold).\napplying - The custodian is in applying hold state (applyHold operation
+        triggered).\nremoving - The custodian is in removing the hold state(removeHold
+        operation triggered).\npartial - The custodian is in mixed state where some
+        sources are on hold and some not on hold or error state."
+      script: '|||msg-apply-hold-ediscovery-custodian'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      custodian_id:
+        simple: ${MsGraph.eDiscoveryCustodian.CustodianId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0f37abda-210f-4dfb-890c-1c75f45bcc93
+    type: regular
+    task:
+      id: 0f37abda-210f-4dfb-890c-1c75f45bcc93
+      version: -1
+      name: remove hold
+      description: Start the process of removing hold from eDiscovery custodians.
+      script: '|||msg-remove-hold-ediscovery-custodian'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      custodian_id:
+        simple: ${MsGraph.eDiscoveryCustodian.CustodianId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 21fbd6e9-8a06-4e28-8218-723650cd85fb
+    type: regular
+    task:
+      id: 21fbd6e9-8a06-4e28-8218-723650cd85fb
+      version: -1
+      name: create non-custodial datasource
+      description: Create a new eDiscoveryNoncustodialDataSource object.
+      script: '|||msg-create-ediscovery-non-custodial-data-source'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      email:
+        simple: testbox2@demistodev.onmicrosoft.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f1da33cb-5621-44da-823c-9b62624279d9
+    type: regular
+    task:
+      id: f1da33cb-5621-44da-823c-9b62624279d9
+      version: -1
+      name: list non cust data source
+      description: Get a list of the non-custodial data sources and their properties.
+      script: '|||msg-list-ediscovery-non-custodial-data-sources'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      case_id:
+        simple: ${CaseID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 45bff4c7-3cb8-4c90-8a69-a9b732f001fe
+    type: condition
+    task:
+      id: 45bff4c7-3cb8-4c90-8a69-a9b732f001fe
+      version: -1
+      name: Check output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.NoncustodialDataSource.DataSourceStatus
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.NoncustodialDataSource.DataSourceId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.NoncustodialDataSource.LastModifiedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.NoncustodialDataSource.CreatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.NoncustodialDataSource.DisplayName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: cc147629-3474-4c53-8140-ad30a0beadae
+    type: regular
+    task:
+      id: cc147629-3474-4c53-8140-ad30a0beadae
+      version: -1
+      name: Create search
+      description: Create a new eDiscoverySearch object.
+      script: '|||msg-create-ediscovery-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      content_query:
+        simple: Date>=01/01/2020
+      data_source_scopes:
+        simple: allCaseCustodians
+      description:
+        simple: this is my search
+      display_name:
+        simple: My search name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 9df582ec-80ce-4feb-861d-3bc7e347524e
+    type: regular
+    task:
+      id: 9df582ec-80ce-4feb-861d-3bc7e347524e
+      version: -1
+      name: Set search id to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: SearchID
+      value:
+        simple: ${MsGraph.eDiscoverySearch.SearchId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 0001a357-146e-4251-8227-540cc776dd01
+    type: condition
+    task:
+      id: 0001a357-146e-4251-8227-540cc776dd01
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.ContentQuery
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.CreatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.DataSourceScopes
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.Description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.SearchId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: d4219cc2-3081-4f54-838b-27dc49d21238
+    type: regular
+    task:
+      id: d4219cc2-3081-4f54-838b-27dc49d21238
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      key:
+        simple: MsGraph.eDiscoverySearch
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 2cabb15b-9a02-4032-8935-39121f927350
+    type: regular
+    task:
+      id: 2cabb15b-9a02-4032-8935-39121f927350
+      version: -1
+      name: Update Search
+      description: Update an eDiscoverySearch object.
+      script: '|||msg-update-ediscovery-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      content_query:
+        simple: Date>=01/01/2021
+      data_source_scopes:
+        simple: allCaseCustodians
+      description:
+        simple: new description
+      display_name:
+        simple: new display name
+      search_id:
+        simple: ${SearchID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: e5ebc2de-e6f0-4e97-86f5-c3f66ff69904
+    type: regular
+    task:
+      id: e5ebc2de-e6f0-4e97-86f5-c3f66ff69904
+      version: -1
+      name: List search
+      description: Get the list of eDiscoverySearch resources from an eDiscovery case.
+      script: '|||msg-list-ediscovery-searchs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      limit:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 98683911-e3a6-4236-88ce-cc21469f3230
+    type: condition
+    task:
+      id: 98683911-e3a6-4236-88ce-cc21469f3230
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.ContentQuery
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.CreatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.DataSourceScopes
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.Description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.SearchId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.CreatedBy.User.UserPrincipalName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: e3c0ab70-373f-4f76-82ba-7e31200f0f09
+    type: regular
+    task:
+      id: e3c0ab70-373f-4f76-82ba-7e31200f0f09
+      version: -1
+      name: purge
+      description: |-
+        Delete Microsoft Teams messages contained in an eDiscovery search.
+        Note: This request purges Teams data only. It does not purge other types of data such as mailbox items.
+
+        You can collect and purge the following categories of Teams content:
+
+        Teams 1:1 chats - Chat messages, posts, and attachments shared in a Teams conversation between two people. Teams 1:1 chats are also called conversations.
+        Teams group chats - Chat messages, posts, and attachments shared in a Teams conversation between three or more people. Also called 1:N chats or group conversations.
+        Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
+        Private channels - Message posts, replies, and attachments shared in a private Teams channel.
+        Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
+      script: '|||msg-purge-ediscovery-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      purge_areas:
+        simple: teamsMessages
+      purge_type:
+        simple: permanentlyDelete
+      search_id:
+        simple: ${SearchID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f35f163c-001b-4237-8abc-f3ea19836b8e
+    type: regular
+    task:
+      id: f35f163c-001b-4237-8abc-f3ea19836b8e
+      version: -1
+      name: delete search
+      description: Delete an eDiscoverySearch object.
+      script: '|||msg-delete-ediscovery-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      case_id:
+        simple: ${CaseID}
+      search_id:
+        simple: ${SearchID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 3ff9dd49-9193-4d22-8573-b4a55c065ec4
+    type: regular
+    task:
+      id: 3ff9dd49-9193-4d22-8573-b4a55c065ec4
+      version: -1
+      name: Auth test
+      description: Tests connectivity to Microsoft Graph Security.
+      script: '|||msg-auth-test'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 367792e9-991b-4806-8ed1-f9bcbeeb6e7c
+    type: regular
+    task:
+      id: 367792e9-991b-4806-8ed1-f9bcbeeb6e7c
+      version: -1
+      name: generate url
+      description: Generate the login url used for Authorization code flow.
+      script: '|||msg-generate-login-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6685,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

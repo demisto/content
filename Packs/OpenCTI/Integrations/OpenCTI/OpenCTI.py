@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
-from typing import List, Optional
 from io import StringIO
 import sys
 import urllib3
@@ -49,7 +48,7 @@ FILE_TYPES = {
 }
 
 
-def label_create(client: OpenCTIApiClient, label_name: Optional[str]):
+def label_create(client: OpenCTIApiClient, label_name: str | None):
     """ Create label at opencti
 
         Args:
@@ -67,7 +66,7 @@ def label_create(client: OpenCTIApiClient, label_name: Optional[str]):
     return label
 
 
-def build_indicator_list(indicator_list: List[str]) -> List[str]:
+def build_indicator_list(indicator_list: list[str]) -> list[str]:
     """Builds an indicator list for the query
     Args:
         indicator_list: List of XSOAR indicators types to return..
@@ -92,8 +91,8 @@ def reset_last_run():
     return CommandResults(readable_output='Fetch history deleted successfully')
 
 
-def get_indicators(client: OpenCTIApiClient, indicator_types: List[str], score: List[str] = None,
-                   limit: Optional[int] = 500, last_run_id: Optional[str] = None, search: str = "") -> dict:
+def get_indicators(client: OpenCTIApiClient, indicator_types: list[str], score=None,
+                   limit: int | None = 500, last_run_id: str | None = None, search: str = "") -> dict:
     """ Retrieving indicators from the API
 
     Args:
@@ -137,19 +136,28 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     indicator_types = argToList(args.get("indicator_types"))
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))
-    start = arg_to_number(args.get('score_start', 1))
-    end = arg_to_number(args.get('score_end', 100)) + 1  # type:ignore
+    start = arg_to_number(args.get('score_start'))
+    end = arg_to_number(args.get('score_end'))  # type:ignore
+    score = args.get('score')
     search = args.get("search", "")
-    score = None
-    if start or end:
-        score = [str(i) for i in range(start, end)]  # type:ignore
+    scores = None
+    if score:
+        if score.lower() == "unknown":
+            scores = [None]
+        elif score.isdigit():
+            scores = [score]
+        else:
+            raise DemistoException("Invalid score was provided.")
+
+    elif start or end:
+        scores = [str(i) for i in range(start, end + 1)]  # type:ignore
 
     raw_response = get_indicators(
         client=client,
         indicator_types=indicator_types,
         limit=limit,
         last_run_id=last_run_id,
-        score=score,
+        score=scores,
         search=search
     )
 
@@ -302,7 +310,7 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
     )
 
 
-def indicator_add_marking(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
+def indicator_add_marking(client: OpenCTIApiClient, id: str | None, value: str | None):
     """ Add indicator marking to opencti
         Args:
             client: OpenCTI Client object
@@ -320,7 +328,7 @@ def indicator_add_marking(client: OpenCTIApiClient, id: Optional[str], value: Op
     return result
 
 
-def indicator_add_label(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
+def indicator_add_label(client: OpenCTIApiClient, id: str | None, value: str | None):
     """ Add indicator label to opencti
         Args:
             client: OpenCTI Client object
@@ -365,7 +373,7 @@ def indicator_field_add_command(client: OpenCTIApiClient, args: Dict[str, str]) 
         return CommandResults(readable_output=f'Cant add {key} to indicator.')
 
 
-def indicator_remove_label(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
+def indicator_remove_label(client: OpenCTIApiClient, id: str | None, value: str | None):
     """ Remove indicator label from opencti
         Args:
             client: OpenCTI Client object
@@ -383,7 +391,7 @@ def indicator_remove_label(client: OpenCTIApiClient, id: Optional[str], value: O
     return result
 
 
-def indicator_remove_marking(client: OpenCTIApiClient, id: Optional[str], value: Optional[str]):
+def indicator_remove_marking(client: OpenCTIApiClient, id: str | None, value: str | None):
     """ Remove indicator marking from opencti
         Args:
             client: OpenCTI Client object

@@ -13,11 +13,11 @@ urllib3.disable_warnings()
 
 def parse_filter_field(filter_str):
     filters = []
-    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-]+)', flags=re.I)
+    regex = re.compile(r'name=([\w\d_:.-]+),values=([ /\w\d@_,.*-:]+)', flags=re.I)
     for f in filter_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.debug('could not parse filter: %s' % (f,))
+            demisto.debug(f'could not parse filter: {f}')
             continue
 
         filters.append({
@@ -34,7 +34,7 @@ def parse_tag_field(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.debug('could not parse field: %s' % (f,))
+            demisto.debug(f'could not parse field: {f}')
             continue
 
         tags.append({
@@ -73,7 +73,7 @@ def parse_date(dt):
         arr = dt.split("-")
         parsed_date = (datetime(int(arr[0]), int(arr[1]), int(arr[2]))).isoformat()
     except ValueError as e:
-        return_error("Date could not be parsed. Please check the date again.\n{error}".format(error=e))
+        return_error(f"Date could not be parsed. Please check the date again.\n{e}")
     return parsed_date
 
 
@@ -133,7 +133,7 @@ def describe_instances_command(args, aws_client):
             try:
                 launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
             except ValueError as e:
-                return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=e))
+                return_error(f'Date could not be parsed. Please check the date again.\n{e}')
             data.append({
                 'InstanceId': instance['InstanceId'],
                 'ImageId': instance['ImageId'],
@@ -162,6 +162,50 @@ def describe_instances_command(args, aws_client):
         return_error(f'Could not decode/encode the raw response - {e}')
     ec = {'AWS.EC2.Instances(val.InstanceId === obj.InstanceId)': raw}
     human_readable = tableToMarkdown('AWS Instances', data)
+    return_outputs(human_readable, ec)
+
+
+def describe_iam_instance_profile_associations_command(args, aws_client):
+    client = aws_client.aws_session(
+        service='ec2',
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
+    )
+    data = []
+    kwargs = {}
+    output = []
+    if (filters := args.get('filters')) is not None:
+        kwargs.update({'Filters': parse_filter_field(filters)})
+    if (association_ids := args.get('associationIds')) is not None:
+        kwargs.update({'AssociationIds': parse_resource_ids(association_ids)})
+    if (max_results := args.get('maxResults')) is not None:
+        kwargs.update({'MaxResults': max_results})
+    if (next_token := args.get('nextToken')) is not None:
+        kwargs.update({'NextToken': next_token})
+
+    response = client.describe_iam_instance_profile_associations(**kwargs)
+
+    if len(response['IamInstanceProfileAssociations']) == 0:
+        demisto.results('No instance profile associations were found.')
+        return
+
+    for _i, association in enumerate(response['IamInstanceProfileAssociations']):
+        data.append({
+            'InstanceId': association['InstanceId'],
+            'State': association['State'],
+            'AssociationId': association['AssociationId'],
+            'IamInstanceProfile': association['IamInstanceProfile'],
+        })
+        output.append(association)
+
+    try:
+        raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
+    except ValueError as e:
+        return_error(f'Could not decode/encode the raw response - {e}')
+    ec = {'AWS.EC2.IamInstanceProfileAssociations(val.AssociationId === obj.AssociationId)': raw}
+    human_readable = tableToMarkdown('AWS IAM Instance Profile Associations', data)
     return_outputs(human_readable, ec)
 
 
@@ -561,7 +605,7 @@ def describe_subnets_command(args, aws_client):
         data.append({
             'AvailabilityZone': subnet['AvailabilityZone'],
             'AvailableIpAddressCount': subnet['AvailableIpAddressCount'],
-            'CidrBlock': subnet['CidrBlock'],
+            'CidrBlock': subnet.get('CidrBlock', ""),
             'DefaultForAz': subnet['DefaultForAz'],
             'State': subnet['State'],
             'SubnetId': subnet['SubnetId'],
@@ -677,7 +721,7 @@ def associate_address_command(args, aws_client):
     if args.get('instanceId') is not None:
         kwargs.update({'InstanceId': args.get('instanceId')})
     if args.get('allowReassociation') is not None:
-        kwargs.update({'AllowReassociation': True if args.get('allowReassociation') == 'True' else False})
+        kwargs.update({'AllowReassociation': argToBoolean(args.get('allowReassociation'))})
     if args.get('networkInterfaceId') is not None:
         kwargs.update({'NetworkInterfaceId': args.get('networkInterfaceId')})
     if args.get('privateIpAddress') is not None:
@@ -720,7 +764,7 @@ def create_snapshot_command(args, aws_client):
     try:
         start_time = datetime.strftime(response['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=e))
+        return_error(f'Date could not be parsed. Please check the date again.\n{e}')
 
     data = ({
         'Description': response['Description'],
@@ -782,7 +826,7 @@ def create_image_command(args, aws_client):
     if args.get('description') is not None:
         kwargs.update({'Description': args.get('description')})
     if args.get('noReboot') is not None:
-        kwargs.update({'NoReboot': True if args.get('noReboot') == 'True' else False})
+        kwargs.update({'NoReboot': argToBoolean(args.get('noReboot'))})
 
     response = client.create_image(**kwargs)
 
@@ -837,7 +881,7 @@ def modify_volume_command(args, aws_client):
     try:
         start_time = datetime.strftime(volumeModification['StartTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{error}'.format(error=e))
+        return_error(f'Date could not be parsed. Please check the date again.\n{e}')
 
     data = ({
         'VolumeId': volumeModification['VolumeId'],
@@ -961,7 +1005,7 @@ def create_volume_command(args, aws_client):
     kwargs = {'AvailabilityZone': args.get('availabilityZone')}
 
     if args.get('encrypted') is not None:
-        kwargs.update({'Encrypted': True if args.get('encrypted') == 'True' else False})
+        kwargs.update({'Encrypted': argToBoolean(args.get('encrypted'))})
     if args.get('iops') is not None:
         kwargs.update({'Iops': int(args.get('iops'))})
     if args.get('kmsKeyId') is not None:
@@ -986,7 +1030,7 @@ def create_volume_command(args, aws_client):
     try:
         create_time = datetime.strftime(response['CreateTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
+        return_error(f'Date could not be parsed. Please check the date again.\n{e}')
 
     data = ({
         'AvailabilityZone': response['AvailabilityZone'],
@@ -1032,7 +1076,7 @@ def attach_volume_command(args, aws_client):
     try:
         attach_time = datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
+        return_error(f'Date could not be parsed. Please check the date again.\n{e}')
     data = ({
         'AttachTime': attach_time,
         'Device': response['Device'],
@@ -1060,7 +1104,7 @@ def detach_volume_command(args, aws_client):
     kwargs = {'VolumeId': args.get('volumeId')}
 
     if args.get('force') is not None:
-        kwargs.update({'Force': True if args.get('force') == 'True' else False})
+        kwargs.update({'Force': argToBoolean(args.get('force'))})
     if args.get('device') is not None:
         kwargs.update({'Device': int(args.get('device'))})
     if args.get('instanceId') is not None:
@@ -1070,7 +1114,7 @@ def detach_volume_command(args, aws_client):
     try:
         attach_time = datetime.strftime(response['AttachTime'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
+        return_error(f'Date could not be parsed. Please check the date again.\n{e}')
     data = ({
         'AttachTime': attach_time,
         'Device': response['Device'],
@@ -1128,9 +1172,9 @@ def run_instances_command(args, aws_client):
     if args.get('keyName') is not None:
         kwargs.update({'KeyName': args.get('keyName')})
     if args.get('ebsOptimized') is not None:
-        kwargs.update({'EbsOptimized': args.get('ebsOptimized')})
+        kwargs.update({'EbsOptimized': argToBoolean(args.get('ebsOptimized'))})
     if args.get('disableApiTermination') is not None:
-        kwargs.update({'DisableApiTermination': True if args.get('disableApiTermination') == 'True' else False})
+        kwargs.update({'DisableApiTermination': argToBoolean(args.get('disableApiTermination'))})
     if args.get('deviceName') is not None:
         BlockDeviceMappings = {'DeviceName': args.get('deviceName')}
         BlockDeviceMappings.update({'Ebs': {}})
@@ -1142,13 +1186,13 @@ def run_instances_command(args, aws_client):
         BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
-            {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
+            {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
     if args.get('ebsKmsKeyId') is not None:
         BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
     if args.get('ebsSnapshotId') is not None:
         BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
     if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+        BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if BlockDeviceMappings:
         kwargs.update({'BlockDeviceMappings': [BlockDeviceMappings]})  # type: ignore
 
@@ -1198,7 +1242,7 @@ def run_instances_command(args, aws_client):
         try:
             launch_date = datetime.strftime(instance['LaunchTime'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
+            return_error(f'Date could not be parsed. Please check the date again.\n{e}')
         data.append({
             'InstanceId': instance['InstanceId'],
             'ImageId': instance['ImageId'],
@@ -1637,7 +1681,7 @@ def revoke_security_group_egress_command(args, aws_client):
         return_results("The Security Group egress rule was revoked")
     else:
         demisto.debug(response.message)
-        return_error("An error has occurred: {error}".format(error=response))
+        return_error(f"An error has occurred: {response}")
 
 
 def copy_image_command(args, aws_client):
@@ -1659,7 +1703,7 @@ def copy_image_command(args, aws_client):
     if args.get('description') is not None:
         kwargs.update({'Description': args.get('description')})
     if args.get('encrypted') is not None:
-        kwargs.update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+        kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('kmsKeyId') is not None:
         kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
 
@@ -1690,7 +1734,7 @@ def copy_snapshot_command(args, aws_client):
     if args.get('description') is not None:
         kwargs.update({'Description': args.get('description')})
     if args.get('encrypted') is not None:
-        kwargs.update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+        kwargs.update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('kmsKeyId') is not None:
         kwargs.update({'KmsKeyId': args.get('kmsKeyId')})
 
@@ -1735,7 +1779,7 @@ def describe_reserved_instances_command(args, aws_client):
             start_time = datetime.strftime(reservation['Start'], '%Y-%m-%dT%H:%M:%SZ')
             end_time = datetime.strftime(reservation['End'], '%Y-%m-%dT%H:%M:%SZ')
         except ValueError as e:
-            return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
+            return_error(f'Date could not be parsed. Please check the date again.\n{e}')
         data.append({
             'ReservedInstancesId': reservation['ReservedInstancesId'],
             'Start': start_time,
@@ -1835,7 +1879,7 @@ def get_password_data_command(args, aws_client):
     try:
         time_stamp = datetime.strftime(response['Timestamp'], '%Y-%m-%dT%H:%M:%SZ')
     except ValueError as e:
-        return_error('Date could not be parsed. Please check the date again.\n{}'.format(e))
+        return_error(f'Date could not be parsed. Please check the date again.\n{e}')
     data = {
         'InstanceId': response['InstanceId'],
         'PasswordData': response['PasswordData'],
@@ -1858,12 +1902,12 @@ def modify_network_interface_attribute_command(args, aws_client):
     kwargs = {'NetworkInterfaceId': args.get('networkInterfaceId')}
 
     if args.get('sourceDestCheck') is not None:
-        kwargs.update({'SourceDestCheck': {'Value': True if args.get('sourceDestCheck') == 'True' else False}})
+        kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
     if args.get('attachmentId') is not None and args.get('deleteOnTermination') is not None:
         kwargs.update({
             'Attachment': {
                 'AttachmentId': args.get('attachmentId'),
-                'DeleteOnTermination': True if args.get('deleteOnTermination') == 'True' else False
+                'DeleteOnTermination': argToBoolean(args.get('deleteOnTermination'))
             }})
     if args.get('description') is not None:
         kwargs.update({'Description': {'Value': args.get('description')}})
@@ -1886,14 +1930,14 @@ def modify_instance_attribute_command(args, aws_client):
     kwargs = {'InstanceId': args.get('instanceId')}
 
     if args.get('sourceDestCheck') is not None:
-        kwargs.update({'SourceDestCheck': {'Value': True if args.get('sourceDestCheck') == 'True' else False}})
+        kwargs.update({'SourceDestCheck': {'Value': argToBoolean(args.get('sourceDestCheck'))}})
     if args.get('disableApiTermination') is not None:
         kwargs.update(
-            {'DisableApiTermination': {'Value': True if args.get('disableApiTermination') == 'True' else False}})
+            {'DisableApiTermination': {'Value': argToBoolean(args.get('disableApiTermination'))}})
     if args.get('ebsOptimized') is not None:
-        kwargs.update({'EbsOptimized': {'Value': True if args.get('ebsOptimized') == 'True' else False}})
+        kwargs.update({'EbsOptimized': {'Value': argToBoolean(args.get('ebsOptimized'))}})
     if args.get('enaSupport') is not None:
-        kwargs.update({'EnaSupport': {'Value': True if args.get('enaSupport') == 'True' else False}})
+        kwargs.update({'EnaSupport': {'Value': argToBoolean(args.get('enaSupport'))}})
     if args.get('instanceType') is not None:
         kwargs.update({'InstanceType': {'Value': args.get('instanceType')}})
     if args.get('instanceInitiatedShutdownBehavior') is not None:
@@ -1918,7 +1962,7 @@ def create_network_acl_command(args, aws_client):
     kwargs = {'VpcId': args.get('VpcId')}
 
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     response = client.create_network_acl(**kwargs)
     network_acl = response['NetworkAcl']
@@ -1949,7 +1993,7 @@ def create_network_acl_entry_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
-        'Egress': True if args.get('Egress') == 'True' else False,
+        'Egress': argToBoolean(args.get('Egress')),
         'NetworkAclId': args.get('NetworkAclId'),
         'Protocol': args.get('Protocol'),
         'RuleAction': args.get('RuleAction'),
@@ -1969,7 +2013,7 @@ def create_network_acl_entry_command(args, aws_client):
     if args.get('To') is not None:
         kwargs.update({'PortRange': {'To': int(args.get('To'))}})
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     response = client.create_network_acl_entry(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -1987,7 +2031,7 @@ def create_fleet_command(args, aws_client):
     kwargs = {}  # type: dict
 
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     if args.get('ClientToken') is not None:
         kwargs.update({'ClientToken': (args.get('ClientToken'))})
@@ -2005,11 +2049,11 @@ def create_fleet_command(args, aws_client):
         SpotOptions.update({
             'InstancePoolsToUseCount': args.get('InstancePoolsToUseCount')
         })
-    if args.get('SingleInstanceType') is not None:
-        SpotOptions.update({'SingleInstanceType': True if args.get('SingleInstanceType') == 'True' else False})
+    if args.get('SpotSingleInstanceType') is not None:
+        SpotOptions.update({'SpotSingleInstanceType': argToBoolean(args.get('SpotSingleInstanceType'))})
     if args.get('SingleAvailabilityZone') is not None:
         SpotOptions.update({
-            'SingleAvailabilityZone': True if args.get('SingleAvailabilityZone') == 'True' else False
+            'SingleAvailabilityZone': argToBoolean(args.get('SingleAvailabilityZone'))
         })
     if args.get('MinTargetCapacity') is not None:
         SpotOptions.update({
@@ -2026,11 +2070,11 @@ def create_fleet_command(args, aws_client):
         })
     if args.get('OnDemandSingleInstanceType') is not None:
         SpotOptions.update({
-            'SingleInstanceType': True if args.get('OnDemandSingleInstanceType') == 'True' else False
+            'SingleInstanceType': argToBoolean(args.get('OnDemandSingleInstanceType'))
         })
     if args.get('OnDemandSingleAvailabilityZone') is not None:
         SpotOptions.update({
-            'SingleAvailabilityZone': True if args.get('OnDemandSingleAvailabilityZone') == 'True' else False
+            'SingleAvailabilityZone': argToBoolean(args.get('OnDemandSingleAvailabilityZone'))
         })
     if args.get('OnDemandMinTargetCapacity') is not None:
         SpotOptions.update({
@@ -2143,8 +2187,7 @@ def create_fleet_command(args, aws_client):
         kwargs.update({'TargetCapacitySpecification': TargetCapacitySpecification})
 
     if args.get('TerminateInstancesWithExpiration') is not None:
-        kwargs.update({'TerminateInstancesWithExpiration': True if args.get(
-            'TerminateInstancesWithExpiration') == 'True' else False})
+        kwargs.update({'TerminateInstancesWithExpiration': argToBoolean(args.get('TerminateInstancesWithExpiration'))})
 
     if args.get('Type') is not None:
         kwargs.update({'Type': (args.get('Type'))})
@@ -2196,7 +2239,7 @@ def delete_fleet_command(args, aws_client):
     kwargs = {}
     output = []
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
     if args.get('FleetIds') is not None:
         kwargs.update({'FleetIds': parse_resource_ids(args.get('FleetIds'))})
     if args.get('TerminateInstances') is not None:
@@ -2205,7 +2248,7 @@ def delete_fleet_command(args, aws_client):
     response = client.delete_fleets(**kwargs)
 
     if len(response['SuccessfulFleetDeletions']) > 0:
-        for i, item in enumerate(response['SuccessfulFleetDeletions']):
+        for _i, item in enumerate(response['SuccessfulFleetDeletions']):
             data.append({'SuccessfulFleetDeletions': {
                 'CurrentFleetState': item['CurrentFleetState'],
                 'PreviousFleetState': item['PreviousFleetState'],
@@ -2215,7 +2258,7 @@ def delete_fleet_command(args, aws_client):
             output.append(item)
 
     if len(response['UnsuccessfulFleetDeletions']) > 0:
-        for i, item in enumerate(response['UnsuccessfulFleetDeletions']):
+        for _i, item in enumerate(response['UnsuccessfulFleetDeletions']):
             data.append({'UnsuccessfulFleetDeletions': {
                 'Error-Code': item['Error']['Code'],
                 'Error-Message': item['Error']['Message'],
@@ -2322,7 +2365,7 @@ def describe_fleet_instances_command(args, aws_client):
         demisto.results('No active instances were found.')
         return
 
-    for i, item in enumerate(response['ActiveInstances']):
+    for _i, item in enumerate(response['ActiveInstances']):
         demisto.debug(str(item))
         data.append({
             'InstanceId': item['InstanceId'],
@@ -2410,7 +2453,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('KernelId') is not None:
         LaunchTemplateData.update({'KernelId': args.get('KernelId')})
     if args.get('EbsOptimized') is not None:
-        LaunchTemplateData.update({'EbsOptimized': args.get('EbsOptimized')})
+        LaunchTemplateData.update({'EbsOptimized': argToBoolean(args.get('EbsOptimized'))})
 
     if args.get('iamInstanceProfileArn') is not None and args.get('iamInstanceProfileName') is not None:
         LaunchTemplateData.update({
@@ -2432,13 +2475,13 @@ def create_launch_template_command(args, aws_client):
         BlockDeviceMappings['Ebs'].update({'Iops': int(args.get('ebsIops'))})
     if args.get('ebsDeleteOnTermination') is not None:
         BlockDeviceMappings['Ebs'].update(
-            {'DeleteOnTermination': True if args.get('ebsDeleteOnTermination') == 'True' else False})
+            {'DeleteOnTermination': argToBoolean(args.get('ebsDeleteOnTermination'))})
     if args.get('ebsKmsKeyId') is not None:
         BlockDeviceMappings['Ebs'].update({'KmsKeyId': args.get('ebsKmsKeyId')})
     if args.get('ebsSnapshotId') is not None:
         BlockDeviceMappings['Ebs'].update({'SnapshotId': args.get('ebsSnapshotId')})
     if args.get('ebsEncrypted') is not None:
-        BlockDeviceMappings['Ebs'].update({'Encrypted': True if args.get('ebsEncrypted') == 'True' else False})
+        BlockDeviceMappings['Ebs'].update({'Encrypted': argToBoolean(args.get('ebsEncrypted'))})
     if args.get('NoDevice') is not None:
         BlockDeviceMappings.update({'NoDevice': {args.get('NoDevice')}})
     if BlockDeviceMappings:
@@ -2446,9 +2489,9 @@ def create_launch_template_command(args, aws_client):
 
     NetworkInterfaces = {}  # type: dict
     if args.get('AssociatePublicIpAddress') is not None:
-        NetworkInterfaces.update({'AssociatePublicIpAddress': args.get('AssociatePublicIpAddress')})
+        NetworkInterfaces.update({'AssociatePublicIpAddress': argToBoolean(args.get('AssociatePublicIpAddress'))})
     if args.get('NetworkInterfacesDeleteOnTermination') is not None:
-        NetworkInterfaces.update({'DeleteOnTermination': args.get('NetworkInterfacesDeleteOnTermination')})
+        NetworkInterfaces.update({'DeleteOnTermination': argToBoolean(args.get('NetworkInterfacesDeleteOnTermination'))})
     if args.get('NetworkInterfacesDescription') is not None:
         NetworkInterfaces.update({'Description': args.get('NetworkInterfacesDescription')})
     if args.get('NetworkInterfacesDeviceIndex') is not None:
@@ -2477,7 +2520,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('KeyName') is not None:
         LaunchTemplateData.update({'KeyName': args.get('KeyName')})
     if args.get('Monitoring') is not None:
-        LaunchTemplateData.update({'Monitoring': {'Enabled': args.get('Monitoring')}})
+        LaunchTemplateData.update({'Monitoring': {'Enabled': argToBoolean(args.get('Monitoring'))}})
     if args.get('AvailabilityZone') is not None:
         LaunchTemplateData.update({
             'Placement': {
@@ -2511,7 +2554,7 @@ def create_launch_template_command(args, aws_client):
     if args.get('RamDiskId') is not None:
         LaunchTemplateData.update({'RamDiskId': args.get('RamDiskId')})
     if args.get('DisableApiTermination') is not None:
-        LaunchTemplateData.update({'DisableApiTermination': args.get('DisableApiTermination')})
+        LaunchTemplateData.update({'DisableApiTermination': argToBoolean(args.get('DisableApiTermination'))})
     if args.get('InstanceInitiatedShutdownBehavior') is not None:
         LaunchTemplateData.update(
             {'InstanceInitiatedShutdownBehavior': args.get('InstanceInitiatedShutdownBehavior')})
@@ -2853,7 +2896,7 @@ def create_traffic_mirror_session_command(args, aws_client):
     if args.get('ClientToken') is not None:
         kwargs.update({'ClientToken': args.get('ClientToken')})
     if args.get('DryRun') is not None:
-        kwargs.update({'DryRun': True if args.get('DryRun') == 'True' else False})
+        kwargs.update({'DryRun': argToBoolean(args.get('DryRun'))})
 
     tag_specifications = []  # type: list
     if args.get('Tags') is not None:
@@ -2962,7 +3005,7 @@ def main():
         command = demisto.command()
         args = demisto.args()
 
-        LOG('Command being called is {command}'.format(command=command))
+        LOG(f'Command being called is {command}')
 
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
@@ -2976,6 +3019,9 @@ def main():
 
         elif command == 'aws-ec2-describe-instances':
             describe_instances_command(args, aws_client)
+
+        elif command == 'aws-ec2-describe-iam-instance-profile-associations':
+            describe_iam_instance_profile_associations_command(args, aws_client)
 
         elif command == 'aws-ec2-describe-images':
             describe_images_command(args, aws_client)
@@ -3153,9 +3199,6 @@ def main():
 
         elif command == 'aws-ec2-modify-image-attribute':
             modify_image_attribute_command(args, aws_client)
-
-        elif command == 'aws-ec2-modify-network-interface-attribute':
-            modify_network_interface_attribute_command(args, aws_client)
 
         elif command == 'aws-ec2-modify-instance-attribute':
             modify_instance_attribute_command(args, aws_client)

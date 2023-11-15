@@ -55,7 +55,7 @@ class Request(BaseModel):
     params: ReqParams
     insecure: bool = Field(not demisto.params().get('insecure', False), alias='verify')
     proxy: bool = Field(demisto.params().get('proxy', False), alias='proxies')
-    data: Optional[str]
+    data: Optional[str] = None
     auth: Optional[HTTPBasicAuth] = Field(
         HTTPBasicAuth(
             demisto.params().get('credentials', {}).get('identifier'),
@@ -177,9 +177,9 @@ def main():
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
     demisto_params['url'] = f'{str(demisto_params.get("url", "")).removesuffix("/")}/rest/api/3/auditing/record'
-    demisto_params['params'] = ReqParams.parse_obj(demisto_params)
+    demisto_params['params'] = ReqParams.model_validate(demisto_params)  # type: ignore[attr-defined]
 
-    request = Request.parse_obj(demisto_params)
+    request = Request.model_validate(demisto_params)  # type: ignore[attr-defined]
     client = Client(request)
     get_events = GetEvents(client)
     command = demisto.command()

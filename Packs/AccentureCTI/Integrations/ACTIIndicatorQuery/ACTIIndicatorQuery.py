@@ -580,7 +580,7 @@ def _enrich_analysis_result_with_intelligence(analysis_info, doc_search_client, 
         client: ACTI Document search contoller client
     Returns:
         analysis_result enriched with intelligence alert and intelligence report information if available for the indicator
-    """
+    """  # noqa: E501
 
     indicator = analysis_info['MD5'] if indicatorTypeHash else analysis_info['Name']
     demisto.debug(f"getting ia for indicator {indicator}")

@@ -12,6 +12,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  additionalinfo: If set, failed command results will be returned as warnings instead of errors.
 - display: Proxy URL
   additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command."
   name: proxy_url
@@ -26,6 +27,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  hidden: false
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -42,7 +44,7 @@ configuration:
   type: 15
   section: Collect
 - additionalinfo: The number of times to try when getting a Rate Limit response.
-  defaultvalue: '3'
+  defaultvalue: '0'
   display: Rate Limit Retry Count
   name: rate_limit_retry_count
   type: 0
@@ -85,7 +87,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Provides data enrichment for domains.
+    description: Provides data enrichment for domains using free resources. Availability of those services may be limited.
     name: whois
     outputs:
     - contextPath: DBotScore.Score
@@ -158,10 +160,10 @@ script:
       description: The organization of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.postalcode
-      description: The postal code of the domain administrator
+      description: The postal code of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.street
-      description: The street of the domain admin
+      description: The street of the domain admin.
       type: string
     - contextPath: Domain.Whois.Administrator.phone
       description: The phone number of the domain administrator.
@@ -311,10 +313,10 @@ script:
       description: The organization of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.postalcode
-      description: The postal code of the domain administrator
+      description: The postal code of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.street
-      description: The street of the domain admin
+      description: The street of the domain admin.
       type: string
     - contextPath: Domain.Whois.Administrator.phone
       description: The phone number of the domain administrator.
@@ -458,12 +460,12 @@ script:
       name: ip
       required: true
     - description: 'The number of times to try when getting a Rate Limit response.'
-      defaultValue: 3
+      defaultValue: 0
       name: rate_limit_retry_count
     - description: 'The number of seconds to wait each iteration when getting a Rate Limit response.'
       defaultValue: 120
       name: rate_limit_wait_seconds
-    - description: 'Whether Rate Limit errors should be supressed or not.'
+    - description: 'Whether Rate Limit errors should be suppressed or not.'
       defaultValue: 'false'
       name: rate_limit_errors_suppressed
     description: Provides data enrichment for ips.
@@ -482,7 +484,7 @@ script:
       description: ASN allocation date in ISO 8601 format.
       type: Date
     - contextPath: Whois.IP.asn_description
-      description: The ASN description
+      description: The ASN description.
       type: string
     - contextPath: Whois.IP.asn_registry
       description: ASN assigned regional internet registry.
@@ -545,10 +547,10 @@ script:
       description: The RIR classification of a registered network.
       type: string
     - contextPath: Whois.IP.query
-      description: The IP address
+      description: The IP address.
       type: string
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
@@ -563,7 +565,7 @@ script:
       description: Indicators that are associated with the IP.
       type: string
     - contextPath: IP.feed_related_indicators.type
-      description: The type of the indicators that are associated with the IP
+      description: The type of the indicators that are associated with the IP.
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -580,7 +582,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.63627
+  dockerimage: demisto/ippysocks-py3:1.0.0.78777
   runonce: false
   script: '-'
   subtype: python3
@@ -588,3 +590,4 @@ script:
 tests:
 - whois_test
 fromversion: 5.0.0
+defaultEnabled: false

@@ -75,6 +75,8 @@ Returns information and a reputation for each IP in the input list.
 ***
 Returns information and a reputation for each domain name in the input list.
 
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
+
 
 #### Base Command
 
@@ -127,6 +129,8 @@ Returns information and a reputation for each domain name in the input list.
 ### url
 ***
 Returns information and a reputation for each URL in the input list.
+
+Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
 
 #### Base Command

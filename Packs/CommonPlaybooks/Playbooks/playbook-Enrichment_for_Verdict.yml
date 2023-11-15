@@ -1577,5 +1577,5 @@ outputs:
 - contextPath: Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value
   description: The local prevalence of the CDM.
 tests:
-- No tests.
+- Enrichment for Verdict - Test
 fromversion: 6.6.0

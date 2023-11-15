@@ -9,7 +9,7 @@ configuration:
   name: longRunning
   type: 8
   required: false
-- additionalinfo: Runs the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
+- additionalinfo: "Runs the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for Simple API Proxy will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port."
   display: Listen Port
   name: longRunningPort
   required: true
@@ -18,12 +18,12 @@ configuration:
   name: credentials
   type: 9
   required: false
-- additionalinfo: Required for HTTPS, if not using server rerouting
+- additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
   display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
   required: false
-- additionalinfo: Required for HTTPS, if not using server rerouting
+- additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.
   display: Private Key (Required for HTTPS)
   name: key
   type: 14
@@ -69,7 +69,7 @@ description: Provide a simple API proxy to restrict privileges or minimize the a
 display: Simple API Proxy
 name: Simple API Proxy
 script:
-  dockerimage: demisto/fastapi:1.0.0.32142
+  dockerimage: demisto/fastapi:1.0.0.76036
   longRunning: true
   longRunningPort: true
   runonce: true
@@ -79,4 +79,3 @@ script:
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-

@@ -4,7 +4,7 @@ import json
 import os
 import zipfile
 from typing import Any
-
+from pytest_mock import MockerFixture
 import pytest
 
 import demistomock as demisto
@@ -2589,7 +2589,7 @@ def test_get_exclusion_command(requests_mock):
     assert res.readable_output == tableToMarkdown('Exclusion', expected_result)
 
 
-def test_get_original_alerts_command(requests_mock):
+def test_get_original_alerts_command__with_filter(requests_mock):
     """
     Given:
         - Core client
@@ -2607,14 +2607,43 @@ def test_get_original_alerts_command(requests_mock):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     args = {
-        'alert_ids': '2',
+        'alert_ids': '2', 'filter_alert_fields': True
     }
 
-    response = get_original_alerts_command(client, args)
-    event = response.outputs[0].get('event', {})
+    output = get_original_alerts_command(client, args).outputs[0]
+    assert len(output) == 4  # make sure fields were filtered
+    event = output['event']
+    assert len(event) == 23  # make sure fields were filtered
     assert event.get('_time') == 'DATE'  # assert general filter is correct
     assert event.get('cloud_provider') == 'AWS'  # assert general filter is correct
     assert event.get('raw_log', {}).get('userIdentity', {}).get('accountId') == 'ID'  # assert vendor filter is correct
+
+
+def test_get_original_alerts_command__without_filtering(requests_mock):
+    """
+    Given:
+        - Core client
+        - Alert IDs
+    When
+        - Running get_original_alerts_command command
+    Then
+        - Verify expected output length
+        - Ensure request body sent as expected
+    """
+    from CoreIRApiModule import get_original_alerts_command, CoreClient
+    api_response = load_test_data('./test_data/get_original_alerts_results.json')
+    requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_original_alerts/', json=api_response)
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'alert_ids': '2', 'filter_alert_fields': False
+    }
+
+    alert = get_original_alerts_command(client, args).outputs[0]
+    event = alert['event']
+    assert len(alert) == 13  # make sure fields were not filtered
+    assert len(event) == 41  # make sure fields were not filtered
 
 
 def test_get_dynamic_analysis(requests_mock):
@@ -3247,18 +3276,14 @@ def test_list_risky_users_hosts_command_raise_exception(
     mocker, command: str, id_: str
 ):
     """
-    Test case to verify if the 'list_risky_users_or_host_command' function raises the expected exception.
+    Given:
+    - XDR API error indicating that the user / host was not found
 
-    Args:
-        mocker (Any): The mocker object to patch the 'risk_score_user_or_host' method.
-        command (str): The command to be tested ('user' or 'host').
-        id_ (str): The ID parameter for the command.
+    When:
+    - executing the list_risky_users_or_host_command function
 
-    Raises:
-        DemistoException: If the expected exception is not raised or the error message doesn't match.
-
-    Returns:
-        None
+    Then:
+    - make sure a message indicating that the user was not found is returned
     """
 
     client = CoreClient(
@@ -3277,11 +3302,59 @@ def test_list_risky_users_hosts_command_raise_exception(
             message="id 'test' was not found", res=MockException(500)
         ),
     )
-    with pytest.raises(
-        DemistoException,
-        match="Error: id test was not found. Full error message: id 'test' was not found"
-    ):
-        list_risky_users_or_host_command(client, command, {id_: "test"})
+
+    result = list_risky_users_or_host_command(client, command, {id_: "test"})
+    assert result.readable_output == f'The {command} test was not found'
+
+
+@pytest.mark.parametrize(
+    "command ,args, client_func",
+    [
+        ('user', {"user_id": "test"}, "risk_score_user_or_host"),
+        ('host', {"host_id": "test"}, "risk_score_user_or_host"),
+        ('user', {}, "list_risky_users"),
+        ('host', {}, "list_risky_hosts"),
+    ],
+    ids=['user_id', 'host_id', 'list_users', 'list_hosts']
+)
+def test_list_risky_users_hosts_command_no_license_warning(mocker: MockerFixture, command: str, args: dict, client_func: str):
+    """
+    Given:
+    - XDR API error indicating that the user / host was not found
+
+    When:
+    - executing the list_risky_users_or_host_command function
+
+    Then:
+    - make sure a message indicating that the user was not found is returned
+    """
+
+    client = CoreClient(
+        base_url="test",
+        headers={},
+    )
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(
+        client,
+        client_func,
+        side_effect=DemistoException(
+            message="An error occurred while processing XDR public API, No identity threat",
+            res=MockException(500)
+        ),
+    )
+    import CoreIRApiModule
+    warning = mocker.patch.object(CoreIRApiModule, 'return_warning')
+
+    with pytest.raises(DemistoException):
+        list_risky_users_or_host_command(client, command, args)
+    assert warning.call_args[0][0] == ('Please confirm the XDR Identity Threat Module is enabled.\n'
+                                       'Full error message: An error occurred while processing XDR public API,'
+                                       ' No identity threat')
+    assert warning.call_args[1] == {"exit": True}
 
 
 def test_list_user_groups_command(mocker):

@@ -12,7 +12,7 @@ import pytz
 from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, ASSET_PROPERTIES_NAME_MAP, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
-    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus
+    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, QueryStatus, LAST_MIRROR_CLOSED_KEY
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
     get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events, sanitize_outputs, \
@@ -186,7 +186,7 @@ def test_get_offense_enrichment(enrichment, expected):
      - Case b: Ensure True, False is returned.
      - Case c: Ensure True, True is returned.
     """
-    return get_offense_enrichment(enrichment) == expected
+    assert get_offense_enrichment(enrichment) == expected
 
 
 def test_add_iso_entries_to_dict():
@@ -911,6 +911,13 @@ def test_commands_with_enrichment(mocker, command_func: Callable[[Client, dict],
     assert results.raw_response == expected_command_results.raw_response
 
 
+def mock_mirroring_response(filter_, **kwargs):
+    if "status=closed" in filter_:
+        return list(filter(lambda x: x['status'] == 'CLOSED', command_test_data['get_modified_remote_data']['response']))
+    else:
+        return list(filter(lambda x: x['status'] != 'CLOSED', command_test_data['get_modified_remote_data']['response']))
+
+
 def test_get_modified_remote_data_command(mocker):
     """
     Given:
@@ -927,7 +934,7 @@ def test_get_modified_remote_data_command(mocker):
                              MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                              'last_update': 1})
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
-    mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
+    mocker.patch.object(client, 'offenses_list', side_effect=mock_mirroring_response)
     result = get_modified_remote_data_command(client, {}, command_test_data['get_modified_remote_data']['args'])
     assert {int(id_) for id_ in expected.modified_incident_ids} == {int(id_) for id_ in result.modified_incident_ids}
 
@@ -1128,13 +1135,13 @@ def test_get_modified_with_events(mocker):
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
     expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'2': '456', '10': '555'},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012', '1': '123'},
-                                LAST_MIRROR_KEY: 3444, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}}
+                                LAST_MIRROR_KEY: 3444, MIRRORED_OFFENSES_FETCHED_CTX_KEY: {}, LAST_MIRROR_CLOSED_KEY: 3444}
     set_integration_context(context_data)
     status = {'123': {'status': 'COMPLETED'},
               '456': {'status': 'WAIT'},
               '555': {'status': 'PENDING'}}
 
-    mocker.patch.object(client, 'offenses_list', return_value=[{'id': 6, 'last_persisted_time': "3444"}])
+    mocker.patch.object(client, 'offenses_list', return_value=[{'id': 6, 'last_persisted_time': "3444", 'close_time': '3444'}])
     mocker.patch.object(QRadar_v3, 'create_events_search', return_value='555')
     mocker.patch.object(client, 'search_status_get', side_effect=lambda offense_id: status[offense_id])
     modified = get_modified_remote_data_command(client,

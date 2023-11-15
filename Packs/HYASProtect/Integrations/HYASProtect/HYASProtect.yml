@@ -21,7 +21,7 @@ name: HYAS Protect
 script:
   commands:
   - arguments:
-    - description: Domain value to query
+    - description: Domain value to query.
       name: domain
       required: true
     description: Returns verdict information for the provided Domain.
@@ -120,9 +120,11 @@ script:
     - contextPath: HYAS.NameserverVerdict.reasons
       description: Verdict Reasons for the provided Nameserver.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.80014
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

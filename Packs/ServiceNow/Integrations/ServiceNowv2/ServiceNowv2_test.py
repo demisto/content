@@ -2,7 +2,6 @@ import re
 
 import pytest
 import json
-import io
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 import ServiceNowv2
@@ -16,8 +15,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
-    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason, \
-    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
+    converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -50,16 +49,16 @@ from urllib.parse import urlencode
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def test_get_server_url():
-    assert "http://www.demisto.com/" == get_server_url("http://www.demisto.com//")
+    assert get_server_url("http://www.demisto.com//") == "http://www.demisto.com/"
 
 
 def test_get_ticket_context():
-    assert EXPECTED_TICKET_CONTEXT == get_ticket_context(RESPONSE_TICKET)
+    assert get_ticket_context(RESPONSE_TICKET) == EXPECTED_TICKET_CONTEXT
 
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[0] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[1] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
@@ -75,8 +74,9 @@ def test_get_ticket_context_additional_fields():
         - validate that all the details of the ticket were updated, and all the updated keys are shown in
         the context with do duplicates.
     """
-    assert EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
-                                                                                ['Summary', 'sys_created_by'])
+    assert get_ticket_context(RESPONSE_TICKET,
+                              ['Summary', 'sys_created_by']) == \
+        EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS
 
 
 def test_get_ticket_context_nested_additional_fields():
@@ -89,12 +89,13 @@ def test_get_ticket_context_nested_additional_fields():
         - validate that all the details of the ticket were updated, and all the updated keys are shown in
         the context with do duplicates.
     """
-    assert EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
-                                                                                       ['Summary', 'opened_by.link'])
+    assert get_ticket_context(RESPONSE_TICKET,
+                              ['Summary', 'opened_by.link']) == \
+        EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS
 
 
 def test_get_ticket_human_readable():
-    assert EXPECTED_TICKET_HR == get_ticket_human_readable(RESPONSE_TICKET, 'incident')
+    assert get_ticket_human_readable(RESPONSE_TICKET, 'incident') == EXPECTED_TICKET_HR
 
     assert EXPECTED_MULTIPLE_TICKET_HR[0] in get_ticket_human_readable(RESPONSE_MULTIPLE_TICKET, 'incident')
     assert EXPECTED_MULTIPLE_TICKET_HR[1] in get_ticket_human_readable(RESPONSE_MULTIPLE_TICKET, 'incident')
@@ -1229,7 +1230,7 @@ def test_get_mapping_fields():
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     res = get_mapping_fields_command(client)
-    assert EXPECTED_MAPPING == res.extract_mapping()
+    assert res.extract_mapping() == EXPECTED_MAPPING
 
 
 def test_get_remote_data(mocker):
@@ -1446,12 +1447,12 @@ def test_get_remote_data_no_entries(mocker):
 
 
 def upload_file_request(*args):
-    assert 'test_mirrored_from_xsoar.txt' == args[2]
+    assert args[2] == 'test_mirrored_from_xsoar.txt'
     return {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test.txt'}
 
 
 def add_comment_request(*args):
-    assert '(dbot): This is a comment\n\n Mirrored from Cortex XSOAR' == args[3]
+    assert args[3] == '(dbot): This is a comment\n\n Mirrored from Cortex XSOAR'
     return {'id': "1234", 'comment': "This is a comment"}
 
 
@@ -1627,7 +1628,7 @@ def test_get_ticket_attachments(mocker, sys_created_on, expected):
     mocker.patch.object(client, 'send_request', return_value=[])
 
     client.get_ticket_attachments('id', sys_created_on)
-    client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'})
+    client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'}, get_attachments=True)
 
 
 @pytest.mark.parametrize('args,expected_ticket_fields', [
@@ -1811,6 +1812,14 @@ def test_get_ticket_attachment_entries_with_oauth_token(mocker):
           "body": {},
           "headers": {},
           },
+         RESPONSE_GENERIC_TICKET),
+        (generic_api_call_command,
+         {"method": "GET",
+          "path": "/table/sn_si_incident?sysparam_limit=1&sysparam_query=active=true^ORDERBYDESCnumber",
+          "body": {},
+          "headers": {},
+          "custom_api": "/api/custom"
+          },
          RESPONSE_GENERIC_TICKET)
     ])
 def test_generic_api_call_command(command, args, response, mocker):
@@ -1874,28 +1883,36 @@ def test_get_closure_case(params, expected):
     assert get_closure_case(params) == expected
 
 
-@pytest.mark.parametrize('ticket_state, server_close_custom_state, expected_res',
-                         [('1', '', 'Other'),
-                          ('7', '', 'Resolved'),
-                          ('6', '', 'Resolved'),
-                          ('10', '10=Test', 'Test'),
-                          ('10', '10=Test,11=Test2', 'Test'),
-                          ('6', '6=Test', 'Test'),  # If builtin state was override by custom state.
-                          ('corrupt_state', '', 'Other'),
-                          ('corrupt_state', 'custom_state=Test', 'Other'),
-                          ('6', 'custom_state=Test', 'Resolved'),
+@pytest.mark.parametrize('ticket_state, ticket_close_code, server_close_custom_state, server_close_custom_code, expected_res',
+                         [('1', 'default close code', '', '', 'Other'),
+                          ('7', 'default close code', '', '', 'Resolved'),
+                          ('6', 'default close code', '', '', 'Resolved'),
+                          ('10', 'default close code', '10=Test', '', 'Test'),
+                          ('10', 'default close code', '10=Test,11=Test2', '', 'Test'),
+                          # If builtin state was override by custom.
+                          ('6', 'default close code', '6=Test', '', 'Test'),
+                          ('corrupt_state', 'default close code', '', '', 'Other'),
+                          ('corrupt_state', 'default close code', 'custom_state=Test', '', 'Other'),
+                          ('6', 'default close code', 'custom_state=Test', '', 'Resolved'),
+                          # custom close_code overwrites custom sate.
+                          ('10', 'custom close code', '10=Test,11=Test2', 'custom close code=Custom,90=90 Custom', 'Custom'),
+                          ('10', '90', '10=Test,11=Test2', '80=Custom, 90=90 Custom', '90 Custom'),
                           ])
-def test_converts_state_close_reason(ticket_state, server_close_custom_state, expected_res):
+def test_converts_close_code_or_state_to_close_reason(ticket_state, ticket_close_code, server_close_custom_state,
+                                                      server_close_custom_code, expected_res):
     """
     Given:
         - ticket_state: The state for the closed service now ticket
+        - ticket_close_code: The Service now ticket close code
         - server_close_custom_state: The custom state for the closed service now ticket
+        - server_close_custom_code: The custom close code for the closed service now ticket
     When:
         - closing a ticket on service now
     Then:
         - return the matching XSOAR incident state.
     """
-    assert converts_state_close_reason(ticket_state, server_close_custom_state) == expected_res
+    assert converts_close_code_or_state_to_close_reason(ticket_state, ticket_close_code, server_close_custom_state,
+                                                        server_close_custom_code) == expected_res
 
 
 def ticket_fields_mocker(*args, **kwargs):

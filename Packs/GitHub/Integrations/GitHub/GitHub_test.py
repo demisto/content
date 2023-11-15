@@ -456,6 +456,30 @@ def test_github_trigger_workflow(mocker):
     assert mocker_results.call_args[0][0].readable_output == 'Workflow triggered successfully.'
 
 
+def test_github_cancel_workflow(mocker):
+    """
+    Given:
+      - A workflow ID.
+    When:
+      - Calling the 'github_cancel_workflow' function
+    Then:
+      - Ensure workflow canceled successfully.
+    """
+    GitHub.BASE_URL = 'https://github.com'
+    GitHub.USE_SSL = True
+    GitHub.TOKEN = '123456'
+    mock_args = {'owner': 'demisto', 'repository': 'test', 'workflow_id': '1234'}
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
+    mocker_results = mocker.patch('GitHub.return_results')
+
+    with requests_mock.Mocker() as m:
+        m.post('https://github.com/repos/demisto/test/actions/runs/1234/cancel', status_code=202)
+        GitHub.github_cancel_workflow_command()
+
+    mocker_results.assert_called_once()
+    assert mocker_results.call_args[0][0].readable_output == 'Workflow canceled successfully.'
+
+
 def test_github_list_workflow(mocker):
     """
     Given:

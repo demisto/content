@@ -75,7 +75,7 @@ script:
       description: The incident priority.
       type: Unknown
     - contextPath: NetWitness.Incidents.riskScore
-      description: Incident risk score calculated based on associated alert’s risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      description: Incident risk score calculated based on associated alert's risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
       type: Unknown
     - contextPath: NetWitness.Incidents.status
       description: The current status.
@@ -265,7 +265,7 @@ script:
       description: The incident priority.
       type: Unknown
     - contextPath: NetWitness.Incidents.riskScore
-      description: Incident risk score calculated based on associated alert’s risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      description: Incident risk score calculated based on associated alert's risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
       type: Unknown
     - contextPath: NetWitness.Incidents.status
       description: The current status.
@@ -368,7 +368,7 @@ script:
       - ClosedFalsePositive
     - description: The NetWitness user identifier of the user currently working on the incident.
       name: assignee
-    description: Update a specific incident.  Currently, an incident’s status and assignee may be modified
+    description: Update a specific incident.  Currently, an incident's status and assignee may be modified
     name: netwitness-update-incident
     outputs:
     - contextPath: NetWitness.Incidents.id
@@ -384,7 +384,7 @@ script:
       description: The incident priority.
       type: Unknown
     - contextPath: NetWitness.Incidents.riskScore
-      description: Incident risk score calculated based on associated alert’s risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      description: Incident risk score calculated based on associated alert's risk score. Risk score ranges from 0 (no risk) to 100 (highest risk).
       type: Unknown
     - contextPath: NetWitness.Incidents.status
       description: The current status.

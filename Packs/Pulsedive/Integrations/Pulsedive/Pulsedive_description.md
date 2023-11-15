@@ -3,4 +3,9 @@ Leverage Pulsedive threat intelligence in Cortex XSOAR to enrich any domain, URL
 
 Register Free: https://pulsedive.com/login
 About: https://pulsedive.com/about/
-Contact: mailto:support@pulsedive.com  
+Contact: mailto:support@pulsedive.com
+
+Notice: Submitting indicators using the following commands of this integration might make the indicator data publicly available.
+- ***url***
+- ***domain***
+See the vendor’s documentation for more details.

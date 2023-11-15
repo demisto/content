@@ -126,9 +126,12 @@ var convertIncidentToTicket = function(incident) {
     return incident_filtered;
 };
 
-var updateBodyWithCustomFields = function(body, customFields) {
+var updateBodyWithCustomFields = function(body, customFields, customFieldsSeparator) {
+    if (!customFieldsSeparator){
+        customFieldsSeparator = ','
+    }
     if (customFields) {
-        var customFieldsArr = customFields.split(',');
+        var customFieldsArr = customFields.split(customFieldsSeparator);
         for (var i = 0; i < customFieldsArr.length; i++) {
             var equalIndex = customFieldsArr[i].indexOf('=');
             var key = customFieldsArr[i].substring(0, equalIndex);
@@ -139,7 +142,7 @@ var updateBodyWithCustomFields = function(body, customFields) {
     return body;
 };
 
-var createIncident = function(updateObject, customFields) {
+var createIncident = function(updateObject, customFields, customFieldsSeparator) {
     var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface_Create';
     var token = login();
 
@@ -148,7 +151,7 @@ var createIncident = function(updateObject, customFields) {
        "values" : updateObject
     };
     body.values.z1D_Action = 'CREATE';
-    body = updateBodyWithCustomFields(body, customFields);
+    body = updateBodyWithCustomFields(body, customFields, customFieldsSeparator);
 
     var res = sendRequest(url, token, "POST", JSON.stringify(body));
     // get created incident
@@ -277,7 +280,8 @@ switch (command) {
                 Impact: args.impact,
                 Urgency: args.urgency
             },
-            args['custom-fields']
+            args['custom-fields'],
+            args['custom-fields-separator']
         );
     case 'remedy-get-incident':
         return getIncident(args.ID);

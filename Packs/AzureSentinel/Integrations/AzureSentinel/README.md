@@ -1196,6 +1196,7 @@ Gets a list of an incident's alerts from Azure Sentinel.
 | AzureSentinel.IncidentAlert.IncidentId | String | The ID of the incident. | 
 | AzureSentinel.IncidentAlert.Kind | String | The kind of the alert. | 
 | AzureSentinel.IncidentAlert.Tactic | Unknown | The tactics of the alert. | 
+| AzureSentinel.IncidentAlert.Techniques | Unknown | The Techniques of the alert. | 
 | AzureSentinel.IncidentAlert.DisplayName | String | The display name of the alert. | 
 | AzureSentinel.IncidentAlert.Description | String | The description of the alert. | 
 | AzureSentinel.IncidentAlert.ConfidenceLevel | String | The confidence level of this alert. | 

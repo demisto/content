@@ -13,9 +13,9 @@ from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_email
                      get_expanded_group, get_searchable_mailboxes, handle_html,
                      handle_transient_files, parse_incident_from_item, parse_item_as_dict)
 
-with open("test_data/commands_outputs.json", "r") as f:
+with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
-with open("test_data/raw_responses.json", "r") as f:
+with open("test_data/raw_responses.json") as f:
     RAW_RESPONSES = json.load(f)
 
 
@@ -506,31 +506,51 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
     assert len(emails) == expected_result
 
 
-def test_parse_incident_from_item():
+@pytest.mark.parametrize("mime_content, expected_data, expected_attachmentSHA256", [
+    (b'\xc400',
+     '\nÄ00',
+     '90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8'),
+    ("Hello, this is a sample email with non-ASCII characters: é, ñ, ü.",
+     "\nHello, this is a sample email with non-ASCII characters: é, ñ, ü.",
+     "228d032fb728b3f86c49084b7d99ec37e913789415789084cd44fd94ea4647b7"),
+    ("Hello, this is a sample email with ASCII characters",
+     "\nHello, this is a sample email with ASCII characters",
+     "84f8a0dec6732c2341eeb7b05ebdbe919e7092bcaf6505fbd6cda495d89b55d6")
+])
+def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_attachmentSHA256):
     """
     Given:
-        - Message item with attachment that contains non UTF-8 encoded char
+        1. Message item with attachment that contains non UTF-8 encoded char
+        2. Message item with attachment that contains non-ASCII characters
+        3. Message item with attachment that contains only ASCII characters.
 
     When:
         - Parsing incident from item
 
     Verify:
         - Parsing runs successfully
-        - Incidnet attachment is not empty
+        - Incident attachment is not empty
     """
+    mock_file_result = mocker.patch('EWSO365.fileResult')
     message = Message(
         datetime_created=EWSDate(year=2021, month=1, day=25),
         to_recipients=[],
         attachments=[
             ItemAttachment(
-                item=Item(mime_content=b'\xc400'),
+                item=Item(mime_content=mime_content),
                 attachment_id=AttachmentId(),
                 last_modified_time=EWSDate(year=2021, month=1, day=25),
             ),
         ],
     )
     incident = parse_incident_from_item(message)
+
+    assert incident
     assert incident['attachment']
+    assert incident["rawJSON"]
+    raw_json = json.loads(incident["rawJSON"])
+    assert raw_json['attachments'][0]['attachmentSHA256'] == expected_attachmentSHA256
+    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
 
 
 def test_parse_incident_from_item_with_attachments():

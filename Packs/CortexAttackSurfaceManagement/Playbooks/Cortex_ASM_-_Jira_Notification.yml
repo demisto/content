@@ -1,5 +1,7 @@
 id: Cortex ASM - Jira Notification
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex ASM - Jira Notification
 description: This playbook is used to create Jira tickets directed toward service owners to notify them of their internet exposures.
 starttaskid: "0"
@@ -17,7 +19,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -25,54 +27,6 @@ tasks:
         "position": {
           "x": 450,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: f25546a1-47be-4b79-803e-013a06424a83
-    type: playbook
-    task:
-      id: f25546a1-47be-4b79-803e-013a06424a83
-      version: -1
-      name: Cortex ASM - Remediation Guidance
-      description: This playbook pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
-      playbookName: Cortex ASM - Remediation Guidance
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      IssueTypeID:
-        complex:
-          root: alert
-          accessor: asmattacksurfaceruleid
-          transformers:
-          - operator: StripChars
-            args:
-              chars:
-                value:
-                  simple: '[\"]'
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
         }
       }
     note: false
@@ -104,7 +58,7 @@ tasks:
       gridfield:
         simple: asmnotification
       keys:
-        simple: Type,Value,URL,Timestamp
+        simple: type,value,url,timestamp
       val1:
         simple: Jira
       val2:
@@ -139,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 530
+          "y": 400
         }
       }
     note: false
@@ -167,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 690
+          "y": 580
         }
       }
     note: false
@@ -179,10 +133,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7c511059-67eb-4f35-82ca-a27f2b2ad513
+    taskid: 2a4bf66b-75ae-4202-81db-59723e63c89a
     type: regular
     task:
-      id: 7c511059-67eb-4f35-82ca-a27f2b2ad513
+      id: 2a4bf66b-75ae-4202-81db-59723e63c89a
       version: -1
       name: Create Jira ticket
       description: Creates a new issue in Jira.
@@ -203,7 +157,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ${RemediationGuidance}
+                  simple: inputs.RemediationGuidance
                 iscontext: true
           - operator: replace
             args:
@@ -249,7 +203,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 350
+          "y": 210
         }
       }
     note: false
@@ -264,7 +218,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 705,
+        "height": 595,
         "width": 380,
         "x": 450,
         "y": 50
@@ -283,7 +237,12 @@ inputs:
   required: true
   description: The Jira project key to associate with the issue.
   playbookInputQuery:
+- key: RemediationGuidance
+  value: {}
+  required: true
+  description: Remediation Guidance of the Attack Surface Rule.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0
+fromversion: 6.9.0

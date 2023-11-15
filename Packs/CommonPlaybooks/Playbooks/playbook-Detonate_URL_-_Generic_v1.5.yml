@@ -84,7 +84,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -126,7 +125,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -168,7 +166,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
       interval:
         simple: "1"
       timeout:
@@ -214,7 +211,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -260,7 +256,6 @@ tasks:
       url:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -342,7 +337,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -384,7 +378,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
       interval:
         simple: "1"
       timeout:
@@ -434,7 +427,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -597,7 +589,6 @@ tasks:
       URL:
         complex:
           root: inputs.URL
-          accessor: Data
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -633,7 +624,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"    
+      - "3"
       "yes":
       - "34"
     separatecontext: false
@@ -699,10 +690,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 3d09fd2a-ac72-4d4f-8f1e-10261797c94b
+    taskid: 7acc875b-ca43-4e39-8977-c15f0373a98f
     type: regular
     task:
-      id: 3d09fd2a-ac72-4d4f-8f1e-10261797c94b
+      id: 7acc875b-ca43-4e39-8977-c15f0373a98f
       version: -1
       name: Detonate URL - WildFire
       description: Uploads a URL of a webpage to WildFire for analysis.
@@ -883,7 +874,7 @@ inputs:
 - key: URL
   value:
     complex:
-      root: URL
+      root: URL.Data
   required: false
   description: The URL object of the URL to be detonated.
   playbookInputQuery:

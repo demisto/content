@@ -1,29 +1,37 @@
 Create Jira issue allows you to open new issues.
-When creating the issue, you can decide to update based on on the issue’s state, which will wait for the issue to resolve or close with StatePolling.
-Alternatively, you can select to mirror the Jira issue and incident fields.  To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options:
-StatePolling
-Mirror
-Leave Blank to use none
+When creating the issue, you can decide to update based on on the issue's state, which will wait for the issue to resolve or close with StatePolling.
+Alternatively, you can select to mirror the Jira issue and incident fields.  To apply either of these options, set the SyncTicket value in the playbook inputs to one of the following options: 
+1. StatePolling
+2. Mirror
+3. Leave Blank to use none
+
 When creating Jira issues through XSOAR, using the mirroring function, make sure that you exclude those issues when fetching incidents. To exclude these issues, tag the relevant issues with a dedicated label and exclude that label from the JQL query (Labels!=).
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Jira Ticket State Polling
+
 * Mirror Jira Ticket
+* Jira Ticket State Polling
 
 ### Integrations
+
 * JiraV2
+* JiraV3
 
 ### Scripts
+
 * IsIntegrationAvailable
 
 ### Commands
-* jira-create-issue
+
 * jira-get-issue
+* jira-create-issue
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -43,9 +51,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | IssueLabel | Add labels to the issue.<br/> |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Create Jira Issue](../doc_files/Create_Jira_Issue.png)

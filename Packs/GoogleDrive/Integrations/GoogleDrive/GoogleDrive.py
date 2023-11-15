@@ -7,10 +7,11 @@ import io
 import urllib3
 import uuid
 import dateparser
+import yaml
 from typing import Any
 from collections.abc import Callable
 
-from apiclient import discovery
+from apiclient import discovery, errors
 from googleapiclient.http import MediaFileUpload
 from googleapiclient.http import MediaIoBaseDownload
 
@@ -18,6 +19,9 @@ from googleapiclient.http import MediaIoBaseDownload
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
+
+API_VERSION = 'v3'
+SERVICE_NAME = 'drive'
 
 MESSAGES: dict[str, str] = {
     'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
@@ -32,6 +36,7 @@ MESSAGES: dict[str, str] = {
 
 HR_MESSAGES: dict[str, str] = {
     'DRIVE_CREATE_SUCCESS': 'A new shared drive created.',
+    'DRIVE_DELETE_SUCCESS': 'The following shared drive was deleted. Drive ID: {}',
     'NOT_FOUND': 'No {} found.',
     'LIST_COMMAND_SUCCESS': 'Total Retrieved {}: {}',
     'DELETE_COMMAND_SUCCESS': 'Total Deleted {}: {}',
@@ -39,6 +44,9 @@ HR_MESSAGES: dict[str, str] = {
     'EXCEPTION_LIST_GENERIC': 'Exception searching for {}: {}',
 
     'EXCEPTION_GENERIC': 'Exception handling a {} request: {}',
+    'MODIFY_LABEL_SUCCESS': 'Modify label successfully assigned to {}.',
+    'GET_LABEL_SUCCESS': 'Label successfully retrieved.',
+    'GET_LABELS_SUCCESS': 'Labels successfully retrieved.',
 }
 
 SCOPES: dict[str, list[str]] = {
@@ -98,12 +106,17 @@ COMMAND_SCOPES: dict[str, list[str]] = {
     'FILE_PERMISSIONS_CRUD': [
         'https://www.googleapis.com/auth/drive',
         'https://www.googleapis.com/auth/drive.file',
-    ]
+    ],
 
+    'MODIFY_LABELS_PERMISSIONS_CRUD': [
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.labels',
+    ]
 }
 
 URLS: dict[str, str] = {
-    'DRIVE_ACTIVITY': 'https://driveactivity.googleapis.com/v2/activity:query'
+    'DRIVE_ACTIVITY': 'https://driveactivity.googleapis.com/v2/activity:query',
+    'DRIVE_LABELS': 'https://drivelabels.googleapis.com/v2/labels'
 }
 URL_SUFFIX: dict[str, str] = {
     'DRIVE_CHANGES': 'drive/v3/changes',
@@ -120,6 +133,8 @@ URL_SUFFIX: dict[str, str] = {
     'FILE_PERMISSION_CREATE': 'drive/v3/files/{}/permissions',
     'FILE_PERMISSION_UPDATE': 'drive/v3/files/{}/permissions/{}',
     'FILE_PERMISSION_DELETE': 'drive/v3/files/{}/permissions/{}',
+    'FILE_MODIFY_LABEL': 'drive/v3/files/{}/modifyLabels',
+    'FILE_GET_LABELS': 'drive/v3/files/{}/listLabels'
 }
 
 OUTPUT_PREFIX: dict[str, str] = {
@@ -142,6 +157,8 @@ OUTPUT_PREFIX: dict[str, str] = {
 
     'GOOGLE_DRIVE_FILE_PERMISSION_HEADER': 'GoogleDrive.FilePermission',
     'FILE_PERMISSION': 'FilePermission',
+
+    'LABELS': 'GoogleDrive.Labels'
 
 }
 
@@ -846,6 +863,35 @@ def drive_get_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandRe
     return handle_response_single_drive(response, args)
 
 
+@logger
+def drive_delete_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+    """
+    google-drive-drive-delete
+    Deletes a single shared drive in Google Drive.
+
+    :param client: Client object.
+    :param args: Command arguments.
+
+    :return: Command Result.
+    """
+    drive_id = args.get('drive_id')
+
+    # Specific drive
+    prepare_drives_request_res = prepare_drives_request(client, args)
+    http_request_params = prepare_drives_request_res['http_request_params']
+    http_request_params['useDomainAdminAccess'] = 'true' if argToBoolean(args.get('use_domain_admin_access')) else 'false'
+    http_request_params['allowItemDeletion'] = 'true' if argToBoolean(args.get('allow_item_deletion')) else 'false'
+    http_request_params['fields'] = '*'
+    url_suffix = URL_SUFFIX['DRIVE_DRIVES_ID'].format(drive_id)
+    response = client.http_request(url_suffix=url_suffix, method='DELETE', params=http_request_params)
+
+    ret_value = CommandResults(
+        raw_response=response,
+        readable_output=HR_MESSAGES['DRIVE_DELETE_SUCCESS'].format(drive_id),
+    )
+    return ret_value
+
+
 def handle_response_drive_list(response: dict[str, Any]) -> CommandResults:
     outputs_context = []
     readable_output = ''
@@ -935,13 +981,26 @@ def prepare_single_drive_human_readable(outputs_context: dict[str, Any], args: d
 
 
 def prepare_file_read_request(client: 'GSuiteClient', args: dict[str, str]) -> dict[str, Any]:
+    corpora_values = {
+        'User': 'user',
+        'Domain': 'domain',
+        'Drive': 'drive',
+        'All Drives': 'allDrives'
+    }
+
     http_request_params: dict[str, str] = assign_params(
         q=args.get('query'),
         pageSize=args.get('page_size'),
         pageToken=args.get('page_token'),
-        supportsAllDrives=args.get('supports_all_drives'),
-        includeItemsFromAllDrives=args.get('include_items_from_all_drives')
+        supportsAllDrives=argToBoolean(args.get('supports_all_drives', False)),
+        includeItemsFromAllDrives=args.get('include_items_from_all_drives'),
+        driveId=args.get('drive_id'),
+        corpora=corpora_values[args.get('corpora', 'User')]
     )
+
+    # driveId must be specified if and only if corpora is set to drive
+    if http_request_params.get('driveId'):
+        http_request_params['corpora'] = 'drive'
 
     # user_id can be overridden in the args
     user_id = args.get('user_id') or client.user_id
@@ -1124,11 +1183,9 @@ def file_upload_command(client: 'GSuiteClient', args: dict[str, str]) -> Command
     file_entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(file_entry_id)
 
-    version = 'v3'
-    service_name = 'drive'
     user_id = args.get('user_id') or client.user_id
     client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=user_id)
-    drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
     body: dict[str, str] = assign_params(
         parents=[args.get('parent')] if 'parent' in args else None,
         name=args.get('file_name'),
@@ -1157,9 +1214,7 @@ def file_download_command(client: 'GSuiteClient', args: dict[str, str]) -> Comma
 
     prepare_file_command_request(client, args, scopes=COMMAND_SCOPES['FILES'])
 
-    version = 'v3'
-    service_name = 'drive'
-    drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
     request = drive_service.files().get_media(fileId=args.get('file_id'))
     fh = io.BytesIO()
     downloader = MediaIoBaseDownload(fh, request)
@@ -1184,9 +1239,7 @@ def file_replace_existing_command(client: 'GSuiteClient', args: dict[str, str]) 
     file_entry_id = args.get('entry_id')
     file_path = demisto.getFilePath(file_entry_id)
 
-    version = 'v3'
-    service_name = 'drive'
-    drive_service = discovery.build(serviceName=service_name, version=version, http=client.authorized_http)
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
     media = MediaFileUpload(file_path['path'])
     file = drive_service.files().update(fileId=args.get('file_id', ''),
                                         body={},
@@ -1194,6 +1247,102 @@ def file_replace_existing_command(client: 'GSuiteClient', args: dict[str, str]) 
                                         fields='*'
                                         ).execute()
     return handle_response_file_single(file, args)
+
+
+@logger
+def modify_label_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+    modify_label_request_res = prepare_file_modify_labels_request(
+        client, args, scopes=COMMAND_SCOPES['MODIFY_LABELS_PERMISSIONS_CRUD'])
+    http_request_params = modify_label_request_res['http_request_params']
+
+    url_suffix = URL_SUFFIX['FILE_MODIFY_LABEL'].format(args.get('file_id'))
+    body_request = {
+        "kind": "drive#modifyLabelsRequest",
+        "labelModifications": [
+            {
+                "fieldModifications": [
+                    {
+                        "kind": "drive#labelFieldModification",
+                        "fieldId": args.get('field_id'),
+                        "setSelectionValues": [
+                            args.get('selection_label_id')
+                        ]
+                    }
+                ],
+                "kind": "drive#labelModification",
+                "labelId": args.get('label_id'),
+                "removeLabel": args.get('remove_label', False)
+            }
+        ]
+    }
+
+    response = client.http_request(url_suffix=url_suffix, method='POST', params=http_request_params, body=body_request)
+
+    table_hr_md = tableToMarkdown(HR_MESSAGES['MODIFY_LABEL_SUCCESS'].format(args.get('file_id')),
+                                  response,
+                                  headerTransform=pascalToSpace,
+                                  removeNull=False)
+    outputs_context = {
+        OUTPUT_PREFIX['LABELS']: response
+    }
+
+    return CommandResults(
+        outputs=outputs_context,
+        raw_response=response,
+        readable_output=table_hr_md,
+    )
+
+
+def get_file_labels_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+    modify_label_request_res = prepare_file_modify_labels_request(
+        client, args, scopes=COMMAND_SCOPES['MODIFY_LABELS_PERMISSIONS_CRUD'])
+    http_request_params = modify_label_request_res['http_request_params']
+
+    url_suffix = URL_SUFFIX['FILE_GET_LABELS'].format(args.get('file_id'))
+
+    response = client.http_request(url_suffix=url_suffix, method='GET', params=http_request_params)
+
+    outputs_context = {
+        OUTPUT_PREFIX['LABELS']: response,
+        OUTPUT_PREFIX['GOOGLE_DRIVE_FILE_HEADER']: {
+            OUTPUT_PREFIX['FILE']: {
+                'id': args.get('file_id'),
+            },
+        }
+    }
+
+    table_hr_md = tableToMarkdown(HR_MESSAGES['GET_LABEL_SUCCESS'].format(args.get('file_id')),
+                                  response['labels'],
+                                  headerTransform=pascalToSpace,
+                                  removeNull=False)
+
+    return CommandResults(
+        outputs=outputs_context,
+        readable_output=table_hr_md,
+    )
+
+
+def get_labels_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+    modify_label_request_res = prepare_get_labels_request(
+        client, args, scopes=COMMAND_SCOPES['MODIFY_LABELS_PERMISSIONS_CRUD'])
+    http_request_params = modify_label_request_res['http_request_params']
+
+    full_url = URLS['DRIVE_LABELS'] + '?' + urllib.parse.urlencode(http_request_params)
+    demisto.info(f'full url for get labels is: {full_url}')
+    response = client.http_request(full_url=full_url, method='GET')
+
+    outputs_context = {
+        OUTPUT_PREFIX['LABELS']: response
+    }
+
+    table_hr_md = tableToMarkdown(HR_MESSAGES['GET_LABELS_SUCCESS'],
+                                  response['labels'],
+                                  headerTransform=pascalToSpace,
+                                  removeNull=False)
+    return CommandResults(
+        readable_output=table_hr_md,
+        outputs=outputs_context
+    )
 
 
 @logger
@@ -1310,6 +1459,37 @@ def prepare_file_permission_request(client: 'GSuiteClient', args: dict[str, str]
         supportsAllDrives=args.get('supports_all_drives'),
         fields='*',
         useDomainAdminAccess=('true' if argToBoolean(args.get('use_domain_admin_access', 'false')) else 'false')
+    )
+
+    return {
+        'client': client,
+        'http_request_params': http_request_params,
+        'user_id': user_id,
+    }
+
+
+def prepare_file_modify_labels_request(client: 'GSuiteClient', args: dict[str, str], scopes: list[str]) -> dict[str, Any]:
+    # user_id can be overridden in the args
+    user_id = args.get('user_id') or client.user_id
+    client.set_authorized_http(scopes=scopes, subject=user_id)
+    # Prepare generic HTTP request params
+    http_request_params: dict[str, str] = assign_params(
+        fileId=args.get('file_id')
+    )
+
+    return {
+        'client': client,
+        'http_request_params': http_request_params,
+        'user_id': user_id,
+    }
+
+
+def prepare_get_labels_request(client: 'GSuiteClient', args: dict[str, str], scopes: list[str]) -> dict[str, Any]:
+    # user_id can be overridden in the args
+    user_id = args.get('user_id') or client.user_id
+    client.set_authorized_http(scopes=scopes, subject=user_id)
+    http_request_params: dict[str, str] = assign_params(
+        view='LABEL_VIEW_FULL'
     )
 
     return {
@@ -1558,12 +1738,11 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
     client.set_authorized_http(scopes=COMMAND_SCOPES['DRIVE_ACTIVITY'], subject=user_id)
     response = client.http_request(full_url=URLS['DRIVE_ACTIVITY'], method='POST', body=body)
 
-    outputs_context = []
     readable_output = ''
-
-    for activity in response.get('activities', []):
-        outputs_context.append(prepare_drive_activity_output(activity))
-
+    outputs_context = [
+        prepare_drive_activity_output(activity)
+        for activity in response.get('activities', [])
+    ]
     drive_activity_hr = prepare_drive_activity_human_readable(outputs_context)
 
     outputs: dict = {
@@ -1580,6 +1759,43 @@ def drive_activity_list_command(client: 'GSuiteClient', args: dict[str, str]) ->
         outputs=outputs,
         readable_output=readable_output,
         raw_response=response,
+    )
+
+
+def copy_file_http_request(
+        client: 'GSuiteClient', file_id: str, supports_all_drives: str, copy_title: str = None, user_id: str = None
+) -> dict:
+
+    client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=(user_id or client.user_id))
+    drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
+
+    try:
+        return drive_service.files().copy(
+            fileId=file_id,
+            supportsAllDrives=argToBoolean(supports_all_drives),
+            body={'name': copy_title} if copy_title else None,
+        ).execute()
+    except errors.HttpError as e:
+        error_dict = {
+            'Details': e.error_details,
+            'Status Code': e.resp.status,
+            'Reason': e.reason,
+        }
+        raise DemistoException(f'Unable to copy file.\n{yaml.dump(error_dict)}')
+
+
+def file_copy_command(client: 'GSuiteClient', args: dict[str, str]) -> CommandResults:
+
+    file = copy_file_http_request(client, **args)
+
+    return CommandResults(
+        outputs_prefix='GoogleDrive.File.File',
+        outputs_key_field='id',
+        outputs=file,
+        readable_output=tableToMarkdown(
+            'File copied successfully.', file,
+            headerTransform=string_to_table_header
+        ),
     )
 
 
@@ -1649,9 +1865,9 @@ def fetch_incidents(client: 'GSuiteClient', last_run: dict, params: dict, is_tes
     return incidents, {'last_fetch': last_fetch}
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
-         PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
     # Commands dictionary
@@ -1662,6 +1878,8 @@ def main() -> None:
 
         'google-drive-drives-list': drives_list_command,
         'google-drive-drive-get': drive_get_command,
+        'google-drive-drive-create': drive_create_command,
+        'google-drive-drive-delete': drive_delete_command,
 
         'google-drive-files-list': files_list_command,
         'google-drive-file-get': file_get_command,
@@ -1670,11 +1888,15 @@ def main() -> None:
         'google-drive-file-download': file_download_command,
         'google-drive-file-replace-existing': file_replace_existing_command,
         'google-drive-file-delete': file_delete_command,
+        'google-drive-file-copy': file_copy_command,
 
         'google-drive-file-permissions-list': file_permission_list_command,
         'google-drive-file-permission-create': file_permission_create_command,
         'google-drive-file-permission-update': file_permission_update_command,
         'google-drive-file-permission-delete': file_permission_delete_command,
+        'google-drive-file-modify-label': modify_label_command,
+        'google-drive-get-labels': get_labels_command,
+        'google-drive-get-file-labels': get_file_labels_command,
     }
     command = demisto.command()
 
@@ -1698,33 +1920,33 @@ def main() -> None:
         }
 
         # prepare client class object
-        gsuite_client = GSuiteClient(service_account_dict,
-                                     base_url='https://www.googleapis.com/', verify=verify_certificate, proxy=proxy,
-                                     headers=headers,
-                                     user_id=user_id)
+        gsuite_client = GSuiteClient(
+            service_account_dict, base_url='https://www.googleapis.com/',
+            verify=verify_certificate, proxy=proxy,
+            headers=headers, user_id=user_id
+        )
 
         # Trim the arguments
         args = GSuiteClient.strip_dict(demisto.args())
 
         # This is the call made when pressing the integration Test button.
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             result = test_module(gsuite_client, demisto.getLastRun(), params)
-            demisto.results(result)
-        elif demisto.command() == 'fetch-incidents':
-
-            incidents, next_run = fetch_incidents(gsuite_client,
-                                                  last_run=demisto.getLastRun(),
-                                                  params=params)
-
+            return_results(result)
+        elif command == 'fetch-incidents':
+            incidents, next_run = fetch_incidents(
+                gsuite_client, last_run=demisto.getLastRun(), params=params,
+            )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-
         elif command in commands:
             return_results(commands[command](gsuite_client, args))
+        else:
+            raise NotImplementedError(f'{command!r} is not a Google Drive command.')
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Error: {str(e)}')
+        return_error(f'Error: {e}')
 
 
 from GSuiteApiModule import *  # noqa: E402

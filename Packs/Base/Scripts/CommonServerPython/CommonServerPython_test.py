@@ -5,6 +5,7 @@ import json
 import os
 import re
 import sys
+import urllib
 import warnings
 
 import dateparser
@@ -26,7 +27,9 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context, is_integration_command_execution
+    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam
+
 
 try:
     from StringIO import StringIO
@@ -1649,27 +1652,6 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
-def test_indicator_type_by_server_version_under_6_1(mocker, clear_version_cache):
-    """
-    Given
-    - demisto version mock under 6.2
-
-    When
-    - demisto version mock under 6.2
-
-    Then
-    - Do not remove the STIX indicator type prefix.
-    """
-    mocker.patch.object(
-        demisto,
-        'demistoVersion',
-        return_value={
-            'version': '6.1.0',
-        }
-    )
-    assert FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern") == "STIX Attack Pattern"
-
-
 def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
     """
     Given
@@ -1798,6 +1780,16 @@ class TestCommandResults:
         command_results = CommandResults(tags=['tag1', 'tag2'])
         assert command_results.tags == ['tag1', 'tag2']
         assert command_results.to_context()['Tags'] == ['tag1', 'tag2']
+
+    @pytest.mark.parametrize('output', [True, False])
+    def test_with_boolean_output(self, output):
+        from CommonServerPython import CommandResults
+        command_results = CommandResults(
+            outputs=output,
+            outputs_prefix="BooleanOutput",
+            readable_output="Boolean Output: {}".format(output),
+        )
+        assert command_results.to_context()['Contents'] == output
 
     def test_dbot_score_is_in_to_context_ip(self):
         """
@@ -2599,6 +2591,28 @@ class TestCommandResults:
 
         assert results.to_context().get('Note') is True
 
+    def test_empty_readable_outputs(self):
+        """
+        Given:
+        - Outputs as str
+        - outputs_prefix is str
+        - No readable_output
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate generated readable_output
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs="outputs_test",
+            outputs_prefix="outputs_prefix_test"
+        )
+        context = res.to_context()
+        assert "outputs_test" == context.get('HumanReadable')
+
 
 def test_http_request_ssl_ciphers_insecure():
     if IS_PY3 and PY_VER_MINOR >= 10:
@@ -3012,6 +3026,45 @@ class TestBaseClient:
         response = Response()
         response.status_code = 400
         assert not self.client._is_status_code_valid(response)
+
+    def test_http_request_params_parser_none(self, requests_mock):
+        """
+            Given
+                - query params with spaces without specific quote function.
+
+            When
+                - Calling _https_request function.
+
+            Then
+                - Verify the spaces in the result is as expected.
+        """
+        mock_request = requests_mock.get('http://example.com/api/v2/', json={})
+        from CommonServerPython import BaseClient
+        mock_client = BaseClient('http://example.com/api/v2/')
+
+        mock_client._http_request('get', params={'key': 'value with spaces'})
+
+        assert mock_request.last_request.query == 'key=value+with+spaces'
+
+    @pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
+    def test_http_request_params_parser_quote(self, requests_mock):
+        """
+            Given
+                - query params with spaces with specific quote function.
+
+            When
+                - Calling _https_request function.
+
+            Then
+                - Verify the spaces in the result is as expected.
+        """
+        mock_request = requests_mock.get('http://example.com/api/v2/', json={})
+        from CommonServerPython import BaseClient
+        mock_client = BaseClient('http://example.com/api/v2/')
+
+        mock_client._http_request('get', params={'key': 'value with spaces'}, params_parser=urllib.parse.quote)
+
+        assert mock_request.last_request.query == 'key=value%20with%20spaces'
 
 
 def test_parse_date_string():
@@ -4042,25 +4095,6 @@ def test_merge_lists():
     assert len(result) == len(expected)
     for obj in result:
         assert obj in expected
-
-
-@pytest.mark.parametrize('version, expected',
-                         [
-                             ({'version': '5.5.0'}, False),
-                             ({'version': '6.0.0'}, True),
-                         ]
-                         )
-def test_is_versioned_context_available(mocker, version, expected):
-    from CommonServerPython import is_versioned_context_available
-    # Set
-    mocker.patch.object(demisto, 'demistoVersion', return_value=version)
-
-    # Arrange
-    result = is_versioned_context_available()
-    get_demisto_version._version = None
-
-    # Assert
-    assert expected == result
 
 
 def test_update_context_merge(mocker):
@@ -6617,27 +6651,6 @@ class TestIndicatorsSearcher:
         iocs = [{'value': 'mock{}'.format(search_after_value)}]
         return {'searchAfter': search_after_value, 'iocs': iocs, 'total': 4}
 
-    def test_search_indicators_by_page(self, mocker):
-        """
-        Given:
-          - Searching indicators couple of times
-          - Server version in less than 6.1.0
-        When:
-          - Mocking search indicators using paging
-        Then:
-          - The page number is rising
-        """
-        from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators_obj_paging = IndicatorsSearcher()
-        search_indicators_obj_paging._can_use_search_after = False
-
-        for n in range(5):
-            search_indicators_obj_paging.search_indicators_by_version()
-
-        assert search_indicators_obj_paging._page == 5
-
     def test_search_indicators_by_search_after(self, mocker):
         """
         Given:
@@ -6653,7 +6666,6 @@ class TestIndicatorsSearcher:
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
         search_indicators_obj_search_after = IndicatorsSearcher()
-        search_indicators_obj_search_after._can_use_search_after = True
         try:
             for n in range(5):
                 search_indicators_obj_search_after.search_indicators_by_version()
@@ -6679,57 +6691,10 @@ class TestIndicatorsSearcher:
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
 
         search_indicators_obj_search_after = IndicatorsSearcher()
-        search_indicators_obj_search_after._can_use_search_after = True
         for n in range(7):
             search_indicators_obj_search_after.search_indicators_by_version()
         assert search_indicators_obj_search_after._search_after_param is None
         assert search_indicators_obj_search_after._page == 7
-
-    def test_search_indicators_in_certain_page(self, mocker):
-        """
-        Given:
-          - Searching indicators in a specific page that is not 0
-          - Server version in less than 6.1.0
-        When:
-          - Mocking search indicators in this specific page
-          so search_after is None
-        Then:
-          - The search after param is not None
-          - The page param is 17
-        """
-        from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators_obj_search_after = IndicatorsSearcher(page=17)
-        search_indicators_obj_search_after._can_use_search_after = False
-        search_indicators_obj_search_after.search_indicators_by_version()
-
-        assert search_indicators_obj_search_after._search_after_param is None
-        assert search_indicators_obj_search_after._page == 18
-
-    def test_iterator__pages(self, mocker):
-        """
-        Given:
-          - Searching indicators from page 1
-          - Total available indicators == 6
-        When:
-          - Searching indicators using iterator
-        Then:
-          - Get 6 indicators
-          - Advance page to 7
-          - is_search_done returns True
-        """
-        from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators = IndicatorsSearcher(page=1, size=1)
-        search_indicators._can_use_search_after = False
-        results = []
-        for res in search_indicators:
-            results.append(res)
-        assert len(results) == 6
-        assert search_indicators.page == 7
-        assert search_indicators.is_search_done() is True
 
     def test_iterator__search_after(self, mocker):
         """
@@ -6746,40 +6711,16 @@ class TestIndicatorsSearcher:
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
         search_indicators = IndicatorsSearcher(limit=10)
-        search_indicators._can_use_search_after = True
         results = []
         for res in search_indicators:
             results.append(res)
         assert len(results) == 4
-
-    def test_iterator__empty_page(self, mocker):
-        """
-        Given:
-          - Searching indicators from page 18
-          - Total available indicators from page 10-16 == 7
-          - No available indicators from page 17
-        When:
-          - Searching indicators using iterator (search_after is not supported)
-        Then:
-          - Get 0 indicators
-          - page doesn't advance (set to 18)
-        """
-        from CommonServerPython import IndicatorsSearcher
-        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
-
-        search_indicators = IndicatorsSearcher(page=18)
-        results = []
-        for res in search_indicators:
-            results.append(res)
-        assert len(results) == 0
-        assert search_indicators.page == 19
 
     def test_iterator__research_flow(self, mocker):
         from CommonServerPython import IndicatorsSearcher
         mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_indicators_search_after)
         # fetch first 3
         search_indicators = IndicatorsSearcher(limit=3)
-        search_indicators._can_use_search_after = True
         results = []
         for res in search_indicators:
             results.append(res)
@@ -6833,21 +6774,6 @@ class TestAutoFocusKeyRetriever:
         auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='1234')
         assert auto_focus_key_retriever.key == '1234'
 
-    def test_instantiate_class_pre_6_2_failed(self, mocker, clear_version_cache):
-        """
-        Given:
-            - not giving the api_key parameter
-        When:
-            - Mocking getAutoFocusApiKey
-            - Mocking server version to be 6.1.0
-        Then:
-            - Validate an exception with appropriate error message is raised.
-        """
-        from CommonServerPython import AutoFocusKeyRetriever
-        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
-        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.1.0', 'buildNumber': '61000'})
-        with raises(DemistoException, match='For versions earlier than 6.2.0, configure an API Key.'):
-            AutoFocusKeyRetriever(api_key='')
 
     def test_instantiate_class_without_param_key(self, mocker, clear_version_cache):
         """
@@ -7151,19 +7077,6 @@ class TestSetAndGetLastRun:
         result = get_feed_last_run()
         assert result == {1: "first indicator"}
 
-    def test_get_last_run_in_6_1_when_get_integration_context_has_results(self, mocker):
-        """
-        Given: 6.1.0 environment and getIntegrationContext return results
-        When: Fetch indicators
-                This can happen when updating XSOAR version to 6.2.0 while a feed instance is already set.
-        Then: Returning all indicators from demisto.getIntegrationContext object
-        """
-        import demistomock as demisto
-        from CommonServerPython import get_feed_last_run
-        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.1.0"})
-        mocker.patch.object(demisto, 'getIntegrationContext', return_value={1: "first indicator"})
-        result = get_feed_last_run()
-        assert result == {1: "first indicator"}
 
     def test_get_last_run_in_6_2_when_get_last_run_has_no_results(self, mocker):
         """
@@ -7211,21 +7124,6 @@ class TestSetAndGetLastRun:
         set_feed_last_run({1: "first indicator"})
         assert set_integration_context.called is False
         set_last_run.assert_called_with({1: "first indicator"})
-
-    def test_set_last_run_in_6_1(self, mocker):
-        """
-        Given: 6.1.0 environment
-        When: Fetch indicators
-        Then: Using demisto.setIntegrationContext to save results
-        """
-        import demistomock as demisto
-        from CommonServerPython import set_feed_last_run
-        mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.1.0"})
-        set_last_run = mocker.patch.object(demisto, 'setLastRun', return_value={})
-        set_integration_context = mocker.patch.object(demisto, 'setIntegrationContext', return_value={})
-        set_feed_last_run({1: "first indicator"})
-        set_integration_context.assert_called_with({1: "first indicator"})
-        assert set_last_run.called is False
 
 
 class TestIsDemistoServerGE:
@@ -7329,6 +7227,28 @@ class TestIsDemistoServerGE:
             }
         )
         assert not is_demisto_version_ge(version, build)
+
+
+class TestDeterminePlatform:
+    @classmethod
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
+        get_demisto_version._version = None
+
+    @pytest.mark.parametrize('demistoVersion, method', [
+        ({'platform': 'xsoar', 'version': '6.5.0'}, is_xsoar),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsoar),
+        ({'platform': 'xsoar_hosted', 'version': '6.5.0'}, is_xsoar),
+        ({'platform': 'x2', 'version': '8.2.0'}, is_xsiam_or_xsoar_saas),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsiam_or_xsoar_saas),
+        ({'platform': 'xsoar', 'version': '6.5.0'}, is_xsoar_on_prem),
+        ({'platform': 'xsoar_hosted', 'version': '6.5.0'}, is_xsoar_hosted),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsoar_saas),
+        ({'platform': 'x2', 'version': '8.2.0'}, is_xsiam),
+    ])
+    def test_determine_platform(self, mocker, demistoVersion, method):
+        mocker.patch.object(demisto, 'demistoVersion', return_value=demistoVersion)
+        assert method()
 
 
 def test_smart_get_dict():
@@ -8177,6 +8097,74 @@ class TestFetchWithLookBack:
         assert results.get('limit') == expected_results3.get('limit')
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
+    
+    def test_lookback_with_offset_update_last_run(self):
+        """
+        Given:
+            A last run
+        
+        When:
+            Calling create_updated_last_run_object with a new offset to change
+            
+        Then:
+            - The last run is updated with the new offset, and the start time remains as it was.
+            - When the offset needs to be reset, the last time is the latest incident time and the offset resets
+        """
+        from CommonServerPython import create_updated_last_run_object
+        last_time = "2022-04-07T10:13:00"
+        last_run = {"time": last_time, "offset": 3}
+        new_offset = 4
+        new_last_run, _ = create_updated_last_run_object(last_run,
+                                                         self.INCIDENTS,
+                                                         fetch_limit=3,
+                                                         look_back=1,
+                                                         start_fetch_time=last_time,
+                                                         end_fetch_time=datetime.now().isoformat(),
+                                                         created_time_field="created",
+                                                         new_offset=new_offset,
+                                                         )
+        # make sure that the start time is unchanged because of the offset, and the offset is updated
+        assert new_last_run["offset"] == 4
+        assert new_last_run["time"] == last_time
+        
+        last_run = {"time": last_time, "offset": new_offset}
+        new_offset = 0
+        new_last_run, _ = create_updated_last_run_object(last_run,
+                                                         self.INCIDENTS,
+                                                         fetch_limit=3,
+                                                         look_back=1,
+                                                         start_fetch_time=last_time,
+                                                         end_fetch_time=datetime.now().isoformat(),
+                                                         created_time_field="created",
+                                                         new_offset=new_offset,
+                                                         )
+        assert new_last_run["offset"] == 0
+        assert new_last_run["time"] == "2022-04-01T10:51:00"
+        
+    def test_calculate_new_offset(self):
+        """
+        Test that the new offset for the next run calculated correctly based on the old offset, number of incidents and total number of incidents.
+        The first argument is the old offset, the second is number of incidents and the third is the total number of incidents returned.
+        Given:
+            old offset, number of incidents, total number of incidents (could be None)
+        
+        When:
+            Calculating a new offset to the next run
+            
+        Then:
+            Make sure that the new offset is correct
+        """
+        from CommonServerPython import calculate_new_offset
+        assert calculate_new_offset(0, 2, 4) == 2
+        assert calculate_new_offset(0, 2, 2) == 0
+        assert calculate_new_offset(0, 2, 3) == 2
+        assert calculate_new_offset(1, 2, 4) == 3
+        assert calculate_new_offset(1, 2, 3) == 0
+        assert calculate_new_offset(1, 2, None) == 3
+
+
+
+
 
 
 class TestTracebackLineNumberAdgustment:

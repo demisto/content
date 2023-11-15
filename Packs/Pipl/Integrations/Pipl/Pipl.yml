@@ -5,7 +5,7 @@ name: Pipl
 fromversion: 5.0.0
 display: Pipl
 category: Data Enrichment & Threat Intelligence
-description: Get contact, social, and professional information about people
+description: Get contact, social, and professional information about people.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: url
@@ -31,6 +31,20 @@ configuration:
   name: proxy
   type: 8
   required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: integration_reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
+  required: false
 script:
   script: ''
   type: javascript
@@ -38,63 +52,78 @@ script:
   - name: pipl-search
     arguments:
     - name: email
-      description: Email address to search
+      description: Email address to search.
     - name: phone
-      description: Home/work/mobile phone number to search
+      description: Home/work/mobile phone number to search.
     - name: username
-      description: Username/screen-name to search. Minimum 4 characters
+      description: Username/screen-name to search. Minimum 4 characters.
     - name: first-name
-      description: First name to search. Minimum 2 characters
+      description: First name to search. Minimum 2 characters.
     - name: last-name
-      description: Last name to search. Minimum 2 characters
+      description: Last name to search. Minimum 2 characters.
     - name: middle-name
-      description: Middle name or middle initial to search
+      description: Middle name or middle initial to search.
     - name: raw-name
-      description: Full name to search. Use this parameter if the accurate name parts (first/middle/last) are not available, this parameter will only be used in absence of first-name and last-name
+      description: Full name to search. Use this parameter if the accurate name parts (first/middle/last) are not available, this parameter will only be used in absence of first-name and last-name.
     - name: country
-      description: A two-letter country code to searchs
+      description: A two-letter country code to searchs.
     - name: state
       description: A United States, Canada, Great Britain or Australia state code. If a US state is provided and no country specified, we’ll assume the country to be US.
     - name: city
-      description: City to search
+      description: City to search.
     - name: zipcode
-      description: ZIP code to search
+      description: ZIP code to search.
     - name: raw-address
-      description: Full address to search
+      description: Full address to search.
     - name: age
-      description: Age to search in String, an exact (YY) or approximate (YY-YY) age
+      description: Age to search in String, an exact (YY) or approximate (YY-YY) age.
     - name: columns
-      description: Order of columns to be displayed in results (comma seperated list of values)
+      description: Order of columns to be displayed in results (comma seperated list of values).
     outputs:
     - contextPath: Account.Email.Address
-      description: Email addresses
+      description: Email addresses.
     - contextPath: Account.IDs
-      description: User IDs
+      description: User IDs.
     - contextPath: Account.Addresses
-      description: Addresses (geographic)
+      description: Addresses (geographic).
     - contextPath: Account.Names
-      description: Full names
+      description: Full names.
     - contextPath: Account.Phones
-      description: Phone numbers
+      description: Phone numbers.
     - contextPath: Account.Usernames
-      description: Online platforms usernames
-    description: Search for required query
+      description: Online platforms usernames.
+    description: Search for required query.
   - name: email
     arguments:
     - name: email
       required: true
-      description: Email address to search for
+      description: Email address to search for.
     outputs:
     - contextPath: Account.Email.Address
-      description: Email addresses
+      description: Email addresses.
     - contextPath: Account.IDs
-      description: User IDs
+      description: User IDs.
     - contextPath: Account.Addresses
-      description: Addresses (geographic)
+      description: Addresses (geographic).
     - contextPath: Account.Names
-      description: Full names
+      description: Full names.
     - contextPath: Account.Phones
-      description: Phone numbers
+      description: Phone numbers.
     - contextPath: Account.Usernames
-      description: Online platforms usernames
-    description: Searches for information regarding given email address
+      description: Online platforms usernames.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Reliability
+      type: String
+      description: Reliability of the source providing the intelligence data.
+    description: Searches for information regarding given email address.

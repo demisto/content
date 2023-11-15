@@ -77,3 +77,10 @@ There are no outputs for this playbook.
 ---
 
 ![Reset User Password via Chatbot](../doc_files/Reset_User_Password_via_Chatbot.png)
+
+## Playbook Demo Video
+<video controls>
+    <source src="https://github.com/demisto/content-assets/raw/master/Assets/PasswordResetViaChatbot/Password%20Reset%20via%20Chatbot.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/raw/master/Assets/PasswordResetViaChatbot/Password%20Reset%20via%20Chatbot.mp4
+</video>

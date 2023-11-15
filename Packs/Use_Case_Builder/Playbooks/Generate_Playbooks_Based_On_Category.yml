@@ -532,12 +532,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d56fef8e-c82a-42a5-8615-19cf9b3c9edb
+    taskid: 2c2bd62d-80f0-4a3b-810a-5007bbe2a312
     type: condition
     task:
-      id: d56fef8e-c82a-42a5-8615-19cf9b3c9edb
+      id: 2c2bd62d-80f0-4a3b-810a-5007bbe2a312
       version: -1
-      name: Is the Use Case Category set to none?
+      name: Is it a New Use Case?
       type: condition
       iscommand: false
       description: ""
@@ -554,11 +554,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.usecasecategory
+              simple: incident.usecasetype
             iscontext: true
           right:
             value:
-              simple: None
+              simple: New Use Case
     continueonerrortype: ""
     view: |-
       {
