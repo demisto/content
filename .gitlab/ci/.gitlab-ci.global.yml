@@ -226,20 +226,11 @@
   - section_start "Checkout upload commit content nightly"
   - | 
     if [[ "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
-      echo "ls before switching Packs"
-      ls -la
-      ls -la ./Packs/PAN-OS/Integrations/Panorama
       rm -rf ./Packs
-      echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/content_production/Packs to ./Packs"
-      cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
-      echo "ls after switching Packs and before chmod 777"
-      ls -la
-      ls -la ./Packs/PAN-OS/Integrations/Panorama
+      echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs to ./Packs"
+      cp -r ${CI_PROJECT_DIR}/artifacts/production_packs ./Packs
       git config core.fileMode false
       chmod -R 777 ./Packs
-      echo "ls after switching Packs and chmod 777" 
-      ls -la
-      ls -la ./Packs/PAN-OS/Integrations/Panorama
       git status
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
@@ -278,12 +269,13 @@
 .add-content-production-to-artifacts:
   - section_start "Clone production content and add it to artifacts"
   - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
-  - mkdir ${ARTIFACTS_FOLDER}/content_production
-  - cd ${ARTIFACTS_FOLDER}/content_production
+  - mkdir content_production
+  - cd content_production
   - git init
   - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
   - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
   - git checkout FETCH_HEAD
+  - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs
   - echo "checked out $LAST_UPLOAD_COMMIT"
   - section_end "Clone production content and add it to artifacts"
 
