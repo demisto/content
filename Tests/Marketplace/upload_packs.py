@@ -1283,10 +1283,10 @@ def main():
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
             continue
 
-        task_status, = pack.format_metadata(index_folder_path,
-                                            packs_dependencies_mapping,
-                                            statistics_handler,
-                                            marketplace, remove_test_deps=remove_test_deps)
+        task_status = pack.format_metadata(index_folder_path,
+                                           packs_dependencies_mapping,
+                                           statistics_handler,
+                                           marketplace, remove_test_deps=remove_test_deps)
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name  # type: ignore[misc]
