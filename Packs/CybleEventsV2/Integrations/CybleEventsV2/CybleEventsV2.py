@@ -107,6 +107,7 @@ def validate_input(args, is_iocs=False):
         if is_iocs:
             date_format = "%Y-%m-%d"
             if args.get('start_date') and args.get('end_date'):
+
                 _start_date = datetime.strptime(args.get('start_date'), date_format)
                 _end_date = datetime.strptime(args.get('end_date'), date_format)
             else:
