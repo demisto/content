@@ -1,5 +1,4 @@
 import argparse
-import os
 import sys
 import traceback
 from pathlib import Path
