@@ -337,7 +337,7 @@ class TestMetadataParsing:
         assert dummy_pack.update_date
         assert dummy_pack._tags == {"tag number one", "Tag number two", PackTags.NEW}
 
-    def test_new_tag_added_to_tags(self, dummy_pack_metadata, dummy_pack):
+    def test_new_tag_added_to_tags(self, dummy_pack):
         """ Test 'New' tag is added
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
@@ -345,7 +345,7 @@ class TestMetadataParsing:
 
         assert PackTags.NEW in tags
 
-    def test_new_tag_removed_from_tags(self, dummy_pack_metadata, dummy_pack):
+    def test_new_tag_removed_from_tags(self, dummy_pack):
         """ Test 'New' tag is removed
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
@@ -353,6 +353,21 @@ class TestMetadataParsing:
         tags = dummy_pack._collect_pack_tags_by_statistics([])
 
         assert PackTags.NEW not in tags
+
+    def test_trending_tag_added_to_tags(self, dummy_pack):
+        """ Test 'TRENDING' tag is added
+        """
+        tags = dummy_pack._collect_pack_tags_by_statistics(["Test Pack Name"])
+
+        assert PackTags.TRENDING in tags
+
+    def test_trending_tag_removed_from_tags(self, dummy_pack):
+        """ Test 'TRENDING' tag is removed
+        """
+        dummy_pack._tags = {PackTags.TRENDING}
+        tags = dummy_pack._collect_pack_tags_by_statistics([])
+
+        assert PackTags.TRENDING not in tags
 
 
 class TestParsingInternalFunctions:

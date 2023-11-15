@@ -2271,11 +2271,11 @@ class Pack:
     def remove_test_dependencies(self):
         """Removes test dependencies from pack dependencies property"""
 
-        pack_dependencies = [dep for dep in self._first_level_dependencies
-                             if not self._first_level_dependencies[dep].get("is_test", False)]
+        pack_dependencies = [dep_id for dep_id in self._first_level_dependencies
+                             if not self._first_level_dependencies[dep_id].get("is_test", False)]
 
-        self._dependencies = {dep: self._dependencies.get(dep) for dep in self._dependencies if dep in pack_dependencies}
-        removed_test_deps = [dep for dep in self._first_level_dependencies if dep not in self._dependencies]
+        self._dependencies = {k: v for k, v in self._dependencies.items() if k in pack_dependencies}
+        removed_test_deps = [dep_id for dep_id in self._first_level_dependencies if dep_id not in self._dependencies]
         logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
 
     def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
