@@ -12,7 +12,6 @@ import traceback
 from enum import Enum
 from io import BytesIO
 from pathlib import Path
-from collections.abc import Callable
 
 import numpy as np
 from pdf2image import convert_from_path
@@ -82,7 +81,7 @@ def ensure_chrome_running():
     try:
         command = ['bash', '/start_chrome_headless.sh']
         with open(os.devnull, "w") as fnull:
-            result = subprocess.call(command, stdout = fnull, stderr = fnull)
+            result = subprocess.call(command, stdout=fnull, stderr=fnull)
             demisto.debug(f'start_chrome_headless output: {result}')
     except Exception as ex:
         demisto.info(f'Exception running chrome headless, {ex}')
@@ -319,6 +318,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     """
     demisto.debug(f'Rasterizing using mode: {r_mode}')
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
+    # from collections.abc import Callable ## should be in the imports above, around line 15
     # rasterize_funcs: tuple[Callable, ...] = ()
     # if r_mode == RasterizeMode.WEBDRIVER_PREFERED:
     #     rasterize_funcs = (rasterize_webdriver, rasterize_headless_cmd)
