@@ -22,8 +22,8 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* closeInvestigation
 * linkIncidents
+* closeInvestigation
 
 ## Playbook Inputs
 

@@ -36,10 +36,10 @@ tasks:
     continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 5e0b6e1e-22f7-4a22-8bf9-2232fdd14b9c
+    taskid: 8ae01464-47e0-4cb7-8909-12a9f7511bd0
     type: regular
     task:
-      id: 5e0b6e1e-22f7-4a22-8bf9-2232fdd14b9c
+      id: 8ae01464-47e0-4cb7-8909-12a9f7511bd0
       version: -1
       name: Find Similar Incidents By Fields
       description: Find past similar incidents based on similar incident fields. Includes an option to also display indicator similarity.
@@ -85,7 +85,8 @@ tasks:
         complex:
           root: inputs.query
       showIncidentSimilarityForAllFields:
-        simple: ${inputs.showIncidentSimilarityForAllFields}
+        complex:
+          root: inputs.showIncidentSimilarityForAllFields
       similarTextField:
         complex:
           root: inputs.similarTextField
@@ -189,13 +190,13 @@ tasks:
     continueonerrortype: ""
   "11":
     id: "11"
-    taskid: b987c1f7-ae48-442b-835c-99b7d380cdb2
+    taskid: da373d63-9d89-4c9f-86d0-3cd179ec992f
     type: regular
     task:
-      id: b987c1f7-ae48-442b-835c-99b7d380cdb2
+      id: da373d63-9d89-4c9f-86d0-3cd179ec992f
       version: -1
       name: Link similar incident
-      description: Link incidents together or mark them as duplicate and close them.
+      description: commands.local.cmd.linkIncidents
       script: Builtin|||linkIncidents
       type: regular
       iscommand: true
