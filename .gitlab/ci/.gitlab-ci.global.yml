@@ -265,6 +265,15 @@
     - *build_parameters
     - *gitlab_ci_build_parameters
     - *checkout-upload-commit-content-nightly
+    - DEEPEN_LENGTH=${DEEPEN_LENGTH:-50}
+    - HEAD_REF=origin/master
+    - BASE_REF=$(git rev-parse HEAD)
+    - git fetch --progress --depth=1 origin "+refs/heads/$BASE_REF:refs/heads/$BASE_REF"
+    - |
+      while [ -z "$( git merge-base "$BASE_REF" "$HEAD_REF" )" ]; do
+        echo "Fetching with depth $DEEPEN_LENGTH..."
+        git fetch -q --deepen="$DEEPEN_LENGTH" origin "$BASE_REF" "$HEAD_REF";
+      done
 
 .default-after-script:
   - source .gitlab/helper_functions.sh
