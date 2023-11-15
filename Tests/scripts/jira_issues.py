@@ -3,6 +3,7 @@ import os
 from collections import defaultdict
 from datetime import datetime, timedelta
 from distutils.util import strtobool
+from typing import Any
 
 from jira import JIRA, Issue
 from jira.client import ResultList
@@ -11,6 +12,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID')
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL')
+CI_PIPELINE_URL = os.getenv('CI_PIPELINE_URL', '')
 JIRA_SERVER_URL = os.environ["JIRA_SERVER_URL"]
 JIRA_VERIFY_SSL = bool(strtobool(os.environ.get("JIRA_VERIFY_SSL", "true")))
 JIRA_API_KEY = os.environ["JIRA_API_KEY"]
@@ -33,8 +35,9 @@ def generate_ticket_summary(prefix: str) -> str:
 
 
 def generate_query_by_component_and_issue_type() -> str:
-    jql_query = f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" AND component = \"{JIRA_COMPONENT}\""
-    return jql_query
+    jira_labels = "".join(f" AND labels = \"{x}\"" for x in JIRA_LABELS) if JIRA_LABELS else ""
+    return (f"project = \"{JIRA_PROJECT_ID}\" AND issuetype = \"{JIRA_ISSUE_TYPE}\" "
+            f"AND component = \"{JIRA_COMPONENT}\" {jira_labels}")
 
 
 def generate_query_with_summary(summary: str) -> str:
@@ -44,6 +47,10 @@ def generate_query_with_summary(summary: str) -> str:
 
 def convert_jira_time_to_datetime(jira_time: str) -> datetime:
     return datetime.strptime(jira_time, JIRA_TIME_FORMAT)
+
+
+def jira_file_link(file_name: str) -> str:
+    return f"[^{file_name}]"
 
 
 def find_existing_jira_ticket(jira_server: JIRA,
@@ -88,10 +95,9 @@ def find_existing_jira_ticket(jira_server: JIRA,
 
 
 def generate_build_markdown_link(ci_pipeline_id: str) -> str:
-    pipeline_url = f"{GITLAB_SERVER_URL}/{GITLAB_PROJECT_ID}/-/pipelines/{ci_pipeline_id}" if ci_pipeline_id else ""
     ci_pipeline_id_hash = f" #{ci_pipeline_id}" if ci_pipeline_id else ""
-    ci_pipeline_markdown_link = f"[Nightly{ci_pipeline_id_hash}|{pipeline_url}]" \
-        if ci_pipeline_id else f"Nightly{ci_pipeline_id_hash}"
+    ci_pipeline_markdown_link = f"[Nightly{ci_pipeline_id_hash}|{CI_PIPELINE_URL}]" \
+        if CI_PIPELINE_URL else f"Nightly{ci_pipeline_id_hash}"
     return ci_pipeline_markdown_link
 
 
@@ -123,3 +129,10 @@ def jira_search_all_by_query(jira_server: JIRA,
             break
 
     return issues
+
+
+def jira_ticket_to_json_data(jira_ticket: Issue) -> dict[str, Any]:
+    return {
+        "url": jira_ticket.permalink(),
+        "key": jira_ticket.key,
+    }

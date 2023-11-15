@@ -11,7 +11,7 @@ from Tests.scripts.gitlab_client import GitlabClient, GetArtifactErrors
 
 SHA = "mock_sha"
 JOB_NAME = "mock_job_name"
-PACKS_DEPENDENCIES_FILEPATH = Path("artifacts/xsoar/packs_dependencies.json")
+PACKS_DEPENDENCIES_FILEPATH = Path("artifacts/xsoar/server_type_XSOAR/packs_dependencies.json")
 
 
 @pytest.fixture
