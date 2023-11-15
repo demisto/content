@@ -18,8 +18,8 @@ from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API
 from Tests.scripts.test_modeling_rule_report import (create_jira_issue_for_test_modeling_rule,
                                                      TEST_MODELING_RULES_BASE_HEADERS,
                                                      calculate_test_modeling_rule_results,
-                                                     write_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule)
-from Tests.scripts.test_playbooks_report import TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
+                                                     write_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule,
+                                                     TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED)
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -105,7 +105,7 @@ def main():
                         jira_tickets_for_modeling_rule[summary] = issue
 
         write_test_modeling_rule_to_jira_mapping(artifacts_path, jira_tickets_for_modeling_rule)
-        open(artifacts_path / TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED, "w")
+        open(artifacts_path / TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED, "w")
 
         logging.info("Finished creating/updating Jira issues for test modeling rules")
 
