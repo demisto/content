@@ -10,6 +10,9 @@ Click [here](https://marketplace.zoom.us/develop/create) to create an app.
 - Enable permissions.
 - Create an Server-to-Server OAuth app.
 - Add relevant scopes: report:read:admin
+- With your Admin user navigate to User Management > Roles. In the role associated with the installed user, navigate to **Reports** and enable view access to the following :
+    - **Admin Activity Logs**
+    - **Sign In/Sign Out**
 - Use the following account credentials to get an access token:
     Account ID
     Client ID

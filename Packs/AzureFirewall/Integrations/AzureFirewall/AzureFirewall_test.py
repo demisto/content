@@ -51,7 +51,6 @@ def get_client_mock():
         subscription_id=SUBSCRIPTION_ID,
         resource_group=RESOURCE_GROUP_NAME,
         client_id=CLIENT_ID,
-        api_version='2021-03-01',
         verify=False,
         proxy=False)
 
@@ -1351,3 +1350,52 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.management_azure]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_azure_firewall_resource_group_list_command(requests_mock):
+    """
+    Given:
+        - limit argument
+        - Mock response from API client
+    When:
+        - Calling azure_firewall_resource_group_list_command
+    Then:
+        - Validate expected outputs returned
+    """
+    from AzureFirewall import azure_firewall_resource_group_list_command
+    authorization_mock(requests_mock)
+    client = get_client_mock()
+
+    url = f'https://management.azure.com/subscriptions/{SUBSCRIPTION_ID}/resourcegroups'
+    mock_response = json.loads(load_mock_response('test_data/resource_group_list.json'))
+    requests_mock.get(url, json=mock_response)
+
+    result = azure_firewall_resource_group_list_command(client, {'limit': 50})
+
+    assert len(result.outputs) == 1
+    assert result.outputs_prefix == 'AzureFirewall.ResourceGroup'
+    assert result.outputs[0].get('name') == 'name'
+
+
+def test_azure_firewall_subscriptions_list_command(requests_mock):
+    """
+    Given:
+        - Nothing
+    When:
+        - Calling azure_firewall_subscriptions_list_command
+    Then:
+        - Validate expected outputs returned
+    """
+    from AzureFirewall import azure_firewall_subscriptions_list_command
+    authorization_mock(requests_mock)
+    client = get_client_mock()
+
+    url = 'https://management.azure.com/subscriptions'
+    mock_response = json.loads(load_mock_response('test_data/subscriptions_list.json'))
+    requests_mock.get(url, json=mock_response)
+
+    result = azure_firewall_subscriptions_list_command(client)
+
+    assert len(result.outputs) == 2
+    assert result.outputs_prefix == 'AzureFirewall.Subscription'
+    assert result.outputs[0].get('id') == '/subscriptions/1234'
