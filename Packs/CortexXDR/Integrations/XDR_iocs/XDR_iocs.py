@@ -530,10 +530,10 @@ def module_test(client: Client):
 def fetch_indicators(client: Client, auto_sync: bool = False):
     if not get_integration_context() and auto_sync:
         demisto.debug("running sync with first_time=True")
-        # this will happen on the first time we run 
+        # this will happen on the first time we run
         xdr_iocs_sync_command(client, first_time=True)
     else:
-        # this will happen every minute 
+        # this will happen every minute
         get_changes(client)
         if auto_sync:
             tim_insert_jsons(client)
@@ -547,7 +547,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
     if first_time or not get_integration_context():
-        # the sync is the large operation including the data and the get_integration_context is fill in the sync  
+        # the sync is the large operation including the data and the get_integration_context is fill in the sync
         sync(client)
     else:
         iocs_to_keep(client)
@@ -576,7 +576,7 @@ def is_iocs_to_keep_time():
     if (
         next_iocs_to_keep_time is not None
         and time_now.hour in range(1, 3)
-        and time_now > datetime.strptime(next_iocs_to_keep_time, DEMISTO_TIME_FORMAT).replace(tzinfo=timezone.utc):
+        and time_now > datetime.strptime(next_iocs_to_keep_time, DEMISTO_TIME_FORMAT).replace(tzinfo=timezone.utc)
     ):
         return True
 
@@ -683,6 +683,8 @@ def main():  # pragma: no cover
     try:
         if command == "fetch-indicators":
             fetch_indicators(client, params.get("autoSync", False))
+        elif command == 'xdr-iocs-set-sync-time':
+            return_results('This command is deprecated and is not relevant anymore.')
         elif command == "xdr-iocs-create-sync-file":
             get_sync_file()
         elif command == 'xdr-iocs-to-keep-file':

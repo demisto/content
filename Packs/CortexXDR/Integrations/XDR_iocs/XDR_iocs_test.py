@@ -639,20 +639,6 @@ class TestCommands:
         get_sync_file()
         assert return_results_mock.call_args[0][0]['File'] == 'xdr-sync-file'
 
-    def test_set_sync_time(self, mocker):
-        mocker_reurn_results = mocker.patch('XDR_iocs.return_results')
-        mocker_set_context = mocker.patch.object(demisto, 'setIntegrationContext')
-        set_sync_time('2021-11-25T00:00:00')
-        mocker_reurn_results.assert_called_once_with('set sync time to 2021-11-25T00:00:00 succeeded.')
-        call_args = mocker_set_context.call_args[0][0]
-        assert call_args['ts'] == 1637798400000
-        assert call_args['time'] == '2021-11-25T00:00:00Z'
-        assert call_args['iocs_to_keep_time']
-
-    def test_set_sync_time_with_invalid_time(self):
-        with pytest.raises(ValueError, match='invalid time format.'):
-            set_sync_time('test')
-
     @freeze_time('2020-06-03T02:00:00Z')
     def test_iocs_to_keep(self, mocker):
         http_request = mocker.patch.object(Client, 'http_request')
