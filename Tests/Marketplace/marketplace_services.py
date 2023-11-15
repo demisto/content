@@ -124,7 +124,6 @@ class Pack:
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
-        self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = is_modified
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
@@ -387,10 +386,6 @@ class Pack:
         return self._uploaded_dynamic_dashboard_images
 
     @property
-    def is_missing_dependencies(self):
-        return self._is_missing_dependencies
-
-    @property
     def zip_path(self):
         return self._zip_path
 
@@ -466,8 +461,7 @@ class Pack:
         return all_dep_int_imgs
 
     @staticmethod
-    def _get_all_pack_images(pack_integration_images: list, display_dependencies_images: list,
-                             dependencies_metadata: dict,
+    def _get_all_pack_images(index_folder_path, pack_integration_images: list, display_dependencies_images: list,
                              pack_dependencies_by_download_count):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
@@ -484,11 +478,10 @@ class Pack:
 
         """
         dependencies_integration_images_dict: dict = {}
-        additional_dependencies_data = {k: v for k, v in dependencies_metadata.items() if k in
-                                        display_dependencies_images}
 
-        for dependency_data in additional_dependencies_data.values():
-            for dep_int_img in dependency_data.get('integrations', []):
+        for pack_id in display_dependencies_images:
+            dependency_metadata = load_json(f"{index_folder_path}/{pack_id}/metadata.json")
+            for dep_int_img in dependency_metadata.get('integrations', []):
                 dep_int_img_gcs_path = dep_int_img.get('imagePath', '')  # image public url
                 dep_int_img['name'] = Pack.remove_contrib_suffix_from_name(dep_int_img.get('name', ''))
                 dep_pack_name = os.path.basename(os.path.dirname(dep_int_img_gcs_path))
@@ -579,49 +572,6 @@ class Pack:
             pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
 
         return pack_metadata
-
-    def _load_pack_dependencies_metadata(self, index_folder_path, packs_dict):
-        """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
-            There are 3 cases:
-              Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
-              Case 2: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
-                dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is
-                created, and therefore it contains the new pack, we call this function again, and hitting case 1.
-              Case 3: The dependency is of a pack that is not a part of this marketplace. In this case, we ignore this
-              dependency.
-        Args:
-            index_folder_path (str): full path to download index folder.
-            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_id: pack_object}.
-
-        Returns:
-            dict: pack id as key and loaded metadata of packs as value.
-            bool: True if the pack is missing dependencies, False otherwise.
-
-        """
-        dependencies_metadata_result = {}
-        dependencies_ids = set(self._first_level_dependencies)
-        dependencies_ids.update(self._displayed_images_dependent_on_packs)
-
-        for dependency_pack_id in dependencies_ids:
-            dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
-
-            if os.path.exists(dependency_metadata_path):
-                # Case 1: the dependency is found in the index.zip
-                with open(dependency_metadata_path) as metadata_file:
-                    dependency_metadata = json.load(metadata_file)
-                    dependencies_metadata_result[dependency_pack_id] = dependency_metadata
-            elif dependency_pack_id in packs_dict:
-                # Case 2: the dependency is not in the index since it is a new pack
-                self._is_missing_dependencies = True
-                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                f"was not found in index, marking it as missing dependencies - to be resolved in "
-                                f"next iteration over packs")
-            else:
-                # Case 3: the dependency is not a part of this marketplace
-                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
-                                f"is not part of this marketplace, ignoring this dependency")
-
-        return dependencies_metadata_result, self._is_missing_dependencies
 
     def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
                                      version_display_name: str = None, build_number_with_prefix: str = None,
@@ -2282,13 +2232,12 @@ class Pack:
                 removed_test_deps.append(dep)
         logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
 
-    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
-                                 statistics_handler=None, format_dependencies_only=False, remove_test_deps=False):
+    def _enhance_pack_attributes(self, index_folder_path, statistics_handler=None, format_dependencies_only=False,
+                                 remove_test_deps=False):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
             index_folder_path (str): downloaded index folder directory path.
-            dependencies_metadata_dict (dict): mapping of pack dependencies metadata, for first level dependencies.
             statistics_handler (StatisticsHandler): The marketplace statistics handler.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
             dependencies or not.
@@ -2317,12 +2266,12 @@ class Pack:
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
         self._related_integration_images = self._get_all_pack_images(
-            self._displayed_integration_images, self._displayed_images_dependent_on_packs, dependencies_metadata_dict,
+            index_folder_path, self._displayed_integration_images, self._displayed_images_dependent_on_packs,
             pack_dependencies_by_download_count
         )
 
     def format_metadata(self, index_folder_path, packs_dependencies_mapping,
-                        statistics_handler, packs_dict=None, marketplace='xsoar',
+                        statistics_handler, marketplace='xsoar',
                         format_dependencies_only=False, remove_test_deps=False):
         """ Formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
@@ -2331,7 +2280,6 @@ class Pack:
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
-            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_name: pack_object}.
             marketplace (str): Marketplace of current upload.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
@@ -2342,18 +2290,11 @@ class Pack:
             bool: True is returned in pack is missing dependencies.
         """
         task_status = False
-        packs_dict = packs_dict if packs_dict else {}
-        is_missing_dependencies = False
 
         try:
             self.set_pack_dependencies(packs_dependencies_mapping, marketplace=marketplace)
-
-            logging.info(f"Loading pack dependencies metadata for {self._pack_name} pack")
-            dependencies_metadata_dict, is_missing_dependencies = self._load_pack_dependencies_metadata(
-                index_folder_path, packs_dict)
-
-            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict,
-                                          statistics_handler, format_dependencies_only, remove_test_deps=remove_test_deps)
+            self._enhance_pack_attributes(index_folder_path, statistics_handler, format_dependencies_only,
+                                          remove_test_deps=remove_test_deps)
 
             formatted_metadata = self._parse_pack_metadata(parse_dependencies=remove_test_deps)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
@@ -2366,7 +2307,7 @@ class Pack:
             logging.exception(f"Failed in formatting {self._pack_name} pack metadata. Additional Info: {str(e)}")
 
         finally:
-            return task_status, is_missing_dependencies
+            return task_status
 
     @staticmethod
     def pack_created_in_time_delta(pack_name, time_delta: timedelta, index_folder_path: str) -> bool:

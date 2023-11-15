@@ -308,8 +308,7 @@ class TestMetadataParsing:
         dummy_pack._is_modified = False
         dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
         dummy_pack._certification = Metadata.CERTIFIED
-        dummy_pack._enhance_pack_attributes(index_folder_path="", dependencies_metadata_dict={},
-                                            statistics_handler=None)
+        dummy_pack._enhance_pack_attributes(index_folder_path="", statistics_handler=None)
         parsed_metadata = dummy_pack._parse_pack_metadata()
 
         assert 'created' in parsed_metadata
@@ -329,7 +328,7 @@ class TestMetadataParsing:
         dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
 
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None
+            index_folder_path="", statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -372,7 +371,7 @@ class TestParsingInternalFunctions:
          ["DummyPack2"],
          [{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}])
     ])
-    def test_get_all_pack_images(self, pack_integration_images, display_dependencies_images, expected):
+    def test_get_all_pack_images(self, mocker, pack_integration_images, display_dependencies_images, expected):
         """
            Tests that all the pack's images are being collected without duplication, according to the pack dependencies,
            and without the contribution details suffix if exists.
@@ -392,20 +391,28 @@ class TestParsingInternalFunctions:
                - Validates that all_pack_images list was updated according to the packs dependencies.
                - Validates that all_pack_images list was updated without duplications.
                - Validates that all_pack_images list was updated without the contribution details suffix.
-       """
+        """
+        from Tests.Marketplace import marketplace_services
 
-        dependencies_data = {
-            "DummyPack": {
-                "integrations": [{
-                    "name": "DummyIntegration",
-                    "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}]},
-            "DummyPack2": {
-                "integrations": [{
-                    "name": "DummyIntegration2 (Partner Contribution)",
-                    "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]}}
+        def side_effect_load_json(path):
+            if "DummyPack2" in path:
+                return {
+                    "integrations": [{
+                        "name": "DummyIntegration2 (Partner Contribution)",
+                        "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"
+                    }]
+                }
+            else:
+                return {
+                    "integrations": [{
+                        "name": "DummyIntegration",
+                        "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"
+                    }]
+                }
 
-        all_pack_images = Pack._get_all_pack_images(pack_integration_images, display_dependencies_images,
-                                                    dependencies_data, display_dependencies_images)
+        mocker.patch.object(marketplace_services, 'load_json', side_effect=side_effect_load_json)
+        all_pack_images = Pack._get_all_pack_images('', pack_integration_images, display_dependencies_images,
+                                                    display_dependencies_images)
 
         assert expected == all_pack_images
 
