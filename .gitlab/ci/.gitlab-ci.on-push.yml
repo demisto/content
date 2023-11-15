@@ -362,8 +362,10 @@ xpanse-prepare-testing-bucket:
     reports:
       junit:
         - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+        - "${ARTIFACTS_FOLDER_INSTANCE}/end_to_end_tests_result.xml"
     paths:
       - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+      - "${ARTIFACTS_FOLDER_INSTANCE}/end_to_end_tests_result.xml"
       - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
@@ -724,8 +726,10 @@ xsoar_ng_server_ga:
     reports:
       junit:
         - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+        - "${ARTIFACTS_FOLDER_INSTANCE}/end_to_end_tests_result.xml"
     paths:
       - "${ARTIFACTS_FOLDER_INSTANCE}/test_playbooks_report.xml"
+      - "${ARTIFACTS_FOLDER_INSTANCE}/end_to_end_tests_result.xml"
       - ${CI_PROJECT_DIR}/artifacts/*  # restoring the default artifacts path from the job default settings
       - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*  # restoring the default artifacts path from the job default settings
 
