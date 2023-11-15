@@ -7,10 +7,10 @@
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Suspicious domain": {
-                    "simple": "additional_info.tables.[0].suspicious_domain"
+                    "simple": "additional_info.tables.suspicious_domain"
                 },
                 "Triggered domain": {
-                    "simple": "additional_info.tables.[0].triggered_domain"
+                    "simple": "additional_info.tables.triggered_domain"
                 }
             }
         }
