@@ -226,6 +226,8 @@
   - section_start "Checkout upload commit content nightly"
   - | 
     if [[ "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
+      ls -la
+      ls -la ./Packs/PAN-OS/Integrations/Panorama
       rm -rf ./Packs
       echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/content_production/Packs to ./Packs"
       cp -r ${CI_PROJECT_DIR}/artifacts/content_production/Packs ./Packs
