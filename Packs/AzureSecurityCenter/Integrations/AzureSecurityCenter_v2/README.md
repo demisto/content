@@ -680,3 +680,29 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### azure-resource-group-list
+
+***
+List all resource groups for a subscription.
+
+#### Base Command
+
+`azure-resource-group-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used. | Optional | 
+| limit | Limit on the number of resource groups to return. Default is 50. | Optional | 
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceGroupName.name | String | Resource group name. | 
+| Azure.ResourceGroupName.location | String | Resource group location. | 
+| Azure.ResourceGroupName.tags | Unknown | Resource group tags. | 
+| Azure.ResourceGroupName.properties.provisioningState | unknown | Resource group provisioning state. | 
