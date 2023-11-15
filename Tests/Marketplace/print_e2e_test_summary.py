@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 import traceback
 from pathlib import Path
@@ -24,9 +25,8 @@ def print_test_e2e_test_summary(artifacts_path: Path) -> bool:
     if not (e2e_tests_result_files_list := get_test_results_files(artifacts_path, END_TO_END_REPORT_FILE_NAME)):
         # Write an empty report file to avoid failing the build artifacts collection.
         JUnitXml().write(e2e_tests_report.as_posix(), pretty=True)
-        logging.warning(f"Could not find any e2e test result files in {artifacts_path}")
-        # skipping it because this is only relevant for xsoar-saas
-        return False
+        logging.error(f"Could not find any e2e test result files in {artifacts_path}")
+        return True
 
     logging.info(f"Found {len(e2e_tests_result_files_list)} e2e test result files")
     e2e_tests_results, server_versions = calculate_e2e_tests_results(e2e_tests_result_files_list)
