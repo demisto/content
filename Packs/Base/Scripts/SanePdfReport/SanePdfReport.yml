@@ -31,7 +31,7 @@ args:
   - 'false'
   description: use server preformatted time string in time section.
   name: forceServerFormattedTimeString
-comment: Parse Sane-json-reports and export them as pdf files (used internally).
+comment: Parse Sane-json-reports and export them as pdf files (used internally). test
 commonfields:
   id: SanePdfReports
   version: -1
