@@ -705,7 +705,7 @@ def rasterize_email_command():
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 
-    output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline,
+    output = rasterize(path=path, r_type=r_type, width=w, height=h,
                        max_page_load_time=html_load, full_screen=full_screen, r_mode=r_mode)
     res = fileResult(filename=file_name, data=output)
     if r_type == RasterizeType.PNG:
