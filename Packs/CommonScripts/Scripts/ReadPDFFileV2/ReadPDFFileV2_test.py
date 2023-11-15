@@ -27,6 +27,7 @@ def test_urls_are_found_correctly(mocker):
     urls, _ = get_urls_and_emails_from_pdf_html_content('', '')
     assert urls == {'http://www.w3.org/1999/xhtml'}
 
+
 def test_run_shell_command_using_owner_password_error():
     """
     Given
@@ -41,6 +42,7 @@ def test_run_shell_command_using_owner_password_error():
         run_shell_command("pdfinfo", "-upw", '123456!', f'{CWD}/dummy-with-owner-pass.pdf')
     assert 'Incorrect password' in str(e)
 
+
 def test_run_shell_command_using_owner_password():
     """
     Given
@@ -52,7 +54,8 @@ def test_run_shell_command_using_owner_password():
     """
     from ReadPDFFileV2 import run_shell_command
     run_shell_command("pdfinfo", "-opw", '123456!', f'{CWD}/dummy-with-owner-pass.pdf')
-    
+
+
 def test_get_pdf_metadata_using_owner_password(mocker: MockerFixture):
     """
     Given
@@ -68,6 +71,7 @@ def test_get_pdf_metadata_using_owner_password(mocker: MockerFixture):
     assert run_shell_command_mocker.call_count == 2
     assert run_shell_command_mocker.call_args_list[0][0][0:2] == ('pdfinfo', '-upw')
     assert run_shell_command_mocker.call_args_list[1][0][0:2] == ('pdfinfo', '-opw')
+
 
 def test_incorrect_authentication():
     """
