@@ -109,7 +109,6 @@ Searches for processes with various filters.
 ***
 Checks if the machine is currently connected to the Cybereason server
 
-
 #### Base Command
 
 `cybereason-is-probe-connected`
@@ -1370,7 +1369,6 @@ There is no context output for this command.
 ***
 Get the Sensor ID of a machine.
 
-
 #### Base Command
 
 `cybereason-get-sensor-id`
@@ -1389,3 +1387,86 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Sensor ID for the machine 'desktop-vg9ke2u' is: 5e77883de4b0575ddcf824ef:PYLUMCLIENT_INTEGRATION_DESKTOP-VG9KE2U_0800273ADC2F
+
+### cybereason-query-inbox
+***
+Gets the malop guid from the INBOX
+
+#### Base Command
+
+`cybereason-query-inbox`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| startTime | The start time for the time range | Optional | 
+| stopTime | The stop time for the time range | Optional | 
+| rangeTime | Time range. Use alternatively to startTime & stoptime  | Optional | 
+| guid | The malbox guID | Mandatory | 
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Inbox | Unknown | The inbox | 
+
+#### Command example
+```!cybereason-query-inbox guid=`AABA0-8czlyrr62Wx``
+#### Context Example
+```json
+{
+    "Inbox": [
+		{
+			"creationTime": 1700053744118,
+			"creationTimeDate": "2023-11-15 13:19:44",
+			"detectionEngines": [
+				"EDR"
+			],
+			"detectionTypes": [
+				"Malicious activity by PowerShell process"
+			],
+			"displayName": "powershell.exe",
+			"guid": "AABA0-8czlyrr62Wx",
+			"lastUpdateTime": 1700053744121,
+			"lastUpdateTimeDate": "2023-11-15 12:19:44",
+			"machines": [
+				{
+					"@class": ".MachineInboxModel",
+					"connected": true,
+					"displayName": "MaliciousMachine",
+					"empty": true,
+					"guid": "BagAyBCi55eyTiwX",
+					"isolated": false,
+					"lastConnected": 1700052834977,
+					"lastConnectedDate": "2023-11-14 13:11:34",
+					"osType": "WINDOWS"
+				}
+			],
+			"malopDetectionType": "CNC",
+			"primaryRootCauseName": "powershell.exe",
+			"priority": null,
+			"rootCauseElementNamesCount": 1,
+			"rootCauseElementType": "Process",
+			"severity": "High",
+			"users": [
+				{
+					"admin": false,
+					"displayName": "somedomain\\somemachine",
+					"domainUser": false,
+					"guid": "AABAGRmfhu1hcryS",
+					"localSystem": false
+				}
+			]
+		}
+	]
+}
+```
+
+#### Human Readable Output
+
+>### Cybereason Processes
+>|creationTime|creationTimeDate|detectionEngines|detectionTypes|displayName|guid|lastUpdateTime|lastUpdateTimeDate|machines|malopDetectionType|primaryRootCauseName|priority|rootCauseElementNamesCount|rootCauseElementType|severity|users|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1700053744118 | 2023-11-15 13:19:44 | EDR | Malicious activity by PowerShell process | powershell.exe | AABA0-8czlyrr62Wx | 1700053744121 | 2023-11-15 12:19:44 | {'@class': '.MachineInboxModel', 'connected': True, 'displayName': 'MaliciousMachine', 'empty': True, 'guid': 'BagAyBCi55eyTiwX', 'isolated': False, 'lastConnected': 1700052834977, 'lastConnectedDate': '2023-11-14 13:11:34', 'osType': 'WINDOWS'} | CNC | powershell.exe |  | 1 | Process | High | {'admin': False, 'displayName': 'somedomain\\somemachine', 'domainUser': False, 'guid': 'AABAGRmfhu1hcryS', 'localSystem': False} |
