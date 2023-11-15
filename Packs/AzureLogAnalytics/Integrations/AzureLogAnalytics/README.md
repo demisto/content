@@ -14,6 +14,9 @@ You need to grant Cortex XSOAR authorization to access Azure Log Analytics.
 In addition, the user needs to be assigned the **Log Analytics Reader** role.
 To add the role, see the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#assign-users-and-groups-to-roles).
 
+For the search job commands  the user needs to be assigned the [**Log Analytics Contributor** role](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/manage-access?tabs=portal#log-analytics-contributor).
+To add the role, see the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-add-app-roles-in-azure-ad-apps#assign-users-and-groups-to-roles)
+
 1. Access the [authorization flow](https://oproxy.demisto.ninja/ms-azure-log-analytics). 
 2. Click **Start Authorization Process**.
  You will be prompted to grant Cortex XSOAR permissions for your Azure Service Management. 
@@ -31,10 +34,10 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 
 In the self-deployed mode you can authenticate, by using one of the following flows:
 
-- Authentication code flow
+- Authorization Code flow
 - Client Credentials flow
 
-### Authentication Code flow
+### Authorization Code flow
 
 ---
 

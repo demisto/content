@@ -1,9 +1,10 @@
 import json
+from collections.abc import Callable
 import pytest
 from pathlib import Path
 from pytest_mock import MockerFixture
 from requests_mock import MockerCore
-from CommonServerPython import CommandResults, ScheduledCommand
+from CommonServerPython import CommandResults, ScheduledCommand, DemistoException
 from AzureLogAnalytics import (
     Client,
     execute_query_command,
@@ -501,3 +502,17 @@ def test_resource_group_list_command(requests_mock: MockerCore) -> None:
     assert len(command_result.outputs) == 1
     assert command_result.outputs_prefix == 'AzureLogAnalytics.ResourceGroup'
     assert command_result.outputs[0].get('id') == 'id'
+
+
+@pytest.mark.parametrize(
+    "function",
+    [
+        (delete_search_job_command),
+        (run_search_job_command)
+    ]
+)
+def test_table_with_invalid_name(function: Callable) -> None:
+
+    with pytest.raises(DemistoException, match="The table_name should end with '_SRCH' suffix."):
+        # in the run_search_job_command the args is the first argument instead of the second because it use the polling decorator
+        function({'table_name': 'invalid'}, {'table_name': 'invalid'})

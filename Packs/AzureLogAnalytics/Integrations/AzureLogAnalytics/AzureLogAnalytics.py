@@ -535,12 +535,12 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
     """
     table_name: str = args['table_name']
     if not table_name.endswith(TABLE_NAME_SUFFIX):
-        raise DemistoException(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix")
+        raise DemistoException(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix.")
 
     if argToBoolean(args["first_run"]):
         if start_search_time_datetime := arg_to_datetime(args.get('start_search_time', '1 day ago'), "start_search_time"):
             start_search_time_iso = start_search_time_datetime.isoformat()
-        if end_search_time_datetime := arg_to_datetime(args.get('end_search_time', '1 day ago'), "end_search_time"):
+        if end_search_time_datetime := arg_to_datetime(args.get('end_search_time', 'now'), "end_search_time"):
             end_search_time_iso = end_search_time_datetime.isoformat()
         url_suffix = f"/tables/{table_name}"
         data = {
@@ -592,7 +592,7 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
             response=CommandResults(
                 outputs_prefix="AzureLogAnalytics.RunSearchJob",
                 outputs_key_field="TableName",
-                outputs={"TableName": table_name},
+                outputs={"TableName": table_name, "Query": args["query"]},
                 readable_output=(
                     f"The {table_name} table created successfully."
                     f" In order to get the table, run !azure-log-analytics-execute-query query={table_name}"
@@ -604,7 +604,7 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
 def delete_search_job_command(client: Client, args: dict[str, str]) -> CommandResults:
     table_name = args['table_name']
     if not table_name.endswith(TABLE_NAME_SUFFIX):
-        DemistoException(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix")
+        raise DemistoException(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix.")
     url_suffix = f"/tables/{table_name}"
 
     client.http_request('DELETE', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
