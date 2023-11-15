@@ -411,7 +411,7 @@ class Pack:
         return {
             Metadata.DOWNLOADS: self.downloads_count,
             Metadata.SEARCH_RANK: self._search_rank,
-            Metadata.TAGS: list(self._tags),
+            Metadata.TAGS: list(self._tags or []),
             Metadata.INTEGRATIONS: self._related_integration_images
         }
 
