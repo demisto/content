@@ -8,7 +8,7 @@ from junitparser import TestSuite, JUnitXml
 from Tests.scripts.utils import logging_wrapper as logging
 
 
-E2E_BASE_HEADERS = ["Test Name"]
+E2E_BASE_HEADERS = ["Test File Name"]
 
 
 def calculate_e2e_tests_results(e2e_tests_results_files: dict[str, Path]):
