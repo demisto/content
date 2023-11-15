@@ -374,7 +374,6 @@ class PackStatus(enum.Enum):
     PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific pack is not updated in current build"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
-    FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
