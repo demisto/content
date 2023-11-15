@@ -1466,7 +1466,7 @@ Gets the malop guid from the INBOX
 
 #### Human Readable Output
 
->### Cybereason Processes
+>### Cybereason Inbox
 >|creationTime|creationTimeDate|detectionEngines|detectionTypes|displayName|guid|lastUpdateTime|lastUpdateTimeDate|machines|malopDetectionType|primaryRootCauseName|priority|rootCauseElementNamesCount|rootCauseElementType|severity|users|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1700053744118 | 2023-11-15 13:19:44 | EDR | Malicious activity by PowerShell process | powershell.exe | AABA0-8czlyrr62Wx | 1700053744121 | 2023-11-15 12:19:44 | {'@class': '.MachineInboxModel', 'connected': True, 'displayName': 'MaliciousMachine', 'empty': True, 'guid': 'BagAyBCi55eyTiwX', 'isolated': False, 'lastConnected': 1700052834977, 'lastConnectedDate': '2023-11-14 13:11:34', 'osType': 'WINDOWS'} | CNC | powershell.exe |  | 1 | Process | High | {'admin': False, 'displayName': 'somedomain\\somemachine', 'domainUser': False, 'guid': 'AABAGRmfhu1hcryS', 'localSystem': False} |
