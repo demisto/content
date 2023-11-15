@@ -1172,8 +1172,6 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
     result = []
     last_run_dict = demisto.getLastRun()
 
-    demisto.debug("fetching indicators")
-
     for indicator_type in types:
         indicators_list, new_last_updated = get_indicator_list(client, limit, first_fetch, indicator_type)
 
@@ -1185,7 +1183,7 @@ def fetch_indicators(client: MandiantClient, args: dict = None) -> tuple[List, d
                 )
                 for indicator in indicators_list
             ]
-        demisto.debug("getting indicators")
+
         indicators = [
             MAP_INDICATORS_FUNCTIONS[indicator_type](client, indicator)[1]
             for indicator in indicators_list
