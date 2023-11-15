@@ -486,7 +486,8 @@ def main():  # pragma: no cover
     from_date = args.get('from_date')
     fetch_start_time = handle_from_date_argument(from_date) if from_date else None
     event_type_name = args.get('event_type')
-    event_type: EVENT_TYPE = EVENT_TYPES[event_type_name]
+    if event_type_name:
+        event_type: EVENT_TYPE = EVENT_TYPES[event_type_name]
     parsed_interval = dateparser.parse(params.get('deviceFetchInterval', '24 hours')) or dateparser.parse('24 hours')
     device_fetch_interval: timedelta = (datetime.now() - parsed_interval)  # type: ignore[operator]
 
@@ -534,9 +535,7 @@ def main():  # pragma: no cover
                 handle_fetched_events(events, next_run)
 
             if should_return_results:
-
-                command_result = events_to_command_results(events=events, event_type=event_type.dataset_name)
-                return_results(command_result)
+                return_results(events_to_command_results(events=events, event_type=event_type.dataset_name))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
