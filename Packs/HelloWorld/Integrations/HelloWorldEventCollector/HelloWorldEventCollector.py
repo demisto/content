@@ -26,7 +26,7 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def search_events(self, prev_id, alert_status, limit, from_date=None):
+    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None) -> List[Dict]:
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -38,7 +38,7 @@ class Client(BaseClient):
             from_date: get events from from_date.
 
         Returns:
-            dict: the next event
+            List[Dict]: the next event
         """
         # use limit & from date arguments to query the API
         return [{
@@ -56,7 +56,7 @@ class Client(BaseClient):
         }]
 
 
-def test_module(client: Client, params: dict[str, Any], first_fetch_time) -> str:
+def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -66,7 +66,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time) -> str
     Args:
         client (Client): HelloWorld client to use.
         params (Dict): Integration parameters.
-        first_fetch_time: The first fetch time as configured in the integration params.
+        first_fetch_time(str): The first fetch time as configured in the integration params.
 
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
@@ -92,7 +92,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time) -> str
     return 'ok'
 
 
-def get_events(client, alert_status, args):
+def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
     limit = args.get('limit', 50)
     from_date = args.get('from_date')
     events = client.search_events(
@@ -107,7 +107,7 @@ def get_events(client, alert_status, args):
 
 def fetch_events(client: Client, last_run: dict[str, int],
                  first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-                 ):
+                 ) -> tuple[Dict, List[Dict]]:
     """
     Args:
         client (Client): HelloWorld client to use.
@@ -141,7 +141,7 @@ def fetch_events(client: Client, last_run: dict[str, int],
 ''' MAIN FUNCTION '''
 
 
-def add_time_to_events(events):
+def add_time_to_events(events: List[Dict] | None):
     """
     Adds the _time key to the events.
     Args:
