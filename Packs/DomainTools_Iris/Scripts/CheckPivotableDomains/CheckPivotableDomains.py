@@ -239,8 +239,8 @@ def check_pivotable_domains(args: Dict[str, Any]) -> CommandResults:
     max_registrar_count = arg_to_number(args["max_registrar_count"]) or 200
     # ssl
     max_ssl_info_organization_count = arg_to_number(
-        args["max_ssl_info_organization_count"] or 350
-    )
+        args["max_ssl_info_organization_count"]
+    )  or 350
     max_ssl_info_hash_count = arg_to_number(
         args["max_ssl_info_hash_count"]) or 350
     max_ssl_email_count = arg_to_number(args["max_ssl_email_count"]) or 350
