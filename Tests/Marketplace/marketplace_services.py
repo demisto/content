@@ -14,7 +14,6 @@ import warnings
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 
-import demisto_client.demisto_api
 from packaging.version import Version
 from pathlib import Path
 from typing import Any
@@ -1940,7 +1939,7 @@ class Pack:
         content_items_id_to_version_map: dict = {}
 
         try:
-
+            logging.info(f"collecting items for pack: {self._pack_name}")
             for root, _pack_dirs, pack_files_names in os.walk(self._pack_path, topdown=False):
                 current_directory = root.split(os.path.sep)[-1]
                 parent_directory = root.split(os.path.sep)[-2]
