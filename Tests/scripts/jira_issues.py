@@ -3,6 +3,7 @@ import os
 from collections import defaultdict
 from datetime import datetime, timedelta
 from distutils.util import strtobool
+from typing import Any
 
 from jira import JIRA, Issue
 from jira.client import ResultList
@@ -124,3 +125,10 @@ def jira_search_all_by_query(jira_server: JIRA,
             break
 
     return issues
+
+
+def jira_ticket_to_json_data(jira_ticket: Issue) -> dict[str, Any]:
+    return {
+        "url": jira_ticket.permalink(),
+        "key": jira_ticket.key,
+    }

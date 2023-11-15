@@ -95,7 +95,7 @@
   - section_end "Stop contrib external build"
 
 .create_artifacts_and_server_type_instance_folders: &create_artifacts_and_server_type_instance_folders
-  - section_start "Create Artifacts & Server Instance & Server Type folders" --collapsed
+  - section_start "Create Artifacts, Server Instance, Server Type folders" --collapsed
   - |
     if [[ -n "${ARTIFACTS_FOLDER}" ]] && [[ ! -d "${ARTIFACTS_FOLDER}" ]]; then
       echo "Creating Artifacts folder: ${ARTIFACTS_FOLDER}"
@@ -113,7 +113,7 @@
       mkdir -p -m 777 "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs" # using the -p to create the logs folder as well.
       echo "${SERVER_TYPE}" > "${ARTIFACTS_FOLDER_SERVER_TYPE}/server_type.txt"
     fi
-  - section_end "Create Artifacts & Server Instance & Server Type folders"
+  - section_end "Create Artifacts, Server Instance, Server Type folders"
 
 .clone_and_export_variables: &clone_and_export_variables
   - section_start "Git - Job Start Actions" --collapsed

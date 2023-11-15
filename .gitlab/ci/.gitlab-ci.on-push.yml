@@ -291,6 +291,7 @@ xpanse-prepare-testing-bucket:
       echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE}"
       if [ -n "${NIGHTLY}" ] && [ "${INSTANCE_ROLE}" != "Server Master" ]; then
         echo "Not running the instance flow, not a Server Master instance and we are in a nightly build."
+        rm -f "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt" # delete the instance_role.txt file so the job will not be collected by slack notifier.
         job-done
         exit 0
       fi
