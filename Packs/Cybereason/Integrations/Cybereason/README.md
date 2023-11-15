@@ -1470,3 +1470,57 @@ Gets the malop guid from the INBOX
 >|creationTime|creationTimeDate|detectionEngines|detectionTypes|displayName|guid|lastUpdateTime|lastUpdateTimeDate|machines|malopDetectionType|primaryRootCauseName|priority|rootCauseElementNamesCount|rootCauseElementType|severity|users|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1700053744118 | 2023-11-15 13:19:44 | EDR | Malicious activity by PowerShell process | powershell.exe | AABA0-8czlyrr62Wx | 1700053744121 | 2023-11-15 12:19:44 | {'@class': '.MachineInboxModel', 'connected': True, 'displayName': 'MaliciousMachine', 'empty': True, 'guid': 'BagAyBCi55eyTiwX', 'isolated': False, 'lastConnected': 1700052834977, 'lastConnectedDate': '2023-11-14 13:11:34', 'osType': 'WINDOWS'} | CNC | powershell.exe |  | 1 | Process | High | {'admin': False, 'displayName': 'somedomain\\somemachine', 'domainUser': False, 'guid': 'AABAGRmfhu1hcryS', 'localSystem': False} |
+
+### cybereason-malop-connection
+***
+Gets the connection associated with a malops
+
+#### Base Command
+
+`cybereason-malop-connection`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuids | The malop guIDs. Multiple guids should be separated by comma | Mandatory | 
+| dateTime | Starting date and time to filter the connections | Optional | 
+| startTime | The start time for the time range | Optional | 
+| stopTime | The stop time for the time range | Optional | 
+
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Connection | Unknown | The malop connection | 
+
+#### Command example
+```!cybereason-malop-connection malopGuids=`AABA0-8czlyrr62Wx``
+#### Context Example
+```json
+{
+    "Connection": {
+		"CreationTime": "2023-11-14T13:17:30.252000",
+		"Direction": null,
+		"EndTime": "2023-11-15T13:07:38.751000",
+		"Name": "192.168.0.139:61364 > 1.2.3.4:80",
+		"OwnerMachine": "someuser",
+		"OwnerProcess": "powershell.exe",
+		"PortType": "SERVICE_HTTP",
+		"ReceivedBytes": null,
+		"RemoteCountry": "Poland",
+		"ServerAddress": null,
+		"ServerPort": null,
+		"TransmittedBytes": null
+	}
+}
+```
+
+#### Human Readable Output
+
+>### Cybereason Connection
+|CreationTime|Direction|EndTime|Name|OwnerMachine|OwnerProcess|PortType|ReceivedBytes|RemoteCountry|ServerAddress|ServerPort|TransmittedBytes|
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2023-11-14T13:17:30.252000 |  | 2023-11-15T13:07:38.751000 | 192.168.0.139:61364 > 1.2.3.4:80 | someuser | powershell.exe | SERVICE_HTTP |  | Poland |  |  |  |
