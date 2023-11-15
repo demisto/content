@@ -8185,6 +8185,60 @@ def is_demisto_version_ge(version, build_number=''):
         return True
 
 
+def is_xsiam_or_xsoar_saas():
+    """Determines whether or not the platform is XSIAM or XSOAR SAAS.
+
+    :return: True iff the platform is XSIAM or XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar():
+    """Determines whether or not the platform is XSOAR.
+
+    :return: True iff the platform is XSOAR.
+    :rtype: ``bool``
+    """
+    return "xsoar" in demisto.demistoVersion().get("platform")
+
+
+def is_xsoar_on_prem():
+    """Determines whether or not the platform is a XSOAR on-prem.
+
+    :return: True iff the platform is XSOAR on-prem.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and not is_demisto_version_ge('8.0.0')
+
+
+def is_xsoar_hosted():
+    """Determines whether or not the platform is XSOAR hosted.
+
+    :return: True iff the platform is XSOAR hosted.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar_hosted"
+
+
+def is_xsoar_saas():
+    """Determines whether or not the platform is XSOAR SAAS.
+
+    :return: True iff the platform is XSOAR SAAS.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "xsoar" and is_xsiam_or_xsoar_saas()
+
+
+def is_xsiam():
+    """Determines whether or not the platform is XSIAM.
+
+    :return: True iff the platform is XSIAM.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "x2"
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
