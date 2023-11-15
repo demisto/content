@@ -1,9 +1,12 @@
-id: detonate_file_from_url_-_wildfire
+id: Detonate File From URL - WildFire v2
 version: -1
-name: Detonate File From URL - WildFire
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate File From URL - WildFire v2
 description: |-
-  Deprecated. Use Detonate File From URL - WildFire v2 instead.
-fromversion: 5.0.0
+  Detonate one or more files using the Wildfire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+  The detonation supports the following file types -
+  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,13 +17,14 @@ tasks:
       id: 219dcb92-ee7d-420e-816e-3f70b24bd953
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,92 +35,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 9a30f2f0-d0e6-44d8-883b-1eb092c13372
-    type: regular
-    task:
-      id: 9a30f2f0-d0e6-44d8-883b-1eb092c13372
-      version: -1
-      name: WildFire Upload File URL
-      description: URL of remote file to be uploaded
-      script: '|||wildfire-upload-file-url'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      upload:
-        complex:
-          root: inputs.FileURL
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 4f0aa551-1874-4223-875d-9701c6192be6
-    type: playbook
-    task:
-      id: 4f0aa551-1874-4223-875d-9701c6192be6
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      Ids:
-        complex:
-          root: WildFire
-          accessor: Report.SHA256
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: hash
-      PollingCommandName:
-        simple: wildfire-report
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: WildFire.Report(val.Status != 'Success').SHA256
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 11650265-0035-421f-8e92-143af887b7a7
@@ -125,21 +47,26 @@ tasks:
       id: 11650265-0035-421f-8e92-143af887b7a7
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": -60,
+          "y": 910
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 4a6315f7-7947-4cfc-8554-4e6b3edb4478
@@ -156,7 +83,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "1"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -166,22 +93,27 @@ tasks:
             value:
               simple: inputs.FileURL
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 370
+          "x": 280,
+          "y": 380
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 2a98f575-de73-4805-874d-87f4af43d99b
+    taskid: db6bc911-dfe3-498b-8232-7ffe22c54d8b
     type: condition
     task:
-      id: 2a98f575-de73-4805-874d-87f4af43d99b
+      id: db6bc911-dfe3-498b-8232-7ffe22c54d8b
       version: -1
       name: Is WildFire sandbox enabled?
       description: Check if integration instance is enabled
@@ -197,7 +129,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               complex:
@@ -211,16 +143,24 @@ tasks:
                     right:
                       value:
                         simple: WildFire
-                transformers:
-                - operator: getField
-                  args:
-                    field:
+                  - operator: isEqualString
+                    left:
                       value:
-                        simple: state
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: WildFire-v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
             iscontext: true
-          right:
-            value:
-              simple: active
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -231,6 +171,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: 83af3952-dd69-4765-8662-3b5371043d46
@@ -255,74 +199,74 @@ tasks:
         complex:
           root: WildFire
           accessor: Report.SHA256
-      md5: {}
-      verbose: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 1070
+          "x": 480,
+          "y": 740
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: df8f3151-deb4-4477-883a-b251e2af3b71
-    type: condition
+    taskid: c047d810-f747-44ae-899e-90b5cefed1e4
+    type: regular
     task:
-      id: df8f3151-deb4-4477-883a-b251e2af3b71
+      id: c047d810-f747-44ae-899e-90b5cefed1e4
       version: -1
-      name: Was upload finished successfully?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
+      name: WildFire Upload File URL
+      description: Uploads the URL of a remote file to WildFire for analysis.
+      script: WildFire-v2|||wildfire-upload-file-url
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
     nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "2"
+      '#none#':
+      - "8"
+    scriptarguments:
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
+      polling:
+        simple: "true"
+      timeout_in_seconds:
+        complex:
+          root: inputs.Timeout
+      upload:
+        complex:
+          root: inputs.FileURL
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: WildFire
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: WildFire.Report.Status
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Pending
-                accessor: Report.URL
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 720
+          "x": 480,
+          "y": 560
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
-        "width": 605,
-        "x": 50,
+        "height": 925,
+        "width": 920,
+        "x": -60,
         "y": 50
       }
     }
@@ -334,20 +278,24 @@ inputs:
       root: FileURL
   required: false
   description: URL of the web file to detonate. The FileUrl is taken from the context.
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
   description: Duration for executing the pooling (in minutes)
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  playbookInputQuery:
 - key: ReportFileType
   value: {}
   required: false
   description: The resource type to download. Default is pdf. xml is also possible.
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore
   description: The DBotScore object.
@@ -440,5 +388,6 @@ outputs:
   description: The size of the submission.
   type: number
 tests:
-- No tests (deprecated)
-deprecated: true
+- Wildfire Test With Polling
+- Wildfire Test
+fromversion: 6.10.0
