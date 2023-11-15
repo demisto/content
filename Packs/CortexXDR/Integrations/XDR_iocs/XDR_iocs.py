@@ -555,18 +555,17 @@ def xdr_iocs_sync_command(client: Client, first_time: bool = False):
 
 def set_new_iocs_to_keep_time():
     offset = secrets.randbelow(115)
-    (
-        hour,
-        minute,
-    ) = divmod(offset, 60)
+    hour, minute = divmod(offset, 60)
     hour += 1
     last_ioc_to_keep = datetime.now(timezone.utc)
     last_ioc_to_keep = last_ioc_to_keep.replace(hour=hour, minute=minute) + timedelta(
         days=1
     )
+    next_iocs_to_keep_time = last_ioc_to_keep.strftime(DEMISTO_TIME_FORMAT)
+    demisto.debug(f"Setting next iocs to keep time to {next_iocs_to_keep_time}.")
     set_integration_context(
         get_integration_context()
-        | {"next_iocs_to_keep_time": last_ioc_to_keep.strftime(DEMISTO_TIME_FORMAT)}
+        | {"next_iocs_to_keep_time": next_iocs_to_keep_time}
     )
 
 
