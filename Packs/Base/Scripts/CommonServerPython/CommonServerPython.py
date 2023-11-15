@@ -6814,6 +6814,7 @@ class CommandResults:
     :type replace_existing: ``bool``
     :param replace_existing: Replace the context value at outputs_prefix if it exists.
             Works only if outputs_prefix is a path to a nested value i.e., contains a period.
+            Used primarily for next tokens.
 
     :return: None
     :rtype: ``None``
