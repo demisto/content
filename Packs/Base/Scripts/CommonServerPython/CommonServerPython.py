@@ -6811,6 +6811,10 @@ class CommandResults:
     :type execution_metrics: ``ExecutionMetrics``
     :param execution_metrics: contains metric data about a command's execution
 
+    :type replace_existing: ``bool``
+    :param replace_existing: Replace the context value at outputs_prefix if it exists.
+            Works only if outputs_prefix is a path to a nested value i.e., contains a period.
+
     :return: None
     :rtype: ``None``
     """
@@ -6927,6 +6931,8 @@ class CommandResults:
                     human_readable = self.outputs   # type: ignore[assignment]
             if self.outputs_prefix and self.replace_existing:
                 next_token_path, _, next_token_key = self.outputs_prefix.rpartition('.')
+                if not next_token_path:
+                    raise DemistoException('outputs_prefix must be a nested path to replace an existing key.')
                 outputs[next_token_path + '(true)'] = {next_token_key: self.outputs}
             elif self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
