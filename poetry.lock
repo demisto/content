@@ -1489,7 +1489,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
 reference = "configure_integration_env"
-resolved_reference = "e3475a9ffbc84c5ffb008c328aeba4097ba1afda"
+resolved_reference = "5e57085f105f9ca0b6e3a86e946a1a9136291b5d"
 
 [[package]]
 name = "deprecated"
@@ -1946,13 +1946,13 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0.dev0)"]
 
 [[package]]
 name = "google-api-python-client"
-version = "2.107.0"
+version = "2.108.0"
 description = "Google API Client Library for Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-api-python-client-2.107.0.tar.gz", hash = "sha256:ef6d4c1a17fe9ec0894fc6d4f61e751c4b859fb33f2ab5b881ceb0b80ba442ba"},
-    {file = "google_api_python_client-2.107.0-py2.py3-none-any.whl", hash = "sha256:51d7bf676f41a77b00b7b9c72ace0c1db3dd5a4dd392a13ae897cf4f571a3539"},
+    {file = "google-api-python-client-2.108.0.tar.gz", hash = "sha256:6396efca83185fb205c0abdbc1c2ee57b40475578c6af37f6d0e30a639aade99"},
+    {file = "google_api_python_client-2.108.0-py2.py3-none-any.whl", hash = "sha256:9d1327213e388943ebcd7db5ce6e7f47987a7e6874e3e1f6116010eea4a0e75d"},
 ]
 
 [package.dependencies]
@@ -2717,18 +2717,18 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jsonschema-specifications"
-version = "2023.7.1"
+version = "2023.11.1"
 description = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "jsonschema_specifications-2023.7.1-py3-none-any.whl", hash = "sha256:05adf340b659828a004220a9613be00fa3f223f2b82002e273dee62fd50524b1"},
-    {file = "jsonschema_specifications-2023.7.1.tar.gz", hash = "sha256:c91a50404e88a1f6ba40636778e2ee08f6e24c5613fe4c53ac24578a5a7f72bb"},
+    {file = "jsonschema_specifications-2023.11.1-py3-none-any.whl", hash = "sha256:f596778ab612b3fd29f72ea0d990393d0540a5aab18bf0407a46632eab540779"},
+    {file = "jsonschema_specifications-2023.11.1.tar.gz", hash = "sha256:c9b234904ffe02f079bf91b14d79987faa685fd4b39c377a0996954c0090b9ca"},
 ]
 
 [package.dependencies]
 importlib-resources = {version = ">=1.4.0", markers = "python_version < \"3.9\""}
-referencing = ">=0.28.0"
+referencing = ">=0.31.0"
 
 [[package]]
 name = "junitparser"
@@ -5080,13 +5080,13 @@ pycryptodomex = "*"
 
 [[package]]
 name = "referencing"
-version = "0.30.2"
+version = "0.31.0"
 description = "JSON Referencing + Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "referencing-0.30.2-py3-none-any.whl", hash = "sha256:449b6669b6121a9e96a7f9e410b245d471e8d48964c67113ce9afe50c8dd7bdf"},
-    {file = "referencing-0.30.2.tar.gz", hash = "sha256:794ad8003c65938edcdbc027f1933215e0d0ccc0291e3ce20a4d87432b59efc0"},
+    {file = "referencing-0.31.0-py3-none-any.whl", hash = "sha256:381b11e53dd93babb55696c71cf42aef2d36b8a150c49bf0bc301e36d536c882"},
+    {file = "referencing-0.31.0.tar.gz", hash = "sha256:cc28f2c88fbe7b961a7817a0abc034c09a1e36358f82fedb4ffdf29a25398863"},
 ]
 
 [package.dependencies]

@@ -438,8 +438,7 @@ def params():
 
     """
     if demisto_params := os.getenv("DEMISTO_PARAMS"):
-        with Path(demisto_params).open() as f:
-            return json.load(f)
+        return json.loads(demisto_params)
 
     return {}
 
