@@ -366,4 +366,4 @@ def test_rasterize_html_no_internet_access(mocker):
     rasterize_html_command()
     assert mocker_output.call_args.args[0]['File'] == 'email.png'
     args, kwargs = mock.call_args
-    assert args[0].startwith("http://127.0.0.1:9222")
+    assert args[0].startswith("http://127.0.0.1:9222")
