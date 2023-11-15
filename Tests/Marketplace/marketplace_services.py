@@ -2273,9 +2273,10 @@ class Pack:
 
         pack_dependencies = [dep for dep in self._first_level_dependencies
                              if not self._first_level_dependencies[dep].get("is_test", False)]
+        metadata_dependencies = list(self._dependencies)
 
         removed_test_deps = []
-        for dep in self._dependencies:
+        for dep in metadata_dependencies:
             if dep not in pack_dependencies:
                 self._dependencies.pop(dep)
                 removed_test_deps.append(dep)
