@@ -1,10 +1,15 @@
-id: WildFire - Detonate file
+id: WildFire - Detonate file v2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: WildFire - Detonate file
+name: WildFire - Detonate file v2
 description: |-
-  Deprecated. Use WildFire - Detonate file v2 instead.
+  Detonate one or more files using the Wildfire integration. This playbook
+  returns relevant reports to the War Room and file reputations to the context data.
+  The detonation supports the following file types -
+  APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
+
+  Note: Base64 encoded files are currently not supported.
 starttaskid: "0"
 tasks:
   "0":
@@ -22,6 +27,7 @@ tasks:
       '#none#':
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,68 +40,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: d89662d0-dedb-49ff-8cba-4855a985cc38
-    type: playbook
-    task:
-      id: d89662d0-dedb-49ff-8cba-4855a985cc38
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Ids:
-        complex:
-          root: WildFire
-          accessor: Report.SHA256
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: hash
-      PollingCommandName:
-        simple: wildfire-report
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: WildFire.Report(val.Status != 'Success').SHA256
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -123,11 +67,12 @@ tasks:
           root: WildFire
           accessor: Report.SHA256
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1360
+          "x": 560,
+          "y": 1040
         }
       }
     note: false
@@ -135,7 +80,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -151,11 +95,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 57.5,
-          "y": 1535
+          "y": 1220
         }
       }
     note: false
@@ -163,7 +108,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -221,6 +165,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -233,7 +178,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -253,10 +197,11 @@ tasks:
       - "15"
       - "14"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 560,
           "y": 290
         }
       }
@@ -265,95 +210,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: d6b386f8-698e-42d5-8944-bc6317356f61
-    type: regular
-    task:
-      id: d6b386f8-698e-42d5-8944-bc6317356f61
-      version: -1
-      name: WildFire Upload File
-      description: Uploads a file to WildFire for analysis.
-      script: '|||wildfire-upload'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      upload:
-        complex:
-          root: SupportedFilesToUpload
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 810
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: d1c6a572-54e7-4233-8228-daa0f7dcb176
-    type: condition
-    task:
-      id: d1c6a572-54e7-4233-8228-daa0f7dcb176
-      version: -1
-      name: Did the upload finish successfully?
-      description: Checks if the upload was successfully finished.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "2"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: WildFire
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: WildFire.Report.Status
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Pending
-                accessor: Report.SHA256
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -401,7 +257,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
+          "x": 770,
           "y": 430
         }
       }
@@ -466,7 +322,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
+          "x": 360,
           "y": 430
         }
       }
@@ -493,7 +349,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "12"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -508,8 +364,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 560,
           "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4529c363-7864-4905-8521-7d23649846be
+    type: regular
+    task:
+      id: 4529c363-7864-4905-8521-7d23649846be
+      version: -1
+      name: WildFire Upload File
+      description: Uploads a file to WildFire for analysis.
+      script: WildFire-v2|||wildfire-upload
+      type: regular
+      iscommand: true
+      brand: WildFire-v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
+      polling:
+        simple: "true"
+      timeout_in_seconds:
+        complex:
+          root: inputs.Timeout
+      upload:
+        complex:
+          root: SupportedFilesToUpload
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 840
         }
       }
     note: false
@@ -522,16 +422,13 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "13_2_yes": 0.55,
-      "13_5_#default#": 0.35,
-      "16_12_yes": 0.58,
-      "16_5_#default#": 0.25,
+      "16_5_#default#": 0.33,
       "7_5_#default#": 0.26
     },
     "paper": {
       "dimensions": {
-        "height": 1620,
-        "width": 1012.5,
+        "height": 1305,
+        "width": 1092.5,
         "x": 57.5,
         "y": -20
       }
@@ -645,6 +542,6 @@ outputs:
   description: The size of the submission.
   type: number
 tests:
-- No tests (deprecated)
-fromversion: 5.0.0
-deprecated: true
+- Wildfire Test With Polling
+- Wildfire Test
+fromversion: 6.10.0
