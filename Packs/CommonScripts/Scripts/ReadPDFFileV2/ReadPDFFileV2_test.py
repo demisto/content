@@ -1,10 +1,9 @@
-from importlib import metadata
 from pytest_mock import MockerFixture
 import demistomock as demisto
 import os
 
 import pytest
-from ReadPDFFileV2 import PdfInvalidCredentialsException, PdfPermissionsException, run_shell_command
+from ReadPDFFileV2 import PdfInvalidCredentialsException, PdfPermissionsException
 
 CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test_data'
 
