@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: dbdf6bf2-a523-4a82-8358-839483e5a73f
+    taskid: 98ff3efe-b3f1-4d1c-8738-ba7a2d9a7592
     type: start
     task:
-      id: dbdf6bf2-a523-4a82-8358-839483e5a73f
+      id: 98ff3efe-b3f1-4d1c-8738-ba7a2d9a7592
       version: -1
       name: ""
       iscommand: false
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 50
+          "y": 40
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4c26d7d2-378f-471a-803b-c19be701c292
+    taskid: 6512960c-b15f-49e2-80ea-0f0628f0482d
     type: condition
     task:
-      id: 4c26d7d2-378f-471a-803b-c19be701c292
+      id: 6512960c-b15f-49e2-80ea-0f0628f0482d
       version: -1
       name: Is entity Account or Host?
       description: Check if the entity is a host or account.
@@ -47,6 +47,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "4"
       Account:
       - "2"
       Host:
@@ -83,7 +85,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 260,
           "y": 370
         }
       }
@@ -96,10 +98,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 38c10c1d-d0da-4011-8c66-ae79720b405a
+    taskid: 39a51436-f43d-4b4a-844e-1b991df495e5
     type: regular
     task:
-      id: 38c10c1d-d0da-4011-8c66-ae79720b405a
+      id: 39a51436-f43d-4b4a-844e-1b991df495e5
       version: -1
       name: Add note for an Account.
       description: Add a note to an Account.
@@ -152,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 555
         }
       }
     note: false
@@ -164,10 +166,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d76d4aff-1052-4413-8cae-ab9c10610292
+    taskid: a07c4554-5e8c-4b62-81cd-4913e3a7e887
     type: regular
     task:
-      id: d76d4aff-1052-4413-8cae-ab9c10610292
+      id: a07c4554-5e8c-4b62-81cd-4913e3a7e887
       version: -1
       name: Add a note for a Host.
       description: Add a note to a Host.
@@ -220,7 +222,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 545
+          "y": 555
         }
       }
     note: false
@@ -232,10 +234,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 758139b7-f317-414e-8b48-bb5470aa686f
+    taskid: 54a9de5a-eb70-42ba-8d2d-20ee78ce33fa
     type: title
     task:
-      id: 758139b7-f317-414e-8b48-bb5470aa686f
+      id: 54a9de5a-eb70-42ba-8d2d-20ee78ce33fa
       version: -1
       name: Done
       type: title
@@ -247,8 +249,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 470,
+          "y": 840
         }
       }
     note: false
@@ -260,10 +262,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ca938cec-795a-4157-8210-0645b4c85230
+    taskid: 5aea5b5d-9102-4197-893c-0a4c9a912816
     type: condition
     task:
-      id: ca938cec-795a-4157-8210-0645b4c85230
+      id: 5aea5b5d-9102-4197-893c-0a4c9a912816
       version: -1
       name: Is VectraXDR Integration Enabled?
       description: Check VectraXDR integration is active.
@@ -310,7 +312,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 195
+          "y": 175
         }
       }
     note: false
@@ -327,10 +329,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 865,
         "width": 810,
         "x": 50,
-        "y": 50
+        "y": 40
       }
     }
   }
