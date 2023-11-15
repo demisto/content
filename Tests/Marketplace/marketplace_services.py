@@ -91,7 +91,7 @@ class Pack:
         self._bucket_url = None  # URL of where the pack was uploaded.
         self._aggregated = False  # weather the pack's rn was aggregated or not.
         self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
-        self._create_date = None  # initialized in enhance_pack_attributes function
+        self._create_date = ""  # initialized in enhance_pack_attributes function
         self._update_date = None  # initialized in enhance_pack_attributes function
         self._uploaded_author_image = False  # whether the pack author image was uploaded or not
         self._reademe_images = []
@@ -2198,6 +2198,7 @@ class Pack:
             self._modules = user_metadata.get(Metadata.MODULES, [])
             self._tags = set(user_metadata.get(Metadata.TAGS) or [])
             self._dependencies = user_metadata.get(Metadata.DEPENDENCIES, {})
+            self._certification = user_metadata.get(Metadata.CERTIFICATION, "")
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
@@ -2210,23 +2211,18 @@ class Pack:
         finally:
             return task_status
 
-    def _collect_pack_tags_by_statistics(self, trending_packs) -> set:
-        tags = set()
+    def _collect_pack_tags_by_statistics(self, trending_packs):
 
-        if self._create_date:
-            days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
-            if days_since_creation <= 30:
-                tags |= {PackTags.NEW}
-            else:
-                tags -= {PackTags.NEW}
+        days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
+        if days_since_creation <= 30:
+            self._tags |= {PackTags.NEW}
+        else:
+            self._tags -= {PackTags.NEW}
 
-        if trending_packs:
-            if self._pack_name in trending_packs:
-                tags |= {PackTags.TRENDING}
-            else:
-                tags -= {PackTags.TRENDING}
-
-        return tags
+        if self._pack_name in trending_packs:
+            self._tags |= {PackTags.TRENDING}
+        else:
+            self._tags -= {PackTags.TRENDING}
 
     def remove_test_dependencies(self):
         """Removes test dependencies from pack dependencies property"""
@@ -2249,7 +2245,7 @@ class Pack:
             dependencies or not.
             remove_test_deps (bool): Whether to remove test dependencies.
         """
-        trending_packs = None
+        trending_packs = []
         pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
         if not format_dependencies_only:
             self._create_date = self._get_pack_creation_date(index_folder_path)
@@ -2267,7 +2263,7 @@ class Pack:
             self._downloads_count = self._pack_statistics_handler.download_count
             trending_packs = statistics_handler.trending_packs
             pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-        self._tags |= self._collect_pack_tags_by_statistics(trending_packs)
+        self._collect_pack_tags_by_statistics(trending_packs)
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )

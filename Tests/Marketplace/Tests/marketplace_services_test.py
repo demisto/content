@@ -308,6 +308,7 @@ class TestMetadataParsing:
         dummy_pack._is_modified = False
         dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
         dummy_pack._certification = Metadata.CERTIFIED
+        dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
         dummy_pack._enhance_pack_attributes(index_folder_path="", statistics_handler=None)
         parsed_metadata = dummy_pack._parse_pack_metadata()
 
@@ -340,33 +341,35 @@ class TestMetadataParsing:
         """ Test 'New' tag is added
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
-        tags = dummy_pack._collect_pack_tags_by_statistics([])
+        dummy_pack._collect_pack_tags_by_statistics([])
 
-        assert PackTags.NEW in tags
+        assert PackTags.NEW in dummy_pack._tags
 
     def test_new_tag_removed_from_tags(self, dummy_pack):
         """ Test 'New' tag is removed
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
         dummy_pack._tags = {PackTags.NEW}
-        tags = dummy_pack._collect_pack_tags_by_statistics([])
+        dummy_pack._collect_pack_tags_by_statistics([])
 
-        assert PackTags.NEW not in tags
+        assert PackTags.NEW not in dummy_pack._tags
 
     def test_trending_tag_added_to_tags(self, dummy_pack):
         """ Test 'TRENDING' tag is added
         """
-        tags = dummy_pack._collect_pack_tags_by_statistics(["Test Pack Name"])
+        dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
+        dummy_pack._collect_pack_tags_by_statistics(["Test Pack Name"])
 
-        assert PackTags.TRENDING in tags
+        assert PackTags.TRENDING in dummy_pack._tags
 
     def test_trending_tag_removed_from_tags(self, dummy_pack):
         """ Test 'TRENDING' tag is removed
         """
+        dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
         dummy_pack._tags = {PackTags.TRENDING}
-        tags = dummy_pack._collect_pack_tags_by_statistics([])
+        dummy_pack._collect_pack_tags_by_statistics([])
 
-        assert PackTags.TRENDING not in tags
+        assert PackTags.TRENDING not in dummy_pack._tags
 
 
 class TestParsingInternalFunctions:
