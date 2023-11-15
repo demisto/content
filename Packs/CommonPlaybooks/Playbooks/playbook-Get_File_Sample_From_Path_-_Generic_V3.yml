@@ -287,7 +287,7 @@ outputs:
   type: string
 - contextPath: AcquiredFile
   description: The acquired file details.
-  type: string
+  type: Unknown
 tests:
 - No tests.
 fromversion: 6.0.0
