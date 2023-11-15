@@ -235,12 +235,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
   stage: run-instances
   script:
     - !reference [.ssh-config-setup]
-    - section_start "Create Artifacts instance directory" --collapsed
-    - |
-      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
-      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
-      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
-    - section_end "Create Artifacts instance directory"
 
     - section_start "Copy env results to artifacts folder" --collapsed
     - |
@@ -274,7 +268,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - section_end "End to End Tests"
 
     - section_start "Install Packs and Test-Module" --collapsed
-    - cat "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt" 
+    - cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs and Test-Module"
@@ -309,7 +303,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
       fi
     - section_end "Destroy Instances"
 
-demisto-sdk-nightly:run-end-to-end-tests-mpv2:
+demisto-sdk-nightly:run-end-to-end-tests-xsiam:
   tags:
     - gce
   extends:
@@ -321,7 +315,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
   variables:
       CLOUD_MACHINES_TYPE: "build"
       CLOUD_MACHINES_COUNT: 1
-      INSTANCE_ROLE: "XSIAM"
+      INSTANCE_ROLE: "xsiam"
       GCS_QUEUE_FILE: "queue-ga"
       GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
       CLOUD_SERVERS_FILE: "xsiam_servers_path"
@@ -329,9 +323,8 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       CLOUD_API_KEYS: $XSIAM_API_KEYS
       CLOUD_API_TOKENS: $XSIAM_TOKENS
       ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-      ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_xsiam"
+      ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_${INSTANCE_ROLE}"
       GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
-      ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
       GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
       GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
       SERVER_TYPE: "XSIAM"
@@ -342,6 +335,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       ALLOW_FAILURE: "true"
       PRODUCT_TYPE: "XSIAM"
       ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
+      ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   needs: ["demisto-sdk-nightly:mpv2-prepare-testing-bucket"]
   stage: run-instances
   script:
@@ -352,13 +346,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
     - cat "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
     - section_end "Update Packs To Install And Modeling Rules To Test"
-
-    - section_start "Create Artifacts Instance Directory" --collapsed
-    - |
-      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
-      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
-      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
-    - section_end "Create Artifacts Instance Directory"
 
     - section_start "Copy Env Results To Artifacts Folder" --collapsed
     - |
@@ -371,8 +358,6 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
     - !reference [.lock-machine]
 
     - !reference [.export_cloud_machine_constants]
-    - echo "Server URL $DEMISTO_BASE_URL"
-    - echo "XSIAM_AUTH_ID $XSIAM_AUTH_ID"
 
     - section_start "Test Modeling Rules" --collapsed
     - demisto-sdk upload -z -x -i Packs/SemperisDSP --insecure
@@ -384,7 +369,7 @@ demisto-sdk-nightly:run-end-to-end-tests-mpv2:
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
       git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
       echo "Server URL: $DEMISTO_BASE_URL"
-      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/xsiam || EXIT_CODE=$?
+      python3 -m pytest "${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/xsiam" || EXIT_CODE=$?
     - section_end "End to End Tests"
 
     - section_start "Install Packs" --collapsed
@@ -420,7 +405,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
-    INSTANCE_ROLE: "XSOAR SAAS"
+    INSTANCE_ROLE: "xsoar_saas"
     SERVER_TYPE: "XSOAR SAAS"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
@@ -428,7 +413,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_XSOAR}/instance_saas"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
     GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
@@ -442,13 +427,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
   stage: run-instances
   script:
     - EXIT_CODE=0
-
-    - section_start "Create Artifacts instance directory" --collapsed
-    - |
-      echo "Creating Artifacts instance directory: ${ARTIFACTS_FOLDER_INSTANCE}"
-      [ ! -d "${ARTIFACTS_FOLDER_INSTANCE}" ] && mkdir -p "${ARTIFACTS_FOLDER_INSTANCE}"
-      echo "${INSTANCE_ROLE}" > "${ARTIFACTS_FOLDER_INSTANCE}/instance_role.txt"
-    - section_end "Create Artifacts instance directory"
 
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -473,7 +451,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - section_end "Copy env results to artifacts folder"
 
     - section_start "Install Packs" --collapsed
-    - cat "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt" 
+    - cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
     - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
     - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     - section_end "Install Packs"

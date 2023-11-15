@@ -1,0 +1,21 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "2b2bd670-2bb4-4c5e-bb12-ef0c5cded161",
+            "vendor": "hello",
+            "product": "world",
+            "dataset": "hello_world_raw",
+            "tenant_timezone": "UTC",
+            "event_data": {},
+            "expected_values": {
+                "_time": null,
+                "xdm.event.description": null,
+                "xdm.event.id": null,
+                "xdm.event.operation_sub_type": null,
+                "xdm.source.user.identifier": null,
+                "xdm.source.user.username": null
+            }
+        }
+    ],
+    "ignored_validations": []
+}
