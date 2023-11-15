@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 410e4732-0fb8-4db6-8268-39fa1d72f3cf
+    taskid: 1253791d-209a-4330-8d48-336354aed25d
     type: start
     task:
-      id: 410e4732-0fb8-4db6-8268-39fa1d72f3cf
+      id: 1253791d-209a-4330-8d48-336354aed25d
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 88456e7e-35ed-4971-84a9-dc019a08e229
+    taskid: cd0afaab-256e-4da2-81a6-db5c9323e909
     type: regular
     task:
-      id: 88456e7e-35ed-4971-84a9-dc019a08e229
+      id: cd0afaab-256e-4da2-81a6-db5c9323e909
       version: -1
       name: Set IPs
       description: Set a value in context under the key you entered.
@@ -72,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 4228e6f9-fffb-4baf-8442-e843a84dbd42
+    taskid: d870586d-635c-4212-8d91-ee8b5b7e9183
     type: regular
     task:
-      id: 4228e6f9-fffb-4baf-8442-e843a84dbd42
+      id: d870586d-635c-4212-8d91-ee8b5b7e9183
       version: -1
       name: Set CIDR ranges
       description: Set a value in context under the key you entered.
@@ -109,10 +109,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 954eb4f0-c925-4e41-8334-180a2f42bb63
+    taskid: 883092f5-a1ec-4740-8291-8357794461d0
     type: regular
     task:
-      id: 954eb4f0-c925-4e41-8334-180a2f42bb63
+      id: 883092f5-a1ec-4740-8291-8357794461d0
       version: -1
       name: IsInCidrRanges
       description: Prints text to war room (Markdown supported)
@@ -154,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 8b9bfa98-36a8-4e49-8a87-86f0d51205e8
+    taskid: 09cd9e25-de9b-4cf1-8d2b-0e9ce3ebaf84
     type: regular
     task:
-      id: 8b9bfa98-36a8-4e49-8a87-86f0d51205e8
+      id: 09cd9e25-de9b-4cf1-8d2b-0e9ce3ebaf84
       version: -1
       name: IsInCidrRanges
       description: Set a value in context under the key you entered.
@@ -201,10 +201,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 72ecc370-2f17-458d-8704-573175e01877
+    taskid: 52bd911d-81c3-4a55-8a24-d0c9db5675f8
     type: regular
     task:
-      id: 72ecc370-2f17-458d-8704-573175e01877
+      id: 52bd911d-81c3-4a55-8a24-d0c9db5675f8
       version: -1
       name: Delete Context
       description: |-
@@ -241,10 +241,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7d3e8083-26fc-4615-87c6-2c7573f6b810
+    taskid: 70f9e104-aa84-41ed-8dbf-638541ff1b93
     type: condition
     task:
-      id: 7d3e8083-26fc-4615-87c6-2c7573f6b810
+      id: 70f9e104-aa84-41ed-8dbf-638541ff1b93
       version: -1
       name: Check if results is correct
       type: condition
@@ -252,7 +252,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "9"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -306,10 +306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 299cc5b4-11c0-4196-8818-ae7ee84789e7
+    taskid: 7e39b0f3-894a-4fec-803e-97e0f7d2fb8d
     type: title
     task:
-      id: 299cc5b4-11c0-4196-8818-ae7ee84789e7
+      id: 7e39b0f3-894a-4fec-803e-97e0f7d2fb8d
       version: -1
       name: Test Success
       type: title
@@ -321,7 +321,89 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7d19d801-309a-4c58-87f2-516b5a90c514
+    type: regular
+    task:
+      id: 7d19d801-309a-4c58-87f2-516b5a90c514
+      version: -1
+      name: Run IsInCidrRanges directly
+      description: Determines whether an IPv4 address is contained in at least one
+        of the comma-delimited CIDR ranges. Multiple IPv4 addresses can be passed
+        comma-delimited and each will be tested.
+      scriptName: IsInCidrRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: scriptResult=.
+      left:
+        simple: fe80::a00:27ff:fe4e:66a1
+      right:
+        simple: fe80::/64
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d1e3e18a-275f-4dcf-8afc-9e865756314b
+    type: condition
+    task:
+      id: d1e3e18a-275f-4dcf-8afc-9e865756314b
+      version: -1
+      name: Check if in range
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${scriptResult}
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1410
         }
       }
     note: false
@@ -336,7 +418,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 1630,
         "width": 380,
         "x": 50,
         "y": 50
