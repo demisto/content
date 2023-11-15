@@ -5,7 +5,7 @@ from demisto_client.demisto_api import IncidentWrapper
 from demisto_client.demisto_api.models.feed_indicator import FeedIndicator
 from demisto_sdk.commands.common.clients import XsoarClient
 from demisto_client.demisto_api.rest import ApiException
-from demisto_sdk.utils.utils import retry
+from demisto_sdk.commands.common.tools import retry
 from Tests.scripts.utils import logging_wrapper as logging
 
 

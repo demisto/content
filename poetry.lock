@@ -1453,10 +1453,12 @@ flatten-dict = "^0.4.2"
 gitdb = "^4.0.9"
 GitPython = "^3.1.37"
 giturlparse = "^0.10.0"
-google-cloud-storage = "^2.2.1"
+google-cloud-secret-manager = "^2.16.2"
+google-cloud-storage = "^2.13.0"
 imagesize = "^1.3.0"
 importlib-resources = "^5.6.0"
 inflection = "^0.5.1"
+json5 = "^0.9.14"
 jsonschema = "^4.4.0"
 junitparser = "^3.1.0"
 klara = "^0.6.3"
@@ -1497,7 +1499,7 @@ types-Markdown = "^3.3.21"
 types-mock = "^4.0.15"
 types-paramiko = "^2.8.17"
 types-pkg-resources = "^0.1.3"
-types-protobuf = "^3.19.15"
+types-protobuf = "^4.24.0.4"
 types-PyMySQL = "^1.0.15"
 types-python-dateutil = "^2.8.10"
 types-pytz = ">=2021.3.6,<2023.0.0"
@@ -1522,7 +1524,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "master"
-resolved_reference = "1e0409f7cb6aac81ec108022492ba0a7375eeb6e"
+resolved_reference = "74c0d3843d673a010c7bbb949ec1f675c543604f"
 
 [[package]]
 name = "deprecated"
@@ -6686,14 +6688,14 @@ files = [
 
 [[package]]
 name = "types-protobuf"
-version = "3.20.4.6"
+version = "4.24.0.4"
 description = "Typing stubs for protobuf"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 files = [
-    {file = "types-protobuf-3.20.4.6.tar.gz", hash = "sha256:ba27443c592bbec1629dd69494a24c84461c63f0d3b7d648ce258aaae9680965"},
-    {file = "types_protobuf-3.20.4.6-py3-none-any.whl", hash = "sha256:ab2d315ba82246b83d28f8797c98dc0fe1dd5cfd187909e56faf87239aedaae3"},
+    {file = "types-protobuf-4.24.0.4.tar.gz", hash = "sha256:57ab42cb171dfdba2c74bb5b50c250478538cc3c5ed95b8b368929ad0c9f90a5"},
+    {file = "types_protobuf-4.24.0.4-py3-none-any.whl", hash = "sha256:131ab7d0cbc9e444bc89c994141327dcce7bcaeded72b1acb72a94827eb9c7af"},
 ]
 
 [[package]]
