@@ -50,7 +50,7 @@ configuration:
   name: credentials
   type: 9
   displaypassword: Secret Key
-  required: true
+  required: false
   section: Connect
 - display: Access Key
   name: access_key
