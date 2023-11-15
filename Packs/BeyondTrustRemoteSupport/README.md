@@ -38,7 +38,7 @@ You can configure the specific vendor and product for this instance.
    | `Product`     | Enter **Remote_Support**. 
 
 ## Remarks
-As described on the BeyondTrust [syslog message format](https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/message-format.htm) & [syslog message segmentation](https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/message-segmentation.htm) docs, syslog messages that are larger than 1KB are segmented by the BeyondTrust syslog service into multiple separate individual syslog messages. 
+As described on the BeyondTrust [syslog message format](https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/message-format.htm) and [syslog message segmentation](https://www.beyondtrust.com/docs/remote-support/how-to/integrations/syslog/message-segmentation.htm) docs, syslog messages that are larger than 1KB are segmented by the BeyondTrust syslog service into multiple separate individual syslog messages. 
 
 The modeling rules provided in this pack are applied to each event individually, so on such cases where a syslog message is divided into multiple events, each event would be mapped individually as a standalone event.
    
