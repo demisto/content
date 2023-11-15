@@ -692,7 +692,7 @@ def rasterize_image_command():
 def rasterize_email_command():
     html_body = demisto.args().get('htmlBody')
     w, h, r_mode = get_common_args(demisto.args())
-    offline = demisto.args().get('offline', 'false') == 'true'
+    # offline = demisto.args().get('offline', 'false') == 'true'
     r_type = RasterizeType(demisto.args().get('type', 'png').lower())
     file_name = demisto.args().get('file_name', 'email')
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
