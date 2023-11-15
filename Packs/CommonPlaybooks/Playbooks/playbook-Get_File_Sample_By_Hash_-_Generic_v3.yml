@@ -113,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d814e95f-65e9-4308-866a-30790e97d928
+    taskid: 1ac553d1-5315-4391-8875-63c8ca4e9fa2
     type: playbook
     task:
-      id: d814e95f-65e9-4308-866a-30790e97d928
+      id: 1ac553d1-5315-4391-8875-63c8ca4e9fa2
       version: -1
       name: Get the binary file from Carbon Black by its MD5 hash
       description: This playbook retrieves a binary file by its MD5 hash from the Carbon Black telemetry data.
@@ -131,6 +131,8 @@ tasks:
       MD5:
         complex:
           root: inputs.MD5
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
