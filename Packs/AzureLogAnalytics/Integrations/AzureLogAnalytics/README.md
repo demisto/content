@@ -561,6 +561,7 @@ Run a search job to fetch records from large datasets into a new search results 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureLogAnalytics.RunSearchJob.TableName | String | Table name. | 
+| AzureLogAnalytics.RunSearchJob.Query | String | The query that was used to create the table. |
 
 #### Command example
 
