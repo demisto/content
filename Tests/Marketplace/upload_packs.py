@@ -1264,9 +1264,6 @@ def main():
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
 
-    # packs that depends on new packs that are not in the previous index.zip
-    packs_with_missing_dependencies = []
-
     all_packs_dict = {p.name: p for p in all_content_packs}  # temporary var to replace packs_for_current_marketplace_dict
 
     # iterating over packs that are for this current marketplace
@@ -1293,17 +1290,10 @@ def main():
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
             continue
 
-        task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
-                                                                    packs_dependencies_mapping,
-                                                                    statistics_handler,
-                                                                    all_packs_dict,
-                                                                    marketplace, remove_test_deps=remove_test_deps)
-
-        if is_missing_dependencies:
-            # If the pack is dependent on a new pack, therefore it is not yet in the index.zip as it might not have
-            # been iterated yet, we will note that it is missing dependencies, and after updating the index.zip with
-            # all new packs - we will go over the pack again to add what was missing. See issue #37290.
-            packs_with_missing_dependencies.append(pack)
+        task_status = pack.format_metadata(index_folder_path,
+                                           packs_dependencies_mapping,
+                                           statistics_handler,
+                                           marketplace, remove_test_deps=remove_test_deps)
 
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name  # type: ignore[misc]
@@ -1360,31 +1350,8 @@ def main():
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_upload and pack not in packs_with_missing_dependencies:
+        if skipped_upload:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
-        pack.status = PackStatus.SUCCESS.name  # type: ignore[misc]
-
-    logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
-
-    # Going over all packs that were marked as missing dependencies,
-    # updating them with the new data for the new packs that were added to the index.zip
-    for pack in packs_with_missing_dependencies:
-        task_status, _ = pack.format_metadata(index_folder_path, packs_dependencies_mapping,
-                                              statistics_handler,
-                                              all_packs_dict, marketplace,
-                                              format_dependencies_only=True)
-
-        if not task_status:
-            pack.status = PackStatus.FAILED_METADATA_REFORMATING.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
-        task_status = update_index_folder(index_folder_path=index_folder_path, pack=pack)
-        if not task_status:
-            pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
