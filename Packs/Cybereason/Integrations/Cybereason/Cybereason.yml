@@ -13,8 +13,8 @@ contentitemexportablefields:
     definitionid: ''
     prevname: ''
 vcShouldKeepItemLegacyProdMachine: false
-name: Cybereason_OCD
-display: Cybereason_OCD
+name: Cybereason
+display: Cybereason
 category: Endpoint
 description: Endpoint detection and response to manage and query malops, connections and processes.
 configuration:
