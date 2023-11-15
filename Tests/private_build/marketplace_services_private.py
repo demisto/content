@@ -405,6 +405,15 @@ class Pack:
     def all_levels_dependencies(self):
         return self._all_levels_dependencies
 
+    @property
+    def statistics_metadata(self):
+        return {
+            Metadata.DOWNLOADS: self.downloads_count,
+            Metadata.SEARCH_RANK: self._search_rank,
+            Metadata.TAGS: list(self._tags or []),
+            Metadata.INTEGRATIONS: self._related_integration_images
+        }
+
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 

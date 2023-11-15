@@ -66,6 +66,7 @@ class Pack:
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
+    INDEX_FILES_TO_UPDATE = [METADATA, CHANGELOG_JSON, README]
 
     def __init__(self, pack_name, pack_path, is_modified=None):
         self._pack_name = pack_name
@@ -405,6 +406,15 @@ class Pack:
     @property
     def all_levels_dependencies(self):
         return self._all_levels_dependencies
+
+    @property
+    def statistics_metadata(self):
+        return {
+            Metadata.DOWNLOADS: self.downloads_count,
+            Metadata.SEARCH_RANK: self._search_rank,
+            Metadata.TAGS: list(self._tags or []),
+            Metadata.INTEGRATIONS: self._related_integration_images
+        }
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -2451,34 +2461,6 @@ class Pack:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
 
-    def prepare_for_index_upload(self):
-        """ Removes and leaves only necessary files in pack folder.
-
-        Returns:
-            bool: whether the operation succeeded.
-
-        """
-        task_status = False
-        files_to_leave = [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]
-
-        try:
-            for file_or_folder in os.listdir(self._pack_path):
-                files_or_folder_path = os.path.join(self._pack_path, file_or_folder)
-
-                if file_or_folder in files_to_leave:
-                    continue
-
-                if os.path.isdir(files_or_folder_path):
-                    shutil.rmtree(files_or_folder_path)
-                else:
-                    os.remove(files_or_folder_path)
-
-            task_status = True
-        except Exception:
-            logging.exception(f"Failed in preparing index for upload in {self._pack_name} pack.")
-        finally:
-            return task_status
-
     @staticmethod
     def _get_spitted_yml_image_data(root, target_folder_files):
         """ Retrieves pack integration image and integration display name and returns binding image data.
@@ -3622,12 +3604,12 @@ def load_json(file_path: str) -> dict:
 
 def json_write(file_path: str, data: dict, update: bool = False):
     """ Writes given data to a json file
-
     Args:
         file_path: The file path
         data: The data to write
         update: Whether to update the json file object with data
     """
+    logging.info(f"update_index: {file_path=}, {data=}, {update=}")
     if update:
         metadata_obj = load_json(file_path=file_path)
         metadata_obj.update(data)
