@@ -56,7 +56,7 @@ class TestUpdateIndex:
     statistics_metadata = {
         Metadata.DOWNLOADS: 0,
         Metadata.SEARCH_RANK: None,
-        Metadata.TAGS: None,
+        Metadata.TAGS: [],
         Metadata.INTEGRATIONS: None
     }
 
