@@ -684,7 +684,7 @@ def main():  # pragma: no cover
         if command == "fetch-indicators":
             fetch_indicators(client, params.get("autoSync", False))
         elif command == 'xdr-iocs-set-sync-time':
-            return_results('This command is deprecated and is not relevant anymore.')
+            return_warning('This command is deprecated and is not relevant anymore.')
         elif command == "xdr-iocs-create-sync-file":
             get_sync_file()
         elif command == 'xdr-iocs-to-keep-file':
