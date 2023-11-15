@@ -31,11 +31,11 @@ def main():
         # the entry_id argument can be a list of entry ids or a single entry id
         entry_ids = args.get('entry_id', demisto.get(demisto.context(), 'lastCompletedTaskEntries'))
 
+        entry_ids = argToList(entry_ids)
         if is_xsiam_or_xsoar_saas():
-            entry_ids = ",".join(entry_ids) if isinstance(entry_ids, list) else entry_ids
+            entry_ids = ",".join(entry_ids)
             entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids})
         else:
-            entry_ids = argToList(entry_ids)
             entries = [demisto.executeCommand('getEntry', {'id': entry_id}) for entry_id in entry_ids]
         error_messages = get_errors(entries)
 
