@@ -300,19 +300,24 @@
 
 .unlock-machine:
   - section_start "Unlock Machine" --collapsed
-  - source CloudEnvVariables
   - |
-    if [[ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
-      if [[ -e "${ARTIFACTS_FOLDER}/logs/lock_file.txt" ]]; then
-        echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-        gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
-        echo "Finished removing lock file"
+    if [[ -f "CloudEnvVariables" ]]; then
+      source CloudEnvVariables
+
+      if [[ -n "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
+        if [[ -e "${ARTIFACTS_FOLDER}/logs/lock_file.txt" ]]; then
+          echo "Job finished, removing lock file for machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
+          gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+          gsutil rm "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
+          echo "Finished removing lock file(s)"
+        else
+          echo "No lock file found, skipping unlocking"
+        fi
       else
-        echo "No lock file found, skipping unlocking"
+        echo "No machine ids were chosen, skipping unlocking"
       fi
     else
-      echo "No machine ids were chosen, skipping unlocking"
+      echo "No CloudEnvVariables file found, skipping unlocking"
     fi
   - section_end "Unlock Machine"
 
