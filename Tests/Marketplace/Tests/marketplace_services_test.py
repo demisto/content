@@ -3325,3 +3325,28 @@ def test_get_upload_data(mocker):
             "Cylance_Protect": [],
         }
     }
+
+
+def test_write_json(tmp_path):
+    """
+    Given:
+        metadata.json file and statistics fields to update.
+    When:
+        Running json_write.
+    Then:
+        Ensure the existing fields stays as expected and that the statistics fields are updated.
+    """
+    from Tests.Marketplace.marketplace_services import json_write, load_json
+    statistics_metadata = {
+        Metadata.DOWNLOADS: 245,
+        Metadata.SEARCH_RANK: 10
+    }
+    metadata_path = os.path.join(tmp_path, 'metadata.json')
+    shutil.copy(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'metadata.json'),
+                metadata_path)
+
+    json_write(metadata_path, statistics_metadata, update=True)
+    metadata = load_json(metadata_path)
+    assert metadata[Metadata.NAME] == 'Impossible Traveler'
+    assert metadata[Metadata.DOWNLOADS] == 245
+    assert metadata[Metadata.SEARCH_RANK] == 10

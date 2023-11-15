@@ -174,7 +174,7 @@ def update_index_folder(index_folder_path: str, pack: Pack, is_private_pack: boo
 
         # Copy new files and add metadata for latest version
         for d in os.scandir(pack.path):
-            if d.name not in [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]:
+            if d.name not in Pack.INDEX_FILES_TO_UPDATE:
                 continue
 
             logging.debug(f"Copying pack's {d.name} file to pack '{pack.name}' index folder")
@@ -1383,8 +1383,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = update_index_folder(index_folder_path=index_folder_path, pack=pack,
-                                          pack_versions_to_keep=pack_versions_to_keep)
+        task_status = update_index_folder(index_folder_path=index_folder_path, pack=pack)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
             pack.cleanup()

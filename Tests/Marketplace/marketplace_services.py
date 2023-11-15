@@ -66,6 +66,7 @@ class Pack:
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
+    INDEX_FILES_TO_UPDATE = [METADATA, CHANGELOG_JSON, README]
 
     def __init__(self, pack_name, pack_path, is_modified=None):
         self._pack_name = pack_name
@@ -410,7 +411,7 @@ class Pack:
         return {
             Metadata.DOWNLOADS: self.downloads_count,
             Metadata.SEARCH_RANK: self._search_rank,
-            Metadata.TAGS: self._tags,
+            Metadata.TAGS: list(self._tags),
             Metadata.INTEGRATIONS: self._related_integration_images
         }
 
@@ -3820,6 +3821,7 @@ def json_write(file_path: str, data: dict, update: bool = False):
         data: The data to write
         update: Whether to update the json file object with data
     """
+    logging.info(f"update_index: {file_path=}, {data=}, {update=}")
     if update:
         metadata_obj = load_json(file_path=file_path)
         metadata_obj.update(data)
