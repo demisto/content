@@ -128,7 +128,7 @@ tasks:
         complex:
           root: ${ips}
           filters:
-          - - operator: 76b53a4d-ee5a-4338-8953-7324534ad5d6
+          - - operator: IsInCidrRanges
               left:
                 value:
                   simple: ${ips}
@@ -175,7 +175,7 @@ tasks:
         complex:
           root: ${ips}
           filters:
-          - - operator: 76b53a4d-ee5a-4338-8953-7324534ad5d6
+          - - operator: IsInCidrRanges
               left:
                 value:
                   simple: ${ips}
