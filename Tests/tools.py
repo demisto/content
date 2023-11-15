@@ -2,7 +2,6 @@ from functools import wraps
 from collections.abc import Callable
 
 from demisto_sdk.commands.test_content.mock_server import MITMProxy
-from demisto_sdk.commands.common.tools import get_file
 from demisto_sdk.commands.common.files.json_file import JsonFile
 
 
