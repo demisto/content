@@ -1,7 +1,7 @@
-from pathlib import Path
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from pathlib import Path
 import hashlib
 import secrets
 import string
