@@ -8985,3 +8985,30 @@ Returns a list of all device groups from Panorama.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.DeviceGroupNames | string | The list of device groups. |
+
+### pan-os-export-tech-support-file
+
+***
+Exports a tech support file (TSF).
+
+#### Base Command
+
+`pan-os-export-tech-support-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| interval_in_seconds | The polling interval (in seconds). Default is 30. | Optional | 
+| timeout | The polling timeout (in seconds). Default is 1200. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-export-tech-support-file```
+
+#### Human Readable Output
+
+>Waiting for tech support file export with job ID 101 to finish...
