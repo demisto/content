@@ -1016,7 +1016,7 @@ def get_new_indicators(
     Returns:
         tuple[List, str]: A list of new indicators, and the new "last updated" checkpoint
     """
-    start_date = arg_to_datetime(last_run, None, True)
+    start_date = arg_to_datetime(last_run)
     minimum_mscore = int(demisto.params().get("feedMinimumConfidence", 80))
     exclude_osint = demisto.params().get("feedExcludeOSIntel", True)
 
@@ -1028,12 +1028,8 @@ def get_new_indicators(
 
         param_start_date: datetime = datetime.fromtimestamp(0)
         if start_date is not None:
-            if start_date.tzinfo is None:
-                start_date = pytz.utc.localize(start_date)
-            else:
-                start_date = start_date.astimezone(pytz.UTC)
             param_start_date = max(
-                earliest_fetch.replace(tzinfo=pytz.UTC), start_date
+                earliest_fetch.replace(tzinfo=pytz.UTC), start_date.replace(tzinfo=pytz.UTC)
             )  # type:ignore
         else:
             param_start_date = earliest_fetch
