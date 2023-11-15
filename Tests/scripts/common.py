@@ -116,11 +116,12 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         headers.extend([h.replace("\n", headers_multiline_char) for h in TEST_SUITE_JIRA_HEADERS])
     column_align = ["left"] * len(headers)
     fixed_headers_length = len(headers)
-    server_versions_list: list[str] = [server_version.replace(' ', headers_multiline_char)
-                                       for server_version in sorted(server_versions)]
+    server_versions_list: list[str] = sorted(server_versions)
     for server_version in server_versions_list:
+        server_version_header = server_version.replace(' ', headers_multiline_char)
         headers.append(
-            server_version if transpose else f"{server_version}{headers_multiline_char}{TEST_SUITE_DATA_CELL_HEADER}"
+            server_version_header
+            if transpose else f"{server_version_header}{headers_multiline_char}{TEST_SUITE_DATA_CELL_HEADER}"
         )
         column_align.append("center")
     tabulate_data = [headers]
