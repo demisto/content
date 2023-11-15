@@ -405,6 +405,15 @@ class Pack:
     def all_levels_dependencies(self):
         return self._all_levels_dependencies
 
+    @property
+    def statistics_metadata(self):
+        return {
+            Metadata.DOWNLOADS: self.downloads_count,
+            Metadata.SEARCH_RANK: self._search_rank,
+            Metadata.TAGS: self._tags,
+            Metadata.INTEGRATIONS: self._related_integration_images
+        }
+
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
 
@@ -3804,16 +3813,21 @@ def load_json(file_path: str) -> dict:
         return {}
 
 
-def json_write(file_path: str, data: list | dict):
+def json_write(file_path: str, data: dict, update: bool = False):
     """ Writes given data to a json file
-
     Args:
         file_path: The file path
         data: The data to write
-
+        update: Whether to update the json file object with data
     """
+    if update:
+        metadata_obj = load_json(file_path=file_path)
+        metadata_obj.update(data)
+    else:
+        metadata_obj = data
+
     with open(file_path, "w") as f:
-        f.write(json.dumps(data, indent=4))
+        f.write(json.dumps(metadata_obj, indent=4))
 
 
 def init_storage_client(service_account=None):
