@@ -270,7 +270,6 @@
 
 .default-after-script:
   - source .gitlab/helper_functions.sh
-  - rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
   - *setup-network-certs
   - *setup-artifactory
   - *install_node_modules
@@ -288,16 +287,12 @@
   - echo "checked out $LAST_UPLOAD_COMMIT"
   - section_end "Clone production content and add it to artifacts"
 
-.remove-content-production-from-artifacts:
-  after_script:
-    - rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
 
 .default-job-settings:
   interruptible: true
   extends:
     - .default-cache
     - .default-before-script
-    - .remove-content-production-from-artifacts
   needs:
     - job: cloning-content-repo-last-upload-commit
       optional: true
