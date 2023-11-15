@@ -23,7 +23,7 @@ clone_repository() {
     # If either user or token is not empty, then we need to add them to the url.
   fi
   for ((i=1; i <= retry_count; i++)); do
-    git clone --depth=1 "https://${user_info}${host}/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
+    git clone --depth=1 --bare "https://${user_info}${host}/${repo_name}.git" --branch "${branch}" && exit_code=0 && break || exit_code=$?
     if [ ${i} -ne "${retry_count}" ]; then
       echo -e "${RED}Failed to clone ${repo_name} with branch:${branch}, exit code:${exit_code}, sleeping for ${sleep_time} seconds and trying again${NC}"
       sleep "${sleep_time}"
