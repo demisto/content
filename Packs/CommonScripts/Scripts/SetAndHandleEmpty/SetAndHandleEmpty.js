@@ -16,31 +16,35 @@ function getValue(value, stringify = false) {
 }
 
 function main() {
+    const keys = argToList(args.key);
     let value = args.value;
-    const key = args.key;
     const force = args.force === 'true';
     value = getValue(value, args.stringify === 'true');
 
-    let humanReadable = '';
-    let contextEntry = {};
+    let results = [];
+    for (let i = 0; i < keys.length; i++) {
+        let humanReadable = '';
+        let contextEntry = {};
 
-    if (value || force) {
-        humanReadable = `Key ${key} set`;
-        contextEntry = { [key]: value };
-    } else {
-        humanReadable = 'value is None';
-    }
+        if (value || force) {
+            humanReadable = `Key ${keys[i]} set`;
+            contextEntry = { [keys[i]]: value };
+        } else {
+            humanReadable = 'value is None';
+        }
 
-    if (args.append === 'false' && Object.keys(contextEntry).length > 0) {
-        executeCommand('DeleteContext', { key: key, subplaybook: 'auto' });
-    }
-    return {
-        Type: entryTypes.note,
-        EntryContext: contextEntry,
-        ContentsFormat: formats.json,
-        Contents: humanReadable,
-        HumanReadable: humanReadable
+        if (args.append === 'false' && Object.keys(contextEntry).length > 0) {
+            executeCommand('DeleteContext', { key: keys[i], subplaybook: 'auto' });
+        }
+        results.push({
+            Type: entryTypes.note,
+            EntryContext: contextEntry,
+            ContentsFormat: formats.json,
+            Contents: humanReadable,
+            HumanReadable: humanReadable
+        });
     };
+    return results;
 }
 
 try {
