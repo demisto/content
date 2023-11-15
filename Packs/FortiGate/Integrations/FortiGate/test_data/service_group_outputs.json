@@ -1,0 +1,23 @@
+[
+    {
+        "Comment": "",
+        "FabricObject": "disable",
+        "Member": {
+            "Name": [
+                "Gary",
+                "Oak"
+            ]
+        },
+        "Name": "Ash Ketchum",
+        "Proxy": "disable"
+    },
+    {
+        "Comment": "",
+        "FabricObject": "disable",
+        "Member": {
+            "Name": ["Brock"]
+        },
+        "Name": "Misty",
+        "Proxy": "disable"
+    }
+]

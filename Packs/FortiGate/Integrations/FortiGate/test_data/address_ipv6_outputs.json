@@ -1,0 +1,19 @@
+[
+    {
+        "CacheTTL": 0,
+        "Comment": "",
+        "Country": "",
+        "EndIP": "::",
+        "FabricObject": "disable",
+        "FQDN": "",
+        "HostType": "any",
+        "IPv6": "fFff:ffff::/120",
+        "Name": "Lucario",
+        "SDN": "",
+        "SDNTag": "",
+        "Template": "",
+        "Tenant": "",
+        "Type": "ipprefix",
+        "UUID": "00000000-0000-0000-0000-000000000000"
+    }
+]
