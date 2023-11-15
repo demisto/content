@@ -53,7 +53,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "18"
     scriptarguments:
       all:
         simple: "yes"
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: d919f68d-c7a8-40f6-86ac-d95072610980
+    taskid: 99ccfaba-521a-4584-8988-1845c23f02df
     type: regular
     task:
-      id: d919f68d-c7a8-40f6-86ac-d95072610980
+      id: 99ccfaba-521a-4584-8988-1845c23f02df
       version: -1
       name: Create Saved Search
       description: Creates or updates a saved search from the Log Analytics workspace.
@@ -97,14 +97,14 @@ tasks:
       query:
         simple: '*'
       saved_search_id:
-        simple: test123
+        simple: test_playbook_${RandomString}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -116,10 +116,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7cd440ac-a6ae-4edf-8437-966ded9376e0
+    taskid: b5b41d08-c9b7-4889-8102-cb59bc00ac63
     type: condition
     task:
-      id: 7cd440ac-a6ae-4edf-8437-966ded9376e0
+      id: b5b41d08-c9b7-4889-8102-cb59bc00ac63
       version: -1
       name: Verify Outputs
       type: condition
@@ -132,14 +132,6 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: AzureLogAnalytics.SavedSearch.id
-            iscontext: true
-          right:
-            value:
-              simple: test123
       - - operator: isEqualString
           left:
             value:
@@ -161,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -173,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3f99ce01-fd10-4ed3-8cf6-051bdd107a1a
+    taskid: 17039ac1-7cc1-446c-8041-0bbd819ae1e0
     type: regular
     task:
-      id: 3f99ce01-fd10-4ed3-8cf6-051bdd107a1a
+      id: 17039ac1-7cc1-446c-8041-0bbd819ae1e0
       version: -1
       name: 'Update Saved Search '
       description: Creates or updates a saved search from the Log Analytics workspace.
@@ -197,14 +189,14 @@ tasks:
       query:
         simple: '*'
       saved_search_id:
-        simple: test123
+        simple: ${AzureLogAnalytics.SavedSearch.id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -249,7 +241,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -284,7 +276,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -319,7 +311,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -360,7 +352,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -390,7 +382,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "19"
     scriptarguments:
       key:
         simple: AzureLogAnalytics.SavedSearch
@@ -400,7 +392,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -439,7 +431,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -474,7 +466,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -532,7 +524,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -567,7 +559,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2820
         }
       }
     note: false
@@ -609,7 +601,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2995
         }
       }
     note: false
@@ -644,7 +636,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3170
         }
       }
     note: false
@@ -672,7 +664,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3345
         }
       }
     note: false
@@ -715,7 +707,90 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3376d070-8806-47d7-8ddb-58f96c5df521
+    type: regular
+    task:
+      id: 3376d070-8806-47d7-8ddb-58f96c5df521
+      version: -1
+      name: Generate random Saved Search id
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "6"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 3c93903c-3638-44bb-8cb8-0ad7a321df0b
+    type: regular
+    task:
+      id: 3c93903c-3638-44bb-8cb8-0ad7a321df0b
+      version: -1
+      name: Delete Context, specific RandomString key
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: RandomString
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -730,7 +805,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3010,
+        "height": 3360,
         "width": 380,
         "x": 50,
         "y": 50
