@@ -1,0 +1,348 @@
+id: TestIsInCidrRanges
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: TestIsInCidrRanges
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 410e4732-0fb8-4db6-8268-39fa1d72f3cf
+    type: start
+    task:
+      id: 410e4732-0fb8-4db6-8268-39fa1d72f3cf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 88456e7e-35ed-4971-84a9-dc019a08e229
+    type: regular
+    task:
+      id: 88456e7e-35ed-4971-84a9-dc019a08e229
+      version: -1
+      name: Set IPs
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: ips
+      value:
+        simple: '["192.168.1.10","2001:0db8:85a3:0000:0000:8a2e:0370:7334","11.1.1.1","fe80::a00:27ff:fe4e:66a1"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4228e6f9-fffb-4baf-8442-e843a84dbd42
+    type: regular
+    task:
+      id: 4228e6f9-fffb-4baf-8442-e843a84dbd42
+      version: -1
+      name: Set CIDR ranges
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: cidrs
+      value:
+        simple: '["2001:0db8:85a3::/32","192.168.1.0/24","192.168.1.0/287","fe80::/64"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 954eb4f0-c925-4e41-8334-180a2f42bb63
+    type: regular
+    task:
+      id: 954eb4f0-c925-4e41-8334-180a2f42bb63
+      version: -1
+      name: IsInCidrRanges
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: ${ips}
+          filters:
+          - - operator: 76b53a4d-ee5a-4338-8953-7324534ad5d6
+              left:
+                value:
+                  simple: ${ips}
+                iscontext: true
+              right:
+                value:
+                  simple: ${cidrs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8b9bfa98-36a8-4e49-8a87-86f0d51205e8
+    type: regular
+    task:
+      id: 8b9bfa98-36a8-4e49-8a87-86f0d51205e8
+      version: -1
+      name: IsInCidrRanges
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: result
+      value:
+        complex:
+          root: ${ips}
+          filters:
+          - - operator: 76b53a4d-ee5a-4338-8953-7324534ad5d6
+              left:
+                value:
+                  simple: ${ips}
+                iscontext: true
+              right:
+                value:
+                  simple: ${cidrs}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 72ecc370-2f17-458d-8704-573175e01877
+    type: regular
+    task:
+      id: 72ecc370-2f17-458d-8704-573175e01877
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7d3e8083-26fc-4615-87c6-2c7573f6b810
+    type: condition
+    task:
+      id: 7d3e8083-26fc-4615-87c6-2c7573f6b810
+      version: -1
+      name: Check if results is correct
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${result.[0]}
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.1.10
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${result.[1]}
+            iscontext: true
+          right:
+            value:
+              simple: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
+      - - operator: hasLength
+          left:
+            value:
+              simple: ${result}
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${result.[2]}
+            iscontext: true
+          right:
+            value:
+              simple: fe80::a00:27ff:fe4e:66a1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 299cc5b4-11c0-4196-8818-ae7ee84789e7
+    type: title
+    task:
+      id: 299cc5b4-11c0-4196-8818-ae7ee84789e7
+      version: -1
+      name: Test Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

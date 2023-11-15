@@ -20,7 +20,7 @@ args:
 scripttarget: 0
 runas: DBotWeakRole
 tests:
-- No test - unit test
+- TestIsInCidrRanges
 fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields:
