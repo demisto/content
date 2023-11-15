@@ -465,7 +465,6 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  needs: []
   variables:
     KUBERNETES_CPU_REQUEST: 1000m
   artifacts:
