@@ -1276,12 +1276,6 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.collect_content_items()
-        if not task_status:
-            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
         # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
             continue
