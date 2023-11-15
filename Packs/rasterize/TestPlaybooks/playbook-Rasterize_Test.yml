@@ -1129,7 +1129,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: google.com
+              simple: google search
     view: |-
       {
         "position": {
