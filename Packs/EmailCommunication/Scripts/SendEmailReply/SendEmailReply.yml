@@ -41,6 +41,7 @@ enabled: true
 name: SendEmailReply
 script: ''
 subtype: python3
+system: true
 type: python
 fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.13.80014
