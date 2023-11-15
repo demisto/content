@@ -93,13 +93,41 @@ HEADERS = {
     'Connection': 'close'
 }
 
+INBOX_INFO = [
+    {'field': 'guid', 'header': 'Guid', 'type': 'simple'},
+    {'field': 'displayName', 'header': 'Process', 'type': 'simple'},
+    {'field': 'rootCauseElementType', 'header': 'Root cause type', 'type': 'simple'},
+    {'field': 'primaryRootCauseName', 'header': 'Root cause', 'type': 'simple'},
+    {'field': 'rootCauseElementNamesCount', 'header': 'Root Cause Amount', 'type': 'simple'},
+    {'field': 'detectionEngines', 'header': 'Detection engines', 'type': 'simple'},
+    {'field': 'detectionTypes', 'header': 'Detection type', 'type': 'simple'},
+    {'field': 'malopDetectionType', 'header': 'Malop detection type', 'type': 'simple'},
+    {'field': 'creationTime', 'header': 'Creation time', 'type': 'simple'},
+    {'field': 'lastUpdateTime', 'header': 'Last updated', 'type': 'simple'},
+    {'field': 'priority', 'header': 'Priority', 'type': 'simple'},
+    {'field': 'severity', 'header': 'Severity', 'type': 'simple'},
+    {'field': 'machines', 'header': 'Machines', 'type': 'element'},
+    {'field': 'users', 'header': 'Users', 'type': 'element'}
+]
+
+INBOX_FIELDS = [element['field'] for element in INBOX_INFO]
+
+INBOX_HEADERS = [element['header'] for element in INBOX_INFO]
+
+
 ''' HELPER FUNCTIONS '''
 
 
 def build_query(query_fields: list, path: list, template_context: str = 'SPECIFIC') -> dict:
     limit = demisto.getArg('limit')
+    startTime = demisto.getArg('startTime')
+    endTime = demisto.getArg('endTime')
+
+    startTime = int(startTime) if startTime else 0
+    endTime = int(endTime) if endTime else 9007199254740991
     results_limit = int(limit) if limit else 10000
     group_limit = int(limit) if limit else 100
+    
 
     query = {
         'customFields': query_fields,
@@ -107,6 +135,8 @@ def build_query(query_fields: list, path: list, template_context: str = 'SPECIFI
         'perGroupLimit': group_limit,
         'queryPath': path,
         'queryTimeout': 120000,
+        'startTime':startTime,
+        'endTime':endTime,
         'templateContext': template_context,
         'totalResultLimit': results_limit
     }
@@ -273,6 +303,67 @@ def is_probe_connected(client: Client, machine: str) -> dict:
 
     return client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
 
+def query_inbox_command(client: Client, args: dict):
+    startTime = args.get('startTime',0)
+    endTime = args.get('endTime',9007199254740991)
+    rangeTime = args.get('rangeTime',False)
+    guid = args.get('guid',False)
+    copy_fields = lambda x, y: dict([ (i,x[i]) for i in x if i in set(y) ])
+
+    if rangeTime:
+        startTime = parse_date_range(rangeTime, to_timestamp=True)[0]
+        endTime = parse_date_range(rangeTime, to_timestamp=True)[1]
+
+    demisto.debug(startTime)
+    demisto.debug(endTime)
+
+    response = query_inbox(client, startTime, endTime)
+    response = response['malops']
+
+
+    demisto.info(json.dumps(response))
+    if isinstance(response, list):
+        context = []
+
+    for element in response:
+        if not guid:
+            put_element = copy_fields(element, INBOX_FIELDS)
+            context.append(put_element)
+        elif guid == element['guid']:
+            put_element = copy_fields(element, INBOX_FIELDS)
+            context.append(put_element)
+
+    if context:
+        if 'creationTime' in context[0]:
+            context[0]['creationTimeDate'] = datetime.utcfromtimestamp(context[0]['creationTime'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
+
+        if 'lastUpdateTime' in context[0]:
+            context[0]['lastUpdateTimeDate'] = datetime.utcfromtimestamp(context[0]['lastUpdateTime'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
+
+        for machine in context[0]['machines']:
+            machine['lastConnectedDate'] = datetime.utcfromtimestamp(machine['lastConnected'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
+
+    ec = {
+        'Cybereason.Inbox': context
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Cybereason Inbox', context, INBOX_FIELDS),
+        'EntryContext': ec
+    })
+
+def query_inbox(client, startTime, endTime):
+    json_body = {
+            'startTime': startTime,
+            'endTime': endTime,
+        }
+
+
+    return client.cybereason_api_call('POST', '/rest/detection/inbox', json_body=json_body)
 
 def query_processes_command(client: Client, args: dict):
     machine = str(args.get('machine'))
@@ -654,10 +745,110 @@ def unisolate_machine(client: Client, machine: str) -> Any:
     return response, pylum_id
 
 
+def malop_connection_command(client: Client, args: dict):
+    malop_guids = args.get('malopGuids')
+    date_time = str(args.get('dateTime'))
+    startTime = args.get('startTime',0)
+    endTime = args.get('endTime',9007199254740991)
+
+    filter_input = []
+    if date_time != 'None':
+        date_time_parser = dateparser.parse(date_time)
+        if not date_time_parser:
+            raise DemistoException("dateTime could not be parsed. Please enter a valid time parameter.")
+        date_time_parser = date_time_parser.timestamp()
+        milliseconds = int(date_time_parser * 1000)
+        filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult":True}]
+
+    if isinstance(malop_guids, str):
+        malop_guids = malop_guids.split(',')
+    elif not isinstance(malop_guids, list):
+        raise Exception('malopGuids must be array of strings')
+
+
+
+    response = malop_connection(client, malop_guids, filter_input, startTime, endTime)
+    elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
+    outputs = []
+
+    for item in list(elements.values()):
+        simple_values = dict_safe_get(item, ['simpleValues'], default_return_value={}, return_type=dict)
+        element_values = dict_safe_get(item, ['elementValues'], default_return_value={}, return_type=dict)
+        output = {}
+        for info in CONNECTION_INFO:
+            if info.get('type', '') == 'filterData':
+                output[info['header']] = dict_safe_get(item, ['filterData', 'groupByValue'])
+
+        output = update_output(output, simple_values, element_values, CONNECTION_INFO)
+        outputs.append(output)
+
+    context = []
+    for output in outputs:
+        # Remove whitespaces from dictionary keys
+        context.append({key.translate({32: None}): value for key, value in output.items()})
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Cybereason Malop Connection', outputs, removeNull=True),
+        outputs_prefix='Cybereason.Connection',
+        outputs_key_field='Name',
+        outputs=context)
+
+
+def malop_connection(client: Client, malop_guids: list, filter_value: list, startTime: int, endTime: int) -> dict:
+    json_body = {
+        'queryPath': [
+            {
+                'requestedType': 'MalopProcess',
+                'filters': [],
+                'guidList': malop_guids,
+                'connectionFeature': {
+                    'elementInstanceType': 'MalopProcess',
+                    'featureName': 'suspects'
+                }
+            },
+            {
+                'requestedType': 'Process',
+                'filters': filter_value,
+                "connectionFeature": {
+                    "elementInstanceType": "Process",
+                    "featureName": "connections"
+                }
+            },
+            {
+                "requestedType": "Connection",
+                "filters": [],
+                "isResult": True
+            }
+        ],
+        'totalResultLimit': 1000,
+        'perGroupLimit': 1200,
+        'perFeatureLimit': 1200,
+        'startTime': startTime,
+        'endTime': endTime,
+        'templateContext': 'MALOP',
+        'queryTimeout': None,
+            "customFields": [
+            "ownerMachine",
+            "ownerProcess.user",
+            "localPort",
+            "remotePort",
+            "transportProtocol",
+            "state",
+            "calculatedCreationTime",
+            "endTime",
+            "elementDisplayName"
+        ]
+    }
+
+    return client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+
+
 def malop_processes_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     machine_name = str(args.get('machineName'))
     date_time = str(args.get('dateTime'))
+    startTime = args.get('startTime',0)
+    endTime = args.get('endTime',9007199254740991)
 
     filter_input = []
     if date_time != 'None':
@@ -675,7 +866,7 @@ def malop_processes_command(client: Client, args: dict):
 
     machine_name_list = [machine.lower() for machine in argToList(machine_name)]
 
-    response = malop_processes(client, malop_guids, filter_input)
+    response = malop_processes(client, malop_guids, filter_input, startTime, endTime)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
 
@@ -723,7 +914,7 @@ def malop_processes_command(client: Client, args: dict):
         outputs=context)
 
 
-def malop_processes(client: Client, malop_guids: list, filter_value: list) -> dict:
+def malop_processes(client: Client, malop_guids: list, filter_value: list, startTime: int, endTime: int) -> dict:
     json_body = {
         'queryPath': [
             {
@@ -744,6 +935,8 @@ def malop_processes(client: Client, malop_guids: list, filter_value: list) -> di
         'totalResultLimit': 1000,
         'perGroupLimit': 1200,
         'perFeatureLimit': 1200,
+        'startTime': startTime,
+        'endTime': endTime,
         'templateContext': 'MALOP',
         'queryTimeout': None
     }
@@ -1965,6 +2158,12 @@ def main():
 
         elif demisto.command() == 'cybereason-add-comment':
             return_results(add_comment_command(client, args))
+
+        elif demisto.command() == 'cybereason-malop-connection':
+            return_results(malop_connection_command(client, args))
+            
+        elif demisto.command() == 'cybereason-query-inbox':
+            return_results(query_inbox_command(client, args))
 
         elif demisto.command() == 'cybereason-update-malop-status':
             return_results(update_malop_status_command(client, args))
