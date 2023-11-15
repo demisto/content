@@ -127,7 +127,6 @@ def build_query(query_fields: list, path: list, template_context: str = 'SPECIFI
     endTime = int(endTime) if endTime else 9007199254740991
     results_limit = int(limit) if limit else 10000
     group_limit = int(limit) if limit else 100
-    
 
     query = {
         'customFields': query_fields,
@@ -135,8 +134,8 @@ def build_query(query_fields: list, path: list, template_context: str = 'SPECIFI
         'perGroupLimit': group_limit,
         'queryPath': path,
         'queryTimeout': 120000,
-        'startTime':startTime,
-        'endTime':endTime,
+        'startTime': startTime,
+        'endTime': endTime,
         'templateContext': template_context,
         'totalResultLimit': results_limit
     }
@@ -184,6 +183,7 @@ class Client(BaseClient):
                     error_msg = 'Authentication failed, verify the credentials are correct.'
                 raise ValueError(
                     f'Failed to process the API response. {str(error_msg)} {str(error_content)} - {str(e)}')
+        return None
 
     def error_handler(self, res: requests.Response):
         # Handle error responses gracefully
@@ -303,12 +303,15 @@ def is_probe_connected(client: Client, machine: str) -> dict:
 
     return client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
 
+
 def query_inbox_command(client: Client, args: dict):
-    startTime = args.get('startTime',0)
-    endTime = args.get('endTime',9007199254740991)
-    rangeTime = args.get('rangeTime',False)
-    guid = args.get('guid',False)
-    copy_fields = lambda x, y: dict([ (i,x[i]) for i in x if i in set(y) ])
+    startTime = args.get('startTime', 0)
+    endTime = args.get('endTime', 9007199254740991)
+    rangeTime = args.get('rangeTime', False)
+    guid = args.get('guid', False)
+
+    def copy_fields(x, y):
+        return {i: x[i] for i in x if i in set(y)}
 
     if rangeTime:
         startTime = parse_date_range(rangeTime, to_timestamp=True)[0]
@@ -319,7 +322,6 @@ def query_inbox_command(client: Client, args: dict):
 
     response = query_inbox(client, startTime, endTime)
     response = response['malops']
-
 
     demisto.info(json.dumps(response))
     if isinstance(response, list):
@@ -335,13 +337,16 @@ def query_inbox_command(client: Client, args: dict):
 
     if context:
         if 'creationTime' in context[0]:
-            context[0]['creationTimeDate'] = datetime.utcfromtimestamp(context[0]['creationTime'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
+            context[0]['creationTimeDate'] = datetime.utcfromtimestamp(
+                context[0]['creationTime'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
         if 'lastUpdateTime' in context[0]:
-            context[0]['lastUpdateTimeDate'] = datetime.utcfromtimestamp(context[0]['lastUpdateTime'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
+            context[0]['lastUpdateTimeDate'] = datetime.utcfromtimestamp(
+                context[0]['lastUpdateTime'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
         for machine in context[0]['machines']:
-            machine['lastConnectedDate'] = datetime.utcfromtimestamp(machine['lastConnected'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
+            machine['lastConnectedDate'] = datetime.utcfromtimestamp(
+                machine['lastConnected'] / 1000).strftime('%Y-%m-%d %H:%M:%S')
 
     ec = {
         'Cybereason.Inbox': context
@@ -356,14 +361,15 @@ def query_inbox_command(client: Client, args: dict):
         'EntryContext': ec
     })
 
+
 def query_inbox(client, startTime, endTime):
     json_body = {
-            'startTime': startTime,
-            'endTime': endTime,
-        }
-
+        'startTime': startTime,
+        'endTime': endTime,
+    }
 
     return client.cybereason_api_call('POST', '/rest/detection/inbox', json_body=json_body)
+
 
 def query_processes_command(client: Client, args: dict):
     machine = str(args.get('machine'))
@@ -500,6 +506,7 @@ def query_connections_command(client: Client, args: dict):
             outputs_prefix='Cybereason.Connection',
             outputs_key_field='Name',
             outputs=context)
+    return None
 
 
 def query_connections(client: Client, machine: str, ip: str, filter_input: str) -> dict:
@@ -642,7 +649,7 @@ def poll_malops(client: Client, start_time):
 
 def get_non_edr_malop_data(client, start_time):
     malop_data = poll_malops(client, start_time)
-    non_edr_malop_data = list()
+    non_edr_malop_data = []
     for malops in malop_data['malops']:
         if not malops.get('edr'):
             non_edr_malop_data.append(malops)
@@ -748,8 +755,8 @@ def unisolate_machine(client: Client, machine: str) -> Any:
 def malop_connection_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     date_time = str(args.get('dateTime'))
-    startTime = args.get('startTime',0)
-    endTime = args.get('endTime',9007199254740991)
+    startTime = args.get('startTime', 0)
+    endTime = args.get('endTime', 9007199254740991)
 
     filter_input = []
     if date_time != 'None':
@@ -758,14 +765,12 @@ def malop_connection_command(client: Client, args: dict):
             raise DemistoException("dateTime could not be parsed. Please enter a valid time parameter.")
         date_time_parser = date_time_parser.timestamp()
         milliseconds = int(date_time_parser * 1000)
-        filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult":True}]
+        filter_input = [{"facetName": "creationTime", "filterType": "GreaterThan", "values": [milliseconds], "isResult": True}]
 
     if isinstance(malop_guids, str):
         malop_guids = malop_guids.split(',')
     elif not isinstance(malop_guids, list):
         raise Exception('malopGuids must be array of strings')
-
-
 
     response = malop_connection(client, malop_guids, filter_input, startTime, endTime)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
@@ -827,7 +832,7 @@ def malop_connection(client: Client, malop_guids: list, filter_value: list, star
         'endTime': endTime,
         'templateContext': 'MALOP',
         'queryTimeout': None,
-            "customFields": [
+        "customFields": [
             "ownerMachine",
             "ownerProcess.user",
             "localPort",
@@ -847,8 +852,8 @@ def malop_processes_command(client: Client, args: dict):
     malop_guids = args.get('malopGuids')
     machine_name = str(args.get('machineName'))
     date_time = str(args.get('dateTime'))
-    startTime = args.get('startTime',0)
-    endTime = args.get('endTime',9007199254740991)
+    startTime = args.get('startTime', 0)
+    endTime = args.get('endTime', 9007199254740991)
 
     filter_input = []
     if date_time != 'None':
@@ -1102,6 +1107,7 @@ def kill_process_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1126,6 +1132,7 @@ def quarantine_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1150,6 +1157,7 @@ def unquarantine_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1174,6 +1182,7 @@ def block_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1198,6 +1207,7 @@ def delete_registry_key_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1222,6 +1232,7 @@ def kill_prevent_unsuspend_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n" Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1246,6 +1257,7 @@ def unsuspend_process_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
+        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1370,7 +1382,7 @@ def query_file_command(client: Client, args: dict) -> Any:
 
                 is_signed = None
                 if 'isSigned' in simple_values:
-                    is_signed = True if dict_safe_get(simple_values, ['isSigned', 'values', 0]) == 'true' else False
+                    is_signed = dict_safe_get(simple_values, ['isSigned', 'values', 0]) == 'true'
 
                 cybereason_outputs.append({
                     'Name': file_name,
@@ -1399,6 +1411,7 @@ def query_file_command(client: Client, args: dict) -> Any:
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
+    return None
 
 
 def query_file(client: Client, filters: list) -> dict:
@@ -1489,6 +1502,7 @@ def query_domain_command(client: Client, args: dict) -> Any:
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
+    return None
 
 
 def query_domain(client: Client, filters: list) -> dict:
@@ -1530,7 +1544,7 @@ def query_user_command(client: Client, args: dict):
                 element_values = dict_safe_get(user, ['elementValues'], default_return_value={}, return_type=dict)
 
                 domain = dict_safe_get(simple_values, ['domain', 'values', 0])
-                local_system = True if dict_safe_get(simple_values, ['isLocalSystem', 'values', 0]) == 'true' else False
+                local_system = dict_safe_get(simple_values, ['isLocalSystem', 'values', 0]) == 'true'
                 machine = dict_safe_get(element_values, ['ownerMachine', 'elementValues', 0, 'name'])
                 organization = dict_safe_get(element_values, ['ownerOrganization', 'elementValues', 0, 'name'])
 
@@ -1550,6 +1564,7 @@ def query_user_command(client: Client, args: dict):
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
+    return None
 
 
 def query_user(client: Client, filters: list) -> dict:
@@ -1886,10 +1901,10 @@ def fetch_imagefile_guids(client: Client, processes: list) -> dict:
             "integrity", "isHidden", "logonSession", "remoteSession", "isWhiteListClassification", "matchedWhiteListRuleIds"]
     }
     response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
-    img_file_guids = dict()
+    img_file_guids = {}
     result = response['data']['resultIdToElementDataMap']
     try:
-        for process, details in list(result.items()):
+        for _process, details in list(result.items()):
             image_files = ('' if details['elementValues']['imageFile']['elementValues'] is None else details[
                 'elementValues']['imageFile']['elementValues'])
             for image_file in image_files:
@@ -1903,13 +1918,14 @@ def start_fetchfile_command(client: Client, args: dict):
     malop_id = str(args.get('malopGUID'))
     user_name = str(args.get('userName'))
     response = get_file_guids(client, malop_id)
-    for filename, file_guid in list(response.items()):
+    for _filename, file_guid in list(response.items()):
         api_response = start_fetchfile(client, file_guid, user_name)
         try:
             if api_response['status'] == "SUCCESS":
                 return CommandResults(readable_output="Successfully started fetching file for the given malop")
         except Exception:
             raise Exception("Failed to start fetch file process")
+    return None
 
 
 def start_fetchfile(client: Client, element_id: str, user_name: str) -> dict:
@@ -2012,6 +2028,7 @@ def malware_query_command(client: Client, args: dict):
         if limit_range > 0:
             filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
             return CommandResults(raw_response=filter_response)
+        return None
     else:
         raise DemistoException("Limit cannot be zero or a negative number.")
 
@@ -2161,7 +2178,7 @@ def main():
 
         elif demisto.command() == 'cybereason-malop-connection':
             return_results(malop_connection_command(client, args))
-            
+
         elif demisto.command() == 'cybereason-query-inbox':
             return_results(query_inbox_command(client, args))
 
