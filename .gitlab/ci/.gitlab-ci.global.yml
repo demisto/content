@@ -287,11 +287,16 @@
   - echo "checked out $LAST_UPLOAD_COMMIT"
   - section_end "Clone production content and add it to artifacts"
 
+.remove-content-production-from-artifacts:
+  after_script:
+    - rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
+
 .default-job-settings:
   interruptible: true
   extends:
     - .default-cache
     - .default-before-script
+    - .remove-content-production-from-artifacts
   needs:
     - job: cloning-content-repo-last-upload-commit
       optional: true
@@ -459,6 +464,7 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
+  needs: []
   variables:
     KUBERNETES_CPU_REQUEST: 1000m
   artifacts:

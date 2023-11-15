@@ -332,6 +332,7 @@ xpanse-prepare-testing-bucket:
     - job-done
     - exit $EXIT_CODE
   after_script:
+    - rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
     - !reference [.default-after-script]
     - !reference [.install_ssh_keys]
     - !reference [.ssh-config-setup]
@@ -612,6 +613,7 @@ slack-notify-on-merge:
     - job-done
     - exit $EXIT_CODE
   after_script:
+    - rm -rf ${CI_PROJECT_DIR}/artifacts/content_production
     - source .gitlab/helper_functions.sh
     - !reference [.unlock-machine]
 
