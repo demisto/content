@@ -32,11 +32,18 @@ def main():
         entry_ids = args.get('entry_id', demisto.get(demisto.context(), 'lastCompletedTaskEntries'))
 
         entry_ids = argToList(entry_ids)
+        entries = []
+
         if is_xsiam_or_xsoar_saas():
-            entry_ids = ",".join(entry_ids)
-            entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids})
-        else:
+            try:
+                entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': ",".join(entry_ids)})
+            except ValueError as e:
+                if "Unsupported Command" not in str(e):
+                    raise e
+
+        if not entries:
             entries = [demisto.executeCommand('getEntry', {'id': entry_id}) for entry_id in entry_ids]
+
         error_messages = get_errors(entries)
 
         return_results(CommandResults(
