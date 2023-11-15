@@ -463,5 +463,5 @@ def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
 
         fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'], auto_detect=False)
         assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
-               ' createIndicators will be executed with noUpdate=False.'
+            ' createIndicators will be executed with noUpdate=False.'
         assert "AMAZON$$CIDR" in last_run.call_args[0][0]

@@ -553,7 +553,7 @@ def return_outputs_tagged(similar_incidents: pd.DataFrame, context: dict, tag: O
     }
     if tag is not None:
         return_entry["Tags"] = [tag]
-    return CommandResults(outputs=return_entry)
+    return return_entry
 
 
 def main():

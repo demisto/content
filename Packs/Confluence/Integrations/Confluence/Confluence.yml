@@ -4,7 +4,7 @@ commonfields:
 name: Atlassian Confluence Server
 display: Atlassian Confluence Server
 category: Utilities
-description: Atlassian Confluence Server API
+description: Atlassian Confluence Server API.
 configuration:
 - display: Server URL (e.g. http://1.2.3.4:8090)
   name: url
@@ -142,7 +142,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Content ID
+      description: Content ID.
     outputs:
     - contextPath: Confluence.Content.Result
       description: Content delete result.
@@ -220,7 +220,7 @@ script:
       description: Content version.
       type: String
     description: 'Fetches a list of content using the Confluence Query Language (CQL). For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.73190
 tests:
 - No test - the test requires personal credentials to the confluence account
 fromversion: 5.0.0

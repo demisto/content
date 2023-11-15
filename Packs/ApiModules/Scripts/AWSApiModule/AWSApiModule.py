@@ -71,7 +71,7 @@ class AWSClient:
             command_config['connect_timeout'] = connect_timeout
         if retries or timeout:
             demisto.debug('Merging client config settings: {}'.format(command_config))
-            self.config = self.config.merge(Config(**command_config))
+            self.config = self.config.merge(Config(**command_config))  # type: ignore[arg-type]
 
     def aws_session(self, service, region=None, role_arn=None, role_session_name=None, role_session_duration=None,
                     role_policy=None):

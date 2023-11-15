@@ -491,6 +491,50 @@ def generate_kwargs_for_get_findings(args: dict) -> dict:
     return kwargs
 
 
+def is_advanced_filters_contain_all_fields(filters_list: list) -> bool:
+    """
+    Check if all the filters in the list contain the fields "name", "value", and "comparison".
+
+    Args:
+        filters_list (list): A list of filters.
+
+    Returns:
+        bool: True if all the filters contain the fields "name", "value", and "comparison", False otherwise.
+    """
+    return all(
+        "name" in filter_str
+        and "value" in filter_str
+        and "comparison" in filter_str
+        for filter_str in filters_list
+    )
+
+
+def is_advanced_filter_fields_in_right_order(filters_list: list) -> bool:
+    """
+    Check if the fields "name", "value", and "comparison" appear in the correct order in each filter string in the list.
+
+    Args:
+        filters_list (list): A list of filter strings.
+
+    Returns:
+        bool: True if the fields "name", "value", and "comparison" appear in the correct order
+        in each filter string in the list, False otherwise.
+    """
+    for filter_str in filters_list:
+        name_index = filter_str.find('name=')
+        value_index = filter_str.find('value=')
+        comparison_index = filter_str.find('comparison=')
+        if not name_index < value_index < comparison_index:
+            return False
+    return True
+
+
+def is_valid_advanced_filters(string_filters: str) -> bool:
+    filters_list = string_filters.split(';')
+    return is_advanced_filters_contain_all_fields(filters_list)\
+        and is_advanced_filter_fields_in_right_order(filters_list)
+
+
 def parse_filter_field(string_filters) -> dict:
     """
     Parses string with sets of name, value and comparison into a dict
@@ -500,20 +544,19 @@ def parse_filter_field(string_filters) -> dict:
     Returns:
         A dict of the form {<name1>:[{'Value': <value1>, 'Comparison': <comparison1>}],<name2>:[{...}]}
     """
-    filters = {}
-    regex = re.compile(r'name=([\w\d_:.-]+),value=([\w\d_:.-]*),comparison=([ /\w\d@_,.\*-]+)', flags=re.I)
-    regex_parse_result = regex.findall(string_filters)
-    if regex_parse_result:
-        for name, value, comparison in regex_parse_result:
-            filters.update({
-                name: [{
-                    'Value': value,
-                    'Comparison': comparison.upper()
-                }]
-            })
+    filters: dict = {}
+    if is_valid_advanced_filters(string_filters):
+        try:
+            filters_list = string_filters.split(';')
+            filters = {split_str[0].split('=')[1]: [{'Value': split_str[1].split('=')[1],
+                                                    'Comparison': split_str[2].split('=')[1].upper()}]
+                       for split_str in [filter_str.split(',') for filter_str in filters_list]}
+        except Exception:
+            demisto.error(f'Failed parsing filters: {string_filters}\n error: {Exception}')
     else:
-        demisto.info(f'could not parse filter: {string_filters}')
-
+        demisto.info(f'Advanced filters does not contain all fields or fields are not in\
+            the correct order: name,value,comparison: {string_filters}\
+            Will run with an empty filter.')
     return filters
 
 

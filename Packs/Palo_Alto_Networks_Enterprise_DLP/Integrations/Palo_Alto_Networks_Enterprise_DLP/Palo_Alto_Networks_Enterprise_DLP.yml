@@ -95,7 +95,7 @@ script:
       - OPERATIONAL_ERROR
       - SEND_NOTIFICATION_FAILURE
       - EXCEPTION_DENIED
-      description: The user feedback
+      description: The user feedback.
     - name: user_id
       required: true
       description: The ID of the user the feedback is collected from.
@@ -106,7 +106,7 @@ script:
     - name: dlp_channel
       description: The DLP channel, needed only for granting exemptions.
     - name: error_details
-      description: Error details if status is SEND_NOTIFICATION_FAILURE
+      description: Error details if status is SEND_NOTIFICATION_FAILURE.
     outputs:
     - contextPath: DLP.IncidentUpdate.success
       description: Whether the update was successful.
@@ -149,7 +149,7 @@ script:
   - name: pan-dlp-reset-last-run
     arguments: []
     description: Resets the fetch incidents last run value, which resets the fetch to its initial fetch state.
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.75921
   isFetchSamples: true
   longRunning: true
   script: '-'

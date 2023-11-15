@@ -11,7 +11,6 @@ import requests
 import warnings
 from dateutil.parser import parse
 import urllib3
-import arrow
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -27,7 +26,8 @@ else:
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
-DEFAULT_DATETIME_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSSZ'
+ES_DEFAULT_DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSSSS'
+PYTHON_DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
@@ -64,53 +64,14 @@ MAP_LABELS = param.get('map_labels', True)
 FETCH_QUERY = RAW_QUERY or FETCH_QUERY_PARM
 
 
-def prepare_datetime_format(datetime_format: str):
-    """Converting the format from ES to Python so that the Arrow format function will format it correctly.
-
-    Args:
-        datetime_format: An ES date time format for example 'yyyy-MM-dd HH:mm:ss'. see here for more examples:
-        https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats.
-
-    Returns:
-        A datetime format in python from 'yyyy-MM-dd HH:mm:ss' => 'YYYY-MM-DD HH:mm:ss'.
-    """
-    return datetime_format.replace('yy', 'YY').replace('dd', 'DD')
-
-
-def get_datetime_field_format(es: Elasticsearch, index: str = FETCH_INDEX, field: str = TIME_FIELD):
-    """Returns the datetime format of a field in an index.
-    In case of two indexes with the same date fields (created_at) and different custom types, The first custom type will return.
-    for example {
-        'my_index': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd HH:mm:ss', 'type': 'date'}}}},
-        'my_index1': {'mappings': {'properties': {'created_at': {'format': 'yyyy-MM-dd', 'type': 'date'}}}}
-    } => 'yyyy-MM-dd HH:mm:ss'
-
-    Args:
-        es: An ES object.
-        index: The index from which to return the mapper.
-        field: The field from which to return the format.
-
-    Returns:
-        String representing the date time format for example 'yyyy-MM-dd HH:mm:ss'.
-    """
-    mapping = es.indices.get_mapping(index=index)
-
-    for mapper in mapping.values():
-        if datetime_format := demisto.get(mapper, f'mappings.properties.{field}.format'):
-            return datetime_format
-
-    return DEFAULT_DATETIME_FORMAT
-
-
-def convert_date_to_timestamp(date, datetime_format: str = DEFAULT_DATETIME_FORMAT):
+def convert_date_to_timestamp(date):
     """converts datetime to the relevant timestamp format.
 
     Args:
         date(datetime): A datetime object setting up the last fetch time
-        datetime_format(str): The datetime format
 
     Returns:
-        (num).The formatted timestamp
+        (num | str): The formatted timestamp
     """
     # this theoretically shouldn't happen but just in case
     if str(date).isdigit():
@@ -123,7 +84,7 @@ def convert_date_to_timestamp(date, datetime_format: str = DEFAULT_DATETIME_FORM
         return int(date.timestamp() * 1000)
 
     # In case of 'Simple-Date'.
-    return arrow.get(date).format(prepare_datetime_format(datetime_format))
+    return datetime.strftime(date, PYTHON_DEFAULT_DATETIME_FORMAT)
 
 
 def timestamp_to_date(timestamp_string):
@@ -305,7 +266,6 @@ def search_command(proxies):
     if timestamp_range_end or timestamp_range_start:
         time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end,
                                          time_field=timestamp_field,
-                                         datetime_format=get_datetime_field_format(es, index, timestamp_field),
                                          )
 
     if query_dsl:
@@ -416,7 +376,7 @@ def test_time_field_query(es):
 
     if total_results == 0:
         # failed in getting the TIME_FIELD
-        return_error(f"Fetch incidents test failed.\nDate field value incorrect [{TIME_FIELD}].")
+        raise Exception(f"Fetch incidents test failed.\nDate field value incorrect [{TIME_FIELD}].")
 
     else:
         return response
@@ -681,30 +641,31 @@ def format_to_iso(date_string):
 
 
 def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_TIME,
-                   time_range_end=None, time_field=TIME_FIELD, datetime_format: str = DEFAULT_DATETIME_FORMAT) -> Dict:
+                   time_range_end=None, time_field=TIME_FIELD) -> Dict:
     """
     Creates the time range filter's dictionary based on the last fetch and given params.
     The filter is using timestamps with the following logic:
         start date (gt) - if this is the first fetch: use time_range_start param if provided, else use fetch time param.
                           if this is not the fetch: use the last fetch provided
         end date (lt) - use the given time range end param.
+        When the `time_method` parameter is set to `Simple-Date` in order to avoid being related to the field datetime format,
+            we add the format key to the query dict.
     Args:
 
         last_fetch (str): last fetch time stamp
         time_range_start (str): start of time range
         time_range_end (str): end of time range
         time_field (str): The field on which the filter the results
-        datetime_format: (str) The datetime format
 
 
     Returns:
-        dictionary (Ex. {"range":{'gt': 1000 'lt':1001}})
+        dictionary (Ex. {"range":{'gt': 1000 'lt': 1001}})
     """
     range_dict = {}
     if not last_fetch and time_range_start:  # this is the first fetch
         start_date = dateparser.parse(time_range_start)
 
-        start_time = convert_date_to_timestamp(start_date, datetime_format)
+        start_time = convert_date_to_timestamp(start_date)
     else:
         start_time = last_fetch
 
@@ -713,8 +674,11 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
 
     if time_range_end:
         end_date = dateparser.parse(time_range_end)
-        end_time = convert_date_to_timestamp(end_date, datetime_format)
+        end_time = convert_date_to_timestamp(end_date)
         range_dict['lt'] = end_time
+
+    if TIME_METHOD == 'Simple-Date':
+        range_dict['format'] = ES_DEFAULT_DATETIME_FORMAT
 
     return {'range': {time_field: range_dict}}
 
@@ -740,7 +704,7 @@ def fetch_incidents(proxies):
     last_fetch = last_run.get('time') or FETCH_TIME
 
     es = elasticsearch_builder(proxies)
-    time_range_dict = get_time_range(time_range_start=last_fetch, datetime_format=get_datetime_field_format(es))
+    time_range_dict = get_time_range(time_range_start=last_fetch)
 
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
@@ -874,6 +838,53 @@ def search_eql_command(args, proxies):
     )
 
 
+def index_document(args, proxies):
+    """
+    Indexes a given document into an Elasticsearch index.
+    return: Result returned from elasticsearch lib
+    """
+    index = args.get('index_name')
+    doc = args.get('document')
+    doc_id = args.get('id', '')
+    es = elasticsearch_builder(proxies)
+    # Because of using elasticsearch lib <8 'document' param is called 'body'
+    if doc_id:
+        response = es.index(index=index, id=doc_id, body=doc)
+    else:
+        response = es.index(index=index, body=doc)
+    return response
+
+
+def index_document_command(args, proxies):
+    resp = index_document(args, proxies)
+    index_context = {
+        'id': resp.get('_id', ''),
+        'index': resp.get('_index', ''),
+        'version': resp.get('_version', ''),
+        'result': resp.get('result', '')
+    }
+    human_readable = {
+        'ID': index_context.get('id'),
+        'Index name': index_context.get('index'),
+        'Version': index_context.get('version'),
+        'Result': index_context.get('result')
+    }
+    headers = [str(k) for k in human_readable]
+    readable_output = tableToMarkdown(
+        name="Indexed document",
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Elasticsearch.Index',
+        outputs=index_context,
+        raw_response=resp,
+        outputs_key_field='id'
+    )
+
+
 def main():
     proxies = handle_proxy()
     proxies = proxies if proxies else None
@@ -889,6 +900,8 @@ def main():
             return_results(get_mapping_fields_command())
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
+        elif demisto.command() == 'es-index':
+            return_results(index_document_command(demisto.args(), proxies))
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '

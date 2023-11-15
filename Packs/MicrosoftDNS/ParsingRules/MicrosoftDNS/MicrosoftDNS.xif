@@ -1,4 +1,4 @@
-[INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_dns_raw", no_hit=keep]
+[INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_dns_raw", no_hit=drop]
 // Support only date time of format: MM/dd/yyyy hh:mm:ss [AM|PM]. For example: 6/10/2022 5:11:49 AM
 filter _raw_log ~= "\d+\/\d+\/\d+\s\d+\:\d+\:\d+ \w{2}"
 | alter 

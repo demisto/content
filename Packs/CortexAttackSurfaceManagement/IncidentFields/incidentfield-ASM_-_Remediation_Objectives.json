@@ -16,7 +16,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Corresponds with remediation option for the main data collection task."
+            "_comment": "Mandatory: Corresponds with remediation option for the main data collection task."
         },
         {
             "displayName": "statement",
@@ -30,7 +30,7 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150,
-            "_comment": "Summary of the remediation action."
+            "_comment": "Mandatory: Summary of the remediation action."
         }
     ],
     "content": true,
@@ -39,7 +39,7 @@
         {},
         {}
     ],
-    "description": "Remediation objectives uses to display the remediation actions to the end user",
+    "description": "Remediation objectives uses to display the remediation actions to the end user.",
     "editForm": true,
     "group": 0,
     "hidden": false,

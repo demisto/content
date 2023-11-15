@@ -737,5 +737,8 @@
         }
       }
     }
+  },
+  "get_mapping_fields": {
+    "RSA Netwitness incident": {"status": "", "assignee": ""}
   }
 }

@@ -16,22 +16,12 @@
 				"factor": "network_security",
 				"direction": "drops",
 				"grade_letter": "C",
-				"score_impact": -3,
-				"direction": "drops",
-				"score": 77,
-				"grade_letter": "C",
-				"factor": "network_security",
 				"score_impact": -3
 			}, {
 				"score": 69,
 				"factor": "ip_reputation",
 				"direction": "drops",
 				"grade_letter": "D",
-				"score_impact": -3,
-				"direction": "drops",
-				"score": 69,
-				"grade_letter": "D",
-				"factor": "ip_reputation",
 				"score_impact": -3
 			}]
 		}, {
@@ -51,11 +41,6 @@
 				"factor": "network_security",
 				"direction": "drops",
 				"grade_letter": "C",
-				"score_impact": -2,
-				"direction": "drops",
-				"score": 78,
-				"grade_letter": "C",
-				"factor": "network_security",
 				"score_impact": -2
 			}]
 		}],

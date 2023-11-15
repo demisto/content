@@ -34,12 +34,13 @@ tasks:
       - "25"
       - "27"
       - "28"
+      - "29"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 3280,
-          "y": 50
+          "x": 3080,
+          "y": 215
         }
       }
     note: false
@@ -66,8 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3490,
-          "y": 545
+          "x": 3080,
+          "y": 720
         }
       }
     note: false
@@ -116,7 +117,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -370,
+          "x": 3080,
           "y": 370
         }
       }
@@ -179,7 +180,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 960,
           "y": 370
         }
       }
@@ -228,7 +229,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 2660,
           "y": 370
         }
       }
@@ -277,7 +278,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1390,
           "y": 370
         }
       }
@@ -325,7 +326,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 1820,
           "y": 370
         }
       }
@@ -370,7 +371,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
+          "x": 2250,
           "y": 370
         }
       }
@@ -417,7 +418,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3060,
+          "x": 3920,
           "y": 370
         }
       }
@@ -460,7 +461,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3490,
+          "x": 540,
           "y": 370
         }
       }
@@ -505,7 +506,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3920,
+          "x": 4340,
           "y": 370
         }
       }
@@ -552,7 +553,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4350,
+          "x": 4770,
           "y": 370
         }
       }
@@ -592,7 +593,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4780,
+          "x": 5200,
           "y": 370
         }
       }
@@ -653,7 +654,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5210,
+          "x": 5630,
           "y": 370
         }
       }
@@ -685,7 +686,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5640,
+          "x": 110,
           "y": 370
         }
       }
@@ -733,8 +734,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6070,
-          "y": 370
+          "x": 3080,
+          "y": 545
         }
       }
     note: false
@@ -774,8 +775,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6407.5,
-          "y": 195
+          "x": 6077.5,
+          "y": 370
         }
       }
     note: false
@@ -809,8 +810,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6520,
-          "y": 370
+          "x": 6190,
+          "y": 540
         }
       }
     note: false
@@ -852,8 +853,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 370
+          "x": 3500,
+          "y": 545
         }
       }
     note: false
@@ -899,8 +900,53 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 3500,
           "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 3136d7d0-e7cc-49e2-8a83-8ff39ee4c834
+    type: playbook
+    task:
+      id: 3136d7d0-e7cc-49e2-8a83-8ff39ee4c834
+      version: -1
+      name: Detonate File - ThreatGrid v2
+      description: Detonate one or more files using the ThreatGrid integration. This playbook returns relevant reports to the War Room and file reputations to the context data. The detonation supports the following file types - EXE, DLL, JAR, JS, PDF, DOC, DOCX, RTF, XLS, PPT, PPTX, XML, ZIP, VBN, SEP, XZ, GZ, BZ2, TAR, MHTML, SWF, LNK, URL, MSI, JTD, JTT, JTDC, JTTC, HWP, HWT, HWPX, BAT, HTA, PS1, VBS, WSF, JSE, VBE, CHM.
+      playbookName: Detonate File - ThreatGrid v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      File:
+        complex:
+          root: inputs.File
+      interval:
+        simple: "60"
+      timeout:
+        simple: "900"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 545
         }
       }
     note: false
@@ -916,10 +962,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
-        "width": 7270,
-        "x": -370,
-        "y": 50
+        "height": 570,
+        "width": 6460,
+        "x": 110,
+        "y": 215
       }
     }
   }

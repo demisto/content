@@ -1,5 +1,6 @@
 Simple web server with a file uploading console to store small files.
 This is helpful to make your environment ready for testing purpose for your playbooks or automations to download files from a web server.
+
 ## Configure Web File Repository on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -10,7 +11,7 @@ This is helpful to make your environment ready for testing purpose for your play
     | --- | --- | --- |
     | Incident type |  | False |
     | Long running instance |  | False |
-    | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;) |  | True |
+    | Port mapping (&lt;port&gt; or &lt;host port&gt;:&lt;docker port&gt;) | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a port, an unused port for Web File Repository will automatically be generated when the instance is saved. However, if using an engine, you must enter a port.  | True |
     | User ID for Read/Write |  | False |
     | Password |  | False |
     | User ID for Read-Only |  | False |
@@ -30,6 +31,7 @@ This is helpful to make your environment ready for testing purpose for your play
 ## How to Access the File Management UI
 
 ### Access the File Management UI by URL and Port (HTTP)
+
 In a web browser, go to **`http://<cortex-xsoar-server-address>:<listen_port>`**.
 
 ### Access the File Management UI by Instance Name (HTTPS)
@@ -37,16 +39,21 @@ In a web browser, go to **`http://<cortex-xsoar-server-address>:<listen_port>`**
 To access the File Management UI by instance name, make sure ***Instance execute external*** is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-3. In a web browser, go to `https://<cortex-xsoar-address>/instance/execute/<instance_name>/`.
+2. (For Cortex XSOAR 6.x) In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, 
+   (For Cortex XSOAR 6.x) go to `https://<cortex-xsoar-address>/instance/execute/<instance_name>/`.
 
    In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc_<account name>/instance/execute/<instance_name>/`
 
-
+   (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+   
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### wfr-status
+
 ***
 Get the service status
 
@@ -54,6 +61,7 @@ Get the service status
 #### Base Command
 
 `wfr-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -75,6 +83,7 @@ Get the service status
 | WebFileRepository.Status.ServerPort | number | The port number of the service | 
 
 ### wfr-cleanup
+
 ***
 Remove all the files from the repository
 
@@ -82,6 +91,7 @@ Remove all the files from the repository
 #### Base Command
 
 `wfr-cleanup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,7 +101,9 @@ Remove all the files from the repository
 #### Context Output
 
 There is no context output for this command.
+
 ### wfr-upload-file
+
 ***
 Upload a file to the repository
 
@@ -99,6 +111,7 @@ Upload a file to the repository
 #### Base Command
 
 `wfr-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -112,7 +125,9 @@ Upload a file to the repository
 #### Context Output
 
 There is no context output for this command.
+
 ### wfr-upload-files
+
 ***
 Upload files to the repository
 
@@ -120,6 +135,7 @@ Upload files to the repository
 #### Base Command
 
 `wfr-upload-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -132,7 +148,9 @@ Upload files to the repository
 #### Context Output
 
 There is no context output for this command.
+
 ### wfr-list-files
+
 ***
 List files in the repository
 
@@ -140,6 +158,7 @@ List files in the repository
 #### Base Command
 
 `wfr-list-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,6 +177,7 @@ List files in the repository
 | WebFileRepository.Files.LastModified | date | The last modified time | 
 
 ### wfr-remove-files
+
 ***
 Remove files from the repository
 
@@ -165,6 +185,7 @@ Remove files from the repository
 #### Base Command
 
 `wfr-remove-files`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -175,7 +196,9 @@ Remove files from the repository
 #### Context Output
 
 There is no context output for this command.
+
 ### wfr-download-file
+
 ***
 Download a file from the repository
 
@@ -183,6 +206,7 @@ Download a file from the repository
 #### Base Command
 
 `wfr-download-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -194,7 +218,9 @@ Download a file from the repository
 #### Context Output
 
 There is no context output for this command.
+
 ### wfr-archive-zip
+
 ***
 Download a file to which all the files are archived
 
@@ -202,6 +228,7 @@ Download a file to which all the files are archived
 #### Base Command
 
 `wfr-archive-zip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -212,7 +239,9 @@ Download a file to which all the files are archived
 #### Context Output
 
 There is no context output for this command.
+
 ### wfr-reset
+
 ***
 Reset the repository data
 
@@ -220,6 +249,7 @@ Reset the repository data
 #### Base Command
 
 `wfr-reset`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

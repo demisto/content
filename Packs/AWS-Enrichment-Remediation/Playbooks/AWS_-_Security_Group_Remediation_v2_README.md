@@ -29,7 +29,9 @@ This playbook does not use any commands.
 | InstanceID | ID of the AWS EC2 instance. |  | Required |
 | Port | TCP/UDP port to be restricted. | alert.remoteport | Required |
 | Protocol | Protocol of the port to be restricted. |  | Required |
-| PublicIP | Public IP address of the EC2 instance. | alert.remoteip | Optional |
+| PublicIP | Public IP address of the EC2 instance. | alert.remoteip | Required |
+| AWSAssumeArn | Name of an AWS role to assume \(should be the same for all organizations\). |  | Optional |
+| Region | Region where EC2 instance is present. |  | Optional |
 
 ## Playbook Outputs
 

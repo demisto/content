@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 938b52b4-c7af-4d75-8724-cc015cda9bfa
+    taskid: 09b3b87e-0bfe-4ebc-87df-984b56058aba
     type: start
     task:
-      id: 938b52b4-c7af-4d75-8724-cc015cda9bfa
+      id: 09b3b87e-0bfe-4ebc-87df-984b56058aba
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -20,19 +21,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1771af49-8703-4635-8166-02f33183cba0
+    taskid: 231009e7-a436-4039-89ec-00954458d752
     type: regular
     task:
-      id: 1771af49-8703-4635-8166-02f33183cba0
+      id: 231009e7-a436-4039-89ec-00954458d752
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -46,27 +52,28 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 200
+          "x": 50,
+          "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 823b4680-d95a-4d1d-8d7e-e7a3c41fc67f
+    taskid: 83bc227b-fb5b-434b-8a27-a9804950f217
     type: regular
     task:
-      id: 823b4680-d95a-4d1d-8d7e-e7a3c41fc67f
+      id: 83bc227b-fb5b-434b-8a27-a9804950f217
       version: -1
       name: general search
       description: search index using Elasticsearch
@@ -78,33 +85,32 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      explain: {}
-      fields: {}
       index:
         simple: customer
-      page: {}
       query:
         simple: '*'
-      size: {}
-      sort-field: {}
-      sort-order: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: e87d351f-7817-48bc-8d51-a63814495065
+    taskid: 2a7d33b6-35c3-42c2-862c-c2e0f390500f
     type: condition
     task:
-      id: e87d351f-7817-48bc-8d51-a63814495065
+      id: 2a7d33b6-35c3-42c2-862c-c2e0f390500f
       version: -1
       name: Verify results
       type: condition
@@ -128,19 +134,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 540
+          "x": 50,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: db6a432f-3158-439a-806f-cdd4aad3fd53
+    taskid: 5ed01906-d67b-492d-8a07-f54198d0a343
     type: regular
     task:
-      id: db6a432f-3158-439a-806f-cdd4aad3fd53
+      id: 5ed01906-d67b-492d-8a07-f54198d0a343
       version: -1
       name: search - sort descending
       description: search index using Elasticsearch
@@ -152,11 +163,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      explain: {}
-      fields: {}
       index:
         simple: customer
-      page: {}
       query:
         simple: check
       size:
@@ -169,19 +177,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 870
+          "x": 50,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7aa7cece-04c9-47b6-8bd1-7463e172adf9
+    taskid: d02eb2be-36b4-4f17-89da-03e2f44ddf1c
     type: condition
     task:
-      id: 7aa7cece-04c9-47b6-8bd1-7463e172adf9
+      id: d02eb2be-36b4-4f17-89da-03e2f44ddf1c
       version: -1
       name: verify decend
       type: condition
@@ -205,41 +218,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1030
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b35308bb-acf6-48a9-825e-2849f8609bf0
+    taskid: dd28d35f-9584-4a2a-8e93-70dc042f3915
     type: title
     task:
-      id: b35308bb-acf6-48a9-825e-2849f8609bf0
+      id: dd28d35f-9584-4a2a-8e93-70dc042f3915
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1750
+          "x": 50,
+          "y": 2330
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0e464169-9978-4860-8b4b-d669f7225c95
+    taskid: d2fe25c2-3fc0-4fa3-8acd-d7f3c0c6e077
     type: regular
     task:
-      id: 0e464169-9978-4860-8b4b-d669f7225c95
+      id: d2fe25c2-3fc0-4fa3-8acd-d7f3c0c6e077
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -253,27 +277,28 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 710
+          "x": 50,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7d04f0c5-9f39-479d-8c24-7fc121739064
+    taskid: 9f08cb30-5ef8-4aea-89ef-dc64b969089d
     type: regular
     task:
-      id: 7d04f0c5-9f39-479d-8c24-7fc121739064
+      id: 9f08cb30-5ef8-4aea-89ef-dc64b969089d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -287,27 +312,28 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1200
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 183faa74-0d37-4484-8785-1bdb366453ee
+    taskid: c58e854d-e241-484b-8ccd-6c2ac28beb7b
     type: regular
     task:
-      id: 183faa74-0d37-4484-8785-1bdb366453ee
+      id: c58e854d-e241-484b-8ccd-6c2ac28beb7b
       version: -1
       name: search - sort ascending
       description: search index using Elasticsearch
@@ -319,11 +345,8 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      explain: {}
-      fields: {}
       index:
         simple: customer
-      page: {}
       query:
         simple: check
       size:
@@ -336,19 +359,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1360
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: b5e5d359-d90e-4da8-8d44-bb55823ecbe4
+    taskid: bd46370e-039f-4513-8da4-85a7ca3c8a5a
     type: condition
     task:
-      id: b5e5d359-d90e-4da8-8d44-bb55823ecbe4
+      id: bd46370e-039f-4513-8da4-85a7ca3c8a5a
       version: -1
       name: verify ascend
       type: condition
@@ -356,7 +384,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "15"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -372,21 +400,143 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 1540
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 85c3cfd5-4e25-4b2a-8653-18bba1088649
+    type: regular
+    task:
+      id: 85c3cfd5-4e25-4b2a-8653-18bba1088649
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: a46f8e62-f7ad-41d2-8a06-ac3d1f615a44
+    type: regular
+    task:
+      id: a46f8e62-f7ad-41d2-8a06-ac3d1f615a44
+      version: -1
+      name: Index a document
+      description: Indexes a document into an Elasticsearch index.
+      script: Elasticsearch v2|||es-index
+      type: regular
+      iscommand: true
+      brand: Elasticsearch v2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      document:
+        simple: ${incident}
+      id:
+        simple: "1234"
+      index_name:
+        simple: test-xsoar
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: cf1057dc-a48f-465e-807c-128c176680ed
+    type: condition
+    task:
+      id: cf1057dc-a48f-465e-807c-128c176680ed
+      version: -1
+      name: verify index
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Elasticsearch.Index.id
+            iscontext: true
+          right:
+            value:
+              simple: "1234"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "14_15_yes": 0.89
+    },
     "paper": {
       "dimensions": {
-        "height": 1765,
-        "width": 390,
-        "x": 450,
+        "height": 2345,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
@@ -394,3 +544,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

@@ -32,8 +32,8 @@ class TestPrivatePacks:
 
         upload_packs_private.add_private_packs_to_index('test', 'private_test')
 
-        index_call_args = upload_packs_private.update_index_folder.call_args[0]  # pylint: disable=no-member
-        index_call_count = upload_packs_private.update_index_folder.call_count  # pylint: disable=no-member
+        index_call_args = upload_packs_private.update_index_folder.call_args[0]  # type: ignore[attr-defined]  # pylint: disable=no-member  # noqa: E501
+        index_call_count = upload_packs_private.update_index_folder.call_count  # type: ignore[attr-defined]  # pylint: disable=no-member  # noqa: E501
 
         assert index_call_count == 1
         assert index_call_args[0] == 'test'

@@ -140,28 +140,28 @@ pagination_response = \
 
 
 response_fetch = [({}),
-        ({"data":
-            {"phisherMessages":
-                {
-                    "nodes":
-                        [
-                            {"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "events":
-                                [
-                                    {"causer": 'null', "createdAt": "2021-08-08T14:06:11Z", "eventType": "CREATED",
+                  ({"data":
+                    {"phisherMessages":
+                     {
+                         "nodes":
+                         [
+                             {"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "events":
+                              [
+                                 {"causer": 'null', "createdAt": "2021-08-08T14:06:11Z", "eventType": "CREATED",
                                      "id": "da4b66b2-adef-438d-83d0-e8d0067cd822", "triggerer": 'null'},
-                                    {"causer": "KB4:URGENCY", "createdAt": "2021-08-08T14:06:31Z", "eventType": "OTHER", "id":
+                                 {"causer": "KB4:URGENCY", "createdAt": "2021-08-08T14:06:31Z", "eventType": "OTHER", "id":
                                      "40e32f01-44ce-498a-9731-0ef8aeb07fbc", "triggerer": 'null'},
-                                    {"causer": "E K", "createdAt": "2021-08-08T14:06:54Z", "eventType": "OTHER",
+                                 {"causer": "E K", "createdAt": "2021-08-08T14:06:54Z", "eventType": "OTHER",
                                      "id": "82b81815-eebb-4ac5-b86d-0e70a72d518e", "triggerer": 'null'}],
-                             "from": "ek@gmail.com", "id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b",
-                             "phishmlReport": 'null', "pipelineStatus": "PROCESSED", "severity": "UNKNOWN_SEVERITY", "subject":
-                             "Fwd: We have received your IT request", "tags": [{"name": "KB4:SECURITY", "type": "STANDARD"},
-                                                                               {"name": "KB4:URGENCY", "type": "STANDARD"}]}
-                        ],
-                    "pagination": {"page": 1, "pages": 1, "per": 100, "totalCount": 31}}}})]
+                              "from": "ek@gmail.com", "id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b",
+                              "phishmlReport": 'null', "pipelineStatus": "PROCESSED", "severity": "UNKNOWN_SEVERITY", "subject":
+                              "Fwd: We have received your IT request", "tags": [{"name": "KB4:SECURITY", "type": "STANDARD"},
+                                                                                {"name": "KB4:URGENCY", "type": "STANDARD"}]}
+                         ],
+                         "pagination": {"page": 1, "pages": 1, "per": 100, "totalCount": 31}}}})]
 expected_fetch = [([]),
-       ([{'name': 'Fwd: We have received your IT request', 'occurred': '2021-08-08T14:06:11+00:00', 'rawJSON':
-           '{"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "from": "ek@gmail.com", \
+                  ([{'name': 'Fwd: We have received your IT request', 'occurred': '2021-08-08T14:06:11+00:00', 'rawJSON':
+                     '{"actionStatus": "RECEIVED", "category": "UNKNOWN", "comments": [], "from": "ek@gmail.com", \
 "id": "bac9cf67-fa8e-46d1-ad67-69513fc44b5b", "phishmlReport": "null", "pipelineStatus": "PROCESSED", "severity": \
 "UNKNOWN_SEVERITY", "subject": "Fwd: We have received your IT request", "tags": [{"name": "KB4:SECURITY", "type": \
 "STANDARD"}, {"name": "KB4:URGENCY", "type": "STANDARD"}], "created at": "2021-08-08T14:06:11+00:00"}'}])]

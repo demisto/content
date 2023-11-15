@@ -1,6 +1,6 @@
 from WAB import main, Client
 import demistomock as demisto
-from CommonServerPython import BaseClient
+from CommonServerPython import *
 from typing import Any
 
 
@@ -28,7 +28,7 @@ def test_wab_get_device(mocker):
 
     def mock_http_request(*args, **kwargs):
         assert args[0] == "get"
-        assert args[1] == "devices/012345"
+        assert args[1] == "/devices/012345"
         assert kwargs["headers"].get("X-Auth-Key") == "key"
         assert kwargs["headers"].get("X-Auth-User") == "user"
 
@@ -60,7 +60,10 @@ def test_wab_get_device(mocker):
 
 
 def test_commands(mocker):
-    mocker.patch.object(demisto, "args", return_value={})
+    """test that all commands names match an existing method."""
+    mocker.patch.object(demisto, "args", return_value={
+        "session_account_type": "account"  # required for add_session_target_to_target_group
+    })
     mocker.patch.object(
         demisto,
         "params",
@@ -75,6 +78,11 @@ def test_commands(mocker):
 
     mocker.patch.object(Client, "_http_request", return_value={})
 
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_result = mocker.patch.object(demisto, "results")
+    main()
+    assert mock_result.call_count == 1
+
     for name in command_names:
         mocker.patch.object(demisto, "results")
         mocker.patch.object(demisto, "command", return_value=name)
@@ -85,104 +93,132 @@ def test_commands(mocker):
 
         assert mock_result.call_count == 1
 
+    for deprecated in deprecated_names:
+        mocker.patch.object(demisto, "command", return_value=deprecated)
+
+        mock_result = mocker.patch("WAB.return_results")
+        main()
+
+        assert mock_result.call_count == 1
+
+
+deprecated_names = {
+    "wab-get-metadata-of-one-or-multiple-sessions"
+}
 
 command_names = {
-    "wab-add-account-in-global-domain",
-    "wab-add-account-to-local-domain-of-application",
-    "wab-add-account-to-local-domain-on-device",
-    "wab-add-authorization",
-    "wab-add-device",
-    "wab-add-notification",
-    "wab-add-user",
-    "wab-cancel-accepted-approval",
-    "wab-cancel-approval-request",
-    "wab-cancel-scan-job",
-    "wab-check-if-approval-is-required-for-target",
-    "wab-create-session-request",
-    "wab-delete-account",
-    "wab-delete-account-from-global-domain",
-    "wab-delete-account-from-local-domain-of-application",
-    "wab-delete-account-from-local-domain-of-device",
-    "wab-delete-application",
-    "wab-delete-authorization",
-    "wab-delete-device",
-    "wab-delete-notification",
-    "wab-delete-pending-or-live-session-request",
-    "wab-delete-resource-from-global-domain-account",
-    "wab-delete-service-from-device",
-    "wab-edit-account-in-global-domain",
-    "wab-edit-account-on-local-domain-of-application",
-    "wab-edit-account-on-local-domain-of-device",
-    "wab-edit-application",
-    "wab-edit-authorization",
-    "wab-edit-device",
-    "wab-edit-notification",
-    "wab-edit-service-of-device",
-    "wab-edit-session",
-    "wab-extend-duration-time-to-get-passwords-for-target",
-    "wab-generate-trace-for-session",
-    "wab-get-account-of-global-domain",
-    "wab-get-account-reference",
+    "wab-add-session-target-to-target-group",
+    "wab-add-password-target-to-target-group",
+    "wab-add-restriction-to-target-group",
     "wab-get-account-references",
-    "wab-get-accounts-of-global-domain",
+    "wab-get-account-reference",
     "wab-get-all-accounts",
-    "wab-get-all-accounts-on-device-local-domain",
-    "wab-get-application",
-    "wab-get-application-account",
+    "wab-get-one-account",
+    "wab-delete-account",
     "wab-get-application-accounts",
+    "wab-add-account-to-local-domain-of-application",
+    "wab-get-application-account",
+    "wab-edit-account-on-local-domain-of-application",
+    "wab-delete-account-from-local-domain-of-application",
     "wab-get-applications",
-    "wab-get-approval-request-pending-for-user",
+    "wab-get-application",
+    "wab-edit-application",
+    "wab-delete-application",
     "wab-get-approvals",
     "wab-get-approvals-for-all-approvers",
+    "wab-reply-to-approval-request",
     "wab-get-approvals-for-approver",
-    "wab-get-auth-domain",
+    "wab-cancel-accepted-approval",
+    "wab-get-approval-request-pending-for-user",
+    "wab-make-new-approval-request-to-access-target",
+    "wab-cancel-approval-request",
+    "wab-notify-approvers-linked-to-approval-request",
+    "wab-check-if-approval-is-required-for-target",
     "wab-get-auth-domains",
-    "wab-get-authentication",
+    "wab-get-auth-domain",
     "wab-get-authentications",
-    "wab-get-authorization",
+    "wab-get-authentication",
     "wab-get-authorizations",
-    "wab-get-certificate-on-device",
-    "wab-get-certificates-on-device",
+    "wab-add-authorization",
+    "wab-get-authorization",
+    "wab-edit-authorization",
+    "wab-delete-authorization",
     "wab-get-checkout-policies",
     "wab-get-checkout-policy",
-    "wab-get-device",
-    "wab-get-devices",
-    "wab-get-global-domain",
-    "wab-get-global-domains",
-    "wab-get-information-about-wallix-bastion-license",
-    "wab-get-latest-snapshot-of-running-session",
-    "wab-get-ldap-user-of-domain",
-    "wab-get-ldap-users-of-domain",
-    "wab-get-metadata-of-one-or-multiple-sessions",
-    "wab-get-notification",
-    "wab-get-notifications",
-    "wab-get-object-to-onboard",
-    "wab-get-one-account",
+    "wab-getx509-configuration-infos",
+    "wab-uploadx509-configuration",
+    "wab-updatex509-configuration",
+    "wab-resetx509-configuration",
+    "wab-get-current-serial-configuration-number-of-bastion",
+    "wab-get-all-accounts-on-device-local-domain",
+    "wab-add-account-to-local-domain-on-device",
     "wab-get-one-account-on-device-local-domain",
-    "wab-get-profile",
-    "wab-get-profiles",
-    "wab-get-scan",
-    "wab-get-scanjob",
-    "wab-get-scanjobs",
-    "wab-get-scans",
-    "wab-get-service-of-device",
+    "wab-edit-account-on-local-domain-of-device",
+    "wab-delete-account-from-local-domain-of-device",
+    "wab-get-certificates-on-device",
+    "wab-get-certificate-on-device",
+    "wab-revoke-certificate-of-device",
     "wab-get-services-of-device",
-    "wab-get-session-sharing-requests",
+    "wab-get-service-of-device",
+    "wab-edit-service-of-device",
+    "wab-delete-service-from-device",
+    "wab-get-devices",
+    "wab-add-device",
+    "wab-get-device",
+    "wab-edit-device",
+    "wab-delete-device",
+    "wab-get-accounts-of-global-domain",
+    "wab-add-account-in-global-domain",
+    "wab-get-account-of-global-domain",
+    "wab-edit-account-in-global-domain",
+    "wab-delete-account-from-global-domain",
+    "wab-delete-resource-from-global-domain-account",
+    "wab-get-global-domains",
+    "wab-get-global-domain",
+    "wab-get-ldap-users-of-domain",
+    "wab-get-ldap-user-of-domain",
+    "wab-get-information-about-wallix-bastion-license",
+    "wab-post-logsiem",
+    "wab-get-notifications",
+    "wab-add-notification",
+    "wab-get-notification",
+    "wab-edit-notification",
+    "wab-delete-notification",
+    "wab-get-object-to-onboard",
+    "wab-get-profiles",
+    "wab-get-profile",
+    "wab-get-scanjobs",
+    "wab-start-scan-job-manually",
+    "wab-get-scanjob",
+    "wab-cancel-scan-job",
+    "wab-get-scans",
+    "wab-get-scan",
     "wab-get-sessionrights",
     "wab-get-sessionrights-user-name",
     "wab-get-sessions",
+    "wab-edit-session",
+    "wab-get-session-metadata",
+    "wab-get-session-sharing-requests",
+    "wab-create-session-request",
+    "wab-delete-pending-or-live-session-request",
+    "wab-get-latest-snapshot-of-running-session",
     "wab-get-status-of-trace-generation",
-    "wab-get-target-by-type",
-    "wab-get-target-group",
-    "wab-get-target-groups",
-    "wab-get-user",
-    "wab-get-user-group",
-    "wab-get-user-groups",
-    "wab-get-users",
+    "wab-generate-trace-for-session",
     "wab-get-wallix-bastion-usage-statistics",
-    "wab-make-new-approval-request-to-access-target",
+    "wab-get-target-groups",
+    "wab-add-target-group",
+    "wab-get-target-group",
+    "wab-edit-target-group",
+    "wab-delete-target-group",
+    "wab-delete-target-from-group",
+    "wab-get-user-groups",
+    "wab-get-user-group",
+    "wab-get-users",
+    "wab-add-user",
+    "wab-get-user",
+    "wab-extend-duration-time-to-get-passwords-for-target",
     "wab-release-passwords-for-target",
-    "wab-reply-to-approval-request",
-    "wab-revoke-certificate-of-device",
-    "wab-start-scan-job-manually",
+    "wab-get-target-by-type",
+    "wab-get-password-for-target",
+    "wab-add-service-in-device"
 }

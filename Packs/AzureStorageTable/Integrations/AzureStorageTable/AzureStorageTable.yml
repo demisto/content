@@ -74,7 +74,7 @@ script:
     - description: Unique identifier for an entity within a given partition.
       name: row_key
       required: true
-    - description: 'Entity fields in JSON format: { "Key1": Value1, "Key2": Value2}'
+    - description: 'Entity fields in JSON format: { "Key1": Value1, "Key2": Value2}.'
       name: entity_fields
       required: true
     description: Insert a new entity into a table.
@@ -102,7 +102,7 @@ script:
     - description: Unique identifier for an entity within a given partition.
       name: row_key
       required: true
-    - description: 'Entity fields in JSON format: { "Key1": Value1, "Key2": Value2}'
+    - description: 'Entity fields in JSON format: { "Key1": Value1, "Key2": Value2}.'
       name: entity_fields
       required: true
     description: Update an existing entity in a table. The Update Entity command does not replace the existing entity.
@@ -117,7 +117,7 @@ script:
     - description: Unique identifier for an entity within a given partition.
       name: row_key
       required: true
-    - description: 'Entity records in JSON format: { "Key1": Value1, "Key2": Value2}'
+    - description: 'Entity records in JSON format: { "Key1": Value1, "Key2": Value2}.'
       name: entity_fields
       required: true
     description: Replace an existing entity in a table. The Replace Entity command replace the entire entity and can be used to remove properties.
@@ -158,7 +158,7 @@ script:
     - description: Entity table name.
       name: table_name
       required: true
-    - description: Unique identifier for the partition within a given table
+    - description: Unique identifier for the partition within a given table.
       name: partition_key
       required: true
     - description: Unique identifier for an entity within a given partition.
@@ -167,7 +167,7 @@ script:
     description: Delete an existing entity in a table.
     execution: true
     name: azure-storage-table-entity-delete
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.72123
   runonce: false
   script: '-'
   subtype: python3

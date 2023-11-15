@@ -84,8 +84,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 720,
+          "y": 200
         }
       }
     note: false
@@ -114,6 +114,9 @@ tasks:
       content:
         complex:
           root: inputs.Domain
+      expiration:
+        complex:
+          root: inputs.Expiration
       scan_action:
         simple: block
       type:
@@ -122,8 +125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 440
+          "x": 970,
+          "y": 370
         }
       }
     note: false
@@ -148,7 +151,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 610
+          "y": 540
         }
       }
     note: false
@@ -198,12 +201,13 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_yes": 0.63
+      "1_2_yes": 0.63,
+      "1_3_#default#": 0.4
     },
     "paper": {
       "dimensions": {
-        "height": 785,
-        "width": 380,
+        "height": 715,
+        "width": 900,
         "x": 450,
         "y": -110
       }
@@ -211,10 +215,14 @@ view: |-
   }
 inputs:
 - key: Domain
-  value:
-    simple: www.test.com
+  value: {}
   required: false
   description: The Domain to block.
+  playbookInputQuery:
+- key: Expiration
+  value: {}
+  required: false
+  description: 'The UTC expiration date and time of the suspicious object, for example: 2020-01-25T09:00:00Z.'
   playbookInputQuery:
 outputs: []
 tests:

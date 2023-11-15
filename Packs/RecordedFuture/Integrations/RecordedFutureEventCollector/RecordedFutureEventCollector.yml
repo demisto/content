@@ -38,6 +38,7 @@ configuration:
 description: This integration fetches alerts from Recorded Future.
 display: Recorded Future Event Collector
 name: RecordedFutureEventCollector
+supportlevelheader: xsoar
 script:
   commands:
   - arguments:
@@ -54,7 +55,7 @@ script:
       name: limit
     description: Gets events from Recorded Future.
     name: recorded-future-get-events
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.78960
   isfetchevents: true
   script: '-'
   subtype: python3

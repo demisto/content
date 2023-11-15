@@ -512,7 +512,7 @@ script:
       description: Group creation time.
       type: Date
     - contextPath: GCPIAM.Group.displayName
-      description: The display name of the group
+      description: The display name of the group.
       type: String
     - contextPath: GCPIAM.Group.groupKey.id
       description: The ID of the group.
@@ -559,7 +559,7 @@ script:
       description: Group creation time.
       type: Date
     - contextPath: GCPIAM.Group.displayName
-      description: The display name of the group
+      description: The display name of the group.
       type: String
     - contextPath: GCPIAM.Group.groupKey.id
       description: The ID of the group.
@@ -1167,7 +1167,7 @@ script:
       description: The name of the permissions.
       type: String
     - contextPath: GCPIAM.Permission.stage
-      description: The current launch stage of the permission
+      description: The current launch stage of the permission.
       type: String
   - arguments:
     - description: 'A comma-separated list of names of service accounts to delete. Every resource name should be in the following format: projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}.'
@@ -1235,7 +1235,18 @@ script:
     - contextPath: GCPIAM.Role.name
       description: The resource name of the role.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.55175
+  - arguments:
+    - description: The email address of the privilege-bearing service account for which the short-lived token is created.
+      name: service_account_email
+      required: true
+    - defaultValue: 3600
+      description: Lifetime of the Access Token in seconds.
+      name: lifetime
+      required: true
+    description: Create a short-lived access token for a service account. The generated token will be exposed to the context menu and War Room, and can potentially be logged.
+    execution: true
+    name: gcp-iam-service-account-generate-access-token
+  dockerimage: demisto/google-api-py3:1.0.0.75863
   runonce: false
   script: '-'
   subtype: python3

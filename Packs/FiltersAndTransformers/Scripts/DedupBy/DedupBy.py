@@ -60,6 +60,7 @@ class Key(object):
     The custom key object class, which enables you to compare any types of data even in different types.
     This can be used for keys of dict.
     """
+
     def __init__(self, value: Any, path: Optional[str] = None) -> None:
         """
         Initialize the key.

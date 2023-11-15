@@ -178,7 +178,7 @@ def init_driver(offline_mode=False, include_url=False):
 
         if not include_url:
             chrome_options.add_argument('--headless')
-        chrome_service = webdriver.ChromeService(service_args=[
+        chrome_service = webdriver.ChromeService(executable_path='/usr/bin/chromedriver', service_args=[
             f'--log-path={DRIVER_LOG}',
         ])
         driver = webdriver.Chrome(options=chrome_options, service=chrome_service)

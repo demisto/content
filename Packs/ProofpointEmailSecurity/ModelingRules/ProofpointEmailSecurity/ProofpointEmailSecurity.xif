@@ -1,0 +1,56 @@
+[MODEL: dataset = proofpoint_email_security_raw]
+// Modeling rule for Proofpoint email security "Message" events
+filter event_type = "message"
+// Parsing fiedls
+| alter
+        header_from = arrayindex(msg -> normalizedHeader.from[], 0),
+        cc = split(rtrim(ltrim(replex(replex(arrayindex(msg -> normalizedHeader.cc[], 0), ",\s*?\\t", ","), ",\s+", ","), "\""), "\""), ","),
+        to = split(rtrim(ltrim(replex(replex(arrayindex(msg -> normalizedHeader.to[], 0), ",\s*?\\t", ","), ",\s+", ","), "\""), "\""), ","),
+        returnPath = split(rtrim(ltrim(replex(replex(arrayindex(json_extract_array(msg, "$.normalizedHeader.return-path"), 0), ",\s*?\\t", ","), ",\s+", ","), "\""), "\""), ","),
+        msgParts_array = msgParts -> [],
+        actions = `filter` -> actions[],
+        source_ip = connection -> ip
+| alter
+        header_from = if(header_from contains "<", arrayindex(regextract(header_from, "<([^>]+)>"), 0), trim(header_from, "\"")),
+        cc = arrayfilter(arraymap(cc, if("@element" contains "<", arrayindex(regextract("@element", "<([^>]+)>"),0), "@element")), "@element" contains "@"),
+        to = arrayfilter(arraymap(to, if("@element" contains "<", arrayindex(regextract("@element", "<([^>]+)>"),0), "@element")), "@element" contains "@")
+// Modeling fields
+| alter
+        xdm.event.type = event_type,
+        xdm.event.id = guid,
+        xdm.network.session_id = connection -> sid,
+        xdm.source.location.country = if(connection -> country !~= "[a-zA-Z]+", null, connection -> country),
+        xdm.source.ipv4 = if(source_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", source_ip, null),
+        xdm.source.ipv6 = if(source_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", source_ip, null),
+        xdm.source.host.hostname = connection -> host,
+        xdm.network.application_protocol = connection -> protocol,
+        xdm.network.tls.cipher = connection -> tls.inbound.cipher,
+        xdm.network.tls.protocol_version = connection -> tls.inbound.version,
+        xdm.email.recipients = to,
+        xdm.email.sender = if(header_from != null and header_from != "", header_from, envelope -> from),
+        xdm.email.cc = cc,
+        xdm.email.message_id = rtrim(ltrim(arrayindex(json_extract_array(msg, "$.normalizedHeader.message-id"), 0), "\""), "\""),
+        xdm.email.subject = rtrim(ltrim(arrayindex(msg -> normalizedHeader.subject[], 0), "\""), "\""),
+        xdm.email.return_path = arraystring(returnPath, ", "),
+        xdm.email.attachment.extension = arraystring(arrayfilter(arraymap(msgParts_array, "@element" -> detectedExt), "@element" != "" and "@element" != null), ", "),
+        xdm.email.mime = arraystring(arrayfilter(arraymap(msgParts_array, "@element" -> detectedMime), "@element" != "" and "@element" != null), ", "),
+        xdm.email.attachment.filename = arraystring(arrayfilter(arraymap(msgParts_array, "@element" -> detectedName), "@element" != "" and "@element" != null), ", "),
+        xdm.email.attachment.md5 = arraystring(arrayfilter(arraymap(msgParts_array, "@element" -> md5), "@element" != "" and "@element" != null), ", "),
+        xdm.email.attachment.sha256 = arraystring(arrayfilter(arraymap(msgParts_array, "@element" -> sha256), "@element" != "" and "@element" != null), ", "),
+        xdm.observer.action = arraystring(arraymap(actions, if("@element" -> isFinal = "true", "@element" -> action, null)), ", "),
+        xdm.alert.original_threat_name = arraystring(`filter` -> modules.av.virusNames[], ", ");
+// Modeling rule for Proofpoint email security "Mail" events
+filter event_type = "maillog"
+| alter
+        xdm.event.type = event_type,
+        xdm.event.description = data,
+        xdm.event.id = id,
+        xdm.source.agent.identifier = pps -> agent,
+        xdm.email.sender = sm -> from,
+        xdm.source.process.name = sm -> daemon,
+        xdm.email.message_id = rtrim(ltrim(sm -> msgid, "<"), ">"),
+        xdm.network.application_protocol = sm -> proto,
+        xdm.observer.action = rtrim(arrayindex(regextract(sm -> stat, "(^[^:\(]+)"), 0), "\s"),
+        xdm.email.recipients = arraymap(arraymap(arraymap(arraymap(sm -> to[], ltrim("@element", "\"")), rtrim("@element", "\"")), ltrim("@element", "<")), rtrim("@element", ">")),
+        xdm.network.tls.cipher = if(lowercase(tls -> cipher) = "none", null, tls -> cipher),
+        xdm.network.tls.protocol_version = if(lowercase(tls -> version) = "none", null, tls -> version);

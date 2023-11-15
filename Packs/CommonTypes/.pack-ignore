@@ -285,6 +285,9 @@ ignore=BA101
 [file:layoutscontainer-HostV2.json]
 ignore=BA101
 
+[file:incidentfield-Number_Of_Found_Related_Alerts.json]
+ignore=IF100
+
 [known_words]
 SysAid
 longText
@@ -311,3 +314,4 @@ mailto
 Misconfiguration
 CloudTrail
 ThreatCommand
+TLP

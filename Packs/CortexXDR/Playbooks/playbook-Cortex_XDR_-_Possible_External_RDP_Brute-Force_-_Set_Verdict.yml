@@ -1,7 +1,7 @@
 id: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
 version: -1
 name: Cortex XDR - Possible External RDP Brute-Force - Set Verdict
-description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
+description: "This playbook creating an array called \"Suspicious Elements\", which is used to count potential security threats. The following elements can be added to the array:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - one or more risky users are involved in the incident, as identified by the Cortex XDR - IR integration's ITDR module.\n- Risky Host - one or more risky hosts are involved in the incident, as identified by the Cortex XDR - IR integration's ITDR module.\n\n\nThe array will then be outputted and its size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive.\""
 starttaskid: "0"
 tasks:
   "0":
@@ -22,6 +22,8 @@ tasks:
       - "1"
       - "2"
       - "10"
+      - "15"
+      - "16"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -412,7 +414,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 520
+          "y": 550
         }
       }
     note: false
@@ -506,18 +508,188 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6d003e29-d346-458d-8456-f929b1a66eab
+    type: regular
+    task:
+      id: 6d003e29-d346-458d-8456-f929b1a66eab
+      version: -1
+      name: Add risky user to suspicious elements
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Suspicious_Elements
+      value:
+        simple: Risky User
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -830,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0a724d34-9e60-4f38-85e3-99228741f075
+    type: condition
+    task:
+      id: 0a724d34-9e60-4f38-85e3-99228741f075
+      version: -1
+      name: Risky user involved?
+      description: Checks if a risky user is involved in the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyUser
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -830,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d45554b1-95ca-49af-8540-addc1a53c928
+    type: condition
+    task:
+      id: d45554b1-95ca-49af-8540-addc1a53c928
+      version: -1
+      name: Risky host involved?
+      description: Checks if a risky host is involved in the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyHost
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1260,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 39626191-a5ed-4a4a-8406-2582fd4a7d42
+    type: regular
+    task:
+      id: 39626191-a5ed-4a4a-8406-2582fd4a7d42
+      version: -1
+      name: Add risky host to suspicious elements
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Suspicious_Elements
+      value:
+        simple: Risky Host
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1260,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "10_9_#default#": 0.28,
+      "15_9_#default#": 0.12,
+      "16_9_#default#": 0.1,
+      "1_9_#default#": 0.23,
+      "2_9_#default#": 0.29,
       "3_9_#default#": 0.19,
       "4_9_#default#": 0.2
     },
     "paper": {
       "dimensions": {
-        "height": 535,
-        "width": 2070,
-        "x": -390,
+        "height": 565,
+        "width": 2940,
+        "x": -1260,
         "y": 50
       }
     }
@@ -548,10 +720,71 @@ inputs:
   required: false
   description: The external IP reputation.
   playbookInputQuery:
+- key: XDRRiskyUser
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.RiskyUser
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: MED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+      accessor: id
+      transformers:
+      - operator: uniq
+  required: false
+  description: Usernames of users that were found as risky by Cortex XDR.
+  playbookInputQuery:
+- key: XDRRiskyHost
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.RiskyHost
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: MED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
+          ignorecase: true
+      accessor: id
+      transformers:
+      - operator: uniq
+  required: false
+  description: Hostnames that were found as risky by Cortex XDR.
+  playbookInputQuery:
 outputs:
 - contextPath: Suspicious_Elements
   description: Array that contains all the suspicious elements.
   type: unknown
 tests:
-- No tests (auto formatted)
+- no tests
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

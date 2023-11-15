@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -615
+          "y": -795
         }
       }
     note: false
@@ -88,7 +88,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -140
+          "y": -320
         }
       }
     note: false
@@ -237,7 +237,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -320
+          "y": -500
         }
       }
     note: false
@@ -334,7 +334,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -485
+          "y": -665
         }
       }
     note: false
@@ -374,7 +374,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -5
+          "y": -185
         }
       }
     note: false
@@ -453,7 +453,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 680
+          "y": 500
         }
       }
     note: false
@@ -490,7 +490,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 160
+          "y": -20
         }
       }
     note: false
@@ -543,7 +543,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 340
+          "y": 160
         }
       }
     note: false
@@ -578,7 +578,7 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 510
+          "y": 330
         }
       }
     note: false
@@ -643,6 +643,10 @@ tasks:
         complex:
           root: Core.Endpoint
           accessor: endpoint_id
+      timeout:
+        simple: "120"
+      timeout_in_seconds:
+        simple: "180"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -797,14 +801,54 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "25"
+      - "31"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 850
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: eb6c588c-9131-415a-86e3-59fb81f882df
+    type: regular
+    task:
+      id: eb6c588c-9131-415a-86e3-59fb81f882df
+      version: -1
+      name: Auto file deletion
+      description: Initiates a new endpoint script execution to delete the specified file.
+      script: '|||core-run-script-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      file_path:
+        simple: C:\Users\administrator\Downloads\fortestplaybook2.txt
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
         }
       }
     note: false
@@ -819,10 +863,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3205,
+        "height": 3385,
         "width": 1090,
         "x": 40,
-        "y": -760
+        "y": -940
       }
     }
   }

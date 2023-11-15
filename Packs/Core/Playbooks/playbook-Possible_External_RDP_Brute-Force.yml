@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Possible External RDP Brute-Force
-description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
+description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigating if the following suspicious elements exists:\n\n- \"IP Reputation\" - DBot Score is 2-3 \n- \"Source geolocation\" - RDP Connection made from rare geo-location \n-  Related to campaign - IP address is related to campaign, based on TIM module\n-  Hunting results - the hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts that related to the same username and endpoint, and to the MITRE tactics that comes after \"Credential Access\", were found.\n- Risky User - The user that was identified in the attack was given a medium or high score by the Core integration's ITDR module.\n- Risky Host - The destination host that was identified in the attack was given a medium or high score by the Core integration's ITDR module.\n\nSet verdict method:\n* Critical Element - The \"Critical Element\" input allows you to select a specific element that, if identified as suspicious,  the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -52,6 +52,7 @@ tasks:
       '#none#':
       - "160"
       - "161"
+      - "162"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -190,10 +191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 19c63b40-81ef-45fd-81c4-c335fb35dcb7
+    taskid: 018c3943-4a66-49fd-849c-dd9f3a17dc7e
     type: collection
     task:
-      id: 19c63b40-81ef-45fd-81c4-c335fb35dcb7
+      id: 018c3943-4a66-49fd-849c-dd9f3a17dc7e
       version: -1
       name: User Communication
       description: Ask the user via email if the RDP connection is authorized activity.
@@ -238,7 +239,10 @@ tasks:
       body:
         simple: |-
           Hello,
-          Cortex XDR has detected a possible RDP Brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.ExternalIP}.
+          We wanted to let you know that Cortex Core has flagged a potential issue related to your recent Remote Desktop Protocol (RDP) activity. Specifically, we detected a possible RDP brute force attempt by the user ${inputs.Username} from the remote IP address ${inputs.ExternalIP}.
+
+          This may happen due to various reasons, one of them being multiple login attempts by the user.
+
           Was this action performed by you and can be considered as authorized?
       methods:
       - email
@@ -417,7 +421,7 @@ tasks:
       {
         "position": {
           "x": -180,
-          "y": 5140
+          "y": 5610
         }
       }
     note: false
@@ -444,8 +448,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 5460
+          "x": 1155,
+          "y": 5930
         }
       }
     note: false
@@ -737,10 +741,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: 752bff23-c722-40fa-8137-5a12b069272c
+    taskid: 644e33ef-559f-4178-878a-f71e36ef3591
     type: condition
     task:
-      id: 752bff23-c722-40fa-8137-5a12b069272c
+      id: 644e33ef-559f-4178-878a-f71e36ef3591
       version: -1
       name: Is the IP malicious?
       description: Check if the IP DbotScore is malicious.
@@ -756,7 +760,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: greaterThanOrEqual
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -771,18 +775,16 @@ tasks:
                       value:
                         simple: IP
                     ignorecase: true
-                accessor: Score
-                transformers:
-                - operator: sort
-                  args:
-                    descending:
+                - - operator: greaterThanOrEqual
+                    left:
                       value:
-                        simple: "true"
-                - operator: LastArrayElement
+                        simple: DBotScore.Score
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "3"
+                accessor: Score
             iscontext: true
-          right:
-            value:
-              simple: "3"
     continueonerrortype: ""
     view: |-
       {
@@ -964,7 +966,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "136"
+      - "163"
       "yes":
       - "156"
     separatecontext: false
@@ -1017,7 +1019,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 5315
+          "y": 5785
         }
       }
     note: false
@@ -1361,7 +1363,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 4840
+          "y": 5290
         }
       }
     note: false
@@ -1400,7 +1402,7 @@ tasks:
       {
         "position": {
           "x": 160,
-          "y": 4970
+          "y": 5440
         }
       }
     note: false
@@ -1560,10 +1562,10 @@ tasks:
       id: 674bfbfe-f4dd-45d6-81ea-9d6eb134d8e3
       version: -1
       name: IP block executed?
+      description: Checks whether the block IP playbook was executed.
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "82"
@@ -1607,10 +1609,10 @@ tasks:
       id: 5d209338-a5a6-4760-86d4-5d002d559dfa
       version: -1
       name: User containment executed?
+      description: Checks whether the block account playbook was executed.
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "82"
@@ -1728,10 +1730,10 @@ tasks:
       id: 0dadf16c-f182-4348-8d29-84f62e8c1433
       version: -1
       name: IP block executed?
+      description: Checks whether the block IP playbook was executed.
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "86"
@@ -1775,10 +1777,10 @@ tasks:
       id: 96d4ae23-3cec-4de9-8b2a-da2f1ee4bf56
       version: -1
       name: User containment executed?
+      description: Checks whether the block account playbook was executed.
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "86"
@@ -1892,10 +1894,10 @@ tasks:
       id: eda6f3d3-203c-4d44-8ebf-0d430b9c946b
       version: -1
       name: Early containment enabled?
+      description: Checks whether early containment is enabled in the playbook inputs.
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "72"
@@ -1988,8 +1990,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
-          "y": 4670
+          "x": -300,
+          "y": 5110
         }
       }
     note: false
@@ -2229,6 +2231,152 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "162":
+    id: "162"
+    taskid: 13d7349c-16d1-458e-8916-e334ddd16332
+    type: playbook
+    task:
+      id: 13d7349c-16d1-458e-8916-e334ddd16332
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "154"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+      UseReputationCommand:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "163":
+    id: "163"
+    taskid: df0c3102-fe07-4886-8e1e-7f8711a4efbf
+    type: condition
+    task:
+      id: df0c3102-fe07-4886-8e1e-7f8711a4efbf
+      version: -1
+      name: Is the endpoint at high risk?
+      description: Checks whether the Cortex Core IR integration associated the endpoint with a high risk level.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "164"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Core.RiskyHost.id
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.RiskyHost.risk_level
+                      iscontext: true
+                    right:
+                      value:
+                        simple: HIGH
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Core.RiskyHost.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: |2-
+
+                          inputs.EndpointID
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 4750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "164":
+    id: "164"
+    taskid: ba8f348a-2ad3-4e68-853d-64695b64cbb8
+    type: condition
+    task:
+      id: ba8f348a-2ad3-4e68-853d-64695b64cbb8
+      version: -1
+      name: Recommend isolation anyway
+      description: |-
+        Notice! The playbook input specifies that isolation should not be performed for the endpoint, but Cortex Core ITDR module considers it risky. Consider isolating it anyway.
+
+        Host ID: ${Core.RiskyHost.id}
+        Risk level: ${Core.RiskyHost.risk_level}
+        Reasons: ${Core.RiskyHost.reasons}
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Do Not Isolate:
+      - "136"
+      Isolate:
+      - "156"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 4940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2240,6 +2388,9 @@ view: |-
       "146_86_#default#": 0.52,
       "147_86_#default#": 0.71,
       "153_72_#default#": 0.29,
+      "163_136_#default#": 0.61,
+      "164_136_Do Not Isolate": 0.21,
+      "164_156_Isolate": 0.58,
       "20_21_yes": 0.18,
       "20_22_#default#": 0.2,
       "35_21_#default#": 0.17,
@@ -2247,11 +2398,13 @@ view: |-
       "53_6_#default#": 0.11,
       "56_11_#default#": 0.42,
       "56_21_yes": 0.21,
-      "73_72_#default#": 0.14
+      "73_72_#default#": 0.14,
+      "87_156_yes": 0.45,
+      "87_163_#default#": 0.57
     },
     "paper": {
       "dimensions": {
-        "height": 5925,
+        "height": 6395,
         "width": 2240,
         "x": -550,
         "y": -400
@@ -2301,6 +2454,8 @@ inputs:
     Hunting Results
     Related Alerts
     Unusual Country
+    Risky User
+    Risky Host
 
     NOTE: You can read about the meaning of every element in the playbook description.
   playbookInputQuery:
@@ -2359,3 +2514,4 @@ tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2"]
 fromversion: 6.8.0
+system: true

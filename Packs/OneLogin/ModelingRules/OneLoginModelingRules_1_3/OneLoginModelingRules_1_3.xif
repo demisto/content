@@ -30,4 +30,4 @@ alter
     xdm.target.ipv6 = ipv6, 
     xdm.target.host.ipv6_addresses = if(ipv6 != null, arraycreate(ipv6), null),
     xdm.target.host.hostname = otp_device_name,
-    xdm.target.host.device_id = otp_device_id;
+    xdm.target.host.device_id = to_string(otp_device_id);

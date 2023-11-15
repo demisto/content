@@ -1,6 +1,8 @@
 import json
 import pytest
 from freezegun import freeze_time
+import warnings
+warnings.filterwarnings('ignore', category=pytest.PytestUnknownMarkWarning)
 
 """Helper functions and fixrtures"""
 

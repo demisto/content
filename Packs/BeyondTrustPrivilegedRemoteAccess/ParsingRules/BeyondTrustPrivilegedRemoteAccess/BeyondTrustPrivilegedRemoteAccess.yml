@@ -1,0 +1,6 @@
+id: BeyondTrust_PrivilegedRemoteAccess_ParsingRule
+name: BeyondTrust Privileged Remote Access Parsing Rule
+fromversion: 8.3.0   
+tags: [BeyondTrust, "Beyond Trust", "Privileged Remote Access"]
+rules: ''
+samples: ''

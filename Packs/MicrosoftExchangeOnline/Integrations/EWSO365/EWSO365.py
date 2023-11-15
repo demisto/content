@@ -198,6 +198,7 @@ class EWSClient:
             proxy=proxy,
             self_deployed=self_deployed,
             scope="https://outlook.office.com/.default",
+            command_prefix="ews",
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
@@ -587,14 +588,17 @@ def start_logging():
 """ Helper Functions """
 
 
-def get_attachment_name(attachment_name):
+def get_attachment_name(attachment_name, eml_extension=False):
     """
     Retrieve attachment name or error string if none is provided
     :param attachment_name: attachment name to retrieve
+    :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
     if attachment_name is None or attachment_name == "":
-        return "demisto_untitled_attachment"
+        return "demisto_untitled_attachment.eml" if eml_extension else "demisto_untitled_attachment"
+    elif eml_extension and not attachment_name.endswith(".eml"):
+        return f'{attachment_name}.eml'
     return attachment_name
 
 
@@ -1075,7 +1079,7 @@ def fetch_attachments_for_message(
             if attachment.item.mime_content:
                 entries.append(
                     fileResult(
-                        get_attachment_name(attachment.name) + ".eml",
+                        get_attachment_name(attachment.name, eml_extension=True),
                         attachment.item.mime_content,
                     )
                 )
@@ -2161,12 +2165,13 @@ def parse_incident_from_item(item):     # pragma: no cover
                         # In case the detected encoding fails apply the default encoding
                         demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
                                      f'using utf-8.\nAttached email:\n{attached_email}')
-                        data = attached_email_bytes.decode('utf-8')
+                        try:
+                            data = attached_email_bytes.decode('utf-8')
+                        except UnicodeDecodeError:
+                            demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
+                            data = attached_email_bytes  # type: ignore
 
-                    file_result = fileResult(
-                        get_attachment_name(attachment.name) + ".eml",
-                        data,
-                    )
+                    file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
 
                 if file_result:
                     # check for error
@@ -2178,7 +2183,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                     incident["attachment"].append(
                         {
                             "path": file_result["FileID"],
-                            "name": get_attachment_name(attachment.name) + ".eml",
+                            "name": get_attachment_name(attachment.name, eml_extension=True),
                         }
                     )
 
@@ -2475,6 +2480,9 @@ def sub_main():     # pragma: no cover
         # special outputs commands
         elif command in special_output_commands:
             demisto.results(special_output_commands[command](client, **args))  # type: ignore[operator]
+
+        elif command == "ews-auth-reset":
+            return_results(reset_auth())
 
         # normal commands
         else:

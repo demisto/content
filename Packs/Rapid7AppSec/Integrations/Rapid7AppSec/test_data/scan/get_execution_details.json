@@ -1,0 +1,12 @@
+{
+    "vulnerable": 0,
+    "failed_requests": 0,
+    "drip_delay": 0,
+    "logged_in": true,
+    "links_crawled": 0,
+    "attacked": 0,
+    "requests": 0,
+    "links_in_queue": 0,
+    "attacks_in_queue": 0,
+    "network_speed": 0
+  }

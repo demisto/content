@@ -5,34 +5,39 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c9da11ee-1cd0-42eb-8b5d-358eb44d300d
+    taskid: f2a381b0-7962-43a4-81b2-b7301affb1b0
     type: start
     task:
-      id: c9da11ee-1cd0-42eb-8b5d-358eb44d300d
+      id: f2a381b0-7962-43a4-81b2-b7301affb1b0
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "46"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 50
+          "y": -100
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 07d50c81-b282-43ac-8d14-186fb662a991
+    taskid: cf599783-1c9e-4d83-82ae-46ef46a8173d
     type: regular
     task:
-      id: 07d50c81-b282-43ac-8d14-186fb662a991
+      id: cf599783-1c9e-4d83-82ae-46ef46a8173d
       version: -1
       name: aws-ec2-describe-instances
       description: Describes one or more of your instances.
@@ -45,14 +50,8 @@ tasks:
       - "12"
       - "13"
       - "14"
-    scriptarguments:
-      filters: {}
-      instanceIds: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -63,15 +62,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9537683d-aeb4-4a39-85e7-4b013a305e43
+    taskid: cab79f8e-88bf-4a0e-87f2-3d2c19a0b153
     type: regular
     task:
-      id: 9537683d-aeb4-4a39-85e7-4b013a305e43
+      id: cab79f8e-88bf-4a0e-87f2-3d2c19a0b153
       version: -1
       name: aws-ec2-describe-images
-      description: Describes one or more of the images (AMIs, AKIs, and ARIs) available to you. Images available to you include public images, private images that you own, and private images owned by other AWS accounts but for which you have explicit launch permissions.
+      description: Describes one or more of the images (AMIs, AKIs, and ARIs) available
+        to you. Images available to you include public images, private images that
+        you own, and private images owned by other AWS accounts but for which you
+        have explicit launch permissions.
       script: AWS - EC2|||aws-ec2-describe-images
       type: regular
       iscommand: true
@@ -82,16 +88,10 @@ tasks:
       - "16"
       - "17"
     scriptarguments:
-      executableUsers: {}
-      filters: {}
-      imageIds: {}
       owners:
         simple: self
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -102,12 +102,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8f248e85-ed2c-444b-8320-0c900f60bf0c
+    taskid: f2da74a8-8f8d-469b-8712-d07b876aa021
     type: regular
     task:
-      id: 8f248e85-ed2c-444b-8320-0c900f60bf0c
+      id: f2da74a8-8f8d-469b-8712-d07b876aa021
       version: -1
       name: aws-ec2-describe-regions
       description: Describes one or more regions that are currently available to you.
@@ -119,13 +123,8 @@ tasks:
       '#none#':
       - "18"
       - "19"
-    scriptarguments:
-      region: {}
-      regionNames: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -136,12 +135,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 03d1bf5f-41a0-4b3c-8c73-576c91f88640
+    taskid: 97cf5afc-f89d-45c5-8e2c-78bd79870cf8
     type: regular
     task:
-      id: 03d1bf5f-41a0-4b3c-8c73-576c91f88640
+      id: 97cf5afc-f89d-45c5-8e2c-78bd79870cf8
       version: -1
       name: aws-ec2-describe-addresses
       description: Describes one or more of your Elastic IP addresses.
@@ -154,15 +157,8 @@ tasks:
       - "20"
       - "21"
       - "22"
-    scriptarguments:
-      allocationIds: {}
-      filters: {}
-      publicIps: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -173,12 +169,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3d35e45b-b246-45b7-8b0f-65a9cb041fd9
+    taskid: 43171155-1b2a-4de9-841d-5f3b8c82ef35
     type: regular
     task:
-      id: 3d35e45b-b246-45b7-8b0f-65a9cb041fd9
+      id: 43171155-1b2a-4de9-841d-5f3b8c82ef35
       version: -1
       name: aws-ec2-describe-snapshots
       description: Describes one or more of the EBS snapshots available to you.
@@ -192,16 +192,10 @@ tasks:
       - "24"
       - "25"
     scriptarguments:
-      filters: {}
       ownerIds:
-        simple: "120785635586"
-      region: {}
-      restorableByUserIds: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      snapshotIds: {}
+        simple: "099720109477"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -212,12 +206,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: cb4fe12a-cb26-4c26-8c40-d0d920552b4e
+    taskid: 405b7bb9-199f-4296-80bb-9ed506fb434d
     type: regular
     task:
-      id: cb4fe12a-cb26-4c26-8c40-d0d920552b4e
+      id: 405b7bb9-199f-4296-80bb-9ed506fb434d
       version: -1
       name: aws-ec2-describe-launch-templates
       description: Describes one or more launch templates.
@@ -231,30 +229,30 @@ tasks:
       - "27"
       - "28"
     scriptarguments:
-      Filters: {}
-      LaunchTemplateIds: {}
-      LaunchTemplateNames: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
+      LaunchTemplateIds:
+        simple: ${AWS.EC2.LaunchTemplates.LaunchTemplateId}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1945
+          "y": 2110
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 2f13762e-fa60-479f-8df2-db6d7df61ed1
+    taskid: e4c82fc0-e082-4ee6-8fae-941757c47242
     type: regular
     task:
-      id: 2f13762e-fa60-479f-8df2-db6d7df61ed1
+      id: e4c82fc0-e082-4ee6-8fae-941757c47242
       version: -1
       name: aws-ec2-describe-key-pairs
       description: Describes one or more of your key pairs.
@@ -266,30 +264,28 @@ tasks:
       '#none#':
       - "29"
       - "30"
-    scriptarguments:
-      filters: {}
-      keyNames: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2295
+          "y": 2625
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 5a368e12-7e37-412c-86a8-6b822488fc63
+    taskid: 447d1ea5-c402-4f38-8081-3303b09a0b1c
     type: regular
     task:
-      id: 5a368e12-7e37-412c-86a8-6b822488fc63
+      id: 447d1ea5-c402-4f38-8081-3303b09a0b1c
       version: -1
       name: aws-ec2-describe-volumes
       description: Describes the specified EBS volumes.
@@ -302,30 +298,28 @@ tasks:
       - "31"
       - "32"
       - "33"
-    scriptarguments:
-      filters: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      volumeIds: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2645
+          "y": 2975
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f933de28-1528-4f3a-8705-f44b8737cc2d
+    taskid: 713ecbdb-b66e-4111-8f82-d8a23e62784f
     type: regular
     task:
-      id: f933de28-1528-4f3a-8705-f44b8737cc2d
+      id: 713ecbdb-b66e-4111-8f82-d8a23e62784f
       version: -1
       name: aws-ec2-describe-vpcs
       description: Describes one or more of your VPCs.
@@ -338,30 +332,28 @@ tasks:
       - "34"
       - "35"
       - "36"
-    scriptarguments:
-      filters: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      vpcIds: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2995
+          "y": 3325
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 565230eb-fc54-44da-8578-0c19d3506009
+    taskid: 54979a30-3a29-4ab2-82b9-29e3d2395872
     type: regular
     task:
-      id: 565230eb-fc54-44da-8578-0c19d3506009
+      id: 54979a30-3a29-4ab2-82b9-29e3d2395872
       version: -1
       name: aws-ec2-describe-subnets
       description: Describes one or more of your subnets.
@@ -374,30 +366,28 @@ tasks:
       - "37"
       - "39"
       - "43"
-    scriptarguments:
-      filters: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      subnetIds: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 3345
+          "y": 3675
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 3166b8ce-7e74-4874-86c8-58a2fc129525
+    taskid: 3fb21ffd-0e75-4070-80ad-929b9df40ad1
     type: regular
     task:
-      id: 3166b8ce-7e74-4874-86c8-58a2fc129525
+      id: 3fb21ffd-0e75-4070-80ad-929b9df40ad1
       version: -1
       name: aws-ec2-describe-security-groups
       description: Describes one or more of your security groups.
@@ -410,31 +400,28 @@ tasks:
       - "40"
       - "41"
       - "42"
-    scriptarguments:
-      filters: {}
-      groupIds: {}
-      groupNames: {}
-      region: {}
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 3695
+          "y": 4025
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: bec236b8-af3f-4f4b-89d6-e6a7f4df7bba
+    taskid: b5bf22f8-b809-4158-8bda-114d1df758f1
     type: regular
     task:
-      id: bec236b8-af3f-4f4b-89d6-e6a7f4df7bba
+      id: b5bf22f8-b809-4158-8bda-114d1df758f1
       version: -1
       name: VerifyContext
       description: |-
@@ -451,11 +438,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Instances.Monitoring.State
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -466,12 +452,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: fc3e21a2-f8e8-4172-8eac-1d969d5f0abe
+    taskid: b14c8d16-8fa0-46ef-8126-432d41f01c66
     type: regular
     task:
-      id: fc3e21a2-f8e8-4172-8eac-1d969d5f0abe
+      id: b14c8d16-8fa0-46ef-8126-432d41f01c66
       version: -1
       name: VerifyContext
       description: |-
@@ -488,11 +478,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Instances.LaunchTime
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -503,12 +492,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: fb8e2dc7-75c3-457b-8edd-726dc9e193e5
+    taskid: bd6e7e99-cc99-4a4e-8d91-558e6693fb90
     type: regular
     task:
-      id: fb8e2dc7-75c3-457b-8edd-726dc9e193e5
+      id: bd6e7e99-cc99-4a4e-8d91-558e6693fb90
       version: -1
       name: VerifyContext
       description: |-
@@ -525,11 +518,10 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Instances.InstanceId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -540,12 +532,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c5ab75f5-5b71-48f1-8f39-9e0b68b0464d
+    taskid: 40ae3958-e69a-40cc-890c-67c330af4e0d
     type: regular
     task:
-      id: c5ab75f5-5b71-48f1-8f39-9e0b68b0464d
+      id: 40ae3958-e69a-40cc-890c-67c330af4e0d
       version: -1
       name: VerifyContext
       description: |-
@@ -562,11 +558,10 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Images.ImageId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -577,12 +572,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 57adde5b-0587-48a8-8e75-737a1daf61d8
+    taskid: 69b86082-e31b-4ab9-8d74-e410f4f27cc6
     type: regular
     task:
-      id: 57adde5b-0587-48a8-8e75-737a1daf61d8
+      id: 69b86082-e31b-4ab9-8d74-e410f4f27cc6
       version: -1
       name: VerifyContext
       description: |-
@@ -599,11 +598,10 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Images.Name
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -614,12 +612,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 20b4df4d-2416-4f89-8dba-eb6ecddf4110
+    taskid: 13e746d6-ea63-40af-88c3-55731c447909
     type: regular
     task:
-      id: 20b4df4d-2416-4f89-8dba-eb6ecddf4110
+      id: 13e746d6-ea63-40af-88c3-55731c447909
       version: -1
       name: VerifyContext
       description: |-
@@ -636,11 +638,10 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Images.Architecture
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -651,12 +652,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 9dfae3f6-b44e-4bb7-8d0a-19a0df232342
+    taskid: ea17bd1f-eec7-4b03-851c-51347347c0e9
     type: regular
     task:
-      id: 9dfae3f6-b44e-4bb7-8d0a-19a0df232342
+      id: ea17bd1f-eec7-4b03-851c-51347347c0e9
       version: -1
       name: VerifyContext
       description: |-
@@ -673,11 +678,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.Regions.RegionName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -688,12 +692,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 53aac3c1-f0c1-4905-8710-49858bfacb21
+    taskid: 551a38a6-7126-47d8-8eae-881089a6660b
     type: regular
     task:
-      id: 53aac3c1-f0c1-4905-8710-49858bfacb21
+      id: 551a38a6-7126-47d8-8eae-881089a6660b
       version: -1
       name: VerifyContext
       description: |-
@@ -710,11 +718,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.Regions.Endpoint
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -725,12 +732,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 65445ae4-bfb7-42a7-8d9a-7c467e0cc543
+    taskid: f7bde11d-ea36-4efa-89e9-64a30bbe372a
     type: regular
     task:
-      id: 65445ae4-bfb7-42a7-8d9a-7c467e0cc543
+      id: f7bde11d-ea36-4efa-89e9-64a30bbe372a
       version: -1
       name: VerifyContext
       description: |-
@@ -747,11 +758,10 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.ElasticIPs.AllocationId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -762,12 +772,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 05021505-fcde-41f6-809e-5b731cae58bb
+    taskid: e904d211-ffcf-4ec2-8eaa-351abfe015ae
     type: regular
     task:
-      id: 05021505-fcde-41f6-809e-5b731cae58bb
+      id: e904d211-ffcf-4ec2-8eaa-351abfe015ae
       version: -1
       name: VerifyContext
       description: |-
@@ -784,11 +798,10 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.ElasticIPs.AllocationId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -799,12 +812,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: f5978947-b9d2-434f-8790-2f3284e16490
+    taskid: 1776952d-65be-402b-8587-0d75a05c2612
     type: regular
     task:
-      id: f5978947-b9d2-434f-8790-2f3284e16490
+      id: 1776952d-65be-402b-8587-0d75a05c2612
       version: -1
       name: VerifyContext
       description: |-
@@ -821,11 +838,10 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.ElasticIPs.Region
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -836,12 +852,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 4b807dd7-a34d-4b14-8633-a46369e3ebdc
+    taskid: 2037ba00-374d-420a-853a-85cef9015b58
     type: regular
     task:
-      id: 4b807dd7-a34d-4b14-8633-a46369e3ebdc
+      id: 2037ba00-374d-420a-853a-85cef9015b58
       version: -1
       name: VerifyContext
       description: |-
@@ -856,13 +876,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "44"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Snapshots.StartTime
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -873,12 +892,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: c71d84db-cf0b-4f82-8403-64f687aeaeb3
+    taskid: 5a1a2c77-380e-4406-81ad-f4cdef33ac5c
     type: regular
     task:
-      id: c71d84db-cf0b-4f82-8403-64f687aeaeb3
+      id: 5a1a2c77-380e-4406-81ad-f4cdef33ac5c
       version: -1
       name: VerifyContext
       description: |-
@@ -893,13 +916,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "44"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Snapshots.VolumeId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -910,12 +932,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: b7a6433a-3bd0-4e99-8ab6-14cfb52b9351
+    taskid: fcf09c1e-040b-4a4c-8e68-2fdac49ac0e1
     type: regular
     task:
-      id: b7a6433a-3bd0-4e99-8ab6-14cfb52b9351
+      id: fcf09c1e-040b-4a4c-8e68-2fdac49ac0e1
       version: -1
       name: VerifyContext
       description: |-
@@ -930,13 +956,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "44"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Snapshots.SnapshotId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -947,12 +972,16 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 98d57f91-1c6d-4915-850c-075ad2fe63e0
+    taskid: a1f1fd0b-4d5d-4f30-8c5d-71bd24041e09
     type: regular
     task:
-      id: 98d57f91-1c6d-4915-850c-075ad2fe63e0
+      id: a1f1fd0b-4d5d-4f30-8c5d-71bd24041e09
       version: -1
       name: VerifyContext
       description: |-
@@ -967,29 +996,32 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "45"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.LaunchTemplates.LaunchTemplateId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2280
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 6ed60255-17fe-48ce-8c71-9eec88b8fca4
+    taskid: f61449af-ebef-403c-8da8-95bf76b76006
     type: regular
     task:
-      id: 6ed60255-17fe-48ce-8c71-9eec88b8fca4
+      id: f61449af-ebef-403c-8da8-95bf76b76006
       version: -1
       name: VerifyContext
       description: |-
@@ -1004,29 +1036,32 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "45"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.LaunchTemplates.LaunchTemplateName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2120
+          "y": 2280
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: c3d24c7e-2c43-466d-8366-3461bf870b96
+    taskid: ccee82c7-0fa3-48ce-8538-c69319d6e04c
     type: regular
     task:
-      id: c3d24c7e-2c43-466d-8366-3461bf870b96
+      id: ccee82c7-0fa3-48ce-8538-c69319d6e04c
       version: -1
       name: VerifyContext
       description: |-
@@ -1041,29 +1076,32 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "45"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.LaunchTemplates.CreateTime
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2120
+          "y": 2280
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: cf4fdfbf-ceb4-40c7-8521-d6eff445d1bc
+    taskid: 5c1eb4d2-1151-45b7-8a23-af180c3d525b
     type: regular
     task:
-      id: cf4fdfbf-ceb4-40c7-8521-d6eff445d1bc
+      id: 5c1eb4d2-1151-45b7-8a23-af180c3d525b
       version: -1
       name: VerifyContext
       description: |-
@@ -1080,27 +1118,30 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.KeyPairs.KeyFingerprint
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2470
+          "y": 2800
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: f7baf68b-a2e9-4c21-8e6e-5d95853aa4cf
+    taskid: 1152a445-c37e-45d3-818d-f8943a3113ee
     type: regular
     task:
-      id: f7baf68b-a2e9-4c21-8e6e-5d95853aa4cf
+      id: 1152a445-c37e-45d3-818d-f8943a3113ee
       version: -1
       name: VerifyContext
       description: |-
@@ -1117,27 +1158,30 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.KeyPairs.KeyName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 2470
+          "y": 2800
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 31e154aa-54a3-4e2c-86bd-948769cc307b
+    taskid: 4f3ce2cb-a080-43b3-816f-51ecdd9751ab
     type: regular
     task:
-      id: 31e154aa-54a3-4e2c-86bd-948769cc307b
+      id: 4f3ce2cb-a080-43b3-816f-51ecdd9751ab
       version: -1
       name: VerifyContext
       description: |-
@@ -1154,27 +1198,30 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.AvailabilityZone
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3150
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 6d91da8e-8a4e-4621-888b-211379fde0ea
+    taskid: f659d7a3-6858-4764-852f-c78f028f5bf1
     type: regular
     task:
-      id: 6d91da8e-8a4e-4621-888b-211379fde0ea
+      id: f659d7a3-6858-4764-852f-c78f028f5bf1
       version: -1
       name: VerifyContext
       description: |-
@@ -1191,27 +1238,30 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.VolumeType
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2820
+          "y": 3150
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: b3e55025-1741-42ea-8a4d-f0ae06725bea
+    taskid: 998d5565-0c35-4ceb-81bc-ae8ac3129d5c
     type: regular
     task:
-      id: b3e55025-1741-42ea-8a4d-f0ae06725bea
+      id: 998d5565-0c35-4ceb-81bc-ae8ac3129d5c
       version: -1
       name: VerifyContext
       description: |-
@@ -1228,27 +1278,30 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Volumes.Size
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 2820
+          "y": 3150
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 7892f76d-bcb7-4838-848c-34d53493183e
+    taskid: 9cef0dfe-d6f5-4ba1-818b-bf6db64c9d4f
     type: regular
     task:
-      id: 7892f76d-bcb7-4838-848c-34d53493183e
+      id: 9cef0dfe-d6f5-4ba1-818b-bf6db64c9d4f
       version: -1
       name: VerifyContext
       description: |-
@@ -1265,27 +1318,30 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Vpcs.IsDefault
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3500
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: da62b838-c376-49f6-89ce-13ae8b03cc75
+    taskid: 953f2fa2-2104-4dda-8c4b-dd59583b068f
     type: regular
     task:
-      id: da62b838-c376-49f6-89ce-13ae8b03cc75
+      id: 953f2fa2-2104-4dda-8c4b-dd59583b068f
       version: -1
       name: VerifyContext
       description: |-
@@ -1302,27 +1358,30 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Vpcs.CidrBlock
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 3170
+          "y": 3500
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: ad32a50f-7fb8-4a6e-8a74-c97cf99b9800
+    taskid: 385429c3-65e3-4b89-81b5-90146294d392
     type: regular
     task:
-      id: ad32a50f-7fb8-4a6e-8a74-c97cf99b9800
+      id: 385429c3-65e3-4b89-81b5-90146294d392
       version: -1
       name: VerifyContext
       description: |-
@@ -1339,27 +1398,30 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Vpcs.VpcId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 3170
+          "y": 3500
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 53716c4e-b6af-4a55-82b7-41f81eb5b15d
+    taskid: ab9ff5e4-81ce-4614-8935-7856398c17af
     type: regular
     task:
-      id: 53716c4e-b6af-4a55-82b7-41f81eb5b15d
+      id: ab9ff5e4-81ce-4614-8935-7856398c17af
       version: -1
       name: VerifyContext
       description: |-
@@ -1376,27 +1438,30 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Subnets.SubnetId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3850
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: d89b9471-f1b3-45ca-808a-c005e0f8cf62
+    taskid: 46047ac0-bd97-4863-86dc-022c67d82399
     type: regular
     task:
-      id: d89b9471-f1b3-45ca-808a-c005e0f8cf62
+      id: 46047ac0-bd97-4863-86dc-022c67d82399
       version: -1
       name: VerifyContext
       description: |-
@@ -1413,27 +1478,30 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Subnets.AvailabilityZone
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 3520
+          "y": 3850
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 55f3383b-7765-4ebc-8c3b-9723d5922324
+    taskid: 5c6d1e7e-5842-4d5d-8dc3-c6131d26be8d
     type: regular
     task:
-      id: 55f3383b-7765-4ebc-8c3b-9723d5922324
+      id: 5c6d1e7e-5842-4d5d-8dc3-c6131d26be8d
       version: -1
       name: VerifyContext
       description: |-
@@ -1447,27 +1515,30 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.SecurityGroups.GroupName
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 4200
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 42d1e1c2-22ec-449f-8cb1-a26e922946a3
+    taskid: dd99c39f-c033-49e4-8043-842b7f759fac
     type: regular
     task:
-      id: 42d1e1c2-22ec-449f-8cb1-a26e922946a3
+      id: dd99c39f-c033-49e4-8043-842b7f759fac
       version: -1
       name: VerifyContext
       description: |-
@@ -1481,27 +1552,30 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.SecurityGroups.GroupId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 3870
+          "y": 4200
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: bb93b42f-1a54-4e15-84a4-329a7d374123
+    taskid: aec1e6b0-42e2-486c-8bd8-a2a37d45ae76
     type: regular
     task:
-      id: bb93b42f-1a54-4e15-84a4-329a7d374123
+      id: aec1e6b0-42e2-486c-8bd8-a2a37d45ae76
       version: -1
       name: VerifyContext
       description: |-
@@ -1515,27 +1589,30 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.SecurityGroups.VpcId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 3870
+          "y": 4200
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 126ccced-b6f5-4113-873f-9bab126879b4
+    taskid: 421b1aaa-534c-4498-8195-f97c3b679642
     type: regular
     task:
-      id: 126ccced-b6f5-4113-873f-9bab126879b4
+      id: 421b1aaa-534c-4498-8195-f97c3b679642
       version: -1
       name: VerifyContext
       description: |-
@@ -1552,30 +1629,159 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      expectedValue: {}
-      fields: {}
       path:
         simple: AWS.EC2.Subnets.VpcId
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 3520
+          "y": 3850
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 8f4d2f53-552e-4253-8324-e2edb583f1e3
+    type: regular
+    task:
+      id: 8f4d2f53-552e-4253-8324-e2edb583f1e3
+      version: -1
+      name: aws-ec2-create-launch-template
+      description: Creates a launch template. A launch template contains the parameters
+        to launch an instance.
+      script: '|||aws-ec2-create-launch-template'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ImageId:
+        simple: ami-088e71edb8795252f
+      LaunchTemplateName:
+        simple: test
+      roleArn:
+        simple: arn:aws:iam::794065701450:role/EC2_SG_API_CRTX-91813_AssumeRole
+      roleSessionDuration:
+        simple: "1000"
+      roleSessionName:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 9c0673c1-8f27-463e-8deb-8decdbd6c042
+    type: regular
+    task:
+      id: 9c0673c1-8f27-463e-8deb-8decdbd6c042
+      version: -1
+      name: aws-ec2-delete-launch-template
+      description: Deletes a launch template. Deleting a launch template deletes all
+        of its versions.
+      script: '|||aws-ec2-delete-launch-template'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      LaunchTemplateId:
+        simple: ${AWS.EC2.LaunchTemplates.LaunchTemplateId}
+      roleArn:
+        simple: arn:aws:iam::794065701450:role/EC2_SG_API_CRTX-91813_AssumeRole
+      roleSessionDuration:
+        simple: "1000"
+      roleSessionName:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: b4c272d6-d0dd-4440-809d-e7d420797c2f
+    type: regular
+    task:
+      id: b4c272d6-d0dd-4440-809d-e7d420797c2f
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3915,
+        "height": 4395,
         "width": 1240,
         "x": 50,
-        "y": 50
+        "y": -100
       }
     }
   }

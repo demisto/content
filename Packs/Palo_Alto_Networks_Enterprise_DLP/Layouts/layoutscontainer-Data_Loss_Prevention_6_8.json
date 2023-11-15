@@ -162,7 +162,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Indicators",
-                        "query": "",
+                        "query": "-verdict:Benign",
                         "queryType": "input",
                         "static": false,
                         "type": "indicators",
