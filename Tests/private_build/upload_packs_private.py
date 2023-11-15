@@ -191,7 +191,7 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
     for d in os.scandir(private_index_path):
         if os.path.isdir(d.path):
             pack = Pack(d.name, d.path)
-            update_index_folder(index_folder_path, pack, is_private_pack=True)
+            update_index_folder(index_folder_path, pack, is_private_pack=True)  # type:ignore[arg-type]
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
@@ -378,7 +378,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
         pack.cleanup()
         return
 
-    task_status = update_index_folder(index_folder_path=index_folder_path, pack=pack,
+    task_status = update_index_folder(index_folder_path=index_folder_path, pack=pack,  # type:ignore[arg-type]
                                       pack_versions_to_keep=pack_versions_to_keep)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
