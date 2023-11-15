@@ -132,7 +132,10 @@ def eliminate_urls_extensions(text):
     formatted_urls_list_res = demisto.executeCommand('FormatURL', {'input': ','.join(urls_list)})
     if is_error(formatted_urls_list_res):
         return_error(formatted_urls_list_res)
-    formatted_urls_list = [entry["Contents"][-1] for entry in formatted_urls_list_res]
+    formatted_urls_list = []
+    for entry in formatted_urls_list_res:
+        if entry['Contents'] and isinstance(entry['Contents'], list):
+            formatted_urls_list.append(entry['Contents'][-1])
     for url, formatted_url in zip(urls_list, formatted_urls_list):
         parsed_uri = urlparse(formatted_url)
         url_with_no_path = '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
