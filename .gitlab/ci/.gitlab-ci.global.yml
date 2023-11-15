@@ -246,6 +246,15 @@
   - |
   - section_end "Checkout upload commit content nightly"
 
+.fetch-through-merge-base: &fetch-through-merge-base
+  - DEEPEN_LENGTH=${DEEPEN_LENGTH:-50}
+  - HEAD_REF=origin/master
+  - BASE_REF=$(git rev-parse HEAD)
+  - |
+    while [ -z "$(git merge-base "$BASE_REF" "$HEAD_REF" 2>/dev/null)" ]; do
+      echo "Fetching with depth $DEEPEN_LENGTH..."
+      git fetch -q --deepen="$DEEPEN_LENGTH" origin;
+    done
 
 .default-before-script:
   before_script:
@@ -265,14 +274,7 @@
     - *build_parameters
     - *gitlab_ci_build_parameters
     - *checkout-upload-commit-content-nightly
-    - DEEPEN_LENGTH=${DEEPEN_LENGTH:-50}
-    - HEAD_REF=origin/master
-    - BASE_REF=$(git rev-parse HEAD)
-    - |
-      while [ -z "$( git merge-base "$BASE_REF" "$HEAD_REF" )" ]; do
-        echo "Fetching with depth $DEEPEN_LENGTH..."
-        git fetch -q --deepen="$DEEPEN_LENGTH" origin;
-      done
+    - *fetch-through-merge-base
 
 .default-after-script:
   - source .gitlab/helper_functions.sh
