@@ -1577,7 +1577,6 @@ def test_module():
         raise
 
 
-
 def fetch_domains():
     # iris search hash
     monitor_domain_by_search_hash = demisto.params().get("monitor_iris_search_hash", ) or "Import Indicators Only"
@@ -1585,8 +1584,6 @@ def fetch_domains():
     # iris tags
     monitor_domain_by_iris_tags = demisto.params().get("monitor_iris_tags") or "Import Indicators Only"
     iris_tags = demisto.params().get("domaintools_iris_tags") or False
-
-    fetch_limit = arg_to_number(demisto.params().get('max_fetch', 2))
 
     iris_search_hash_params = {
         "import_only": monitor_domain_by_search_hash == "Import Indicators Only",
