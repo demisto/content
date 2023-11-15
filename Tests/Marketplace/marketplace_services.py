@@ -2284,7 +2284,8 @@ class Pack:
             pack_obj = interface.search(content_type=ContentType.PACK, object_id=self._pack_name)[0]
             pack_test_dependencies = [dep.content_item_to.object_id for dep in pack_obj.depends_on if dep.is_test]
 
-        removed_test_deps = [self._dependencies.pop(d) for d in self._dependencies if d in pack_test_dependencies]
+        pack_deps_ids = self._dependencies.keys()
+        removed_test_deps = [self._dependencies.pop(d) for d in pack_deps_ids if d in pack_test_dependencies]
         logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
 
     def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
