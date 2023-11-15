@@ -32,6 +32,7 @@ def main():
         entry_ids = args.get('entry_id', demisto.get(demisto.context(), 'lastCompletedTaskEntries'))
 
         if is_xsiam_or_xsoar_saas():
+            entry_ids = ",".join(entry_ids) if isinstance(entry_ids, list) else entry_ids
             entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids})
         else:
             entry_ids = argToList(entry_ids)

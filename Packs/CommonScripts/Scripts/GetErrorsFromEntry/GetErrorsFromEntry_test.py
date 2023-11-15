@@ -19,6 +19,17 @@ WITHOUT_ERROR_ENTRIES = [
 ]
 
 
+def prepare_mocks(mocker, is_xsiam_or_xsoar_saas, args):
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(GetErrorsFromEntry, 'is_xsiam_or_xsoar_saas', return_value=is_xsiam_or_xsoar_saas)
+    mocker.patch.object(
+        demisto,
+        'executeCommand',
+        return_value=ERROR_ENTRIES if is_xsiam_or_xsoar_saas else None,
+        side_effect=None if is_xsiam_or_xsoar_saas else ERROR_ENTRIES,
+    )
+
+
 @pytest.mark.parametrize("is_xsiam_or_xsoar_saas", [True, False])
 def test_main_with_explicitly_passed_argument_as_list(mocker, is_xsiam_or_xsoar_saas):
     """
@@ -36,10 +47,11 @@ def test_main_with_explicitly_passed_argument_as_list(mocker, is_xsiam_or_xsoar_
     Then:
         - Verify the two error entries' contents are returned
     """
-    mocker.patch.object(demisto, 'args',
-                        return_value={'entry_id': ['err_entry_id_1', 'err_entry_id_2', 'std_entry_id_1']})
-    mocker.patch.object(GetErrorsFromEntry, 'is_xsiam_or_xsoar_saas', return_value=is_xsiam_or_xsoar_saas)
-    mocker.patch.object(demisto, 'executeCommand', side_effect=ERROR_ENTRIES)
+    prepare_mocks(
+        mocker,
+        is_xsiam_or_xsoar_saas,
+        args={'entry_id': ['err_entry_id_1', 'err_entry_id_2', 'std_entry_id_1']},
+    )
     demisto_args = mocker.spy(demisto, 'args')
     demisto_results = mocker.spy(demisto, 'results')
 
@@ -73,10 +85,11 @@ def test_main_with_explicitly_passed_argument_as_string(mocker, is_xsiam_or_xsoa
     Then:
         - Verify the two error entries' contents are returned
     """
-    mocker.patch.object(demisto, 'args',
-                        return_value={'entry_id': 'err_entry_id_1, err_entry_id_2, std_entry_id_1'})
-    mocker.patch.object(GetErrorsFromEntry, 'is_xsiam_or_xsoar_saas', return_value=is_xsiam_or_xsoar_saas)
-    mocker.patch.object(demisto, 'executeCommand', side_effect=ERROR_ENTRIES)
+    prepare_mocks(
+        mocker,
+        is_xsiam_or_xsoar_saas,
+        args={'entry_id': 'err_entry_id_1, err_entry_id_2, std_entry_id_1'},
+    )
     demisto_args = mocker.spy(demisto, 'args')
     demisto_results = mocker.spy(demisto, 'results')
 
@@ -110,12 +123,13 @@ def test_main_without_explicitly_passed_argument(mocker, is_xsiam_or_xsoar_saas)
     Then:
         - Verify the two error entries' contents are returned
     """
-    mocker.patch.object(demisto, 'args',
-                        return_value={})
+    prepare_mocks(
+        mocker,
+        is_xsiam_or_xsoar_saas,
+        args={},
+    )
     mocker.patch.object(demisto, 'context', return_value={'lastCompletedTaskEntries': [
                         'err_entry_id_1', 'err_entry_id_2', 'std_entry_id_1']})
-    mocker.patch.object(GetErrorsFromEntry, 'is_xsiam_or_xsoar_saas', return_value=is_xsiam_or_xsoar_saas)
-    mocker.patch.object(demisto, 'executeCommand', side_effect=ERROR_ENTRIES)
     demisto_args = mocker.spy(demisto, 'args')
     demisto_results = mocker.spy(demisto, 'results')
 
