@@ -57,7 +57,6 @@ def filter_skipped_playbooks(playbooks_results: dict[str, dict[str, TestSuite]])
 
 def print_test_playbooks_summary(artifacts_path: Path, without_jira: bool) -> bool:
     test_playbooks_report = artifacts_path / TEST_PLAYBOOKS_REPORT_FILE_NAME
-    logging.info("test")
 
     # iterate over the artifacts path and find all the test playbook result files
     if not (test_playbooks_result_files_list := get_test_results_files(artifacts_path, TEST_PLAYBOOKS_REPORT_FILE_NAME)):
