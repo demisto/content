@@ -13,6 +13,13 @@ urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
+MIRROR_DIRECTION = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -101,6 +108,21 @@ def demisto_entry_to_otrs_attachment(entry_list: list[Any]):
         )
         attachments.append(otrs_attachment)
     return attachments
+
+
+def get_mirroring():
+    """
+    Get tickets mirroring.
+    """
+    params = demisto.params()
+
+    return {
+        'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
+        'mirror_tags': [
+            params.get('tag'),  # tag to otrs
+        ],
+        'mirror_instance': demisto.integrationInstance()
+    }
 
 
 ''' CLASS '''
@@ -574,6 +596,7 @@ def fetch_incidents(client: Client, fetch_queue: str, fetch_priority: str, fetch
 
     for ticket_id in tickets:
         ticket = client.get_ticket(ticket_id)
+        ticket.update(get_mirroring())
         incident = ticket_to_incident(ticket)
         incidents.append(incident)
         if first_ticket:
@@ -590,6 +613,7 @@ def fetch_incidents(client: Client, fetch_queue: str, fetch_priority: str, fetch
 
 
 def get_remote_data_command(client: Client, args: dict[str, str]):
+    params = demisto.params()
     ticket_id = args.get("id")
     headers = ["ArticleID", "To", "Cc", "Subject", "CreateTime", "From", "ContentType", "Body"]
     demisto.debug(f"Getting update for remote {ticket_id}")
@@ -634,9 +658,15 @@ def get_remote_data_command(client: Client, args: dict[str, str]):
                             'Type': EntryType.NOTE,
                             'Contents': description,
                             'ContentsFormat': EntryFormat.MARKDOWN,
-                            'Tags': ["FromOTRS"],  # the list of tags to add to the entry
+                            'Tags': [params.get('tag_from_otrs', "FromOTRS")],  # the list of tags to add to the entry
                             'Note': False  # boolean, True for Note, False otherwise
                         })
+                        if article.get('Attachment'):
+                            for attachment in article.get('Attachment'):
+                                file = fileResult(attachment['Filename'], base64.b64decode(attachment['Content']))
+                                file["Tags"] = [params.get('tag_from_otrs')]
+                                entries.append(file)
+
         return GetRemoteDataResponse(ticket, entries)
     else:
         return None
@@ -657,11 +687,24 @@ def update_remote_system_command(client: Client, args: dict[str, str]):
             demisto.debug(f'Sending entry {entry.get("id")}')
             article_object = {
                 "Subject": "Update from Cortex XSOAR",
-                "Body": str(entry.get("contents", "")),
+                "Body": "File from XSOAR" if entry.get("file") else str(entry.get("contents", "")),
             }
 
             article = Article(article_object)
-            client.update_ticket(ticket_id, article=article)
+            if entry.get("file"):
+                file_path = demisto.getFilePath(entry.get("id"))
+                with open(file_path['path'], 'rb') as file_content:
+                    encoded_file = base64.b64encode(file_content.read()).decode('utf-8')  # Encoding file content in base64,
+                    # as required by OTRS and then decode it as mentioned in https://gitlab.com/rhab/PyOTRS/-/issues/18
+
+                otrs_attachment = Attachment.create_basic(  # Creating OTRS attachment object
+                    Filename=file_path['name'],
+                    Content=encoded_file,
+                    ContentType=entry['fileMetadata']['type']
+                )
+                client.update_ticket(ticket_id, article=article, attachments=[otrs_attachment])
+            else:
+                client.update_ticket(ticket_id, article=article)
 
     # Close incident if relevant
     demisto.debug(f"Incident Status {parsed_args.inc_status}")

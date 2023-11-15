@@ -59,6 +59,35 @@ configuration:
   name: use_legacy_sessions
   type: 8
   required: false
+- additionalinfo: Choose the tag to add to an entry to mirror it as an article in OTRS.
+  defaultvalue: OTRS
+  display: Entry Tag To OTRS
+  name: tag
+  type: 0
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: Choose the tag to add to an entry to mirror it as an article from OTRS.
+  defaultvalue: FromOTRS
+  display: Entry Tag From OTRS
+  name: tag_from_otrs
+  type: 0
+  hidden:
+  - marketplacev2
+  required: false
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from OTRS to Cortex XSOAR), Outgoing (from Cortex XSOAR to OTRS), or Incoming and Outgoing (from/to Cortex XSOAR and OTRS).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  type: 15
+  hidden:
+  - marketplacev2
+  required: false
 description: Service management suite that comprises ticketing, workflow automation, and notification.
 display: OTRS
 name: OTRS
