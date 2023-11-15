@@ -236,7 +236,7 @@
       ls -la
       ls -la ./Packs/PAN-OS/Integrations/Panorama
       git config core.fileMode false
-      chmod -R g+w ./Packs
+      chmod -R 770 ./Packs
       echo "ls after switching Packs and chmod 777" 
       ls -la
       ls -la ./Packs/PAN-OS/Integrations/Panorama
