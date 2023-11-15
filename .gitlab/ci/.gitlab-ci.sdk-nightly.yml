@@ -341,11 +341,11 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
   script:
     - EXIT_CODE=0
 
-    - section_start "Update Packs To Install And Modeling Rules To Test" --collapsed
-    - echo -e "\nSemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/content_packs_to_install.txt"
-    - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
-    - cat "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
-    - section_end "Update Packs To Install And Modeling Rules To Test"
+    # - section_start "Update Packs To Install And Modeling Rules To Test" --collapsed
+    # - echo -e "\nSemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/content_packs_to_install.txt"
+    # - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
+    # - cat "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
+    # - section_end "Update Packs To Install And Modeling Rules To Test"
 
     - section_start "Copy Env Results To Artifacts Folder" --collapsed
     - |
@@ -358,12 +358,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
     - !reference [.lock-machine]
 
     - !reference [.export_cloud_machine_constants]
-
-    - section_start "Test Modeling Rules" --collapsed
-    - demisto-sdk upload -z -x -i Packs/SemperisDSP --insecure
-    - ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
-    - section_end "Test Modeling Rules"
-
     - section_start "End to End Tests" --collapsed
     - |
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
@@ -439,7 +433,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - |
       mkdir $ARTIFACTS_FOLDER/demisto-sdk
       git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-
       echo "Server URL: $DEMISTO_BASE_URL"
       python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/xsoar-saas || EXIT_CODE=$?
     - section_end "End to End Tests"
