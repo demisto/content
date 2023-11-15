@@ -13,6 +13,7 @@ args:
   required: true
   default: true
   description: The email address to check.
+  isArray: true
 - name: domain
   description: List of internal domains to check, comma separated.
   isArray: true
