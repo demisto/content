@@ -3,6 +3,7 @@ from collections.abc import Callable
 
 from demisto_sdk.commands.test_content.mock_server import MITMProxy
 from demisto_sdk.commands.common.tools import get_file
+from demisto_sdk.commands.common.files.json_file import JsonFile
 
 
 def run_with_proxy_configured(function: Callable) -> Callable:
@@ -28,7 +29,7 @@ def run_with_proxy_configured(function: Callable) -> Callable:
 
 
 def get_integration_params(integration_secrets_path: str, instance_name: str) -> dict:
-    integrations_instance_data = get_file(integration_secrets_path, raise_on_error=True).get("integrations") or []
+    integrations_instance_data = JsonFile.read_from_local_path(integration_secrets_path).get("integrations") or []
 
     for integration_instance in integrations_instance_data:
         if integration_instance.get("instance_name") == instance_name or integration_instance.get("name") == instance_name:
