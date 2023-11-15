@@ -5326,6 +5326,9 @@
             "playbookID": "IPToHost - Test"
         },
         {
+            "playbookID": "TestIsInCidrRanges"
+        },
+        {
             "playbookID": "NetskopeAPIv1 Test",
             "integrations": "NetskopeAPIv1"
         },
@@ -5584,6 +5587,9 @@
             "integrations": "Netcraft V2",
             "playbookID": "Test - Netcraft",
             "timeout": 2400
+        },
+        {
+
         }
     ],
     "skipped_tests": {
