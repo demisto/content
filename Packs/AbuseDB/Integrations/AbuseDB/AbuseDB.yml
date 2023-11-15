@@ -53,6 +53,12 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Disable reputation lookups for private IP addresses
+  name: disable_private_ip_lookup
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  additionalinfo: To reduce the number of lookups made to the AbuseIPDB API, this option can be selected to gracefully skip enrichment of any IP addresses allocated for private networks.
 - display: Disregard quota errors
   name: disregard_quota
   type: 8
@@ -81,13 +87,20 @@ script:
       description: The IP address to check (CSV supported).
       isArray: true
       name: ip
+    - defaultValue: false
+      description: When set to "true", enrichment of private IP addresses will be conducted even if it has been disabled at the integration level.
+      name: override_private_lookup
+      default: false
+      predefined:
+      - 'true'
+      - 'false'
     - defaultValue: '30'
       description: The time range to return reports (in days). Default is 30.
       name: days
-    - auto: PREDEFINED
-      defaultValue: 'true'
+    - defaultValue: 'true'
       description: The length of the report. "true" returns the full report, "false" does not return reported categories. Default is "true".
       name: verbose
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -272,7 +285,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.80014
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test
