@@ -997,3 +997,33 @@ def test_create_validation_errors_response(validation_errors, expected_str):
     """
     from XDR_iocs import create_validation_errors_response
     assert expected_str in create_validation_errors_response(validation_errors)
+
+
+@pytest.mark.parametrize('current_time,next_iocs_to_keep_time,should_run_iocs_to_keep', [
+    ('2020-01-01T02:00:00Z', '2020-01-01T01:00:00Z', True),
+    ('2020-01-01T01:05:00Z', '2020-01-01T02:00:00Z', False),
+    ('2020-01-01T04:00:00Z', '2020-01-01T01:00:00Z', False),
+    ('2020-01-02T02:00:00Z', '2020-01-01T01:00:00Z', True),
+    ('2020-01-02T04:00:00Z', '2020-01-01T01:00:00Z', False),
+    ('2020-01-01T01:05:00Z', None, False),
+])
+def test_is_iocs_to_keep_time(current_time, next_iocs_to_keep_time, should_run_iocs_to_keep, mocker):
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={"next_iocs_to_keep_time": next_iocs_to_keep_time})
+    with freeze_time(current_time):
+        assert is_iocs_to_keep_time() == should_run_iocs_to_keep
+
+
+@pytest.mark.parametrize('random_int,expected_next_time', [
+    (0, '2023-11-16T01:00:00Z'),
+    (40, '2023-11-16T01:40:00Z'),
+    (60, '2023-11-16T02:00:00Z'),
+    (100, '2023-11-16T02:40:00Z'),
+    (115, '2023-11-16T02:55:00Z'),
+])
+@freeze_time('2023-11-15T18:00:00')
+def test_set_new_iocs_to_keep_time(random_int, expected_next_time, mocker):
+    mocker.patch('XDR_iocs.secrets.randbelow', return_value=random_int)
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
+    set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
+    set_new_iocs_to_keep_time()
+    set_integration_context_mock.assert_called_once_with({'next_iocs_to_keep_time': expected_next_time})
