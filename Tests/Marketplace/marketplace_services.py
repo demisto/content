@@ -2284,11 +2284,8 @@ class Pack:
         pack_dependencies = [dep for dep in self._first_level_dependencies
                              if not self._first_level_dependencies[dep].get("is_test", False)]
 
-        removed_test_deps = []
-        for dep in self._dependencies:
-            if dep not in pack_dependencies:
-                self._dependencies.pop(dep)
-                removed_test_deps.append(dep)
+        self._dependencies = {dep: self._dependencies.get(dep) for dep in self._dependencies if dep in pack_dependencies}
+        removed_test_deps = [dep for dep in self._first_level_dependencies if dep not in self._dependencies]
         logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
 
     def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict,
