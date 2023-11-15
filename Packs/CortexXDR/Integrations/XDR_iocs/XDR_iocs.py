@@ -1,3 +1,4 @@
+from pathlib import Path
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -350,11 +351,10 @@ def iocs_to_keep(client: Client):
 
 def get_iocs_to_keep_file():
     demisto.info('get_iocs_to_keep_file executed')
-    temp_file_path = get_temp_file()
+    temp_file_path = Path(get_temp_file())
     try:
         create_file_iocs_to_keep(temp_file_path)
-        with open(temp_file_path, 'r') as _tmpfile:
-            return_results(fileResult('xdr-ioc-to-keep-file', _tmpfile.read()))
+        return_results(fileResult('xdr-ioc-to-keep-file', temp_file_path.read_text()))
     finally:
         os.remove(temp_file_path)
 
