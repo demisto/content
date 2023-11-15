@@ -1,27 +1,12 @@
+category: Endpoint
 commonfields:
   id: Cybereason
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: ''
-    packName: ''
-    itemVersion: ''
-    fromServerVersion: ''
-    toServerVersion: ''
-    propagationLabels:
-    - all
-    definitionid: ''
-    prevname: ''
-vcShouldKeepItemLegacyProdMachine: false
-name: Cybereason
-display: Cybereason
-category: Endpoint
-description: Endpoint detection and response to manage and query malops, connections and processes.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
-  type: 0
   required: true
+  type: 0
 - display: Credentials
   name: credentials
   type: 9
@@ -42,19 +27,19 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
-  defaultvalue: 3 days
   type: 0
   required: false
-- display: Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents)
+- defaultvalue: MALOP CREATION TIME
+  display: Fetch by "MALOP CREATION TIME" or by "MALOP UPDATE TIME" (Fetching by Malop update time might create duplicates of Malops as incidents)
   name: fetch_by
-  defaultvalue: MALOP CREATION TIME
   type: 0
   required: false
-- display: Check this box to Enable Polling for Cybereason EPP Malops.
+- defaultvalue: "false"
+  display: Check this box to Enable Polling for Cybereason EPP Malops.
   name: enable_epp_poll
-  defaultvalue: 'false'
   type: 8
   required: false
 - display: Incidents Fetch Interval
@@ -62,279 +47,281 @@ configuration:
   defaultvalue: '1'
   type: 19
   required: false
+description: Endpoint detection and response to manage and query malops, connections and processes.
+display: Cybereason
+name: Cybereason
 script:
-  script: ''
-  type: python
   commands:
-  - name: cybereason-archive-sensor
-    arguments:
-    - name: sensorID
+  - arguments:
+    - description: Sensor ID of Cybereason Sensor.
+      name: sensorID
       required: true
-      description: Sensor ID of Cybereason Sensor.
-    - name: archiveReason
+    - description: Reason for Archiving Cybereason Sensor.
+      name: archiveReason
       required: true
-      description: Reason for Archiving Cybereason Sensor.
     description: Archives a Sensor.
-  - name: cybereason-unarchive-sensor
-    arguments:
-    - name: sensorID
+    name: cybereason-archive-sensor
+  - arguments:
+    - description: Sensor ID of Cybereason Sensor.
+      name: sensorID
       required: true
-      description: Sensor ID of Cybereason Sensor.
-    - name: unarchiveReason
+    - description: Reason for Unarchiving Cybereason Sensor.
+      name: unarchiveReason
       required: true
-      description: Reason for Unarchiving Cybereason Sensor.
     description: Unarchives a Sensor.
-  - name: cybereason-delete-sensor
-    arguments:
-    - name: sensorID
+    name: cybereason-unarchive-sensor
+  - arguments:
+    - description: Sensor ID of Cybereason Sensor.
+      name: sensorID
       required: true
-      description: Sensor ID of Cybereason Sensor.
     description: Deletes a Sensor.
-  - name: cybereason-query-processes
-    arguments:
-    - name: machine
-      description: The hostname of the machine.
-    - name: onlySuspicious
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
+    name: cybereason-delete-sensor
+  - arguments:
+    - description: The hostname of the machine.
+      name: machine
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Show only suspicious processes.
-      defaultValue: 'false'
-    - name: limit
+      name: onlySuspicious
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: '10000'
       description: Maximum number of results to retrieve.
-      defaultValue: '10000'
-    - name: processName
-      description: Process name to filter by.
-    - name: saveToContext
-      auto: PREDEFINED
-      predefined:
-      - 'true'
-      - 'false'
+      name: limit
+    - description: Process name to filter by.
+      name: processName
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: If true, save the result to the context.
-      defaultValue: 'false'
-    - name: hasIncomingConnection
-      auto: PREDEFINED
+      name: saveToContext
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Filter only processes with incoming connections.
-      defaultValue: 'false'
-    - name: hasOutgoingConnection
-      auto: PREDEFINED
+      name: hasIncomingConnection
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
       description: Filter only processes with outgoing connections.
-      defaultValue: 'false'
-    - name: hasExternalConnection
-      auto: PREDEFINED
+      name: hasOutgoingConnection
       predefined:
       - 'true'
       - 'false'
-      description: If process has external connection
-    - name: unsignedUnknownReputation
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: If process has external connection.
+      name: hasExternalConnection
       predefined:
       - 'true'
       - 'false'
-      description: If process is not known to reputation services and its image file is unsigned
-    - name: fromTemporaryFolder
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: If process is not known to reputation services and its image file is unsigned.
+      name: unsignedUnknownReputation
       predefined:
       - 'true'
       - 'false'
-      description: If process is running from temporary folder
-    - name: privilegesEscalation
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: If process is running from temporary folder.
+      name: fromTemporaryFolder
       predefined:
       - 'true'
       - 'false'
-      description: If process was identified elevating its privileges to local system user
-    - name: maliciousPsExec
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: If process was identified elevating its privileges to local system user.
+      name: privilegesEscalation
       predefined:
       - 'true'
       - 'false'
-      description: If the process was executed by PsExec service and is suspicious as being executed maliciously
+    - auto: PREDEFINED
+      description: If the process was executed by PsExec service and is suspicious as being executed maliciously.
+      name: maliciousPsExec
+      predefined:
+      - 'true'
+      - 'false'
     - name: startTime
-      description: The query start time
+      description: The query start time.
     - name: endTime
-      description: The query stop time
+      description: The query stop time.
+    description: Searches for processes with various filters.
+    name: cybereason-query-processes
     outputs:
     - contextPath: Cybereason.Process.Name
-      description: The process name
+      description: The process name.
       type: Unknown
     - contextPath: Cybereason.Process.Malicious
-      description: Malicious status of the process
+      description: Malicious status of the process.
       type: Unknown
     - contextPath: Cybereason.Process.CreationTime
-      description: The process creation time
+      description: The process creation time.
       type: Unknown
     - contextPath: Cybereason.Process.EndTime
-      description: The process end time
+      description: The process end time.
       type: Unknown
     - contextPath: Cybereason.Process.CommandLine
-      description: The command line of the process
+      description: The command line of the process.
       type: Unknown
     - contextPath: Cybereason.Process.SignedAndVerified
-      description: Is the process signed and verified
+      description: Is the process signed and verified.
       type: Unknown
     - contextPath: Cybereason.Process.ProductType
-      description: The product type
+      description: The product type.
       type: Unknown
     - contextPath: Cybereason.Process.Children
-      description: Children of the process
+      description: Children of the process.
       type: Unknown
     - contextPath: Cybereason.Process.Parent
-      description: The parent process
+      description: The parent process.
       type: Unknown
     - contextPath: Cybereason.Process.OwnerMachine
-      description: The machine's hostname
+      description: The machine's hostname.
       type: Unknown
     - contextPath: Cybereason.Process.User
-      description: The user who ran the process
+      description: The user who ran the process.
       type: Unknown
     - contextPath: Cybereason.Process.ImageFile
-      description: Image file of the process
+      description: Image file of the process.
       type: Unknown
     - contextPath: Cybereason.Process.SHA1
-      description: SHA1 of the process file
+      description: SHA1 of the process file.
       type: Unknown
     - contextPath: Cybereason.Process.MD5
-      description: MD5 of the process file
+      description: MD5 of the process file.
       type: Unknown
     - contextPath: Cybereason.Process.CompanyName
-      description: The company's name
+      description: The company's name.
       type: Unknown
     - contextPath: Cybereason.Process.ProductName
-      description: The product's name
+      description: The product's name.
       type: Unknown
-    description: Searches for processes with various filters.
-  - name: cybereason-is-probe-connected
-    arguments:
-    - name: machine
+  - arguments:
+    - description: The hostname of the machine to check.
+      name: machine
       required: true
-      description: The hostname of the machine to check.
+    description: Checks if the machine is currently connected to the Cybereason server.
+    name: cybereason-is-probe-connected
     outputs:
     - contextPath: Cybereason.Machine.isConnected
-      description: true if machine is connected, else false
+      description: true if machine is connected, else false.
       type: boolean
     - contextPath: Cybereason.Machine.Name
-      description: Machine name
+      description: Machine name.
       type: string
-    description: Checks if the machine is currently connected to the Cybereason server
-  - name: cybereason-query-connections
-    arguments:
-    - name: ip
-      description: Filter connections which contain this IP (in or out).
-    - name: machine
-      description: Filter connections on the given machine.
-    - name: saveToContext
+  - arguments:
+    - description: Filter connections which contain this IP (in or out).
+      name: ip
+    - description: Filter connections on the given machine.
+      name: machine
+    - description: If true, save the result to the context.
+      name: saveToContext
       auto: PREDEFINED
+      defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-      description: If true, save the result to the context.
-      defaultValue: 'false'
     - name: startTime
-      description: The start time to query for
+      description: The start time to query for.
     - name: endTime
-      description: The endTime to query for
+      description: The endTime to query for.
+    description: Searches for connections.
+    name: cybereason-query-connections
     outputs:
     - contextPath: Cybereason.Connection.Name
-      description: The connection's name
+      description: The connection's name.
       type: Unknown
     - contextPath: Cybereason.Connection.Direction
-      description: OUTGOING/INCOMING
+      description: OUTGOING/INCOMING.
       type: Unknown
     - contextPath: Cybereason.Connection.ServerAddress
-      description: Address of the Cybereason machine
+      description: Address of the Cybereason machine.
       type: Unknown
     - contextPath: Cybereason.Connection.ServerPort
-      description: Port of the Cybereason machine
+      description: Port of the Cybereason machine.
       type: Unknown
     - contextPath: Cybereason.Connection.PortType
-      description: Type of the connection
+      description: Type of the connection.
       type: Unknown
     - contextPath: Cybereason.Connection.ReceivedBytes
-      description: Received bytes count
+      description: Received bytes count.
       type: Unknown
     - contextPath: Cybereason.Connection.TransmittedBytes
-      description: Transmitted bytes count
+      description: Transmitted bytes count.
       type: Unknown
     - contextPath: Cybereason.Connection.RemoteCountry
-      description: The connection's remote country
+      description: The connection's remote country.
       type: Unknown
     - contextPath: Cybereason.Connection.OwnerMachine
-      description: The machine's hostname
+      description: The machine's hostname.
       type: Unknown
     - contextPath: Cybereason.Connection.OwnerProcess
-      description: The process which performed the connection
+      description: The process which performed the connection.
       type: Unknown
     - contextPath: Cybereason.Connection.CreationTime
-      description: Creation time of the connection
+      description: Creation time of the connection.
       type: Unknown
     - contextPath: Cybereason.Connection.EndTime
-      description: End time of the connection
+      description: End time of the connection.
       type: Unknown
-    description: Searches for connections.
-  - name: cybereason-isolate-machine
-    arguments:
-    - name: machine
+  - arguments:
+    - default: true
+      description: Machine name to be isolated.
+      name: machine
       required: true
-      default: true
-      description: Machine name to be isolated
+    description: Isolates a machine that has been infected from the rest of the network.
+    execution: true
+    name: cybereason-isolate-machine
     outputs:
     - contextPath: Cybereason.Machine
-      description: Machine name
+      description: Machine name.
       type: string
     - contextPath: Cybereason.IsIsolated
-      description: Is the machine isolated
+      description: Is the machine isolated.
       type: boolean
-    description: Isolates a machine that has been infected from the rest of the network
-    execution: true
-  - name: cybereason-unisolate-machine
-    arguments:
-    - name: machine
+  - arguments:
+    - default: true
+      description: Machine name to be un-isolated.
+      name: machine
       required: true
-      default: true
-      description: Machine name to be un-isolated
+    description: Stops isolation of a machine.
+    execution: true
+    name: cybereason-unisolate-machine
     outputs:
     - contextPath: Cybereason.Machine
-      description: Machine name
+      description: Machine name.
       type: string
     - contextPath: Cybereason.IsIsolated
-      description: Is the machine isolated
+      description: Is the machine isolated.
       type: boolean
-    description: Stops isolation of a machine
-    execution: true
-  - name: cybereason-query-malops
-    arguments:
-    - name: filters
-      description: Filter to filter response by, given in Cybereason API syntax.
-    - name: totalResultLimit
-      description: The total number of results to return for your Server. Ensure you make the limit a reasonable number to maximize Server performance and not to overload the system.
-    - name: perGroupLimit
-      description: The number of items to return per Malop group.
-    - name: templateContext
-      auto: PREDEFINED
+  - arguments:
+    - description: Filter to filter response by, given in Cybereason API syntax.
+      name: filters
+    - description: The total number of results to return for your Server. Ensure you make the limit a reasonable number to maximize Server performance and not to overload the system.
+      name: totalResultLimit
+    - description: The number of items to return per Malop group.
+      name: perGroupLimit
+    - auto: PREDEFINED
+      defaultValue: MALOP
+      description: 'The level of detail to provide in the response. Possible values include:  SPECIFIC:  References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. CUSTOM:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results. DETAILS:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results.'
+      name: templateContext
       predefined:
       - MALOP
       - SPECIFIC
       - CUSTOM
       - DETAILS
       - OVERVIEW
-      description: 'The level of detail to provide in the response. Possible values include:  SPECIFIC:  References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. CUSTOM:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results. DETAILS:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results.'
-      defaultValue: MALOP
-    - name: withinLastDays
-      description: Return all the malops within the last days
-    - name: malopGuid
-      description: Malop GUIDs to filter by (Comma separated values supported, e.g. 11.5681864988155542407,11.1773255057963879999)
+    - description: Return all the malops within the last days.
+      name: withinLastDays
+    - description: Malop GUIDs to filter by (Comma separated values supported, e.g. 11.5681864988155542407,11.1773255057963879999).
+      name: malopGuid
     - name: startTime
-      description: Query start time range
+      description: Query start time range.
     - name: endTime
-      description: Query end time range
+      description: Query end time range.
+    description: Returns a list of all Malops and details on the Malops.
+    name: cybereason-query-malops
     outputs:
     - contextPath: Cybereason.Malops.GUID
       description: The unique globally unique identifier (guid) for the Malop.
@@ -349,487 +336,490 @@ script:
       description: Link to the Malop on Cybereason.
       type: string
     - contextPath: Cybereason.Malops.Suspects
-      description: Malop suspect type and name
+      description: Malop suspect type and name.
       type: string
     - contextPath: Cybereason.Malops.LastUpdatedTime
-      description: Last updated time of malop
+      description: Last updated time of malop.
       type: string
     - contextPath: Cybereason.Malops.AffectedMachine
-      description: List of machines affected by this Malop
+      description: List of machines affected by this Malop.
       type: string
     - contextPath: Cybereason.Malops.InvolvedHash
-      description: List of file hashes involved in this Malop
+      description: List of file hashes involved in this Malop.
       type: string
     - contextPath: Cybereason.Malops.Status
-      description: Malop managemant status
+      description: Malop managemant status.
       type: string
-    description: Returns a list of all Malops and details on the Malops.
-  - name: cybereason-malop-processes
-    arguments:
-    - name: malopGuids
+  - arguments:
+    - description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command).
+      name: malopGuids
       required: true
-      description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command)
-    - name: machineName
-      description: Machine names which were affected by malop. Comma separated values supported (e.g., machine1,machine2)
-    - name: dateTime
-      description: Starting Date and Time to filter the Processes based on their creation date. The format for the input is ("YYYY/MM/DD HH:MM:SS").
+    - description: Machine names which were affected by malop. Comma separated values supported (e.g., machine1,machine2).
+      name: machineName
+    - description: Starting Date and Time to filter the Processes based on their creation date. The format for the input is ("YYYY/MM/DD HH:MM:SS").
+      name: dateTime
     - name: startTime
-      description: The start time to query for
+      description: The start time to query for.
     - name: endTime
-      description: The end time to query for
+      description: The end time to query for.
+    description: Returns a list of malops.
+    name: cybereason-malop-processes
     outputs:
     - contextPath: Cybereason.Process.Name
-      description: The process name
+      description: The process name.
       type: string
     - contextPath: Cybereason.Process.Malicious
-      description: Malicious status of the process
+      description: Malicious status of the process.
       type: Unknown
     - contextPath: Cybereason.Process.CreationTime
-      description: The process creation time
+      description: The process creation time.
       type: date
     - contextPath: Cybereason.Process.EndTime
-      description: The process end time
+      description: The process end time.
       type: date
     - contextPath: Cybereason.Process.CommandLine
-      description: The command line of the process
+      description: The command line of the process.
       type: string
     - contextPath: Cybereason.Process.SignedAndVerified
-      description: Is the process signed and verified
+      description: Is the process signed and verified.
       type: Unknown
     - contextPath: Cybereason.Process.ProductType
-      description: The product type
+      description: The product type.
       type: Unknown
     - contextPath: Cybereason.Process.Children
-      description: Children of the process
+      description: Children of the process.
       type: Unknown
     - contextPath: Cybereason.Process.Parent
-      description: The parent process
+      description: The parent process.
       type: Unknown
     - contextPath: Cybereason.Process.OwnerMachine
-      description: The machine's hostname
+      description: The machine's hostname.
       type: Unknown
     - contextPath: Cybereason.Process.User
-      description: The user who ran the process
+      description: The user who ran the process.
       type: string
     - contextPath: Cybereason.Process.ImageFile
-      description: Image file of the process
+      description: Image file of the process.
       type: Unknown
     - contextPath: Cybereason.Process.SHA1
-      description: SHA1 of the process file
+      description: SHA1 of the process file.
       type: string
     - contextPath: Cybereason.Process.MD5
-      description: MD5 of the process file
+      description: MD5 of the process file.
       type: string
     - contextPath: Cybereason.Process.CompanyName
-      description: The company's name
+      description: The company's name.
       type: string
     - contextPath: Cybereason.Process.ProductName
-      description: The product's name
+      description: The product's name.
       type: string
-    description: Returns a list of malops
-  - name: cybereason-add-comment
-    arguments:
-    - name: comment
+  - arguments:
+    - description: Comment to add to the malop.
+      name: comment
       required: true
-      description: Comment to add to the malop
-    - name: malopGuid
+    - description: Malop GUID to add comment to. (Malop GUID can be retrieved with the command cybereason-query-malops command).
+      name: malopGuid
       required: true
-      description: Malop GUID to add comment to. (Malop GUID can be retrieved with the command cybereason-query-malops command)
-    description: Add new comment to malop
-  - name: cybereason-update-malop-status
-    arguments:
-    - name: malopGuid
+    description: Add new comment to malop.
+    name: cybereason-add-comment
+  - arguments:
+    - description: Malop GUID to update its status.
+      name: malopGuid
       required: true
-      description: Malop GUID to update its status
-    - name: status
-      required: true
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: Status to update.
+      name: status
       predefined:
       - To Review
       - Unread
       - Remediated
       - Not Relevant
       - Open
-      description: Status to update
+      required: true
+    description: Updates malop status.
+    name: cybereason-update-malop-status
     outputs:
     - contextPath: Cybereason.Malops.GUID
-      description: Malop GUID
+      description: Malop GUID.
       type: string
     - contextPath: Cybereason.Malops.Status
-      description: 'Malop status: To Review,Unread,Remediated,Not Relevant'
+      description: 'Malop status: To Review,Unread,Remediated,Not Relevant.'
       type: string
-    description: Updates malop status
-  - name: cybereason-prevent-file
-    arguments:
-    - name: md5
+  - arguments:
+    - default: true
+      description: Malop process file MD5 to prevent.
+      name: md5
       required: true
-      default: true
-      description: Malop process file MD5 to prevent
+    description: Prevent malop process file.
+    name: cybereason-prevent-file
     outputs:
     - contextPath: Cybereason.Process.MD5
-      description: Process file MD5
+      description: Process file MD5.
       type: string
     - contextPath: Cybereason.Process.Prevent
-      description: True if process file is prevented, else false
+      description: True if process file is prevented, else false.
       type: boolean
-    description: Prevent malop process file
-  - name: cybereason-unprevent-file
-    arguments:
-    - name: md5
+  - arguments:
+    - default: true
+      description: Malop process file MD5 to unprevent.
+      name: md5
       required: true
-      default: true
-      description: Malop process file MD5 to unprevent
+    description: Unprevent malop process file.
+    name: cybereason-unprevent-file
     outputs:
     - contextPath: Cybereason.Process.MD5
-      description: Process file MD5
+      description: Process file MD5.
       type: string
     - contextPath: Cybereason.Process.Prevent
-      description: True if process file is prevented, else false
+      description: True if process file is prevented, else false.
       type: boolean
-    description: Unprevent malop process file
-  - name: cybereason-query-file
-    arguments:
-    - name: file_hash
+  - arguments:
+    - default: true
+      description: File hash (SHA-1 and MD5 supported).
+      name: file_hash
       required: true
-      default: true
-      description: File hash (SHA-1 and MD5 supported)
+    description: Query files as part of investigation.
+    name: cybereason-query-file
     outputs:
     - contextPath: Cybereason.File.Path
-      description: File path
+      description: File path.
       type: string
     - contextPath: Cybereason.File.SHA1
-      description: File SHA-1 hash
+      description: File SHA-1 hash.
       type: string
     - contextPath: Cybereason.File.Machine
-      description: Machine name on which file is located
+      description: Machine name on which file is located.
       type: string
     - contextPath: Cybereason.File.SuspicionsCount
-      description: File suspicions count
+      description: File suspicions count.
       type: number
     - contextPath: Cybereason.File.Name
-      description: File name
+      description: File name.
       type: string
     - contextPath: Cybereason.File.CreationTime
-      description: File creation time
+      description: File creation time.
       type: date
     - contextPath: Cybereason.File.Suspicion
-      description: File suspicions object of suspicion as key and detected date as value
+      description: File suspicions object of suspicion as key and detected date as value.
       type: string
     - contextPath: Cybereason.File.OSVersion
-      description: Machine OS version on which file is located
+      description: Machine OS version on which file is located.
       type: string
     - contextPath: Cybereason.File.ModifiedTime
-      description: File modified date
+      description: File modified date.
       type: date
     - contextPath: Cybereason.File.Malicious
-      description: Is file malicious
+      description: Is file malicious.
       type: boolean
     - contextPath: Cybereason.File.Company
-      description: Company name
+      description: Company name.
       type: string
     - contextPath: Cybereason.File.MD5
-      description: File MD5 hash
+      description: File MD5 hash.
       type: string
     - contextPath: Cybereason.File.IsConnected
-      description: Is machine connected to Cybereason
+      description: Is machine connected to Cybereason.
       type: boolean
     - contextPath: Cybereason.File.Signed
-      description: Is file signed
+      description: Is file signed.
       type: boolean
     - contextPath: Cybereason.File.Evidence
-      description: File evidences
+      description: File evidences.
       type: string
-    description: Query files as part of investigation
-  - name: cybereason-query-domain
-    arguments:
-    - name: domain
+  - arguments:
+    - default: true
+      description: Domain to query.
+      name: domain
       required: true
-      default: true
-      description: Domain to query
+    description: Query domains as part of investigation.
+    name: cybereason-query-domain
     outputs:
     - contextPath: Cybereason.Domain.Name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: Cybereason.Domain.Malicious
-      description: Is domain malicious
+      description: Is domain malicious.
       type: boolean
     - contextPath: Cybereason.Domain.IsInternalDomain
-      description: Is domain internal
+      description: Is domain internal.
       type: boolean
     - contextPath: Cybereason.Domain.Reputation
-      description: Domain reputation
+      description: Domain reputation.
       type: string
     - contextPath: Cybereason.Domain.SuspicionsCount
-      description: Domain suspicions count
+      description: Domain suspicions count.
       type: number
     - contextPath: Cybereason.Domain.WasEverResolved
-      description: Was domain ever resolved
+      description: Was domain ever resolved.
       type: boolean
     - contextPath: Cybereason.Domain.WasEverResolvedAsASecondLevelDomain
-      description: Was domain ever resolved as a second level domain
+      description: Was domain ever resolved as a second level domain.
       type: boolean
-    description: Query domains as part of investigation
-  - name: cybereason-query-user
-    arguments:
-    - name: username
+  - arguments:
+    - default: true
+      description: Username to query.
+      name: username
       required: true
-      default: true
-      description: Username to query
     - name: startTime
-      description: Start time to query
+      description: Start time to query.
     - name: endTime
-      description: End time to query
+      description: End time to query.
+    description: Query users as part of investigation.
+    name: cybereason-query-user
     outputs:
     - contextPath: Cybereason.User.Username
-      description: User name
+      description: User name.
       type: string
     - contextPath: Cybereason.User.Domain
-      description: User domain
+      description: User domain.
       type: string
     - contextPath: Cybereason.User.LastMachineLoggedInTo
-      description: Last machine which user logged in to
+      description: Last machine which user logged in to.
       type: string
     - contextPath: Cybereason.User.LocalSystem
-      description: Is local system
+      description: Is local system.
       type: boolean
     - contextPath: Cybereason.User.Organization
-      description: User organization
+      description: User organization.
       type: string
-    description: Query users as part of investigation
-  - name: cybereason-start-fetchfile
-    arguments:
-    - name: malopGUID
+  - arguments:
+    - description: Malop GUID for fetching a file from a sensor to download.
+      name: malopGUID
       required: true
-      description: Malop GUID for fetching a file from a sensor to download
-    - name: userName
+    - description: The complete Cybereason user name string for the user performing the request.
+      name: userName
       required: true
-      description: The complete Cybereason user name string for the user performing the request
-    description: Start fetching the file to download
-  - name: cybereason-fetchfile-progress
-    arguments:
-    - name: malopGuid
+    description: Start fetching the file to download.
+    name: cybereason-start-fetchfile
+  - arguments:
+    - default: true
+      description: Malop GUID to know the progress for downloading a file.
+      name: malopGuid
       required: true
-      default: true
-      description: Malop GUID to know the progress for downloading a file
+    description: Return a batch id for files waiting for download.
+    name: cybereason-fetchfile-progress
     outputs:
     - contextPath: Cybereason.Download.Progress.fileName
-      description: Filename for tha given malop
+      description: Filename for tha given malop.
       type: string
     - contextPath: Cybereason.Download.Progress.status
-      description: Status for batch ID
+      description: Status for batch ID.
       type: boolean
     - contextPath: Cybereason.Download.Progress.batchID
-      description: Unique batch id
+      description: Unique batch id.
       type: Unknown
-    description: Return a batch id for files waiting for download
-  - name: cybereason-download-file
-    arguments:
-    - name: batchID
+  - arguments:
+    - default: true
+      description: The batch id for the file download operation.
+      name: batchID
       required: true
-      default: true
-      description: The batch id for the file download operation
-    description: Downloads the actual file to the machine
-  - name: cybereason-close-file-batch-id
-    arguments:
-    - name: batchID
+    description: Downloads the actual file to the machine.
+    name: cybereason-download-file
+  - arguments:
+    - default: true
+      description: The batch id to abort a file download operation.
+      name: batchID
       required: true
-      default: true
-      description: The batch id to abort a file download operation
-    description: Aborts a file download operation that is in progress
-  - name: cybereason-available-remediation-actions
-    arguments:
-    - name: malopGuid
+    description: Aborts a file download operation that is in progress.
+    name: cybereason-close-file-batch-id
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop.
+      name: malopGuid
       required: true
-      description: The unique ID assigned by the Cybereason platform for the Malop
-    description: Get all remediation action details whatever available for that malop
-  - name: cybereason-kill-process
-    arguments:
-    - name: malopGuid
+    description: Get all remediation action details whatever available for that malop.
+    name: cybereason-available-remediation-actions
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop.
+      name: malopGuid
       required: true
-      description: The unique ID assigned by the Cybereason platform for the Malop
-    - name: machine
+    - description: Machine name to kill the process.
+      name: machine
       required: true
-      description: Machine name to kill the process
-    - name: targetId
+    - description: Target ID to kill the process.
+      name: targetId
       required: true
-      description: Target ID to kill the process
-    - name: userName
+    - description: The complete Cybereason user name string for the user performing the request.
+      name: userName
       required: true
-      description: The complete Cybereason user name string for the user performing the request
-    - name: comment
-      description: Comment to add to the malop
-    description: Kill a processes for the malicious file. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
-  - name: cybereason-quarantine-file
-    arguments:
-    - name: malopGuid
+    - description: Comment to add to the malop.
+      name: comment
+    description: Kill a processes for the malicious file. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop).
+    name: cybereason-kill-process
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop.
+      name: malopGuid
       required: true
-      description: The unique ID assigned by the Cybereason platform for the Malop
-    - name: machine
+    - description: Machine name to quarantine a file.
+      name: machine
       required: true
-      description: Machine name to quarantine a file
-    - name: targetId
+    - description: Target ID to quarantine a file.
+      name: targetId
       required: true
-      description: Target ID to quarantine a file
-    - name: userName
+    - description: The complete Cybereason user name string for the user performing the request.
+      name: userName
       required: true
-      description: The complete Cybereason user name string for the user performing the request
-    - name: comment
-      description: Comment to add to the malop
-    description: Quarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
-  - name: cybereason-unquarantine-file
-    arguments:
-    - name: malopGuid
+    - description: Comment to add to the malop.
+      name: comment
+    description: Quarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop).
+    name: cybereason-quarantine-file
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop.
+      name: malopGuid
       required: true
-      description: The unique ID assigned by the Cybereason platform for the Malop
-    - name: machine
+    - description: Machine name to unquarantine a file.
+      name: machine
       required: true
-      description: Machine name to unquarantine a file
-    - name: targetId
+    - description: Target ID to unquarantine a file.
+      name: targetId
       required: true
-      description: Target ID to unquarantine a file
-    - name: userName
+    - description: The complete Cybereason user name string for the user performing the request.
+      name: userName
       required: true
-      description: The complete Cybereason user name string for the user performing the request
-    - name: comment
-      description: Comment to add to the malop
-    description: Unquarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
-  - name: cybereason-block-file
-    arguments:
-    - name: malopGuid
+    - description: Comment to add to the malop.
+      name: comment
+    description: Unquarantine the detected malicious file in a secure location. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop).
+    name: cybereason-unquarantine-file
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop.
+      name: malopGuid
       required: true
-      description: The unique ID assigned by the Cybereason platform for the Malop
-    - name: machine
+    - description: Machine name whose files needs to be blocked.
+      name: machine
       required: true
-      description: Machine name whose files needs to be blocked
-    - name: targetId
+    - description: Target ID of file to be blocked.
+      name: targetId
       required: true
-      description: Target ID of file to be blocked
-    - name: userName
+    - description: The complete Cybereason user name string for the user performing the request.
+      name: userName
       required: true
-      description: The complete Cybereason user name string for the user performing the request
-    - name: comment
-      description: Comment to add to the malop
-    description: Block a file only in particular machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
-  - name: cybereason-delete-registry-key
-    arguments:
-    - name: malopGuid
+    - description: Comment to add to the malop.
+      name: comment
+    description: Block a file only in particular machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop).
+    name: cybereason-block-file
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop.
+      name: malopGuid
       required: true
-      description: The unique ID assigned by the Cybereason platform for the Malop
-    - name: machine
+    - description: Machine name to delete the registry key.
+      name: machine
       required: true
-      description: Machine name to delete the registry key
-    - name: targetId
+    - description: Target ID to delete the registry key.
+      name: targetId
       required: true
-      description: Target ID to delete the registry key
-    - name: userName
+    - description: The complete Cybereason user name string for the user performing the request.
+      name: userName
       required: true
-      description: The complete Cybereason user name string for the user performing the request
-    - name: comment
-      description: Comment to add to the malop
-    description: Delete a registry entry associated with a malicious process. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
-  - name: cybereason-kill-prevent-unsuspend
-    arguments:
-    - name: malopGuid
+    - description: Comment to add to the malop.
+      name: comment
+    description: Delete a registry entry associated with a malicious process. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop).
+    name: cybereason-delete-registry-key
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop.
+      name: malopGuid
       required: true
-      description: The unique ID assigned by the Cybereason platform for the Malop
-    - name: machine
+    - description: Machine name to prevent detected ransomware from running on the machine.
+      name: machine
       required: true
-      description: Machine name to prevent detected ransomware from running on the machine
-    - name: targetId
+    - description: Target ID to prevent detected ransomware from running on the machine.
+      name: targetId
       required: true
-      description: Target ID to prevent detected ransomware from running on the machine
-    - name: userName
+    - description: The complete Cybereason user name string for the user performing the request.
+      name: userName
       required: true
-      description: The complete Cybereason user name string for the user performing the request
-    - name: comment
-      description: Comment to add to the malop
-    description: Prevent detected ransomware from running on the machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
-  - name: cybereason-unsuspend-process
-    arguments:
-    - name: malopGuid
+    - description: Comment to add to the malop.
+      name: comment
+    description: Prevent detected ransomware from running on the machine. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop).
+    name: cybereason-kill-prevent-unsuspend
+  - arguments:
+    - description: The unique ID assigned by the Cybereason platform for the Malop.
+      name: malopGuid
       required: true
-      description: The unique ID assigned by the Cybereason platform for the Malop
-    - name: machine
+    - description: Machine name to prevent a file associated with ransomware.
+      name: machine
       required: true
-      description: Machine name to prevent a file associated with ransomware
-    - name: targetId
+    - description: Target ID to prevent a file associated with ransomware.
+      name: targetId
       required: true
-      description: Target ID to prevent a file associated with ransomware
-    - name: userName
+    - description: The complete Cybereason user name string for the user performing the request.
+      name: userName
       required: true
-      description: The complete Cybereason user name string for the user performing the request
-    - name: comment
-      description: Comment to add to the malop
-    description: Prevent a file associated with ransomware. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
-  - name: cybereason-malware-query
-    arguments:
-    - name: needsAttention
+    - description: Comment to add to the malop.
+      name: comment
+    description: Prevent a file associated with ransomware. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop).
+    name: cybereason-unsuspend-process
+  - arguments:
+    - description: Filter for Fetching Malwares by Malware needsAttention.
+      name: needsAttention
       auto: PREDEFINED
       predefined:
       - 'True'
       - 'False'
-      description: Filter for Fetching Malwares by Malware needsAttention.
-    - name: type
-      description: Filter for Fetching Malwares by Malware Type. (Possible filter values for Type are "KnownMalware,UnknownMalware,FilelessMalware,ApplicationControlMalware,RansomwareMalware").
-    - name: status
-      description: Filter for Fetching Malwares by Malware Status. (Possible filter values for Status are "Done,Excluded,Detected,Prevented,Remediated,DeleteOnRestart,Quarantined").
-    - name: timestamp
-      description: Filter for Fetching Malwares by Timestamp. Enter the time (in epoch).
-    - name: limit
+    - description: Filter for Fetching Malwares by Malware Type. (Possible filter values for Type are "KnownMalware,UnknownMalware,FilelessMalware,ApplicationControlMalware,RansomwareMalware").
+      name: type
+    - description: Filter for Fetching Malwares by Malware Status. (Possible filter values for Status are "Done,Excluded,Detected,Prevented,Remediated,DeleteOnRestart,Quarantined").
+      name: status
+    - description: Filter for Fetching Malwares by Timestamp. Enter the time (in epoch).
+      name: timestamp
+    - description: Filter for Fetching Malwares by Malware Limit.
+      name: limit
       required: true
-      description: Filter for Fetching Malwares by Malware Limit.
-    description: Malware query with options and values to filter
-  - name: cybereason-start-host-scan
-    arguments:
-    - name: sensorID
+    description: Malware query with options and values to filter.
+    name: cybereason-malware-query
+  - arguments:
+    - description: Sensor ID of a sensor. (Comma separated values supported.)
+      name: sensorID
       required: true
-      description: Sensor ID of a sensor. (Comma separated values supported.)
-    - name: scanType
+    - description: Select a method/type to scan a host.
+      name: scanType
       required: true
       auto: PREDEFINED
       predefined:
       - FULL
       - QUICK
       - STOP
-      description: Select a method/type to scan a host.
     description: Start or stop a full or quick scan for a host.
-  - name: cybereason-fetch-scan-status
-    arguments:
-    - name: batchID
-      required: true
-      default: true
+    name: cybereason-start-host-scan
+  - arguments:
+    - default: true
       description: The batch ID obtained after initiating the scan.
+      name: batchID
+      required: true
     description: Get the results for host scanning.
-  - name: cybereason-get-sensor-id
-    arguments:
-    - name: machineName
-      description: The hostname of the machine.
+    name: cybereason-fetch-scan-status
+  - arguments:
+    - description: The hostname of the machine.
+      name: machineName
     description: Get the Sensor ID of a machine.
+    name: cybereason-get-sensor-id
   - name: cybereason-query-inbox
     arguments:
     - name: startTime
-      description: The start time
+      description: The start time.
     - name: endTime
-      description: Queries the end time
+      description: Queries the end time.
     - name: rangeTime
-      description: Queries the time range
+      description: Queries the time range.
     - name: guid
-      description: The malbox guid
-    description: Quieries the CR inbox
+      description: The malbox guid.
+    description: Quieries the CR inbox.
   - name: cybereason-malop-connection
     arguments:
     - name: malopGuids
       required: true
-      description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command)
+      description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command).
     - name: dateTime
       description: Starting Date and Time to filter the Processes based on their creation date. The format for the input is ("YYYY/MM/DD HH:MM:SS").
     - name: startTime
-      description: The start time to query for
+      description: The start time to query for.
     - name: endTime
-      description: The end time to query for
-    description: Get connection for a malop in a specified time range
-  dockerimage: demisto/python3:3.10.13.78960
+      description: The end time to query for.
+    description: Get connection for a malop in a specified time range.
   isfetch: true
-  runonce: false
+  script: ''
+  type: python
   subtype: python3
-sourcemoduleid: Cybereason
+  dockerimage: demisto/python3:3.10.13.78960
+  runonce: false
+tests:
+- Cybereason Test
+fromversion: 5.0.0
