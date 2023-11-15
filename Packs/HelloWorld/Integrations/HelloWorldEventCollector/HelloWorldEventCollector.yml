@@ -6,19 +6,12 @@ commonfields:
   id: HelloWorldEventCollector
   version: -1
 configuration:
-- defaultvalue: https://some_url.com
-  display: Server URL (e.g. https://some_url.com)
+- defaultvalue: https://test.com
+  display: Server URL
   name: url
-  required: true
+  required: false
   type: 0
   section: Connect
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
-  required: false
-  section: Connect
-  hiddenusername: true
-  type: 9
 - defaultvalue: ACTIVE
   section: Collect
   display: Fetch alerts with status (ACTIVE, CLOSED)
@@ -83,7 +76,7 @@ script:
     description: Gets events from Hello World.
     execution: false
     name: hello-world-get-events
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.13.80014
   isfetchevents: true
   runonce: false
   script: '-'

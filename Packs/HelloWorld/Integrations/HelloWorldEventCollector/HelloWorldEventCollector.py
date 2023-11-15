@@ -2,7 +2,7 @@ import uuid
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -40,22 +40,25 @@ class Client(BaseClient):
         Returns:
             dict: the next event
         """
+        # use limit & from date arguments to query the API
         return [{
             'id': prev_id + 1,
             'created_time': datetime.now().isoformat(),
             'description': f'This is test description {prev_id + 1}',
             'alert_status': alert_status,
             'custom_details': {
-                               'triggered_by_name': f'Name for id: {prev_id + 1}',
-                               'triggered_by_uuid': str(uuid.uuid4()),
-                               'type': 'customType'
+                'triggered_by_name': f'Name for id: {prev_id + 1}',
+                'triggered_by_uuid': str(uuid.uuid4()),
+                'type': 'customType',
+                'requested_limit': limit,
+                'requested_From_date': from_date
             }
         }]
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time) -> str:
+def test_module(client: Client, params: dict[str, Any], first_fetch_time) -> str:
     """
-    Tests API connectivity and authentication'
+    Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
     successful.
     Raises exceptions if something goes wrong.
@@ -102,8 +105,8 @@ def get_events(client, alert_status, args):
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: Dict[str, int],
-                 first_fetch_time, alert_status: Optional[str], max_events_per_fetch: int
+def fetch_events(client: Client, last_run: dict[str, int],
+                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
                  ):
     """
     Args:
@@ -124,13 +127,14 @@ def fetch_events(client: Client, last_run: Dict[str, int],
     events = client.search_events(
         prev_id=prev_id,
         alert_status=alert_status,
-        limit=max_events_per_fetch
+        limit=max_events_per_fetch,
+        from_date=first_fetch_time,
     )
-    demisto.info(f'Fetched event with id: {prev_id + 1}.')
+    demisto.debug(f'Fetched event with id: {prev_id + 1}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'prev_id': prev_id + 1}
-    demisto.info(f'Setting next run {next_run}.')
+    demisto.debug(f'Setting next run {next_run}.')
     return next_run, events
 
 
@@ -151,7 +155,7 @@ def add_time_to_events(events):
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
@@ -162,10 +166,9 @@ def main() -> None:
     api_key = params.get('apikey', {}).get('password')
     base_url = urljoin(params.get('url'), '/api/v1')
     verify_certificate = not params.get('insecure', False)
-    next_run = None
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now()
+    first_fetch_time = datetime.now().isoformat()
     proxy = params.get('proxy', False)
     alert_status = params.get('alert_status', None)
     max_events_per_fetch = params.get('max_events_per_fetch', 1000)

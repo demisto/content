@@ -1,33 +1,48 @@
-import json
-import io
-import pytest
+from datetime import datetime
+import uuid
+from HelloWorldEventCollector import Client, fetch_events
 
-
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
-def test_say_hello():
-    """
-    Tests helloworld-say-hello command function.
-
-        Given:
-            - No mock is needed here because the say_hello_command does not call any external API.
-
-        When:
-            - Running the 'say_hello_command'.
-
-        Then:
-            - Checks the output of the command function with the expected output.
-
-    """
-    from HelloWorld import Client, say_hello_command
-
-    client = Client(base_url='https://test.com/api/v1', verify=False, auth=('test', 'test'))
-    args = {
-        'name': 'Dbot'
+RESPONSE = [{
+    'id': 2,
+    'created_time': datetime.now().isoformat(),
+    'description': 'This is test description 2',
+    'alert_status': 'Status',
+    'custom_details': {
+        'triggered_by_name': 'Name for id: 2',
+        'triggered_by_uuid': str(uuid.uuid4()),
+        'type': 'customType',
+        'requested_limit': 1,
     }
-    response = say_hello_command(client, args)
+}]
 
-    assert response.outputs == 'Hello Dbot'
+
+def test_fetch_detection_events_command():
+    """
+    Given:
+    - fetch events command (fetches detections)
+
+    When:
+    - Running fetch-events command
+
+    Then:
+    - Ensure number of events fetched
+    """
+    first_fetch_str = '2022-12-21T03:42:05Z'
+    base_url = 'https://server_url/'
+    client = Client(
+        base_url=base_url,
+        verify=True,
+        proxy=False,
+    )
+    last_run = {'prev_id': 1}
+    next_run, events = fetch_events(
+        client=client,
+        last_run=last_run,
+        first_fetch_time=first_fetch_str,
+        alert_status="Status",
+        max_events_per_fetch=1,
+    )
+
+    assert len(events) == 1
+    assert next_run.get('prev_id') == 2
+    assert events[0].get('id') == 2
