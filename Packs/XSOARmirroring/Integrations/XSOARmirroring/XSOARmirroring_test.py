@@ -407,12 +407,12 @@ case_with_an_incident_that_was_fetched_and_there_are_more_with_the_same_time = (
 )
 
 case_incidents_not_utc_time = (
-    "2023-11-09T06:25:45.000000Z",
+    "2023-11-09T03:25:05.000000Z",
     # responses from search_incidents
     [
         [
             {"id": "1", "version": 8, "created": "2023-11-09T06:25:06.828698605+03:00"},
-            {"id": "2", "version": 8, "created": "2023-11-09T06:25:06.828698605+03:00"},
+            {"id": "2", "version": 8, "created": "2023-11-09T06:26:06.828698605+03:00"},
         ],
         [],
     ],  # max fetch
@@ -422,12 +422,12 @@ case_incidents_not_utc_time = (
         # expected incident result
         [
             {"id": "1", "version": 8, "created": "2023-11-09T06:25:06.828698605+03:00"},
-            {"id": "2", "version": 8, "created": "2023-11-09T06:25:06.828698605+03:00"},
+            {"id": "2", "version": 8, "created": "2023-11-09T06:26:06.828698605+03:00"},
 
         ],
         # expected incidents_last_fetch_ids result
-        ["1", "2"],
-        dateparser.parse("2023-11-09T03:25:06.828698605+03:00")
+        ["2"],
+        dateparser.parse("2023-11-09T03:26:06.828698605Z")
     ),
 )
 

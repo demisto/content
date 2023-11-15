@@ -340,7 +340,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
     incidents, last_fetched_incidents, last_fetched_incident_time = get_and_dedup_incidents(client, last_fetched_incidents, query,
                                                                                             max_results, last_fetch)
-    demisto.debug("last_fetched_incident_time: {last_fetched_incident_time}")
+    demisto.debug(f"last_fetched_incident_time: {last_fetched_incident_time}")
     if fetch_incident_history:
         integration_context = get_integration_context()
         incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
@@ -394,11 +394,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
-        # incident_created_time = dateparser.parse(incident.get('created'))  # type: ignore[arg-type]
-
+        incident_created_time = dateparser.parse(incident.get('created'), settings={'TIMEZONE': 'Z'})  # type: ignore[arg-type]
+        demisto.debug(f"incident_created_time= {incident_created_time}")
         # Update last run and add incident if the incident is newer than last fetch
-        if last_fetched_incident_time > latest_created_time:  # type: ignore[operator]
-            latest_created_time = last_fetched_incident_time
+        if incident_created_time > latest_created_time:  # type: ignore[operator]
+            latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': (latest_created_time)  # type: ignore[operator]
@@ -849,12 +849,10 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
             if len(new_incidents) >= max_results:
                 break
             incident_id = incident.get("id")
-            incident_creation_time = dateparser.parse(incident.get("created", last_fetched_incident_time))
-            if incident_creation_time:
-                timezone_offset = incident_creation_time.utcoffset()
-                if timezone_offset:
-                    demisto.debug(f"before incident_creation_time with timezone: {incident_creation_time}")
-                    incident_creation_time = incident_creation_time - timezone_offset
+            created = incident.get("created", last_fetched_incident_time)
+            demisto.debug(f"before incident_creation_time with timezone: {created}")
+            incident_creation_time = dateparser.parse(incident.get("created", last_fetched_incident_time),
+                                                      settings={'TIMEZONE': 'Z'})
             demisto.debug(f"{incident_id} incident_creation_time: {incident_creation_time}")
             if incident_id not in last_fetched_incidents:
                 # Case 3: The last fetched incident with the different timestamp then the previous incident.
@@ -868,7 +866,8 @@ def get_and_dedup_incidents(client: Client, last_fetched_incidents: list[Any],
                 new_incidents.append(incident)
                 last_fetched_incident_time = incident_creation_time
         page += 1
-        demisto.debug(f"new_incidents: {new_incidents}")
+        demisto.debug(f"new_incidents: {new_incidents}, last_fetched_incident_time:{last_fetched_incident_time}"),
+        (f"last_fetched_incidents:{last_fetched_incidents}")
     return new_incidents, last_fetched_incidents, last_fetched_incident_time
 
 
