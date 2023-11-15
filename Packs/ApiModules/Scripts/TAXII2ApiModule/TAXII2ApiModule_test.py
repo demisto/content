@@ -219,7 +219,7 @@ class TestInitServer:
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
         mock_client.init_server()
-        assert isinstance(mock_client.server, v20.Server)
+        assert isinstance(mock_client.server, v21.Server)
 
     def test_v21(self):
         """
@@ -259,7 +259,7 @@ class TestInitServer:
             objects_to_fetch=[]
         )
         mock_client.init_server()
-        assert isinstance(mock_client.server, v20.Server)
+        assert isinstance(mock_client.server, v21.Server)
         assert mock_auth_header_key in mock_client.server._conn.session.headers
         assert mock_client.server._conn.session.headers.get(mock_auth_header_key) == mock_password
 

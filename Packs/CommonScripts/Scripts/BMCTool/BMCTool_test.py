@@ -543,8 +543,8 @@ def test_main(mocker):
         'EntryID': ''
     })
     # Mock CommonServerPython.fileResult() to do nothing (avoid creating files on disk)
-    with mocker.patch("BMCTool.BMCContainer.b_write"):
-        main()
+    mocker.patch("BMCTool.BMCContainer.b_write")
+    main()
 
     result = demisto.results
     assert result

@@ -48,17 +48,22 @@ configuration:
   name: fetch_time
   type: 0
   required: false
-- defaultvalue: 1
+- additionalinfo: When fetching incident from specific queue, search also back for incident created before the last run time but moved to the queue after the last fetch.
+  defaultvalue: '1'
   display: Days to look back when fetching
-  additionalinfo: When fetching incident from specific queue, search also back for incident created before the last run time but moved to the queue after the last fetch.
   name: look_back
-  type: 0
   required: false
+  type: 0
 - additionalinfo: If true, use sessions compatibility for OTRS versions lower than V8.
   display: Use legacy sessions
   name: use_legacy_sessions
-  type: 8
   required: false
+  type: 8
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 - additionalinfo: Choose the tag to add to an entry to mirror it as an article in OTRS.
   defaultvalue: OTRS
   display: Entry Tag To OTRS

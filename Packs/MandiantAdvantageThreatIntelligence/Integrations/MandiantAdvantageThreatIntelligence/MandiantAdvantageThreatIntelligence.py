@@ -1047,7 +1047,10 @@ def get_new_indicators(
         new_indicators_list = list(
             filter(last_updated_filter(start_date), new_indicators_list)  # type: ignore
         )
-        return new_indicators_list, new_indicators_list[-1]["last_updated"]
+        if new_indicators_list:
+            return new_indicators_list, new_indicators_list[-1]["last_updated"]
+        else:
+            return [], last_run
     else:
         updated_indicators = []
         # For Indicators of Compromise only

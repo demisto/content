@@ -179,12 +179,14 @@ class TestCreateFile:
         ('File_iocs', 'File_iocs_to_keep_file')
     ]
 
-    def setup(self):
+    @classmethod
+    def setup_method(cls):
         # creates the file
         with open(TestCreateFile.path, 'w') as _file:
             _file.write('')
 
-    def teardown(self):
+    @classmethod
+    def teardown_method(cls):
         # removes the file when done
         os.remove(TestCreateFile.path)
 

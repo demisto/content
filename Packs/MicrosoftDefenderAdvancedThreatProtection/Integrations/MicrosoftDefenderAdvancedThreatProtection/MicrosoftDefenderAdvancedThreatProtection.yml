@@ -806,6 +806,13 @@ script:
       - Malware
       - SecurityTesting
       - UnwantedSoftware
+      - MultiStagedAttack
+      - MaliciousUserActivity
+      - CompromisedAccount
+      - Phishing
+      - LineOfBusinessApplication
+      - ConfirmedActivity
+      - NotMalicious
       - Other
     - description: Comment to be added to the alert.
       name: comment
@@ -1277,6 +1284,8 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
+    - name: filters
+      description: String representation of filters (Override every other filters).
     description: |-
       Return the machine's actions. If you set an action ID, it returns the info on the specific action.
       Filtering can be done only on one argument.
@@ -1488,7 +1497,7 @@ script:
       name: machine_id
       required: true
     - description: |-
-        The file SHA1 hash to stop and quarantine on the machine. 
+        The file SHA1 hash to stop and quarantine on the machine.
         When providing multiple values, each value is checked for the same machine_id.
       isArray: true
       name: file_hash
@@ -5525,7 +5534,7 @@ script:
     execution: false
     name: microsoft-atp-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.78196
+  dockerimage: demisto/crypto:1.0.0.80214
   isfetch: true
   runonce: false
   script: '-'

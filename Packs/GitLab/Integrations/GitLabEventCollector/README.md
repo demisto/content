@@ -15,6 +15,7 @@ An event collector for Gitlab audit events and events using Gitlab's API.
 | Groups IDs  | A comma-separated list of group IDs to retrieve. To view your groups or to create a group, see [Manage Groups](https://docs.gitlab.com/ee/user/group/manage.html) in the Gitlab documentation. | False   |
 | Projects IDs    | A comma-separated list of project IDs to get. To view your projects or to create a project, see [Manage Projects](https://docs.gitlab.com/ee/user/project/working_with_projects.html#manage-projects) in the Gitlab documentation. | True         |
 | First fetch timestamp    | The period to retrieve events for.  In the format (\[number] \[time unit]). For example, 12 hours, 1 day, 3 months. | False |
+| The maximum number of events to fetch for each event type | Each fetch will bring the `limit` number of events for each type (audits, groups and projects) and each group/project ID. For example, if `limit` is set to 500 and groups/projects IDs are given as well, then the fetch will bring 500 audit events and 500 group/project events for each group/project ID. | False |
 | Trust any certificate (not secure) | Use SSL secure connection or ‘None’.  | False  |
 | User system proxy settings  | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.  | False  |
 
