@@ -66,17 +66,17 @@ configuration:
   required: false
 - display: Timeout
   name: timeout
-  defaultvalue: "60,10"
   type: 0
   required: false
+  defaultvalue: "60,10"
   additionalinfo: The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   section: Connect
   advanced: true
 - display: Retries
   name: retries
   type: 0
-  defaultvalue: 5
   required: false
+  defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   section: Connect
   advanced: true
@@ -125,7 +125,7 @@ script:
       description: ID of the newly created query.
       type: String
     - contextPath: AWS.Athena.Query.QueryString
-      description: Object size.
+      description: The query string submitted.
       type: String
   - name: aws-athena-stop-query
     arguments:
@@ -172,7 +172,15 @@ script:
       description: An identifier for the assumed role session.
     - name: roleSessionDuration
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+    - auto: PREDEFINED
+      description: Whether to use polling for getting query results.
+      defaultValue: 'true'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns the results of a single query execution specified by QueryExecutionId if you have access to the workgroup in which the query ran.
+    polling: true
     outputs:
     - contextPath: AWS.Athena.QueryResults
       description: List of query results.

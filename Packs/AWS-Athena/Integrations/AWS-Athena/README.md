@@ -40,9 +40,9 @@ Start an Athena query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | QueryString | The SQL query statements to be executed. | Required | 
-| ClientRequestToken | A unique case-sensitive string used to ensure the request to create the query is idempotent (executes only once). Possible values are: private, public-read, public-read-write, authenticated-read. | Optional | 
+| ClientRequestToken | A unique case-sensitive string used to ensure the request to create the query is idempotent (executes only once). If another StartQueryExecution request is received, the same response is returned and another query is not created. | Optional | 
 | Database | The name of the database. | Optional | 
-| OutputLocation | he location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/. | Optional | 
+| OutputLocation | The location in Amazon S3 where your query results are stored, such as s3://path/to/query/bucket/. | Optional | 
 | EncryptionOption | Indicates whether Amazon S3 server-side encryption with Amazon S3-managed keys (SSE-S3 ), server-side encryption with KMS-managed keys (SSE-KMS ), or client-side encryption with KMS-managed keys (CSE-KMS) is used. | Optional | 
 | KmsKey | For SSE-KMS and CSE-KMS , this is the KMS key ARN or ID. | Optional | 
 | WorkGroup | The name of the workgroup in which the query is being started. | Optional | 
@@ -56,7 +56,7 @@ Start an Athena query.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.Athena.Query.QueryExecutionId | String | ID of the newly created query. | 
-| AWS.Athena.Query.QueryString | String | Object size. | 
+| AWS.Athena.Query.QueryString | String | The query string submitted. | 
 
 ### aws-athena-stop-query
 
@@ -123,6 +123,7 @@ Returns the results of a single query execution specified by QueryExecutionId if
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| polling | Whether to use polling for getting query results. Possible values are: true, false. Default is true. | Optional | 
 
 #### Context Output
 

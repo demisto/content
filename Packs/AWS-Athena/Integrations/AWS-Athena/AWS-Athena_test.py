@@ -70,7 +70,7 @@ def test_get_query_results_command(mocker):
     mock_data = load_test_data('raw_data_mock', 'get_query_results')
     mocker.patch.object(client, 'get_query_results', return_value=mock_data)
 
-    args = {'QueryExecutionId': 'b3c194e7-6580-421c-81fa-4b409e1ba04f'}
+    args = {'QueryExecutionId': 'b3c194e7-6580-421c-81fa-4b409e1ba04f', 'polling': 'false'}
     result = AWS_Athena.get_query_results_command(args, client)
 
     expected_context = load_test_data('expected_context', 'get_query_results_command')
