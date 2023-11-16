@@ -31,14 +31,15 @@ def available_indicators(xsoar_saas_client: XsoarSaasClient) -> list[str]:
     return [indicator.get("value") for indicator in xsoar_saas_client.list_indicators().get("iocObjects")]
 
 
-def test_edl(request: SubRequest, xsoar_saas_client: XsoarSaasClient, available_indicators: list[str]):
+def test_edl_returns_indicators(request: SubRequest, xsoar_saas_client: XsoarSaasClient, available_indicators: list[str]):
     """
     Given:
-        - indicators in xsoar-ng
+        - indicators in xsoar-saas
         - long-running EDL instance
     When:
         - Trying to query the URL of edl
     Then:
+        - make sure that edl collect the indicators from xsoar
         - make sure that indicators are returned in the response of edl instance
     """
     feed_indicators = [
@@ -70,16 +71,17 @@ def test_edl(request: SubRequest, xsoar_saas_client: XsoarSaasClient, available_
                 f' status code={edl_response.status_code}, response={edl_response.text}'
 
 
-def test_taxii2_server(
+def test_taxii2_server_returns_indicators(
     request: SubRequest, xsoar_saas_client: XsoarSaasClient, available_indicators: list[str]
 ):
     """
     Given:
-        - indicators in xsoar-ng
+        - indicators in xsoar-saas
         - long-running taxii2 server instance
     When:
         - Trying to query the URL(s) of taxii2 server
     Then:
+        - make sure that taxii2-server collect the indicators from xsoar
         - make sure that indicators are returned in the response of taxii2 server instance
     """
 

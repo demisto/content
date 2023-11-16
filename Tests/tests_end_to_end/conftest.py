@@ -32,10 +32,12 @@ def get_cloud_machine_credentials(request):
         api_key_id = os.getenv("XSIAM_AUTH_ID")
 
         if not url or not api_key or not api_key_id:
-            pytest.skip(
-                'could not find environment configuration, either pass --cloud_machine --cloud_servers_path --cloud_servers_'
-                'api_keys or make sure DEMISTO_BASE_URL/DEMISTO_API_KEY/XSIAM_AUTH_ID environment variables are set'
-            )
+            message = 'could not find environment configuration, either pass ' \
+                      '--cloud_machine --cloud_servers_path --cloud_servers_api_' \
+                      'keys or make sure DEMISTO_BASE_URL/DEMISTO_API_KEY/XSIAM_AUTH_ID environment variables are set'
+            if os.getenv("GITLAB_CI"):
+                raise ValueError(message)
+            pytest.skip(message)
     else:
         api_key, _, url, api_key_id = CloudBuild.get_cloud_configuration(
             cloud_machine, cloud_servers_path, cloud_servers_api_keys

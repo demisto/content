@@ -1368,6 +1368,11 @@ class EndToEndTestCollector(TestCollector, ABC):
 
     @abstractmethod
     def get_end_to_end_packs(self) -> set[str]:
+        """
+        Implement this abstract method to collect relevant packs for xsoar/xsoar-saas/xsiam,
+        in the future when there will be a nightly for xsoar-saas, we will install all nightly packs including e2e tests
+        so this logic will be removed
+        """
         pass
 
     def _collect(self) -> CollectionResult | None:
