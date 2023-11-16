@@ -5330,6 +5330,9 @@
             "playbookID": "FormatURL-Test"
         },
         {
+            "playbookID": "TestGetErrorsFromEntry"
+        },
+        {
             "playbookID": "IPToHost - Test"
         },
         {
