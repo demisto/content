@@ -13,7 +13,7 @@ You need to grant Cortex XSOAR authorization to access Azure Log Analytics.
 3. Click the **Accept** button. 
    You will receive your ID, token, and key. You need to enter this information, when you configure the Azure Log Analytics integration instance in Cortex XSOAR.
 
-## Authorize Cortex XSOAR for Azure Log Analytics (Self-Deployed Configuration)
+## Authorize Cortex XSOAR for Azure Log Analytics - Self-Deployed Configuration
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, go to the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 
 ### Required permissions
@@ -21,30 +21,31 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 - Log Analytics API - permission `Data.Read` of type `Delegated`
 
 In the self-deployed mode, you can authenticate by using one of the following flows:
-- Authentication code flow
+- Authorization Code flow
 - Client Credentials flow
 
-### Authentication Code flow
+### Authorization Code flow
 
 ---
-1. Enter your client ID in the **ID** parameter. 
-2. Enter your client secret in the **password** parameter.
-3. Enter your tenant ID in the **Token** parameter.
-4. Enter your redirect URI in the **Redirect URI** parameter.
-5. Save the integration settings.
-6. Run the `!azure-log-analytics-generate-login-url` command in the War Room and follow the instruction.
+1. In the instance configuration, select the **Use a self-deployed Azure application - Authorization Code flow** checkbox.
+2. Enter your Client ID in the **ID / Client ID** parameter. 
+3. Enter your Client secret in the **Key / Client Secret** parameter.
+4. Enter your tenant ID in the **Tenant ID** parameter.
+5. Enter your redirect URI in the **Redirect URI** parameter.
+6. Save the integration settings.
+7. Run the `!azure-log-analytics-generate-login-url` command in the War Room and follow the instruction.
+8. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
 
-
-### Authorize Cortex XSOAR for Azure Log Analytics (Client-Credentials Configuration)
+### Client Credentials Flow
 
 ---
 Follow these steps for client-credentials configuration.
 
-1. In the instance configuration, select the **client-credentials** checkbox.
-2. Enter your Client ID in the **ID/Client ID** parameter. 
-3. Enter your Client Secret in the **password** parameter.
+1. In the instance configuration, select the **Use a self-deployed Azure application - Client Credentials Authorization Flow** checkbox.
+2. Enter your Client ID in the **ID / Client ID** parameter. 
+3. Enter your Client Secret in the **Key / Client Secret** parameter.
 4. Enter your Tenant ID in the **Tenant ID** parameter.
-5. Run the ***azure-log-analytics-test*** command to test the connection and the authorization process.
+5. Click **Test** to validate the URLs, token, and connection.
 
 ### Azure Managed Identities Authentication
 ##### Note: This option is relevant only if the integration is running on Azure VM.
@@ -59,6 +60,7 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. Select the **Use Azure Managed Identities** checkbox.
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
+
 ## Get the Additional Instance Parameters
 
 To get the **Subscription ID**, **Workspace Name**, **Workspace ID** and **Resource Group** parameters, in the Azure Portal, go to **Log Analytics workspaces > YOUR-WORKSPACE > Settings** and click the **Workspace Settings** tab.

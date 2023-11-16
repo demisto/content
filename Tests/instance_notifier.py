@@ -12,7 +12,8 @@ from Tests.test_integration import __create_integration_instance, __delete_integ
 from demisto_sdk.commands.common.tools import str2bool
 
 SERVER_URL = "https://{}"
-ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
 
 
 def options_handler():
@@ -90,7 +91,7 @@ def test_instances(secret_conf_path, server, username, password):
 
 
 def create_failed_integrations_file(failed_instances):
-    with open(f"{ARTIFACTS_FOLDER}/failed_instances.txt", "w") as failed_instances_file:
+    with open(f"{ARTIFACTS_FOLDER_SERVER_TYPE}/failed_instances.txt", "w") as failed_instances_file:
         failed_instances_file.write('\n'.join(failed_instances))
 
 
@@ -101,7 +102,7 @@ def get_attachments(secret_conf_path, server, user, password, build_url):
     fields = []
     if failed_integration:
         field_failed_tests = {
-            "title": "Found {0} Problematic Instances. See CircleCI for errors.".format(len(failed_integration)),
+            "title": f"Found {len(failed_integration)} Problematic Instances. See CircleCI for errors.",
             "value": '\n'.join(failed_integration),
             "short": False
         }
@@ -135,7 +136,7 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
             'username': 'Instances nightly report',
             'as_user': 'False',
             'attachments': attachments,
-            'text': "You have {0} instances configurations".format(integrations_counter)
+            'text': f"You have {integrations_counter} instances configurations"
         }
     )
 
@@ -157,8 +158,7 @@ if __name__ == "__main__":
     install_logging('Instance-Test.log', logger=logging)
     options = options_handler()
     if options.instance_tests:
-        env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'), 'env_results.json')
-        with open(env_results_path, 'r') as json_file:
+        with open(ENV_RESULTS_PATH) as json_file:
             env_results = json.load(json_file)
             server = f'https://localhost:{env_results[0]["TunnelPort"]}'
 

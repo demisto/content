@@ -23,7 +23,7 @@ slack-notify:
   stage: notify
   extends: .default-job-settings
   script:
-    - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "$PIPELINE_TO_QUERY" -s "$SLACK_TOKEN" -c "$GITLAB_STATUS_TOKEN" -ch "$SLACK_CHANNEL" -tw "$WORKFLOW"
+    - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "${PIPELINE_TO_QUERY}" -s "${SLACK_TOKEN}" -c "${GITLAB_STATUS_TOKEN}" -ch "${SLACK_CHANNEL}" --triggering-workflow "${WORKFLOW}" --allow-failure "${SLACK_ALLOW_FAILURE}"
   retry:
     max: 2
   needs:

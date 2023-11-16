@@ -968,7 +968,7 @@ script:
     - contextPath: InstaQuery.List
       description: The list of InstaQuery.
       type: string
-  dockerimage: demisto/auth-utils:1.0.0.76157
+  dockerimage: demisto/auth-utils:1.0.0.77807
   isfetch: true
   script: ''
   subtype: python3

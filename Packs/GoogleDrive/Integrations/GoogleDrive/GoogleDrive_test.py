@@ -1003,3 +1003,84 @@ class TestFilePermissionMethods:
         }
         file_upload_command(gsuite_client, args)
         assert GoogleDrive.assign_params.call_args[1]['parents'] == ['test_parent']
+
+    def test_file_copy_command(self, mocker, gsuite_client):
+        """
+        Given:
+        - A request to copy a Drive file.
+
+        When:
+        - Calling google-drive-file-copy.
+
+        Then:
+        - Copy the Drive file.
+        """
+
+        from GoogleDrive import file_copy_command
+
+        mocker.patch(
+            'GoogleDrive.copy_file_http_request',
+            return_value={
+                'id': 'test_id',
+                'kind': 'drive#file',
+                'mimeType': 'application/octet-stream',
+                'name': 'TEST COPY',
+            }
+        )
+
+        results = file_copy_command(
+            gsuite_client,
+            args={
+                'file_id': 'test_file_id',
+                'copy_title': 'test_copy_title',
+                'supports_all_drives': 'true',
+                'user_id': 'test_user_id',
+            }
+        )
+
+        assert results.outputs == {
+            'id': 'test_id',
+            'kind': 'drive#file',
+            'mimeType': 'application/octet-stream',
+            'name': 'TEST COPY'
+        }
+        assert results.readable_output == (
+            '### File copied successfully.\n'
+            '|Id|Kind|Mimetype|Name|\n'
+            '|---|---|---|---|\n'
+            '| test_id | drive#file | application/octet-stream | TEST COPY |\n'
+        )
+
+    def test_file_copy_command_error(self, mocker, gsuite_client):
+        """
+        Given:
+        - A request to copy a Drive file with an error.
+
+        When:
+        - Calling google-drive-file-copy.
+
+        Then:
+        - Return an error gracefully.
+        """
+        from GoogleDrive import file_copy_command, errors
+
+        def raise_error():
+            raise errors.HttpError(
+                resp=type(
+                    'MockRequest', (),
+                    {'status': 400, 'reason': 'Bad Request'}
+                ),
+                content=b'Bad Request')
+
+        mocker.patch('googleapiclient.http.HttpRequest.execute', side_effect=raise_error)
+
+        with pytest.raises(DemistoException, match='Status Code: 400'):
+            file_copy_command(
+                gsuite_client,
+                args={
+                    'file_id': 'test_file_id',
+                    'copy_title': 'test_copy_title',
+                    'supports_all_drives': 'true',
+                    'user_id': 'test_user_id',
+                }
+            )

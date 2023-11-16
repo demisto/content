@@ -5,15 +5,17 @@ description: |-
   Given an IP address, port, and protocol of a service, this playbook enriches on-prem integrations to find the related firewall rule and other related information.
 
   Conditions:
-  This is currently limited to standalone firewalls for PAN-OS.
+  - Multiple integration instances configured at the same time are not supported (Panorama or standalone NGFW).
+  - !pan-os-security-policy-match fails if any firewall is disconnected (Panorama).
+  - Matching on different rules for different firewalls not supported (Panorama).
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bd09ee3f-c77e-461a-8574-958584097a38
+    taskid: 4627b363-29d7-4351-880f-f69276a11174
     type: start
     task:
-      id: bd09ee3f-c77e-461a-8574-958584097a38
+      id: 4627b363-29d7-4351-880f-f69276a11174
       version: -1
       name: ""
       iscommand: false
@@ -40,10 +42,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ed8d8371-d765-4cfb-8566-427b549811e0
+    taskid: c495e804-5dcc-4474-84fc-29935ff3bb46
     type: regular
     task:
-      id: ed8d8371-d765-4cfb-8566-427b549811e0
+      id: c495e804-5dcc-4474-84fc-29935ff3bb46
       version: -1
       name: pan-os-show-device-version
       description: Show firewall device software version.
@@ -72,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 3f58a27a-4a30-44bb-81fb-dcbdc9928dce
+    taskid: 9ec49b1d-f3ef-4338-80d5-53f8c0388991
     type: regular
     task:
-      id: 3f58a27a-4a30-44bb-81fb-dcbdc9928dce
+      id: 9ec49b1d-f3ef-4338-80d5-53f8c0388991
       version: -1
       name: pan-os-security-policy-match
       description: Checks whether a session matches a specified security policy. This command is only available on firewall instances.
@@ -97,6 +99,7 @@ tasks:
         complex:
           root: inputs.RemoteProtocol
           transformers:
+          - operator: toUpperCase
           - operator: MapPattern
             args:
               algorithm: {}
@@ -111,7 +114,7 @@ tasks:
               priority: {}
               wildcards: {}
       source:
-        simple: 1.1.1.1
+        simple: 0.0.0.0
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -130,13 +133,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 41495cf3-0a25-43e8-8b40-61c32fae2188
+    taskid: e62a440c-57ac-4c93-8bb5-ef4e4ce71649
     type: condition
     task:
-      id: 41495cf3-0a25-43e8-8b40-61c32fae2188
+      id: e62a440c-57ac-4c93-8bb5-ef4e4ce71649
       version: -1
-      name: Was a match found?
-      description: Check if firewall rule information was found.
+      name: Was a match found that allows exposure traffic?
+      description: Check if firewall rule information was found (allow rules only).
       type: condition
       iscommand: false
       brand: ""
@@ -158,6 +161,16 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Panorama.SecurityPolicyMatch.Rules
+                accessor: Action
+            iscontext: true
+          right:
+            value:
+              simple: allow
     continueonerrortype: ""
     view: |-
       {
@@ -175,10 +188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 0c34774e-809b-400e-8170-c7dca17efde3
+    taskid: 0ed129bf-45cb-4997-82d0-f2838151a0f2
     type: title
     task:
-      id: 0c34774e-809b-400e-8170-c7dca17efde3
+      id: 0ed129bf-45cb-4997-82d0-f2838151a0f2
       version: -1
       name: Continue
       type: title
@@ -193,8 +206,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 1965
+          "x": -350,
+          "y": 2535
         }
       }
     note: false
@@ -206,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a32bee38-d5f2-41dd-868d-1d7b7aaebf73
+    taskid: f5797d40-066e-4f19-84b1-8ae33501e28e
     type: condition
     task:
-      id: a32bee38-d5f2-41dd-868d-1d7b7aaebf73
+      id: f5797d40-066e-4f19-84b1-8ae33501e28e
       version: -1
       name: Is there a Panorama instance?
       description: Check if one of the integration instances is for a Panorama device.
@@ -220,7 +233,7 @@ tasks:
       '#default#':
       - "8"
       "yes":
-      - "5"
+      - '30'
     separatecontext: false
     conditions:
     - label: "yes"
@@ -252,10 +265,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 0455d8ba-b8b2-484c-8563-d8cc68f6e94b
+    taskid: e9f87bca-b353-4aa1-8f33-09145bf2cd38
     type: regular
     task:
-      id: 0455d8ba-b8b2-484c-8563-d8cc68f6e94b
+      id: e9f87bca-b353-4aa1-8f33-09145bf2cd38
       version: -1
       name: pan-os-list-rules
       description: Returns a list of predefined Security Rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
@@ -271,13 +284,22 @@ tasks:
         complex:
           root: Panorama.SecurityPolicyMatch.Rules
           accessor: Name
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.SecurityPolicyMatch.Rules.Action
+                iscontext: true
+              right:
+                value:
+                  simple: allow
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 1040
+          "x": 300,
+          "y": 990
         }
       }
     note: false
@@ -289,10 +311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: c8e13ab6-9f8b-408e-8714-1b7c6ff12371
+    taskid: 8869db45-0714-43e9-8dd2-3c4600729a7b
     type: regular
     task:
-      id: c8e13ab6-9f8b-408e-8714-1b7c6ff12371
+      id: 8869db45-0714-43e9-8dd2-3c4600729a7b
       version: -1
       name: Set system IDs grid field (type)
       description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
@@ -319,8 +341,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1600
+          "x": 440,
+          "y": 2270
         }
       }
     note: false
@@ -332,10 +354,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: c8ad47b4-47ae-4062-827a-2f59bdb7a60d
+    taskid: a4d9354c-0d88-442e-84e6-732634431c1d
     type: regular
     task:
-      id: c8ad47b4-47ae-4062-827a-2f59bdb7a60d
+      id: a4d9354c-0d88-442e-84e6-732634431c1d
       version: -1
       name: Set cloud grid field
       description: |-
@@ -368,8 +390,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 1600
+          "x": 880,
+          "y": 2290
         }
       }
     note: false
@@ -381,10 +403,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 00c3867d-cd18-4ebc-8088-8625090c75e0
+    taskid: 55cb16b5-dffa-42bd-8d90-4d1b03d97d56
     type: regular
     task:
-      id: 00c3867d-cd18-4ebc-8088-8625090c75e0
+      id: 55cb16b5-dffa-42bd-8d90-4d1b03d97d56
       version: -1
       name: Set system IDs grid field (firewall rule name)
       description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
@@ -394,7 +416,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "14"
+      - '27'
     scriptarguments:
       gridfield:
         simple: asmsystemids
@@ -413,8 +435,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1775
+          "x": 440,
+          "y": 2430
         }
       }
     note: false
@@ -426,10 +448,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: f1503355-2fd3-4b09-813e-c92d690407ef
+    taskid: a8b9924f-da5a-4477-857a-1d8f9f0be0ae
     type: regular
     task:
-      id: f1503355-2fd3-4b09-813e-c92d690407ef
+      id: a8b9924f-da5a-4477-857a-1d8f9f0be0ae
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -452,8 +474,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 1965
+          "x": 660,
+          "y": 3165
         }
       }
     note: false
@@ -465,10 +487,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 92075ebf-888b-4860-8572-973b9dfb9fe1
+    taskid: 7c841170-de87-483f-8a8f-bbfec49e4573
     type: regular
     task:
-      id: 92075ebf-888b-4860-8572-973b9dfb9fe1
+      id: 7c841170-de87-483f-8a8f-bbfec49e4573
       version: -1
       name: Set ASM enrichment status to true
       description: |-
@@ -497,8 +519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 2410
+          "x": 280,
+          "y": 3610
         }
       }
     note: false
@@ -510,10 +532,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e79adc9f-a635-4f4c-86b2-b52642754674
+    taskid: 7a3e239b-28b0-40cc-8a6c-c47d9cbe9380
     type: condition
     task:
-      id: e79adc9f-a635-4f4c-86b2-b52642754674
+      id: 7a3e239b-28b0-40cc-8a6c-c47d9cbe9380
       version: -1
       name: Was enrichment performed?
       description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
@@ -540,8 +562,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 2180
+          "x": 490,
+          "y": 3380
         }
       }
     note: false
@@ -553,10 +575,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 8917ebd4-8126-427e-8155-50f90998008d
+    taskid: ba489c19-e205-4184-86a2-5cc77c34f1f9
     type: regular
     task:
-      id: 8917ebd4-8126-427e-8155-50f90998008d
+      id: ba489c19-e205-4184-86a2-5cc77c34f1f9
       version: -1
       name: Set ASM enrichment status to false
       description: |-
@@ -585,8 +607,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 2410
+          "x": 700,
+          "y": 3610
         }
       }
     note: false
@@ -598,10 +620,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 13f85251-5132-4eec-8782-ce70265faa10
+    taskid: 41bdab6f-1603-4da9-8dc5-94bbe94c92ba
     type: title
     task:
-      id: 13f85251-5132-4eec-8782-ce70265faa10
+      id: 41bdab6f-1603-4da9-8dc5-94bbe94c92ba
       version: -1
       name: System IDs
       type: title
@@ -616,8 +638,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1450
+          "x": 440,
+          "y": 2140
         }
       }
     note: false
@@ -629,10 +651,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 999d3593-60f6-4197-8bb2-700471f13857
+    taskid: 9d98d3cc-f234-401f-874a-2002b0dcee46
     type: title
     task:
-      id: 999d3593-60f6-4197-8bb2-700471f13857
+      id: 9d98d3cc-f234-401f-874a-2002b0dcee46
       version: -1
       name: Cloud
       type: title
@@ -647,8 +669,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 1450
+          "x": 880,
+          "y": 2140
         }
       }
     note: false
@@ -660,10 +682,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 48c6852d-414f-4454-8d55-7ce2adec31f1
+    taskid: fc836b11-f69a-4405-8f28-8e54eacfdd52
     type: condition
     task:
-      id: 48c6852d-414f-4454-8d55-7ce2adec31f1
+      id: fc836b11-f69a-4405-8f28-8e54eacfdd52
       version: -1
       name: Was rule information found?
       description: Check if firewall rule information was found.
@@ -691,8 +713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 1200
+          "x": 500,
+          "y": 1900
         }
       }
     note: false
@@ -704,10 +726,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: ff3d1155-2578-49a8-8057-f4b325fb141c
+    taskid: dbd0896a-ebbc-4b94-8541-564f9fdfd356
     type: title
     task:
-      id: ff3d1155-2578-49a8-8057-f4b325fb141c
+      id: dbd0896a-ebbc-4b94-8541-564f9fdfd356
       version: -1
       name: Complete
       type: title
@@ -719,8 +741,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 2640
+          "x": 500,
+          "y": 3840
         }
       }
     note: false
@@ -732,10 +754,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: e0061687-b532-4e7d-8951-bfd47cd72a2e
+    taskid: 826cad0a-611a-49dd-825e-f66d78e1cba1
     type: condition
     task:
-      id: e0061687-b532-4e7d-8951-bfd47cd72a2e
+      id: 826cad0a-611a-49dd-825e-f66d78e1cba1
       version: -1
       name: Palo Alto Networks PAN-OS enabled?
       description: Check whether the PAN-OS integration is enabled.
@@ -809,17 +831,548 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: 293893d7-56d7-43dc-872f-4681c30f9dc6
+    type: regular
+    task:
+      id: 293893d7-56d7-43dc-872f-4681c30f9dc6
+      version: -1
+      name: Set system IDs grid field (device group)
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: FIREWALL-DEVICE-GROUP
+      val2:
+        complex:
+          root: Panorama.SecurityRule
+          accessor: Location
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: 5eaf15c4-c5cc-4a9b-8ec2-c8a5c03b609f
+    type: condition
+    task:
+      id: 5eaf15c4-c5cc-4a9b-8ec2-c8a5c03b609f
+      version: -1
+      name: Was there a device group in rule?
+      description: Check if firewall device group information was found.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '14'
+      other device-group:
+      - '26'
+      shared device-group:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: other device-group
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Panorama.SecurityRule
+                accessor: Location
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PanoramaUsed
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+    - label: shared device-group
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PanoramaUsed
+            iscontext: true
+          right:
+            value:
+              simple: 'true'
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '28':
+    id: '28'
+    taskid: 93180524-b691-45bc-8f43-2edae5dec1c1
+    type: regular
+    task:
+      id: 93180524-b691-45bc-8f43-2edae5dec1c1
+      version: -1
+      name: Set temporary context (signify Panorama used)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      key:
+        simple: PanoramaUsed
+      value:
+        simple: 'true'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: 0490d2ba-549b-4968-89e4-95a28ade32f5
+    type: regular
+    task:
+      id: 0490d2ba-549b-4968-89e4-95a28ade32f5
+      version: -1
+      name: Set system IDs grid field (device group)
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: FIREWALL-DEVICE-GROUP
+      val2:
+        simple: shared
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: 048f7537-fa3b-4c13-88d7-ddca9a825ab3
+    type: regular
+    task:
+      id: 048f7537-fa3b-4c13-88d7-ddca9a825ab3
+      version: -1
+      name: pan-os-platform-get-device-groups
+      description: Gets the operational information of the device groups in the topology. (Only device groups with associated devices will be listed by this command).
+      script: Panorama|||pan-os-platform-get-device-groups
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - '28'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '32':
+    id: '32'
+    taskid: 26b88096-38cb-49cb-8a46-3631ac412d21
+    type: regular
+    task:
+      id: 26b88096-38cb-49cb-8a46-3631ac412d21
+      version: -1
+      name: Set temporary context (secondary device-groups)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+      - '35'
+    scriptarguments:
+      key:
+        simple: SecondaryDG
+      value:
+        complex:
+          root: PANOS.DeviceGroupOp
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: PANOS.DeviceGroupOp.serial
+                iscontext: true
+              right:
+                value:
+                  simple: Panorama.SecurityPolicyMatch.Device.Serial
+                iscontext: true
+          accessor: name
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '33':
+    id: '33'
+    taskid: 068e20a0-f298-40b4-8416-8948c9d7235f
+    type: regular
+    task:
+      id: 068e20a0-f298-40b4-8416-8948c9d7235f
+      version: -1
+      name: pan-os-list-rules (device-groups pre-rulebase)
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      script: Panorama|||pan-os-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments:
+      device-group:
+        complex:
+          root: SecondaryDG
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        complex:
+          root: Panorama.SecurityPolicyMatch.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.SecurityPolicyMatch.Rules.Action
+                iscontext: true
+              right:
+                value:
+                  simple: allow
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '34':
+    id: '34'
+    taskid: deb936be-a71d-4539-8d88-ef3d4fb1c065
+    type: regular
+    task:
+      id: deb936be-a71d-4539-8d88-ef3d4fb1c065
+      version: -1
+      name: Set system IDs grid field (secondary device group)
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: FIREWALL-SECONDARY-DEVICE-GROUP
+      val2:
+        complex:
+          root: SecondaryDG
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '35':
+    id: '35'
+    taskid: b0ecff52-f5b6-45da-8281-d3defc49d5d5
+    type: regular
+    task:
+      id: b0ecff52-f5b6-45da-8281-d3defc49d5d5
+      version: -1
+      name: 'pan-os-list-rules (device-groups post-rulebase) '
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      script: Panorama|||pan-os-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments:
+      device-group:
+        complex:
+          root: SecondaryDG
+      pre_post:
+        simple: post-rulebase
+      rulename:
+        complex:
+          root: Panorama.SecurityPolicyMatch.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.SecurityPolicyMatch.Rules.Action
+                iscontext: true
+              right:
+                value:
+                  simple: allow
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '36':
+    id: '36'
+    taskid: 4a269433-06d1-48c9-843f-db146da7e06c
+    type: regular
+    task:
+      id: 4a269433-06d1-48c9-843f-db146da7e06c
+      version: -1
+      name: pan-os-list-rules (shared pre-rulebase)
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      script: Panorama|||pan-os-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      device-group:
+        simple: shared
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        complex:
+          root: Panorama.SecurityPolicyMatch.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.SecurityPolicyMatch.Rules.Action
+                iscontext: true
+              right:
+                value:
+                  simple: allow
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '37':
+    id: '37'
+    taskid: 7b99a59a-e4e5-4bb1-8c5a-f93b6efe60d9
+    type: regular
+    task:
+      id: 7b99a59a-e4e5-4bb1-8c5a-f93b6efe60d9
+      version: -1
+      name: pan-os-list-rules (shared post-rulebase)
+      description: Returns a list of predefined security rules. (When passing a query, all other arguments are overridden. Make sure the query includes all the filters you want).
+      script: Panorama|||pan-os-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      device-group:
+        simple: shared
+      pre_post:
+        simple: post-rulebase
+      rulename:
+        complex:
+          root: Panorama.SecurityPolicyMatch.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.SecurityPolicyMatch.Rules.Action
+                iscontext: true
+              right:
+                value:
+                  simple: allow
+          accessor: Name
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "4_5_#default#": 0.39,
-      "6_5_yes": 0.22
+      "21_5_#default#": 0.33,
+      "24_5_#default#": 0.68,
+      "4_5_#default#": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 2865,
-        "width": 1130,
-        "x": 140,
+        "height": 4065,
+        "width": 1990,
+        "x": -350,
         "y": -160
       }
     }
@@ -852,4 +1405,6 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0 
+fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}

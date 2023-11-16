@@ -1,4 +1,4 @@
-This playbook blocks a Destination IP and Service (TCP or UDP port) by creating a rule for a specific Device Group on PAN-OS. 
+This playbook blocks a destination IP and service (TCP or UDP port) by creating a rule for a specific device group on PAN-OS. 
 
 ## Dependencies
 
@@ -14,16 +14,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* SetAndHandleEmpty
 * Set
+* SetAndHandleEmpty
 
 ### Commands
 
-* pan-os-create-address
+* pan-os-create-service
 * pan-os-list-addresses
+* pan-os-create-address
 * pan-os-list-services
 * pan-os-create-rule
-* pan-os-create-service
 
 ## Playbook Inputs
 
@@ -43,6 +43,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | WhereRule | Where to move the rule. If you specify "before" or "after", you need to supply the "dst" argument. \(Default is: 'top'\) | top | Optional |
 | SourceZone | A comma-separated list of source zones. |  | Optional |
 | DestinationZone | A comma-separated list of destination zones. |  | Optional |
+| SecondaryDeviceGroup | If the rule, address and service are created in the "Shared" location, we need to know what device groups we can push to because it isn't possible to push to the "Shared" location. |  | Optional |
 
 ## Playbook Outputs
 

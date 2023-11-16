@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from pathlib import Path
 import hashlib
 import secrets
 import string
@@ -313,6 +314,7 @@ def get_temp_file() -> str:
 
 
 def sync(client: Client):
+    demisto.debug("executing sync")
     temp_file_path: str = get_temp_file()
     try:
         create_file_sync(temp_file_path)  # can be empty
@@ -321,13 +323,18 @@ def sync(client: Client):
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
-    set_integration_context({'ts': int(datetime.now(timezone.utc).timestamp() * 1000),
-                             'time': datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
-                             'iocs_to_keep_time': create_iocs_to_keep_time()})
-    return_outputs('sync with XDR completed.')
+    set_integration_context(
+        {
+            "ts": int(datetime.now(timezone.utc).timestamp() * 1000),
+            "time": datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
+        }
+    )
+    set_new_iocs_to_keep_time()
+    return_outputs("sync with XDR completed.")
 
 
 def iocs_to_keep(client: Client):
+    demisto.debug("executing iocs_to_keep")
     if datetime.utcnow().hour not in range(1, 3):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
@@ -336,6 +343,7 @@ def iocs_to_keep(client: Client):
         requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
         path = 'iocs_to_keep'
         client.http_request(path, requests_kwargs)
+        set_new_iocs_to_keep_time()
     finally:
         os.remove(temp_file_path)
     return_outputs('sync with XDR completed.')
@@ -343,11 +351,10 @@ def iocs_to_keep(client: Client):
 
 def get_iocs_to_keep_file():
     demisto.info('get_iocs_to_keep_file executed')
-    temp_file_path = get_temp_file()
+    temp_file_path = Path(get_temp_file())
     try:
         create_file_iocs_to_keep(temp_file_path)
-        with open(temp_file_path, 'r') as _tmpfile:
-            return_results(fileResult('xdr-ioc-to-keep-file', _tmpfile.read()))
+        return_results(fileResult('xdr-ioc-to-keep-file', temp_file_path.read_text()))
     finally:
         os.remove(temp_file_path)
 
@@ -522,37 +529,56 @@ def module_test(client: Client):
 
 def fetch_indicators(client: Client, auto_sync: bool = False):
     if not get_integration_context() and auto_sync:
-        # this will happen on the first time we run 
+        demisto.debug("running sync with first_time=True")
+        # this will happen on the first time we run
         xdr_iocs_sync_command(client, first_time=True)
     else:
-        # this will happen every minute 
+        # this will happen every minute
         get_changes(client)
         if auto_sync:
             tim_insert_jsons(client)
-            if iocs_to_keep_time():
+            demisto.debug("checking if iocs_to_keep should run")
+            if is_iocs_to_keep_time():
                 # first_time=False will call iocs_to_keep
+                demisto.debug("running sync with first_time=False")
                 xdr_iocs_sync_command(client)
 
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
     if first_time or not get_integration_context():
-        # the sync is the large operation including the data and the get_integration_context is fill in the sync  
+        # the sync is the large operation including the data and the get_integration_context is fill in the sync
         sync(client)
     else:
         iocs_to_keep(client)
 
 
-def iocs_to_keep_time():
-    hour, minute = get_integration_context().get('iocs_to_keep_time', (0, 0))
-    time_now = datetime.now(timezone.utc)
-    return time_now.hour == hour and time_now.min == minute
-
-
-def create_iocs_to_keep_time():
+def set_new_iocs_to_keep_time():
     offset = secrets.randbelow(115)
-    hour, minute, = divmod(offset, 60)
+    hour, minute = divmod(offset, 60)
     hour += 1
-    return hour, minute
+    last_ioc_to_keep = datetime.now(timezone.utc)
+    last_ioc_to_keep = last_ioc_to_keep.replace(hour=hour, minute=minute) + timedelta(
+        days=1
+    )
+    next_iocs_to_keep_time = last_ioc_to_keep.strftime(DEMISTO_TIME_FORMAT)
+    demisto.debug(f"Setting next iocs to keep time to {next_iocs_to_keep_time}.")
+    set_integration_context(
+        get_integration_context()
+        | {"next_iocs_to_keep_time": next_iocs_to_keep_time}
+    )
+
+
+def is_iocs_to_keep_time():
+    next_iocs_to_keep_time = get_integration_context().get("next_iocs_to_keep_time")
+    time_now = datetime.now(timezone.utc)
+    if (
+        next_iocs_to_keep_time is not None
+        and time_now.hour in range(1, 3)
+        and time_now > datetime.strptime(next_iocs_to_keep_time, DEMISTO_TIME_FORMAT).replace(tzinfo=timezone.utc)
+    ):
+        return True
+
+    return False
 
 
 def is_xdr_data(ioc):
@@ -583,16 +609,6 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
         return xdr_server
     else:
         return xdr_local
-
-
-def set_sync_time(time: str):
-    date_time_obj = parse(time, settings={'TIMEZONE': 'UTC'})
-    if not date_time_obj:
-        raise ValueError('invalid time format.')
-    set_integration_context({'ts': int(date_time_obj.timestamp() * 1000),
-                             'time': date_time_obj.strftime(DEMISTO_TIME_FORMAT),
-                             'iocs_to_keep_time': create_iocs_to_keep_time()})
-    return_results(f'set sync time to {time} succeeded.')
 
 
 def get_sync_file():
@@ -663,11 +679,11 @@ def main():  # pragma: no cover
     demisto.debug(f'Command being called is {command}')
 
     try:
-        if command == 'fetch-indicators':
-            fetch_indicators(client, params.get('autoSync', False))
+        if command == "fetch-indicators":
+            fetch_indicators(client, params.get("autoSync", False))
         elif command == 'xdr-iocs-set-sync-time':
-            set_sync_time(demisto.args()['time'])
-        elif command == 'xdr-iocs-create-sync-file':
+            return_warning('This command is deprecated and is not relevant anymore.')
+        elif command == "xdr-iocs-create-sync-file":
             get_sync_file()
         elif command == 'xdr-iocs-to-keep-file':
             get_iocs_to_keep_file()

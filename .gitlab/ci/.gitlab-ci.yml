@@ -14,11 +14,10 @@ stages:
   - unittests-and-validations
   - prepare-testing-bucket
   - run-instances
-  - test_playbooks_report
+  - results
   - upload-to-marketplace
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
-  - schedules
 
 include:
   - local: .gitlab/ci/.gitlab-ci.variables.yml
@@ -30,4 +29,3 @@ include:
   - local: .gitlab/ci/.gitlab-ci.test-native-candidate.yml
   - local: .gitlab/ci/.gitlab-ci.security-scans.yml
   - local: .gitlab/ci/.gitlab-ci.build-machines-cleanup.yml
-  - local: .gitlab/ci/.gitlab-ci.mirror.yml

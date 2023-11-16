@@ -188,6 +188,7 @@ script:
       name: time
       required: true
     description: Set sync time manually (Do not use this command unless you unredstandard the consequences).
+    deprecated: true
     name: xdr-iocs-set-sync-time
   - description: Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
     name: xdr-iocs-create-sync-file
@@ -205,7 +206,7 @@ script:
       required: true
     description: Disables IOCs in the XDR server.
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.13.75921
+  dockerimage: demisto/python3:3.10.13.80014
   feed: true
   runonce: false
   script: '-'
