@@ -215,12 +215,12 @@ class Client(BaseClient):
         Returns:
             str | None: name=@value
         """
-        if not any([field, value]):
-            return None
+        if field and value:
+            return f"{to_kebab_case(field)}=@{value}"
 
-        return f"{to_kebab_case(field)}=@{value}"
+        return None
 
-    def _get_format(self, fields: list[str]) -> str | None:
+    def _get_format(self, fields: list[str] | None) -> str | None:
         """Formats the fields to be used in the API call.
 
         Args:
@@ -338,7 +338,7 @@ class Client(BaseClient):
                     "end-ip": end_ip,
                     "fqdn": fqdn,
                     "country": country,
-                    "macaddr": [{"macaddr": mac_address} for mac_address in mac_addresses],
+                    "macaddr": [{"macaddr": mac_address} for mac_address in mac_addresses or []],
                 }
             ),
             error_handler=Client._error_handler,
@@ -411,7 +411,7 @@ class Client(BaseClient):
                     "end-ip": end_ip,
                     "fqdn": fqdn,
                     "country": country,
-                    "macaddr": [{"macaddr": mac_address} for mac_address in mac_addresses],
+                    "macaddr": [{"macaddr": mac_address} for mac_address in mac_addresses or []],
                 }
             ),
             error_handler=Client._error_handler,
@@ -530,7 +530,7 @@ class Client(BaseClient):
                     "end-ip": end_ip,
                     "fqdn": fqdn,
                     "country": country,
-                    "macaddr": [{"macaddr": mac_address} for mac_address in mac_addresses],
+                    "macaddr": [{"macaddr": mac_address} for mac_address in mac_addresses or []],
                     "sdn": sdn_connector,
                 }
             ),
@@ -595,7 +595,7 @@ class Client(BaseClient):
                     "end-ip": end_ip,
                     "fqdn": fqdn,
                     "country": country,
-                    "macaddr": [{"macaddr": mac_address} for mac_address in mac_addresses],
+                    "macaddr": [{"macaddr": mac_address} for mac_address in mac_addresses or []],
                     "sdn": sdn_connector,
                 }
             ),
@@ -1314,7 +1314,7 @@ def map_keys(old_dict: dict[str, Any], mappings: list[Mapping]) -> dict[str, Any
     Returns:
         dict[str, Any]: A new dictionary with the mapped keys and modified values.
     """
-    new_dict = {}
+    new_dict: dict = {}
 
     for mapping in mappings:
         current_dict = new_dict
@@ -1668,13 +1668,12 @@ def build_address_table(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     }
 
     for item in items:
-        if (start_ip := item.get("StartIP")) and (end_ip := item.get("EndIP")):
-            value = f"{start_ip}-{end_ip}"
-        else:
-            value = extract_first_match(item, keys)
-
         row = {header: item.get(key) for header, key in header_to_key.items()}
-        row["Details"] = value
+        row["Details"] = (
+            f"{start_ip}-{end_ip}"
+            if (start_ip := item.get("StartIP")) and (end_ip := item.get("EndIP"))
+            else extract_first_match(item, keys)
+        )
 
         address_table.append(row)
 
@@ -1703,8 +1702,8 @@ def validate_address_type(
         DemistoException: If the type of the address is not compatible with the requested type.
     """
     response = get_request(name=name, vdom=vdom, format_fields=["type"])
-    result = next(iter(response.get("results", [])), {})
-    expected_type = result.get("type")
+    result: dict[str, Any] = next(iter(response.get("results", [])), {})
+    expected_type = result.get("type", "")
 
     if input_type != expected_type:
         raise DemistoException(
@@ -2002,7 +2001,7 @@ def create_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
     """
     type_ = get_address_type(args)
 
-    name = args.get("name")
+    name = args.get("name", "")
     vdom = args.get("vdom", VDOM_DEFAULT)
     comment = args.get("comment")
     associated_interface = args.get("associated_interface")
@@ -2055,8 +2054,8 @@ def update_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    name = args.get("name")
-    type_ = ADDRESS_GUI_TO_API_TYPE.get(args.get("type"))
+    name = args.get("name", "")
+    type_ = ADDRESS_GUI_TO_API_TYPE.get(args.get("type", ""))
     vdom = args.get("vdom", VDOM_DEFAULT)
     comment = args.get("comment")
     associated_interface = args.get("associated_interface")
@@ -2205,7 +2204,7 @@ def create_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
     """
     type_ = get_address_type(args, True)
 
-    name = args.get("name")
+    name = args.get("name", "")
     vdom = args.get("vdom", VDOM_DEFAULT)
     comment = args.get("comment")
     address = args.get("address")
@@ -2262,8 +2261,8 @@ def update_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    name = args.get("name")
-    type_ = ADDRESS6_GUI_TO_API_TYPE.get(args.get("type"))
+    name = args.get("name", "")
+    type_ = ADDRESS6_GUI_TO_API_TYPE.get(args.get("type", ""))
     vdom = args.get("vdom", VDOM_DEFAULT)
     comment = args.get("comment")
     address = args.get("address")
@@ -2396,11 +2395,11 @@ def create_firewall_address_ipv4_multicast_command(client: Client, args: dict[st
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    name = args.get("name")
+    name = args.get("name", "")
     vdom = args.get("vdom", VDOM_DEFAULT)
     comment = args.get("comment")
     associated_interface = args.get("associated_interface")
-    type_ = ADDRESS_MULTICAST_GUI_TO_API_TYPE.get(args.get("type"))
+    type_ = ADDRESS_MULTICAST_GUI_TO_API_TYPE.get(args.get("type", ""), "")
     first_ip = args.get("first_ip")
     final_ip = args.get("final_ip")
 
@@ -2445,11 +2444,11 @@ def update_firewall_address_ipv4_multicast_command(client: Client, args: dict[st
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    name = args.get("name")
+    name = args.get("name", "")
     vdom = args.get("vdom", VDOM_DEFAULT)
     comment = args.get("comment")
     associated_interface = args.get("associated_interface")
-    type_ = ADDRESS_MULTICAST_GUI_TO_API_TYPE.get(args.get("type"))
+    type_ = ADDRESS_MULTICAST_GUI_TO_API_TYPE.get(args.get("type", ""), "")
     first_ip = args.get("first_ip")
     final_ip = args.get("final_ip")
 
@@ -2562,14 +2561,14 @@ def create_firewall_address_ipv6_multicast_command(client: Client, args: dict[st
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    name = args.get("name")
+    name = args.get("name", "")
     vdom = args.get("vdom", VDOM_DEFAULT)
     comment = args.get("comment")
     address = args.get("address")
     mask = arg_to_number(args.get("mask"))
 
     validate_mask(mask)
-    subnet = f"{address}/{mask}" if address and mask is not None else None
+    subnet = f"{address}/{mask}"
     validate_ipv6_networks([subnet])
 
     response = client.create_firewall_address_ipv6_multicast(
@@ -2604,7 +2603,7 @@ def update_firewall_address_ipv6_multicast_command(client: Client, args: dict[st
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    name = args.get("name")
+    name = args.get("name", "")
     vdom = args.get("vdom", VDOM_DEFAULT)
     comment = args.get("comment")
     address = args.get("address")
@@ -3022,6 +3021,8 @@ def list_firewall_policies_command(client: Client, args: dict[str, Any]) -> Comm
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
+    name = args.get("policyName")
+
     raw_response = client.list_firewall_policies(
         id_=args.get("policyID"),
         filter_field=args.get("filter_field"),
@@ -3052,12 +3053,11 @@ def list_firewall_policies_command(client: Client, args: dict[str, Any]) -> Comm
         Mapping(["status"], ["Status"]),
         UUID_MAPPING,
     ]
-    name: Any | None = args.get("policyName")
-    outputs = []
 
     # Handle VDOM == *
     responses = raw_response if isinstance(raw_response, list) else [raw_response]
-    outputs = []
+    outputs: list = []
+    found_output = None
 
     for response in responses:
         response_results = response.get("results", [])
@@ -3067,12 +3067,12 @@ def list_firewall_policies_command(client: Client, args: dict[str, Any]) -> Comm
             output = map_keys(result, mappings) | build_security(result) | {"VDOM": response_vdom}
 
             if name == result.get("name"):
-                outputs = output
+                found_output = output
                 break
 
             outputs.append(output)
 
-    outputs = remove_empty_elements(outputs)
+    outputs = remove_empty_elements(found_output or outputs)
 
     readable_output = tableToMarkdown(
         name="Firewall Policies",
