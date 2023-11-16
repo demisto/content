@@ -6,6 +6,9 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "videos": [
+        "https://www.youtube.com/watch?v=yHwDTXt8Vjo"
+    ],
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
