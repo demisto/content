@@ -179,7 +179,7 @@ def get_pdf_metadata(file_path: str, user_or_owner_password: str | None = None) 
         except PdfInvalidCredentialsException:
             demisto.debug('Trying password as owner password, using the [opw] flag')
             metadata_txt = run_shell_command(
-                "pdfinfo", "-opw", user_password, file_path
+                "pdfinfo", "-opw", user_or_owner_password, file_path
             )
         demisto.debug('Opened PDF file and got metadata')
     else:
