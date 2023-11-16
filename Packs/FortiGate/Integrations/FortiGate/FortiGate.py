@@ -237,7 +237,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv4s(
         self,
         name: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -276,7 +276,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         comment: str | None = None,
         associated_interface: str | None = None,
         address: str | None = None,
@@ -348,7 +348,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         comment: str | None = None,
         associated_interface: str | None = None,
         address: str | None = None,
@@ -438,7 +438,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv6s(
         self,
         name: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -477,7 +477,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         comment: str | None = None,
         subnet: str | None = None,
         start_ip: str | None = None,
@@ -541,7 +541,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         comment: str | None = None,
         subnet: str | None = None,
         start_ip: str | None = None,
@@ -623,7 +623,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv4_multicasts(
         self,
         name: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -664,7 +664,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         comment: str | None = None,
         associated_interface: str | None = None,
         subnet: str | None = None,
@@ -715,7 +715,7 @@ class Client(BaseClient):
     def update_firewall_address_ipv4_multicast(
         self,
         name: str,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         comment: str | None = None,
         associated_interface: str | None = None,
         type_: str | None = None,
@@ -787,7 +787,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv6_multicasts(
         self,
         name: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -828,7 +828,7 @@ class Client(BaseClient):
         self,
         name: str,
         subnet: str,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         comment: str | None = None,
     ) -> dict[str, Any]:
         """Create a IPv6 multicast address.
@@ -861,7 +861,7 @@ class Client(BaseClient):
     def update_firewall_address_ipv6_multicast(
         self,
         name: str,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         comment: str | None = None,
         subnet: str | None = None,
     ) -> dict[str, Any]:
@@ -914,7 +914,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv4_groups(
         self,
         name: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -976,7 +976,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv6_groups(
         self,
         name: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -1038,7 +1038,7 @@ class Client(BaseClient):
     def list_firewall_services(
         self,
         name: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -1100,7 +1100,7 @@ class Client(BaseClient):
     def list_firewall_service_groups(
         self,
         name: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -1162,7 +1162,7 @@ class Client(BaseClient):
     def list_firewall_policies(
         self,
         id_: str | None = None,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -1257,7 +1257,7 @@ class Client(BaseClient):
 
     def list_banned_ips(
         self,
-        vdom: str = VDOM_DEFAULT,
+        vdom: str | None = VDOM_DEFAULT,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -3260,7 +3260,11 @@ def get_addresses_command(client: Client, args: dict[str, Any]):
     name = args.get("name", "")
 
     response = client.list_firewall_address_ipv4s(name, address)
-    addresses = response[0].get("results") if address == "*" else response.get("results")
+
+    if isinstance(response, list):
+        response = response[0]
+
+    addresses = response.get("results", [])
 
     for address in addresses:
         subnet = address.get("subnet")
@@ -3437,7 +3441,7 @@ def get_firewall_service_command(client: Client, args: dict[str, Any]):
     if not service_name:
         service_title = "all services"
 
-    services = client.list_firewall_services(service_name).get("results")
+    services = client.list_firewall_services(service_name).get("results", [])
 
     for service in services:
         contents.append(
@@ -3474,7 +3478,7 @@ def get_service_groups_command(client: Client, args: dict[str, Any]):
     service_groups_context = []
     name = args.get("name", "")
 
-    service_groups = client.list_firewall_service_groups(name).get("results")
+    service_groups = client.list_firewall_service_groups(name).get("results", [])
 
     for service_group in service_groups:
         service_group_members = []
@@ -3500,7 +3504,7 @@ def get_service_groups_command(client: Client, args: dict[str, Any]):
 @logger
 def delete_service_group_command(client: Client, args: dict[str, Any]):
     context = {}
-    group_name = args.get("groupName").encode("utf-8")
+    group_name = args.get("groupName", "").encode("utf-8")
 
     client.delete_firewall_service_group(group_name)
 
@@ -3550,7 +3554,7 @@ def get_policy_command(client: Client, args: dict[str, Any]):
         "av-profile",
         "nat",
     ]
-    policies = client.list_firewall_policies(id_=policy_id, format_fields=format_fields).get("results")
+    policies = client.list_firewall_policies(id_=policy_id, format_fields=format_fields).get("results", [])
 
     for policy in policies:
         if policy_name == policy.get("name") or not policy_name:
@@ -3628,7 +3632,7 @@ def get_policy_command(client: Client, args: dict[str, Any]):
 def delete_policy_command(client: Client, args: dict[str, Any]):
     contents = []
     context = {}
-    policy_id = args.get("policyID")
+    policy_id = args.get("policyID", "")
 
     client.delete_firewall_policy(policy_id)
 
