@@ -2656,7 +2656,11 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                     key = 'comments'
                 # Sometimes user is an empty str, not None, therefore nothing is displayed in ServiceNow
                 user = entry.get('user', 'dbot') or 'dbot'
-                text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
+                if str(entry.get('format')) == 'html':
+                    contents = str(entry.get('contents', ''))
+                    text = f"({user}): <br/><br/>[code]{contents} <br/><br/>[/code] Mirrored from Cortex XSOAR"
+                else:
+                    text = f"({user}): {str(entry.get('contents', ''))}\n\n Mirrored from Cortex XSOAR"
                 client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
