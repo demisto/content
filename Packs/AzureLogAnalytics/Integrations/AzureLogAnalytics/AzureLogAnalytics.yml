@@ -505,7 +505,7 @@ script:
     name: azure-log-analytics-auth-reset
     arguments: []
   - arguments:
-    - description: The name of the table to add. Must contain '_SRCH' suffix.
+    - description: "The name of the table to add. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH."
       name: table_name
       required: true
     - description: Maximum number of records in the result set, up to one million records.

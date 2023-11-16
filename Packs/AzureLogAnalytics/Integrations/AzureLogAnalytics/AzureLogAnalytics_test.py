@@ -369,7 +369,7 @@ def test_run_search_job_command(mocker: MockerFixture, requests_mock: MockerCore
 
     args_to_next_run = response.scheduled_command._args
     assert args_to_next_run == {
-        "table_name": "test_SRCH",
+        "table_name": TABLE_NAME,
         "query": "test",
         "limit": 50,
         "first_run": False,
@@ -377,8 +377,9 @@ def test_run_search_job_command(mocker: MockerFixture, requests_mock: MockerCore
     }
     response: CommandResults = run_search_job_command(args_to_next_run, CLIENT)
     assert response.readable_output == (
-        f"The {args['table_name']} table created successfully."
-        f" In order to get the table, run !azure-log-analytics-execute-query query={args['table_name']}"
+        f"The {TABLE_NAME} table created successfully. "
+        f"The table can be queried by running the following command: "
+        f"!azure-log-analytics-execute-query query={TABLE_NAME}"
     )
 
 
@@ -505,14 +506,14 @@ def test_resource_group_list_command(requests_mock: MockerCore) -> None:
 
 
 @pytest.mark.parametrize(
-    "function",
+    "function, message",
     [
-        (delete_search_job_command),
-        (run_search_job_command)
+        (delete_search_job_command, "Deleting tables without '_SRCH' suffix is not allowed."),
+        (run_search_job_command, "The table_name should end with '_SRCH' suffix.")
     ]
 )
-def test_table_with_invalid_name(function: Callable) -> None:
+def test_table_with_invalid_name(function: Callable, message: str) -> None:
 
-    with pytest.raises(DemistoException, match="The table_name should end with '_SRCH' suffix."):
+    with pytest.raises(DemistoException, match=message):
         # in the run_search_job_command the args is the first argument instead of the second because it use the polling decorator
         function({'table_name': 'invalid'}, {'table_name': 'invalid'})

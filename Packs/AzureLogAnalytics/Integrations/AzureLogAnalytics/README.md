@@ -543,7 +543,7 @@ Run a search job to fetch records from large datasets into a new search results 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_name | The name of the table to add. | Required | 
+| table_name | The name of the table to add. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH. | Required | 
 | limit | Maximum number of records in the result set, up to one million records. Default is 50. | Optional | 
 | query | Log query written in KQL format to retrieve data. Search job queries must always start with a table name. For the proper syntax, see <https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator> | Required | 
 | start_search_time | Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z". Default is 1 day. | Optional | 
@@ -738,7 +738,7 @@ Delete a Log Analytics workspace table. We recommend you delete the search job w
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_name | The name of the table. Example value: AuditLogs_SRCH. | Optional | 
+| table_name | The name of the table. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH. | Optional | 
 | subscription_id | The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'. | Optional | 
 | resource_group_name | The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'. | Optional | 
 | workspace_name | The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'. | Optional |
