@@ -30,15 +30,15 @@ The following parameters can be used to select the events that should be importe
 |Number of span queries to run in parallel|Short text|No|5| Number of threads to use for querying `spans` in parallel. |
 |Max spans per thread|Short text|No|50| Number of `spans` to query per span thread. Value can be an integer between 1 to 1000. |
 |Comma Separated Environment List To Process|Long text|No|-| Comma separated list of environments to query. |
-|Security Score Category|Multi select|No|CRITICAL, HIGH, MEDIUM| `Security Score Category` of the events to be queried. |
-|Threat Category|Multi select|No|Malicious Activities, API Abuse, Malicious Sources| `Threat Category` of the events to be queried. |
-|IP Reputation Level|Multi select|No|CRITICAL, HIGH, MEDIUM| `IP Reputation Level` of the events to be queried. |
-|IP Abuse Velocity|Multi select|No|CRITICAL, HIGH, MEDIUM| `IP Abuse Velocity` of the events to queried. |
+|Security Score Category|Multi select|No|CRITICAL,<br/>HIGH,<br/>MEDIUM| `Security Score Category` of the events to be queried. |
+|Threat Category|Multi select|No|Malicious Activities,<br/>API Abuse,<br/>Malicious Sources| `Threat Category` of the events to be queried. |
+|IP Reputation Level|Multi select|No|CRITICAL,<br/>HIGH,<br/>MEDIUM| `IP Reputation Level` of the events to be queried. |
+|IP Abuse Velocity|Multi select|No|CRITICAL,<br/>HIGH,<br/>MEDIUM| `IP Abuse Velocity` of the events to queried. |
 |IP Location Type|Multi select|No|-| `IP Location` type of the events to be queried. |
 |Traceable Platform Endpoint URL|Long text|No|<https://app.traceable.ai>| Base URL of the Traceable platform UI endpoint. |
 |Ignore Status Codes|Long text|No|400-499| Ignore incidents for which the HTTP status codes fall in the range of the given comma-separated list of HTTP status codes and/or status code ranges. eg. `301, 400-499`. |
-|Incident optional field list|Multi select|No|actorDevice,actorEntityId,actorId,actorScoreCategory,actorSession,apiName,apiUri,category,ipAbuseVelocity,ipReputationLevel,securityEventType,securityScore,serviceId,actorScore,threatCategory,type| Optional fields to pull from the Traceable event. |
-|Additional API Attributes|Multi select|No|isExternal,isAuthenticated,riskScore,riskScoreCategory,isLearnt| Additional API attributes to query for the affected API in the incident. |
+|Incident optional field list|Multi select|No|actorDevice,<br/>actorEntityId,<br/>actorId,<br/>actorScoreCategory,<br/>actorSession,<br/>apiName,<br/>apiUri,<br/>category,<br/>ipAbuseVelocity,<br/>ipReputationLevel,<br/>securityEventType,<br/>securityScore,<br/>serviceId,<br/>actorScore,<br/>threatCategory,<br/>type| Optional fields to pull from the Traceable event. |
+|Additional API Attributes|Multi select|No|isExternal,<br/>isAuthenticated,<br/>riskScore,<br/>riskScoreCategory,<br/>isLearnt| Additional API attributes to query for the affected API in the incident. |
 |Fetch unique incidents|Boolean|No|true| Select if the integration should only fetch unique occurrences of a given incident from Traceable Platform. |
 
 ## Incident Types

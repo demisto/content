@@ -27,7 +27,7 @@
 
 | **Parameter**                                                                                      | **Required** |
 |----------------------------------------------------------------------------------------------------|--------------|
-| API Key                                                                                            | True         |
+| API Key                                                                                            | False        |
 | Project ID                                                                                         | True         |
 | Min Severity                                                                                       | False        |
 | Issue Grouping                                                                                     | False        |
