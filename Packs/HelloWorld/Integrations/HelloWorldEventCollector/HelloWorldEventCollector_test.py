@@ -1,4 +1,4 @@
-from HelloWorldEventCollector import Client, fetch_events, test_module, get_events
+from HelloWorldEventCollector import Client, fetch_events, get_events
 
 
 def test_fetch_detection_events_command():
@@ -44,6 +44,7 @@ def test_test_module_command():
     Then:
     - Test module passed
     """
+    from HelloWorldEventCollector import test_module
     first_fetch_str = '2022-12-21T03:42:05Z'
     base_url = 'https://server_url/'
     client = Client(
