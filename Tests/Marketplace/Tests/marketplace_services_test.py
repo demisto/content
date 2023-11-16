@@ -1526,7 +1526,44 @@ This is visible
 <~XSIAM>
 - **Field Name 1**
 - **Field Name 2**
-</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.')
+</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.'),
+        (  # Case 11
+            '''
+## PackName
+- General pack change
+
+#### Integrations
+##### Integration Display Name
+<~XSIAM>
+- Fixed an issue
+</~XSIAM>''', 'xsoar', '## PackName\n- General pack change'),
+        (  # Case 12
+            '''
+## PackName
+- General pack change''', 'xsoar', '## PackName\n- General pack change'),
+        (  # Case 13
+            '''
+## PackName
+- General pack change
+
+#### Integrations
+##### Integration Display Name
+<~XSOAR>
+- Fixed an issue
+</~XSOAR>''', 'xsoar',
+            '## PackName\n- General pack change\n#### Integrations\n##### Integration Display Name\n- Fixed an issue'),
+        (  # Case 14
+            '''
+## PackName
+<~XSOAR>
+- General pack change
+<~XSOAR>''', 'xsoar', '## PackName\n- General pack change'),
+        (  # Case 15
+            '''
+## PackName
+<~XSIAM>
+- General pack change
+</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.'),
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
                                                         expected_result):
@@ -1543,15 +1580,32 @@ This is visible
                  Case 8: Test for new entities with the 'New' in display name for the same marketplace.
                  Case 9: Same as case 8 but for the other marketplace.
                  Case 10: Eentities like incident fields in RN have wrapping tags in their entries and not relevant for MP.
+                 Case 11: General pack notes along with XSIAM only changes for xsoar marketplace.
+                 Case 12: General pack release notes only.
+                 Case 13: General pack release notes along with XSOAR only changes for xsoar marketplace.
+                 Case 14: General pack release notes that are wrapped in XSOAR tags for xsoar marketplace.
+                 Case 15: General pack release notes that are wrapped in XSIAM tags for xsoar marketplace.
            When:
                - Creating changelog entry and filtering the entries by the tags.
            Then:
                - Cases 1-5: Ensure the RN are filtered correctly including the headers / display names if needed.
                - Cases 6-7: Ensure just the tags are removed from RN and not entries.
+               - Cases 11-15: Ensure handling of general pack release notes is the same as other entities.
+
         """
         version_display_name = "1.2.3"
         build_number = "5555"
         id_set = {
+            "Packs": [
+                {
+                    'id':
+                        {
+                            "name": "PackName",
+                            "display_name": "PackName",
+                            "marketplaces": []
+                        }
+                }
+            ],
             "integrations": [
                 {
                     'id':
