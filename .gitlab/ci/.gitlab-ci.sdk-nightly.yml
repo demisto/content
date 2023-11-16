@@ -172,7 +172,7 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
   variables:
     PRODUCT_TYPE: "XSIAM"
     SERVER_TYPE: "XSIAM"
-    INSTANCE_ROLE: "xsiam"
+    INSTANCE_ROLE: "XSIAM"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
@@ -374,7 +374,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
   variables:
       CLOUD_MACHINES_TYPE: "build"
       CLOUD_MACHINES_COUNT: 1
-      INSTANCE_ROLE: "xsiam"
+      INSTANCE_ROLE: "XSIAM"
       GCS_QUEUE_FILE: "queue-ga"
       GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
       CLOUD_SERVERS_FILE: "xsiam_servers_path"
