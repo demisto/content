@@ -32,7 +32,7 @@ MSG_DICT = {
 
 
 def read_json(path):
-    with open(path, 'r') as file:
+    with open(path) as file:
         return json.load(file)
 
 
@@ -173,7 +173,7 @@ class GCP:
         Returns the pack README file
         """
         item_path = os.path.join(self.extracting_destination, pack_id, 'README.md')
-        with open(item_path, 'r') as f:
+        with open(item_path) as f:
             return f.read()
 
 
@@ -335,9 +335,9 @@ class BucketVerifier:
         expected_rn = 'testing adding new RN'
         self.verify_new_version('ZeroFox', expected_rn)
 
-        # Case 5: Verify modified existing release notes - BPA
+        # Case 5: Verify modified existing release notes - Box
         expected_rn = 'testing modifying existing RN'
-        self.verify_rn('BPA', expected_rn)
+        self.verify_rn('Box', expected_rn)
 
         # Case 6: Verify pack is set to hidden - Microsoft365Defender
         self.verify_hidden('Microsoft365Defender')
