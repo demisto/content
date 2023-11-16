@@ -1,6 +1,5 @@
-fromversion: 8.3.0
-id: HelloWorld_ModelingRule
+fromversion: 8.4.0
+id: HelloWorldModelingRule
 name: HelloWorld Modeling Rule
 rules: ''
 schema: ''
-tags: ''

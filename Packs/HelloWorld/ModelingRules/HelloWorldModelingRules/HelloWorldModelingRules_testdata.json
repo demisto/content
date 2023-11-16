@@ -6,16 +6,29 @@
             "product": "world",
             "dataset": "hello_world_raw",
             "tenant_timezone": "UTC",
-            "event_data": {},
+            "event_data": {
+                "id": 1,
+                "created_time": "'2022-12-21T03:42:05Z'",
+                "description": "This is test description 1",
+                "alert_status": "Pending",
+                "custom_details": {
+                    "triggered_by_name": "Name for id: 1",
+                    "triggered_by_uuid": "uuid",
+                    "type": "customType",
+                    "requested_limit": 5,
+                    "requested_From_date": "2022-12-21T03:42:05Z"
+                }
+            },
             "expected_values": {
                 "_time": null,
-                "xdm.event.description": null,
-                "xdm.event.id": null,
-                "xdm.event.operation_sub_type": null,
-                "xdm.source.user.identifier": null,
-                "xdm.source.user.username": null
+                "xdm.event.description": "This is test description 1",
+                "xdm.event.id": 1,
+                "xdm.event.operation_sub_type": "customType",
+                "xdm.source.user.identifier": "uuid",
+                "xdm.source.user.username": "Name for id: 1"
             }
         }
+        
     ],
     "ignored_validations": []
 }
