@@ -298,3 +298,31 @@ class organization_get(Data):
 |---|---|---|---|---|---|
 | id | arn | featureset | masteraccountarn | masteraccountid | masteraccountemail |
 """
+
+
+class account_remove(Data):
+    command_args = {"account_id": "account_id"}
+    client_func_kwargs = {"AccountId": "account_id"}
+    readable_output = """### AWS Account Removed
+|AccountId|
+|---|
+| account_id |
+"""
+
+
+class account_move(Data):
+    command_args = {
+        'account_id': 'account_id',
+        'source_parent_id': 'source_parent_id',
+        'destination_parent_id': 'destination_parent_id'
+    }
+    client_func_kwargs = {
+        'AccountId': 'account_id',
+        'SourceParentId': 'source_parent_id',
+        'DestinationParentId': 'destination_parent_id'
+    }
+    readable_output = """### AWS Account Moved
+|AccountId|
+|---|
+| account_id |
+"""

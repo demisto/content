@@ -1,12 +1,7 @@
 import pytest
-from test_data.data import *
-from typing import TYPE_CHECKING
+from test_data.data import *  # noqa
 
-# The following imports are used only for type hints and autocomplete.
-# They are not used at runtime, and are not in the docker image.
-if TYPE_CHECKING:
-    from mypy_boto3_organizations import *
-    # from botocore.paginate import Paginator
+# from mypy_boto3_organizations import *
 
 
 class MockOrganizationsClient:  # (OrganizationsClient):
@@ -24,6 +19,12 @@ class MockOrganizationsClient:  # (OrganizationsClient):
 
     def describe_organization(self):
         return organization_get.client_func_return
+
+    def remove_account_from_organization(self, **kwargs):
+        assert account_remove.client_func_kwargs == kwargs
+
+    def move_account(self, **kwargs):
+        assert account_move.client_func_kwargs == kwargs
 
 
 CLIENT = MockOrganizationsClient()
@@ -193,3 +194,21 @@ def test_organization_get():
 
     assert result.outputs == organization_get.context_outputs
     assert result.readable_output == organization_get.readable_output
+
+
+def test_account_remove():
+
+    from AWSOrganizations import account_remove_command
+
+    result = account_remove_command(account_remove.command_args, CLIENT)
+
+    assert result.readable_output == account_remove.readable_output
+
+
+def test_account_move():
+
+    from AWSOrganizations import account_move_command
+
+    result = account_move_command(account_move.command_args, CLIENT)
+
+    assert result.readable_output == account_move.readable_output

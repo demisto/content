@@ -7,7 +7,8 @@ from botocore.paginate import Paginator
 # The following imports are used only for type hints and autocomplete.
 # They are not used at runtime, and are not in the docker image.
 if TYPE_CHECKING:
-    from mypy_boto3_organizations import *
+    from mypy_boto3_organizations import *  # noqa
+    from mypy_boto3_organizations.type_defs import *  # noqa
 
 ''' CONSTANTS '''
 
@@ -292,6 +293,133 @@ def organization_get_command(aws_client: 'OrganizationsClient') -> CommandResult
     )
 
 
+def account_remove_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    aws_client.remove_account_from_organization(
+        AccountId=args['account_id']
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'AWS Account Removed',
+            {'AccountId': args['account_id']}
+        )
+    )
+
+
+def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    aws_client.move_account(
+        AccountId=args['account_id'],
+        SourceParentId=args['source_parent_id'],
+        DestinationParentId=args['destination_parent_id'],
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'AWS Account Moved',
+            {'AccountId': args['account_id']}
+        )
+    )
+
+
+@polling_function(
+    'aws-org-account-create',
+    interval=arg_to_number(demisto.getArg('interval_in_seconds')),
+    timeout=arg_to_number(demisto.getArg('timeout')),
+    poll_message='Creating account:',
+    requires_polling_arg=False
+)
+def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:
+
+    def build_tags(keys: str | None, values: str | None) -> list:
+        try:
+            return [
+                {
+                    'Key': key,
+                    'Value': value
+                }
+                for key, value in zip(
+                    argToList(keys),
+                    argToList(values),
+                    strict=True
+                )
+            ]
+        except ValueError:
+            raise DemistoException('"tag_key" and "tag_value" must have the same length.')
+
+    def initial_call() -> dict:
+        account = aws_client.create_account(
+            Email=args['email'],
+            AccountName=args['account_name'],
+            RoleName=args['role_name'],
+            IamUserAccessToBilling=args['iam_user_access_to_billing'].upper(),
+            Tags=build_tags(
+                args.get('tag_key'),
+                args.get('tag_value')
+            )
+        )
+        args['request_id'] = account['CreateAccountStatus']['Id']
+        return account
+
+    def polling_call() -> dict:
+        return aws_client.describe_create_account_status(
+            CreateAccountRequestId=args['request_id']
+        )
+
+    def create_response(account: dict) -> PollResult:
+
+        result = PollResult(None, continue_to_poll=True)
+
+        match dict_safe_get(account, ['CreateAccountStatus', 'State']):
+            case 'SUCCEEDED':
+                result.continue_to_poll = False
+                result.response = account_list_command(
+                    {'account_id': account.get('AccountId')},
+                    aws_client
+                )
+            case 'FAILED':
+                pass
+
+        return result
+
+    if not args.get('request_id'):
+        account = initial_call()
+    else:
+        account = polling_call()
+
+    return create_response(account)
+
+
+@polling_function(
+    'aws-org-account-close',
+    interval=arg_to_number(demisto.getArg('interval_in_seconds')),
+    timeout=arg_to_number(demisto.getArg('timeout')),
+    poll_message='Closing account:',
+    requires_polling_arg=False
+)
+def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:
+
+    if not args['is_closed']:
+        aws_client.close_account(
+            AccountId=args['account_id']
+        )
+        args['is_closed'] = True
+
+    account = aws_client.describe_account(
+        AccountId=args['account_id']
+    )
+    return PollResult(
+        response=CommandResults(
+            readable_output=tableToMarkdown(
+                'Account closed',
+                {'AccountId': args['account_id']}
+            )
+        ),
+        continue_to_poll=(dict_safe_get(account, ['Account', 'Status']) != 'SUSPENDED'),
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -320,6 +448,14 @@ def main():
             return_results(account_list_command(args, aws_client))
         elif command == 'aws-org-organization-get':
             return_results(organization_get_command(aws_client))
+        elif command == 'aws-org-account-remove':
+            return_results(account_remove_command(args, aws_client))
+        elif command == 'aws-org-account-move':
+            return_results(account_move_command(args, aws_client))
+        elif command == 'aws-org-account-create':
+            return_results(account_create_command(args, aws_client))
+        elif command == 'aws-org-account-close':
+            return_results(account_close_command(args, aws_client))
         else:
             raise NotImplementedError(f'AWS-Organizations error: command {command!r} is not implemented')
 

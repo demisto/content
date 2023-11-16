@@ -5,3 +5,8 @@
 !aws-org-account-list account_id=890404229245
 !aws-org-account-list
 !aws-org-organization-get
+
+!aws-org-account-remove account_id=890404229245
+!aws-org-account-move 
+!aws-org-account-create
+!aws-org-account-close
