@@ -96,6 +96,7 @@ def split_query_to_term_args(query: str) -> Dict[str, Any]:
 
     return {get_key(term): get_value(term) for term in query.split(',') if get_value(term)}
 
+failonme
 
 def validated_term(key: str, val: Any) -> Any:
     if key == 'verdict':
