@@ -185,11 +185,6 @@ class Client(BaseClient):
         if response.text == "2":
             raise DemistoException("Too many login attempts. Please wait and try again.")
 
-        for cookie in response.cookies:
-            if cookie.name.startswith("ccsrftoken"):
-                csrftoken = cookie.value[1:-1]
-                self._session.headers.update({"X-CSRFTOKEN": csrftoken})
-
         login_disclaimer = "logindisclaimer"
 
         if login_disclaimer in response.text:
