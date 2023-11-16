@@ -39,11 +39,11 @@ The Cloud Token Theft playbook is designed to guide security analysts through th
 
 <~XSIAM>
 - [Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cloud-token-theft-response)
-<~/XSIAM>
+</~XSIAM>
 
 <~XSOAR>
 - [Cortex XDR - Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---x-cloud-token-theft-response)
-<~/XSOAR>
+</~XSOAR>
 
 ### 2. Cryptojacking Response
 
@@ -51,11 +51,11 @@ The Cryptojacking Response playbook assists security teams in detecting and miti
 
 <~XSIAM>
 - [Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/x-cloud-cryptomining)
-<~/XSIAM>
+</~XSIAM>
 
 <~XSOAR>
 - [Cortex XDR - Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-cryptomining)
-<~/XSOAR>
+</~XSOAR>
 
 ### 3. IAM User Investigation
 
@@ -63,11 +63,11 @@ The IAM User Investigation playbook provides step-by-step instructions for inves
 
 <~XSIAM>
 - [Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cloud-iam-user-access-investigation)
-<~/XSIAM>
+</~XSIAM>
 
 <~XSOAR>
 - [Cortex XDR - Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-iam-user-access-investigation)
-<~/XSOAR>
+</~XSOAR>
 
 ### Investigative Playbooks
 
