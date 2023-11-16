@@ -1,2 +1,2 @@
 ## Hello World
-- This is example integration. No configuration needed.
+This is an example integration. No configuration needed.

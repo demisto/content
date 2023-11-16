@@ -10,7 +10,7 @@ This is the Hello World event collector integration for XSIAM.
     | --- | --- |
     | Server URL | False |
     | Fetch alerts with status (ACTIVE, CLOSED) | False |
-    | Max events number per fetch | False |
+    | Max number of events per fetch | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
@@ -36,8 +36,8 @@ Gets events from Hello World.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
 | status | Filter by alert status. Possible values are: ACTIVE, CLOSED. | Optional | 
-| limit | Maximum results to return. | Required | 
-| from_date | From date to get events from. | Optional | 
+| limit | Maximum number of results to return. | Required | 
+| from_date | Date from which to get events. | Optional | 
 
 #### Context Output
 
