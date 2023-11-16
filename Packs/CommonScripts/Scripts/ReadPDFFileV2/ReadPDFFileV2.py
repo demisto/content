@@ -170,7 +170,7 @@ def get_images_paths_in_path(path: str) -> List[str]:
 
 def get_pdf_metadata(file_path: str, user_or_owner_password: str | None = None) -> dict:
     """Gets the metadata from the pdf as a dictionary"""
-    if user_password:
+    if user_or_owner_password:
         try:
             demisto.debug('Trying password as user password, using the [upw] flag')
             metadata_txt = run_shell_command(
