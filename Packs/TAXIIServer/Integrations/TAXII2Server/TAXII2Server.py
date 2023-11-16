@@ -1416,12 +1416,15 @@ def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value
             if (entity_b_value := relationship.get('entityB')) and entity_b_value not in iocs_value_to_id:
                 iocs_value_to_id[entity_b_value] = ""
                 entity_b_values += f'\"{entity_b_value}\" '
+        else:
+            demisto.debug(f'relationship is empty {relationship=}')
     if not entity_b_values:
         return entity_b_objects
 
     try:
         found_indicators = demisto.searchIndicators(query=f'value:({entity_b_values})').get('iocs') or []
     except AttributeError:
+        demisto.debug(f'Could not find indicators from using query value:({entity_b_values})')
         found_indicators = []
 
     extensions_dict: dict = {}
@@ -1437,6 +1440,8 @@ def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value
                     extensions.append(extension_definition)
             elif stix_ioc:
                 entity_b_objects.append(stix_ioc)
+        else:
+            demisto.debug(f"{xsoar_indicator=} is emtpy")
 
             iocs_value_to_id[(get_stix_object_value(stix_ioc))] = stix_ioc.get('id') if stix_ioc else None
     demisto.debug(f"Generated {len(entity_b_objects)} STIX objects for 'entityB' values.")
