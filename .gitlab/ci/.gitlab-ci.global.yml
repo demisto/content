@@ -248,7 +248,7 @@
 
 .fetch-through-merge-base: &fetch-through-merge-base
   - section_start "Fetch Through Merge Base"
-  - DEEPEN_LENGTH=${DEEPEN_LENGTH:-50}
+  - DEEPEN_LENGTH=${DEEPEN_LENGTH:-$GIT_DEPTH}
   - HEAD_REF=origin/master
   - BASE_REF=${CI_COMMIT_SHA}
   - |
