@@ -39,7 +39,7 @@
         "Addresses": [
             "192.0.2.0"
         ],
-        "Name": "ec2-34-255-72-253.eu-west-1.compute.amazonaws.com",
+        "Name": "ec2-1.eu.compute-1.amazonaws.com",
         "Site": "Test",
         "Exploits": 0,
         "Malware": 0,
