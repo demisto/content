@@ -5,6 +5,7 @@ echo "Starting pylint run"
 
 for dir in $*; do
     pylint_out=$(python3 -m pylint --disable=$pylint_disabled_errors 2>&1 $dir/*.py)
+    echo $pylint_out
     if [[ $? -ne 0 ]]; then
       echo -e "$pylint_out" | sort | uniq | grep ": [A-Z][0-9]*: "
       if [[ $? -eq 0 ]]; then
