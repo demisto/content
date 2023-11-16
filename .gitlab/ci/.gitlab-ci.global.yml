@@ -226,6 +226,10 @@
   - section_start "Checkout upload commit content nightly"
   - | 
     if [[ "${CI_COMMIT_BRANCH}" == "fix_nightly_files_not_found" ]]; then
+      if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
+        echo "content production packs do not exist in artifacts"
+        exit 1
+      fi
       rm -rf ./Packs
       echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs to ./Packs"
       cp -r ${CI_PROJECT_DIR}/artifacts/production_packs ./Packs
@@ -267,16 +271,16 @@
   - *install_venv
 
 .add-content-production-to-artifacts:
-  - section_start "Clone production content and add it to artifacts"
+  - section_start "Clone production content and add it to artifacts" --collapsed
   - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
   - mkdir content_production
   - cd content_production
-  - git init
+  - git init > /dev/null 2>&1
   - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
   - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
-  - git checkout FETCH_HEAD
+  - git checkout FETCH_HEAD > /dev/null 2>&1
   - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs
-  - echo "checked out $LAST_UPLOAD_COMMIT"
+  - echo "checked out $LAST_UPLOAD_COMMIT which is the last successful upload commit"
   - section_end "Clone production content and add it to artifacts"
 
 
