@@ -847,6 +847,37 @@ script:
     - contextPath: MSGraphMail.Folders.UnreadItemCount
       description: The number of unread email messages in the folder.
       type: Number
+  - arguments:
+    - description: limit
+      name: limit
+      required: true
+      defaultValue: 50
+    - description: all_results.
+      name: all_results
+      required: true
+      defaultValue: 'true'
+    description: msgraph-mail-list-rules
+    name: msgraph-mail-list-rules
+    outputs:
+    - contextPath: MSGraphMail.Rule.id
+      description: MSGraphMail.Rule.id
+      type: String
+  - arguments:
+    - description: rule_id
+      name: rule_id
+      required: true
+    description: msgraph-mail-get-rule
+    name: msgraph-mail-get-rule
+    outputs:
+    - contextPath: MSGraphMail.Rule.id
+      description: MSGraphMail.Rule.id
+      type: String
+  - arguments:
+    - description: rule_id
+      name: rule_id
+      required: true
+    description: msgraph-mail-delete-rule
+    name: msgraph-mail-delete-rule
   dockerimage: demisto/crypto:1.0.0.79610
   isfetch: true
   script: ''

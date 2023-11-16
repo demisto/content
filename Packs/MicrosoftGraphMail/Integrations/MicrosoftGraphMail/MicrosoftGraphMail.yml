@@ -1054,6 +1054,49 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-mail-auth-reset
     arguments: []
+  - arguments:
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      isArray: false
+      name: user_id
+      required: true
+    - description: limit
+      name: limit
+      required: true
+      defaultValue: 50
+    - description: all_results.
+      name: all_results
+      required: true
+      defaultValue: 'true'
+    description: msgraph-mail-list-rules
+    name: msgraph-mail-list-rules
+    outputs:
+    - contextPath: MSGraphMail.Rule.id
+      description: MSGraphMail.Rule.id
+      type: String
+  - arguments:
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      isArray: false
+      name: user_id
+      required: true
+    - description: rule_id
+      name: rule_id
+      required: true
+    description: msgraph-mail-get-rule
+    name: msgraph-mail-get-rule
+    outputs:
+    - contextPath: MSGraphMail.Rule.id
+      description: MSGraphMail.Rule.id
+      type: String
+  - arguments:
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      isArray: false
+      name: user_id
+      required: true
+    - description: rule_id
+      name: rule_id
+      required: true
+    description: msgraph-mail-delete-rule
+    name: msgraph-mail-delete-rule
   dockerimage: demisto/crypto:1.0.0.80694
   isfetch: true
   runonce: false
