@@ -58,7 +58,10 @@ class Client(BaseClient):
 
     def post(self, query_uri: str, data: dict = None, json: dict = None):
         """Handles Darktrace POST API calls"""
-        return self._darktrace_api_call(query_uri, method='POST', data=data, json=json)
+        response = self._darktrace_api_call(query_uri, method='POST', data=data, json=json)
+        if isinstance(response, list) and len(response):
+            response = response[0]
+        return response
 
     def _darktrace_api_call(
         self,
