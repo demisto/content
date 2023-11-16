@@ -13,7 +13,6 @@ from packaging.version import Version
 from freezegun import freeze_time
 from datetime import datetime, timedelta
 from typing import Any
-from demisto_sdk.commands.common.constants import MarketplaceVersions
 from pathlib import Path
 
 # pylint: disable=no-member
@@ -1527,7 +1526,44 @@ This is visible
 <~XSIAM>
 - **Field Name 1**
 - **Field Name 2**
-</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.')
+</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.'),
+        (  # Case 11
+            '''
+## PackName
+- General pack change
+
+#### Integrations
+##### Integration Display Name
+<~XSIAM>
+- Fixed an issue
+</~XSIAM>''', 'xsoar', '## PackName\n- General pack change'),
+        (  # Case 12
+            '''
+## PackName
+- General pack change''', 'xsoar', '## PackName\n- General pack change'),
+        (  # Case 13
+            '''
+## PackName
+- General pack change
+
+#### Integrations
+##### Integration Display Name
+<~XSOAR>
+- Fixed an issue
+</~XSOAR>''', 'xsoar',
+            '## PackName\n- General pack change\n#### Integrations\n##### Integration Display Name\n- Fixed an issue'),
+        (  # Case 14
+            '''
+## PackName
+<~XSOAR>
+- General pack change
+<~XSOAR>''', 'xsoar', '## PackName\n- General pack change'),
+        (  # Case 15
+            '''
+## PackName
+<~XSIAM>
+- General pack change
+</~XSIAM>''', 'xsoar', 'Changes are not relevant for XSOAR marketplace.'),
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
                                                         expected_result):
@@ -1544,15 +1580,32 @@ This is visible
                  Case 8: Test for new entities with the 'New' in display name for the same marketplace.
                  Case 9: Same as case 8 but for the other marketplace.
                  Case 10: Eentities like incident fields in RN have wrapping tags in their entries and not relevant for MP.
+                 Case 11: General pack notes along with XSIAM only changes for xsoar marketplace.
+                 Case 12: General pack release notes only.
+                 Case 13: General pack release notes along with XSOAR only changes for xsoar marketplace.
+                 Case 14: General pack release notes that are wrapped in XSOAR tags for xsoar marketplace.
+                 Case 15: General pack release notes that are wrapped in XSIAM tags for xsoar marketplace.
            When:
                - Creating changelog entry and filtering the entries by the tags.
            Then:
                - Cases 1-5: Ensure the RN are filtered correctly including the headers / display names if needed.
                - Cases 6-7: Ensure just the tags are removed from RN and not entries.
+               - Cases 11-15: Ensure handling of general pack release notes is the same as other entities.
+
         """
         version_display_name = "1.2.3"
         build_number = "5555"
         id_set = {
+            "Packs": [
+                {
+                    'id':
+                        {
+                            "name": "PackName",
+                            "display_name": "PackName",
+                            "marketplaces": []
+                        }
+                }
+            ],
             "integrations": [
                 {
                     'id':
@@ -1986,7 +2039,7 @@ class TestImagesUpload:
             - Ensure the pack was uploaded to the right path in the bucket.
         """
         mocker.patch.object(os.path, "isdir", return_value=True)
-        mocker.patch.object(glob, "glob", side_effect=[["Packs/TestPack/Integrations/IntegrationId/IntegrationId_image.svg"],
+        mocker.patch.object(glob, "glob", side_effect=[["Packs/TestPack/Integrations/IntegrationId/IntegrationId_dark.svg"],
                                                        ["Packs/TestPack/Integrations/IntegrationId/IntegrationId.yml"]])
         mocker.patch("builtins.open", mock_open(read_data='{"commonfields": {"id": "Integration Id"}}'))
 
@@ -1994,7 +2047,7 @@ class TestImagesUpload:
         task_status = dummy_pack.upload_dynamic_dashboard_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH)
 
         assert task_status
-        assert dummy_pack._uploaded_dynamic_dashboard_images == ['content/images/Integration Id.svg']
+        assert dummy_pack._uploaded_dynamic_dashboard_images == ['content/images/dark/Integration Id.svg']
 
     def test_copy_dynamic_dashboard_images(self, mocker, dummy_pack: Pack):
         """
@@ -2007,11 +2060,11 @@ class TestImagesUpload:
         """
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
-        blob_name = "content/images/Integration Id.svg"
+        blob_name = "content/images/dark/Integration Id.svg"
 
         images_data = {"TestPack": {BucketUploadFlow.DYNAMIC_DASHBOARD_IMAGES: [blob_name]}}
         task_status = dummy_pack.copy_dynamic_dashboard_images(dummy_prod_bucket, dummy_build_bucket, images_data,
-                                                               GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
+                                                               GCPConfig.CONTENT_PACKS_PATH)
         assert task_status
 
     def test_copy_author_image(self, mocker, dummy_pack):
@@ -3220,227 +3273,6 @@ def create_rn_config_file(rn_dir: str, version: str, data: dict):
 def create_rn_file(rn_dir: str, version: str, text: str):
     with open(f'{rn_dir}/{version}.md', 'w') as f:
         f.write(text)
-
-
-class TestDetectModified:
-    """ Test class for detect modified files. """
-
-    @pytest.fixture(scope="class")
-    def dummy_pack(self):
-        """ dummy pack fixture
-        """
-        dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
-        sample_pack = Pack(pack_name="TestPack", pack_path=dummy_path)
-        return sample_pack
-
-    @pytest.fixture(scope="class")
-    def content_repo(self):
-        class ModifiedFile:
-            a_path = 'Packs/TestPack/Integrations/integration/integration.yml'
-
-        class Commit:
-            def __init__(self, commit_hash) -> None:
-                commit_hash = commit_hash
-
-            @staticmethod
-            def diff(commit_hash):
-                return [ModifiedFile()]
-
-        class Repo:
-            @staticmethod
-            def commit(commit_hash):
-                return Commit(commit_hash)
-
-        return Repo()
-
-    def test_modified_files(self, mocker, dummy_pack: Pack, content_repo):
-        """
-           Given:
-               - Content repo with modified files.
-           When:
-               - Trying detect the modified files between commits.
-           Then:
-               - Ensure status is True
-               - Ensure the returned modified files data conteins the modified repo files.
-        """
-        open_mocker = MockOpen()
-        dummy_path = 'Irrelevant/Test/Path'
-        mocker.patch("os.path.exists", return_value=True)
-        mocker.patch("builtins.open", open_mocker)
-        open_mocker[os.path.join(dummy_path, dummy_pack.name, Pack.METADATA)].read_data = '{}'
-        # open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
-        status, _ = dummy_pack.detect_modified(content_repo, dummy_path, 'current_hash', 'previous_hash')
-
-        assert dummy_pack._modified_files['Integrations'][0] == \
-            'Packs/TestPack/Integrations/integration/integration.yml'
-        assert status is True
-
-
-class TestCheckChangesRelevanceForMarketplace:
-    """ Test class for checking the changes relevance for marketplace. """
-
-    ID_SET_MP_V2 = {
-        "integrations": [
-            {
-                "int_id_1": {
-                    "name": "Dummy name 1",
-                    "display_name": "Dummy display name 1",
-                    "file_path": "Packs/pack_name/Integrations/integration_name/file"
-                }
-            },
-            {
-                "int_id_2": {
-                    "name": "Dummy name 2",
-                    "display_name": "Dummy display name 2",
-                    "file_path": "Packs/pack_name/Integrations/integration_name2/file"
-                }
-            }
-        ],
-        "XSIAMDashboards": [
-            {
-                "xsiam_dash_id_1": {
-                    "name": "Dummy xdash name",
-                    "display_name": "Dummy xdash display name",
-                    "file_path": "Packs/pack_name/Dashboards/dash_name/file"
-                }
-            }
-        ],
-        "Dashboards": []
-    }
-
-    @pytest.fixture(scope="class")
-    def dummy_pack(self):
-        """ dummy pack fixture
-        """
-        dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
-        sample_pack = Pack(pack_name="TestPack", pack_path=dummy_path)
-        sample_pack.description = 'Sample description'
-        sample_pack.current_version = '1.0.0'
-        sample_pack._marketplaces = ['marketplacev2']
-        sample_pack._modified_files = {
-            'Integrations': [
-                'Packs/pack_name/Integrations/integration_name/file',
-                'Packs/pack_name/Integrations/integration_name3/file'
-            ],
-            'Dashboards': [
-                "Packs/pack_name/Dashboards/dash_name2/file"
-            ],
-            'XSIAMDashboards': [
-                "Packs/pack_name/Dashboards/dash_name/file"
-            ]
-        }
-        return sample_pack
-
-    def test_entities_filtered_correctly(self, dummy_pack: Pack):
-        """
-           Given:
-               - id-set for marketplacev2.
-           When:
-               - Modified files contains files that are not relevant for marketplacev2.
-           Then:
-               - Ensure status is True
-               - Ensure the returned modified files data as expected.
-        """
-        id_set_copy = self.ID_SET_MP_V2.copy()
-        expected_modified_files_data = {
-            "Integrations":
-                [
-                    {
-                        'int_id_1':
-                            {
-                                "name": "Dummy name 1",
-                                "display_name": "Dummy display name 1",
-                                "file_path": "Packs/pack_name/Integrations/integration_name/file"
-                            }
-                    }
-                ],
-            "XSIAMDashboards":
-                [
-                    {
-                        'xsiam_dash_id_1':
-                            {
-                                "name": "Dummy xdash name",
-                                "display_name": "Dummy xdash display name",
-                                "file_path": "Packs/pack_name/Dashboards/dash_name/file"
-                            }
-                    }
-                ]
-        }
-
-        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy,
-                                                                                 [],
-                                                                                 MarketplaceVersions.MarketplaceV2)
-
-        assert status is True
-        assert modified_files_data == expected_modified_files_data
-
-    def test_changes_not_relevant_to_mp(self, dummy_pack: Pack):
-        """
-           Given:
-               - id-set for marketplacev2.
-           When:
-               - Modified files contains only files that are not relevant for marketplacev2.
-           Then:
-               - Ensure status is False
-               - Ensure the returned modified files data is empty.
-        """
-        id_set_copy = self.ID_SET_MP_V2.copy()
-        dummy_pack._modified_files = {
-            'Dashboards': [
-                'Packs/pack_name/Dashboards/dash_name2/file'
-            ]
-        }
-
-        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy,
-                                                                                 [],
-                                                                                 MarketplaceVersions.MarketplaceV2)
-
-        assert status is False
-        assert modified_files_data == {}
-
-    def test_mappers(self, dummy_pack: Pack):
-        """
-           Given:
-               - id-set for marketplacev2 containig Mappers.
-           When:
-               - Modified files contains mappers that are under directory Classifiers.
-           Then:
-               - Ensure status is True
-               - Ensure the mapper exist in the modified files data under Classifiers.
-        """
-        id_set_copy = self.ID_SET_MP_V2.copy()
-        dummy_pack._modified_files = {
-            "Classifiers": ["Packs/pack_name/Classifiers/file"]
-        }
-        id_set_copy["Mappers"] = [
-            {
-                "mapper_id":
-                    {
-                        "name": "mapper name",
-                        "file_path": "Packs/pack_name/Classifiers/file"
-                    }
-            }
-        ]
-        id_set_copy["Classifiers"] = []
-        expected_modified_files_data = {
-            "Classifiers":
-                [
-                    {
-                        "mapper_id":
-                            {
-                                "name": "mapper name",
-                                "file_path": "Packs/pack_name/Classifiers/file"
-                            }
-                    }
-                ]
-        }
-
-        status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy,
-                                                                                 [],
-                                                                                 MarketplaceVersions.MarketplaceV2)
-
-        assert status is True
-        assert modified_files_data == expected_modified_files_data
 
 
 class TestVersionsMetadataFile:

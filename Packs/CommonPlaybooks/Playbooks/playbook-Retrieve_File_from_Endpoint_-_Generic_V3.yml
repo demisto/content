@@ -127,11 +127,14 @@ tasks:
       - "3"
     scriptarguments:
       Agent_ID:
-        simple: ${inputs.Agent_ID}
+        complex:
+          root: inputs.Agent_ID
       Host:
-        simple: ${inputs.Host}
+        complex:
+          root: inputs.Host
       Path:
-        simple: ${inputs.Path}
+        complex:
+          root: inputs.Path
     separatecontext: true
     loop:
       iscommand: false

@@ -313,44 +313,49 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "xdrresolvecomment",
-                                "height": 24,
+                                "height": 22,
                                 "id": "5a450d90-ac8a-11e9-a30b-53d47e1ea7d7",
                                 "index": 0,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             },
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "dbotclosed",
-                                "height": 24,
+                                "height": 22,
                                 "id": "427bf020-a866-11e9-aeb8-c3448b5d692d",
                                 "index": 1,
                                 "listId": "e462ffc0-a864-11e9-aeb8-c3448b5d692d",
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "closereason",
-                                "height": 24,
+                                "height": 22,
                                 "id": "f23f6e30-a864-11e9-aeb8-c3448b5d692d",
                                 "index": 2,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "closinguserid",
-                                "height": 24,
+                                "height": 22,
                                 "id": "f387a5a0-a864-11e9-aeb8-c3448b5d692d",
                                 "index": 3,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "closenotes",
-                                "height": 48,
+                                "height": 44,
                                 "id": "f579ffc0-a864-11e9-aeb8-c3448b5d692d",
                                 "index": 4,
-                                "startCol": 0
+                                "startCol": 0,
+                                "sectionItemType": "field"
                             }
                         ],
                         "maxW": 3,
@@ -370,7 +375,7 @@
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "xdrdescription",
                                 "height": 22,
                                 "id": "a398d4f0-ac89-11e9-a30b-53d47e1ea7d7",
@@ -417,101 +422,47 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "xdrhostcount",
+                                "fieldId": "xdrurl",
                                 "height": 22,
-                                "id": "5d54d8e0-ac7a-11e9-a30b-53d47e1ea7d7",
+                                "id": "df4e1380-aef4-11e9-896e-b72bc9d2cace",
                                 "index": 5,
                                 "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "xdrusercount",
-                                "height": 22,
-                                "id": "b1232bc0-ac89-11e9-a30b-53d47e1ea7d7",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
+                                "startCol": 0,
                                 "dropEffect": "move",
+                                "listId": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7"
+                            },
+                            {
                                 "endCol": 2,
                                 "fieldId": "xdrnotes",
                                 "height": 22,
                                 "id": "8f040360-ac8a-11e9-a30b-53d47e1ea7d7",
-                                "index": 7,
-                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "index": 6,
                                 "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "xdrurl",
-                                "height": 22,
-                                "id": "df4e1380-aef4-11e9-896e-b72bc9d2cace",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7"
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "xdralertcount",
-                                "height": 22,
-                                "id": "53bb4440-ac7a-11e9-a30b-53d47e1ea7d7",
-                                "index": 1,
-                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "xdrhighseverityalertcount",
-                                "height": 22,
-                                "id": "407735a0-ac7b-11e9-a30b-53d47e1ea7d7",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "xdrmediumseverityalertcount",
-                                "height": 22,
-                                "id": "42b2a6b0-ac7b-11e9-a30b-53d47e1ea7d7",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "xdrlowseverityalertcount",
-                                "height": 22,
-                                "id": "440ae3b0-ac7b-11e9-a30b-53d47e1ea7d7",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "xdrassigneduserprettyname",
                                 "height": 22,
                                 "id": "688064a0-ad29-11e9-b20c-1b6878c52e9c",
-                                "index": 5,
+                                "index": 9,
                                 "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "xdrassigneduseremail",
                                 "height": 22,
                                 "id": "3704da40-ac8a-11e9-a30b-53d47e1ea7d7",
-                                "index": 6,
-                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "index": 10,
                                 "sectionItemType": "field",
-                                "startCol": 2
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7"
                             }
                         ],
                         "maxW": 3,
@@ -519,7 +470,7 @@
                         "moved": false,
                         "name": "XDR Basic Information",
                         "static": false,
-                        "w": 2,
+                        "w": 1,
                         "x": 1,
                         "y": 0
                     },
@@ -659,6 +610,102 @@
                         "w": 1,
                         "x": 0,
                         "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-f5ec1810-61cb-11ee-8258-1b5d9765392a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdrusercount",
+                                "height": 22,
+                                "id": "b1232bc0-ac89-11e9-a30b-53d47e1ea7d7",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdrriskyusercount",
+                                "height": 22,
+                                "id": "b965df60-401b-11ee-bc50-a9a9295a889b",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-lthdv5gwt9-1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrhostcount",
+                                "height": 22,
+                                "id": "5d54d8e0-ac7a-11e9-a30b-53d47e1ea7d7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrriskyhostcount",
+                                "height": 22,
+                                "id": "8e7d8a20-40be-11ee-9b52-09ff9fac4941",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdralertcount",
+                                "height": 22,
+                                "id": "53bb4440-ac7a-11e9-a30b-53d47e1ea7d7",
+                                "index": 4,
+                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrlowseverityalertcount",
+                                "height": 22,
+                                "id": "440ae3b0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdrmediumseverityalertcount",
+                                "height": 22,
+                                "id": "42b2a6b0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "index": 6,
+                                "listId": "1vduzkpmlh-f5ec1810-61cb-11ee-8258-1b5d9765392a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrhighseverityalertcount",
+                                "height": 22,
+                                "id": "407735a0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Alert \u0026 Asset Count",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -679,25 +726,6 @@
                                 "isContext": false,
                                 "value": {
                                     "simple": "token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        }
-                    ],
-                    [
-                        {
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "mitretacticname"
-                                }
-                            },
-                            "operator": "notContainsGeneral",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Credential Access"
                                 }
                             },
                             "type": "multiSelect"
@@ -865,43 +893,105 @@
                 "filters": [
                     [
                         {
-                            "id": 0,
                             "ignoreCase": false,
                             "left": {
                                 "isContext": true,
                                 "value": {
-                                    "simple": "xdralertname"
+                                    "simple": "xdrriskyhostcount"
                                 }
                             },
-                            "operator": "containsString",
+                            "operator": "greaterThan",
                             "right": {
                                 "isContext": false,
                                 "value": {
-                                    "simple": "Suspicious usage of AWS Lambda’s token"
+                                    "simple": "0"
                                 }
                             },
-                            "type": "multiSelect"
+                            "type": "number"
                         },
                         {
-                            "id": 1,
                             "ignoreCase": false,
                             "left": {
                                 "isContext": true,
                                 "value": {
-                                    "simple": "xdralertname"
+                                    "simple": "xdrriskyusercount"
                                 }
                             },
-                            "operator": "containsString",
+                            "operator": "greaterThan",
                             "right": {
                                 "isContext": false,
                                 "value": {
-                                    "simple": "Suspicious usage of AWS Lambda’s role"
+                                    "simple": "0"
                                 }
                             },
-                            "type": "multiSelect"
-                        },
+                            "type": "number"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "qevuzu2oip",
+                "name": "Risky Assets",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-de41cda0-47f8-11ee-98f3-e53ed2b50bbd",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrriskyusers",
+                                "height": 106,
+                                "id": "439d86d0-47f9-11ee-98f3-e53ed2b50bbd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Risky Users",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0,
+                        "description": "Displays users that are involved in the incident, and were deemed as risky by XDR's Identity Threat module, due to their time or nature of activities in various systems.",
+                        "hideItemTitleOnlyOne": true
+                    },
+                    {
+                        "h": 3,
+                        "i": "1vduzkpmlh-df5400f0-47f8-11ee-98f3-e53ed2b50bbd",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "xdrriskyhosts",
+                                "height": 106,
+                                "id": "46b945c0-47f9-11ee-98f3-e53ed2b50bbd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Risky Hosts",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 3,
+                        "description": "Displays hosts that are involved in the incident, and were deemed as risky by XDR's Identity Threat module, due to risky activities performed from or on them.",
+                        "displayType": "ROW",
+                        "hideName": false
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
                         {
-                            "id": 2,
                             "ignoreCase": false,
                             "left": {
                                 "isContext": true,
@@ -913,187 +1003,7 @@
                             "right": {
                                 "isContext": false,
                                 "value": {
-                                    "simple": "Suspicious usage of EC2 token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 3,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Remote usage of an AWS service token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 4,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Remote usage of an AWS EKS token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 5,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Suspicious usage of an AWS EKS token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 6,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Suspicious usage of an AWS ECS token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 7,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Remote usage of an AWS ECS token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 8,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Suspicious usage of AWS service token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 9,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Remote usage of an App engine Service Account token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 10,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Suspicious usage of App engine Service Account token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 11,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Remote usage of VM Service Account token"
-                                }
-                            },
-                            "type": "multiSelect"
-                        },
-                        {
-                            "id": 12,
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsString",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Suspicious usage of VM Service Account token"
+                                    "simple": "token"
                                 }
                             },
                             "type": "multiSelect"
@@ -1111,15 +1021,15 @@
                         "i": "1vduzkpmlh-ohwq8lhsex-caseinfoid-be53e110-3992-11ed-9adb-83e728f46893",
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "hostip",
                                 "height": 22,
                                 "id": "aeeee620-ffbc-11ed-91cb-b704c053731a",
                                 "index": 0,
-                                "listId": "caseinfoid-be53e110-3992-11ed-9adb-83e728f46893",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "caseinfoid-be53e110-3992-11ed-9adb-83e728f46893"
                             },
                             {
                                 "endCol": 2,
@@ -1184,13 +1094,13 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Malicious or Suspicious Indicators",
-                        "query": "reputation:Benign OR reputation:Suspicious OR reputation:Malicious",
-                        "queryType": "input",
                         "static": false,
-                        "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 2
+                        "y": 2,
+                        "query": "reputation:Benign OR reputation:Suspicious OR reputation:Malicious",
+                        "queryType": "input",
+                        "type": "indicators"
                     },
                     {
                         "h": 2,
@@ -1200,6 +1110,10 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Hunting Results",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 5,
                         "query": {
                             "categories": [
                                 "tags"
@@ -1210,14 +1124,9 @@
                             ]
                         },
                         "queryType": "warRoomFilter",
-                        "static": false,
-                        "type": "invTimeline",
-                        "w": 1,
-                        "x": 2,
-                        "y": 5
+                        "type": "invTimeline"
                     },
                     {
-                        "description": "The indicators extracted from the threat hunting results.",
                         "h": 3,
                         "i": "1vduzkpmlh-ohwq8lhsex-caseinfoid-494706a0-063c-11ee-b283-eb5063f641e1",
                         "items": [],
@@ -1225,13 +1134,14 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Cloud Indicators",
-                        "query": "99900222-7570-4e56-8fa6-1206e76be060",
-                        "queryType": "script",
                         "static": false,
-                        "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 2
+                        "y": 2,
+                        "description": "The indicators extracted from the threat hunting results.",
+                        "query": "99900222-7570-4e56-8fa6-1206e76be060",
+                        "queryType": "script",
+                        "type": "dynamic"
                     },
                     {
                         "displayType": "ROW",
@@ -1460,7 +1370,6 @@
                 "name": "First SSO access",
                 "sections": [
                     {
-                        "description": "",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
@@ -1519,7 +1428,8 @@
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 0
+                        "y": 0,
+                        "description": ""
                     },
                     {
                         "displayType": "ROW",
@@ -1618,26 +1528,26 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "asnname",
                                 "height": 22,
                                 "id": "c1d02320-8b6e-11ed-8f68-b3bf4a3a1ddf",
                                 "index": 2,
-                                "listId": "1vduzkpmlh-76c7cac0-8b6b-11ed-8534-dd7eadd1d5dd",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "1vduzkpmlh-76c7cac0-8b6b-11ed-8534-dd7eadd1d5dd"
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "countrycode",
                                 "height": 22,
                                 "id": "26601020-90ba-11ed-8ab6-ab0516dbb87b",
                                 "index": 3,
-                                "listId": "1vduzkpmlh-76c7cac0-8b6b-11ed-8534-dd7eadd1d5dd",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "1vduzkpmlh-76c7cac0-8b6b-11ed-8534-dd7eadd1d5dd"
                             },
                             {
                                 "endCol": 2,
@@ -1683,15 +1593,15 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "containmentsla",
                                 "height": 22,
                                 "id": "82526ee0-902a-11ed-bbb4-fbf235dd1775",
                                 "index": 0,
-                                "listId": "1vduzkpmlh-001975e0-8b70-11ed-9514-c56dac00c61e",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "1vduzkpmlh-001975e0-8b70-11ed-9514-c56dac00c61e"
                             },
                             {
                                 "dropEffect": "move",
@@ -1803,27 +1713,6 @@
                 "type": "custom"
             },
             {
-                "filters": [
-                    [
-                        {
-                            "ignoreCase": false,
-                            "left": {
-                                "isContext": true,
-                                "value": {
-                                    "simple": "xdralertname"
-                                }
-                            },
-                            "operator": "containsGeneral",
-                            "right": {
-                                "isContext": false,
-                                "value": {
-                                    "simple": "Possible external RDP Brute-Force"
-                                }
-                            },
-                            "type": "multiSelect"
-                        }
-                    ]
-                ],
                 "hidden": false,
                 "id": "ilvvquvjmw",
                 "name": "RDP Brute Force",
@@ -2156,12 +2045,34 @@
                         "y": 0
                     }
                 ],
-                "type": "custom"
+                "type": "custom",
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "xdralertname"
+                                }
+                            },
+                            "operator": "containsGeneral",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "Possible external RDP Brute-Force"
+                                }
+                            },
+                            "type": "multiSelect"
+                        }
+                    ]
+                ]
             },
             {
-                "hidden": false,
                 "id": "lthdv5gwt9",
                 "name": "Similar Incidents",
+                "type": "custom",
+                "hidden": false,
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -2192,8 +2103,7 @@
                         "x": 0,
                         "y": 0
                     }
-                ],
-                "type": "custom"
+                ]
             },
             {
                 "id": "warRoom",
@@ -2225,7 +2135,7 @@
     "group": "incident",
     "id": "Cortex XDR Incident",
     "name": "Cortex XDR Incident",
-    "system": true,
+    "system": false,
     "version": -1,
     "fromVersion": "6.8.0",
     "description": ""

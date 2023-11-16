@@ -1,4 +1,4 @@
-Default playbook for parsing Prisma Cloud Compute audit alerts.
+Default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
 
 ## Dependencies
 
@@ -14,27 +14,27 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* ToTable
-* CreatePrismaCloudComputeLink
 * PrismaCloudComputeParseAuditAlert
+* ToTable
 
 ### Commands
 
 * prisma-cloud-compute-logs-defender
-* prisma-cloud-compute-get-settings-defender
-* findIndicators
+* prisma-cloud-compute-images-scan-list
+* prisma-cloud-compute-get-waas-policies
 * prisma-cloud-compute-profile-container-list
 * setIncident
-* prisma-cloud-compute-get-audit-firewall-container-alerts
-* prisma-cloud-compute-logs-defender-download
-* prisma-cloud-compute-get-waas-policies
-* closeInvestigation
-* prisma-cloud-compute-get-backups
-* prisma-cloud-compute-get-alert-profiles
-* prisma-cloud-compute-images-scan-list
-* createNewIndicator
 * prisma-cloud-compute-profile-container-forensic-list
+* findIndicators
+* createNewIndicator
+* prisma-cloud-compute-logs-defender-download
+* prisma-cloud-compute-host-forensic-list
+* prisma-cloud-compute-get-backups
 * prisma-cloud-compute-profile-host-list
+* prisma-cloud-compute-get-audit-firewall-container-alerts
+* prisma-cloud-compute-defenders-list
+* closeInvestigation
+* prisma-cloud-compute-get-alert-profiles
 
 ## Playbook Inputs
 
@@ -42,7 +42,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| baseUrl | The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image. |  | Optional |
+| baseUrl | The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image. | https://app.prismacloud.io | Optional |
+| Project | A specific project name to get alert profiles for | PrismaCloudCompute.AlertProfiles.ServiceNow.Project | Optional |
 
 ## Playbook Outputs
 

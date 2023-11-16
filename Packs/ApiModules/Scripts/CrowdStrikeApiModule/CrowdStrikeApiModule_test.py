@@ -1,6 +1,6 @@
 from CrowdStrikeApiModule import CrowdStrikeClient
-from TestsInput.http_responses import MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE
-from TestsInput.context import MULTIPLE_ERRORS_RESULT
+from test_data.http_responses import MULTI_ERRORS_HTTP_RESPONSE, NO_ERRORS_HTTP_RESPONSE
+from test_data.context import MULTIPLE_ERRORS_RESULT
 import pytest
 import demistomock as demisto
 from datetime import datetime

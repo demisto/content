@@ -29,28 +29,28 @@ SECURITY_EVENTS_LIST_RESULT = {
 }
 
 SECURITY_EVENTS_LIST_OUTPUT = {'security_risk': [
-        {
-            "event": "security_risk_scan",
+    {
+        "event": "security_risk_scan",
+        "log_item_id": "a9e2990a-8d7c-45e9-84a8-84b59087b2dd",
+        "message": {
+            "action": "Quarantine",
+            "action_result": "success",
+            "affected_user": "",
+            "detected_by": "",
+            "detection_time": "2020-07-19T22:51:30.000Z",
+            "file_name": "20200325_100518.jpg",
+            "file_upload_time": "2020-07-19T10:51:12.000Z",
+            "location": "",
             "log_item_id": "a9e2990a-8d7c-45e9-84a8-84b59087b2dd",
-            "message": {
-                "action": "Quarantine",
-                "action_result": "success",
-                "affected_user": "",
-                "detected_by": "",
-                "detection_time": "2020-07-19T22:51:30.000Z",
-                "file_name": "20200325_100518.jpg",
-                "file_upload_time": "2020-07-19T10:51:12.000Z",
-                "location": "",
-                "log_item_id": "a9e2990a-8d7c-45e9-84a8-84b59087b2dd",
-                "risk_level": "",
-                "scan_type": "Real-time scan",
-                "security_risk_name": "20200325_100518.jpg",
-                "triggered_policy_name": "Default OneDrive Policy ATP",
-                "triggered_security_filter": "File Blocking"
-            },
-            "service": "OneDrive"
-        }
-    ]
+            "risk_level": "",
+            "scan_type": "Real-time scan",
+            "security_risk_name": "20200325_100518.jpg",
+            "triggered_policy_name": "Default OneDrive Policy ATP",
+            "triggered_security_filter": "File Blocking"
+        },
+        "service": "OneDrive"
+    }
+]
 }
 
 EMAIL_SWEEP_RESULT = {

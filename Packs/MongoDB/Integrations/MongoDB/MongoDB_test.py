@@ -266,6 +266,7 @@ class MockResponse:
     """Mock response for TestUpdateQueryCommands and TestBulkUpdateQueryCommands classes.
     represents a partial SDK response of the update_entry and bulk_update_entries functions.
     """
+
     def __init__(self, acknowledged, modified_count, upserted_count, upserted_id=False):
         self.acknowledged = acknowledged
         self.modified_count = modified_count

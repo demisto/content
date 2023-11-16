@@ -72,6 +72,7 @@
     "isReadOnly": false,
     "locked": false,
     "name": "ASM - Dev Check Details",
+    "description": "A field to determine whether the asset is most likely used for solely development/non-production purposes, including uses like testing, staging, QA, sandbox, and user acceptance testing. Why reasons and confidence.",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

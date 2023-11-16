@@ -171,7 +171,7 @@ script:
       name: limit
     - description: The index of the first indicator to fetch.
       name: offset
-    - description: The minimum timestamp to fetch indicators by
+    - description: The minimum timestamp to fetch indicators by.
       name: last_run
     description: Gets indicators from the CrowdStrike Falcon Intel Feed.
     name: crowdstrike-indicators-list
@@ -229,7 +229,7 @@ script:
       type: Unknown
   - description: 'Resets the retrieving start time according to the `First Fetch Time` parameter, WARNING: This command will reset your fetch history.'
     name: crowdstrike-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.74666
   feed: true
   runonce: false
   script: '-'

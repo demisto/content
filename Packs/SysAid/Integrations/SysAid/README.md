@@ -19553,6 +19553,65 @@ There is no context output for this command.
 
 >File uploaded to Service Record 25 successfully.
 
+### sysaid-service-record-get-file
+
+***
+Download an attachment to a service record.
+
+#### Base Command
+
+`sysaid-service-record-get-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The service record ID. | Required | 
+| file_id | The ID of the file to download. | Required | 
+| file_name | The full name with extension of the file to be downloaded. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Integer | The size of the file. | 
+| File.SHA1 | String | The SHA1 of the file. | 
+| File.SHA256 | String | The SHA256 of the file. | 
+| File.SHA512 | String | The SHA512 of the file. |
+| File.Name | String | The full name with extension of the file. | 
+| File.SSDeep | String | The SSDeep of the file. | 
+| File.EntryID | String | The entryId of the file. | 
+| File.Info | String | The info of the file. | 
+| File.Type | String | The type of the file. | 
+| File.MD5 | String | The MD5 of the file. | 
+| File.Extension | String | The extension of the file. | 
+
+#### Command example
+```!sysaid-service-record-get-file file_id="-80357423_-1872498142" id=37 file_name="file_name.png"```
+
+#### Context Example
+```json
+{
+    "File": {
+        "Size": 12345,
+            "SHA1": "6d9ea21dcb062e9ba8cd20f7a9982726efc7a3a9",
+            "SHA256": "44acf94aacf694950485c6fb0ff36f9aa72273479780abf591e052ba4d31e6ae",
+            "SHA512": "36a0ea76413cf38f6de997c3e1d5229ee242458b024a6869f69054bdcbd61bcf572ba430e2b69d24ee8b7d3a5b94ae20fdc6fdafdf607407ac24bd9b6a88dc71",
+            "Name": "file_name.png",
+            "SSDeep": "1536:qCv/2+0gCPs0hzlUXOMvVAN50PjPS4ScOcy/Va/QgGZcm4p4/iuI:1/Vus0hzlqOMpj6Xcy/Va/Cgp4C",
+            "EntryID": "112@6840e1fb-a9e6-4a66-8454-cdeaf5b98639",
+            "Info": "image/png",
+            "Type": "PNG image data, 2560 x 1773, 8-bit/color RGBA, non-interlaced",
+            "MD5": "e0cca2f09d13bc2c7729b7caacbe2b6f",
+            "Extension": "png",
+    }
+}
+```
+
+#### Human Readable Output
+
+There is no human readable output for this command.
+
 ### sysaid-service-record-delete-file
 
 ***

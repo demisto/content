@@ -13,6 +13,21 @@ configuration:
   hiddenusername: true
   display: ""
   required: false
+- display: Use IDS flag
+  name: check_to_ids
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: This is to enable checking the boolean flag to_ids. The flag
+    allows you to indicate if an attribute should be actionable or not.
+- display: ORG names to use for reputation checks
+  name: allowed_orgs
+  type: 12
+  required: false
+  additionalinfo: Comma-separated list of allowed TI providers (orgc in MISP events). 
+    When pulling data from MISP you may have data coming from a reliable source.
+    However, some of the orgs are including things like 8.8.8.8 in their feeds.
+    This parameter is used to filter such orgs out by specifying the exact list of orgs to trust.
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -944,7 +959,7 @@ script:
       name: category
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to create the event''s attribute with the Intrusion Detection System flag. Possible values: "true" and "false".'
+      description: 'Whether to create the event''s attribute with the Intrusion Detection System flag. Possible values are: true, false.'
       name: to_ids
       predefined:
       - 'true'
@@ -1114,7 +1129,7 @@ script:
       name: category
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to create the attribute with the Intrusion Detection System flag. Possible values: "true" and "false".'
+      description: 'Whether to create the attribute with the Intrusion Detection System flag. Possible values are: true, false.'
       name: to_ids
       predefined:
       - 'true'
@@ -2221,7 +2236,7 @@ script:
     - description: Return attributes with the given UUID. Alternatively, return all the attributes that are part of the given UUID's event. For example, 59523300-4be8-4fa6-8867-0037ac110002.
       name: uuid
     - auto: PREDEFINED
-      description: 'Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes without with and with out to_ids flag. Possible values: "true" and "false".'
+      description: 'Whether to return only the attributes set with the "to_ids" flag. The default is to return all attributes without with and with out to_ids flag. Possible values are: true, false.'
       name: to_ids
       predefined:
       - 'true'
@@ -2229,7 +2244,7 @@ script:
     - description: Search attributes of events published within the last "x" amount of time. Valid time values are days, hours, and minutes. For example, "5d", "12h", "30m". This filter uses the published timestamp of the event.
       name: last
     - auto: PREDEFINED
-      description: 'Whether to return the decay score at the attribute level. Possible values: "true" and "false".'
+      description: 'Whether to return the decay score at the attribute level. Possible values are: true, false.'
       name: include_decay_score
       predefined:
       - 'true'
@@ -2247,17 +2262,23 @@ script:
       isArray: true
       name: event_id
     - auto: PREDEFINED
-      description: 'Whether to include the the sightings of the matching attributes. Default is false. Possible values: "true" and "false".'
+      description: 'Whether to include the the sightings of the matching attributes. Default is false. Possible values are: true, false.'
       name: include_sightings
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 'Whether to include the full correlations of the matching attributes. Possible values: "true" and "false". Default is false.'
+      description: 'Whether to include the full correlations of the matching attributes. Possible values are: true, false. Default is false.'
       name: include_correlations
       predefined:
       - 'true'
       - 'false'
+    - auto: PREDEFINED
+      description: 'Whether to include the file data of the matching attributes. Possible values are: true, false. Default is false.'
+      name: with_attachments
+      predefined:
+        - 'true'
+        - 'false'
     - description: If a limit is set, sets the page to be returned. For example, page 3, limit 100 will return records 201->300. Default is 1.
       defaultValue: '1'
       name: page
@@ -2265,13 +2286,13 @@ script:
       name: limit
       defaultValue: '50'
     - auto: PREDEFINED
-      description: 'Whether to return only the values that are not on the warninglists. Possible values: "true" and "false".'
+      description: 'Whether to return only the values that are not on the warninglists. Possible values are: true, false.'
       name: enforceWarninglist
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: 'Whether to return only the attribute''s values that match the search query. In case you want to get the full attributes data, set this argument to false. Possible values: "true" and "false".'
+      description: 'Whether to return only the attribute''s values that match the search query. In case you want to get the full attributes data, set this argument to false. Possible values are: true, false.'
       defaultValue: 'false'
       name: compact
       predefined:
@@ -2594,7 +2615,7 @@ script:
     - contextPath: MISP.Role.role_name
       description: MISP role name.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.73694
+  dockerimage: demisto/pymisp2:1.0.0.78350
   runonce: false
   script: ''
   subtype: python3

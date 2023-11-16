@@ -1,0 +1,501 @@
+id: Cortex XDR - Display Risky Assets
+version: -1
+name: Cortex XDR - Display Risky Assets
+description: This playbooks displays risky users and risky hosts, as detected by Cortex XDR's ITDR module. The data is displayed in incident fields in Cortex XDR incidents.
+tags:
+- XDR
+- ITDR
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 09cbd4f8-89a1-4060-8b4a-136eaedd8275
+    type: start
+    task:
+      id: 09cbd4f8-89a1-4060-8b4a-136eaedd8275
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1f26dc0c-e4fd-415a-8276-d017ff8343fe
+    type: condition
+    task:
+      id: 1f26dc0c-e4fd-415a-8276-d017ff8343fe
+      version: -1
+      name: Is a risky user involved in the incident?
+      description: Checks whether any of the enriched users has a risk score associated to it in Cortex XDR.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyUsers
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 68225a40-3e20-442e-89bf-6ef26208959f
+    type: regular
+    task:
+      id: 68225a40-3e20-442e-89bf-6ef26208959f
+      version: -1
+      name: Save risky users
+      description: Saves the risky users in a new context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: UsersWithScore
+      value:
+        complex:
+          root: inputs.XDRRiskyUsers
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 53782dc4-4be5-4bca-8d50-96499963c120
+    type: title
+    task:
+      id: 53782dc4-4be5-4bca-8d50-96499963c120
+      version: -1
+      name: Risky User Layout Display
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 49afff7a-8120-4823-8462-df45527174c9
+    type: regular
+    task:
+      id: 49afff7a-8120-4823-8462-df45527174c9
+      version: -1
+      name: Display risky users table
+      description: Displays the risky users in a grid field in the layout.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      columns:
+        simple: userid,risklevel,reasons
+      context_path:
+        simple: UsersWithScore
+      grid_id:
+        simple: xdrriskyusers
+      keys:
+        simple: id,risk_level,reasons
+      overwrite:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 213305e7-a1ff-4171-8a33-3c618cc43d84
+    type: regular
+    task:
+      id: 213305e7-a1ff-4171-8a33-3c618cc43d84
+      version: -1
+      name: Display number of risky users
+      description: Saves the number of risky users in a field in the layout.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      xdrriskyusercount:
+        complex:
+          root: UsersWithScore
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 15a20427-aac6-42bf-8c14-cfa3514669b3
+    type: condition
+    task:
+      id: 15a20427-aac6-42bf-8c14-cfa3514669b3
+      version: -1
+      name: Is a risky host involved in the incident?
+      description: Checks whether any of the enriched hosts has a risk score associated to it in Cortex XDR.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.XDRRiskyHosts
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 98bc3a26-e013-4b79-8a7d-0ef0449b5309
+    type: regular
+    task:
+      id: 98bc3a26-e013-4b79-8a7d-0ef0449b5309
+      version: -1
+      name: Save risky hosts
+      description: Saves the risky hosts in a new context key.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: HostsWithScore
+      value:
+        complex:
+          root: inputs.XDRRiskyHosts
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: c2e6aa8c-1fa9-4cb8-89c3-276eb1f0d6fe
+    type: title
+    task:
+      id: c2e6aa8c-1fa9-4cb8-89c3-276eb1f0d6fe
+      version: -1
+      name: Risky Host Layout Display
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: afb63dab-0dd3-4946-87b2-b3f574b9cb0c
+    type: regular
+    task:
+      id: afb63dab-0dd3-4946-87b2-b3f574b9cb0c
+      version: -1
+      name: Display risky hosts table
+      description: Displays the risky hosts in a grid field in the layout.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      columns:
+        simple: hostid,risklevel,reasons
+      context_path:
+        simple: HostsWithScore
+      grid_id:
+        simple: xdrriskyhosts
+      keys:
+        simple: id,risk_level,reasons
+      overwrite:
+        simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6e454176-d1af-4573-88cd-84f608a898ca
+    type: regular
+    task:
+      id: 6e454176-d1af-4573-88cd-84f608a898ca
+      version: -1
+      name: Display number of risky hosts
+      description: Saves the number of risky hosts in a field in the layout.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      xdrriskyhostcount:
+        complex:
+          root: HostsWithScore
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8e0e9d85-65ce-4f6f-84d2-244c0ce78077
+    type: title
+    task:
+      id: 8e0e9d85-65ce-4f6f-84d2-244c0ce78077
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_12_#default#": 0.21,
+      "7_12_#default#": 0.23
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 1630,
+        "x": -170,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: XDRRiskyUsers
+  value:
+    complex:
+      root: PaloAltoNetworksXDR
+      accessor: RiskyUser
+      transformers:
+      - operator: uniq
+  required: false
+  description: A list of risky usernames, their scores, risk levels, and the reasons for the risk, as outputted from the "xdr-list-risky-users" command.
+  playbookInputQuery:
+- key: XDRRiskyHosts
+  value:
+    complex:
+      root: PaloAltoNetworksXDR
+      accessor: RiskyHost
+      transformers:
+      - operator: uniq
+  required: false
+  description: A list of risky hosts, their scores, risk levels, and the reasons for the risk, as outputted from the "xdr-list-risky-hosts" command.
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

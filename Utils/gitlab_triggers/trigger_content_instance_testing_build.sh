@@ -6,7 +6,7 @@
 # This script takes the gitlab-ci trigger token as first parameter and the branch name as an optional second parameter (the default is the current branch).
 
 # Ways to run this script are:
-# trigger_content_nightly_build.sh <trigger-token> [<branch-name>]
+# trigger_content_instance_testing_build.sh <trigger-token> [<branch-name>]
 if [[ "$#" -lt 1 ]]; then
   echo "Usage: $0 <trigger-token> <branch-name>[current-branch as default]"
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection

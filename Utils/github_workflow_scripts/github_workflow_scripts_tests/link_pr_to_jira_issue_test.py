@@ -22,12 +22,12 @@ relates:https://jira-hq.paloaltonetworks.local/browse/CIAC-3472"""
 
 PR_WITH_BOTH_BY_NEWLINE = """This pr is dummy
 fixes: https://jira-hq.paloaltonetworks.local/browse/CIAC-3473
-relates: https://jira-hq.paloaltonetworks.local/browse/CIAC-3475
+relates: https://jira-dc.paloaltonetworks.com/browse/CIAC-3475
 
 something else to say"""
 PR_WITH_MULTIPLE_FIXES_BY_NEWLINE = """This pr is dummy
 fixes:https://jira-hq.paloaltonetworks.local/browse/CIAC-3473
-fixes: https://jira-hq.paloaltonetworks.local/browse/CIAC-3475
+fixes: https://jira-dc.paloaltonetworks.com/browse/CIAC-3475
 
 something else to say"""
 
@@ -84,7 +84,7 @@ TRIGGER_TEST_CASE = [
         False,
         [  # case multiple links only related:
             {'action': 'fixes', 'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'},
-            {'action': 'relates', 'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3475', 'id': 'CIAC-3475'}
+            {'action': 'relates', 'link': 'https://jira-dc.paloaltonetworks.com/browse/CIAC-3475', 'id': 'CIAC-3475'}
         ]
     )
 ]

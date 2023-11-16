@@ -701,7 +701,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 4150
+          "y": 4220
         }
       }
     note: false
@@ -766,7 +766,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "24"
     scriptarguments:
       key:
         simple: UserRequestedExemption
@@ -1037,6 +1037,54 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: c3f1bf18-e289-465a-8a15-0b27d8f41fb3
+    type: regular
+    task:
+      id: c3f1bf18-e289-465a-8a15-0b27d8f41fb3
+      version: -1
+      name: Set feedback status to "Exception Requested"
+      description: Set feedback status to "Pending".
+      script: '|||pan-dlp-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      feedback:
+        simple: EXCEPTION_REQUESTED
+      incident_id:
+        complex:
+          root: incident
+          accessor: pandlpincidentid
+      region:
+        complex:
+          root: incident
+          accessor: pandlpincidentregion
+      user_id:
+        complex:
+          root: incident
+          accessor: sourceusername
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 4050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -1048,7 +1096,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3465,
+        "height": 3535,
         "width": 1620,
         "x": 670,
         "y": 750

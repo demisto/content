@@ -12,13 +12,13 @@ from AnomaliThreatStreamv3 import main, get_indicators, \
     create_investigation_command, update_investigation_command, delete_investigation_command, add_investigation_element_command, \
     approve_import_job_command, search_threat_model_command, create_element_list, \
     add_threat_model_association_command, validate_values_search_threat_model, validate_investigation_action, \
-    return_params_of_pagination_or_limit, create_indicators_list
+    return_params_of_pagination_or_limit, create_indicators_list, add_indicator_tag_command, remove_indicator_tag_command
 from CommonServerPython import *
 import pytest
 
 
 def util_load_json(path):
-    with open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -43,7 +43,8 @@ def mock_client():
         proxy=False,
         should_create_relationships=True,
         verify=False,
-        reliability='B - Usually reliable'
+        reliability='B - Usually reliable',
+        remote_api=False,
     )
 
 
@@ -225,7 +226,9 @@ class TestReputationCommands:
                         proxy=False,
                         should_create_relationships=should_create_relationships,
                         verify=False,
-                        reliability='B - Usually reliable')
+                        reliability='B - Usually reliable',
+                        remote_api=False,
+                        )
 
         # run
         intelligence_relationships, _ = get_intelligence(client, INDICATOR[0], FeedIndicatorType.URL)
@@ -259,7 +262,7 @@ class TestReputationCommands:
 
         # prepare
 
-        test_indicator = dict(confidence=confidence, value='test_ioc', asn='', meta=dict(registrant_name='test'))
+        test_indicator = {'confidence': confidence, 'value': 'test_ioc', 'asn': '', 'meta': {'registrant_name': 'test'}}
         mocker.patch.object(demisto, 'results')
         mocker.patch('AnomaliThreatStreamv3.search_worst_indicator_by_params', return_value=test_indicator)
 
@@ -301,13 +304,13 @@ class TestReputationCommands:
 
         # prepare
 
-        test_indicator = dict(confidence=55,
-                              value='test_ioc',
-                              asn='test_asn',
-                              org='test_org',
-                              tlp='test_tlp',
-                              country='test_country',
-                              meta=dict(registrant_name='test', maltype='test_maltype'))
+        test_indicator = {'confidence': 55,
+                          'value': 'test_ioc',
+                          'asn': 'test_asn',
+                          'org': 'test_org',
+                          'tlp': 'test_tlp',
+                          'country': 'test_country',
+                          'meta': {'registrant_name': 'test', 'maltype': 'test_maltype'}}
         mocker.patch.object(demisto, 'results')
         mocker.patch('AnomaliThreatStreamv3.search_worst_indicator_by_params', return_value=test_indicator)
 
@@ -354,7 +357,7 @@ class TestReputationCommands:
             main()
 
         # validate
-        mocked_search.call_args[0][1]['status'] == exp_status_param
+        assert mocked_search.call_args[0][1]['status'] == exp_status_param
 
     def test_no_confidence_in_result_ioc(self, mocker):
         """
@@ -369,7 +372,7 @@ class TestReputationCommands:
         """
 
         # prepare
-        test_indicator = dict(value='test_ioc', asn='', meta=dict(registrant_name='test'))
+        test_indicator = {'value': 'test_ioc', 'asn': '', 'meta': {'registrant_name': 'test'}}
         mocker.patch.object(demisto, 'results')
         mocker.patch('AnomaliThreatStreamv3.search_worst_indicator_by_params', return_value=test_indicator)
 
@@ -606,27 +609,27 @@ class TestGetCommands:
         return {}
 
     commands_with_expected_context_key = [
-        ('threatstream-get-analysis-status', dict(report_id=1), ['ReportID', 'Status', 'Platform', 'Verdict']),
-        ('threatstream-get-passive-dns', dict(value='test'), ['Domain', 'Rrtype', 'Source', 'FirstSeen']),
-        ('threatstream-get-model-list', dict(model='Actor'), ['Name', 'ID', 'CreatedTime', 'Type']),
-        ('threatstream-get-model-description', dict(model='Actor', id='test'), ['File', 'FileID']),
-        ('threatstream-get-indicators-by-model', dict(model='Actor', id=1), ['ModelType', 'ModelID', 'Indicators']),
+        ('threatstream-get-analysis-status', {'report_id': 1}, ['ReportID', 'Status', 'Platform', 'Verdict']),
+        ('threatstream-get-passive-dns', {'value': 'test'}, ['Domain', 'Rrtype', 'Source', 'FirstSeen']),
+        ('threatstream-get-model-list', {'model': 'Actor'}, ['Name', 'ID', 'CreatedTime', 'Type']),
+        ('threatstream-get-model-description', {'model': 'Actor', 'id': 'test'}, ['File', 'FileID']),
+        ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1}, ['ModelType', 'ModelID', 'Indicators']),
         ('threatstream-get-indicators', {}, INDICATOR_EXTENDED_MAPPING.keys()),
         ('threatstream-supported-platforms', {}, ['Platform', 'Name', 'Types', 'Label']),
-        ('threatstream-analysis-report', dict(report_id=1), ['Category', 'Started', 'ReportID', 'Verdict', 'Network'])
+        ('threatstream-analysis-report', {'report_id': 1}, ['Category', 'Started', 'ReportID', 'Verdict', 'Network'])
     ]
 
     commands_with_expected_output = [
-        ('threatstream-get-analysis-status', dict(report_id=1), 'No report found with id 1'),
-        ('threatstream-get-passive-dns', dict(value='test_val'), 'No Passive DNS enrichment data found for test_val'),
-        ('threatstream-get-model-list', dict(model='Actor'), 'No Threat Model Actor found.'),
-        ('threatstream-get-model-description', dict(model='Actor', id=1),
+        ('threatstream-get-analysis-status', {'report_id': 1}, 'No report found with id 1'),
+        ('threatstream-get-passive-dns', {'value': 'test_val'}, 'No Passive DNS enrichment data found for test_val'),
+        ('threatstream-get-model-list', {'model': 'Actor'}, 'No Threat Model Actor found.'),
+        ('threatstream-get-model-description', {'model': 'Actor', 'id': 1},
          'No description found for Threat Model Actor with id 1'),
-        ('threatstream-get-indicators-by-model', dict(model='Actor', id=1),
+        ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1},
          'No indicators found for Threat Model Actor with id 1'),
         ('threatstream-get-indicators', {}, 'No indicators found from ThreatStream'),
         ('threatstream-supported-platforms', {}, 'No supported platforms found for default sandbox'),
-        ('threatstream-analysis-report', dict(report_id=1), 'No report found with id 1')
+        ('threatstream-analysis-report', {'report_id': 1}, 'No report found with id 1')
     ]
 
     @pytest.mark.parametrize(
@@ -662,7 +665,7 @@ class TestGetCommands:
         context = result['EntryContext'].popitem()[1] if 'EntryContext' in result else result
         if isinstance(context, list):
             context = context[0]
-        assert all(key in context.keys() for key in expected_context_keys)
+        assert all(key in context for key in expected_context_keys)
 
     @pytest.mark.parametrize(
         argnames='command, command_args, expected_output',
@@ -695,36 +698,38 @@ class TestGetCommands:
     @pytest.mark.parametrize(
         argnames='command, command_args, expected_http_params',
         argvalues=[
-            ('threatstream-get-model-list', dict(model='Actor'),
-             dict(limit=50, skip_intelligence="true", skip_associations="true", order_by="-created_ts")),
-            ('threatstream-get-model-description', dict(model='Actor', id=1),
-             dict(skip_intelligence="true", skip_associations="true")),
-            ('threatstream-get-indicators-by-model', dict(model='Actor', id=1), dict(limit=20)),
-            ('threatstream-get-indicators-by-model', dict(model='Actor', id=1, page=2, page_size=2),
-             dict(limit=2, offset=2)),
-            ('threatstream-get-indicators', {}, dict(limit=20, offset=0)),
-            ('threatstream-get-indicators', {'page': 2, 'page_size': 2}, dict(limit=2, offset=2)),
-            ('threatstream-list-user', {'page': 2, 'page_size': 3}, dict(limit=3, offset=3)),
-            ('threatstream-list-user', {}, dict(limit=50)),
-            ('threatstream-list-investigation', {'page': 3, 'page_size': 2}, dict(limit=2, offset=4, order_by='-created_ts')),
-            ('threatstream-list-investigation', {}, dict(limit=50, order_by='-created_ts')),
-            ('threatstream-list-rule', {'page': 2, 'page_size': 2}, dict(limit=2, offset=2, order_by='-created_ts')),
-            ('threatstream-list-rule', {}, dict(limit=50, order_by='-created_ts')),
-            ('threatstream-list-whitelist-entry', {'page': 2, 'page_size': 4}, dict(limit=4, offset=4, order_by='-created_ts',
-                                                                                    format='json', showNote='true')),
-            ('threatstream-list-whitelist-entry', {}, dict(limit=50, format='json', showNote='true', order_by='-created_ts')),
-            ('threatstream-list-import-job', {'page': 2, 'page_size': 4}, dict(limit=4, offset=4)),
-            ('threatstream-list-import-job', {}, dict(limit=50)),
+            ('threatstream-get-model-list', {'model': 'Actor'},
+             {'limit': 50, 'skip_intelligence': "true", 'skip_associations': "true", 'order_by': "-created_ts"}),
+            ('threatstream-get-model-description', {'model': 'Actor', 'id': 1},
+             {'skip_intelligence': "true", 'skip_associations': "true"}),
+            ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1}, {'limit': 20}),
+            ('threatstream-get-indicators-by-model', {'model': 'Actor', 'id': 1, 'page': 2, 'page_size': 2},
+             {'limit': 2, 'offset': 2}),
+            ('threatstream-get-indicators', {}, {'limit': 20, 'offset': 0}),
+            ('threatstream-get-indicators', {'page': 2, 'page_size': 2}, {'limit': 2, 'offset': 2}),
+            ('threatstream-list-user', {'page': 2, 'page_size': 3}, {'limit': 3, 'offset': 3}),
+            ('threatstream-list-user', {}, {'limit': 50}),
+            ('threatstream-list-investigation', {'page': 3, 'page_size': 2},
+             {'limit': 2, 'offset': 4, 'order_by': '-created_ts'}),
+            ('threatstream-list-investigation', {}, {'limit': 50, 'order_by': '-created_ts'}),
+            ('threatstream-list-rule', {'page': 2, 'page_size': 2}, {'limit': 2, 'offset': 2, 'order_by': '-created_ts'}),
+            ('threatstream-list-rule', {}, {'limit': 50, 'order_by': '-created_ts'}),
+            ('threatstream-list-whitelist-entry', {'page': 2, 'page_size': 4},
+             {'limit': 4, 'offset': 4, 'order_by': '-created_ts', 'format': 'json', 'showNote': 'true'}),
+            ('threatstream-list-whitelist-entry', {},
+             {'limit': 50, 'format': 'json', 'showNote': 'true', 'order_by': '-created_ts'}),
+            ('threatstream-list-import-job', {'page': 2, 'page_size': 4}, {'limit': 4, 'offset': 4}),
+            ('threatstream-list-import-job', {}, {'limit': 50}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Errors'},
-             dict(limit=4, offset=4, status='errors')),
+             {'limit': 4, 'offset': 4, 'status': 'errors'}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Approved'},
-             dict(limit=4, offset=4, status='approved')),
+             {'limit': 4, 'offset': 4, 'status': 'approved'}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Ready To Review'},
-             dict(limit=4, offset=4, status='done')),
+             {'limit': 4, 'offset': 4, 'status': 'done'}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Rejected'},
-             dict(limit=4, offset=4, status='deleted')),
+             {'limit': 4, 'offset': 4, 'status': 'deleted'}),
             ('threatstream-list-import-job', {'page': 2, 'page_size': 4, 'status_in': 'Processing'},
-             dict(limit=4, offset=4, status='processing')),
+             {'limit': 4, 'offset': 4, 'status': 'processing'}),
         ]
     )
     def test_expected_params_in_get_requests(self, mocker, command, command_args, expected_http_params):
@@ -753,9 +758,9 @@ class TestGetCommands:
     @pytest.mark.parametrize(
         argnames='model, description',
         argvalues=[
-            ('signature', dict(notes='test_description')),
-            ('tipreport', dict(body='test_description')),
-            ('actor', dict(description='test_description'))
+            ('signature', {'notes': 'test_description'}),
+            ('tipreport', {'body': 'test_description'}),
+            ('actor', {'description': 'test_description'})
         ])
     def test_get_model_description__various_models(self, mocker, model, description):
         """
@@ -779,7 +784,7 @@ class TestGetCommands:
         get_model_description(mock_client(), model, '1')
 
         # validate
-        mocked_result.call_args[0][1] == b'test_description'
+        assert mocked_result.call_args[0][1] == b'test_description'
 
 
 class TestUpdateCommands:
@@ -880,7 +885,7 @@ class TestUpdateCommands:
         """
 
         # prepare
-        mocked_report = dict(success=True, reports=dict(test_platform=dict(id='report_id')))
+        mocked_report = {'success': True, 'reports': {'test_platform': {'id': 'report_id'}}}
         mocker.patch.object(Client, 'http_request', return_value=mocked_report)
         mocker.patch('AnomaliThreatStreamv3.get_submission_status', return_value=('success', None))
 
@@ -914,7 +919,7 @@ class TestUpdateCommands:
         # prepare
         file_obj = util_tmp_json_file(MOCK_OBJECTS, 'test_file')
         mocker.patch.object(demisto, 'getFilePath', return_value=file_obj)
-        mocked_report = dict(success=True, reports=dict(test_platform=dict(id='report_id')))
+        mocked_report = {'success': True, 'reports': {'test_platform': {'id': 'report_id'}}}
         mocker.patch.object(Client, 'http_request', return_value=mocked_report)
         mocker.patch('AnomaliThreatStreamv3.get_submission_status', return_value=('success', None))
 
@@ -946,7 +951,7 @@ class TestUpdateCommands:
 
         # prepare
         mocker.patch.object(demisto, 'getFilePath', side_effect=lambda *args, **kwargs: open('wrong_path', 'rb'))
-        mocked_report = dict(success=True, reports=dict(test_platform=dict(id='report_id')))
+        mocked_report = {'success': True, 'reports': {'test_platform': {'id': 'report_id'}}}
         mocker.patch.object(Client, 'http_request', return_value=mocked_report)
         mocker.patch('AnomaliThreatStreamv3.get_submission_status', return_value=('success', None))
 
@@ -973,7 +978,7 @@ class TestUpdateCommands:
         """
 
         # prepare
-        mocker.patch.object(Client, 'http_request', return_value=dict(success=True))
+        mocker.patch.object(Client, 'http_request', return_value={'success': True})
 
         # run
         res = add_tag_to_model(mock_client(), model_id='test_actor_id', model='Actor', tags='tag_1,tag_2')
@@ -981,7 +986,7 @@ class TestUpdateCommands:
         # validate
         data = json.loads(Client.http_request.call_args[1]['data'])
 
-        assert data['tags'][1] == dict(name='tag_2', tlp='red')
+        assert data['tags'][1] == {'name': 'tag_2', 'tlp': 'red'}
         assert res == "Added successfully tags: ['tag_1', 'tag_2'] to Actor with test_actor_id"
 
     def test_add_tag_to_model__not_exist_model(self, mocker):
@@ -997,7 +1002,7 @@ class TestUpdateCommands:
         """
 
         # prepare
-        mocker.patch.object(Client, 'http_request', return_value=dict(success=False))
+        mocker.patch.object(Client, 'http_request', return_value={'success': False})
 
         # run & validate
         msg = "Failed to add \['tag_1'\] to Actor with test_actor_id"
@@ -1037,6 +1042,7 @@ class TestGetIndicators:
             proxy=False,
             reliability='B - Usually reliable',
             should_create_relationships=False,
+            remote_api=False,
         )
 
         results = get_indicators(client, limit='7000')
@@ -1070,6 +1076,7 @@ class TestGetIndicators:
             proxy=False,
             reliability='B - Usually reliable',
             should_create_relationships=False,
+            remote_api=False,
         )
 
         results = get_indicators(client, limit='7000')
@@ -1783,3 +1790,77 @@ def test_create_indicators_list(names_and_indicators_list, notes, expected_resul
     """
     result = create_indicators_list(names_and_indicators_list, notes)
     assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "args, expected_data, expected_output",
+    [
+        (
+            {"indicator_ids": "123,456", "tags": "tag1,tag2"},
+            json.dumps({
+                "ids": ["123", "456"],
+                "tags": [{"name": "tag1", "tlp": "red"}, {"name": "tag2", "tlp": "red"}],
+            }),
+            "The tags have been successfully added for the following ids:\n `123, 456`",
+        )
+    ],
+)
+def test_add_indicator_tag_success(
+    mocker, args: dict[str, str], expected_data: dict[str, str], expected_output: str
+):
+    """
+    Given:
+        - A list of indicator IDs and tags
+    When:
+        - `add_indicator_tag_command` is called with valid arguments
+    Then:
+        - A POST request should be made to add the tags
+          and it should return a successful CommandResults
+    """
+    # Arrange
+    client = mock_client()
+    mock_http_request = mocker.patch.object(client, "http_request", return_value={})
+
+    # Act
+    result = add_indicator_tag_command(client, **args)
+
+    # Assert
+    assert expected_output == result.readable_output
+    mock_http_request.assert_called_with(
+        method="POST", url_suffix="v2/intelligence/bulk_tagging/", data=expected_data
+    )
+
+
+@pytest.mark.parametrize(
+    "args, expected_output",
+    [
+        (
+            {"indicator_ids": "1,2", "tags": "tag1,tag2"},
+            "The tags were successfully deleted for the following ids:\n `1, 2`",
+        )
+    ],
+)
+def test_remove_indicator_tag_command_success(
+    mocker, args: dict[str, str], expected_output: str
+):
+    """
+    Given:
+        - A list of indicator IDs and tags
+    When:
+        - `remove_indicator_tag_command` is called with valid arguments
+    Then:
+        - A PATCH request should be made to remove the tags
+          and it should return a successful CommandResults
+    """
+    client = mock_client()
+    # Mock API response
+    mocker.patch.object(client, "remove_indicator_tag", json={})
+
+    # Call function
+    result = remove_indicator_tag_command(
+        client=client,
+        **args,
+    )
+
+    # Verify result
+    assert result.readable_output == expected_output

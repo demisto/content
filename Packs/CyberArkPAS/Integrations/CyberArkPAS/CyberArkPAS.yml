@@ -68,7 +68,7 @@ script:
       required: true
     - description: The user type according to the license.
       name: user_type
-    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP"
+    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., - "PSM", "PSMP".
       isArray: true
       name: non_authorized_interfaces
     - description: The location in the vault where the user will be created. Must begin with "\\".  If just "\\", the vault is in the root.
@@ -93,7 +93,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'A comma-separated list of user permissions. Valid values are: AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers'
+    - description: 'A comma-separated list of user permissions. Valid values are: AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers.'
       isArray: true
       name: vault_authorization
     - description: Notes and comments.
@@ -165,7 +165,7 @@ script:
       name: username
     - description: User type according to the license.
       name: user_type
-    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., "PSM", "PSMP"
+    - description: The CyberArkPAS interfaces that this user is not authorized to use, e.g., "PSM", "PSMP".
       isArray: true
       name: non_authorized_interfaces
     - description: The location in the vault where the user will be created. Must begin with "\\". If just "\\", the vault is in the root.
@@ -186,7 +186,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: 'A comma-separated list of user permissions. Valid values are: AddSafes, AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers'
+    - description: 'A comma-separated list of user permissions. Valid values are: AddSafes, AuditUsers, AddUpdateUsers, ResetUsersPasswords, ActivateUsers, AddNetworkAreas, ManageDirectoryMapping, ManageServerFileCategories, BackupAllSafes, RestoreAllSafes e.g., AddSafes,AuditUsers.'
       isArray: true
       name: vault_authorization
     - description: Notes and comments.
@@ -510,7 +510,7 @@ script:
     - description: |-
         The user’s permissions in the safe.
         Valid values: UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders
-        e.g., UseAccounts,RetrieveAccounts
+        e.g., UseAccounts,RetrieveAccounts.
       isArray: true
       name: permissions
     - description: The name of the safe to add a member to.
@@ -554,7 +554,7 @@ script:
         The user’s permissions in the safe.
         Valid values are:
         UseAccounts, RetrieveAccounts, ListAccounts, AddAccounts, UpdateAccountContent, UpdateAccountProperties, InitiateCPMAccountManagementOperations, InitiateCPMAccountManagementOperations, SpecifyNextAccountContent, RenameAccounts, DeleteAccounts, UnlockAccounts, ManageSafe, ManageSafeMembers, BackupSafe, ViewAuditLog, ViewAuditLog, ViewSafeMembers, RequestsAuthorizationLevel, AccessWithoutConfirmation, CreateFolders, DeleteFolders, MoveAccountsAndFolders
-        e.g., UseAccounts,RetrieveAccounts
+        e.g., UseAccounts,RetrieveAccounts.
       isArray: true
       name: permissions
     - description: The name of the safe to which the safe member belongs.
@@ -631,7 +631,7 @@ script:
       secret: true
     - description: |-
         Object containing key-value pairs to associate with the account, as defined by the account platform.
-        e.g., {"Location": "IT", "OwnerName": "MSSPAdmin"}
+        e.g., {"Location": "IT", "OwnerName": "MSSPAdmin"}.
       name: properties
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -745,12 +745,12 @@ script:
   - arguments:
     - description: |-
         List of keywords to search for in the accounts.
-        Separated with a space, e.g,. Windows admin
+        Separated with a space, e.g,. Windows admin.
       name: search
     - description: |-
         Property or properties by which to sort the returned accounts.
         The properties are followed by a comma and then 'asc' (default) or 'desc' to control the sort direction,
-        e.g., Windows,asc
+        e.g., Windows,asc.
       name: sort
     - defaultValue: '0'
       description: The offset of the first account that is returned in the collection of results. Default is '0'.
@@ -932,7 +932,7 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.77674
   isfetch: true
   runonce: false
   script: '-'

@@ -7,16 +7,16 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: 'Active TLS fingerprinting using JARM'
+description: 'Active TLS fingerprinting using JARM.'
 display: JARM
 name: JARM
 script:
   commands:
   - arguments:
-    - description: 'FQDN or IP address to fingerprint. Also supports [https://fqdn:port] format'
+    - description: 'FQDN or IP address to fingerprint. Also supports [https://fqdn:port] format.'
       name: host
       required: true
-    - description: 'Port to fingerprint. If provided overrides the port specified in the host parameter'
+    - description: 'Port to fingerprint. If provided overrides the port specified in the host parameter.'
       name: port
       defaultValue: 443
     description: 'Calculate JARM fingerprint by scanning host with multiple TLS packets.'
@@ -29,10 +29,10 @@ script:
       description: 'IP Address of the host.'
       type: String
     - contextPath: JARM.Port
-      description: 'TCP port'
+      description: 'TCP port.'
       type: Number
     - contextPath: JARM.Target
-      description: 'The host in the format [IP or FQDN]:Port'
+      description: 'The host in the format [IP or FQDN]:Port.'
       type: Number
     - contextPath: JARM.Fingerprint
       description: 'JARM fingerprint of the host.'
@@ -53,7 +53,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.72621
+  dockerimage: demisto/py3-tools:1.0.0.74403
 fromversion: 5.0.0
 tests:
 - JARM-Test

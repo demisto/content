@@ -13,24 +13,27 @@ The Umbrella Reporting v2 API provides visibility into your core network and sec
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | API URL | Cisco Umbrella Reporting API base URL. | True |
-    | Organization ID | Organization ID. | True |
-    | Client ID | Client ID. | True |
-    | Client Secret | Client Secret. | True |
+    | API Key | API Key | True |
+    | API Secret | API Secret | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### umbrella-reporting-destination-list
+
 ***
 List of destinations ordered by the number of requests made in descending order.
-
 
 #### Base Command
 
 `umbrella-reporting-destination-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,8 +53,7 @@ List of destinations ordered by the number of requests made in descending order.
 | identity_types | An identity type or comma-separated list of identity types. | Optional | 
 | verdict | A verdict string. Possible values are: allowed, blocked, proxied. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. Default is 50.| Optional | 
-
+| page_size | The number of requested results per page. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -202,13 +204,14 @@ List of destinations ordered by the number of requests made in descending order.
 
 
 ### umbrella-reporting-category-list
+
 ***
 List of categories ordered by the number of requests made matching the categories in descending order.
-
 
 #### Base Command
 
 `umbrella-reporting-category-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -216,7 +219,6 @@ List of categories ordered by the number of requests made matching the categorie
 | traffic_type | Specify the type of traffic. By default, all supported traffic types are included. Possible values are: dns, proxy, ip. | Optional | 
 | from | A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days. | Optional | 
 | to | A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'. | Optional | 
-| limit | The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored. | Optional | 
 | domains | A domain name or comma-separated list of domain names. | Optional | 
 | urls | A URL or comma-separated list of URLs. | Optional | 
 | ip | An IP address. | Optional | 
@@ -289,13 +291,14 @@ List of categories ordered by the number of requests made matching the categorie
 
 
 ### umbrella-reporting-identity-list
+
 ***
 List of identities ordered by the number of requests made matching the categories in descending order.
-
 
 #### Base Command
 
 `umbrella-reporting-identity-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -303,7 +306,6 @@ List of identities ordered by the number of requests made matching the categorie
 | traffic_type | Specify the type of traffic. By default, all supported traffic types are included. Possible values are: dns, proxy, firewall, ip. | Optional | 
 | from | A timestamp (milliseconds) or relative time string (for example:-1days' or '1639146300000'). Filter for data that appears after this time. Default is -7days. | Optional | 
 | to | A timestamp (milliseconds) or relative time string (for example:'now' or 1661510185000). Filter for data that appears before this time. Default is 'now'. | Optional | 
-| limit | The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored. | Optional | 
 | domains | A domain name or comma-separated list of domain names. | Optional | 
 | urls | A URL or comma-separated list of URLs. | Optional | 
 | ip | An IP address. | Optional | 
@@ -314,9 +316,9 @@ List of identities ordered by the number of requests made matching the categorie
 | threat_types | A threat type or comma-separated list of threat types. | Optional | 
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | identity_types | An identity type or comma-separated list of identity types. | Optional | 
+| limit | The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. Default is 50.| Optional | 
-
+| page_size | The number of requested results per page. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -397,13 +399,14 @@ List of identities ordered by the number of requests made matching the categorie
 
 
 ### umbrella-reporting-event-type-list
+
 ***
 List of event types ordered by the number of requests made for each type of event in descending order. The event types are: domain_security, domain_integration, url_security, url_integration, cisco_amp and antivirus.
-
 
 #### Base Command
 
 `umbrella-reporting-event-type-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -419,15 +422,14 @@ List of event types ordered by the number of requests made for each type of even
 | threat_types | A threat type or comma-separated list of threat types. | Optional | 
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. Default is 50.| Optional | 
-
+| page_size | The number of requested results per page. Default is 50. | Optional | 
 
 #### Context Output
 
-| **Path**                              | **Type** | **Description** |
-|---------------------------------------| --- | --- |
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
 | UmbrellaReporting.EventType.eventtype | String | The event type. One of "domain_security", "domain_integration", "url_security", "url_integration", "cisco_amp" and "antivirus". | 
-| UmbrellaReporting.EventType.count     | Number | Number of requests made that match this event type. | 
+| UmbrellaReporting.EventType.count | Number | Number of requests made that match this event type. | 
 
 #### Command example
 ```!umbrella-reporting-event-type-list```
@@ -484,13 +486,14 @@ List of event types ordered by the number of requests made for each type of even
 
 
 ### umbrella-reporting-file-list
+
 ***
 List of files within a time frame. Only returns proxy data.
-
 
 #### Base Command
 
 `umbrella-reporting-file-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -506,8 +509,7 @@ List of files within a time frame. Only returns proxy data.
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | identity_types | An identity type or comma-separated list of identity types. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. Default is 50.| Optional | 
-
+| page_size | The number of requested results per page. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -570,13 +572,14 @@ List of files within a time frame. Only returns proxy data.
 
 
 ### umbrella-reporting-threat-list
+
 ***
 List of top threats within a time frame. Returns both DNS and Proxy data.
-
 
 #### Base Command
 
 `umbrella-reporting-threat-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -592,8 +595,7 @@ List of top threats within a time frame. Returns both DNS and Proxy data.
 | threats | A threat name or comma-separated list of threat names. | Optional | 
 | threat_types | A threat type or comma-separated list of threat types. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. Default is 50.| Optional | 
-
+| page_size | The number of requested results per page. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -627,13 +629,14 @@ List of top threats within a time frame. Returns both DNS and Proxy data.
 | Adware | 1 |
 
 ### umbrella-reporting-activity-list
+
 ***
 List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time frame.
-
 
 #### Base Command
 
 `umbrella-reporting-activity-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -652,8 +655,7 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 | threat_types | A threat type or comma-separated list of threat types. | Optional | 
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. Default is 50.| Optional | 
-
+| page_size | The number of requested results per page. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -695,8 +697,8 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 | UmbrellaReporting.Activity.allowedapplications.type | String | Type of the application, NBAR or AVC. | 
 | UmbrellaReporting.Activity.allowedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.Activity.allowedapplications.category.id | Number | ID of the application category. | 
-| UmbrellaReporting.Activity.querytype | String | The type of DNS request that was made. For more information, see https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
-| UmbrellaReporting.Activity.returncode | Number | The DNS return code for this request. For more information, see https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
+| UmbrellaReporting.Activity.querytype | String | The type of DNS request that was made. For more information, see Common DNS Request Types. https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
+| UmbrellaReporting.Activity.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service \(and Umbrella\). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
 | UmbrellaReporting.Activity.blockedapplications.id | Number | ID of the application. | 
 | UmbrellaReporting.Activity.blockedapplications.label | String | Label of the application. | 
 | UmbrellaReporting.Activity.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
@@ -846,14 +848,15 @@ List all activity entries (dns/proxy/firewall/ip/intrusion/amp) within the time 
 
 
 ### umbrella-reporting-activity-get
+
 ***
 List all entries within a time frame based on the traffic type selected. Valid activity types are dns, proxy, firewall, intrusion, ip, amp.
 Only one activity type can be selected at a time.
 
-
 #### Base Command
 
 `umbrella-reporting-activity-get`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | **Required** |
@@ -919,7 +922,7 @@ Only one activity type can be selected at a time.
 | UmbrellaReporting.ActivityDns.allowedapplications.category.label | String | Label of the application category. | 
 | UmbrellaReporting.ActivityDns.allowedapplications.category.id | Number | ID of the application category. | 
 | UmbrellaReporting.ActivityDns.querytype | String | The type of DNS request that was made. For more information, see https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
-| UmbrellaReporting.ActivityDns.returncode | Number | The DNS return code for this request. For more information, see https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
+| UmbrellaReporting.ActivityDns.returncode | Number | The DNS return code for this request. For more information, see Common DNS return codes for any DNS service \(and Umbrella\). https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella- | 
 | UmbrellaReporting.ActivityDns.blockedapplications.id | Number | ID of the application. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.label | String | Label of the application. | 
 | UmbrellaReporting.ActivityDns.blockedapplications.type | String | Type of the application, NBAR or AVC. | 
@@ -1646,13 +1649,14 @@ Only one activity type can be selected at a time.
 
 
 ### umbrella-reporting-summary-list
+
 ***
 Get the summary.
-
 
 #### Base Command
 
 `umbrella-reporting-summary-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1672,7 +1676,7 @@ Get the summary.
 | threat_types | A threat type or comma-separated list of threat types. | Optional | 
 | amp_disposition | An Advanced Malware Protection (AMP) disposition string. Possible values are: clean, malicious, unknown. | Optional | 
 | page | The page number. Default is 1. | Optional | 
-| page_size | The number of requested results per page. Default is 50.| Optional | 
+| page_size | The number of requested results per page. Default is 50. | Optional | 
 | signatures | A comma-separated list of Generator id - Signatures ID. Where Generator ID is unique id assigned to the part of the IPS which generated the event and Signature ID is used to uniquely identify signatures. Example:- 1-2,1-4. | Optional | 
 | intrusion_action | Comma-separated List of intrusion actions. Possible values: would_block, blocked, detected. | Optional | 
 

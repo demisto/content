@@ -2201,3 +2201,41 @@ Triggers a GitLab pipeline on a selected project and branch.
 | GitLab.Pipeline.user.state | String | State of the user who triggered the pipeline. | 
 | GitLab.Pipeline.user.avatar_url | String | Avatar URL of the user who trigerred the pipeline. | 
 | GitLab.Pipeline.user.web_url | String | Web URL of the user who triggered the pipeline. | 
+
+### gitlab-cancel-pipeline
+
+***
+Cancels a GitLab pipeline.
+
+#### Base Command
+
+`gitlab-cancel-pipeline`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID on which to run the pipeline. | Optional | 
+| pipeline_id | The pipline ID to cancel. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Pipeline.id | Number | Pipeline ID. | 
+| GitLab.Pipeline.project_id | Number | Project ID that the pipeline belongs to. | 
+| GitLab.Pipeline.status | String | Status of the pipeline. | 
+| GitLab.Pipeline.ref | String | Reference of the pipeline. | 
+| GitLab.Pipeline.sha | String | SHA of the pipeline. | 
+| GitLab.Pipeline.created_at | Date | Time when the pipeline was created. | 
+| GitLab.Pipeline.updated_at | Date | Time when the pipeline was last updated. | 
+| GitLab.Pipeline.started_at | Date | Time when the pipeline was started. | 
+| GitLab.Pipeline.finished_at | Date | Time when the pipeline was finished. | 
+| GitLab.Pipeline.duration | Number | Duration of the pipeline in seconds. | 
+| GitLab.Pipeline.web_url | String | Web URL of the pipeline. | 
+| GitLab.Pipeline.user.name | String | Name of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.username | String | Username that triggered the pipeline. | 
+| GitLab.Pipeline.user.id | Number | ID of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.state | String | State of the user who triggered the pipeline. | 
+| GitLab.Pipeline.user.avatar_url | String | Avatar URL of the user who trigerred the pipeline. | 
+| GitLab.Pipeline.user.web_url | String | Web URL of the user who triggered the pipeline. | 

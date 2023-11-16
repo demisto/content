@@ -33,6 +33,7 @@ def test_generateEndpointURL(mocker):
     res = generateEndpointURL("test", "test")
     assert res == ('picus_servertest', {'X-Api-Token': 'Bearer test', 'Content-Type': 'application/json'})
 
+
 def test_filterInsecureAttacks(mocker):
     from Picus import filterInsecureAttacks
     threatinfo_mock = mocker.patch("Picus.demisto")
@@ -76,7 +77,7 @@ def test_getAttackResults(mocker):
     mocker.patch("Picus.requests.post", side_effect=[mock_secure_response, mock_insecure_response])
     result = getAttackResults().outputs
     assert result["results"][0][
-               "threat_ids"] == "351578,674267,850468,773109,428692,768048,826183,692856,476996,587400,376491,723488"
+        "threat_ids"] == "351578,674267,850468,773109,428692,768048,826183,692856,476996,587400,376491,723488"
 
 
 def test_getThreatResults(mocker):

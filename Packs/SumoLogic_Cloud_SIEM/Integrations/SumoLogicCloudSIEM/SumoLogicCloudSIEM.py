@@ -735,7 +735,7 @@ def cleanup_records(signal: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]
     for rec in signal['allRecords']:
         field_names = list(rec.keys())
         for field_name in field_names:
-            if (field_name.startswith('bro') and len(rec.get(field_name)) == 0):
+            if (field_name.startswith('bro') and rec.get(field_name) in ([], (), {}, "")):
                 rec.pop(field_name, None)
             if (field_name == 'timestamp'):
                 rec['lastlog_timestamp'] = rec['timestamp']

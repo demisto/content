@@ -838,6 +838,53 @@ def search_eql_command(args, proxies):
     )
 
 
+def index_document(args, proxies):
+    """
+    Indexes a given document into an Elasticsearch index.
+    return: Result returned from elasticsearch lib
+    """
+    index = args.get('index_name')
+    doc = args.get('document')
+    doc_id = args.get('id', '')
+    es = elasticsearch_builder(proxies)
+    # Because of using elasticsearch lib <8 'document' param is called 'body'
+    if doc_id:
+        response = es.index(index=index, id=doc_id, body=doc)
+    else:
+        response = es.index(index=index, body=doc)
+    return response
+
+
+def index_document_command(args, proxies):
+    resp = index_document(args, proxies)
+    index_context = {
+        'id': resp.get('_id', ''),
+        'index': resp.get('_index', ''),
+        'version': resp.get('_version', ''),
+        'result': resp.get('result', '')
+    }
+    human_readable = {
+        'ID': index_context.get('id'),
+        'Index name': index_context.get('index'),
+        'Version': index_context.get('version'),
+        'Result': index_context.get('result')
+    }
+    headers = [str(k) for k in human_readable]
+    readable_output = tableToMarkdown(
+        name="Indexed document",
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Elasticsearch.Index',
+        outputs=index_context,
+        raw_response=resp,
+        outputs_key_field='id'
+    )
+
+
 def main():
     proxies = handle_proxy()
     proxies = proxies if proxies else None
@@ -853,6 +900,8 @@ def main():
             return_results(get_mapping_fields_command())
         elif demisto.command() == 'es-eql-search':
             return_results(search_eql_command(demisto.args(), proxies))
+        elif demisto.command() == 'es-index':
+            return_results(index_document_command(demisto.args(), proxies))
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '

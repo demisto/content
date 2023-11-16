@@ -522,6 +522,7 @@ def test_message_search_command(
     assert len(outputs) == expected_outputs_len
     assert outputs[0]["mid"] == expected_message_id
     assert outputs[1]["recipient"] == expected_recipients
+    assert mock_request.last_request.timeout == 60
 
 
 @pytest.mark.parametrize(
@@ -872,3 +873,46 @@ def test_format_timestamp(timestamp, output_format, expected_result):
     result = format_timestamp(timestamp, output_format)
 
     assert result == expected_result
+
+
+@patch("CiscoSMA.Client.handle_request_headers", mock_access_token)
+def test_message_search_command_with_timout(requests_mock):
+    """
+    Scenario: Tracking message search.
+    Given:
+     - User has provided valid credentials.
+     - User may provided pagination args.
+     - User may Provided filtering arguments.
+    When:
+     - cisco-sma-message-search command called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure number of items is correct.
+     - Ensure that the timeout argument was sent.
+     - Validate outputs' fields.
+    """
+    from CiscoSMA import message_search_command
+    from CiscoSMA import Client
+    mock_client = Client(BASE_URL, USERNAME, PASSWORD, verify=False, proxy=False, timeout=90)
+    mock_response = load_mock_response("message_search.json")
+    url = f"{BASE_URL}/message-tracking/messages"
+    mock_request = requests_mock.get(url=url, json=mock_response)
+
+    result = message_search_command(mock_client,
+                                    {
+                                        "start_date": "2 weeks",
+                                        "end_date": "1 day",
+                                        "page": "2",
+                                        "page_size": "4",
+                                        "recipient_filter_operator": "is",
+                                        "recipient_filter_value": "test@test.com",
+                                        "timeout": "90"
+                                    })
+    outputs = result.outputs
+
+    assert "test%40test.com" in mock_request.last_request.query
+    assert result.outputs_prefix == "CiscoSMA.Message"
+    assert len(outputs) == 4
+    assert outputs[0]["mid"] == [315]
+    assert outputs[1]["recipient"] == ["test@test.com"]
+    assert mock_request.last_request.timeout == 90

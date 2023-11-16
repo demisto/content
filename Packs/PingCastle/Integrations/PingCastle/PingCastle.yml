@@ -17,6 +17,7 @@ configuration:
   name: longRunningPort
   type: 0
   required: false
+  additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for Ping Castle will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port."
 - display: Certificate (Required for HTTPS)
   name: certificate
   type: 12
@@ -33,18 +34,18 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'No'
-      description: Whether to delete the report after getting it or save it to allow retrieving it again
+      description: Whether to delete the report after getting it or save it to allow retrieving it again.
       name: delete_report
       predefined:
       - 'Yes'
       - 'No'
-    description: Get the Currently saved Ping Castle Report
+    description: Get the Currently saved Ping Castle Report.
     name: pingcastle-get-report
     outputs:
     - contextPath: PingCastle.Report.report
-      description: The XML report sent by Ping Castle
+      description: The XML report sent by Ping Castle.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.75921
   longRunning: true
   longRunningPort: true
   script: '-'

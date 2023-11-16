@@ -19,37 +19,37 @@ configuration:
   name: picus_apikey
   required: true
   type: 4
-description: Picus - The Complete Security Control Validation NG Platform
-display: Picus Security
+description: Picus - The Complete Security Control Validation NG Platform.
+display: Picus Security NG
 name: PicusNG
 script:
   commands:
   - description: This command returns the simulation agent list with agent name, id, status, agent type and platform information as in Picus platform > Agents.
     name: picus-get-agent-list
   - arguments:
-    - description: Agent id
+    - description: Agent id.
       name: id
       required: true
     description: This command returns agent name, status, agent type, platform and also mitigation devices and attack modules using the agent ID.
     name: picus-get-agent-detail
   - arguments:
-    - description: ID of the agent
+    - description: ID of the agent.
       name: agent_id
       required: true
     - defaultValue: this simulation created with cortex app
-      description: Description of the simulation
+      description: Description of the simulation.
       name: description
-    - description: Name of the simulation
+    - description: Name of the simulation.
       name: name
       required: true
     - auto: PREDEFINED
-      description: Schedule now state
+      description: Schedule now state.
       name: schedule_now
       predefined:
       - 'True'
       - 'False'
       required: true
-    - description: Id of the template
+    - description: Id of the template.
       name: template_id
       required: true
     description: |-
@@ -57,98 +57,98 @@ script:
       You can create a simulation by giving your simulation a name and adding the template ID, agent ID.
     name: picus-create-simulation
   - arguments:
-    - description: Pagination value
+    - description: Pagination value.
       name: offset
-    - description: Pagination value
+    - description: Pagination value.
       name: limit
     description: This command returns template list that contains template name, id, description, content type, category as in Picus Platform> Threat Templates.
     name: picus-get-template-list
   - description: This command returns the agent name, id, status, agent installation information and the token expiration information.
     name: picus-get-integration-agent-list
   - arguments:
-    - description: Pagination value
+    - description: Pagination value.
       name: offset
-    - description: Pagination value
+    - description: Pagination value.
       name: limit
     description: This command returns the list of you latest simulation result overview as in Picus Platform > Simulations tab. Latest simulation run results are included.
     name: picus-get-simulation-list
     outputs:
     - contextPath: Picus.simulationlist.simulation_id
-      description: ID of the simulation
+      description: ID of the simulation.
       type: Number
   - arguments:
-    - description: Simulation ID
+    - description: Simulation ID.
       name: id
       required: true
     description: This command runs the existing simulation using the Simulation ID.
     name: picus-simulate-now
   - arguments:
-    - description: Simulation ID
+    - description: Simulation ID.
       name: id
       required: true
     description: This command returns the information about a specific simulation.
     name: picus-get-simulation-detail
   - arguments:
-    - description: Simulation ID
+    - description: Simulation ID.
       name: id
       required: true
     description: This command returns detailed information about simulation results including Prevention and Detection result details for the latest simulation run.
     name: picus-get-latest-simulation-result
     outputs:
     - contextPath: Picus.latestSimulationResult.simulation_run_id
-      description: Simulation Run ID
+      description: Simulation Run ID.
       type: String
     - contextPath: Picus.latestSimulationResult.simulation_id
-      description: Simulation ID
+      description: Simulation ID.
       type: String
     - contextPath: Picus.latestSimulationResult.status
-      description: Simulation Status
+      description: Simulation Status.
       type: String
   - arguments:
-    - description: Simulation ID
+    - description: Simulation ID.
       name: id
       required: true
-    - description: Simulation Run ID
+    - description: Simulation Run ID.
       name: run_id
       required: true
     description: This command returns detailed information about simulation results including Prevention and Detection result details for a specific simulation run with run id.
     name: picus-get-simulation-result
   - arguments:
-    - description: Simulation ID
+    - description: Simulation ID.
       name: id
       required: true
-    - description: Simulation Run ID
+    - description: Simulation Run ID.
       name: run_id
       required: true
-    - description: Pagination value
+    - description: Pagination value.
       name: limit
-    - description: Pagination value
+    - description: Pagination value.
       name: offset
     description: This command returns simulation result based on threats. Threat result includes threat id and name, prevention result and action count.
     name: picus-get-simulation-threats
     outputs:
     - contextPath: Picus.SimulationThreats
-      description: Threat list of simulation
+      description: Threat list of simulation.
       type: String
   - arguments:
-    - description: Simulation ID
+    - description: Simulation ID.
       name: id
       required: true
-    - description: Simulation Run ID
+    - description: Simulation Run ID.
       name: run_id
       required: true
     - description: Threat ID list ("111,222,333,...") or single threat ID can be given.
       name: threat_ids
       required: true
-    - description: Pagination value
+    - description: Pagination value.
       name: limit
-    - description: Pagination value
+    - description: Pagination value.
       name: offset
     description: This command returns simulation result based on action list using threat ID, simulation ID and simulation run ID.
     name: picus-get-simulation-actions
     outputs:
     - contextPath: Picus.SimulationActions
-      description: Action Results(ID and result combination)
+      description: Action Results(ID and result combination).
       type: String
   - arguments:
     - description: Simulation ID list ("111,222,333,...") or single simulation ID can be given.
@@ -156,7 +156,7 @@ script:
     description: This command returns mitigation device information as obtained under Picus platform > Mitigation > Vendor Based Mitigations. Vendor based mitigation devices can be fetched using this command.
     name: picus-get-mitigation-devices
   - arguments:
-    - description: Mitigation Device ID
+    - description: Mitigation Device ID.
       name: device_id
       required: true
     - description: Action ID list ("111,222,333,...") or single action ID can be given.
@@ -165,37 +165,37 @@ script:
     description: This command returns action based signature suggestions.
     name: picus-get-signature-list
   - arguments:
-    - description: Simulation Agent ID
+    - description: Simulation Agent ID.
       name: agent_id
       required: true
-    - description: 'Device ID '
+    - description: Device ID.
       name: device_id
-    - description: Simulation ID
+    - description: Simulation ID.
       name: simulation_id
       required: true
-    description: Set parameter on playbook. (This command is only used on playbook)
+    description: Set parameter on playbook. (This command is only used on playbook).
     name: picus-set-paramPB
     outputs:
     - contextPath: Picus.param.agent_id
-      description: Agent ID
+      description: Agent ID.
       type: String
     - contextPath: Picus.param.device_id
-      description: Device ID
+      description: Device ID.
       type: String
     - contextPath: Picus.param.simulation_id
-      description: Simulation ID
+      description: Simulation ID.
       type: String
   - arguments:
     - description: Threat id and result combine. Used for playbook.
       name: threatinfo
       required: true
-    description: Filter insecure attacks on playbook. (This command is only used on playbook)
+    description: Filter insecure attacks on playbook. (This command is only used on playbook).
     name: picus-filter-insecure-attacks
     outputs:
     - contextPath: Picus.filterinsecure
-      description: Insecure Attack List
+      description: Insecure Attack List.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.73190
   runonce: false
   script: '-'
   subtype: python3

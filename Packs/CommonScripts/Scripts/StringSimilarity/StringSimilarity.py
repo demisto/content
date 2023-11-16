@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import difflib
 
 
-def stringSimilarity(first_string: str, second_string: str, similarity_threshold: float):
+def stringSimilarity(first_array: str, second_array: str, similarity_threshold: float):
     """
     Calculate the similarity score between two strings using the SequenceMatcher.
 
@@ -26,26 +26,27 @@ def stringSimilarity(first_string: str, second_string: str, similarity_threshold
                     with a message indicating that no similarity score is calculated.
     """
 
-    similarity_ratio = difflib.SequenceMatcher(None, first_string, second_string).ratio()
-    if similarity_ratio >= float(similarity_threshold):
-        results = {
-            "StringA": first_string,
-            "StringB": second_string,
-            "SimilarityScore": similarity_ratio
-        }
-
-        return CommandResults("StringSimilarity", ["StringA", "StringB"], results)
-    return None
+    results = []
+    for string_a in first_array:
+        for string_b in second_array:
+            similarity_ratio = difflib.SequenceMatcher(None, string_a, string_b).ratio()
+            if similarity_ratio >= float(similarity_threshold):
+                results.append({
+                    "StringA": string_a,
+                    "StringB": string_b,
+                    "SimilarityScore": similarity_ratio
+                })
+    if not results:
+        return None
+    return CommandResults("StringSimilarity", ["StringA", "StringB"], results)
 
 
 def main():
     similarity_threshold = demisto.getArg('similarity_threshold')
-    first_string = demisto.getArg('string_A')
-    second_string = demisto.getArg('string_B')
-
+    first_array = argToList(demisto.getArg('string_A'))
+    second_array = argToList(demisto.getArg('string_B'))
     try:
-        results = stringSimilarity(first_string, second_string, similarity_threshold)
-
+        results = stringSimilarity(first_array, second_array, similarity_threshold)
         return_results(results)
     except Exception as e:
         return_error(f'Failed to check string similarity. Problem: {str(e)}')

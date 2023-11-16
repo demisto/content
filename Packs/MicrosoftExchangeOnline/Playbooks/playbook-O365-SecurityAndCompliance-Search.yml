@@ -511,6 +511,14 @@ tasks:
             value:
               simple: O365.SecurityAndCompliance.ContentSearch.Search.Name
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: O365.SecurityAndCompliance.ContentSearch.Search.SearchStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
     view: |-
       {
         "position": {

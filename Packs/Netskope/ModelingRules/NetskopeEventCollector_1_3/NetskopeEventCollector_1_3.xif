@@ -194,7 +194,7 @@ filter source_log_event = "audit" or type = "admin_audit_logs"
 	xdm.alert.severity = coalesce(to_string(severity_level), ccl),
 	xdm.observer.action = audit_log_event,
 	xdm.alert.subcategory = if(json_extract_scalar(supporting_data, "$.data_type") = "policy", json_extract_scalar(supporting_data, "$.data_values[0]"), null),
-	xdm.event.description = details;
+	xdm.event.description = to_string(details);
 // Network Logs
 filter source_log_event = "network"
 | alter

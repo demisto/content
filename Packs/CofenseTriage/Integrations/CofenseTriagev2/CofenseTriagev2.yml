@@ -85,7 +85,7 @@ script:
     - name: url
       description: The reported URLs.
     - name: subject
-      description: Report's subject
+      description: Report's subject.
     - name: reported_at
       description: 'Retrieve reports that were reported after this time, for example: "2 hours, 4 minutes, 6 month, 1 day".'
       defaultValue: 60 days
@@ -160,7 +160,7 @@ script:
     - name: url
       description: The reported URLs.
     - name: subject
-      description: Report's subject
+      description: Report's subject.
     - name: reported_at
       description: 'Retrieve reports that were reported after this time, for example: "2 hours, 4 minutes, 6 month, 1 day".'
       defaultValue: 60 days
@@ -238,7 +238,7 @@ script:
       description: File size.
       type: number
     - contextPath: File.Type
-      description: 'File type, for example: "PE", "txt"'
+      description: 'File type, for example: "PE", "txt".'
       type: string
     - contextPath: File.EntryID
       description: The file entry ID.
@@ -286,12 +286,12 @@ script:
     - contextPath: Cofense.Reporter.VIP
       description: Whether Reporter is a VIP.
       type: bool
-    description: Retrieves Email address of the reporter by ID
+    description: Retrieves Email address of the reporter by ID.
   - name: cofense-get-report-by-id
     arguments:
     - name: report_id
       required: true
-      description: ID of the report
+      description: ID of the report.
     outputs:
     - contextPath: Cofense.Report.ID
       description: ID number of the report.
@@ -348,20 +348,20 @@ script:
     arguments:
     - name: report_id
       required: true
-      description: Report ID PNG output
+      description: Report ID PNG output.
     - name: set_white_bg
       auto: PREDEFINED
       predefined:
       - "True"
       - "False"
-      description: Change background to white
+      description: Change background to white.
       defaultValue: "False"
-    description: 'Retrieves a report by the report ID number and displays as PNG'
+    description: 'Retrieves a report by the report ID number and displays as PNG.'
   - name: cofense-get-threat-indicators
     arguments:
     - name: type
       auto: PREDEFINED
-      description: indicator type
+      description: indicator type.
       predefined:
       - Domain
       - URL
@@ -371,7 +371,7 @@ script:
       - Sender
     - name: level
       auto: PREDEFINED
-      description: indicator severity
+      description: indicator severity.
       predefined:
       - Malicious
       - Suspicious
@@ -382,7 +382,7 @@ script:
       description: "designated end date from assignment (format example: YYYY-MM-DD+HH:MM:SS). Default: current date."
     outputs:
     - contextPath: Cofense.ThreatIndicators
-      description: Threat indicator output
+      description: Threat indicator output.
     - contextPath: Cofense.ThreatIndicators.ID
       description: Threat indicator ID in Cofense Triage.
       type: number
@@ -401,8 +401,8 @@ script:
     - contextPath: Cofense.ThreatIndicators.ThreatValue
       description: Value of the threat indicator.
       type: string
-    description: Threat Indicators that are designated by analysts as malicious, suspicious or benign
-  dockerimage: demisto/chromium:1.0.0.56296
+    description: Threat Indicators that are designated by analysts as malicious, suspicious or benign.
+  dockerimage: demisto/chromium:117.0.5938.74233
   isfetch: true
 tests:
 - No test - partner integration (test pb exists - Cofense Triage Test)

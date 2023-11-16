@@ -167,7 +167,7 @@ script:
       required: true
     description: Gets indicators available in the configured Elasticsearch database.
     name: es-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.64131
+  dockerimage: demisto/elasticsearch:1.0.0.77444
   feed: true
   runonce: false
   script: '-'

@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import io
 import os
 import random
@@ -7,7 +9,6 @@ import urllib3
 from zipfile import ZipFile
 
 import requests
-from CommonServerPython import *
 
 ''' GLOBAL PARAMS '''
 API_KEY = demisto.params().get('api_key') or demisto.params().get('credentials', {}).get('password')
@@ -349,6 +350,7 @@ def build_upload_params():
     shareable = demisto.args().get('shareable')
     max_jobs = demisto.args().get('max_jobs')
     tags = demisto.args().get('tags')
+    net_scheme_name = demisto.args().get('net_scheme_name')
 
     params = {}
     if doc_pass:
@@ -367,6 +369,8 @@ def build_upload_params():
             raise ValueError('max_jobs arguments isn\'t a number')
     if tags:
         params['tags'] = tags
+    if net_scheme_name:
+        params['user_config'] = "{\"net_scheme_name\": \"" + str(net_scheme_name) + "\"}"
     return params
 
 
@@ -1393,6 +1397,66 @@ def get_screenshots_command():
     return_results(file_results)
 
 
+def vmray_get_license_usage_verdicts_command():     # pragma: no cover
+    """
+
+    Returns:
+        dict: response
+    """
+    suffix = 'billing_info'
+    raw_response = http_request('GET', suffix)
+    data = raw_response.get('data')
+
+    entry = dict()
+    entry['VerdictsQuota'] = data.get('verdict_quota')
+    entry['VerdictsRemaining'] = data.get('verdict_remaining')
+    entry['VerdictsUsage'] = round((100 / float(data.get('verdict_quota')))
+                                   * (float(data.get('verdict_quota')) - float(data.get('verdict_remaining'))), 2)
+    entry['PeriodEndDate'] = data.get('end_date')
+
+    markdown = tableToMarkdown('VMRay Verdicts Quota Information', entry, headers=[
+                               'VerdictsQuota', 'VerdictsRemaining', 'VerdictsUsage', 'PeriodEndDate'])
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='VMRay.VerdicsQuota',
+        outputs_key_field='PeriodEndDate',
+        outputs=entry
+    )
+
+    return_results(results)
+
+
+def vmray_get_license_usage_reports_command():      # pragma: no cover
+    """
+
+    Returns:
+        dict: response
+    """
+    suffix = 'billing_info'
+    raw_response = http_request('GET', suffix)
+    data = raw_response.get('data')
+
+    entry = dict()
+    entry['ReportQuota'] = data.get('report_quota')
+    entry['ReportRemaining'] = data.get('report_remaining')
+    entry['ReportUsage'] = round((100 / float(data.get('report_quota')))
+                                 * (float(data.get('report_quota')) - float(data.get('report_remaining'))), 2)
+    entry['PeriodEndDate'] = data.get('end_date')
+
+    markdown = tableToMarkdown('VMRay Reports Quota Information', entry, headers=[
+                               'ReportQuota', 'ReportRemaining', 'ReportUsage', 'PeriodEndDate'])
+
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='VMRay.ReportsQuota',
+        outputs_key_field='PeriodEndDate',
+        outputs=entry
+    )
+
+    return_results(results)
+
+
 def main():
     try:
         command = demisto.command()
@@ -1429,6 +1493,10 @@ def main():
             get_summary_command()
         elif command == 'vmray-get-screenshots':
             get_screenshots_command()
+        elif command == 'vmray-get-license-usage-verdicts':
+            vmray_get_license_usage_verdicts_command()
+        elif command == 'vmray-get-license-usage-reports':
+            vmray_get_license_usage_reports_command()
     except Exception as exc:
         return_error(f"Failed to execute `{demisto.command()}` command. Error: {str(exc)}")
 
