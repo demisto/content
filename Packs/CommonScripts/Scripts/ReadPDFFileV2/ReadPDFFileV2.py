@@ -181,7 +181,7 @@ def get_pdf_metadata(file_path: str, user_or_owner_password: str | None = None) 
             metadata_txt = run_shell_command(
                 "pdfinfo", "-opw", user_or_owner_password, file_path
             )
-        demisto.debug('Opened PDF file and got metadata')
+        demisto.debug('PDF file has been successfully opened. Metadata has been retrieved.')
     else:
         metadata_txt = run_shell_command("pdfinfo", "-enc", "UTF-8", file_path)
     metadata = {}
