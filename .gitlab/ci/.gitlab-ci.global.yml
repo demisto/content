@@ -235,6 +235,7 @@
       cp -r ${CI_PROJECT_DIR}/artifacts/production_packs ./Packs
       git config core.fileMode false  # used to tell git not to identify permission changes on files as changes
       chmod -R 776 ./Packs  # required for the lint, we use the group permissions of the file when running pytest within the containers
+      echo "the Packs changes between upload commit $LAST_UPLOAD_COMMIT to {CI_COMMIT_BRANCH} is:"
       git status -- Packs  # show the differences between the upload commit to the master branch for the Packs folder
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
