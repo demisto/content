@@ -229,8 +229,8 @@
       rm -rf ./Packs
       echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs to ./Packs"
       cp -r ${CI_PROJECT_DIR}/artifacts/production_packs ./Packs
-      git config core.fileMode false
-      chmod -R 777 ./Packs
+      git config core.fileMode false  # used to tell git not to identify permission changes on files as changes
+      chmod -R 770 ./Packs  # required for the lint, we use the group permissions of the file when running pytest within the containers
       git status
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
     else
