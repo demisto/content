@@ -65,14 +65,14 @@ class CollectionReason(str, Enum):
     XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
     README_FILE_CHANGED = 'readme file was changed'
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
-    PACK_TEST_END_TO_END = "pack was chosen to be tested in end2end tests"
+    PACK_TEST_E2E = "pack was chosen to be tested in e2e tests"
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
     # these may be used without an id_set or conf.json object, see _validate_collection.
     CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
     CollectionReason.ALWAYS_INSTALLED_PACKS,
-    CollectionReason.PACK_TEST_END_TO_END
+    CollectionReason.PACK_TEST_E2E
 }
 
 
@@ -1364,10 +1364,10 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         ))
 
 
-class EndToEndTestCollector(TestCollector, ABC):
+class E2ETestCollector(TestCollector, ABC):
 
     @abstractmethod
-    def get_end_to_end_packs(self) -> set[str]:
+    def get_e2e_packs(self) -> set[str]:
         """
         Implement this abstract method to collect relevant packs for xsoar/xsoar-saas/xsiam,
         in the future when there will be a nightly for xsoar-saas, we will install all nightly packs including e2e tests
@@ -1382,20 +1382,20 @@ class EndToEndTestCollector(TestCollector, ABC):
                     test=None,
                     modeling_rule_to_test=None,
                     pack=pack,
-                    reason=CollectionReason.PACK_TEST_END_TO_END,
+                    reason=CollectionReason.PACK_TEST_E2E,
                     version_range=None,
-                    reason_description="end to end tests",
+                    reason_description="e2e tests",
                     conf=None,
                     id_set=None,
                     only_to_install=True
-                ) for pack in self.get_end_to_end_packs()
+                ) for pack in self.get_e2e_packs()
             ]
         )
 
 
-class XSOARNGEndToEndTestCollector(EndToEndTestCollector):
+class XSOARNGE2ETestCollector(E2ETestCollector):
 
-    def get_end_to_end_packs(self) -> set[str]:
+    def get_e2e_packs(self) -> set[str]:
         return {"TAXIIServer", "EDL", "QRadar", "Slack"}
 
 
@@ -1477,7 +1477,7 @@ if __name__ == '__main__':
     collector: TestCollector
 
     if os.getenv("CI_COMMIT_BRANCH") == "xsoar_8_end_to_end_tests":
-        collector = XSOARNGEndToEndTestCollector(marketplace=marketplace, graph=graph)
+        collector = XSOARNGE2ETestCollector(marketplace=marketplace, graph=graph)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
@@ -1494,7 +1494,7 @@ if __name__ == '__main__':
             case (True, (MarketplaceVersions.XSOAR)):
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
             case (True, MarketplaceVersions.XSOAR_SAAS):
-                collector = XSOARNGEndToEndTestCollector(marketplace=marketplace, graph=graph)
+                collector = XSOARNGE2ETestCollector(marketplace=marketplace, graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.XPANSE:
