@@ -412,8 +412,8 @@ jobs-done-check-nightly:
     - xsoar-saas-prepare-testing-bucket
     - xsiam_server_ga
     - tests_xsoar_server
-    - xsoar_test_results
-    - xsiam_test_results
+    - xsoar_e2e_test_results
+    - xsiam_e2e_test_results
     - xsiam-test_modeling_rule_results
   tags:
     - gke
@@ -457,8 +457,8 @@ jobs-done-check-on-push:
     - xsiam_server_ga
     - tests_xsoar_server
     - xsoar_ng_server_ga
-    - xsoar_test_results
-    - xsiam_test_results
+    - xsoar_e2e_test_results
+    - xsiam_e2e_test_results
     - xsiam-test_modeling_rule_results
   tags:
     - gke
@@ -500,8 +500,8 @@ jobs-done-check-on-merge:
     - xsiam_server_ga
     - tests_xsoar_server
     - xsoar_ng_server_ga
-    - xsoar_test_results
-    - xsiam_test_results
+    - xsoar_e2e_test_results
+    - xsiam_e2e_test_results
     - xsiam-test_modeling_rule_results
   tags:
     - gke
@@ -825,7 +825,7 @@ test-upload-flow:
     - ./Tests/scripts/test_modeling_rule_results.sh
     - job-done
 
-xsoar_test_results:
+xsoar_e2e_test_results:
   variables:
     SERVER_TYPE: "XSOAR"
     PRODUCT_TYPE: "XSOAR"
@@ -842,7 +842,7 @@ xsoar_test_results:
     - tests_xsoar_server
     - xsoar_ng_server_ga
 
-xsiam_test_results:
+xsiam_e2e_test_results:
   variables:
     SERVER_TYPE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
