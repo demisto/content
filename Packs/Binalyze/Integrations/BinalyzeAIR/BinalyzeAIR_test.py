@@ -80,11 +80,9 @@ def test_get_profile_id_preset() -> None:
         base_url='https://nonexistent-domain.com',
         verify=False
     )
-    preset_profiles = ["browsing-history", "compromise-assessment", "event-logs", "full", "memory-ram-pagefile", "quick"]
     mocked_profile = "full"
     result = client.get_profile_id(mocked_profile, 1)
-    if mocked_profile in preset_profiles:
-        assert result == mocked_profile
+    assert result == mocked_profile
 
 
 def test_get_profile_id_custom(requests_mock: Any) -> None:
