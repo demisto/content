@@ -73,8 +73,6 @@ VDOM_DEFAULT = "root"
 MIN_MASK = 0
 MAX_MASK = 128
 
-OptionalStr = TypeVar("OptionalStr", str, None)
-
 
 class Mapping(NamedTuple):
     old_keys: list[str]
@@ -207,29 +205,29 @@ class Client(BaseClient):
                 error_handler=Client._error_handler,
             )
 
-    def _get_filter(self, field: OptionalStr, value: OptionalStr) -> OptionalStr:
+    def _get_filter(self, field: str | None, value: str | None) -> str | None:
         """Formats the filter to be used in the API call.
 
         Args:
-            field (OptionalStr): "name"
-            value (OptionalStr): "@value"
+            field (str | None): "name"
+            value (str | None): "@value"
 
         Returns:
-            OptionalStr: name=@value
+            str | None: name=@value
         """
         if not any([field, value]):
             return None
 
         return f"{to_kebab_case(field)}=@{value}"
 
-    def _get_format(self, fields: list[str]) -> OptionalStr:
+    def _get_format(self, fields: list[str]) -> str | None:
         """Formats the fields to be used in the API call.
 
         Args:
             fields (list[str]): ["name", "type"]
 
         Returns:
-            OptionalStr: name|type
+            str | None: name|type
         """
         if not fields:
             return None
@@ -238,10 +236,10 @@ class Client(BaseClient):
 
     def list_firewall_address_ipv4s(
         self,
-        name: OptionalStr = None,
+        name: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all IPv4 addresses.
@@ -251,9 +249,9 @@ class Client(BaseClient):
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -279,15 +277,15 @@ class Client(BaseClient):
         name: str,
         type_: str,
         vdom: str = VDOM_DEFAULT,
-        comment: OptionalStr = None,
-        associated_interface: OptionalStr = None,
-        address: OptionalStr = None,
-        mask: OptionalStr = None,
-        allow_routing: OptionalStr = None,
-        start_ip: OptionalStr = None,
-        end_ip: OptionalStr = None,
-        fqdn: OptionalStr = None,
-        country: OptionalStr = None,
+        comment: str | None = None,
+        associated_interface: str | None = None,
+        address: str | None = None,
+        mask: str | None = None,
+        allow_routing: str | None = None,
+        start_ip: str | None = None,
+        end_ip: str | None = None,
+        fqdn: str | None = None,
+        country: str | None = None,
         mac_addresses: list[str] | None = None,
     ) -> dict[str, Any]:
         """Create a IPv4 address.
@@ -297,23 +295,23 @@ class Client(BaseClient):
             type_ (str): The type of the IPv4 address to create.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            comment (OptionalStr, optional): A comment for the address.
+            comment (str | None, optional): A comment for the address.
                 Defaults to None.
-            associated_interface (OptionalStr, optional): Network interface associated with address.
+            associated_interface (str | None, optional): Network interface associated with address.
                 Defaults to None.
-            address (OptionalStr, optional): The IP address.
+            address (str | None, optional): The IP address.
                 Defaults to None.
-            mask (OptionalStr, optional): The subnet mask of the address.
+            mask (str | None, optional): The subnet mask of the address.
                 Defaults to None.
-            allow_routing (OptionalStr, optional): Enable/disable use of this address in the static route configuration.
+            allow_routing (str | None, optional): Enable/disable use of this address in the static route configuration.
                 Defaults to None.
-            start_ip (OptionalStr, optional): First IP address (inclusive) in the range for the address.
+            start_ip (str | None, optional): First IP address (inclusive) in the range for the address.
                 Defaults to None.
-            end_ip (OptionalStr, optional): Final IP address (inclusive) in the range for the address.
+            end_ip (str | None, optional): Final IP address (inclusive) in the range for the address.
                 Defaults to None.
-            fqdn (OptionalStr, optional): Fully Qualified Domain Name address.
+            fqdn (str | None, optional): Fully Qualified Domain Name address.
                 Defaults to None.
-            country (OptionalStr, optional): IP addresses associated to a specific country.
+            country (str | None, optional): IP addresses associated to a specific country.
                 Input must be according to the two-letter counter codes, for example: `IL`.
                 Defaults to None.
             mac_addresses (list[str] | None, optional): list of MAC addresses.
@@ -349,44 +347,44 @@ class Client(BaseClient):
     def update_firewall_address_ipv4(
         self,
         name: str,
-        type_: OptionalStr = None,
+        type_: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        comment: OptionalStr = None,
-        associated_interface: OptionalStr = None,
-        address: OptionalStr = None,
-        mask: OptionalStr = None,
-        allow_routing: OptionalStr = None,
-        start_ip: OptionalStr = None,
-        end_ip: OptionalStr = None,
-        fqdn: OptionalStr = None,
-        country: OptionalStr = None,
+        comment: str | None = None,
+        associated_interface: str | None = None,
+        address: str | None = None,
+        mask: str | None = None,
+        allow_routing: str | None = None,
+        start_ip: str | None = None,
+        end_ip: str | None = None,
+        fqdn: str | None = None,
+        country: str | None = None,
         mac_addresses: list[str] | None = None,
     ) -> dict[str, Any]:
         """Update a IPv4 address.
 
         Args:
             name (str): The name of the address to update.
-            type_ (OptionalStr, optional): The type of the IPv4 address to update.
+            type_ (str | None, optional): The type of the IPv4 address to update.
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            comment (OptionalStr, optional): A comment for the address.
+            comment (str | None, optional): A comment for the address.
                 Defaults to None.
-            associated_interface (OptionalStr, optional): Network interface associated with address.
+            associated_interface (str | None, optional): Network interface associated with address.
                 Defaults to None.
-            address (OptionalStr, optional): The IP address.
+            address (str | None, optional): The IP address.
                 Defaults to None.
-            mask (OptionalStr, optional): The subnet mask of the address.
+            mask (str | None, optional): The subnet mask of the address.
                 Defaults to None.
-            allow_routing (OptionalStr, optional): Enable/disable use of this address in the static route configuration.
+            allow_routing (str | None, optional): Enable/disable use of this address in the static route configuration.
                 Defaults to None.
-            start_ip (OptionalStr, optional): First IP address (inclusive) in the range for the address.
+            start_ip (str | None, optional): First IP address (inclusive) in the range for the address.
                 Defaults to None.
-            end_ip (OptionalStr, optional): Final IP address (inclusive) in the range for the address.
+            end_ip (str | None, optional): Final IP address (inclusive) in the range for the address.
                 Defaults to None.
-            fqdn (OptionalStr, optional): Fully Qualified Domain Name address.
+            fqdn (str | None, optional): Fully Qualified Domain Name address.
                 Defaults to None.
-            country (OptionalStr, optional): IP addresses associated to a specific country.
+            country (str | None, optional): IP addresses associated to a specific country.
                 Input must be according to the two-letter counter codes, for example: `IL`.
                 Defaults to None.
             mac_addresses (list[str] | None, optional): list of MAC addresses.
@@ -439,10 +437,10 @@ class Client(BaseClient):
 
     def list_firewall_address_ipv6s(
         self,
-        name: OptionalStr = None,
+        name: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all IPv6 addresses.
@@ -452,9 +450,9 @@ class Client(BaseClient):
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -480,14 +478,14 @@ class Client(BaseClient):
         name: str,
         type_: str,
         vdom: str = VDOM_DEFAULT,
-        comment: OptionalStr = None,
-        subnet: OptionalStr = None,
-        start_ip: OptionalStr = None,
-        end_ip: OptionalStr = None,
-        fqdn: OptionalStr = None,
-        country: OptionalStr = None,
+        comment: str | None = None,
+        subnet: str | None = None,
+        start_ip: str | None = None,
+        end_ip: str | None = None,
+        fqdn: str | None = None,
+        country: str | None = None,
         mac_addresses: list[str] | None = None,
-        sdn_connector: OptionalStr = None,
+        sdn_connector: str | None = None,
     ) -> dict[str, Any]:
         """Create a IPv6 address.
 
@@ -496,22 +494,22 @@ class Client(BaseClient):
             type_ (str): The type of the IPv6 address to create.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            comment (OptionalStr, optional): A comment for the address.
+            comment (str | None, optional): A comment for the address.
                 Defaults to None.
-            subnet (OptionalStr, optional): IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
+            subnet (str | None, optional): IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
                 Defaults to None.
-            start_ip (OptionalStr, optional): First IP address (inclusive) in the range for the address.
+            start_ip (str | None, optional): First IP address (inclusive) in the range for the address.
                 Defaults to None.
-            end_ip (OptionalStr, optional): Final IP address (inclusive) in the range for the address.
+            end_ip (str | None, optional): Final IP address (inclusive) in the range for the address.
                 Defaults to None.
-            fqdn (OptionalStr, optional): Fully Qualified Domain Name address.
+            fqdn (str | None, optional): Fully Qualified Domain Name address.
                 Defaults to None.
-            country (OptionalStr, optional): IP addresses associated to a specific country.
+            country (str | None, optional): IP addresses associated to a specific country.
                 Input must be according to the two-letter counter codes, for example: `IL`.
                 Defaults to None.
             mac_addresses (list[str] | None, optional): list of MAC addresses.
                 Defaults to None.
-            sdn_connector (OptionalStr, optional): Software-defined networking connector
+            sdn_connector (str | None, optional): Software-defined networking connector
                 enables to interact with SDN controllers.
                 Defaults to None.
 
@@ -542,41 +540,41 @@ class Client(BaseClient):
     def update_firewall_address_ipv6(
         self,
         name: str,
-        type_: OptionalStr = None,
+        type_: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        comment: OptionalStr = None,
-        subnet: OptionalStr = None,
-        start_ip: OptionalStr = None,
-        end_ip: OptionalStr = None,
-        fqdn: OptionalStr = None,
-        country: OptionalStr = None,
+        comment: str | None = None,
+        subnet: str | None = None,
+        start_ip: str | None = None,
+        end_ip: str | None = None,
+        fqdn: str | None = None,
+        country: str | None = None,
         mac_addresses: list[str] | None = None,
-        sdn_connector: OptionalStr = None,
+        sdn_connector: str | None = None,
     ) -> dict[str, Any]:
         """Update a IPv6 address.
 
         Args:
             name (str): The name of the address to update.
-            type_ (OptionalStr, optional): The type of the IPv6 address to update.
+            type_ (str | None, optional): The type of the IPv6 address to update.
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            comment (OptionalStr, optional): A comment for the address.
+            comment (str | None, optional): A comment for the address.
                 Defaults to None.
-            subnet (OptionalStr, optional): IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
+            subnet (str | None, optional): IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
                 Defaults to None.
-            start_ip (OptionalStr, optional): First IP address (inclusive) in the range for the address.
+            start_ip (str | None, optional): First IP address (inclusive) in the range for the address.
                 Defaults to None.
-            end_ip (OptionalStr, optional): Final IP address (inclusive) in the range for the address.
+            end_ip (str | None, optional): Final IP address (inclusive) in the range for the address.
                 Defaults to None.
-            fqdn (OptionalStr, optional): Fully Qualified Domain Name address.
+            fqdn (str | None, optional): Fully Qualified Domain Name address.
                 Defaults to None.
-            country (OptionalStr, optional): IP addresses associated to a specific country.
+            country (str | None, optional): IP addresses associated to a specific country.
                 Input must be according to the two-letter counter codes, for example: `IL`.
                 Defaults to None.
             mac_addresses (list[str] | None, optional): list of MAC addresses.
                 Defaults to None.
-            sdn_connector (OptionalStr, optional): Software-defined networking connector
+            sdn_connector (str | None, optional): Software-defined networking connector
                 enables to interact with SDN controllers.
                 Defaults to None.
 
@@ -624,10 +622,10 @@ class Client(BaseClient):
 
     def list_firewall_address_ipv4_multicasts(
         self,
-        name: OptionalStr = None,
+        name: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all IPv4 multicast addresses.
@@ -637,9 +635,9 @@ class Client(BaseClient):
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -667,11 +665,11 @@ class Client(BaseClient):
         name: str,
         type_: str,
         vdom: str = VDOM_DEFAULT,
-        comment: OptionalStr = None,
-        associated_interface: OptionalStr = None,
-        subnet: OptionalStr = None,
-        start_ip: OptionalStr = None,
-        end_ip: OptionalStr = None,
+        comment: str | None = None,
+        associated_interface: str | None = None,
+        subnet: str | None = None,
+        start_ip: str | None = None,
+        end_ip: str | None = None,
     ) -> dict[str, Any]:
         """Create a IPv4 multicast address.
 
@@ -680,15 +678,15 @@ class Client(BaseClient):
             type_ (str): The type of the IPv4 multicast address to create, can be `multicastrange` or `broadcastmask`.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            comment (OptionalStr, optional): A comment for the address.
+            comment (str | None, optional): A comment for the address.
                 Defaults to None.
-            associated_interface (OptionalStr, optional): Network interface associated with address.
+            associated_interface (str | None, optional): Network interface associated with address.
                 Defaults to None.
-            subnet (OptionalStr, optional): Broadcast address and subnet.
+            subnet (str | None, optional): Broadcast address and subnet.
                 Defaults to None.
-            start_ip (OptionalStr, optional): First IP address (inclusive) in the range for the address.
+            start_ip (str | None, optional): First IP address (inclusive) in the range for the address.
                 Defaults to None.
-            end_ip (OptionalStr, optional): Final IP address (inclusive) in the range for the address.
+            end_ip (str | None, optional): Final IP address (inclusive) in the range for the address.
                 Defaults to None.
 
         Returns:
@@ -718,12 +716,12 @@ class Client(BaseClient):
         self,
         name: str,
         vdom: str = VDOM_DEFAULT,
-        comment: OptionalStr = None,
-        associated_interface: OptionalStr = None,
-        type_: OptionalStr = None,
-        subnet: OptionalStr = None,
-        start_ip: OptionalStr = None,
-        end_ip: OptionalStr = None,
+        comment: str | None = None,
+        associated_interface: str | None = None,
+        type_: str | None = None,
+        subnet: str | None = None,
+        start_ip: str | None = None,
+        end_ip: str | None = None,
     ) -> dict[str, Any]:
         """Update a IPv4 multicast address.
 
@@ -731,18 +729,18 @@ class Client(BaseClient):
             name (str): The name of the address to update.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            comment (OptionalStr, optional): A comment for the address.
+            comment (str | None, optional): A comment for the address.
                 Defaults to None.
-            associated_interface (OptionalStr, optional): Network interface associated with address.
+            associated_interface (str | None, optional): Network interface associated with address.
                 Defaults to None.
-            type_ (OptionalStr, optional): The type of the IPv4 multicast address to create,
+            type_ (str | None, optional): The type of the IPv4 multicast address to create,
                 can be `multicastrange` or `broadcastmask`.
                 Defaults to None.
-            subnet (OptionalStr, optional): Broadcast address and subnet.
+            subnet (str | None, optional): Broadcast address and subnet.
                 Defaults to None.
-            start_ip (OptionalStr, optional): First IP address (inclusive) in the range for the address.
+            start_ip (str | None, optional): First IP address (inclusive) in the range for the address.
                 Defaults to None.
-            end_ip (OptionalStr, optional): Final IP address (inclusive) in the range for the address.
+            end_ip (str | None, optional): Final IP address (inclusive) in the range for the address.
                 Defaults to None.
 
         Returns:
@@ -788,10 +786,10 @@ class Client(BaseClient):
 
     def list_firewall_address_ipv6_multicasts(
         self,
-        name: OptionalStr = None,
+        name: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all IPv6 multicast addresses.
@@ -801,9 +799,9 @@ class Client(BaseClient):
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -831,16 +829,16 @@ class Client(BaseClient):
         name: str,
         subnet: str,
         vdom: str = VDOM_DEFAULT,
-        comment: OptionalStr = None,
+        comment: str | None = None,
     ) -> dict[str, Any]:
         """Create a IPv6 multicast address.
 
         Args:
             name (str): The name of the address to create.
-            subnet (OptionalStr, optional): IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
+            subnet (str | None, optional): IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            comment (OptionalStr, optional): A comment for the address.
+            comment (str | None, optional): A comment for the address.
                 Defaults to None.
 
         Returns:
@@ -864,8 +862,8 @@ class Client(BaseClient):
         self,
         name: str,
         vdom: str = VDOM_DEFAULT,
-        comment: OptionalStr = None,
-        subnet: OptionalStr = None,
+        comment: str | None = None,
+        subnet: str | None = None,
     ) -> dict[str, Any]:
         """Update a IPv6 multicast address.
 
@@ -873,9 +871,9 @@ class Client(BaseClient):
             name (str): The name of the address to create.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            comment (OptionalStr, optional): A comment for the address.
+            comment (str | None, optional): A comment for the address.
                 Defaults to None.
-            subnet (OptionalStr, optional): IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
+            subnet (str | None, optional): IPv6 address prefix (format: xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx/xxx).
                 Defaults to None.
 
         Returns:
@@ -915,10 +913,10 @@ class Client(BaseClient):
 
     def list_firewall_address_ipv4_groups(
         self,
-        name: OptionalStr = None,
+        name: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all IPv4 address groups.
@@ -928,9 +926,9 @@ class Client(BaseClient):
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -977,10 +975,10 @@ class Client(BaseClient):
 
     def list_firewall_address_ipv6_groups(
         self,
-        name: OptionalStr = None,
+        name: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all IPv6 address groups.
@@ -990,9 +988,9 @@ class Client(BaseClient):
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -1039,10 +1037,10 @@ class Client(BaseClient):
 
     def list_firewall_services(
         self,
-        name: OptionalStr = None,
+        name: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all services.
@@ -1052,9 +1050,9 @@ class Client(BaseClient):
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -1101,10 +1099,10 @@ class Client(BaseClient):
 
     def list_firewall_service_groups(
         self,
-        name: OptionalStr = None,
+        name: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all service groups.
@@ -1114,9 +1112,9 @@ class Client(BaseClient):
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -1163,10 +1161,10 @@ class Client(BaseClient):
 
     def list_firewall_policies(
         self,
-        id_: OptionalStr = None,
+        id_: str | None = None,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all policies.
@@ -1176,9 +1174,9 @@ class Client(BaseClient):
                 Defaults to None.
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -1228,16 +1226,16 @@ class Client(BaseClient):
 
     def list_system_vdoms(
         self,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all virtual domains.
 
         Args:
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -1260,8 +1258,8 @@ class Client(BaseClient):
     def list_banned_ips(
         self,
         vdom: str = VDOM_DEFAULT,
-        filter_field: OptionalStr = None,
-        filter_value: OptionalStr = None,
+        filter_field: str | None = None,
+        filter_value: str | None = None,
         format_fields: list[str] | None = None,
     ) -> dict[str, Any]:
         """List all banned IPv4 and IPv6 addresses.
@@ -1269,9 +1267,9 @@ class Client(BaseClient):
         Args:
             vdom (str, optional): The VDOM to use.
                 Defaults to VDOM_DEFAULT.
-            filter_field (OptionalStr, optional): The field to filter by.
+            filter_field (str | None, optional): The field to filter by.
                 Defaults to None.
-            filter_value (OptionalStr, optional): The value to filter by.
+            filter_value (str | None, optional): The value to filter by.
                 Defaults to None.
             format_fields (list[str], optional): The fields to format.
                 Defaults to None.
@@ -1355,15 +1353,15 @@ def extract_key_from_items(key: str, items: list[dict[str, Any]] | None = None) 
     return [item[key] for item in items or []]
 
 
-def space_to_hyphen(value: OptionalStr = None) -> OptionalStr:
+def space_to_hyphen(value: str | None = None) -> str | None:
     """Replaces all spaces with hyphens in a string.
 
     Args:
-        value (OptionalStr, optional): The string to modify.
+        value (str | None, optional): The string to modify.
             Defaults to None.
 
     Returns:
-        OptionalStr: The modified string.
+        str | None: The modified string.
     """
     return value and value.replace(" ", "-")
 
@@ -1505,11 +1503,11 @@ def create_addr_string(list_of_addr_data_dicts):
     return addr_string
 
 
-def validate_mac_addresses(mac_addresses: list[OptionalStr] | None = None) -> None:
+def validate_mac_addresses(mac_addresses: list[str | None] | None = None) -> None:
     """Validates the given list of MAC addresses.
 
     Args:
-        mac_addresses (list[OptionalStr] | None, optional): The list of MAC addresses to validate.
+        mac_addresses (list[str | None] | None, optional): The list of MAC addresses to validate.
             Defaults to None.
 
     Raises:
@@ -1522,11 +1520,11 @@ def validate_mac_addresses(mac_addresses: list[OptionalStr] | None = None) -> No
                     raise DemistoException(f"Invalid MAC address: {mac_address}")
 
 
-def validate_ipv4_addresses(ipv4_addresses: list[OptionalStr] | None = None) -> None:
+def validate_ipv4_addresses(ipv4_addresses: list[str | None] | None = None) -> None:
     """Validates the given list of IPv4 addresses.
 
     Args:
-        ipv4_addresses (list[OptionalStr] | None, optional): The list of IPv4 addresses to validate.
+        ipv4_addresses (list[str | None] | None, optional): The list of IPv4 addresses to validate.
             Defaults to None.
 
     Raises:
@@ -1537,11 +1535,11 @@ def validate_ipv4_addresses(ipv4_addresses: list[OptionalStr] | None = None) -> 
             raise DemistoException(f"Invalid IPv4 address: {ipv4_address}")
 
 
-def validate_ipv6_networks(ipv6_networks: list[OptionalStr] | None = None) -> None:
+def validate_ipv6_networks(ipv6_networks: list[str | None] | None = None) -> None:
     """Validates the given list of IPv6 networks.
 
     Args:
-        ipv6_networks (list[OptionalStr] | None, optional): The list of IPv6 networks to validate.
+        ipv6_networks (list[str | None] | None, optional): The list of IPv6 networks to validate.
             Defaults to None.
 
     Raises:
