@@ -168,7 +168,7 @@ def get_images_paths_in_path(path: str) -> List[str]:
     return res
 
 
-def get_pdf_metadata(file_path: str, user_password: str | None = None) -> dict:
+def get_pdf_metadata(file_path: str, user_or_owner_password: str | None = None) -> dict:
     """Gets the metadata from the pdf as a dictionary"""
     if user_password:
         try:
