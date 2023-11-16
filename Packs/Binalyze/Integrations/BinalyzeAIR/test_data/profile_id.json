@@ -1,0 +1,20 @@
+{
+      "success": true,
+      "result": {
+            "entities": [
+                {
+                    "_id": "RANDOMSTRINGHERE",
+                    "name": "profile",
+                    "organizationIds": [],
+                    "averageTime": 1,
+                    "createdAt": "2012-12-12T12:12:12.122Z",
+                    "createdBy": "username@user.com",
+                    "lastUsedAt": "2012-12-12T112:12:12.917Z",
+                    "lastUsedBy": "someone",
+                    "deletable": true
+                }
+            ]
+      },
+      "statusCode": 200,
+      "errors": []
+}
