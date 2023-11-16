@@ -2,7 +2,7 @@ Fetch indicators from a CSV feed. The integration allows a great amount of user 
 
 * **Indicator Type** - The type of indicators in the feed.
 * **Server URL** - URL of the feed.
-* **Username + Password** - Credentials to access feeds that require basic authentication. 
+ * **Username + Password** - Credentials to access feeds that require basic authentication. 
 These fields also support the use of API key headers. To use API key headers, specify the header name and value in the following format:
 `_header:<header_name>` in the **Username** field and the header value in the **Password** field.
 * **Ignore Regex** - Python regular expression for lines that should be ignored.
@@ -14,16 +14,16 @@ These fields also support the use of API key headers. To use API key headers, sp
 * **Skip Initial Space** - When True, whitespace immediately following the delimiter is ignored.
 
 ## Step by step configuration
-As an example, we'll be looking at the SSL BL feed by Abuse. This feed will ingest indicators of type IP. These are the feed isntance configuration parameters for our example.
+ As an example, we'll be looking at the SSL BL feed by Abuse. This feed will ingest indicators of type IP. These are the feed isntance configuration parameters for our example.
 
 **Indicator Type** - IP.
 
 **Server URL**: https://sslbl.abuse.ch/blacklist/sslipblacklist.csv.
-
+ 
 **Credentials** - This feed does not require authentication.
 
 From a quick look at the feed in the web browser, we are going to configure the rest of the parameters:
-
+ 
 **Ignore Regex** - We are going to need to ignore all the text inside the part enclosed by the `#` character (included) 
 so we'll configure `^#` as the regular expression to use to ignore this text.
 
@@ -35,7 +35,7 @@ Note that the field for the indicator value itself (the IP) must be `value`. So 
 **Delimiter** - The delimiter between the fields in this feed is `,`, we'll use that as the value for this field.
 
 **Quote Character** - No need to change the quote character, we'll leave that as the default (`"`).
-
+ 
 **Escape Character** - No need to change the escape character, we'll leave that empty.
 
 **Skip Initial Space** - No whitespaces between the delimiter and the value, we'll leave the unchecked.

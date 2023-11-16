@@ -9,18 +9,99 @@ This integration was integrated and tested with version 2.0.0 of Zoom
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. '<https://api.zoom.us/v2/>') |  | False |
-    | Account ID (OAuth) |  | False |
-    | Client ID (OAuth) |  | False |
-    | Client Secret (OAuth) |  | False |
-    | API Key (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | API Secret (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | API Key (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | API Secret (JWT-Deprecated.) | This authentication method will be deprecated by Zoom in June 2023. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
+    | `Server URL` (e.g., '<https://api.zoom.us/v2/>') |  | True |
+    | `Account ID (OAuth)` |  | True |
+    | `Client ID (OAuth)` |  | True |
+    | `Client Secret (OAuth)` |  | True |
+    | `Use system proxy settings` |  | False |
+    | `Trust any certificate (not secure)` |  | False |
+    | `Long running instance`| Enable in order to use zoom-ask and for mirroring. |False |
+    | `Listen Port`|Listener port number.  |False|
+    | `Bot JID`| Zoom Bot app JID. | False|
+    | `Bot Client ID (OAuth)`| Zoom Bot app client ID. | False|
+    | `Bot Client Secret (OAuth)`|  Zoom Bot app secret ID. | False|
+    | `Secret Token`| For mirroring, see [Configuring Secret Token](#secret-token). |False|
+    | `Verification Token`| For verify the mirror in. |False|
+    | `Mirroring` | Enable Incident Mirroring. See [how to configure the app](#secret-token). | False |
+    | `Certificate (Required for HTTPS)`| (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are supported only using engine.|False|
+    |`Private Key (Required for HTTPS)`|(For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key|False|
+ 
+  
+
+
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+### Server configuration (XSOAR 6.x)
+
+In the Server Configuration section, verify that the value for the instance.execute.external.`INTEGRATION-INSTANCE-NAME` key is set to true. If this key does not exist:
+1. Click **+ Add Server Configuration**.
+2. Add **instance.execute.external.`INTEGRATION-INSTANCE-NAME`** and set the value to **true**. 
+
+XSOAR endpoint URL-
+   - **For Cortex XSOAR 6.x**: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your XSOAR instance, but rather is part of the URL.
+   - **For Cortex XSOAR 8.x / XSIAM**: you need to run using external engine: `https://<Engine URL>:<port>`. For example, https://my-engine-url:7001. 
+
+
+## Create Zoom ChatBOT app
+1. Navigate to https://marketplace.zoom.us/.
+2. Click **Develop** > **Build Team** > **Team Chat Apps**.
+3. Enter the **App Name**.
+4. Click **Create**.
+
+![enter image description here](doc_files/create-team-chat-app.gif)
+### Configure App Settings
+Enter your Cortex XSOAR endpoint URL in all Redirect URLS.
+
+
+1. Click **Feature**> **Team Chat**.
+In the Team Chat Subscription section under BOT endpoint URL add:
+   - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`. For example, `https://my.demisto.live/instance/execute/zoom`. Note that the string `instance` does not refer to the name of your Cortex XSOAR instance, but rather is part of the URL.
+   - For Cortex XSOAR 8.x / XSAIM you need to run using extrnal engine: `https://<Engine Url>:<port>`. For example, https://my-engine-url:7001. 
+
+
+![enter image description here](doc_files/bot_endpoint_url.gif)
+
+1. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
+
+   | Scope Type | Scope Name | 
+   | --- |  --- | 
+   | Team Chat |  Enable Chatbot within Zoom Team Chat Client /imchat:bot |
+   | Team Chat |  Send a team chat message to a Zoom Team Chat user or channel on behalf of a Chatbot /imchat:write:admin |
+   | Team Chat |  View and manage all users' team chat channels /chat_channel:write:admin |
+   | User |   View all user information /user:read:admin |
+![enter image description here](doc_files/scope-premissions.png)
+
+1. Click **Local Test** >**Add** to test your app and authorize your Cortex XSOAR app.
+ ![enter image description here](doc_files/test-zoom-app.gif)
+
+ 1. **If mirroring is enabled in the integration configuration or using ZoomAsk**:
+**Endpoint URL Requirements-**
+    To receive webhooks, the Event notification endpoint URL that you specify for each event subscription must:
+   *  Be a publicly accessible https endpoint url that supports TLSv1.2+ with a valid certificate chain issued by a Certificate Authority (CA).
+   *   Be able to accept HTTP POST requests.
+   *   Be able to respond with a 200 or 204 HTTP Status Code.
+    <a name="secret-token"></a>
+      1. Copy the **secret token** from the "Feature" page under the "Token" section and add it
+    to the instance configuration.
+    ![enter image description here](doc_files/zoom-token.png)
+      2. Configure Event Subscriptions. 
+         1. In the "Feature" page
+   under the "General Features" section, enable "Event Subscriptions".
+         2. Click **+Add New Event Subscription**.
+         3. Enter the following information:
+         - Subscription name: Enter a name for this Event Subscription (e.g., "Send Message Sent").
+         - Authentication Header Option - 
+             1. **Default Header Provided by Zoom option**- This option allows you to use a verification token provided by Zoom. Copy the **verification token** from the "Feature" page under the "Token" section and add it to the instance configuration.
+              ![enter image description here](doc_files/verification.png)
+              2. **Basic Authentication Option (must in XSOAR8)** you can use Basic Authentication by providing your Zoom Client ID (OAuth) and Secret ID (OAuth) as configured in the instance configuration. 
+              ![enter image description here](doc_files/authentication_header.png)
+         - Event notification endpoint URL: Enter the Cortex XSOAR URL of your server (`CORTEX-XSOAR-URL`/instance/execute/`INTEGRATION-INSTANCE-NAME`) where you want to receive event notifications. This URL should handle incoming event data from Zoom. Make sure it's publicly accessible.
+         - Validate the URL: Just after setting up/configuration of the Cortex XSOAR side you can validate the URL.
+         - Add Events: Click **+Add Events**. Under Event types, select **Chat Message** and then select **Chat message sent**.
+![enter image description here](doc_files/add-event.gif)
+
 
 ## Commands
 
@@ -1837,4 +1918,101 @@ Searches chat messages or shared files between a user and an individual contact 
 >|---|---|---|---|---|---|---|---|
 >| 2023-05-22T08:24:14Z | None | a62636c8-b6c1-4135-9352-88ac61eafc31 | <example@example.com> | message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
 >| 2023-05-22T08:20:22Z | None | 4a59df4a-9668-46bd-bff2-3e1f3462ecc3 | <example@example.com> | my message | admin zoom | None | uJiZN-O7Rp6Jp_995FpZGg |
+
+### send-notification
+
+***
+Sends messages from your Marketplace Chatbot app on Zoom to either an individual user or to a channel.
+
+#### Base Command
+
+`send-notification`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to |  The email address or user ID or member ID of the person to send a message.  | Required | 
+| channel_id |  The channel ID of the channel to send a message. | Optional | 
+| message | The message to be sent. Maximum of 1024 characters. | Required | 
+| visible_to_user | The UserID that allows a Chatbot to send a message to a group channel when it has only one designated person in that group channel to see the message. | Optional | 
+| zoom_ask | Whether to send the message as a JSON. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!send-notification message=hi to=example@example.com```
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+>### Message
+>Message sent to Zoom successfully. Message ID is: 20230815153245201_BPK3S3S_aw1
+
+
+## mirror-investigation
+
+***
+Mirrors the investigation between Zoom and the Cortex XSOAR War Room.
+
+#### Base Command
+
+`mirror-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. Possible values are: all, chat, none. Default is all. | Optional | 
+| autoclose | Whether the channel is auto-closed when an investigation is closed. Can be "true" or "false". Default is "true". | Optional | 
+| direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". Default value is "Both". | Optional | 
+| channelName | The name of the channel. The default is "incident-&lt;incidentID&gt;". | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!mirror-investigation direction="FromDemisto" channelName="example"```
+
+#### Human Readable Output
+
+> Investigation mirrored successfully, channel:example
+
+### close-channel
+
+***
+Delete a mirrored Zoom channel.
+
+#### Base Command
+
+`close-channel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel | The name of the channel to delete. If not provided, the mirrored investigation channel is deleted (if the channel exists). | Optional | 
+| channel_id | The ID of the channel to delete. If not provided, the mirrored investigation channel is deleted (if the channel exists). | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```
+!close-channel channel=new-zoom-channel
+```
+
+#### Human Readable Output
+
+> Channel successfully deleted.
 

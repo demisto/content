@@ -83,7 +83,8 @@ class GCP:
                 pack_zip.extractall(os.path.join(self.extracting_destination, pack_id))
             return os.path.join(self.extracting_destination, pack_id)
         else:
-            raise FileNotFoundError(f'{pack_id} pack of version {pack_version} was not found in the bucket. {pack_path=}')
+            logging.critical(f'{pack_id} pack of version {pack_version} was not found in the bucket. {pack_path=}')
+            return False
 
     def download_image(self, pack_id):
         """
@@ -158,7 +159,7 @@ class GCP:
         Returns the max version of a given pack
         """
         changelog = self.get_changelog(pack_id)
-        return str(max([Version(key) for key in changelog.keys()]))
+        return str(max([Version(key) for key in changelog]))
 
     def get_changelog(self, pack_id):
         """
@@ -197,12 +198,22 @@ class BucketVerifier:
         return all(version_exists) and all(items_exists) and rn_as_expected, pack_id
 
     @logger
+    def verify_new_xsoar_pack(self, pack_id):
+        """
+        Verify the new XSOAR pack is NOT in the index, verify version 1.0.0 zip DOES NOT exists under the pack's path
+        """
+        version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
+        return not any(version_exists), pack_id
+
+    @logger
     def verify_modified_pack(self, pack_id, pack_items, expected_rn):
         """
         Verify the pack's new version is in the index, verify the new version zip exists under the pack's path,
         verify all the new items are present in the pack
         """
-        self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        pack_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        if not pack_exists:
+            return False, pack_id
         changelog_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
@@ -214,6 +225,8 @@ class BucketVerifier:
         Verify a new version exists in the index, verify the rn is parsed correctly to the changelog
         """
         new_version_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        if not new_version_exists:
+            return False, pack_id
         new_version_exists_in_changelog = rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
         new_version_exists_in_metadata = self.gcp.get_pack_metadata(pack_id).get('currentVersion') == self.versions[pack_id]
         return all([new_version_exists, new_version_exists_in_changelog, new_version_exists_in_metadata]), pack_id
@@ -237,7 +250,10 @@ class BucketVerifier:
         """
         Verify readme content is parsed correctly, verify that there was no version bump if only readme was modified
         """
-        self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        pack_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        if not pack_exists:
+            return False, pack_id
+
         return self.gcp.get_max_version(pack_id) == self.versions[pack_id] and \
             readme in self.gcp.get_pack_readme(pack_id), pack_id
 
@@ -253,7 +269,10 @@ class BucketVerifier:
         """
         Verify the path of the item is modified
         """
-        self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        pack_exists = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        if not pack_exists:
+            return False, pack_id
+
         modified_item_exist = self.gcp.is_items_in_pack([modified_item_path], pack_id)
         items_exists = [self.gcp.is_items_in_pack(item_file_paths, pack_id) for item_file_paths
                         in pack_items.values()]
@@ -265,7 +284,7 @@ class BucketVerifier:
         Verify the new dependency is in the metadata
         """
         # TODO: Should verify the dependency in the pack zip metadata as well - after CIAC-4686 is fixed
-        return dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}).keys(), pack_id
+        return dependency_id in self.gcp.get_pack_metadata(pack_id).get('dependencies', {}), pack_id
 
     @logger
     def verify_new_image(self, pack_id, new_image_path):
@@ -288,6 +307,8 @@ class BucketVerifier:
         """
         self.verify_modified_item_path('AlibabaActionTrail', 'ModelingRules/modelingrule-Alibaba.yml',
                                        self.items_dict.get('AlibabaActionTrail'))
+
+        self.verify_new_xsoar_pack('TestUploadFlowXSOAR', self.items_dict.get('TestUploadFlowXSOAR'))
 
     def run_xsoar_bucket_validations(self):
         """
@@ -321,10 +342,9 @@ class BucketVerifier:
         # Case 6: Verify pack is set to hidden - Microsoft365Defender
         self.verify_hidden('Microsoft365Defender')
 
-        # TODO: fix after README changes are collected the pack to upload is fixed - CIAC-5369
         # Case 7: Verify changed readme - Maltiverse
-        # expected_readme = 'readme test upload flow'
-        # self.verify_readme('Maltiverse', expected_readme)
+        expected_readme = 'readme test upload flow'
+        self.verify_readme('Maltiverse', expected_readme)
 
         # TODO: need to cause this pack to fail in another way because the current way cause validation to fail
         # Case 8: Verify failing pack - Absolute

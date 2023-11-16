@@ -8,13 +8,12 @@ BRANCH=${CI_COMMIT_BRANCH:-unknown}
 ARTIFACTS_DIR=${ARTIFACTS_FOLDER:-artifacts}
 
 # build type is staging if ID_SET doesn't exist
-ID_SET=$ARTIFACTS_FOLDER/id_set.json
+ID_SET="${ARTIFACTS_FOLDER_SERVER_TYPE}/id_set.json"
 STAGING_SUFFIX=""
-if [ ! -f "$ID_SET" ]; then
-    echo "ID_SET file not found at $ID_SET"
+if [ ! -f "${ID_SET}" ]; then
+    echo "ID_SET file not found at ${ID_SET}"
     STAGING_SUFFIX="_staging"
 fi
-
 
 if [[ ! -d "$ARTIFACTS_DIR" ]]; then
     echo "Directory [$ARTIFACTS_DIR] not found. Nothing to upload. Skipping!"
@@ -46,7 +45,8 @@ if [[ ! -f "$GCS_ARTIFACTS_KEY" ]]; then
     exit 1
 fi
 
-gcloud auth activate-service-account --key-file=$GCS_ARTIFACTS_KEY > auth.out 2>&1
+gcloud auth activate-service-account --key-file="${GCS_ARTIFACTS_KEY}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
 TARGET_PATH="content/$BRANCH/$CI_PIPELINE_ID$STAGING_SUFFIX"
-echo "auth loaded. uploading files at: $ARTIFACTS_DIR to target path: $TARGET_PATH ..."
-gsutil -m cp -z html,md,json,log,txt -r "$ARTIFACTS_DIR" "gs://$GCS_ARTIFACTS_BUCKET/$TARGET_PATH"
+TARGET="gs://$GCS_ARTIFACTS_BUCKET/$TARGET_PATH"
+echo "auth loaded. uploading files at: $ARTIFACTS_DIR to target: ${TARGET}"
+gsutil -m cp -z html,md,json,log,txt -r "$ARTIFACTS_DIR" "${TARGET}"
