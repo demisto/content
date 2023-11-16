@@ -32,7 +32,7 @@ fi
 # We can freely use these buckets since its only reading the prod to the circle-ci bucket.
 
 echo "Preparing content packs for testing ..."
-gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/gcloud_auth.log" 2>&1
 echo "Auth loaded successfully."
 
 # ====== BUILD CONFIGURATION ======
@@ -60,7 +60,7 @@ else
     SOURCE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
     # ====== UPDATING TESTING BUCKET ======
     echo "Copying production bucket files at: gs://$GCS_PRODUCTION_BUCKET/content to testing bucket at path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
-    gsutil -m cp -r "gs://$GCS_PRODUCTION_BUCKET/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing gsutil.log" 2>&1
+    gsutil -m cp -r "gs://$GCS_PRODUCTION_BUCKET/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/Prepare_Content_Packs_For_Testing_gsutil.log" 2>&1
     echo "Finished copying successfully."
     # ====== UPDATING TESTING BUCKET ======
   else  # case 3: a test upload, the source is of an exiting target bucket, no need to copy from the prod bucket
@@ -71,7 +71,7 @@ else
 fi
 
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH ..."
-gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing gsutil.log" 2>&1
+gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/Prepare_Content_Packs_For_Testing_gsutil.log" 2>&1
 echo "Finished copying successfully."
 
 CONTENT_PACKS_TO_UPLOAD_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.txt"
@@ -119,25 +119,25 @@ else
   fi
   python3 ./Tests/Marketplace/upload_packs.py -pa "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --artifacts-folder-server-type "${ARTIFACTS_FOLDER_SERVER_TYPE}" -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -pn "${CONTENT_PACKS_TO_UPLOAD}" -p $UPLOAD_SPECIFIC_PACKS -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
 
-  if [ -f "$ARTIFACTS_FOLDER/index.json" ]; then
-    gsutil cp -z json "$ARTIFACTS_FOLDER/index.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
+  if [ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/index.json" ]; then
+    gsutil cp -z json "${ARTIFACTS_FOLDER_SERVER_TYPE}/index.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
   else
-    echo "Skipping uploading index.json file."
+    echo "Skipping uploading ${ARTIFACTS_FOLDER_SERVER_TYPE}/index.json file, it doesn't exist."
   fi
 
-  corepacks_files_count=$(find $ARTIFACTS_FOLDER -name "corepacks*.json" | wc -l)
-  if [ $corepacks_files_count -eq 0 ]; then
-    echo "No corepacks files were found, skipping uploading."
+  core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
+  if [ "${core_packs_files_count}" -eq 0 ]; then
+    echo "No core packs files were found, skipping uploading."
   else
-    echo "Uploading corepacks files."
-    # Copy corepacks files from the artifacts folder to the build bucket:
-    find $ARTIFACTS_FOLDER -name "corepacks*.json" -exec gsutil cp -z json {} "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH" \;
-    echo "Successfully uploaded corepacks files."
+    echo "Uploading ${core_packs_files_count} core packs files."
+    # Copy core packs files from the artifacts folder to the build bucket:
+    find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" -exec gsutil cp -z json "{}" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH" \;
+    echo "Successfully uploaded core packs files."
   fi
 
-  if [ -f "$ARTIFACTS_FOLDER/versions-metadata.json" ]; then
+  if [ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/versions-metadata.json" ]; then
     echo "Uploading versions-metadata.json."
-    gsutil cp -z json "$ARTIFACTS_FOLDER/versions-metadata.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
+    gsutil cp -z json "${ARTIFACTS_FOLDER_SERVER_TYPE}/versions-metadata.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
     echo "Successfully uploaded versions-metadata.json."
   else
     echo "No versions-metadata.json file, skipping uploading."

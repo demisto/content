@@ -1,0 +1,32 @@
+{
+    "id": "incident_cybleeventsv2application",
+    "version": -1,
+    "modified": "2023-11-03T08:12:46.912634844Z",
+    "name": "CybleEventsV2 Application",
+    "ownerOnly": false,
+    "description": "Compromised endpoints: Application",
+    "cliName": "cybleeventsv2application",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Cyble Vision Alert V2"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": false,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
