@@ -155,20 +155,6 @@ class Pack:
         return self._pack_path
 
     @property
-    def latest_version(self):
-        """ str: pack latest version from sorted keys of changelog.json file.
-        """
-        if not self._latest_version:
-            self._latest_version = self._get_latest_version()
-            return self._latest_version
-        else:
-            return self._latest_version
-
-    @latest_version.setter
-    def latest_version(self, latest_version):
-        self._latest_version = latest_version
-
-    @property
     def status(self):
         """ str: current status of the packs.
         """
@@ -239,7 +225,7 @@ class Pack:
 
     @property
     def current_version(self):
-        """ str: current version of the pack (different from latest_version).
+        """ str: current version of the pack.
         """
         return self._current_version
 
@@ -411,29 +397,6 @@ class Pack:
             Metadata.INTEGRATIONS: self._related_integration_images
         }
 
-    def _get_latest_version(self):
-        """ Return latest semantic version of the pack.
-
-        In case that changelog.json file was not found, default value of 1.0.0 will be returned.
-        Otherwise, keys of semantic pack versions will be collected and sorted in descending and return latest version.
-        For additional information regarding changelog.json format go to issue #19786
-
-        Returns:
-            str: Pack latest version.
-
-        """
-        changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
-
-        if not os.path.exists(changelog_path):
-            return self._current_version
-
-        with open(changelog_path) as changelog_file:
-            changelog = json.load(changelog_file)
-            pack_versions = [Version(v) for v in changelog]
-            pack_versions.sort(reverse=True)
-
-            return str(pack_versions[0])
-
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
                                     pack_dependencies_by_download_count: list):
@@ -462,7 +425,7 @@ class Pack:
         all_dep_int_imgs = pack_integration_images
         for dep_pack_name in pack_dependencies_by_download_count:
             if dep_pack_name in pack_dependencies_integration_images_dict:
-                logging.info(f'Adding {dep_pack_name} to deps int imgs')
+                logging.debug(f'Adding {dep_pack_name} to deps int imgs')
                 dep_int_imgs = sorted(pack_dependencies_integration_images_dict[dep_pack_name], key=sort_by_name)
                 for dep_int_img in dep_int_imgs:
                     if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
@@ -676,11 +639,8 @@ class Pack:
 
         return entry_result, False
 
-    def remove_unwanted_files(self, delete_test_playbooks=True):
+    def remove_unwanted_files(self):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
-
-        Args:
-            delete_test_playbooks (bool): whether to delete test playbooks folder.
 
         Returns:
             bool: whether the operation succeeded.
@@ -688,7 +648,7 @@ class Pack:
         task_status = True
         try:
             for directory in Pack.EXCLUDE_DIRECTORIES:
-                if delete_test_playbooks and os.path.isdir(f'{self._pack_path}/{directory}'):
+                if os.path.isdir(f'{self._pack_path}/{directory}'):
                     shutil.rmtree(f'{self._pack_path}/{directory}')
                     logging.info(f"Deleted {directory} directory from {self._pack_name} pack")
 
@@ -883,96 +843,124 @@ class Pack:
         final_path_to_zipped_pack = f"{source_path}.zip"
         return task_status, final_path_to_zipped_pack
 
-    def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
-                          private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
+    def sign_and_zip_pack(self, signature_key, uploaded_packs_dir=None):
+        """
+        Signs and zips the pack before uploading it to GCP.
+
+        Args:
+            pack (Pack): Pack to be zipped.
+            signature_key (str): Base64 encoded string used to sign the pack.
+            uploaded_packs_dir: Directory path to save the pack zip in build artifacts.
+
+        Returns:
+            (bool): Whether the zip was successful
+        """
+
+        if not self.remove_unwanted_files():
+            self.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
+            self.cleanup()
+            return False
+
+        if not self.sign_pack(signature_key):
+            self.status = PackStatus.FAILED_SIGNING_PACKS.name
+            self.cleanup()
+            return False
+
+        task_status, _ = self.zip_pack()
+        if not task_status:
+            self.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+            self.cleanup()
+            return False
+
+        shutil.copyfile(self.zip_path, uploaded_packs_dir / f"{self.name}.zip")
+        return True
+
+    def upload_encrypted_private_content_to_storage(self, storage_bucket, storage_base_path, pack_artifacts_path):
+        """For private content packs, change path to an encrypted path and upload it to GCP.
+
+        Args:
+            storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
+            storage_base_path (str): The upload destination in the target bucket.
+            pack_artifacts_path (str): Path to where we are saving pack artifacts.
+        """
+        secondary_encryption_key_pack_name = f"{self._pack_name}.enc2.zip"
+        secondary_encryption_key_bucket_path = os.path.join(storage_base_path, self.name, self.current_version,
+                                                            secondary_encryption_key_pack_name)
+
+        #  In some cases the path given is actually a zip.
+        if isinstance(pack_artifacts_path, str) and pack_artifacts_path.endswith('content_packs.zip'):
+            _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
+        else:
+            _pack_artifacts_path = pack_artifacts_path
+
+        secondary_encryption_key_artifacts_path = self.zip_path.replace(f'{self._pack_name}',
+                                                                        f'{self._pack_name}.enc2')
+
+        blob = storage_bucket.blob(secondary_encryption_key_bucket_path)
+        blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+        with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
+            blob.upload_from_file(pack_zip)
+
+        logging.info(
+            f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/"
+            f"packs/{self._pack_name}.zip")
+        shutil.copy(secondary_encryption_key_artifacts_path,
+                    f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
+
+    def upload_to_storage(self, zip_pack_path, storage_bucket, storage_base_path,
+                          private_content=False, pack_artifacts_path=None, with_dependencies_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
-        The zip pack will be uploaded by default to following path: /content/packs/pack_name/pack_latest_version.
-        In case that zip pack artifact already exist at constructed path, the upload will be skipped.
-        If flag override_pack is set to True, pack will forced for upload.
-        If item_upload_path is provided it will override said path, and will save the item to that destination.
+        The zip pack will be uploaded by default to following path: /content/packs/pack_name/pack_current_version.
+        If with_dependencies_path is provided it will override said path, and will save the item to that destination.
 
         Args:
             zip_pack_path (str): full path to pack zip artifact.
-            latest_version (str): pack latest version.
             storage_bucket (google.cloud.storage.bucket.Bucket): google cloud storage bucket.
-            override_pack (bool): whether to override existing pack.
-            private_content (bool): Is being used in a private content build.
             storage_base_path (str): The upload destination in the target bucket for all packs (in the format of
                                      <some_path_in_the_target_bucket>/content/Packs).
-
+            private_content (bool): Is being used in a private content build.
             pack_artifacts_path (str): Path to where we are saving pack artifacts.
-            overridden_upload_path (str): If provided, will override version_pack_path calculation and will use this path instead
+            with_dependencies_path (str): If provided, will override version_pack_path calculation and will use this path instead
 
         Returns:
             bool: whether the operation succeeded.
-            bool: True in case of pack existence at targeted path and upload was skipped, otherwise returned False.
-            str: Path to pack's zip in the bucket after the upload.
-
         """
-        task_status = True
 
+        task_status = True
         try:
-            if overridden_upload_path:
+            if with_dependencies_path:
                 if private_content:
                     logging.warning("Private content does not support overridden argument")
-                    return task_status, True, None
-                zip_to_upload_full_path = overridden_upload_path
+                    return task_status
+                dest_path_to_upload = with_dependencies_path
             else:
-                version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
+                version_pack_path = os.path.join(storage_base_path, self.name, self.current_version)
+                logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
+                                f"files already in storage.")
 
-                if override_pack:
-                    logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
-                                    f"files already in storage.")
+                dest_path_to_upload = os.path.join(version_pack_path, f"{self._pack_name}.zip")
 
-                else:
-                    logging.warning(f"The following packs were not modified: {self._pack_name}")
-                    logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-                    return task_status, True, None
-
-                zip_to_upload_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
-            blob = storage_bucket.blob(zip_to_upload_full_path)
+            blob = storage_bucket.blob(dest_path_to_upload)
             blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
+
             if private_content:
-                secondary_encryption_key_pack_name = f"{self._pack_name}.enc2.zip"
-                secondary_encryption_key_bucket_path = os.path.join(version_pack_path,
-                                                                    secondary_encryption_key_pack_name)
-
-                #  In some cases the path given is actually a zip.
-                if isinstance(pack_artifacts_path, str) and pack_artifacts_path.endswith('content_packs.zip'):
-                    _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
-                else:
-                    _pack_artifacts_path = pack_artifacts_path
-
-                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}',
-                                                                                f'{self._pack_name}.enc2')
-
-                blob = storage_bucket.blob(secondary_encryption_key_bucket_path)
-                blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-                with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
-                    blob.upload_from_file(pack_zip)
-
-                logging.info(
-                    f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/"
-                    f"packs/{self._pack_name}.zip")
-                shutil.copy(secondary_encryption_key_artifacts_path,
-                            f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
+                self.upload_encrypted_private_content_to_storage(storage_bucket, storage_base_path, pack_artifacts_path)
 
             self.public_storage_path = blob.public_url
-            logging.success(f"Uploaded {self._pack_name} pack to {zip_to_upload_full_path} path.")
+            logging.success(f"Uploaded {self._pack_name} pack to {dest_path_to_upload} path.")
 
-            return task_status, False, zip_to_upload_full_path
+            return task_status
         except Exception:
             task_status = False
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
-            return task_status, True, None
+            return task_status
 
     def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict,
                                    successful_uploaded_dependencies_zip_packs_dict, storage_base_path, build_bucket_base_path):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
-        The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
+        The zip pack will be copied to following path: /content/packs/pack_name/pack_current_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
 
         Args:
@@ -999,20 +987,19 @@ class Pack:
 
         elif pack_was_uploaded_in_prepare_content:
 
-            latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
-            self._latest_version = latest_version
+            latest_pack_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
 
-            build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_version)
+            build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_pack_version)
 
             # Verifying that the latest version of the pack has been uploaded to the build bucket
             existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
             if not existing_bucket_version_files:
-                logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
+                logging.error(f"{self._pack_name} latest version ({latest_pack_version}) was not found on build bucket at "
                               f"path {build_version_pack_path}.")
                 return False, False
 
             # We upload the pack zip object taken from the build bucket into the production bucket
-            prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
+            prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_pack_version)
             prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
             build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
             build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
@@ -1025,7 +1012,7 @@ class Pack:
                 self.public_storage_path = copied_blob.public_url
                 task_status = copied_blob.exists()
             except Exception as e:
-                pack_suffix = os.path.join(self._pack_name, latest_version, f'{self._pack_name}.zip')
+                pack_suffix = os.path.join(self._pack_name, latest_pack_version, f'{self._pack_name}.zip')
                 logging.exception(f"Failed copying {pack_suffix}. Additional Info: {str(e)}")
                 return False, False
 
@@ -2234,69 +2221,64 @@ class Pack:
         removed_test_deps = [dep_id for dep_id in self._first_level_dependencies if dep_id not in self._dependencies]
         logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
 
-    def _enhance_pack_attributes(self, index_folder_path, statistics_handler=None, format_dependencies_only=False,
-                                 remove_test_deps=False):
-        """ Enhances the pack object with attributes for the metadata file
+    def enhance_pack_attributes(self, index_folder_path, statistics_handler=None, remove_test_deps=False):
+        """
+        Enhances the pack object attributes for the metadata file.
 
         Args:
             index_folder_path (str): downloaded index folder directory path.
             statistics_handler (StatisticsHandler): The marketplace statistics handler.
-            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
-            dependencies or not.
             remove_test_deps (bool): Whether to remove test dependencies.
         """
-        trending_packs = []
-        pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
-        if not format_dependencies_only:
+        task_status = False
+        try:
+            trending_packs = []
+            pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
             self._create_date = self._get_pack_creation_date(index_folder_path)
             self._update_date = self._get_pack_update_date(index_folder_path)
 
-        if remove_test_deps:
-            self.remove_test_dependencies()
+            if remove_test_deps:
+                self.remove_test_dependencies()
 
-        # ===== Pack Statistics Attributes =====
-        if statistics_handler:  # Public Content case
-            self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
-                self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
-                self._displayed_images_dependent_on_packs
+            if statistics_handler:  # Public Content case
+                self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
+                    self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
+                    self._displayed_images_dependent_on_packs
+                )
+                self._downloads_count = self._pack_statistics_handler.download_count
+                trending_packs = statistics_handler.trending_packs
+                pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
+
+            self._collect_pack_tags_by_statistics(trending_packs)
+            self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
+                tags=self._tags, certification=self._certification, content_items=self._content_items
             )
-            self._downloads_count = self._pack_statistics_handler.download_count
-            trending_packs = statistics_handler.trending_packs
-            pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-        self._collect_pack_tags_by_statistics(trending_packs)
-        self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
-            tags=self._tags, certification=self._certification, content_items=self._content_items
-        )
-        self._related_integration_images = self._get_all_pack_images(
-            index_folder_path, self._displayed_integration_images, self._displayed_images_dependent_on_packs,
-            pack_dependencies_by_download_count
-        )
+            self._displayed_integration_images = self.search_for_integration_images()
+            self._related_integration_images = self._get_all_pack_images(
+                index_folder_path, self._displayed_integration_images, self._displayed_images_dependent_on_packs,
+                pack_dependencies_by_download_count
+            )
+            task_status = True
+        except Exception as e:
+            logging.exception(f"Failed to enhance the pack properties for pack '{self.name}'.\n{e}")
+        finally:
+            return task_status
 
-    def format_metadata(self, index_folder_path, packs_dependencies_mapping,
-                        statistics_handler, marketplace='xsoar',
-                        format_dependencies_only=False, remove_test_deps=False):
-        """ Formats metadata according to marketplace metadata format defined in issue #19786 and writes back
-        the result.
+    def format_metadata(self, packs_dependencies_mapping, marketplace='xsoar', remove_test_deps=False):
+        """
+        Formats pack's metadata before uploading to bucket.
 
         Args:
-            index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
-            statistics_handler (StatisticsHandler): The marketplace statistics handler
             marketplace (str): Marketplace of current upload.
-            format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
-             dependencies or not.
             remove_test_deps (bool): Whether to remove test dependencies.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
-            bool: True is returned in pack is missing dependencies.
         """
         task_status = False
-
         try:
             self.set_pack_dependencies(packs_dependencies_mapping, marketplace=marketplace)
-            self._enhance_pack_attributes(index_folder_path, statistics_handler, format_dependencies_only,
-                                          remove_test_deps=remove_test_deps)
 
             formatted_metadata = self._parse_pack_metadata(parse_dependencies=remove_test_deps)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
@@ -2306,7 +2288,7 @@ class Pack:
             task_status = True
 
         except Exception as e:
-            logging.exception(f"Failed in formatting {self._pack_name} pack metadata. Additional Info: {str(e)}")
+            logging.exception(f"Failed in formatting {self._pack_name} pack metadata.\n{str(e)}")
 
         finally:
             return task_status
@@ -2549,86 +2531,55 @@ class Pack:
             integration_path_basename in unified_integrations
         ])
 
-    def upload_integration_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
-        """ Uploads pack integrations images to gcs.
+    def search_for_integration_images(self) -> list[dict]:
+        """Searches for integration images and collects their data to be added in pack's metadata.json
 
-        The returned result of integration section are defined in issue #19786.
+        Returns:
+            list[dict]: List of objects with the integration image data
+        """
+        integration_images_data = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
+        return [{'name': self.remove_contrib_suffix_from_name(image_data.get('display_name')),
+                 'imagePath': urllib.parse.quote(os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name,
+                                                              os.path.basename(image_data.get('image_path'))))}
+                for image_data in integration_images_data]
+
+    def upload_integration_images(self, storage_bucket, storage_base_path):
+        """Searches for integration images and uploads them to gcs.
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
             storage_base_path (str): The target destination of the upload in the target bucket.
-            detect_changes (bool): Whether to detect changes or upload all images in any case.
-            diff_files_list (list): The list of all modified/added files found in the diff
+
         Returns:
             bool: whether the operation succeeded.
-            list: list of dictionaries with uploaded pack integration images.
-
         """
         task_status = True
-        integration_images = []
-        integration_dirs = []
-        unified_integrations = []
-
         try:
-            if detect_changes:
-                # detect added/modified integration images
-                for file in diff_files_list:
-                    if self.is_integration_image(file.a_path):
-                        # integration dir name will show up in the unified integration file path in content_packs.zip
-                        integration_dirs.append(os.path.basename(os.path.dirname(file.a_path)))
-                    elif self.is_unified_integration(file.a_path):
-                        # if the file found in the diff is a unified integration we upload its image
-                        unified_integrations.append(os.path.basename(file.a_path))
-
             pack_local_images = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
 
             if not pack_local_images:
-                return True  # return empty list if no images were found
-
-            pack_storage_root_path = os.path.join(storage_base_path, self._pack_name)
+                logging.debug(f"No integration images were found in pack {self.name}")
+                return task_status
 
             for image_data in pack_local_images:
-                image_path = image_data.get('image_path')
-                if not image_path:
-                    raise Exception(f"{self._pack_name} pack integration image was not found")
-
-                image_name = os.path.basename(image_path)
-                image_storage_path = os.path.join(pack_storage_root_path, image_name)
-                pack_image_blob = storage_bucket.blob(image_storage_path)
-
-                if not detect_changes or \
-                        self.need_to_upload_integration_image(image_data, integration_dirs, unified_integrations):
-                    # upload the image if needed
-                    logging.info(f"Uploading image: {image_name} of integration: {image_data.get('display_name')} "
-                                 f"from pack: {self._pack_name}")
-                    with open(image_path, "rb") as image_file:
-                        pack_image_blob.upload_from_file(image_file)
-                    self._uploaded_integration_images.append(image_name)
-
-                if GCPConfig.USE_GCS_RELATIVE_PATH:
-                    image_gcs_path = urllib.parse.quote(
-                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, image_name))
-                else:
-                    image_gcs_path = pack_image_blob.public_url
-
                 integration_name = image_data.get('display_name', '')
 
-                if self.support_type != Metadata.XSOAR_SUPPORT:
-                    integration_name = self.remove_contrib_suffix_from_name(integration_name)
+                image_name = os.path.basename(image_data.get('image_path'))
+                image_storage_path = os.path.join(storage_base_path, self.name, image_name)
+                pack_image_blob = storage_bucket.blob(image_storage_path)
 
-                integration_images.append({
-                    'name': integration_name,
-                    'imagePath': image_gcs_path
-                })
+                logging.debug(f"Uploading image for integration: {integration_name} from pack: {self.name}")
+                with open(image_data.get('image_path'), "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
+                self._uploaded_integration_images.append(image_name)
 
             if self._uploaded_integration_images:
-                logging.info(f"Uploaded {len(self._uploaded_integration_images)} images for {self._pack_name} pack.")
+                logging.debug(f"Uploaded {len(self._uploaded_integration_images)} images for {self._pack_name} pack.")
+
         except Exception as e:
             task_status = False
             logging.exception(f"Failed to upload {self._pack_name} pack integration images. Additional Info: {str(e)}")
-        finally:
-            self._displayed_integration_images = integration_images
-            return task_status
+        return task_status
 
     def copy_integration_images(self, production_bucket, build_bucket, images_data, storage_base_path,
                                 build_bucket_base_path):
@@ -2685,58 +2636,30 @@ class Pack:
 
         return task_status
 
-    def upload_author_image(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
-        """ Uploads pack author image to gcs.
-
-        Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
-        default Base pack image path is used and it's gcp path is returned.
+    def upload_author_image(self, storage_bucket, storage_base_path):
+        """
+        Searches for `Author_image.png` and uploads pack author image to gcs.
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
             storage_base_path (str): the path under the bucket to upload to.
-            diff_files_list (list): The list of all modified/added files found in the diff
-            detect_changes (bool): Whether to detect changes or upload the author image in any case.
 
         Returns:
             bool: whether the operation succeeded.
-            str: public gcp path of author image.
-
         """
         task_status = True
-        author_image_storage_path = ""
-
         try:
-            author_image_path = os.path.join(self._pack_path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
+            author_image_path = os.path.join(self.path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
-                image_to_upload_storage_path = os.path.join(storage_base_path, self._pack_name,
-                                                            Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
-                pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
+                storage_image_path = os.path.join(storage_base_path, self.name, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
+                pack_author_image_blob = storage_bucket.blob(storage_image_path)
 
-                if not detect_changes or any(self.is_author_image(file.a_path) for file in diff_files_list):
-                    # upload the image if needed
-                    with open(author_image_path, "rb") as author_image_file:
-                        pack_author_image_blob.upload_from_file(author_image_file)
-                    self._uploaded_author_image = True
-                    logging.success(f"Uploaded successfully {self._pack_name} pack author image")
+                with open(author_image_path, "rb") as author_image_file:
+                    pack_author_image_blob.upload_from_file(author_image_file)
+                self._uploaded_author_image = True
+                logging.debug(f"Uploaded successfully {self._pack_name} pack author image")
 
-                if GCPConfig.USE_GCS_RELATIVE_PATH:
-                    author_image_storage_path = urllib.parse.quote(
-                        os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME))
-                else:
-                    author_image_storage_path = pack_author_image_blob.public_url
-
-            elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
-                author_image_storage_path = os.path.join(GCPConfig.IMAGES_BASE_PATH, GCPConfig.BASE_PACK,
-                                                         Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
-
-                if not GCPConfig.USE_GCS_RELATIVE_PATH:
-                    # disable-secrets-detection-start
-                    author_image_storage_path = os.path.join(GCPConfig.GCS_PUBLIC_URL, storage_bucket.name,
-                                                             author_image_storage_path)
-                    # disable-secrets-detection-end
-                logging.info(f"Skipping uploading of {self._pack_name} pack author image "
-                             f"and use default {GCPConfig.BASE_PACK} pack image")
             else:
                 logging.info(f"Skipping uploading of {self._pack_name} pack author image. "
                              f"The pack is defined as {self.support_type} support type")
@@ -2744,9 +2667,7 @@ class Pack:
         except Exception:
             logging.exception(f"Failed uploading {self._pack_name} pack author image.")
             task_status = False
-            author_image_storage_path = ""
         finally:
-            self._author_image = author_image_storage_path
             return task_status
 
     def copy_author_image(self, production_bucket, build_bucket, images_data, storage_base_path,
@@ -2798,43 +2719,42 @@ class Pack:
             logging.info(f"No added/modified author image was detected in {self._pack_name} pack.")
             return True
 
-    def upload_images(self, index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
+    def upload_images(self, storage_bucket, storage_base_path, marketplace):
         """
         Upload the images related to the pack.
         The image is uploaded in the case it was modified, OR if this is the first time the current pack is being
         uploaded to this current marketplace (#46785).
         Args:
-            index_folder_path (str): the path to the local index folder
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
             storage_base_path (str): the path under the bucket to upload to.
-            diff_files_list (list): The list of all modified/added files found in the diff
-            override_all_packs (bool): Whether to override all packs without checking for changes
         Returns:
             True if the images were successfully uploaded, false otherwise.
 
         """
-
-        detect_changes = False if override_all_packs else os.path.exists(os.path.join(index_folder_path, self.name,
-                                                                                      Pack.METADATA)) or self.hidden
-
-        # Don't check if the image was modified if this is the first time it is uploaded to this marketplace, meaning it
-        # doesn't exist in the index (and it isn't deprecated), or if we want to override it (upload without
-        # detecting changes)
-
-        if not detect_changes:
-            logging.info(f'Uploading images of pack {self.name} which did not exist in this marketplace before')
-
-        task_status = self.upload_integration_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        task_status = self.upload_integration_images(storage_bucket, storage_base_path)
         if not task_status:
             self._status = PackStatus.FAILED_IMAGES_UPLOAD.name
             self.cleanup()
             return False
 
-        task_status = self.upload_author_image(storage_bucket, storage_base_path, diff_files_list, detect_changes)
+        task_status = self.upload_author_image(storage_bucket, storage_base_path)
         if not task_status:
             self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             self.cleanup()
             return False
+
+        task_status = self.upload_preview_images(storage_bucket, storage_base_path)
+        if not task_status:
+            self._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
+            self.cleanup()
+            return False
+
+        if marketplace == XSIAM_MP:
+            task_status = self.upload_dynamic_dashboard_images(storage_bucket, storage_base_path)
+            if not task_status:
+                self._status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
+                self.cleanup()
+                return False
 
         return True
 
@@ -3474,7 +3394,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
                     BucketUploadFlow.STATUS: pack.status,
                     BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
                     else "False",
-                    BucketUploadFlow.LATEST_VERSION: pack.latest_version
+                    BucketUploadFlow.LATEST_VERSION: pack.current_version
                 } for pack in successful_packs
             }
         }
@@ -3486,7 +3406,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
             BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS: {
                 pack.name: {
                     BucketUploadFlow.STATUS: pack.status,
-                    BucketUploadFlow.LATEST_VERSION: pack.latest_version
+                    BucketUploadFlow.LATEST_VERSION: pack.current_version
                 } for pack in successful_uploaded_dependencies_zip_packs
             }
         }

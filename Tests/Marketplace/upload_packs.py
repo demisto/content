@@ -32,7 +32,7 @@ METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 
 
-def get_packs_names(packs_to_upload: str) -> set:
+def get_packs_ids_to_upload(packs_to_upload: str) -> set:
     """Returns a set of pack's names to upload.
 
     Args:
@@ -40,12 +40,10 @@ def get_packs_names(packs_to_upload: str) -> set:
 
     Returns:
         set: unique collection of packs names to upload.
-
     """
     if packs_to_upload and isinstance(packs_to_upload, str):
         packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
-        logging.info(f"Number of selected packs to upload is: {len(packs)}")
-        # return only packs from csv list
+        logging.info(f"Collected {len(packs)} content packs to upload: {list(packs)}")
         return packs
     else:
         logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
@@ -448,7 +446,7 @@ def _build_summary_table(packs_input_list: list, include_pack_status: bool = Fal
 
     for index, pack in enumerate(packs_input_list, start=1):
         pack_status_message = PackStatus[pack.status].value
-        row = [index, pack.name, pack.display_name, pack.latest_version,
+        row = [index, pack.name, pack.display_name, pack.current_version,
                pack.aggregation_str if pack.aggregated and pack.aggregation_str else "False"]
         if include_pack_status:
             row.append(pack_status_message)
@@ -480,8 +478,8 @@ def build_summary_table_md(packs_input_list: list, include_pack_status: bool = F
     for index, pack in enumerate(packs_input_list):
         pack_status_message = PackStatus[pack.status].value if include_pack_status else ''
 
-        row = [index, pack.name, pack.display_name, pack.latest_version, pack_status_message] if include_pack_status \
-            else [index, pack.name, pack.display_name, pack.latest_version]
+        row = [index, pack.name, pack.display_name, pack.current_version, pack_status_message] if include_pack_status \
+            else [index, pack.name, pack.display_name, pack.current_version]
 
         row_hr = '|'
         for _value in row:
@@ -921,35 +919,6 @@ def get_images_data(packs_list: list, markdown_images_dict: dict):
     return images_data
 
 
-def sign_and_zip_pack(pack, signature_key, delete_test_playbooks=False):
-    """
-    Prepares the pack before zip, and then zips it.
-    Args:
-        pack (Pack): Pack to be zipped.
-        signature_key (str): Base64 encoded string used to sign the pack.
-        delete_test_playbooks (bool): Whether to delete test playbooks folder.
-    Returns:
-        (bool): Whether the zip was successful
-    """
-
-    task_status = pack.remove_unwanted_files(delete_test_playbooks)
-    if not task_status:
-        pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
-        pack.cleanup()
-        return False
-    task_status = pack.sign_pack(signature_key)
-    if not task_status:
-        pack.status = PackStatus.FAILED_SIGNING_PACKS.name
-        pack.cleanup()
-        return False
-    task_status, _ = pack.zip_pack()
-    if not task_status:
-        pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
-        pack.cleanup()
-        return False
-    return task_status
-
-
 def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                        packs_dict):
     """
@@ -999,8 +968,8 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
                 shutil.rmtree(pack_with_dep_path)
                 logging.info(f"Uploading {pack_name} with its dependencies")
-                task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
-                                                           storage_base_path, overridden_upload_path=upload_path)
+                task_status = pack.upload_to_storage(zip_with_deps_path, storage_bucket, storage_base_path,
+                                                     with_dependencies_path=upload_path)
                 logging.info(f"{pack_name} with dependencies was{'' if task_status else ' not'} "
                              f"uploaded successfully")
                 if not task_status:
@@ -1233,23 +1202,17 @@ def main():
                                                                         is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
-    pack_names_to_upload = get_packs_names(modified_packs_to_upload)
+    pack_ids_to_upload = get_packs_ids_to_upload(modified_packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     # list of all packs from `content_packs.zip` given from create artifacts
-    all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
-                              is_modified=pack_name in pack_names_to_upload)
-                         for pack_name in os.listdir(extract_destination_path)]
-
-    # pack's list to update their index metadata and upload them.
-    # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
-    packs_list = list(filter(lambda x: x.name not in IGNORED_FILES,
-                             all_content_packs)) if (is_bucket_upload_flow and not packs_flag) else \
-        list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
+    all_content_packs = [Pack(pack_id, os.path.join(extract_destination_path, pack_id), is_modified=pack_id in pack_ids_to_upload)
+                         for pack_id in os.listdir(extract_destination_path)]
+    packs_to_upload_list = [pack for pack in all_content_packs if pack.is_modified]
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload, storage_base_path
+        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_ids_to_upload, storage_base_path
     )
 
     delete_from_index_packs_not_in_marketplace(index_folder_path, all_content_packs, private_packs)
@@ -1272,33 +1235,14 @@ def main():
     # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
     # changelog, etc.
     pack: Pack
-    for pack in packs_list:
+    for pack in all_content_packs:
 
-        task_status = pack.load_user_metadata()
-        if not task_status:
+        if not pack.load_user_metadata():
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
             pack.cleanup()
             continue
 
-        task_status = pack.collect_content_items()
-        if not task_status:
-            pack.status = PackStatus.FAILED_COLLECT_ITEMS.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
-        # upload author integration images and readme images
-        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list, override_all_packs):
-            continue
-
-        task_status = pack.format_metadata(index_folder_path,
-                                           packs_dependencies_mapping,
-                                           statistics_handler,
-                                           marketplace, remove_test_deps=remove_test_deps)
-
-        if not task_status:
-            pack.status = PackStatus.FAILED_METADATA_PARSING.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
+        pack.enhance_pack_attributes(index_folder_path, statistics_handler, remove_test_deps)
 
         task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
             index_folder_path,
@@ -1317,40 +1261,32 @@ def main():
             pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name  # type: ignore[misc]
             continue
 
-        sign_and_zip_pack(pack, signature_key, delete_test_playbooks=True)
-        shutil.copyfile(pack.zip_path, uploaded_packs_dir / f"{pack.name}.zip")
-        task_status, skipped_upload, _ = pack.upload_to_storage(pack.zip_path, pack.latest_version, storage_bucket,
-                                                                pack.is_modified,
-                                                                storage_base_path)
+        if pack.is_modified:
 
-        if not task_status:
-            pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
-        # uploading preview images. The path contains pack version
-        task_status = pack.upload_preview_images(storage_bucket, storage_base_path)
-        if not task_status:
-            pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name  # type: ignore[misc]
-            pack.cleanup()
-            continue
-
-        if marketplace == XSIAM_MP:
-            task_status = pack.upload_dynamic_dashboard_images(storage_bucket, storage_base_path)
-            if not task_status:
-                pack._status = PackStatus.FAILED_DYNAMIC_DASHBOARD_IMAGES_UPLOAD.name  # type: ignore[misc]
+            if not pack.format_metadata(packs_dependencies_mapping, marketplace, remove_test_deps=remove_test_deps):
+                pack.status = PackStatus.FAILED_METADATA_PARSING.name  # type: ignore[misc]
                 pack.cleanup()
                 continue
 
-        task_status = update_index_folder(index_folder_path=index_folder_path, pack=pack,
-                                          pack_versions_to_keep=pack_versions_to_keep)
-        if not task_status:
+            # upload author integration images and readme images
+            if not pack.upload_images(storage_bucket, storage_base_path, marketplace):
+                continue
+
+            if not pack.sign_and_zip_pack(pack, signature_key, uploaded_packs_dir):
+                continue
+
+            if not pack.upload_to_storage(pack.zip_path, storage_bucket, storage_base_path):
+                pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
+                pack.cleanup()
+                continue
+
+        if not update_index_folder(index_folder_path=index_folder_path, pack=pack, pack_versions_to_keep=pack_versions_to_keep):
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
             pack.cleanup()
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if skipped_upload:
+        if not pack.status:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
             continue
@@ -1398,14 +1334,14 @@ def main():
 
     logging.debug(f'{markdown_images_dict=}')
     # get the lists of packs divided by their status
-    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_to_upload_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
         successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
-        images_data=get_images_data(packs_list, markdown_images_dict=markdown_images_dict)
+        images_data=get_images_data(packs_to_upload_list, markdown_images_dict=markdown_images_dict)
     )
 
     # summary of packs status
