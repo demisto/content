@@ -136,7 +136,7 @@ script:
     - defaultValue: '10'
       description: The amount of time (in seconds) that a request will wait for the query response before a timeout occurs.
       name: timeout
-    - description: "The Workspace ID. Note: This argument will override the instance parameter ‘Default Workspace ID'."
+    - description: "The Workspace ID. Note: This argument will override the instance parameter 'Default Workspace ID'."
       name: workspace_id
     description: Executes an Analytics query for data.
     name: azure-log-analytics-execute-query
@@ -156,11 +156,11 @@ script:
     - defaultValue: '0'
       description: The page number from which to start a search.
       name: page
-    - description: "The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'."
       name: subscription_id
-    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'."
       name: resource_group_name
-    - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'."
+    - description: "The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'."
       name: workspace_name
     description: Gets the saved searches of the Log Analytics workspace.
     name: azure-log-analytics-list-saved-searches
@@ -199,11 +199,11 @@ script:
     - description: The ID of the saved search.
       name: saved_search_id
       required: true
-    - description: "The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'."
       name: subscription_id
-    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'."
       name: resource_group_name
-    - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'."
+    - description: "The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'."
       name: workspace_name
     description: Gets a specified saved search from the Log Analytics workspace.
     name: azure-log-analytics-get-saved-search-by-id
@@ -224,7 +224,7 @@ script:
       description: The function alias if the query serves as a function.
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.functionParameters
-      description: 'The optional function parameters if the query serves as a function. Value should be in the following format: ''param-name1:type1 = default_value1, param-name2:type2 = default_value2''. For more examples and proper syntax see the Microsoft documention, https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions'
+      description: 'The optional function parameters if the query serves as a function. Value should be in the following format: ''param-name1:type1 = default_value1, param-name2:type2 = default_value2''. For more examples and proper syntax see the Microsoft documentation, https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions.'
       type: String
     - contextPath: AzureLogAnalytics.SavedSearch.query
       description: The query expression for the saved search.
@@ -259,11 +259,11 @@ script:
       required: true
     - description: 'The tags attached to the saved search. Value should be in the following format: ''name=value;name=value''.'
       name: tags
-    - description: "The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'."
       name: subscription_id
-    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'."
       name: resource_group_name
-    - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'."
+    - description: "The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'."
       name: workspace_name
     description: Creates or updates a saved search from the Log Analytics workspace.
     name: azure-log-analytics-create-or-update-saved-search
@@ -302,11 +302,11 @@ script:
     - description: The ID of the saved search.
       name: saved_search_id
       required: true
-    - description: "The subscription ID to use. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'."
       name: subscription_id
-    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'."
       name: resource_group_name
-    - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Workspace Name'."
+    - description: "The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'."
       name: workspace_name
     description: Deletes a specified saved search in the Log Analytics workspace.
     name: azure-log-analytics-delete-saved-search
@@ -346,9 +346,9 @@ script:
   - name: azure-log-analytics-workspace-list
     description: Gets workspaces in a resource group.
     arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
       name: subscription_id
-    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'."
       name: resource_group_name
     outputs:
     - contextPath: AzureLogAnalytics.workspace.etag
@@ -472,7 +472,7 @@ script:
     description: List all resource groups for a subscription.
     arguments:
     - name: subscription_id
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter 'Default Subscription ID'."
     - name: limit
       description: Limit on the number of resource groups to return.
       defaultValue: 50
@@ -504,6 +504,185 @@ script:
     execution: false
     name: azure-log-analytics-auth-reset
     arguments: []
+  - arguments:
+    - description: "The name of the table to add. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH."
+      name: table_name
+      required: true
+    - description: Maximum number of records in the result set, up to one million records.
+      name: limit
+      defaultValue: 50
+    - description: Log query written in KQL format to retrieve data. Search job queries must always start with a table name. For the proper syntax, see https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/whereoperator.
+      name: query
+      required: true
+    - description: Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
+      name: start_search_time
+      defaultValue: 1 day
+    - description: End of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as "2023-10-31T00:00:00Z".
+      name: end_search_time
+      defaultValue: now
+    - description: The timeout in seconds until polling ends.
+      name: timeout
+      defaultValue: '600'
+    - description: The interval in seconds between each poll.
+      name: interval
+      defaultValue: '60'
+    - description: This argument is used to determine whether the current execution of the command is the initial run. After the command is executed, the argument is updated to 'false.' During polling, the code checks the status only for the first execution. This argument is for a developer, not for a user.
+      name: first_run
+      defaultValue: true
+      hidden: true
+    - description: Hide the polling message and only print the final status at the end. This argument is for a developer not for a user.
+      name: hide_polling_output
+      hidden: true
+    - description: "The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      name: subscription_id
+    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+      name: resource_group_name
+    - description: "The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'."
+      name: workspace_name
+    polling: true
+    description: Run a search job to fetch records from large datasets into a new search results table in your workspace. Tables use the retention value set for the workspace, but this value can be modified after the table is created.
+    name: azure-log-analytics-run-search-job
+    outputs:
+    - contextPath: AzureLogAnalytics.RunSearchJob.TableName
+      description: Table name.
+      type: String
+    - contextPath: AzureLogAnalytics.RunSearchJob.Query
+      description: The query that was used to create the table.
+      type: String
+  - arguments:
+    - description: "The name of the table. Example value: AuditLogs_SRCH."
+      name: table_name
+    - description: "The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      name: subscription_id
+    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+      name: resource_group_name
+    - description: "The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'."
+      name: workspace_name
+    description: Gets a Log Analytics workspace table.
+    name: azure-log-analytics-get-search-job
+    outputs:
+    - contextPath: AzureLogAnalytics.SearchJob.systemData.createdBy
+      description: The identity that created the resource.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.systemData.createdAt
+      description: The timestamp of resource creation (UTC).
+      type: Date
+    - contextPath: AzureLogAnalytics.SearchJob.properties.resultStatistics.progress
+      description: Search job completion percentage.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.resultStatistics.ingestedRecords
+      description: The number of rows that were returned by the search job.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.resultStatistics.scannedGb
+      description: Amount of scanned data in the search job.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.query
+      description: Search job query.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.description
+      description: Search job description.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.limit
+      description: Limit the search job to return up to the specified number of rows.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.startSearchTime
+      description: The timestamp to start the search from (UTC).
+      type: Date
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.endSearchTime
+      description: The timestamp to end the search by (UTC).
+      type: Date
+    - contextPath: AzureLogAnalytics.SearchJob.properties.searchResults.sourceTable
+      description: The table used in the search job.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.name
+      description: Table name.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableSubType
+      description: The subtype describes what APIs can be used to interact with the table, and what features are available against it (Any, Classic, DataCollectionRuleBased).
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.tableType
+      description: Table's creator.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.displayName
+      description: Table display name.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.description
+      description: Table description.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.columns
+      description: A list of table custom columns.
+      type: List
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isHidden
+      description: Is column hidden.
+      type: Boolean
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.name
+      description: Column name.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.type
+      description: Column data type (bool, datetime, dynamic, guid, int, long, real, string).
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.dataTypeHint
+      description: Column data type logical hint (armPath, guid, ip, uri).
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.displayName
+      description: Column display name.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.description
+      description: Column description.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.standardColumns.isDefaultDisplay
+      description: Is displayed by default.
+      type: Boolean
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.categories
+      description: Table category.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.labels
+      description: Table labels.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.source
+      description: Table's creator (customer, microsoft).
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.schema.solutions
+      description: List of solutions the table is affiliated with.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.provisioningState
+      description: Table's current provisioning state (Deleting, InProgress, Succeeded, Updating). If set to 'updating', indicates a resource lock due to an ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.properties.retentionInDays
+      description: The table retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.totalRetentionInDays
+      description: The table total retention in days, between 4 and 2556. Setting this property to -1 will default to table retention.
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.archiveRetentionInDays
+      description: The table data archive retention in days. Calculated as (totalRetentionInDays-retentionInDays).
+      type: Number
+    - contextPath: AzureLogAnalytics.SearchJob.properties.retentionInDaysAsDefault
+      description: True - Value originates from workspace retention in days, False - Customer specific.
+      type: Boolean
+    - contextPath: AzureLogAnalytics.SearchJob.properties.totalRetentionInDaysAsDefault
+      description: True - Value originates from retention in days, False - Customer specific.
+      type: Boolean
+    - contextPath: AzureLogAnalytics.SearchJob.properties.plan
+      description: Instruct the system how to handle and charge the logs ingested to this table.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.id
+      description: Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}.
+      type: String
+    - contextPath: AzureLogAnalytics.SearchJob.name
+      description: The name of the resource.
+      type: String
+  - arguments:
+    - description: "The name of the table. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH."
+      name: table_name
+    - description: "The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'."
+      name: subscription_id
+    - description: "The name of the resource group within the user's subscription. Note: This argument will override the instance parameter 'Default Resource Group Name'."
+      name: resource_group_name
+    - description: "The name of the resource group. Note: This argument will override the instance parameter 'Default Workspace Name'."
+      name: workspace_name
+    description: Delete a Log Analytics workspace table. We recommend you delete the search job when you're done querying the table. This reduces workspace clutter and extra charges for data retention.
+    name: azure-log-analytics-delete-search-job
   dockerimage: demisto/crypto:1.0.0.80214
   runonce: false
   script: '-'
