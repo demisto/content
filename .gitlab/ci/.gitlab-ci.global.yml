@@ -272,7 +272,6 @@
 
 .add-content-production-to-artifacts:
   - section_start "Clone production content and add it to artifacts" --collapsed
-  - CI_SERVER_HOST=${CI_SERVER_HOST:-code.pan.run}
   - mkdir content_production
   - cd content_production
   - git init > /dev/null 2>&1
