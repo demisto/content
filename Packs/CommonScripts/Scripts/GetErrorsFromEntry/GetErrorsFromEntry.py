@@ -25,29 +25,33 @@ def get_errors(entries: List) -> List[str]:
     return error_messages
 
 
+def get_entries(entry_ids: list) -> list:
+    entries = []
+
+    if is_xsiam_or_xsoar_saas():
+        try:
+            entry_ids_str = ",".join(entry_ids)
+            entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids_str})
+        except ValueError as e:
+            if "Unsupported Command" not in str(e):
+                raise e
+
+    if not entries:
+        entries = [
+            demisto.executeCommand('getEntry', {'id': entry_id})
+            for entry_id in entry_ids
+        ]
+    return entries
+
+
 def main():
     try:
         args = demisto.args()
         # the entry_id argument can be a list of entry ids or a single entry id
         entry_ids = args.get('entry_id', demisto.get(demisto.context(), 'lastCompletedTaskEntries'))
-
         entry_ids = argToList(entry_ids)
-        entries = []
 
-        if is_xsiam_or_xsoar_saas():
-            try:
-                entry_ids_str = ",".join(entry_ids)
-                entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids_str})
-            except ValueError as e:
-                if "Unsupported Command" not in str(e):
-                    raise e
-
-        if not entries:
-            entries = [
-                demisto.executeCommand('getEntry', {'id': entry_id})
-                for entry_id in entry_ids
-            ]
-
+        entries = get_entries(entry_ids)
         error_messages = get_errors(entries)
 
         return_results(CommandResults(
