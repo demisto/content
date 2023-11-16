@@ -857,22 +857,23 @@ class Pack:
         """
 
         if not self.remove_unwanted_files():
-            self.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
+            self._status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS.name
             self.cleanup()
             return False
 
         if not self.sign_pack(signature_key):
-            self.status = PackStatus.FAILED_SIGNING_PACKS.name
+            self._status = PackStatus.FAILED_SIGNING_PACKS.name
             self.cleanup()
             return False
 
         task_status, _ = self.zip_pack()
         if not task_status:
-            self.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
+            self._status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
             self.cleanup()
             return False
 
-        shutil.copyfile(self.zip_path, uploaded_packs_dir / f"{self.name}.zip")
+        if uploaded_packs_dir:
+            shutil.copyfile(self.zip_path, uploaded_packs_dir / f"{self.name}.zip")
         return True
 
     def upload_encrypted_private_content_to_storage(self, storage_bucket, storage_base_path, pack_artifacts_path):
@@ -2652,7 +2653,8 @@ class Pack:
             author_image_path = os.path.join(self.path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
-                storage_image_path = os.path.join(storage_base_path, self.name, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
+                storage_image_path = os.path.join(storage_base_path, self.name,
+                                                  Pack.AUTHOR_IMAGE_NAME)
                 pack_author_image_blob = storage_bucket.blob(storage_image_path)
 
                 with open(author_image_path, "rb") as author_image_file:

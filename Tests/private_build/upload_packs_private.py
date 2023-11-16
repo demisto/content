@@ -13,7 +13,7 @@ from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTE
 from Tests.private_build.marketplace_services_private import init_storage_client, Pack, load_json, \
     get_content_git_client, get_recent_commits_data
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
-from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
+from Tests.Marketplace.upload_packs import get_packs_ids_to_upload, extract_packs_artifacts, download_and_extract_index, \
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, create_corepacks_config, \
     check_if_index_is_updated, print_packs_summary, get_packs_summary, prepare_index_json
 from Tests.scripts.utils.log_util import install_logging
@@ -487,7 +487,7 @@ def main():
         content_repo = None
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs)
+    pack_names = get_packs_ids_to_upload(target_packs)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]

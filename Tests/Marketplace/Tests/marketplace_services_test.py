@@ -23,7 +23,7 @@ from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_vali
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block, get_pull_request_numbers_from_file, remove_old_versions_from_changelog
 from Tests.Marketplace.marketplace_constants import Changelog, PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
-    PACKS_FOLDER, PackTags
+    PackTags
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -297,7 +297,7 @@ class TestMetadataParsing:
         """
         return Pack(pack_name="Test Pack Name", pack_path="dummy_path")
 
-    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack: Pack, dummy_pack_metadata):
+    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
         dummy_pack._description = 'Description of test pack'
@@ -309,7 +309,7 @@ class TestMetadataParsing:
         dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
         dummy_pack._certification = Metadata.CERTIFIED
         dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
-        dummy_pack._enhance_pack_attributes(index_folder_path="", statistics_handler=None)
+        dummy_pack.enhance_pack_attributes(index_folder_path="", statistics_handler=None)
         parsed_metadata = dummy_pack._parse_pack_metadata()
 
         assert 'created' in parsed_metadata
@@ -328,7 +328,7 @@ class TestMetadataParsing:
         dummy_pack._is_modified = False
         dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
 
-        dummy_pack._enhance_pack_attributes(
+        dummy_pack.enhance_pack_attributes(
             index_folder_path="", statistics_handler=None
         )
 
@@ -1687,29 +1687,20 @@ class TestImagesUpload:
     def test_upload_integration_images_with_special_character(self, mocker, dummy_pack, integration_name,
                                                               expected_result):
         """
-           Given:
-               - Integration name with special characters.
-           When:
-               - When pack has integration with special character.
-           Then:
-               - return encoded url
-       """
+            Given:
+                - Integration name with special characters.
+            When:
+                - When pack has integration with special character.
+            Then:
+                - return encoded url
+        """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
                                            'image_path': f'/path/{temp_image_name}',
                                            'integration_path_basename': 'fake_unified_integration_path'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
-        mocker.patch("marketplace_services_test.Pack.need_to_upload_integration_image", return_value=True)
-        mocker.patch('builtins.open', mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        dummy_storage_bucket = mocker.MagicMock()
-        dummy_file = mocker.MagicMock()
-        dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.CONTENT_PACKS_PATH, "TestPack",
-                                                                   temp_image_name)
-        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH,
-                                                           [dummy_file],
-                                                           True)
+        task_status = dummy_pack.enhance_pack_attributes('')
 
         assert task_status
         assert len(dummy_pack._displayed_integration_images) == len(expected_result)
@@ -1724,28 +1715,20 @@ class TestImagesUpload:
     def test_upload_integration_images_without_special_character(self, mocker, dummy_pack, integration_name,
                                                                  expected_result):
         """
-           Given:
-               - Integration name without special characters.
-           When:
-               - When pack has integration no special character.
-           Then:
-               - validate that encoded url did not change the original url.
-       """
+            Given:
+                - Integration name without special characters.
+            When:
+                - When pack has integration no special character.
+            Then:
+                - validate that encoded url did not change the original url.
+        """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
                                            'image_path': f'/path/{temp_image_name}',
                                            'integration_path_basename': 'fake_unified_integration_path'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
-        mocker.patch("marketplace_services_test.Pack.need_to_upload_integration_image", return_value=True)
-        mocker.patch("builtins.open", mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        dummy_storage_bucket = mocker.MagicMock()
-        dummy_file = mocker.MagicMock()
-        dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.CONTENT_PACKS_PATH, "TestPack",
-                                                                   temp_image_name)
-        task_status = dummy_pack.upload_integration_images(dummy_storage_bucket, GCPConfig.CONTENT_PACKS_PATH,
-                                                           [dummy_file], True)
+        task_status = dummy_pack.enhance_pack_attributes('')
 
         assert task_status
         assert len(dummy_pack._displayed_integration_images) == len(expected_result)
@@ -2601,7 +2584,7 @@ class TestStoreInCircleCIArtifacts:
             pack._status = PackStatus.SUCCESS.name
             pack._aggregated = True
             pack._aggregation_str = '[1.0.0, 1.0.1] => 1.0.1'
-            pack.latest_version = '1.0.1'
+            pack.current_version = '1.0.1'
         return successful_packs
 
     @staticmethod
@@ -2627,7 +2610,7 @@ class TestStoreInCircleCIArtifacts:
         ]
         for pack in successful_dependencies:
             pack._status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
-            pack.latest_version = '1.0.1'
+            pack.current_version = '1.0.1'
         return successful_dependencies
 
     def test_store_successful_and_failed_packs_in_ci_artifacts_both(self, tmp_path):

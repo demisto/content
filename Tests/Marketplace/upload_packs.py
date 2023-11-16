@@ -19,7 +19,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     load_json, get_content_git_client, get_recent_commits_data, store_successful_and_failed_packs_in_ci_artifacts, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
-from Tests.Marketplace.marketplace_constants import XSIAM_MP, PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
+from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES, XSOAR_MP, XSOAR_SAAS_MP
 from demisto_sdk.commands.common.tools import str2bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
@@ -954,7 +954,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                     # zip the pack and each of the pack's dependencies (or copy existing zip if was already zipped)
                     if not (current_pack.zip_path and os.path.isfile(current_pack.zip_path)):
                         # the zip does not exist yet, zip the current pack
-                        task_status = sign_and_zip_pack(current_pack, signature_key)
+                        task_status = pack.sign_and_zip_pack(signature_key)
                         if not task_status:
                             # modify the pack's status to indicate the failure was in the dependencies zip step
                             pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
@@ -1166,7 +1166,6 @@ def main():
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
     modified_packs_to_upload = option.pack_names or ""
-    packs_flag = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
@@ -1272,7 +1271,7 @@ def main():
             if not pack.upload_images(storage_bucket, storage_base_path, marketplace):
                 continue
 
-            if not pack.sign_and_zip_pack(pack, signature_key, uploaded_packs_dir):
+            if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
                 continue
 
             if not pack.upload_to_storage(pack.zip_path, storage_bucket, storage_base_path):
@@ -1334,7 +1333,8 @@ def main():
 
     logging.debug(f'{markdown_images_dict=}')
     # get the lists of packs divided by their status
-    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_to_upload_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(
+        packs_to_upload_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
