@@ -388,6 +388,7 @@ jobs-done-check-nightly:
   extends:
     - .jobs-done-check
   needs:
+    - cloning-content-repo-last-upload-commit
     - run-unittests-and-lint
     - run-validations
     - trigger-private-build
