@@ -210,6 +210,49 @@ demisto-sdk-nightly:test-upload-flow:
   script:
     - !reference [test-upload-flow, script]
 
+demisto-sdk-nightly:run-end-to-end-tests-general:
+  tags:
+    - gce # can't run docker in docker on gke
+  extends:
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule-always
+  services: # needed for running lint
+    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    PRODUCT_TYPE: "XSOAR"
+    SERVER_TYPE: "XSOAR"
+    INSTANCE_ROLE: "Server Master"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER}/instance_${INSTANCE_ROLE}"
+    ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
+    ALLOW_FAILURE: "true"
+  needs: []
+  stage: run-instances
+  script:
+    - !reference [.ssh-config-setup]
+
+    - section_start "End to End Tests"  --collapsed
+    - |
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
+      echo "Server URL: $DEMISTO_BASE_URL"
+      unset DEMISTO_API_KEY # a temporary fix 
+      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/general || EXIT_CODE=$?
+    - section_end "End to End Tests"
+
+    - job-done
+    - exit $EXIT_CODE
+  after_script:
+    - !reference [.default-after-script]
+
 demisto-sdk-nightly:run-end-to-end-tests-xsoar:
   tags:
     - gce # can't run docker in docker on gke
