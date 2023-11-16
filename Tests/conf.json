@@ -5336,6 +5336,9 @@
             "playbookID": "IPToHost - Test"
         },
         {
+            "playbookID": "TestIsInCidrRanges"
+        },
+        {
             "playbookID": "NetskopeAPIv1 Test",
             "integrations": "NetskopeAPIv1"
         },
