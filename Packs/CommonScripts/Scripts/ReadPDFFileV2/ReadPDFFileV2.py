@@ -125,8 +125,7 @@ def run_shell_command(command: str, *args) -> bytes:
     )
     exit_codes = completed_process.returncode
     error_string = completed_process.stderr.decode('utf-8')
-    demisto.debug(f'Got the following exit codes: {exit_codes=}')
-    demisto.debug(f'Got the following error string: {error_string=}')
+    demisto.debug(f'Got the following error: {exit_codes=},  {error_string=}')
     if exit_codes != 0:
         if 'PDF file is damaged' in error_string or 'Couldn\'t read xref table' in error_string:
             raise ShellException('PDf file is damaged/corrupted.')
