@@ -46,7 +46,7 @@ repos:
 
   - id: pylint-in-docker
     name: pylint-in-docker
-    description: my description
+    description: Run pylint on the code in content packs
     docker_image:nightly: from-yml
     docker_image: native:ga,from-yml,native:dev,native:maintenance
     entry: pylint
