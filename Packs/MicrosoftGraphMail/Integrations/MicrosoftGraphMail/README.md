@@ -44,6 +44,7 @@ The following permissions are required for all commands:
 
 - Mail.ReadWrite - Application
 - Mail.Send - Application
+- MailboxSettings.ReadWrite - Application
 
 ## Commands
 

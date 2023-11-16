@@ -31,6 +31,7 @@ The following permissions are required for all commands:
 - Mail.ReadWrite - Delegated
 - Mail.Send - Delegated
 - User.Read - Delegated 
+- MailboxSettings.ReadWrite - Delegated 
 
 ## Configure Microsoft Graph Mail Single User on Cortex XSOAR
 
