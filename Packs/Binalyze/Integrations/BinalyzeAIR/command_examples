@@ -13,3 +13,5 @@
 !binalyze-air-acquire endpoint="hostname" profile="memory-ram-pagefile" caseid="c-2022-0001" organization_id=0
 
 !binalyze-air-acquire endpoint="hostname" profile="full" caseid="c-2022-0001" organization_id=0
+
+!binalyze-air-acquire endpoint="hostname" profile="custom_profile" caseid="c-2022-0001" organization_id=0
