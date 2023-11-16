@@ -19,7 +19,7 @@
   - demisto-sdk upload -i Packs/AzureSentinel -z --insecure
   - section_end "Upload Entities to Cortex XSOAR"
 
-.run_test_content:
+.run_test_content: &run_test_content
   - section_start "Run test-content" --collapsed
   - |
     if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
@@ -29,6 +29,39 @@
     ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
   - rm -f Tests/conf.json
   - section_end "Run test-content"
+
+.run_end_to_end_tests: &run_end_to_end_tests
+  - section_start "End to End Tests"  --collapsed
+  - |
+    mkdir $ARTIFACTS_FOLDER/demisto-sdk
+    git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+    TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
+    export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
+    python3 -m pytest "$ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER}" || EXIT_CODE=$?
+  - section_end "End to End Tests"
+
+.prepare_for_test_content: &prepare_for_test_content
+  - section_start "Copy env results to artifacts folder" --collapsed
+  - |
+    # workaround for the hard-coded value in the sdk
+    if [[ -e "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" ]] && cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" "./artifacts/env_results.json"
+    if [[ -e "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" ]] && cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
+  - section_end "Copy env results to artifacts folder"
+
+  - section_start "Install Packs" --collapsed
+  - cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
+  - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
+  - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
+  - section_end "Install Packs"
+
+.cleanup_after_test_content: &cleanup_after_test_content
+  - section_start "Cleanup env results from artifacts folder" --collapsed
+  - |
+    # workaround for the hard-coded value in the sdk
+    if [[ -e "./artifacts/env_results.json" ]] && rm -f "./artifacts/env_results.json"
+    if [[ -e "./artifacts/filter_file.txt" ]] && rm -f "./artifacts/filter_file.txt"
+  - section_end "Cleanup env results from artifacts folder"
 
 demisto-sdk-nightly:run-unittests-and-lint:
   extends:
@@ -130,7 +163,7 @@ demisto-sdk-nightly:mpv2-prepare-testing-bucket:
   variables:
     PRODUCT_TYPE: "XSIAM"
     SERVER_TYPE: "XSIAM"
-    INSTANCE_ROLE: "XSIAM"
+    INSTANCE_ROLE: "xsiam"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     ARTIFACTS_FOLDER_INSTANCE: "${ARTIFACTS_FOLDER_MPV2}/instance_${INSTANCE_ROLE}"
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
@@ -231,8 +264,8 @@ demisto-sdk-nightly:run-end-to-end-tests-general:
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     ALLOW_FAILURE: "true"
-  needs: []
-  stage: run-instances
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
+  stage: run-e2e-tests
   script:
     - !reference [.ssh-config-setup]
 
@@ -274,17 +307,11 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     ALLOW_FAILURE: "true"
+    E2E_TEST_FOLDER: "xsoar"
   needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
-  stage: run-instances
+  stage: run-e2e-tests
   script:
     - !reference [.ssh-config-setup]
-
-    - section_start "Copy env results to artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" "./artifacts/env_results.json"
-      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
-    - section_end "Copy env results to artifacts folder"
 
     - section_start "Wait Until Server Ready" --collapsed
     - |
@@ -294,27 +321,10 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
 
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
-    - |
-      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
-      echo "Server URL: $DEMISTO_BASE_URL"
 
-    - section_start "End to End Tests"  --collapsed
-    - |
-      mkdir $ARTIFACTS_FOLDER/demisto-sdk
-      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+    - !reference [.run_end_to_end_tests]
 
-      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
-      echo "Server URL: $DEMISTO_BASE_URL"
-      unset DEMISTO_API_KEY # a temporary fix 
-      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/xsoar || EXIT_CODE=$?
-    - section_end "End to End Tests"
-
-    - section_start "Install Packs and Test-Module" --collapsed
-    - cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
-    - section_end "Install Packs and Test-Module"
+    - !reference [.prepare_for_test_content]
 
     - section_start "Wait Until Server Ready"  --collapsed
     - echo Going to sleep for 15 minutes to allow server finish indexing
@@ -324,12 +334,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
 
     - !reference [.run_test_content]
 
-    - section_start "Cleanup env results from artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      rm -f "./artifacts/env_results.json"
-      rm -f "./artifacts/filter_file.txt"
-    - section_end "Cleanup env results from artifacts folder"
+    - !reference [.cleanup_after_test_content]
 
     - job-done
     - exit $EXIT_CODE
@@ -376,52 +381,27 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
       EXTRACT_PRIVATE_TESTDATA: "true"
       NIGHTLY: "true"
       ALLOW_FAILURE: "true"
+      E2E_TEST_FOLDER: "xsiam"
       PRODUCT_TYPE: "XSIAM"
       ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_MPV2}/server_type_${SERVER_TYPE}"
       ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   needs: ["demisto-sdk-nightly:mpv2-prepare-testing-bucket"]
-  stage: run-instances
+  stage: run-e2e-tests
   script:
     - EXIT_CODE=0
-
-    # - section_start "Update Packs To Install And Modeling Rules To Test" --collapsed
-    # - echo -e "\nSemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/content_packs_to_install.txt"
-    # - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
-    # - cat "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
-    # - section_end "Update Packs To Install And Modeling Rules To Test"
-
-    - section_start "Copy Env Results To Artifacts Folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
-    - section_end "Copy Env Results To Artifacts Folder"
 
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - !reference [.lock-machine]
-
     - !reference [.export_cloud_machine_constants]
-    - section_start "End to End Tests" --collapsed
-    - |
-      mkdir $ARTIFACTS_FOLDER/demisto-sdk
-      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-      echo "Server URL: $DEMISTO_BASE_URL"
-      python3 -m pytest "${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/xsiam" || EXIT_CODE=$?
-    - section_end "End to End Tests"
 
-    - section_start "Install Packs" --collapsed
-    - cat "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt" 
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
-    - section_end "Install Packs"
+    - !reference [.run_end_to_end_tests]
+
+    - !reference [.prepare_for_test_content]
 
     - !reference [.run_test_content]
 
-    - section_start "Cleanup env results from artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      rm -f "./artifacts/filter_file.txt"
-    - section_end "Cleanup env results from artifacts folder"
+    - !reference [.cleanup_after_test_content]
 
     - !reference [.cloud-machine-information]
     - exit $EXIT_CODE
@@ -430,7 +410,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
     - source .gitlab/helper_functions.sh
     - !reference [.unlock-machine]
 
-demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
+demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
   tags:
     - gce
   extends:
@@ -456,12 +436,13 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     NON_REMOVABLE_PACKS: "Base"
     NIGHTLY: "true"
     ALLOW_FAILURE: "true"
+    E2E_TEST_FOLDER: "xsoar-saas"
     PRODUCT_TYPE: "XSOAR"
     CLOUD_API_TOKENS: $XSIAM_TOKENS
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
   needs: ["demisto-sdk-nightly:xsoar-saas-prepare-testing-bucket"]
-  stage: run-instances
+  stage: run-e2e-tests
   script:
     - EXIT_CODE=0
 
@@ -472,33 +453,13 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
     - !reference [.export_cloud_machine_constants]
 
-    - section_start "End to End Tests" --collapsed
-    - |
-      mkdir $ARTIFACTS_FOLDER/demisto-sdk
-      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-      echo "Server URL: $DEMISTO_BASE_URL"
-      python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/xsoar-saas || EXIT_CODE=$?
-    - section_end "End to End Tests"
+    - !reference [.run_end_to_end_tests]
 
-    - section_start "Copy env results to artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
-    - section_end "Copy env results to artifacts folder"
-
-    - section_start "Install Packs" --collapsed
-    - cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
-    - section_end "Install Packs"
+    - !reference [.prepare_for_test_content]
 
     - !reference [.run_test_content]
 
-    - section_start "Cleanup env results from artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      rm -f "./artifacts/filter_file.txt"
-    - section_end "Cleanup env results from artifacts folder"
+    - !reference [.cleanup_after_test_content]
 
     - !reference [.cloud-machine-information]
     - job-done
