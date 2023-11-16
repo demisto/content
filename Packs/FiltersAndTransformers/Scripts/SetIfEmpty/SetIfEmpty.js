@@ -11,15 +11,13 @@ function toBoolean(value) {
 }
 
 function isValueEmpty(value) {
-    console.log("\n\nvalue: " + value + "\n\n");
-    console.log("\n\typeof: " + typeof(value) + "\n\n");
     if (Array.isArray(value) && value.length === 1) {
         value = value[0];
     }
 
-    const valueIsStringNull = typeof value === 'string' && value.toLowerCase() === 'none' || value.toLowerCase() === 'null' || value === '';
+    const valueIsStringNull = typeof value === 'string' && (value.toLowerCase() === 'none' || value.toLowerCase() === 'null' || value === '');
 
-    return value === null || (Array.isArray(value) && value.length === 0) || valueIsStringNull;
+    return value === null || (Array.isArray(value) && value.length === 0) || (value.constructor == Object && Object.keys(value).length === 0) || valueIsStringNull;
 }
 
 
@@ -38,7 +36,9 @@ function getValueToSet(value) {
 
 
 function main() {
-    values = argToList(args.value || [null]);
+    let values = argToList(args.value || [null]);
+    values = Array.isArray(values)? values : [values];
+
     for (let i = 0; i < values.length; i++) {
         values[i] = getValueToSet(values[i]);
     }
