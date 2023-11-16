@@ -996,7 +996,7 @@ def test_get_modified_remote_data_command(mocker):
                                       'Type': EntryType.NOTE,
                                       'Contents': {
                                           'dbotIncidentClose': True,
-                                          'closeReason': 'False-Positive, Tuned', 
+                                          'closeReason': 'False-Positive, Tuned',
                                           'closeNotes': 'From QRadar: This offense was closed with reason: '
                                                          'False-Positive, Tuned. Notes: Closed because it is on our '
                                                          'white list.',
