@@ -314,6 +314,10 @@ def get_temp_file() -> str:
 
 
 def sync(client: Client):
+    """
+    Sync command is supposed to run only in first run or the integration context is empty. 
+    Creates the initial sync between xdr and xsoar iocs. 
+    """
     demisto.debug("executing sync")
     temp_file_path: str = get_temp_file()
     try:
@@ -334,6 +338,10 @@ def sync(client: Client):
 
 
 def iocs_to_keep(client: Client):
+    """
+    Creats a file of all the indicators from xsoar we want to keep in XDR. 
+    All the indicators not send to XDR with the file will be deleted from XDR. 
+    """
     demisto.debug("executing iocs_to_keep")
     if datetime.utcnow().hour not in range(1, 3):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
@@ -533,7 +541,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
         # this will happen on the first time we run
         xdr_iocs_sync_command(client, first_time=True)
     else:
-        # this will happen every minute
+        # This will happen every fetch time interval as defined in the integration configuration
         get_changes(client)
         if auto_sync:
             tim_insert_jsons(client)
@@ -562,6 +570,7 @@ def set_new_iocs_to_keep_time():
     )
     next_iocs_to_keep_time = last_ioc_to_keep.strftime(DEMISTO_TIME_FORMAT)
     demisto.debug(f"Setting next iocs to keep time to {next_iocs_to_keep_time}.")
+    # This will set the new ioc to keep time in the integration context
     set_integration_context(
         get_integration_context()
         | {"next_iocs_to_keep_time": next_iocs_to_keep_time}
@@ -569,6 +578,10 @@ def set_new_iocs_to_keep_time():
 
 
 def is_iocs_to_keep_time():
+    """
+    This function checks if this is the time to run the iocs_to_keep command.
+    In order to remove deleted/expired/filtered indicators. 
+    """
     next_iocs_to_keep_time = get_integration_context().get("next_iocs_to_keep_time")
     time_now = datetime.now(timezone.utc)
     if (
