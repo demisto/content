@@ -279,7 +279,7 @@
   - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
   - git checkout FETCH_HEAD > /dev/null 2>&1
   - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs
-  - echo "checked out $LAST_UPLOAD_COMMIT which is the last successful upload commit"
+  - echo "checked out ${LAST_UPLOAD_COMMIT} which is the last successful upload commit"
   - section_end "Clone production content and add it to artifacts"
 
 
