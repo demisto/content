@@ -537,7 +537,6 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
         get_changes(client)
         if auto_sync:
             tim_insert_jsons(client)
-            # TODO: Remove/comment this log line
             demisto.debug("checking if iocs_to_keep should run")
             if is_iocs_to_keep_time():
                 # first_time=False will call iocs_to_keep
