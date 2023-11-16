@@ -2,6 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+UNSUPPORTED_COMMAND_MSG = "Unsupported Command : getEntriesByIDs"
+
+
 def get_errors(entries: List) -> List[str]:
     """Extracts error entry contents
 
@@ -15,8 +18,11 @@ def get_errors(entries: List) -> List[str]:
     """
     error_messages = []
     for entry in entries:
-        assert len(entry) == 1
-        entry_details = entry[0]
+        if isinstance(entry, list):
+            assert len(entry) == 1
+            entry_details = entry[0]
+        else:
+            entry_details = entry
         is_error_entry = isinstance(entry_details, dict) and entry_details['Type'] == entryTypes['error']
         if is_error_entry:
             demisto.debug(f'error entry contents: "{entry_details["Contents"]}"')
@@ -29,12 +35,10 @@ def get_entries(entry_ids: list) -> list:
     entries = []
 
     if is_xsiam_or_xsoar_saas():
-        try:
-            entry_ids_str = ",".join(entry_ids)
-            entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids_str})
-        except ValueError as e:
-            if "Unsupported Command" not in str(e):
-                raise e
+        entry_ids_str = ",".join(entry_ids)
+        entries = demisto.executeCommand('getEntriesByIDs', {'entryIDs': entry_ids_str})
+        if is_error(entries) and UNSUPPORTED_COMMAND_MSG in get_error(entries):
+            entries = []  # unsupported, try again using getEntry
 
     if not entries:
         entries = [

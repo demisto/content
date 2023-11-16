@@ -17,6 +17,10 @@ WITHOUT_ERROR_ENTRIES = [
     STD_ENTRY,
     STD_ENTRY
 ]
+UNSUPPORTED_CMD_ERROR_ENTRY = {
+    'Contents': GetErrorsFromEntry.UNSUPPORTED_COMMAND_MSG,
+    'Type': entryTypes['error'],
+}
 
 
 def prepare_mocks(mocker, is_xsiam_or_xsoar_saas, args):
@@ -146,27 +150,29 @@ def test_main_without_explicitly_passed_argument(mocker, is_xsiam_or_xsoar_saas)
     demisto_results.assert_called_once_with(expected_results)
 
 
-@pytest.mark.parametrize("err_msg", ["Unsupported Command", "Something different"])
-def test_get_entries_by_ids_raises_value_error(mocker, err_msg):
+def test_get_entries_by_ids_raises_value_error(mocker):
     """
     Given:
         - Entry IDs
         - Platform is XSOAR SAAS
     When:
         - Calling get_entries() method
-        - `getEntriesByIDs` raises a ValueError
+        - `getEntriesByIDs` returns an error entry
 
     Then:
-        - Verify a ValueError is not raised in case of "Unsupported Command".
+        - Verify the method complete as expected.
+        - Verify executeCommand is called once for `getEntriesByIDs` and 3 times for `getEntry`.
     """
     entry_ids = ['err_entry_id_1', 'err_entry_id_2', 'std_entry_id_1']
     mocker.patch.object(GetErrorsFromEntry, 'is_xsiam_or_xsoar_saas', return_value=True)
-    mocker.patch.object(demisto, 'executeCommand', side_effect=[ValueError(err_msg)] + ERROR_ENTRIES)
+    mocker.patch.object(
+        demisto,
+        'executeCommand',
+        side_effect=[UNSUPPORTED_CMD_ERROR_ENTRY] + ERROR_ENTRIES,
+    )
 
-    try:
-        GetErrorsFromEntry.get_entries(entry_ids)
-    except ValueError as e:
-        assert str(e) != "Unsupported Command"
+    assert GetErrorsFromEntry.get_entries(entry_ids) == ERROR_ENTRIES
+    assert demisto.executeCommand.call_count == 1 + len(entry_ids)
 
 
 def test_get_errors_with_error_entries():
