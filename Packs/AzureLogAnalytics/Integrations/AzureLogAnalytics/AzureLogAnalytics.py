@@ -604,7 +604,7 @@ def run_search_job_command(args: dict[str, Any], client: Client) -> PollResult:
 def delete_search_job_command(client: Client, args: dict[str, str]) -> CommandResults:
     table_name = args['table_name']
     if not table_name.endswith(TABLE_NAME_SUFFIX):
-        raise DemistoException(f"The table_name should end with '{TABLE_NAME_SUFFIX}' suffix.")
+        raise DemistoException(f"Deleting tables without '{TABLE_NAME_SUFFIX}' suffix is not allowed.")
     url_suffix = f"/tables/{table_name}"
 
     client.http_request('DELETE', url_suffix, resource=AZURE_MANAGEMENT_RESOURCE)
