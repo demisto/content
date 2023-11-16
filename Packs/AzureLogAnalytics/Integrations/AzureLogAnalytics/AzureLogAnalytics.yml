@@ -673,7 +673,7 @@ script:
       description: The name of the resource.
       type: String
   - arguments:
-    - description: "The name of the table. Example value: AuditLogs_SRCH."
+    - description: "The name of the table. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH."
       name: table_name
     - description: "The subscription ID to use. Note: This argument will override the instance parameter 'Default Subscription ID'."
       name: subscription_id
