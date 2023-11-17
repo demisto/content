@@ -812,9 +812,7 @@ def test_get_forensic_file_information(mocker):
 def mock_download_analysis_report_response(*args, **kwargs):
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=BytesResp(
-            content=b"JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nD2OywoCMQxF9=="
-        ),
+        response=BytesResp(content=b"JVBERi0xLjQKJcCnN0cmVhbQp4nD2OywoCMQxF9=="),
     )
 
 
@@ -845,9 +843,7 @@ def test_download_analysis_report(mocker):
 def mock_download_investigation_package_response(*args, **kwargs):
     return Result(
         result_code=ResultCode.SUCCESS,
-        response=BytesResp(
-            content=b"JVBERi0xLjQKJcOkw7zDtsOfCjIgMCBvYmoKPDwvTGVuZ3RoIDMgMCBSL0ZpbHRlci9GbGF0ZURlY29kZT4+CnN0cmVhbQp4nD2OywoCMQxF9=="
-        ),
+        response=BytesResp(content=b"JVBERi0xLjQKJcCnN0cmVhbQp4nD2OywoCMQxF9=="),
     )
 
 
@@ -993,11 +989,12 @@ def test_submit_file_to_sandbox(mocker):
     )
     args = {
         "file_path": "https://someurl.com/test.json",
-        "filename": "cheat_sheet.pdf",
+        "filename": "dummy.pdf",
         "archive_password": "6hn467c8",
         "document_password": "",
         "arguments": "LS10ZXN0IA==",
     }
+    mocker.patch("TrendMicroVisionOneV3.requests.get", mocked_requests_get)
     result = submit_file_to_sandbox(client, args)
     assert isinstance(result.outputs["task_id"], str)
     assert isinstance(result.outputs["digest"], dict)
