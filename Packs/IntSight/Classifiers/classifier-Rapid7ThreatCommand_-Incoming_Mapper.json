@@ -21,12 +21,6 @@
                 "Rapid7 ThreatCommand Assets": {
                     "simple": "assets"
                 },
-                "Rapid7 ThreatCommand Attachments": {
-                    "simple": "attachments"
-                },
-                "Rapid7 ThreatCommand CSV": {
-                    "simple": "attachments.content"
-                },
                 "Rapid7 ThreatCommand Related IOCs": {
                     "simple": "related_iocs"
                 },
