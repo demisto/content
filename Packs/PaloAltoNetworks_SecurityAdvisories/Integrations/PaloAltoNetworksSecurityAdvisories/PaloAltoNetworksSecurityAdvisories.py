@@ -171,7 +171,7 @@ def advisory_to_indicator(advisory_dict: dict):
     fields = {}
 
     if "references" in advisory_dict:
-        references: list = advisory_dict.get('references', {}).get('reference_data', {})
+        references: list = advisory_dict.get('references', {}).get('reference_data', [])
         fields['publications'] = [
             {
                 "link": x.get('url'),
@@ -179,23 +179,31 @@ def advisory_to_indicator(advisory_dict: dict):
                 "source": x.get('refsource')
             } for x in references]
 
-    fields['cvss'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", "")
-    fields['cvssscore'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", "")
+    impact = advisory_dict.get("impact", {})
+    cvss = impact.get("cvss", {})
+    fields['cvss'] = cvss.get("baseScore", "")
+    fields['cvssscore'] = cvss.get("baseScore", "")
+    fields['cvssvector'] = cvss.get("vectorString", "")
+    fields['sourceoriginalseverity'] = cvss.get("baseSeverity", "")
+
+    # fields['cvss'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", "")
+    # fields['cvssscore'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", "")
     fields['cvedescription'] = advisory_dict.get("description", {}).get("description_data", [])[0].get("value", "")
-    fields['cvssvector'] = advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", "")
-    fields['sourceoriginalseverity'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", "")
+    # fields['cvssvector'] = advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", "")
+    # fields['sourceoriginalseverity'] = advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", "")
     fields['published'] = advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", "")
 
-    if "impact" in advisory_dict and advisory_dict.get("impact", {}).get("cvss", {}).get("version", "") == '3.1':
-        fields['cvssversion'] = advisory_dict.get("impact", {}).get("cvss", {}).get("version", "")
+    # if "impact" in advisory_dict and advisory_dict.get("impact", {}).get("cvss", {}).get("version", "") == '3.1':
+    if "impact" in advisory_dict and cvss.get("version", "") == '3.1':
+        fields['cvssversion'] = cvss.get("version", "")
 
-        all_cvss = []
+        # all_cvss = []
         base_metric = advisory_dict.get("impact", {})
         # is this v3 cvss?
         cvss_v3 = base_metric.get('cvss')
-        all_cvss.append({"cvssV3": cvss_v3})
+        # all_cvss.append({"cvssV3": cvss_v3})
 
-        # fills out the cvss_v3 table
+        # fills out the cvss_v3 table - not default table in layout
         cvss_v3_data = []
         for k, v in cvss_v3.items():
             cvss_v3_data.append(
@@ -217,20 +225,6 @@ def advisory_to_indicator(advisory_dict: dict):
             )
         fields['cvsstable'] = cvss_data
 
-    """
-    return {
-        "value": advisory_dict.get("CVE_data_meta", {}).get("ID", ""),
-        "type": FeedIndicatorType.CVE,
-        "rawJSON": advisory_dict,
-        "fields": {
-            "cvss": advisory_dict.get("impact", {}).get("cvss", {}).get("baseScore", ""),
-            "cvedescription": advisory_dict.get("description", {}).get("description_data", [])[0].get("value", ""),
-            "cvssvector": advisory_dict.get("impact", {}).get("cvss", {}).get("vectorString", ""),
-            "sourceoriginalseverity": advisory_dict.get("impact", {}).get("cvss", {}).get("baseSeverity", ""),
-            "published": advisory_dict.get("CVE_data_meta", {}).get("DATE_PUBLIC", "")
-        }
-    }
-    """
     return {
         "value": advisory_dict.get("CVE_data_meta", {}).get("ID", ""),
         "type": FeedIndicatorType.CVE,
