@@ -209,7 +209,7 @@ List cyber term IOCs by cyber term ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatCommand.IOC.value | String | The value of the IOC. | 
-| ThreatCommand.IOC.type | String | The type of the IOC | 
+| ThreatCommand.IOC.type | String | The type of the IOC. | 
 | ThreatCommand.IOC.updated_date | String | The date the IOC was last updated. | 
 | ThreatCommand.IOC.status | String | The status of the IOC. | 
 | ThreatCommand.IOC.is_whitelisted | String | Whether the IOC is whitelisted. | 
@@ -1426,7 +1426,7 @@ Get alert's analyst response
 | ThreatCommand.Alert.id | String | Alert ID. | 
 | ThreatCommand.Alert.Message.date | String | Response date. | 
 | ThreatCommand.Alert.Message.initiator | String | Response initiator. | 
-| ThreatCommand.Alert.Message.message | String | Response message | 
+| ThreatCommand.Alert.Message.message | String | Response message. | 
 
 #### Command example
 ```!threat-command-alert-analyst-conversation-list alert_id=1234```

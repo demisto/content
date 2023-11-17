@@ -558,15 +558,6 @@
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "rapid7threatcommandcsv2",
-                                "height": 22,
-                                "id": "cb7a2150-d2d1-11ed-9f3d-77738f524bff",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
