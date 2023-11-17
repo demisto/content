@@ -1,6 +1,13 @@
 [
     {
-        "url": "http://www.shadywebsite.com",
+        "status": 202,
+        "headers": [
+            {
+                "name": "Operation-Location",
+                "value": "{{request.baseUrl}}/v3.0/xdr/response/tasks/00000005"
+            }
+        ],
+        "url": "https://www.trendmicro.com",
         "id": "012e4eac-9bd9-4e89-95db-77e02f75a6f5",
         "digest": {
             "md5": "f3a2e1227de8d5ae7296665c1f34b28d",

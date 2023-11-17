@@ -186,6 +186,19 @@ script:
       description: Task ID generated after deleting a message from a mailbox.
       type: string
   - arguments:
+    - description: Email Message ID (<mailMsgId>), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data.
+      name: email_identifiers
+      required: true
+    description: Restores a quarantined message. Deleted messages cannot be restored.
+    name: trendmicro-visionone-restore-email-message
+    outputs:
+    - contextPath: VisionOne.Email.status
+      description: Status of restoring a message.
+      type: number
+    - contextPath: VisionOne.Email.task_id
+      description: Task ID generated after restoring a message.
+      type: string
+  - arguments:
     - description: 'Object containing endpoint (hostname) and description or agent_guid and description.'
       name: endpoint_identifiers
       required: true
@@ -343,8 +356,157 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
       name: select
-    - description: 'Should the activity data count be fetched?'
-      name: get_activity_data_count
+    - description: Query Operator.
+      name: query_op
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
+      default: true
+    description: Displays all search results from the Endpoint Activity Data source that match the parameters provided. It is advised to run get-endpoint-activity-count to get an idea of how many results will be returned based on your query. If the results are too many, then get-endpoint-activity-data can be run that accepts a top value, which limits the results to the integer value provided.
+    name: trendmicro-visionone-get-all-endpoint-activity-data
+    outputs:
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.dpt
+      description: Destination port.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.dst
+      description: Destination IP address.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.endpoint_guid
+      description: endpoint GUID for identity.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.endpoint_host_name
+      description: Hostname of the endpoint on which the event was generated.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.endpoint_ip
+      description: Endpoint IP address list.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.event_id
+      description: ID corresponding to data field mapping.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.event_sub_id
+      description: ID corresponding to data field mapping.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_integrity_level
+      description: ID corresponding to data field mapping.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_true_type
+      description: ID corresponding to data field mapping.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_sub_true_type
+      description: ID corresponding to data field mapping.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.win_event_id
+      description: ID corresponding to data field mapping.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.event_time
+      description: Log collect time utc format.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.event_time_d_t
+      description: Log collect time.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.host_name
+      description: Hostname of the endpoint on which the event was generated.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.logon_user
+      description: Logon user name.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_cmd
+      description: Command line entry of target process.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_file_hash_sha1
+      description: The SHA1 hash of target process image or target file.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_file_path
+      description: File path location of target process image or target file.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_host_name
+      description: Server name where Internet event was detected.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_ip
+      description: IP address of internet event.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_ips
+      description: IP address list of internet event.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_port
+      description: The port number used by internet event.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_registry_data
+      description: The registry value data.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_registry_key_handle
+      description: The registry key.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_registry_value
+      description: Registry value name.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_signer
+      description: Certificate signer of object process or file.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_signer_valid
+      description: Validity of certificate signer.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.object_user
+      description: The owner name of target process / The logon user name.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.os
+      description: System.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.parent_cmd
+      description: The command line that parent process.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.parent_file_hash_sha1
+      description: The SHA1 hash of parent process.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.parent_file_path
+      description: The file path location of parent process.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.process_cmd
+      description: The command line used to launch this process.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.process_file_hash_sha1
+      description: The process file sha1.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.process_file_path
+      description: The process file path.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.request
+      description: Request URL (normally detected by Web Reputation Services).
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.search_d_l
+      description: Search data lake.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.spt
+      description: Source port.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.src
+      description: Source IP address.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.src_file_hash_sha1
+      description: Source file sha1.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.src_file_path
+      description: Source file path.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.tags
+      description: Detected by Security Analytics Engine filters.
+      type: string
+    - contextPath: VisionOne.All_Endpoint_Activity_Data.uuid
+      description: Log unique identity.
+      type: string
+  - arguments:
+    - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data.'
+      name: fields
+      required: true
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+      name: start
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+      name: end
+    - description: 'Number of records displayed on a page.'
+      name: top
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+      name: select
     - description: Query Operator.
       name: query_op
       auto: PREDEFINED
@@ -355,9 +517,6 @@ script:
     description: Displays search results from the Endpoint Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-endpoint-activity-data
     outputs:
-    - contextPath: VisionOne.Endpoint_Activity_Data.total_count
-      description: Total endpoint activity data count.
-      type: string
     - contextPath: VisionOne.Endpoint_Activity_Data.dpt
       description: Destination port.
       type: string
@@ -488,6 +647,31 @@ script:
       description: Log unique identity.
       type: string
   - arguments:
+    - description: 'Statement that allows you to retrieve a subset of the collected endpoint activity data.'
+      name: fields
+      required: true
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+      name: start
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+      name: end
+    - description: 'Number of records displayed on a page.'
+      name: top
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+      name: select
+    - description: Query Operator.
+      name: query_op
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
+      default: true
+    description: Displays total count of search results from the Endpoint Activity Data source that match the parameters provided.
+    name: trendmicro-visionone-get-endpoint-activity-count
+    outputs:
+    - contextPath: VisionOne.Endpoint_Activity_Count.endpoint_activity_count
+      description: Total count for endpoint activity queried.
+      type: string
+  - arguments:
     - description: 'Statement that allows you to retrieve a subset of the collected email activity data.'
       name: fields
       required: true
@@ -499,8 +683,73 @@ script:
       name: top
     - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
       name: select
-    - description: 'Should the activity data count be fetched?'
-      name: get_activity_data_count
+    - description: Query Operator.
+      name: query_op
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
+      default: true
+    description: Displays all search results from the Email Activity Data source that match the parameters provided. It is advised to run get-email-activity-count to get an idea of how many results will be returned based on your query. If the results are too many, then get-email-activity-data can be run that accepts a top value, which limits the results to the integer value provided.
+    name: trendmicro-visionone-get-all-email-activity-data
+    outputs:
+    - contextPath: VisionOne.All_Email_Activity_Data.mail_msg_subject
+      description: Subject of the email message.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.mail_msg_id
+      description: Internet message ID of the email message.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.msg_uuid
+      description: Unique ID of the email message.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.mailbox
+      description: Mailbox where the email message is.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.mail_sender_ip
+      description: Source IP address of the email message.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.mail_from_addresses
+      description: Sender email address of the email message.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.mail_whole_header
+      description: Information about the header of the email message.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.mail_to_addresses
+      description: A list of recipient email addresses of the email message.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.mail_source_domain
+      description: Source domain of the email message.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.search_d_l
+      description: Search data lake.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.scan_type
+      description: Email activity scan type.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.event_time
+      description: Date and time UTC.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.org_id
+      description: Unique ID used to identify an organization.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.mail_urls_visible_link
+      description: Visible link in email message.
+      type: string
+    - contextPath: VisionOne.All_Email_Activity_Data.mail_urls_real_link
+      description: Real link in email message.
+      type: string
+  - arguments:
+    - description: 'Statement that allows you to retrieve a subset of the collected email activity data.'
+      name: fields
+      required: true
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+      name: start
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+      name: end
+    - description: 'Number of records displayed on a page.'
+      name: top
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+      name: select
     - description: Query Operator.
       name: query_op
       auto: PREDEFINED
@@ -511,9 +760,6 @@ script:
     description: Displays search results from the Email Activity Data source that match the parameters provided.
     name: trendmicro-visionone-get-email-activity-data
     outputs:
-    - contextPath: VisionOne.Email_Activity_Data.total_count
-      description: Total email activity data count.
-      type: string
     - contextPath: VisionOne.Email_Activity_Data.mail_msg_subject
       description: Subject of the email message.
       type: string
@@ -558,6 +804,31 @@ script:
       type: string
     - contextPath: VisionOne.Email_Activity_Data.mail_urls_real_link
       description: Real link in email message.
+      type: string
+  - arguments:
+    - description: 'Statement that allows you to retrieve a subset of the collected email activity data.'
+      name: fields
+      required: true
+    - description: 'Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made.'
+      name: start
+    - description: 'Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.'
+      name: end
+    - description: 'Number of records displayed on a page.'
+      name: top
+    - description: 'List of fields to include in the search results. If no fields are specified, the query returns all supported fields.'
+      name: select
+    - description: Query Operator.
+      name: query_op
+      auto: PREDEFINED
+      predefined:
+      - and
+      - or
+      default: true
+    description: Displays search results from the Email Activity Data source that match the parameters provided.
+    name: trendmicro-visionone-get-email-activity-count
+    outputs:
+    - contextPath: VisionOne.Email_Activity_Count.email_activity_count
+      description: Total count of email activity.
       type: string
   - arguments:
     - description: 'Object consisting of endpoint (hostname) or agent_guid, file_sha1, filename and description.'
@@ -827,7 +1098,7 @@ script:
     name: trendmicro-visionone-download-analysis-report
   - arguments:
     - description: URL pointing to the location of the file to be submitted.
-      name: file_path
+      name: file_url
       required: true
     - description: Name of the file (including extension) to be analyzed.
       name: file_name

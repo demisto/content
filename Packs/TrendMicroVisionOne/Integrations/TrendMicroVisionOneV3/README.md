@@ -1,4 +1,4 @@
-Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. In this new release 2 actions have been added, one to fetch email activity data with count and another to fetch endpoint activity data with count. This integration was integrated and tested with version 3 API of Trend Micro Vision One V3.
+Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection. V3 version of the app includes everything that the previous app had and adds more capabilities. It leverages V3 of Trend Micro APIs and introduces further ability to manage domain accounts with addition of 4 domain account actions for enabling/disabling user account, forcing sign-out and password resets for compromised accounts. This app is in active development. In this new release 3 actions have been added, one to fetch email activity data with count, one to fetch endpoint activity data with count and one action to restore a quarantined email message. This integration was integrated and tested with version 3 API of Trend Micro Vision One.
 
 ## Configure Trend Micro Vision One V3. on Cortex XSOAR
 
@@ -203,6 +203,28 @@ Deletes a message from a mailbox.
 | VisionOne.Email.status  | number   | Status of deleting a message from a mailbox.               |
 | VisionOne.Email.task_id | string   | Task ID generated after deleting a message from a mailbox. |
 
+### trendmicro-visionone-restore-email-message
+
+***
+Restores a quarantined message. Deleted messages cannot be restored.
+
+#### Base Command
+
+`trendmicro-visionone-restore-email-message`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                    | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| email_identifiers | Email Message ID (&lt;mailMsgId&gt;), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data. | Required     |
+
+#### Context Output
+
+| **Path**                | **Type** | **Description**                              |
+| ----------------------- | -------- | -------------------------------------------- |
+| VisionOne.Email.status  | number   | Status of restoring a message.               |
+| VisionOne.Email.task_id | string   | Task ID generated after restoring a message. |
+
 ### trendmicro-visionone-isolate-endpoint
 
 ***
@@ -374,6 +396,74 @@ Retrieves information about a specific endpoint.
 | VisionOne.Endpoint_Info.product_code            | string   | Product code of the Trend Micro product running on the endpoint.   |
 | VisionOne.Endpoint_Info.installed_product_codes | string   | Product code of the Trend Micro product installed on the endpoint. |
 
+### trendmicro-visionone-get-all-endpoint-activity-data
+
+***
+Displays all search results from the Endpoint Activity Data source that match the parameters provided. It is advised to run get-endpoint-activity-count to get an idea of how many results will be returned based on your query. If the results are too many, then get-endpoint-activity-data can be run that accepts a top value, which limits the results to the integer value provided.
+
+#### Base Command
+
+`trendmicro-visionone-get-all-endpoint-activity-data`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data.                                                                             | Required     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
+| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
+| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+
+#### Context Output
+
+| **Path**                                                        | **Type** | **Description**                                               |
+| --------------------------------------------------------------- | -------- | ------------------------------------------------------------- |
+| VisionOne.All_Endpoint_Activity_Data.dpt                        | string   | Destination port.                                             |
+| VisionOne.All_Endpoint_Activity_Data.dst                        | string   | Destination IP address.                                       |
+| VisionOne.All_Endpoint_Activity_Data.endpoint_guid              | string   | endpoint GUID for identity.                                   |
+| VisionOne.All_Endpoint_Activity_Data.endpoint_host_name         | string   | Hostname of the endpoint on which the event was generated.    |
+| VisionOne.All_Endpoint_Activity_Data.endpoint_ip                | string   | Endpoint IP address list.                                     |
+| VisionOne.All_Endpoint_Activity_Data.event_id                   | string   | ID corresponding to data field mapping.                       |
+| VisionOne.All_Endpoint_Activity_Data.event_sub_id               | string   | ID corresponding to data field mapping.                       |
+| VisionOne.All_Endpoint_Activity_Data.object_integrity_level     | string   | ID corresponding to data field mapping.                       |
+| VisionOne.All_Endpoint_Activity_Data.object_true_type           | string   | ID corresponding to data field mapping.                       |
+| VisionOne.All_Endpoint_Activity_Data.object_sub_true_type       | string   | ID corresponding to data field mapping.                       |
+| VisionOne.All_Endpoint_Activity_Data.win_event_id               | string   | ID corresponding to data field mapping.                       |
+| VisionOne.All_Endpoint_Activity_Data.event_time                 | string   | Log collect time utc format.                                  |
+| VisionOne.All_Endpoint_Activity_Data.event_time_d_t             | string   | Log collect time.                                             |
+| VisionOne.All_Endpoint_Activity_Data.host_name                  | string   | Hostname of the endpoint on which the event was generated.    |
+| VisionOne.All_Endpoint_Activity_Data.logon_user                 | string   | Logon user name.                                              |
+| VisionOne.All_Endpoint_Activity_Data.object_cmd                 | string   | Command line entry of target process.                         |
+| VisionOne.All_Endpoint_Activity_Data.object_file_hash_sha1      | string   | The SHA1 hash of target process image or target file.         |
+| VisionOne.All_Endpoint_Activity_Data.object_file_path           | string   | File path location of target process image or target file.    |
+| VisionOne.All_Endpoint_Activity_Data.object_host_name           | string   | Server name where Internet event was detected.                |
+| VisionOne.All_Endpoint_Activity_Data.object_ip                  | string   | IP address of internet event.                                 |
+| VisionOne.All_Endpoint_Activity_Data.object_ips                 | string   | IP address list of internet event.                            |
+| VisionOne.All_Endpoint_Activity_Data.object_port                | string   | The port number used by internet event.                       |
+| VisionOne.All_Endpoint_Activity_Data.object_registry_data       | string   | The registry value data.                                      |
+| VisionOne.All_Endpoint_Activity_Data.object_registry_key_handle | string   | The registry key.                                             |
+| VisionOne.All_Endpoint_Activity_Data.object_registry_value      | string   | Registry value name.                                          |
+| VisionOne.All_Endpoint_Activity_Data.object_signer              | string   | Certificate signer of object process or file.                 |
+| VisionOne.All_Endpoint_Activity_Data.object_signer_valid        | string   | Validity of certificate signer.                               |
+| VisionOne.All_Endpoint_Activity_Data.object_user                | string   | The owner name of target process / The logon user name.       |
+| VisionOne.All_Endpoint_Activity_Data.os                         | string   | System.                                                       |
+| VisionOne.All_Endpoint_Activity_Data.parent_cmd                 | string   | The command line that parent process.                         |
+| VisionOne.All_Endpoint_Activity_Data.parent_file_hash_sha1      | string   | The SHA1 hash of parent process.                              |
+| VisionOne.All_Endpoint_Activity_Data.parent_file_path           | string   | The file path location of parent process.                     |
+| VisionOne.All_Endpoint_Activity_Data.process_cmd                | string   | The command line used to launch this process.                 |
+| VisionOne.All_Endpoint_Activity_Data.process_file_hash_sha1     | string   | The process file sha1.                                        |
+| VisionOne.All_Endpoint_Activity_Data.process_file_path          | string   | The process file path.                                        |
+| VisionOne.All_Endpoint_Activity_Data.request                    | string   | Request URL \(normally detected by Web Reputation Services\). |
+| VisionOne.All_Endpoint_Activity_Data.search_d_l                 | string   | Search data lake.                                             |
+| VisionOne.All_Endpoint_Activity_Data.spt                        | string   | Source port.                                                  |
+| VisionOne.All_Endpoint_Activity_Data.src                        | string   | Source IP address.                                            |
+| VisionOne.All_Endpoint_Activity_Data.src_file_hash_sha1         | string   | Source file sha1.                                             |
+| VisionOne.All_Endpoint_Activity_Data.src_file_path              | string   | Source file path.                                             |
+| VisionOne.All_Endpoint_Activity_Data.tags                       | string   | Detected by Security Analytics Engine filters.                |
+| VisionOne.All_Endpoint_Activity_Data.uuid                       | string   | Log unique identity.                                          |
+
 ### trendmicro-visionone-get-endpoint-activity-data
 
 ***
@@ -385,21 +475,19 @@ Displays search results from the Endpoint Activity Data source that match the pa
 
 #### Input
 
-| **Argument Name**       | **Description**                                                                                                                                                     | **Required** |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| fields                  | Statement that allows you to retrieve a subset of the collected endpoint activity data.                                                                             | Required     |
-| start                   | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
-| end                     | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
-| top                     | Number of records displayed on a page.                                                                                                                              | Optional     |
-| select                  | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
-| get_activity_data_count | Should the activity data count be fetched?.                                                                                                                         | Optional     |
-| query_op                | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data.                                                                             | Required     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
+| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
+| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
 
 #### Context Output
 
 | **Path**                                                    | **Type** | **Description**                                               |
 | ----------------------------------------------------------- | -------- | ------------------------------------------------------------- |
-| VisionOne.Endpoint_Activity_Data.total_count                | string   | Total endpoint activity data count.                           |
 | VisionOne.Endpoint_Activity_Data.dpt                        | string   | Destination port.                                             |
 | VisionOne.Endpoint_Activity_Data.dst                        | string   | Destination IP address.                                       |
 | VisionOne.Endpoint_Activity_Data.endpoint_guid              | string   | endpoint GUID for identity.                                   |
@@ -444,6 +532,72 @@ Displays search results from the Endpoint Activity Data source that match the pa
 | VisionOne.Endpoint_Activity_Data.tags                       | string   | Detected by Security Analytics Engine filters.                |
 | VisionOne.Endpoint_Activity_Data.uuid                       | string   | Log unique identity.                                          |
 
+### trendmicro-visionone-get-endpoint-activity-count
+
+***
+Displays total count of search results from the Endpoint Activity Data source that match the parameters provided.
+
+#### Base Command
+
+`trendmicro-visionone-get-endpoint-activity-count`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected endpoint activity data.                                                                             | Required     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
+| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
+| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+
+#### Context Output
+
+| **Path**                                                  | **Type** | **Description**                            |
+| --------------------------------------------------------- | -------- | ------------------------------------------ |
+| VisionOne.Endpoint_Activity_Count.endpoint_activity_count | string   | Total count for endpoint activity queried. |
+
+### trendmicro-visionone-get-all-email-activity-data
+
+***
+Displays all search results from the Email Activity Data source that match the parameters provided. It is advised to run get-email-activity-count to get an idea of how many results will be returned based on your query. If the results are too many, then get-email-activity-data can be run that accepts a top value, which limits the results to the integer value provided.
+
+#### Base Command
+
+`trendmicro-visionone-get-all-email-activity-data`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected email activity data.                                                                                | Required     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
+| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
+| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+
+#### Context Output
+
+| **Path**                                                 | **Type** | **Description**                                           |
+| -------------------------------------------------------- | -------- | --------------------------------------------------------- |
+| VisionOne.All_Email_Activity_Data.mail_msg_subject       | string   | Subject of the email message.                             |
+| VisionOne.All_Email_Activity_Data.mail_msg_id            | string   | Internet message ID of the email message.                 |
+| VisionOne.All_Email_Activity_Data.msg_uuid               | string   | Unique ID of the email message.                           |
+| VisionOne.All_Email_Activity_Data.mailbox                | string   | Mailbox where the email message is.                       |
+| VisionOne.All_Email_Activity_Data.mail_sender_ip         | string   | Source IP address of the email message.                   |
+| VisionOne.All_Email_Activity_Data.mail_from_addresses    | string   | Sender email address of the email message.                |
+| VisionOne.All_Email_Activity_Data.mail_whole_header      | string   | Information about the header of the email message.        |
+| VisionOne.All_Email_Activity_Data.mail_to_addresses      | string   | A list of recipient email addresses of the email message. |
+| VisionOne.All_Email_Activity_Data.mail_source_domain     | string   | Source domain of the email message.                       |
+| VisionOne.All_Email_Activity_Data.search_d_l             | string   | Search data lake.                                         |
+| VisionOne.All_Email_Activity_Data.scan_type              | string   | Email activity scan type.                                 |
+| VisionOne.All_Email_Activity_Data.event_time             | string   | Date and time UTC.                                        |
+| VisionOne.All_Email_Activity_Data.org_id                 | string   | Unique ID used to identify an organization.               |
+| VisionOne.All_Email_Activity_Data.mail_urls_visible_link | string   | Visible link in email message.                            |
+| VisionOne.All_Email_Activity_Data.mail_urls_real_link    | string   | Real link in email message.                               |
+
 ### trendmicro-visionone-get-email-activity-data
 
 ***
@@ -455,21 +609,19 @@ Displays search results from the Email Activity Data source that match the param
 
 #### Input
 
-| **Argument Name**       | **Description**                                                                                                                                                     | **Required** |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| fields                  | Statement that allows you to retrieve a subset of the collected email activity data.                                                                                | Required     |
-| start                   | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
-| end                     | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
-| top                     | Number of records displayed on a page.                                                                                                                              | Optional     |
-| select                  | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
-| get_activity_data_count | Should the activity data count be fetched?.                                                                                                                         | Optional     |
-| query_op                | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected email activity data.                                                                                | Required     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
+| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
+| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
 
 #### Context Output
 
 | **Path**                                             | **Type** | **Description**                                           |
 | ---------------------------------------------------- | -------- | --------------------------------------------------------- |
-| VisionOne.Email_Activity_Data.total_count            | string   | Total email activity data count.                          |
 | VisionOne.Email_Activity_Data.mail_msg_subject       | string   | Subject of the email message.                             |
 | VisionOne.Email_Activity_Data.mail_msg_id            | string   | Internet message ID of the email message.                 |
 | VisionOne.Email_Activity_Data.msg_uuid               | string   | Unique ID of the email message.                           |
@@ -485,6 +637,32 @@ Displays search results from the Email Activity Data source that match the param
 | VisionOne.Email_Activity_Data.org_id                 | string   | Unique ID used to identify an organization.               |
 | VisionOne.Email_Activity_Data.mail_urls_visible_link | string   | Visible link in email message.                            |
 | VisionOne.Email_Activity_Data.mail_urls_real_link    | string   | Real link in email message.                               |
+
+### trendmicro-visionone-get-email-activity-count
+
+***
+Displays search results from the Email Activity Data source that match the parameters provided.
+
+#### Base Command
+
+`trendmicro-visionone-get-email-activity-count`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                     | **Required** |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| fields            | Statement that allows you to retrieve a subset of the collected email activity data.                                                                                | Required     |
+| start             | Timestamp in ISO 8601 format that indicates the start of the data retrieval range. If no value is specified, start defaults to 24 hours before the request is made. | Optional     |
+| end               | Timestamp in ISO 8601 format that indicates the end of the data retrieval time range. If no value is specified, end defaults to the time the request is made.       | Optional     |
+| top               | Number of records displayed on a page.                                                                                                                              | Optional     |
+| select            | List of fields to include in the search results. If no fields are specified, the query returns all supported fields.                                                | Optional     |
+| query_op          | Query Operator. Possible values are: and, or.                                                                                                                       | Optional     |
+
+#### Context Output
+
+| **Path**                                            | **Type** | **Description**                |
+| --------------------------------------------------- | -------- | ------------------------------ |
+| VisionOne.Email_Activity_Count.email_activity_count | string   | Total count of email activity. |
 
 ### trendmicro-visionone-terminate-process
 
@@ -724,7 +902,7 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 
 | **Argument Name** | **Description**                                                                                       | **Required** |
 | ----------------- | ----------------------------------------------------------------------------------------------------- | ------------ |
-| file_path         | URL pointing to the location of the file to be submitted.                                             | Required     |
+| file_url          | URL pointing to the location of the file to be submitted.                                             | Required     |
 | file_name         | Name of the file (including extension) to be analyzed.                                                | Required     |
 | document_password | The Base64 encoded password for decrypting the submitted document. sample.                            | Optional     |
 | archive_password  | The Base64 encoded password for decrypting the submitted archive.                                     | Optional     |

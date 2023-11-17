@@ -68,7 +68,6 @@ AGENT_GUID = "agent_guid"
 DESCRIPTION = "description"
 MESSAGE_ID = "message_id"
 MAILBOX = "mailbox"
-APP_NAME = "Trend Micro Vision One V3"
 ENDPOINT = "endpoint"
 START = "start"
 SELECT = "select"
@@ -76,7 +75,6 @@ END = "end"
 TOP = "top"
 QUERY_OP = "query_op"
 FIELDS = "fields"
-GET_ACTIVITY_DATA_COUNT = "get_activity_data_count"
 ENTRY_ID = "entry_id"
 FILE_SHA1 = "file_sha1"
 SUCCEEDED = "succeeded"
@@ -85,16 +83,17 @@ RISK_LEVEL = "risk_level"
 EXPIRY_DAYS = "expiry_days"
 TASKID = "task_id"
 REPORT_ID = "report_id"
-FAILED = "failed"
 OBJECT_TYPE = "object_type"
 OBJECT_VALUE = "object_value"
-PROCESSING = "processing"
 QUEUED = "queued"
+FAILED = "failed"
 RUNNING = "running"
+REJECTED = "rejected"
 WAITFORAPPROVAL = "waitForApproval"
 OS_TYPE = "os"
 FILEPATH = "filepath"
 FILE_PATH = "file_path"
+FILE_URL = "file_url"
 FILE_NAME = "filename"
 DOCUMENT_PASSWORD = "document_password"
 ARCHIVE_PASSWORD = "archive_password"
@@ -144,15 +143,17 @@ TABLE_ADD_SUSPICIOUS_LIST = "Add object to suspicious list "
 TABLE_DELETE_SUSPICIOUS_LIST = "Delete object from suspicious list "
 TABLE_ENDPOINT_INFO = "Endpoint info "
 TABLE_GET_EMAIL_ACTIVITY_DATA = "Email activity data "
-TABLE_GET_EMAIL_ACTIVITY_DATA_COUNT = "Email activity data count "
+TABLE_GET_ALL_EMAIL_ACTIVITY_DATA = "All email activity data "
+TABLE_GET_EMAIL_ACTIVITY_COUNT = "Email activity data count "
 TABLE_GET_ENDPOINT_ACTIVITY_DATA = "Endpoint activity data "
-TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT = "Endpoint activity data count"
+TABLE_GET_ALL_ENDPOINT_ACTIVITY_DATA = "All endpoint activity data "
+TABLE_GET_ENDPOINT_ACTIVITY_COUNT = "Endpoint activity data count"
 TABLE_GET_FILE_ANALYSIS_STATUS = "File analysis status "
 TABLE_GET_FILE_ANALYSIS_RESULT = "File analysis result "
 TABLE_GET_ALERT_DETAILS = "Alert details"
 TABLE_COLLECT_FILE = "Collect forensic file "
 TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = (
-    "The download information for collected forensic file "
+    "Download information for collected forensic file "
 )
 TABLE_SUBMIT_FILE_TO_SANDBOX = "Submit file to sandbox "
 TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX = "Submit file entry to sandbox "
@@ -207,7 +208,13 @@ SANDBOX_SUBMISSION_POLLING_COMMAND = (
 CHECK_TASK_STATUS_COMMAND = "trendmicro-visionone-check-task-status"
 GET_ENDPOINT_INFO_COMMAND = "trendmicro-visionone-get-endpoint-info"
 GET_EMAIL_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-email-activity-data"
+GET_EMAIL_ACTIVITY_COUNT_COMMAND = "trendmicro-visionone-get-email-activity-count"
+GET_ALL_EMAIL_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-all-email-activity-data"
 GET_ENDPOINT_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-endpoint-activity-data"
+GET_ENDPOINT_ACTIVITY_COUNT_COMMAND = "trendmicro-visionone-get-endpoint-activity-count"
+GET_ALL_ENDPOINT_ACTIVITY_DATA_COMMAND = (
+    "trendmicro-visionone-get-all-endpoint-activity-data"
+)
 GET_ALERT_DETAILS_COMMAND = "trendmicro-visionone-get-alert-details"
 UPDATE_STATUS_COMMAND = "trendmicro-visionone-update-status"
 ADD_NOTE_COMMAND = "trendmicro-visionone-add-note"
@@ -243,9 +250,13 @@ table_name = {
     GET_FILE_ANALYSIS_STATUS_COMMAND: TABLE_GET_FILE_ANALYSIS_STATUS,
     GET_FILE_ANALYSIS_RESULT_COMMAND: TABLE_GET_FILE_ANALYSIS_RESULT,
     DOWNLOAD_ANALYSIS_REPORT_COMMAND: TABLE_DOWNLOAD_ANALYSIS_REPORT,
+    GET_EMAIL_ACTIVITY_COUNT_COMMAND: TABLE_GET_EMAIL_ACTIVITY_COUNT,
     FILE_ENTRY_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX,
-    GET_ENDPOINT_ACTIVITY_DATA_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA,
     SANDBOX_SUBMISSION_POLLING_COMMAND: TABLE_SANDBOX_SUBMISSION_POLLING,
+    GET_ENDPOINT_ACTIVITY_DATA_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA,
+    GET_ALL_EMAIL_ACTIVITY_DATA_COMMAND: TABLE_GET_ALL_EMAIL_ACTIVITY_DATA,
+    GET_ENDPOINT_ACTIVITY_COUNT_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_COUNT,
+    GET_ALL_ENDPOINT_ACTIVITY_DATA_COMMAND: TABLE_GET_ALL_ENDPOINT_ACTIVITY_DATA,
     DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND: TABLE_DOWNLOAD_INVESTIGATION_PACKAGE,
     DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND: TABLE_DOWNLOAD_SUSPICIOUS_OBJECT_LIST,
     DOWNLOAD_COLLECTED_FILE_COMMAND: TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION,
@@ -256,7 +267,7 @@ urllib3.disable_warnings()
 _T = TypeVar("_T")
 
 
-def unwrap(val: Union[_T, None]) -> _T:
+def unwrap(val: Optional[_T]) -> _T:
     if val is None:
         raise ValueError("Expected non-null value but received None.")
     return val
@@ -266,246 +277,225 @@ def check_datetime_aware(d):
     return (d.tzinfo is not None) and (d.tzinfo.utcoffset(d) is not None)
 
 
-class Client(BaseClient):
-    def __init__(self, base_url: str, api_key: str, proxy: bool, verify: bool) -> None:
-        """
-        Inherit the BaseClient class from the demistomock.
-        :type base_url: ``str``
-        :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
-        :type api_key: ``str``
-        :param api_key: api token to access the api data.
-        :type proxy: ``bool``
-        :param proxy: Whether the request should use the system proxy settings.
-        :type verify: ``bool``
-        :param verify: Whether the request should verify the SSL certificate.
-        :return: returns None
-        :rtype: ``None``
-        """
-        self.base_url = base_url
-        self.api_key = api_key
-        self.status = None
-        self.app = APP_NAME
+def status_check(v1_client: pytmv1.Client, data: Dict[str, Any]) -> Any:
+    """
+    Check the status of particular task.
+    :type data: ``dict``
+    :param method: Response data to received from the end point.
+    :return: task status response data.
+    :rtype: ``Any``
+    """
+    task_id = data.get(TASKID, EMPTY_STRING)
+    poll = argToBoolean(data.get(POLL, TRUE))
+    poll_time_sec = arg_to_number(data.get(POLL_TIME_SEC, 0))
+    message: Dict[str, Any] = {}
 
-        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
+    # Make rest call
+    resp = v1_client.get_base_task_result(task_id, poll, poll_time_sec)  # type: ignore
+    # Check if error response is returned
+    if _is_pytmv1_error(resp.result_code):
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
+    # Get the task action type that will be used to
+    # fetch task class which is used in get_task_result
+    status_resp: pytmv1.BaseTaskResp = unwrap(resp.response)
+    action: pytmv1.TaskAction = status_resp.action
+    # Make rest call using task class to get final result
+    task_resp = v1_client.get_task_result(
+        class_=_get_task_type(action),
+        task_id=task_id,
+        poll=poll,
+        poll_time_sec=poll_time_sec,  # type: ignore
+    )
+    # Assign values on a successful call
+    resp_obj: pytmv1.BaseTaskResp = unwrap(task_resp.response)
+    message = resp_obj.dict()
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[CHECK_TASK_STATUS_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Task_Status",
+        outputs_key_field="id",
+        outputs=message,
+    )
 
-    def status_check(self, data: Dict[str, Any]) -> Any:
-        """
-        Check the status of particular task.
-        :type data: ``dict``
-        :param method: Response data to received from the end point.
-        :return: task status response data.
-        :rtype: ``Any``
-        """
-        task_id = data.get(TASKID, EMPTY_STRING)
-        poll = data.get(POLL, TRUE)
-        poll_time_sec = arg_to_number(data.get(POLL_TIME_SEC, 0))
-        message: Dict[str, Any] = {}
 
-        # Initialize pytmv1 client
-        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
+def sandbox_submission_polling(v1_client: pytmv1.Client, data: Dict[str, Any]) -> Any:
+    """
+    Check the status of sandbox submission
+    :type data: ``dict``
+    :param method: Response data received from sandbox.
+    :return: Sandbox submission response data.
+    :rtype: ``Any``
+    """
+    task_id = data.get(TASKID, EMPTY_STRING)
+    message: Dict[str, Any] = {}
+    # Make rest call
+    resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
+    resp_obj: pytmv1.SandboxSubmissionStatusResp = unwrap(resp.response)
+    # Check if error response is returned
+    if _is_pytmv1_error(resp.result_code):
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
+    # Get the task status of rest call
+    task_status = resp_obj.status
 
-        # Make rest call
-        resp = v1_client.get_base_task_result(task_id, poll, poll_time_sec)  # type: ignore
-        # Check if error response is returned
-        if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
-        # Get the task action type that will be used to
-        # fetch task class which is used in get_task_result
-        action = unwrap(resp.response).action
-        # Make rest call using task class to get final result
-        task_resp = v1_client.get_task_result(
-            class_=_get_task_type(action),
-            task_id=task_id,
-            poll=poll,
-            poll_time_sec=poll_time_sec,  # type: ignore
+    file_entry = None
+    if task_status.lower() == SUCCEEDED:
+        analysis_resp = v1_client.get_sandbox_analysis_result(submit_id=task_id)
+        if _is_pytmv1_error(analysis_resp.result_code):
+            error: pytmv1.Error = unwrap(analysis_resp.error)
+            return_error(message=f"{error.message}", error=str(error))
+        analysis_resp_obj: pytmv1.SandboxAnalysisResultResp = unwrap(
+            analysis_resp.response
         )
-        # Assign values on a successful call
-        message = unwrap(task_resp.response).dict()
-        return CommandResults(
-            readable_output=tableToMarkdown(
-                table_name[CHECK_TASK_STATUS_COMMAND],
-                message,
-                headerTransform=string_to_table_header,
-                removeNull=True,
-            ),
-            outputs_prefix="VisionOne.Task_Status",
-            outputs_key_field="id",
-            outputs=message,
+        risk = analysis_resp_obj.risk_level
+        risk_score = incident_severity_to_dbot_score(risk)
+        digest: pytmv1.Digest = unwrap(analysis_resp_obj.digest)
+        sha256 = digest.sha256
+        md5 = digest.md5
+        sha1 = digest.sha1
+        reliability = demisto.params().get(INTEGRATION_RELIABILITY)
+        dbot_score = Common.DBotScore(
+            indicator=sha256,
+            indicator_type=DBotScoreType.FILE,
+            integration_name=VENDOR_NAME,
+            score=risk_score,
+            reliability=reliability,
         )
-
-    def sandbox_submission_polling(self, data: Dict[str, Any]) -> Any:
-        """
-        Check the status of sandbox submission
-        :type data: ``dict``
-        :param method: Response data received from sandbox.
-        :return: Sandbox submission response data.
-        :rtype: ``Any``
-        """
-        task_id = data.get(TASKID, EMPTY_STRING)
-        message: Dict[str, Any] = {}
-        # Initialize pytmv1 client
-        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
-
-        resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
-        # Check if error response is returned
-        if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
-        # Get the task status of rest call
-        task_status = unwrap(resp.response).status
-
-        file_entry = None
-        if task_status.lower() == SUCCEEDED:
-            analysis_resp = v1_client.get_sandbox_analysis_result(submit_id=task_id)
-            if _is_pytmv1_error(analysis_resp.result_code):
-                return_error(
-                    message=f"{unwrap(analysis_resp.error).message}",
-                    error=str(analysis_resp.error),
-                )
-            risk = unwrap(analysis_resp.response).risk_level
-            risk_score = incident_severity_to_dbot_score(risk)
-            digest = unwrap(unwrap(analysis_resp.response).digest)
-            sha256 = digest.sha256
-            md5 = digest.md5
-            sha1 = digest.sha1
-            reliability = demisto.params().get(INTEGRATION_RELIABILITY)
-            dbot_score = Common.DBotScore(
-                indicator=sha256,
-                indicator_type=DBotScoreType.FILE,
-                integration_name=VENDOR_NAME,
-                score=risk_score,
-                reliability=reliability,
-            )
-            file_entry = Common.File(
-                sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score
-            )
-            message = {
-                "status_code": 200,
-                "status": task_status,
-                "report_id": unwrap(analysis_resp.response).id,
-                "type": unwrap(analysis_resp.response).type,
-                "digest": unwrap(unwrap(analysis_resp.response).digest).dict(),
-                "arguments": unwrap(analysis_resp.response).arguments,
-                "analysis_completion_time": unwrap(
-                    analysis_resp.response
-                ).analysis_completion_date_time,
-                "risk_level": unwrap(analysis_resp.response).risk_level,
-                "detection_name_list": unwrap(analysis_resp.response).detection_names,
-                "threat_type_list": unwrap(analysis_resp.response).threat_types,
-                "file_type": unwrap(analysis_resp.response).true_file_type,
-                "DBotScore": {
-                    "Score": dbot_score.score,
-                    "Vendor": dbot_score.integration_name,
-                    "Reliability": dbot_score.reliability,
-                },
-            }
-        else:
-            message = {
-                "status": unwrap(resp.response).status,
-                "report_id": task_id,
-                "result_code": resp.result_code,
-                "message": unwrap(resp.response).action,
-            }
-        return CommandResults(
-            readable_output=tableToMarkdown(
-                table_name[SANDBOX_SUBMISSION_POLLING_COMMAND],
-                message,
-                headerTransform=string_to_table_header,
-                removeNull=True,
-            ),
-            outputs_prefix="VisionOne.Sandbox_Submission_Polling",
-            outputs_key_field="report_id",
-            outputs=message,
-            indicator=Common.File(file_entry),
+        file_entry = Common.File(
+            sha256=sha256, md5=md5, sha1=sha1, dbot_score=dbot_score
         )
+        message = {
+            "status_code": 200,
+            "status": task_status,
+            "report_id": analysis_resp_obj.id,
+            "type": analysis_resp_obj.type,
+            "digest": digest.dict(),
+            "arguments": analysis_resp_obj.arguments,
+            "analysis_completion_time": analysis_resp_obj.analysis_completion_date_time,
+            "risk_level": risk,
+            "detection_name_list": analysis_resp_obj.detection_names,
+            "threat_type_list": analysis_resp_obj.threat_types,
+            "file_type": analysis_resp_obj.true_file_type,
+            "DBotScore": {
+                "Score": dbot_score.score,
+                "Vendor": dbot_score.integration_name,
+                "Reliability": dbot_score.reliability,
+            },
+        }
+    else:
+        message = {
+            "status": resp_obj.status,
+            "report_id": task_id,
+            "result_code": resp.result_code,
+            "message": resp_obj.action,
+        }
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[SANDBOX_SUBMISSION_POLLING_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Sandbox_Submission_Polling",
+        outputs_key_field="report_id",
+        outputs=message,
+        indicator=Common.File(file_entry),
+    )
 
-    def exception_list_count(self) -> int:
-        """
-        Gets the count of object present in exception list
-        :return: number of exception object.
-        :rtype: ``int``
-        """
-        new_exceptions: List[ExceptionObject] = []
-        # Initialize pytmv1 client
-        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
-        # Make rest call
-        try:
-            v1_client.consume_exception_list(
-                lambda exception: new_exceptions.append(exception)
-            )
-        except Exception as err:
-            raise RuntimeError(f"Error while fetching exception list count.\n {err}")
-        # Return length of exception list
-        return len(new_exceptions)
 
-    def suspicious_list_count(self) -> int:
-        """
-        Gets the count of object present in suspicious list
-        :return: number of suspicious object.
-        :rtype: ``int``
-        """
-        new_suspicious: List[SuspiciousObject] = []
-        # Initialize pytmv1 client
-        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
-        # Make rest call
-        try:
-            v1_client.consume_suspicious_list(
-                lambda suspicious: new_suspicious.append(suspicious)
-            )
-        except Exception as err:
-            raise RuntimeError(f"Error while fetching suspicious list count.\n {err}")
-        # Return length of suspicious list
-        return len(new_suspicious)
+def exception_list_count(v1_client: pytmv1.Client) -> int:
+    """
+    Gets the count of object present in exception list
+    :return: number of exception object.
+    :rtype: ``int``
+    """
+    new_exceptions: List[ExceptionObject] = []
 
-    def get_workbench_histories(self, start, end) -> list:
-        """
-        Fetches incidents based on incident severity per user selection.
-        Args:
-        start (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the start of the data retrieval
-                     time range. Oldest available value is "1970-01-01T00:00:00Z"
-        end (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the end of the data retrieval
-                   time range. "endDateTime" can not be earlier than "startDateTime".
-        Returns:
-            list: List of incidents fetched
-        """
-        # Initialize pytmv1 client
-        v1_client = _get_client(APP_NAME, self.api_key, self.base_url)
-        if not check_datetime_aware(start):
-            start = start.astimezone()
-        if not check_datetime_aware(end):
-            end = end.astimezone()
-        # Date time format before formatting -> 2020-06-15T10:00:00.000Z
-        start = start.astimezone(timezone.utc)
-        end = end.astimezone(timezone.utc)
-        start = start.isoformat(timespec="milliseconds").replace("+00:00", "Z")
-        end = end.isoformat(timespec="milliseconds").replace("+00:00", "Z")
-        # Format start and end to remove decimal values so that the request
-        # call doesn't fail due to incorrect time format for seconds.
-        # Date time format after formatting -> 2020-06-15T10:00:00Z
-        formatted_start = str(start[: (start.index("."))]) + str(start[-1])
-        formatted_end = str(end[: (start.index("."))]) + str(end[-1])
+    #
+    # Make rest call
+    try:
+        v1_client.consume_exception_list(
+            lambda exception: new_exceptions.append(exception)
+        )
+    except Exception as err:
+        raise RuntimeError(f"Error while fetching exception list count.\n {err}")
+    # Return length of exception list
+    return len(new_exceptions)
 
-        new_alerts: List[Union[SaeAlert, TiAlert]] = []
 
-        # filter incidents per user preference
-        def _filter_alerts(alert: Union[SaeAlert, TiAlert]) -> None:
-            # If incidents of all severities need to be fetched
-            if demisto.params().get(INCIDENT_SEVERITY) == ANY:
-                new_alerts.append(alert)
-            # If incidents of selected severity need to be fetched
-            elif alert.severity.value == demisto.params().get(INCIDENT_SEVERITY):
-                new_alerts.append(alert)
+def suspicious_list_count(v1_client: pytmv1.Client) -> int:
+    """
+    Gets the count of object present in suspicious list
+    :return: number of suspicious object.
+    :rtype: ``int``
+    """
+    new_suspicious: List[SuspiciousObject] = []
 
-        # Make rest call
-        try:
-            v1_client.consume_alert_list(
-                _filter_alerts,
-                start_time=formatted_start,
-                end_time=formatted_end,
-            )
-        except Exception as err:
-            demisto.debug(f"Error while fetching incidents.\n {err}")
-            return []
-        return new_alerts
+    # Make rest call
+    try:
+        v1_client.consume_suspicious_list(
+            lambda suspicious: new_suspicious.append(suspicious)
+        )
+    except Exception as err:
+        raise RuntimeError(f"Error while fetching suspicious list count.\n {err}")
+    # Return length of suspicious list
+    return len(new_suspicious)
+
+
+def get_workbench_histories(v1_client: pytmv1.Client, start, end) -> list:
+    """
+    Fetches incidents based on incident severity per user selection.
+    Args:
+    start (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the start of the data retrieval
+                    time range. Oldest available value is "1970-01-01T00:00:00Z"
+    end (str): Datetime in ISO 8601 format (yyyy-MM-ddThh:mm:ssZ in UTC) that indicates the end of the data retrieval
+                time range. "endDateTime" can not be earlier than "startDateTime".
+    Returns:
+        list: List of incidents fetched
+    """
+
+    if not check_datetime_aware(start):
+        start = start.astimezone()
+    if not check_datetime_aware(end):
+        end = end.astimezone()
+    # Date time format before formatting -> 2020-06-15T10:00:00.000Z
+    start = start.astimezone(timezone.utc)
+    end = end.astimezone(timezone.utc)
+    start = start.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    end = end.isoformat(timespec="milliseconds").replace("+00:00", "Z")
+    # Format start and end to remove decimal values so that the request
+    # call doesn't fail due to incorrect time format for seconds.
+    # Date time format after formatting -> 2020-06-15T10:00:00Z
+    formatted_start = str(start[: (start.index("."))]) + str(start[-1])
+    formatted_end = str(end[: (start.index("."))]) + str(end[-1])
+
+    new_alerts: List[Union[SaeAlert, TiAlert]] = []
+
+    # filter incidents per user preference
+    def _filter_alerts(alert: Union[SaeAlert, TiAlert]) -> None:
+        # If incidents of all severities need to be fetched
+        if demisto.params().get(INCIDENT_SEVERITY) == ANY:
+            new_alerts.append(alert)
+        # If incidents of selected severity need to be fetched
+        elif alert.severity.value == demisto.params().get(INCIDENT_SEVERITY):
+            new_alerts.append(alert)
+
+    # Make rest call
+    try:
+        v1_client.consume_alert_list(
+            _filter_alerts,
+            start_time=formatted_start,
+            end_time=formatted_end,
+        )
+    except Exception as err:
+        demisto.debug(f"Error while fetching incidents.\n {err}")
+        return []
+    return new_alerts
 
 
 def incident_severity_to_dbot_score(severity: str) -> int:
@@ -571,7 +561,7 @@ def _get_task_type(action: str) -> Type[BaseTaskResp]:
 
 
 def run_polling_command(
-    args: Dict[str, Any], cmd: str, client: Client
+    args: Dict[str, Any], cmd: str, v1_client: pytmv1.Client
 ) -> Union[str, CommandResults]:
     """
     Performs polling interval to check status of task.
@@ -582,23 +572,16 @@ def run_polling_command(
     :param client: The command that polled for an interval.
 
     :type client: ``Client``
-    :param client: client object used to call respective polling commands.
+    :param v1_client: pytmv1.Client object used to call respective polling commands.
     """
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get(INTERVAL_IN_SECONDS, 30))
     task_id = args.get(TASKID, EMPTY_STRING)
     if cmd == CHECK_TASK_STATUS_COMMAND:
-        command_results = client.status_check(args)
+        command_results = status_check(v1_client, args)
     else:
-        command_results = client.sandbox_submission_polling(args)
-    statuses = [
-        "failed",
-        "queued",
-        "rejected",
-        "running",
-        "succeeded",
-        "waitForApproval",
-    ]
+        command_results = sandbox_submission_polling(v1_client, args)
+    statuses = [FAILED, QUEUED, REJECTED, SUCCEEDED, WAITFORAPPROVAL]
     if command_results.outputs[STATUS] not in statuses:
         # schedule next poll
         polling_args = {
@@ -617,7 +600,9 @@ def run_polling_command(
     return command_results
 
 
-def get_task_status(args: Dict[str, Any], client: Client) -> Union[str, CommandResults]:
+def get_task_status(
+    args: Dict[str, Any], v1_client: pytmv1.Client
+) -> Union[str, CommandResults]:
     """
     check status of task.
 
@@ -625,32 +610,31 @@ def get_task_status(args: Dict[str, Any], client: Client) -> Union[str, CommandR
     :param client: argument required for polling.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     """
-    return run_polling_command(args, CHECK_TASK_STATUS_COMMAND, client)
+    return run_polling_command(args, CHECK_TASK_STATUS_COMMAND, v1_client)
 
 
 def get_sandbox_submission_status(
-    args: Dict[str, Any], client: Client
+    args: Dict[str, Any], v1_client: pytmv1.Client
 ) -> Union[str, CommandResults]:
     """
     call polling command to check status of sandbox submission.
     :type args: ``args``
     :param client: argument required for polling.
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     """
-    return run_polling_command(args, SANDBOX_SUBMISSION_POLLING_COMMAND, client)
+    return run_polling_command(args, SANDBOX_SUBMISSION_POLLING_COMMAND, v1_client)
 
 
-def test_module(client: Client) -> str:
+def test_module(v1_client: pytmv1.Client) -> str:
     """
     Performs basic get request to check for connectivity to Trend XDR.
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     """
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Make rest call
     resp = v1_client.check_connectivity()
     if _is_pytmv1_error(resp.result_code):
@@ -659,7 +643,7 @@ def test_module(client: Client) -> str:
 
 
 def enable_or_disable_user_account(
-    client: Client, command: str, args: Dict[str, Any]
+    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Enable allows the user to sign in to new application and browser sessions.
@@ -668,7 +652,7 @@ def enable_or_disable_user_account(
     Supported IAM systems: Azure AD and Active Directory (on-premises).
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type command: ``str``
     :param command: Either trendmicro-visionone-enable-user-account
@@ -681,13 +665,9 @@ def enable_or_disable_user_account(
     :rtype: ``dict`
     """
     # Required Params
-    account_identifiers: List[Dict[str, str]] = []
-    for account in args["account_identifiers"]:
-        account_identifiers.append(account)
+    account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
     account_tasks: List[AccountTask] = []
     message: List[Dict[str, Any]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == ENABLE_USER_ACCOUNT_COMMAND:
         # Create account task list
@@ -700,11 +680,13 @@ def enable_or_disable_user_account(
             )
         # Make rest call
         resp = v1_client.enable_account(*account_tasks)
+        enable_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in unwrap(resp.response).items]
+        message = [item.dict() for item in enable_resp_obj.items]
 
     if command == DISABLE_USER_ACCOUNT_COMMAND:
         # Create account task list
@@ -717,11 +699,13 @@ def enable_or_disable_user_account(
             )
         # Make rest call
         resp = v1_client.disable_account(*account_tasks)
+        disable_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in unwrap(resp.response).items]
+        message = [item.dict() for item in disable_resp_obj.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -736,13 +720,15 @@ def enable_or_disable_user_account(
     )
 
 
-def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def force_sign_out(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
     Signs the user out of all active application and browser sessions.
     Supported IAM systems: Azure AD
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -751,13 +737,10 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
     :rtype: ``dict`
     """
     # Required Params
-    account_identifiers: List[Dict[str, str]] = []
-    for account in args[ACCOUNT_IDENTIFIERS]:
-        account_identifiers.append(account)
+    account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
     account_tasks: List[AccountTask] = []
     message: List[Dict[str, Any]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Create account task list
     for account in account_identifiers:
         account_tasks.append(
@@ -768,11 +751,12 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
         )
     # Make rest call
     resp = v1_client.sign_out_account(*account_tasks)
+    resp_obj: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
         return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
     # Add results to message to be sent to the War Room
-    message = [item.dict() for item in unwrap(resp.response).items]
+    message = [item.dict() for item in resp_obj.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -788,7 +772,7 @@ def force_sign_out(client: Client, args: Dict[str, Any]) -> Union[str, CommandRe
 
 
 def force_password_reset(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Signs the user out of all active application and browser sessions,
@@ -796,7 +780,7 @@ def force_password_reset(
     Supported IAM systems: Azure AD and Active Directory (on-premises)
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -805,13 +789,10 @@ def force_password_reset(
     :rtype: ``dict`
     """
     # Required Params
-    account_identifiers: List[Dict[str, str]] = []
-    for account in args[ACCOUNT_IDENTIFIERS]:
-        account_identifiers.append(account)
+    account_identifiers = json.loads(args[ACCOUNT_IDENTIFIERS])
     account_tasks: List[AccountTask] = []
     message: List[Dict[str, Any]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Create account task list
     for account in account_identifiers:
         account_tasks.append(
@@ -822,11 +803,13 @@ def force_password_reset(
         )
     # Make rest call
     resp = v1_client.reset_password_account(*account_tasks)
+    resp_obj: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+        errors: List[pytmv1.MsError] = unwrap(resp.errors)
+        return_error(message=f"{errors}", error=str(errors))
     # Add results to message to be sent to the War Room
-    message = [item.dict() for item in unwrap(resp.response).items]
+    message = [item.dict() for item in resp_obj.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -842,14 +825,14 @@ def force_password_reset(
 
 
 def get_endpoint_info(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Retrieve information about the endpoint queried and
     sends the result to demisto war room.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -868,8 +851,6 @@ def get_endpoint_info(
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
 
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     try:
         v1_client.consume_endpoint_data(
@@ -903,8 +884,8 @@ def get_endpoint_info(
     )
 
 
-def get_endpoint_activity_data(
-    client: Client, args: Dict[str, Any]
+def get_all_endpoint_activity_data(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Displays search results from the Endpoint Activity Data source
@@ -920,29 +901,20 @@ def get_endpoint_activity_data(
     :rtype: ``dict`
     """
     # Optional Params
-    fields = args.get(FIELDS, EMPTY_STRING)
+    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
     start = args.get(START, EMPTY_STRING)
     end = args.get(END, EMPTY_STRING)
     top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
-    get_activity_data_count = args.get(GET_ACTIVITY_DATA_COUNT, FALSE)
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
         query_op = pytmv1.QueryOp.OR
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # List to contain endpoint activity data
     endpoint_activity_data: List[EndpointActivity] = []
-    message: list[Any] = []
-    # Should the data count be fetched
-    if get_activity_data_count == TRUE:
-        count = get_endpoint_activity_data_count(
-            v1_client, start, end, query_op, top, select, fields
-        )
-        message.append({"total_count": count})
+    message: List[Any] = []
     # Make rest call
     try:
         v1_client.consume_endpoint_activity_data(
@@ -967,6 +939,63 @@ def get_endpoint_activity_data(
 
     return CommandResults(
         readable_output=tableToMarkdown(
+            table_name[GET_ALL_ENDPOINT_ACTIVITY_DATA_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.All_Endpoint_Activity_Data",
+        outputs_key_field="endpoint_host_name",
+        outputs=message,
+    )
+
+
+def get_endpoint_activity_data(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
+    """
+    Displays search results from the Endpoint Activity Data source
+    in a paginated list and sends the result to demisto war room.
+
+    :type client: ``Client``
+    :param client: client object used to initialize pytmv1 client.
+
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Optional Params
+    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
+    start = args.get(START, EMPTY_STRING)
+    end = args.get(END, EMPTY_STRING)
+    top = args.get(TOP, EMPTY_STRING)
+    select = args.get(SELECT, EMPTY_STRING).split(",")
+    query_op = args.get(QUERY_OP, EMPTY_STRING)
+    # Choose QueryOp Enum based on user choice
+    if query_op.lower() == "or":
+        query_op = pytmv1.QueryOp.OR
+    elif query_op.lower() == "and":
+        query_op = pytmv1.QueryOp.AND
+    # List to contain endpoint activity data
+    message: List[Any] = []
+    # Make rest call
+    resp = v1_client.get_endpoint_activity_data(
+        start_time=start,
+        end_time=end,
+        top=top,
+        select=select,
+        op=query_op,
+        **fields,
+    )
+    resp_obj: pytmv1.GetEndpointActivityDataResp = unwrap(resp.response)
+    # Parse endpoint activity data to message list and send to war room
+    for activity in resp_obj.items:
+        message.append(activity.dict())
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
             table_name[GET_ENDPOINT_ACTIVITY_DATA_COMMAND],
             message,
             headerTransform=string_to_table_header,
@@ -978,15 +1007,21 @@ def get_endpoint_activity_data(
     )
 
 
-def get_endpoint_activity_data_count(
-    v1_client: pytmv1.Client, start, end, query_op, top, select, fields
-) -> int:
+def get_endpoint_activity_count(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
     Fetches endpoint activity data count.
 
     :return: sends data count to demisto war room.
     :rtype: ``int``
     """
+    start = args.get(START, EMPTY_STRING)
+    end = args.get(END, EMPTY_STRING)
+    top = args.get(TOP, EMPTY_STRING)
+    select = args.get(SELECT, EMPTY_STRING).split(",")
+    query_op = args.get(QUERY_OP, EMPTY_STRING)
+    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
     # Make rest call
     resp = v1_client.get_endpoint_activity_data_count(
         start_time=start,
@@ -996,15 +1031,29 @@ def get_endpoint_activity_data_count(
         op=query_op,
         **fields,
     )
+    resp_obj: pytmv1.GetEndpointActivityDataCountResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Add results to message to be sent to the War Room
-    return unwrap(resp.response).total_count
+    activity_count = {"endpoint_activity_count": resp_obj.total_count}
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_ENDPOINT_ACTIVITY_COUNT_COMMAND],
+            activity_count,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Endpoint_Activity_Count",
+        outputs_key_field="endpoint_activity_count",
+        outputs=activity_count,
+    )
 
 
-def get_email_activity_data(
-    client: Client, args: Dict[str, Any]
+def get_all_email_activity_data(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Displays search results from the Email Activity Data source
@@ -1020,12 +1069,11 @@ def get_email_activity_data(
     :rtype: ``dict`
     """
     # Optional Params
-    fields = args.get(FIELDS, EMPTY_STRING)
+    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
     start = args.get(START, EMPTY_STRING)
     end = args.get(END, EMPTY_STRING)
     top = args.get(TOP, EMPTY_STRING)
     select = args.get(SELECT, EMPTY_STRING).split(",")
-    get_activity_data_count = args.get(GET_ACTIVITY_DATA_COUNT, FALSE)
     query_op = args.get(QUERY_OP, EMPTY_STRING)
     # Choose QueryOp Enum based on user choice
     if query_op.lower() == "or":
@@ -1034,15 +1082,7 @@ def get_email_activity_data(
         query_op = pytmv1.QueryOp.AND
     # List to populate email activity data
     email_activity_data: List[EmailActivity] = []
-    message: list[Any] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
-    # Should the data count be fetched
-    if get_activity_data_count == TRUE:
-        count = get_email_activity_data_count(
-            v1_client, start, end, query_op, top, select, fields
-        )
-        message.append({"total_count": count})
+    message: List[Any] = []
     # Make rest call
     try:
         v1_client.consume_email_activity_data(
@@ -1065,6 +1105,62 @@ def get_email_activity_data(
 
     return CommandResults(
         readable_output=tableToMarkdown(
+            table_name[GET_ALL_EMAIL_ACTIVITY_DATA_COMMAND],
+            message,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.All_Email_Activity_Data",
+        outputs_key_field="mail_to_addresses",
+        outputs=message,
+    )
+
+
+def get_email_activity_data(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
+    """
+    Displays search results from the Email Activity Data source
+    in a paginated list and sends the result to demisto war room.
+
+    :type client: ``Client``
+    :param client: client object used to initialize pytmv1 client.
+
+    :type args: ``dict``
+    :param args: args object to fetch the argument data.
+
+    :return: sends data to demisto war room.
+    :rtype: ``dict`
+    """
+    # Optional Params
+    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
+    start = args.get(START, EMPTY_STRING)
+    end = args.get(END, EMPTY_STRING)
+    top = args.get(TOP, EMPTY_STRING)
+    select = args.get(SELECT, EMPTY_STRING).split(",")
+    query_op = args.get(QUERY_OP, EMPTY_STRING)
+    # Choose QueryOp Enum based on user choice
+    if query_op.lower() == "or":
+        query_op = pytmv1.QueryOp.OR
+    elif query_op.lower() == "and":
+        query_op = pytmv1.QueryOp.AND
+    # List to populate email activity data
+    message: List[Any] = []
+    # Make rest call
+    resp = v1_client.get_email_activity_data(
+        start_time=start,
+        end_time=end,
+        top=top,
+        select=select,
+        op=query_op,
+        **fields,
+    )
+    resp_obj: pytmv1.GetEmailActivityDataResp = unwrap(resp.response)
+    for activity in resp_obj.items:
+        message.append(activity.dict())
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
             table_name[GET_EMAIL_ACTIVITY_DATA_COMMAND],
             message,
             headerTransform=string_to_table_header,
@@ -1076,15 +1172,21 @@ def get_email_activity_data(
     )
 
 
-def get_email_activity_data_count(
-    v1_client: pytmv1.Client, start, end, query_op, top, select, fields
-) -> int:
+def get_email_activity_count(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
     Fetches email activity data count.
 
     :return: sends activity data count to demisto war room.
     :rtype: ``int`
     """
+    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
+    start = args.get(START, EMPTY_STRING)
+    end = args.get(END, EMPTY_STRING)
+    top = args.get(TOP, EMPTY_STRING)
+    select = args.get(SELECT, EMPTY_STRING).split(",")
+    query_op = args.get(QUERY_OP, EMPTY_STRING)
     # Make rest call
     resp = v1_client.get_email_activity_data_count(
         start_time=start,
@@ -1094,22 +1196,36 @@ def get_email_activity_data_count(
         op=query_op,
         **fields,
     )
+    resp_obj: pytmv1.GetEmailActivityDataCountResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Return the total count
-    return unwrap(resp.response).total_count
+    activity_count = {"email_activity_count": resp_obj.total_count}
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            table_name[GET_EMAIL_ACTIVITY_COUNT_COMMAND],
+            activity_count,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+        ),
+        outputs_prefix="VisionOne.Email_Activity_Count",
+        outputs_key_field="email_activity_count",
+        outputs=activity_count,
+    )
 
 
 def add_or_remove_from_block_list(
-    client: Client, command: str, args: Dict[str, Any]
+    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Retrieve data from the add or remove from block list and
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type command: ``str``
     :param command: Either trendmicro-visionone-add-to-block-list
@@ -1122,13 +1238,10 @@ def add_or_remove_from_block_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, str]] = []
-    for block in args[BLOCK_OBJECTS]:
-        block_objects.append(block)
+    block_objects = json.loads(args[BLOCK_OBJECTS])
     block_tasks: List[ObjectTask] = []
     message: List[Dict[str, Any]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     if command == ADD_BLOCKLIST_COMMAND:
         # Create block task list
         for obj in block_objects:
@@ -1141,11 +1254,13 @@ def add_or_remove_from_block_list(
             )
         # Make rest call
         resp = v1_client.add_to_block_list(*block_tasks)
+        add_block_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in unwrap(resp.response).items]
+        message = [item.dict() for item in add_block_resp_obj.items]
 
     if command == REMOVE_BLOCKLIST_COMMAND:
         # Create unblock task list
@@ -1159,11 +1274,13 @@ def add_or_remove_from_block_list(
             )
         # Make rest call
         resp = v1_client.remove_from_block_list(*block_tasks)
+        remove_block_resp_obj: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in unwrap(resp.response).items]
+        message = [item.dict() for item in remove_block_resp_obj.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1178,7 +1295,7 @@ def add_or_remove_from_block_list(
     )
 
 
-def fetch_incidents(client: Client):
+def fetch_incidents(v1_client: pytmv1.Client):
     """
     This function executes to get all workbench alerts by using
     startDateTime, endDateTime and sends the result to war room.
@@ -1192,7 +1309,7 @@ def fetch_incidents(client: Client):
     else:
         start = end + timedelta(days=-days)
     # Fetch alerts
-    alerts: List[Any] = client.get_workbench_histories(start, end)
+    alerts: List[Any] = get_workbench_histories(v1_client, start, end)
     # List to store incidents that will be sent to the UI
     incidents: List[Dict[str, Any]] = []
     if alerts:
@@ -1220,14 +1337,14 @@ def fetch_incidents(client: Client):
 
 
 def quarantine_or_delete_email_message(
-    client: Client, command: str, args: Dict[str, Any]
+    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Retrieve data from the quarantine or delete email message and
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type command: ``str``
     :param command: Either trendmicro-visionone-quarantine-email-message
@@ -1240,13 +1357,9 @@ def quarantine_or_delete_email_message(
     :rtype: ``dict`
     """
     # Required Params
-    email_identifiers: List[Dict[str, str]] = []
-    for email in args[EMAIL_IDENTIFIERS]:
-        email_identifiers.append(email)
+    email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
     message: List[Dict[str, Any]] = []
     email_tasks: List[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == QUARANTINE_EMAIL_COMMAND:
         # Create email task list
@@ -1268,12 +1381,14 @@ def quarantine_or_delete_email_message(
                 )
         # Make rest call
         resp = v1_client.quarantine_email_message(*email_tasks)
+        quarantine_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errs}", error=str(errs))
 
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in unwrap(resp.response).items]
+        message = [item.dict() for item in quarantine_resp.items]
 
     if command == DELETE_EMAIL_COMMAND:
         # Create email task list
@@ -1295,11 +1410,13 @@ def quarantine_or_delete_email_message(
                 )
         # Make rest call
         resp = v1_client.delete_email_message(*email_tasks)
+        delete_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in unwrap(resp.response).items]
+        message = [item.dict() for item in delete_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1315,14 +1432,14 @@ def quarantine_or_delete_email_message(
 
 
 def restore_email_message(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Restores a quarantined email message and
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type command: ``str``
     :param command: Either trendmicro-visionone-quarantine-email-message
@@ -1335,13 +1452,9 @@ def restore_email_message(
     :rtype: ``dict`
     """
     # Required Params
-    email_identifiers: List[Dict[str, str]] = []
-    for email in args[EMAIL_IDENTIFIERS]:
-        email_identifiers.append(email)
+    email_identifiers = json.loads(args[EMAIL_IDENTIFIERS])
     message: List[Dict[str, Any]] = []
     email_tasks: List[Union[EmailMessageIdTask, EmailMessageUIdTask]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     # Create email task list
     for email in email_identifiers:
@@ -1362,11 +1475,13 @@ def restore_email_message(
             )
         # Make rest call
         resp = v1_client.restore_email_message(*email_tasks)
+        restore_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in unwrap(resp.response).items]
+        message = [item.dict() for item in restore_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1382,14 +1497,14 @@ def restore_email_message(
 
 
 def isolate_or_restore_connection(
-    client: Client, command: str, args: Dict[str, Any]
+    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Retrieve data from the isolate or restore endpoint connection and
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type command: ``str``
     :param command: Either trendmicro-visionone-isolate-endpoint
@@ -1402,13 +1517,9 @@ def isolate_or_restore_connection(
     :rtype: ``dict`
     """
     # Required Params
-    endpoint_identifiers: List[Dict[str, str]] = []
-    for endpoint in args[ENDPOINT_IDENTIFIERS]:
-        endpoint_identifiers.append(endpoint)
+    endpoint_identifiers = json.loads(args[ENDPOINT_IDENTIFIERS])
     message: List[Dict[str, Any]] = []
     endpt_tasks: List[EndpointTask] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == ISOLATE_ENDPOINT_COMMAND:
         # Create endpoint task list
@@ -1429,11 +1540,13 @@ def isolate_or_restore_connection(
                 )
         # Make rest call
         resp = v1_client.isolate_endpoint(*endpt_tasks)
+        isolate_endpoint_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errs}", error=str(errs))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in unwrap(resp.response).items]
+        message = [item.dict() for item in isolate_endpoint_resp.items]
 
     if command == RESTORE_ENDPOINT_COMMAND:
         # Create endpoint task list
@@ -1454,11 +1567,13 @@ def isolate_or_restore_connection(
                 )
         # Make rest call
         resp = v1_client.restore_endpoint(*endpt_tasks)
+        restore_endpoint_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errors}", error=str(errors))
         # Add results to message to be sent to the War Room
-        message = [item.dict() for item in unwrap(resp.response).items]
+        message = [item.dict() for item in restore_endpoint_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1474,14 +1589,14 @@ def isolate_or_restore_connection(
 
 
 def terminate_process(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Terminate the process running on the end point and
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1490,13 +1605,9 @@ def terminate_process(
     :rtype: ``dict`
     """
     # Required Params
-    process_identifiers: List[Dict[str, str]] = []
-    for process in args[PROCESS_IDENTIFIERS]:
-        process_identifiers.append(process)
+    process_identifiers = json.loads(args[PROCESS_IDENTIFIERS])
     process_tasks: List[ProcessTask] = []
     message: List[Dict[str, Any]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     # Create process task list
     for process in process_identifiers:
@@ -1520,11 +1631,13 @@ def terminate_process(
             )
     # Make rest call
     resp = v1_client.terminate_process(*process_tasks)
+    process_resp: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+        errs: List[pytmv1.MsError] = unwrap(resp.errors)
+        return_error(message=f"{errs}", error=str(errs))
     # Add results to message to be sent to the War Room
-    message = [item.dict() for item in unwrap(resp.response).items]
+    message = [item.dict() for item in process_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1540,14 +1653,14 @@ def terminate_process(
 
 
 def add_or_delete_from_exception_list(
-    client: Client, command: str, args: Dict[str, Any]
+    v1_client: pytmv1.Client, command: str, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Add or Delete the exception object to exception list and
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type command: ``str``
     :param command: type of command either
@@ -1561,13 +1674,9 @@ def add_or_delete_from_exception_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, str]] = []
-    for block in args[BLOCK_OBJECTS]:
-        block_objects.append(block)
+    block_objects = json.loads(args[BLOCK_OBJECTS])
     excp_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     if command == ADD_EXCEPTION_LIST_COMMAND:
         # Create exception task list
@@ -1581,12 +1690,14 @@ def add_or_delete_from_exception_list(
             )
         # Make rest call
         resp = v1_client.add_to_exception_list(*excp_tasks)
+        add_excp_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errs: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errs}", error=str(errs))
         message = {
             "message": "success",
-            "multi_response": [item.dict() for item in unwrap(resp.response).items],
+            "multi_response": [item.dict() for item in add_excp_resp.items],
         }
 
     if command == DELETE_EXCEPTION_LIST_COMMAND:
@@ -1601,17 +1712,19 @@ def add_or_delete_from_exception_list(
             )
         # Make rest call
         resp = v1_client.remove_from_exception_list(*excp_tasks)
+        rmv_excp_resp: pytmv1.MultiResp = unwrap(resp.response)
         # Check if an error occurred for each call
         if _is_pytmv1_error(resp.result_code):
-            return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+            errors: List[pytmv1.MsError] = unwrap(resp.errors)
+            return_error(message=f"{errors}", error=str(errors))
         message = {
             "message": "success",
-            "multi_response": [item.dict() for item in unwrap(resp.response).items],
+            "multi_response": [item.dict() for item in rmv_excp_resp.items],
         }
     # Get the total count of items in exception list
-    exception_list_count = client.exception_list_count()
+    exception_count = exception_list_count(v1_client)
     # Add count of total exception items to message
-    message["total_items"] = exception_list_count
+    message["total_items"] = exception_count
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[command],
@@ -1626,14 +1739,14 @@ def add_or_delete_from_exception_list(
 
 
 def add_to_suspicious_list(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Add suspicious object to suspicious list and
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1642,14 +1755,11 @@ def add_to_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, Any]] = []
-    for block in args[BLOCK_OBJECTS]:
-        block_objects.append(block)
+    block_objects = json.loads(args[BLOCK_OBJECTS])
 
     suspicious_tasks: List[SuspiciousObjectTask] = []
     message: Dict[str, Any] = {}
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Create suspicious task list
     for block in block_objects:
         suspicious_tasks.append(
@@ -1664,16 +1774,18 @@ def add_to_suspicious_list(
         )
     # Make rest call
     resp = v1_client.add_to_suspicious_list(*suspicious_tasks)
+    add_sus_resp: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+        errs: List[pytmv1.MsError] = unwrap(resp.errors)
+        return_error(message=f"{errs}", error=str(errs))
     # Get the total count of items in suspicious list
-    suspicious_list_count = client.suspicious_list_count()
+    suspicious_count = suspicious_list_count(v1_client)
     # Add results to message to be sent to the War Room
     message = {
         "message": "success",
-        "multi_response": [item.dict() for item in unwrap(resp.response).items],
-        "total_items": suspicious_list_count,
+        "multi_response": [item.dict() for item in add_sus_resp.items],
+        "total_items": suspicious_count,
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1689,14 +1801,14 @@ def add_to_suspicious_list(
 
 
 def delete_from_suspicious_list(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Delete the suspicious object from suspicious list and
     sends the result to demist war room.
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1705,15 +1817,11 @@ def delete_from_suspicious_list(
     :rtype: ``dict`
     """
     # Required Params
-    block_objects: List[Dict[str, str]] = []
-    for block in args[BLOCK_OBJECTS]:
-        block_objects.append(block)
+    block_objects = json.loads(args[BLOCK_OBJECTS])
 
     suspicious_tasks: List[ObjectTask] = []
     message: Dict[str, Any] = {}
 
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Create suspicious task list
     for block in block_objects:
         suspicious_tasks.append(
@@ -1725,15 +1833,17 @@ def delete_from_suspicious_list(
         )
     # Make rest call
     resp = v1_client.remove_from_suspicious_list(*suspicious_tasks)
+    dlt_sus_resp: pytmv1.MultiResp = unwrap(resp.response)
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+        errs: List[pytmv1.MsError] = unwrap(resp.errors)
+        return_error(message=f"{errs}", error=str(errs))
     # Get the total count of items in suspicious list
-    suspicious_list_count = client.suspicious_list_count()
+    suspicious_count = suspicious_list_count(v1_client)
     # Add results to message to be sent to the War Room
     message = {
         "message": "success",
-        "multi_response": [item.dict() for item in unwrap(resp.response).items],
-        "total_items": suspicious_list_count,
+        "multi_response": [item.dict() for item in dlt_sus_resp.items],
+        "total_items": suspicious_count,
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1749,14 +1859,14 @@ def delete_from_suspicious_list(
 
 
 def get_file_analysis_status(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Get the status of file based on task id and
     sends the result to demist war room
 
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
 
     :type args: ``dict``
     :param args: args object to fetch the argument data.
@@ -1767,15 +1877,16 @@ def get_file_analysis_status(
     # Required Params
     task_id = args.get(TASKID, EMPTY_STRING)
     message: Dict[str, Any] = {}
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Make rest call
     resp = v1_client.get_sandbox_submission_status(submit_id=task_id)
+    resp_obj: pytmv1.SandboxSubmissionStatusResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Add results to message to be sent to the War Room
-    message = unwrap(resp.response).dict()
+    message = resp_obj.dict()
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1791,12 +1902,12 @@ def get_file_analysis_status(
 
 
 def get_file_analysis_result(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Get the report of file based on report id and sends the result to demist war room
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -1807,10 +1918,8 @@ def get_file_analysis_result(
     # Optional Params
     poll = argToBoolean(args.get(POLL, TRUE))
     poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
-
     message: Dict[str, Any] = {}
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Make rest call
     resp = v1_client.get_sandbox_analysis_result(
         submit_id=report_id,
@@ -1819,15 +1928,17 @@ def get_file_analysis_result(
     )
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Extract values on successful call
     reliability = demisto.params().get(INTEGRATION_RELIABILITY)
-    risk = unwrap(resp.response).risk_level
+    sandbox_response: pytmv1.SandboxAnalysisResultResp = unwrap(resp.response)
+    risk = sandbox_response.risk_level
     risk_score = incident_severity_to_dbot_score(risk)
-    digest = unwrap(resp.response).digest
-    sha256 = unwrap(digest).sha256
-    md5 = unwrap(digest).md5
-    sha1 = unwrap(digest).sha1
+    digest: pytmv1.Digest = unwrap(sandbox_response.digest)
+    sha256 = digest.sha256
+    md5 = digest.md5
+    sha1 = digest.sha1
     # Create DBot Score
     dbot_score = Common.DBotScore(
         indicator=sha256,
@@ -1841,17 +1952,15 @@ def get_file_analysis_result(
     # Add results to message to be sent to the War Room
     message = {
         "status": resp.result_code,
-        "id": unwrap(resp.response).id,
-        "type": unwrap(resp.response).type,
-        "digest": unwrap(unwrap(resp.response).digest).dict(),
-        "arguments": unwrap(resp.response).arguments,
-        "risk_level": unwrap(resp.response).risk_level,
-        "threat_types": unwrap(resp.response).threat_types,
-        "true_file_type": unwrap(resp.response).true_file_type,
-        "detection_names": unwrap(resp.response).detection_names,
-        "analysis_completion_date_time": unwrap(
-            resp.response
-        ).analysis_completion_date_time,
+        "id": sandbox_response.id,
+        "type": sandbox_response.type,
+        "digest": digest.dict(),
+        "arguments": sandbox_response.arguments,
+        "risk_level": risk,
+        "threat_types": sandbox_response.threat_types,
+        "true_file_type": sandbox_response.true_file_type,
+        "detection_names": sandbox_response.detection_names,
+        "analysis_completion_date_time": sandbox_response.analysis_completion_date_time,
         "DBotScore": {
             "Score": dbot_score.score,
             "Vendor": dbot_score.integration_name,
@@ -1869,25 +1978,24 @@ def get_file_analysis_result(
     )
 
 
-def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def collect_file(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
     Collect forensic file and sends the result to demist war room
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
     # Required Params
-    collect_files: List[Dict[str, str]] = []
-    for file in args[COLLECT_FILES]:
-        collect_files.append(file)
+    collect_files = json.loads(args[COLLECT_FILES])
     # Create file task list
     file_tasks: List[FileTask] = []
     message: List[Dict[str, Any]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Create file task list
     for file in collect_files:
         if file.get(ENDPOINT, EMPTY_STRING):
@@ -1908,11 +2016,13 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
             )
     # Make rest call
     resp = v1_client.collect_file(*file_tasks)
+    file_resp: pytmv1.MultiResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
+        errs: List[pytmv1.MsError] = resp.errors
+        return_error(message=f"{errs}", error=str(errs))
 
-    message = [item.dict() for item in unwrap(resp.response).items]
+    message = [item.dict() for item in file_resp.items]
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -1928,13 +2038,13 @@ def collect_file(client: Client, args: Dict[str, Any]) -> Union[str, CommandResu
 
 
 def download_information_collected_file(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[Any, CommandResults]:
     """
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -1945,8 +2055,6 @@ def download_information_collected_file(
     # Optional Params
     poll = argToBoolean(args.get(POLL, TRUE))
     poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_task_result(
         task_id=task_id,
@@ -1954,11 +2062,13 @@ def download_information_collected_file(
         poll=poll,
         poll_time_sec=poll_time_sec,  # type: ignore
     )
+    resp_obj: pytmv1.CollectFileTaskResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Add results to message to be sent to the War Room
-    message = unwrap(resp.response).dict()
+    message = resp_obj.dict()
     return CommandResults(
         readable_output=tableToMarkdown(
             table_name[DOWNLOAD_COLLECTED_FILE_COMMAND],
@@ -1973,13 +2083,13 @@ def download_information_collected_file(
 
 
 def download_analysis_report(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[Any, CommandResults]:
     """
     Get the analysis report of file based on action id and sends
     the file to demist war room where it can be downloaded.
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -1990,8 +2100,6 @@ def download_analysis_report(
     # Optional Params
     poll = argToBoolean(args.get(POLL, TRUE))
     poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     # Create name for pdf report file to be downloaded
     name = "Trend_Micro_Sandbox_Analysis_Report"
@@ -2001,12 +2109,13 @@ def download_analysis_report(
     resp = v1_client.download_sandbox_analysis_result(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
     )
-
+    analysis_resp: pytmv1.BytesResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Extract content value on successful call
-    data = unwrap(resp.response).content
+    data = analysis_resp.content
 
     resp_msg = "Please click download to download PDF Report."
     # fileResult takes response data and creates a file with
@@ -2034,13 +2143,13 @@ def download_analysis_report(
 
 
 def download_investigation_package(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[Any, CommandResults]:
     """
     Downloads the Investigation Package of the specified object based on
     submission id and sends the file to demist war room where it can be downloaded.
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2051,8 +2160,6 @@ def download_investigation_package(
     # Optional Params
     poll = argToBoolean(args.get(POLL, TRUE))
     poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
 
     # Create name for zip package to be downloaded
     name = "Sandbox_Investigation_Package"
@@ -2062,12 +2169,13 @@ def download_investigation_package(
     resp = v1_client.download_sandbox_investigation_package(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
     )
-
+    investigation_resp: pytmv1.BytesResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Extract content value on successful call
-    data = unwrap(resp.response).content
+    data = investigation_resp.content
 
     # fileResult takes response data and creates a file with
     # the specified extension that can be downloaded in the war room
@@ -2096,13 +2204,13 @@ def download_investigation_package(
 
 
 def download_suspicious_object_list(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Downloads the suspicious object list associated to the specified object
     Note: Suspicious Object Lists are only available for objects with a high risk level
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2114,17 +2222,18 @@ def download_suspicious_object_list(
     poll = argToBoolean(args.get(POLL, TRUE))
     poll_time_sec = arg_to_number(args.get(POLL_TIME_SEC, 0))
     suspicious_objects: List[Dict[str, str]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Make rest call
     resp = v1_client.get_sandbox_suspicious_list(
         submit_id=submit_id, poll=poll, poll_time_sec=poll_time_sec  # type: ignore
     )
+    sus_list_resp: pytmv1.SandboxSuspiciousListResp = unwrap(resp.response)
     # Check if an error occurred
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Extract suspicious objects from response
-    for item in unwrap(resp.response).items:
+    for item in sus_list_resp.items:
         suspicious_objects.append(item.dict())
 
     return CommandResults(
@@ -2141,28 +2250,27 @@ def download_suspicious_object_list(
 
 
 def submit_file_to_sandbox(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     submit file to sandbox and sends the result to demist war room
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
     # Required Params
-    file_path = args.get(FILE_PATH, EMPTY_STRING)
+    file_url = args.get(FILE_URL, EMPTY_STRING)
     file_name = args.get(FILE_NAME, EMPTY_STRING)
     # Optional Params
     document_pass = args.get(DOCUMENT_PASSWORD, EMPTY_STRING)
     archive_pass = args.get(ARCHIVE_PASSWORD, EMPTY_STRING)
     arguments = args.get(ARGUMENTS, EMPTY_STRING)
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Get file contents
-    _file = requests.get(file_path, allow_redirects=True, timeout=30)
+    _file = requests.get(file_url, allow_redirects=True, timeout=30)
     # Make rest call
     resp = v1_client.submit_file_to_sandbox(
         file=_file.content,
@@ -2171,16 +2279,19 @@ def submit_file_to_sandbox(
         archive_password=archive_pass,
         arguments=arguments,
     )
+    sub_file_resp: pytmv1.SubmitFileToSandboxResp = unwrap(resp.response)
+    digest: pytmv1.Digest = unwrap(sub_file_resp.digest)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Add results to message to be sent to the War Room
     message = {
         "code": 202,
         "message": resp.result_code,
-        "task_id": unwrap(resp.response).id,
-        "digest": unwrap(resp.response).digest.dict(),
-        "arguments": unwrap(resp.response).arguments,
+        "task_id": sub_file_resp.id,
+        "digest": digest.dict(),
+        "arguments": sub_file_resp.arguments,
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -2196,12 +2307,12 @@ def submit_file_to_sandbox(
 
 
 def submit_file_entry_to_sandbox(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     submit file entry to sandbox and sends the result to demist war room
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2213,8 +2324,7 @@ def submit_file_entry_to_sandbox(
     archive_pass = args.get(ARCHIVE_PASSWORD, EMPTY_STRING)
     document_pass = args.get(DOCUMENT_PASSWORD, EMPTY_STRING)
     arguments = args.get(ARGUMENTS, EMPTY_STRING)
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Use entry ID to get file details from demisto
     file_ = demisto.getFilePath(entry)
     file_name = file_.get(NAME, EMPTY_STRING)
@@ -2229,9 +2339,12 @@ def submit_file_entry_to_sandbox(
         archive_password=archive_pass,
         arguments=arguments,
     )
+    sub_file_resp: pytmv1.SubmitFileToSandboxResp = unwrap(resp.response)
+    digest: pytmv1.Digest = unwrap(sub_file_resp.digest)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Add results to message to be sent to the War Room
     message = {
         "code": 202,
@@ -2239,9 +2352,9 @@ def submit_file_entry_to_sandbox(
         "filename": file_name,
         "entry_id": entry,
         "file_path": file_path,
-        "task_id": unwrap(resp.response).id,
-        "digest": unwrap(resp.response).digest.dict(),
-        "arguments": unwrap(resp.response).arguments,
+        "task_id": sub_file_resp.id,
+        "digest": digest.dict(),
+        "arguments": sub_file_resp.arguments,
     }
 
     return CommandResults(
@@ -2258,32 +2371,28 @@ def submit_file_entry_to_sandbox(
 
 
 def submit_urls_to_sandbox(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     submit Urls to sandbox and send the result to demist war room
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
     :rtype: ``dict`
     """
     # Required Params
-    urls: List[str] = []
-    # extract urls and add to urls list
-    for url in args[URLS]:
-        urls.append(url)
+    urls: List[str] = argToList(args[URLS])
     submit_urls_resp: List[Dict[str, Any]] = []
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
-
     # Make rest call
     resp = v1_client.submit_urls_to_sandbox(*urls)
+    urls_resp: pytmv1.MultiUrlResp = unwrap(resp.response)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.errors)}", error=str(resp.errors))
-    for item in unwrap(resp.response).items:
+        errs: List[pytmv1.MsError] = unwrap(resp.errors)
+        return_error(message=f"{errs}", error=str(errs))
+    for item in urls_resp.items:
         submit_urls_resp.append(item.dict())
 
     return CommandResults(
@@ -2300,12 +2409,12 @@ def submit_urls_to_sandbox(
 
 
 def get_alert_details(
-    client: Client, args: Dict[str, Any]
+    v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
     Fetch information for a specific alert and display in war room.
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2314,16 +2423,16 @@ def get_alert_details(
     # Required Params
     workbench_id: str = args.get(WORKBENCH_ID, EMPTY_STRING)
     message: Dict[str, Any] = {}
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Make rest call
     resp = v1_client.get_alert_details(alert_id=workbench_id)
+    alert_resp: pytmv1.GetAlertDetailsResp = unwrap(resp.response)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Extract values from response
-    etag = unwrap(resp.response).etag
-    alert = unwrap(resp.response).alert.dict()
+    etag = alert_resp.etag
+    alert = alert_resp.alert.dict()
     # Add results to message to be sent to the War Room
     message = {"etag": etag, "alert": alert}
 
@@ -2340,11 +2449,13 @@ def get_alert_details(
     )
 
 
-def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def add_note(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
     Adds a note to an existing workbench alert
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2354,18 +2465,19 @@ def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]
     workbench_id = args.get(WORKBENCH_ID, EMPTY_STRING)
     content = args.get(CONTENT, EMPTY_STRING)
     message: Dict[str, Any] = {}
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
+
     # Make rest call
     resp = v1_client.add_alert_note(alert_id=workbench_id, note=content)
+    note_resp: pytmv1.AddAlertNoteResp = unwrap(resp.response)
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Add results to message to be sent to the War Room
     message = {
         "code": 201,
         "message": f"Note has been successfully added to {workbench_id}",
-        "note_id": unwrap(resp.response).note_id(),
+        "note_id": note_resp.note_id(),
     }
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -2380,11 +2492,13 @@ def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]
     )
 
 
-def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+def update_status(
+    v1_client: pytmv1.Client, args: Dict[str, Any]
+) -> Union[str, CommandResults]:
     """
     Updates the status of an existing workbench alert
     :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
+    :param v1_client: pytmv1.Client object used to initialize pytmv1 client.
     :type args: ``dict``
     :param args: args object to fetch the argument data.
     :return: sends data to demisto war room.
@@ -2395,13 +2509,8 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
     status = args.get(STATUS, EMPTY_STRING)
     if_match = args.get(IF_MATCH, EMPTY_STRING)
     message: Dict[str, Any] = {}
-    # Initialize pytmv1 client
-    v1_client = _get_client(APP_NAME, client.api_key, client.base_url)
     # Choose Status Enum
     sts = status.upper()
-    if sts not in InvestigationStatus.__members__:
-        err_msg = f"Invalid investigation status ({status}) provided!"
-        return_error(message=err_msg)
     # Assign enum status
     status = InvestigationStatus[sts]
     # Make rest call
@@ -2410,7 +2519,8 @@ def update_status(client: Client, args: Dict[str, Any]) -> Union[str, CommandRes
     )
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
-        return_error(message=f"{unwrap(resp.error).message}", error=str(resp.error))
+        err: pytmv1.Error = unwrap(resp.error)
+        return_error(message=f"{err.message}", error=str(err))
     # Add results to message to be sent to the War Room
     message = {
         "code": 204,
@@ -2435,114 +2545,133 @@ def main():  # pragma: no cover
         """GLOBAL VARS"""
         params = demisto.params()
 
-        base_url: Union[str, None] = params.get(URL)
-        api_key = params.get(API_TOKEN).get("password")  # type: ignore
-        proxy = params.get("proxy", False)
-        verify = not params.get("insecure", False)
+        base_url: str = params.get(URL, "")
+        api_key: str = params.get(API_TOKEN, {}).get("password")
 
-        assert base_url is not None
-        client = Client(base_url, api_key, proxy, verify)
+        if base_url == "":
+            raise RuntimeError(
+                "The base_url cannot be empty, please provide a valid value."
+            )
+        v1_client = _get_client(VENDOR_NAME, api_key, base_url)
 
         command = demisto.command()
         demisto.debug(COMMAND_CALLED.format(command=command))
         args = demisto.args()
 
         if command == TEST_MODULE:
-            return_results(test_module(client))
+            return_results(test_module(v1_client))
 
         elif command == FETCH_INCIDENTS:
-            return_results(fetch_incidents(client))
+            return_results(fetch_incidents(v1_client))
 
         elif command in (ENABLE_USER_ACCOUNT_COMMAND, DISABLE_USER_ACCOUNT_COMMAND):
-            return_results(enable_or_disable_user_account(client, command, args))
+            return_results(enable_or_disable_user_account(v1_client, command, args))
 
         elif command == FORCE_SIGN_OUT_COMMAND:
-            return_results(force_sign_out(client, args))
+            return_results(force_sign_out(v1_client, args))
 
         elif command == FORCE_PASSWORD_RESET_COMMAND:
-            return_results(force_password_reset(client, args))
+            return_results(force_password_reset(v1_client, args))
 
         elif command in (ADD_BLOCKLIST_COMMAND, REMOVE_BLOCKLIST_COMMAND):
-            return_results(add_or_remove_from_block_list(client, command, args))
+            return_results(add_or_remove_from_block_list(v1_client, command, args))
 
         elif command in (QUARANTINE_EMAIL_COMMAND, DELETE_EMAIL_COMMAND):
-            return_results(quarantine_or_delete_email_message(client, command, args))
+            return_results(quarantine_or_delete_email_message(v1_client, command, args))
 
         elif command == RESTORE_EMAIL_COMMAND:
-            return_results(restore_email_message(client, args))
+            return_results(restore_email_message(v1_client, args))
 
         elif command in (ISOLATE_ENDPOINT_COMMAND, RESTORE_ENDPOINT_COMMAND):
-            return_results(isolate_or_restore_connection(client, command, args))
+            return_results(isolate_or_restore_connection(v1_client, command, args))
 
         elif command == TERMINATE_PROCESS_COMMAND:
-            return_results(terminate_process(client, args))
+            return_results(terminate_process(v1_client, args))
 
         elif command in (ADD_EXCEPTION_LIST_COMMAND, DELETE_EXCEPTION_LIST_COMMAND):
-            return_results(add_or_delete_from_exception_list(client, command, args))
+            return_results(add_or_delete_from_exception_list(v1_client, command, args))
 
         elif command == ADD_SUSPICIOUS_LIST_COMMAND:
-            return_results(add_to_suspicious_list(client, args))
+            return_results(add_to_suspicious_list(v1_client, args))
 
         elif command == DELETE_SUSPICIOUS_LIST_COMMAND:
-            return_results(delete_from_suspicious_list(client, args))
+            return_results(delete_from_suspicious_list(v1_client, args))
 
         elif command == GET_FILE_ANALYSIS_STATUS_COMMAND:
-            return_results(get_file_analysis_status(client, args))
+            return_results(get_file_analysis_status(v1_client, args))
 
         elif command == GET_FILE_ANALYSIS_RESULT_COMMAND:
-            return_results(get_file_analysis_result(client, args))
+            return_results(get_file_analysis_result(v1_client, args))
 
         elif command == GET_ENDPOINT_INFO_COMMAND:
-            return_results(get_endpoint_info(client, args))
+            return_results(get_endpoint_info(v1_client, args))
+
+        elif command == GET_ENDPOINT_ACTIVITY_DATA_COMMAND:
+            return_results(get_endpoint_activity_data(v1_client, args))
+
+        elif command == GET_ALL_ENDPOINT_ACTIVITY_DATA_COMMAND:
+            return_results(get_all_endpoint_activity_data(v1_client, args))
+
+        elif command == GET_ENDPOINT_ACTIVITY_COUNT_COMMAND:
+            return_results(get_endpoint_activity_count(v1_client, args))
+
+        elif command == GET_EMAIL_ACTIVITY_DATA_COMMAND:
+            return_results(get_email_activity_data(v1_client, args))
+
+        elif command == GET_ALL_EMAIL_ACTIVITY_DATA_COMMAND:
+            return_results(get_all_email_activity_data(v1_client, args))
+
+        elif command == GET_EMAIL_ACTIVITY_COUNT_COMMAND:
+            return_results(get_email_activity_count(v1_client, args))
 
         elif command == COLLECT_FILE_COMMAND:
-            return_results(collect_file(client, args))
+            return_results(collect_file(v1_client, args))
 
         elif command == DOWNLOAD_COLLECTED_FILE_COMMAND:
-            return_results(download_information_collected_file(client, args))
+            return_results(download_information_collected_file(v1_client, args))
 
         elif command == FILE_TO_SANDBOX_COMMAND:
-            return_results(submit_file_to_sandbox(client, args))
+            return_results(submit_file_to_sandbox(v1_client, args))
 
         elif command == FILE_ENTRY_TO_SANDBOX_COMMAND:
-            return_results(submit_file_entry_to_sandbox(client, args))
+            return_results(submit_file_entry_to_sandbox(v1_client, args))
 
         elif command == URLS_TO_SANDBOX_COMMAND:
-            return_results(submit_urls_to_sandbox(client, args))
+            return_results(submit_urls_to_sandbox(v1_client, args))
 
         elif command == SANDBOX_SUBMISSION_POLLING_COMMAND:
             if args.get(POLLING) == TRUE:
-                cmd_res = get_sandbox_submission_status(args, client)
+                cmd_res = get_sandbox_submission_status(args, v1_client)
                 if cmd_res is not None:
                     return_results(cmd_res)
             else:
-                return_results(client.sandbox_submission_polling(args))
+                return_results(sandbox_submission_polling(v1_client, args))
 
         elif command == DOWNLOAD_ANALYSIS_REPORT_COMMAND:
-            return_results(download_analysis_report(client, args))
+            return_results(download_analysis_report(v1_client, args))
 
         elif command == DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND:
-            return_results(download_investigation_package(client, args))
+            return_results(download_investigation_package(v1_client, args))
 
         elif command == DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND:
-            return_results(download_suspicious_object_list(client, args))
+            return_results(download_suspicious_object_list(v1_client, args))
 
         elif command == UPDATE_STATUS_COMMAND:
-            return_results(update_status(client, args))
+            return_results(update_status(v1_client, args))
 
         elif command == GET_ALERT_DETAILS_COMMAND:
-            return_results(get_alert_details(client, args))
+            return_results(get_alert_details(v1_client, args))
 
         elif command == ADD_NOTE_COMMAND:
-            return_results(add_note(client, args))
+            return_results(add_note(v1_client, args))
 
         elif command == CHECK_TASK_STATUS_COMMAND:
             if args.get(POLLING) == TRUE:
-                cmd_res = get_task_status(args, client)
+                cmd_res = get_task_status(args, v1_client)
                 if cmd_res is not None:
                     return_results(cmd_res)
             else:
-                return_results(client.status_check(args))
+                return_results(status_check(v1_client, args))
 
         else:
             demisto.error(f"{command} command is not implemented.")
