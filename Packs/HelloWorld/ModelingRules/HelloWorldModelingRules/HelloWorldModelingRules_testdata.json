@@ -22,7 +22,7 @@
             "expected_values": {
                 "_time": null,
                 "xdm.event.description": "This is test description 1",
-                "xdm.event.id": 1,
+                "xdm.event.id": "1",
                 "xdm.event.operation_sub_type": "customType",
                 "xdm.source.user.identifier": "uuid",
                 "xdm.source.user.username": "Name for id: 1"
