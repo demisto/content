@@ -23,7 +23,7 @@ from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_vali
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
     is_the_only_rn_in_block, get_pull_request_numbers_from_file, remove_old_versions_from_changelog
 from Tests.Marketplace.marketplace_constants import Changelog, PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
-    PACKS_FOLDER, PackTags, BASE_PACK_DEPENDENCY_DICT
+    PACKS_FOLDER, PackTags
 
 CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
@@ -297,7 +297,7 @@ class TestMetadataParsing:
         """
         return Pack(pack_name="Test Pack Name", pack_path="dummy_path")
 
-    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack, dummy_pack_metadata):
+    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack: Pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
         dummy_pack._description = 'Description of test pack'
@@ -306,37 +306,19 @@ class TestMetadataParsing:
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
-        dummy_pack._enhance_pack_attributes(index_folder_path="", dependencies_metadata_dict={},
-                                            statistics_handler=None, marketplace='xsoar')
-        parsed_metadata = dummy_pack._parse_pack_metadata(build_number="dummy_build_number", commit_hash="dummy_commit")
+        dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
+        dummy_pack._certification = Metadata.CERTIFIED
+        dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
+        dummy_pack._enhance_pack_attributes(index_folder_path="", statistics_handler=None)
+        parsed_metadata = dummy_pack._parse_pack_metadata()
 
-        assert parsed_metadata['name'] == 'Test Pack Name'
-        assert parsed_metadata['id'] == 'Test Pack Name'
-        assert parsed_metadata['description'] == 'Description of test pack'
         assert 'created' in parsed_metadata
         assert 'updated' in parsed_metadata
-        assert parsed_metadata['legacy']
-        assert parsed_metadata['support'] == 'xsoar'
-        assert parsed_metadata['supportDetails']['url'] == 'https://test.com'
-        assert parsed_metadata['supportDetails']['email'] == 'test@test.com'
-        assert parsed_metadata['author'] == 'Cortex XSOAR'
-        assert 'authorImage' in parsed_metadata
-        assert 'certification' in parsed_metadata
-        assert parsed_metadata['price'] == 0
-        assert parsed_metadata['serverMinVersion'] == '6.0.0'
-        assert parsed_metadata['currentVersion'] == '2.3.0'
-        assert parsed_metadata['versionInfo'] == "dummy_build_number"
-        assert parsed_metadata['commit'] == "dummy_commit"
-        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", PackTags.NEW, PackTags.USE_CASE}
-        assert len(parsed_metadata['tags']) == 4
-        assert parsed_metadata['categories'] == ["Messaging"]
-        assert 'contentItems' in parsed_metadata
+        assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", PackTags.NEW}
+        assert len(parsed_metadata['tags']) == 3
         assert 'integrations' in parsed_metadata
-        assert parsed_metadata['useCases'] == ["Some Use Case"]
-        assert parsed_metadata['keywords'] == ["dummy keyword", "Additional dummy keyword"]
         assert parsed_metadata['downloads'] == 10
         assert parsed_metadata['searchRank'] == 20
-        assert 'dependencies' in parsed_metadata
 
     def test_enhance_pack_attributes(self, dummy_pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
@@ -344,210 +326,56 @@ class TestMetadataParsing:
         dummy_pack._displayed_integration_images = []
         dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
+        dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
+
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None, marketplace='xsoar'
+            index_folder_path="", statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
         assert dummy_pack.create_date
         assert dummy_pack.update_date
-        assert dummy_pack._legacy
-        assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
-        assert dummy_pack._support_details['url'] == 'https://test.com'
-        assert dummy_pack._support_details['email'] == 'test@test.com'
-        assert dummy_pack._author == Metadata.XSOAR_AUTHOR
-        assert dummy_pack._certification == Metadata.CERTIFIED
-        assert dummy_pack._price == 0
-        assert dummy_pack._use_cases == ["Some Use Case"]
-        assert dummy_pack._tags == {"tag number one", "Tag number two", PackTags.NEW, PackTags.USE_CASE}
-        assert dummy_pack._categories == ["Messaging"]
-        assert dummy_pack._keywords == ["dummy keyword", "Additional dummy keyword"]
+        assert dummy_pack._tags == {"tag number one", "Tag number two", PackTags.NEW}
 
-    def test_enhance_pack_attributes_empty_input(self, dummy_pack):
-        """ Test for empty pack_metadata.json and validating that support, support details and author are set correctly
-            to XSOAR defaults value of Metadata class.
-        """
-
-        dummy_pack._displayed_integration_images = []
-        dummy_pack._user_metadata = {}
-        dummy_pack._is_modified = False
-        dummy_pack._enhance_pack_attributes(
-            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None, marketplace='xsoar'
-        )
-
-        assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
-        assert dummy_pack._support_details['url'] == Metadata.XSOAR_SUPPORT_URL
-        assert dummy_pack._certification == Metadata.CERTIFIED
-        assert dummy_pack._author == Metadata.XSOAR_AUTHOR
-
-    @pytest.mark.parametrize("raw_price,expected", [("120", 120), (120, 120), ("FF", 0)])
-    def test_convert_price(self, raw_price, expected, mocker):
-        """ Price field is not mandatory field and needs to be set to integer value.
-
-        """
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        assert convert_price("pack_name", raw_price) == expected
-
-    def test_use_case_tag_added_to_tags(self, dummy_pack_metadata, dummy_pack):
-        """
-           Given:
-               - Pack metadata file with use case.
-           When:
-               - Running parse_pack_metadada
-           Then:
-               - Ensure the `Use Case` tag was added to tags.
-
-       """
-        dummy_pack._use_cases = ['Phishing']
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
-
-        assert PackTags.USE_CASE in tags
-
-    @pytest.mark.parametrize('is_feed_pack', [True, False])
-    def test_tim_tag_added_to_tags(self, dummy_pack_metadata, dummy_pack, is_feed_pack):
-        """ Test 'TIM' tag is added if is_feed_pack is True
-        """
-        dummy_pack.is_feed = is_feed_pack
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
-
-        if is_feed_pack:
-            assert PackTags.TIM in tags
-        else:
-            assert PackTags.TIM not in tags
-
-    def test_new_tag_added_to_tags(self, dummy_pack_metadata, dummy_pack):
+    def test_new_tag_added_to_tags(self, dummy_pack):
         """ Test 'New' tag is added
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
+        dummy_pack._collect_pack_tags_by_statistics([])
 
-        assert PackTags.NEW in tags
+        assert PackTags.NEW in dummy_pack._tags
 
-    def test_new_tag_removed_from_tags(self, dummy_pack_metadata, dummy_pack):
+    def test_new_tag_removed_from_tags(self, dummy_pack):
         """ Test 'New' tag is removed
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
         dummy_pack._tags = {PackTags.NEW}
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
+        dummy_pack._collect_pack_tags_by_statistics([])
 
-        assert PackTags.NEW not in tags
+        assert PackTags.NEW not in dummy_pack._tags
 
-    def test_section_tags_added(self, dummy_pack_metadata, dummy_pack):
+    def test_trending_tag_added_to_tags(self, dummy_pack):
+        """ Test 'TRENDING' tag is added
         """
-        Given:
-            Pack
-        When:
-            Parsing a pack metadata
-        Then:
-            add the 'Featured' landingPage section tag and raise the searchRank
-        """
-        section_tags = {
-            "sections": [
-                "Trending",
-                "Featured",
-                "Getting Started"
-            ],
-            "Featured": [
-                "Test Pack Name"
-            ]
-        }
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, section_tags, [], 'xsoar')
-        assert 'Featured' in tags
+        dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
+        dummy_pack._collect_pack_tags_by_statistics(["Test Pack Name"])
 
-    @pytest.mark.parametrize('pack_metadata,marketplace,expected_result',
-                             [({'tags': ['tag1', 'marketplacev2:tag2']}, 'xsoar', {'tag1'}),
-                              ({'tags': ['tag1', 'marketplacev2:tag2']}, 'marketplacev2', {'tag1', 'tag2'}),
-                              ({'tags': ['marketplacev2:tag2']}, 'xsoar', set()),
-                              ({'tags': ['tag1', 'marketplacev2,xsoar:tag2']}, 'xsoar', {'tag1', 'tag2'})])
-    def test_get_tags_by_marketplace(self, dummy_pack, pack_metadata, marketplace, expected_result):
+        assert PackTags.TRENDING in dummy_pack._tags
+
+    def test_trending_tag_removed_from_tags(self, dummy_pack):
+        """ Test 'TRENDING' tag is removed
         """
-        Given:
-            Pack, metadata and a marketplace
-        When:
-            Getting tags by marketplace
-        Then:
-            Validating the output
-        """
-        output = dummy_pack._get_tags_by_marketplace(pack_metadata, marketplace)
-        assert output == expected_result
+        dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
+        dummy_pack._tags = {PackTags.TRENDING}
+        dummy_pack._collect_pack_tags_by_statistics([])
+
+        assert PackTags.TRENDING not in dummy_pack._tags
 
 
 class TestParsingInternalFunctions:
     """ Test class for internal functions that are used in _parse_pack_metadata static method.
 
     """
-
-    @pytest.mark.parametrize("support_url, support_email",
-                             [("", ""), (None, None), (None, ""), ("", None)])
-    def test_empty_create_support_section_with_xsoar_support(self, support_url, support_email):
-        """ Test the case when support type is set to xsoar and returns XSOAR support default details.
-        Currently is only returned url field. May include XSOAR support email in the future.
-        """
-        support_details = Pack._create_support_section(support_type="xsoar", support_url=support_url,
-                                                       support_email=support_email)
-        expected_result = {'url': Metadata.XSOAR_SUPPORT_URL}
-
-        assert support_details == expected_result
-
-    @pytest.mark.parametrize("support_type,support_url, support_email",
-                             [
-                                 ("partner", "", ""), ("partner", None, None),
-                                 ("partner", None, ""), ("partner", "", None),
-                                 ("developer", "", ""), ("developer", None, None),
-                                 ("developer", None, ""), ("developer", "", None),
-                                 ("nonsupported", "", ""), ("nonsupported", None, None),
-                                 ("nonsupported", None, ""), ("nonsupported", "", None)
-                             ])
-    def test_empty_create_support_section_with_other_support(self, support_type, support_url, support_email):
-        """ Tests case when support is set to non xsoar, one of following: partner, developer or nonsupported.
-            Expected not do override the url with XSOAR default support url and email if it be included eventually.
-
-        """
-        support_details = Pack._create_support_section(support_type=support_type, support_url=support_url,
-                                                       support_email=support_email)
-
-        assert support_details == {}
-
-    @pytest.mark.parametrize("author", [None, "", Metadata.XSOAR_AUTHOR])
-    def test_get_author_xsoar_support(self, author):
-        """ Tests case when support is set to xsoar. Expected result should be Cortex XSOAR.
-        """
-        result_author = Pack._get_author(support_type="xsoar", author=author)
-
-        assert result_author == Metadata.XSOAR_AUTHOR
-
-    @pytest.mark.parametrize("author, expected", [("", ""), ("dummy_author", "dummy_author")])
-    def test_get_author_non_xsoar_support(self, author, expected):
-        """ Test case when support is set to non xsoar, in that case partner. Expected behavior is not to override
-        author str that was received as input.
-        """
-        result_author = Pack._get_author(support_type="partner", author=author)
-
-        assert result_author == expected
-
-    @pytest.mark.parametrize("support_type, certification", [("xsoar", None), ("xsoar", ""), ("xsoar", "verified")])
-    def test_get_certification_xsoar_support(self, support_type, certification):
-        """ Tests case when support is set to xsoar. Expected result should be certified certification.
-        """
-        result_certification = Pack._get_certification(support_type=support_type, certification=certification)
-
-        assert result_certification == Metadata.CERTIFIED
-
-    @pytest.mark.parametrize("support_type, certification", [("community", None), ("developer", "")])
-    def test_get_certification_non_xsoar_support_empty(self, support_type, certification):
-        """ Tests case when support is set to non xsoar. Expected result should empty certification string.
-        """
-        result_certification = Pack._get_certification(support_type=support_type, certification=certification)
-
-        assert result_certification == ""
-
-    def test_get_certification_non_xsoar_support(self):
-        """ Tests case when support is set to partner with certified value.
-            Expected result should be certified certification.
-        """
-        result_certification = Pack._get_certification(support_type="partner", certification="certified")
-
-        assert result_certification == Metadata.CERTIFIED
 
     @pytest.mark.parametrize("pack_integration_images, display_dependencies_images, expected", [
         ([], [], []),
@@ -561,7 +389,7 @@ class TestParsingInternalFunctions:
          ["DummyPack2"],
          [{"name": "DummyIntegration2", "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}])
     ])
-    def test_get_all_pack_images(self, pack_integration_images, display_dependencies_images, expected):
+    def test_get_all_pack_images(self, mocker, pack_integration_images, display_dependencies_images, expected):
         """
            Tests that all the pack's images are being collected without duplication, according to the pack dependencies,
            and without the contribution details suffix if exists.
@@ -581,20 +409,28 @@ class TestParsingInternalFunctions:
                - Validates that all_pack_images list was updated according to the packs dependencies.
                - Validates that all_pack_images list was updated without duplications.
                - Validates that all_pack_images list was updated without the contribution details suffix.
-       """
+        """
+        from Tests.Marketplace import marketplace_services
 
-        dependencies_data = {
-            "DummyPack": {
-                "integrations": [{
-                    "name": "DummyIntegration",
-                    "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"}]},
-            "DummyPack2": {
-                "integrations": [{
-                    "name": "DummyIntegration2 (Partner Contribution)",
-                    "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]}}
+        def side_effect_load_json(path):
+            if "DummyPack2" in path:
+                return {
+                    "integrations": [{
+                        "name": "DummyIntegration2 (Partner Contribution)",
+                        "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"
+                    }]
+                }
+            else:
+                return {
+                    "integrations": [{
+                        "name": "DummyIntegration",
+                        "imagePath": "content/packs/DummyPack/DummyIntegration_image.png"
+                    }]
+                }
 
-        all_pack_images = Pack._get_all_pack_images(pack_integration_images, display_dependencies_images,
-                                                    dependencies_data, display_dependencies_images)
+        mocker.patch.object(marketplace_services, 'load_json', side_effect=side_effect_load_json)
+        all_pack_images = Pack._get_all_pack_images('', pack_integration_images, display_dependencies_images,
+                                                    display_dependencies_images)
 
         assert expected == all_pack_images
 
@@ -2221,7 +2057,7 @@ class TestLoadUserMetadata:
         Then:
             - Ensure eula link appears in the pack object metadata
         """
-        metadata_path = os.path.join(tmp_path, 'pack_metadata.json')
+        metadata_path = os.path.join(tmp_path, 'metadata.json')
         dummy_pack._pack_path = tmp_path
         with open(metadata_path, 'w') as metadata_file:
             metadata_file.write(json.dumps(dummy_pack_metadata))
@@ -2258,113 +2094,16 @@ class TestSetDependencies:
 
         return pack_metadata
 
-    def test_set_dependencies_no_user_dependencies(self):
-        """
-           Given:
-               - Pack without user dependencies
-               - New generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be the generated ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-
-        generated_dependencies = {
-            'ImpossibleTraveler': {
-                'dependencies': {
-                    'HelloWorld': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'HelloWorld',
-                        'certification': 'certified'
-                    },
-                    'ServiceNow': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    },
-                    'Active_Directory_Query': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Active Directory Query v2',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
-        metadata['dependencies'] = {}
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        p._user_metadata = metadata
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
-
-    def test_set_dependencies_core_pack(self):
-        """
-           Given:
-               - Core pack with new dependencies
-               - No mandatory dependencies that are not core packs
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be merged
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-
-        generated_dependencies = {
-            'HelloWorld': {
-                'dependencies': {
-                    'CommonPlaybooks': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Common Playbooks',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-
-        generated_dependencies['HelloWorld']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
-        metadata['dependencies'] = {}
-        metadata['name'] = 'HelloWorld'
-        metadata['id'] = 'HelloWorld'
-        p = Pack('HelloWorld', 'dummy_path')
-        p._user_metadata = metadata
-        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
-        dependencies = json.loads(dependencies)
-
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
-
     def test_set_dependencies_core_pack_new_mandatory_dependency(self):
         """
-           Given:
-               - Core pack with new dependencies
-               - Mandatory dependencies that are not core packs
-           When:
-               - Formatting metadata
-           Then:
-               - An exception should be raised
-       """
+            Given:
+                - Core pack with new dependencies
+                - Mandatory dependencies that are not core packs
+            When:
+                - Formatting metadata
+            Then:
+                - An exception should be raised
+        """
         from Tests.Marketplace.marketplace_services import Pack
 
         metadata = self.get_pack_metadata()
@@ -2390,13 +2129,12 @@ class TestSetDependencies:
             }
         }
 
-        generated_dependencies['HelloWorld']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
         p._user_metadata = metadata
 
         with pytest.raises(Exception) as e:
-            p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
+            p.set_pack_dependencies(generated_dependencies)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
 
@@ -3379,3 +3117,28 @@ def test_get_upload_data(mocker):
             "Cylance_Protect": [],
         }
     }
+
+
+def test_write_json(tmp_path):
+    """
+    Given:
+        metadata.json file and statistics fields to update.
+    When:
+        Running json_write.
+    Then:
+        Ensure the existing fields stays as expected and that the statistics fields are updated.
+    """
+    from Tests.Marketplace.marketplace_services import json_write, load_json
+    statistics_metadata = {
+        Metadata.DOWNLOADS: 245,
+        Metadata.SEARCH_RANK: 10
+    }
+    metadata_path = os.path.join(tmp_path, 'metadata.json')
+    shutil.copy(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'metadata.json'),
+                metadata_path)
+
+    json_write(metadata_path, statistics_metadata, update=True)
+    metadata = load_json(metadata_path)
+    assert metadata[Metadata.NAME] == 'Impossible Traveler'
+    assert metadata[Metadata.DOWNLOADS] == 245
+    assert metadata[Metadata.SEARCH_RANK] == 10

@@ -47,18 +47,18 @@ def get_upload_job_status(pipeline_id, token):
     try:
         jobs_info = json.loads(res.content)
         pipeline_status = jobs_info[0].get('pipeline', {}).get('status')
-        upload_job_status = get_job_status('upload-packs-to-marketplace', jobs_info)
+        xsoar_upload_job_status = get_job_status('upload-packs-to-marketplace', jobs_info)
+        xsiam_upload_job_status = get_job_status('upload-packs-to-marketplace-v2', jobs_info)
     except Exception as e:
         logging.error(f'Unable to parse pipeline status response: {e}')
         sys.exit(1)
 
-    return pipeline_status, upload_job_status
+    return pipeline_status, xsoar_upload_job_status, xsiam_upload_job_status
 
 
 def get_job_status(job_name, pipelines_jobs_response):
-    for job in pipelines_jobs_response:
-        if job.get('name') == job_name:
-            return job.get('status')
+    if job_obj := [job for job in pipelines_jobs_response if job.get('name') == job_name]:
+        return job_obj[0].get('status')
     return None
 
 
@@ -74,7 +74,7 @@ def main():
     token = args.gitlab_api_token
     pipeline_id = args.pipeline_id
 
-    pipeline_status, upload_job_status = get_upload_job_status(pipeline_id, token)
+    pipeline_status = 'running'  # pipeline status when start to run
 
     # initialize timer
     start = time.time()
@@ -83,7 +83,7 @@ def main():
     while pipeline_status not in ['failed', 'success', 'canceled'] and elapsed < TIMEOUT:
         logging.info(f'Pipeline {pipeline_id} status is {pipeline_status}')
         time.sleep(300)
-        pipeline_status, upload_job_status = get_upload_job_status(pipeline_id, token)
+        pipeline_status, xsoar_upload_job_status, xsiam_upload_job_status = get_upload_job_status(pipeline_id, token)
         elapsed = time.time() - start
 
     if elapsed >= TIMEOUT:
@@ -92,11 +92,14 @@ def main():
 
     pipeline_url = get_pipeline_info(pipeline_id, token).get('web_url')
 
-    if upload_job_status == 'skipped':
-        logging.info(f'Failed to upload files to marketplace. See failed pipeline here: {pipeline_url}')
-        sys.exit(1)
+    if pipeline_status == 'failed':
+        if xsoar_upload_job_status == 'skipped' or xsiam_upload_job_status == 'skipped':
+            logging.error(f'Upload pipeline failed before upload-to-marketplace step. See here: {pipeline_url}')
+            sys.exit(1)
+        else:
+            logging.error("upload pipeline has failed but not in required upload steps, continuing testing the buckets")
 
-    logging.info(f'The upload has finished. See pipeline here: {pipeline_url}')
+    logging.info(f'The upload-flow pipeline has finished. See pipeline here: {pipeline_url}')
 
 
 if __name__ == "__main__":
