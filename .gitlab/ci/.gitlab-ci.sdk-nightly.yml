@@ -35,9 +35,6 @@
   - |
     mkdir $ARTIFACTS_FOLDER/demisto-sdk
     git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-
-    TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-    export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
     python3 -m pytest "$ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER}" || EXIT_CODE=$?
   - section_end "End to End Tests"
 
@@ -333,21 +330,12 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
 
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
+
     - |
       export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
 
-    - section_start "End to End Tests"  --collapsed
-    - |
-      mkdir $ARTIFACTS_FOLDER/demisto-sdk
-      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-
-      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
-      export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
-      echo "Server URL: $DEMISTO_BASE_URL"
-      unset DEMISTO_API_KEY # a temporary fix 
-      python3 -m pytest ${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER} || EXIT_CODE=$?
-    - section_end "End to End Tests"
+    - !reference [.run_end_to_end_tests]
 
     - !reference [.prepare_for_test_content]
 
@@ -359,12 +347,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
 
     - !reference [.run_test_content]
 
-    - section_start "Cleanup env results from artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      rm -f "./artifacts/env_results.json"
-      rm -f "./artifacts/filter_file.txt"
-    - section_end "Cleanup env results from artifacts folder"
+    - !reference [.cleanup_after_test_content]
 
     - job-done
     - exit $EXIT_CODE
@@ -428,23 +411,14 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
     - !reference [.lock-machine]
 
     - !reference [.export_cloud_machine_constants]
-    - section_start "End to End Tests" --collapsed
-    - |
-      mkdir $ARTIFACTS_FOLDER/demisto-sdk
-      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-      echo "Server URL: $DEMISTO_BASE_URL"
-      python3 -m pytest "${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER}" || EXIT_CODE=$?
-    - section_end "End to End Tests"
+
+    - !reference [.run_end_to_end_tests]
 
     - !reference [.prepare_for_test_content]
 
     - !reference [.run_test_content]
 
-    - section_start "Cleanup env results from artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      rm -f "./artifacts/filter_file.txt"
-    - section_end "Cleanup env results from artifacts folder"
+    - !reference [.cleanup_after_test_content]
 
     - !reference [.cloud-machine-information]
     - exit $EXIT_CODE
@@ -489,6 +463,8 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
   script:
     - EXIT_CODE=0
 
+    - !reference [.copy_env_results]
+
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
     - !reference [.lock-machine]
@@ -496,29 +472,13 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
     - !reference [.export_cloud_machine_constants]
 
-    - section_start "End to End Tests" --collapsed
-    - |
-      mkdir $ARTIFACTS_FOLDER/demisto-sdk
-      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-      echo "Server URL: $DEMISTO_BASE_URL"
-      python3 -m pytest "${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER}" || EXIT_CODE=$?
-    - section_end "End to End Tests"
-
-    - section_start "Copy env results to artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
-    - section_end "Copy env results to artifacts folder"
+    - !reference [.run_end_to_end_tests]
 
     - !reference [.prepare_for_test_content]
 
     - !reference [.run_test_content]
 
-    - section_start "Cleanup env results from artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      rm -f "./artifacts/filter_file.txt"
-    - section_end "Cleanup env results from artifacts folder"
+    - !reference [.cleanup_after_test_content]
 
     - !reference [.cloud-machine-information]
     - job-done
