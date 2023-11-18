@@ -35,6 +35,7 @@
   - |
     mkdir $ARTIFACTS_FOLDER/demisto-sdk
     git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+    TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
     python3 -m pytest "$ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER}" || EXIT_CODE=$?
   - section_end "End to End Tests"
 
@@ -421,6 +422,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
     - !reference [.cleanup_after_test_content]
 
     - !reference [.cloud-machine-information]
+    - job-done
     - exit $EXIT_CODE
 
   after_script:
