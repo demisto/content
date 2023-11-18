@@ -35,7 +35,6 @@
   - |
     mkdir $ARTIFACTS_FOLDER/demisto-sdk
     git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
-    TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
     python3 -m pytest "$ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER}" || EXIT_CODE=$?
   - section_end "End to End Tests"
 
@@ -332,11 +331,17 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
 
+    - section_start "End to End Tests"  --collapsed
     - |
+      mkdir $ARTIFACTS_FOLDER/demisto-sdk
+      git clone -b ${SDK_REF} --single-branch --depth 1 https://github.com/demisto/demisto-sdk.git $ARTIFACTS_FOLDER/demisto-sdk
+
+      TUNNEL_PORT=$(cat "${ENV_RESULTS_PATH}" | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
       export DEMISTO_BASE_URL="https://$(cat "${ENV_RESULTS_PATH}" | jq -r '.[0].InstanceDNS')"
       echo "Server URL: $DEMISTO_BASE_URL"
-
-    - !reference [.run_end_to_end_tests]
+      unset DEMISTO_API_KEY # a temporary fix 
+      python3 -m pytest ${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER} || EXIT_CODE=$?
+    - section_end "End to End Tests"
 
     - !reference [.prepare_for_test_content]
 
