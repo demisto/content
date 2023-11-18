@@ -323,12 +323,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
   script:
     - !reference [.ssh-config-setup]
 
-    - section_start "Copy env results to artifacts folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json" "./artifacts/env_results.json"
-      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
-    - section_end "Copy env results to artifacts folder"
+    - !reference [.copy_env_results]
 
     - section_start "Wait Until Server Ready" --collapsed
     - |
@@ -354,11 +349,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
       python3 -m pytest ${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER} || EXIT_CODE=$?
     - section_end "End to End Tests"
 
-    - section_start "Install Packs and Test-Module" --collapsed
-    - cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
-    - section_end "Install Packs and Test-Module"
+    - !reference [.prepare_for_test_content]
 
     - section_start "Wait Until Server Ready"  --collapsed
     - echo Going to sleep for 15 minutes to allow server finish indexing
@@ -430,17 +421,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
   script:
     - EXIT_CODE=0
 
-    # - section_start "Update Packs To Install And Modeling Rules To Test" --collapsed
-    # - echo -e "\nSemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/content_packs_to_install.txt"
-    # - echo "SemperisDSP/ModelingRules/SemperisDSP" >> "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
-    # - cat "${ARTIFACTS_FOLDER_INSTANCE}/modeling_rules_to_test.txt"
-    # - section_end "Update Packs To Install And Modeling Rules To Test"
-
-    - section_start "Copy Env Results To Artifacts Folder" --collapsed
-    - |
-      # workaround for the hard-coded value in the sdk
-      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
-    - section_end "Copy Env Results To Artifacts Folder"
+    - !reference [.copy_env_results]
 
     - !reference [.download-demisto-conf]
     - !reference [.secrets-fetch]
@@ -455,11 +436,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
       python3 -m pytest "${ARTIFACTS_FOLDER}/demisto-sdk/tests_end_to_end/${E2E_TEST_FOLDER}" || EXIT_CODE=$?
     - section_end "End to End Tests"
 
-    - section_start "Install Packs" --collapsed
-    - cat "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt" 
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
-    - section_end "Install Packs"
+    - !reference [.prepare_for_test_content]
 
     - !reference [.run_test_content]
 
@@ -533,11 +510,7 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar-ng:
       cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt" "./artifacts/filter_file.txt"
     - section_end "Copy env results to artifacts folder"
 
-    - section_start "Install Packs" --collapsed
-    - cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/filter_file.txt"
-    - ./Tests/scripts/install_content_and_test_integrations.sh || EXIT_CODE=$?
-    - cp -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
-    - section_end "Install Packs"
+    - !reference [.prepare_for_test_content]
 
     - !reference [.run_test_content]
 
