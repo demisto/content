@@ -1209,7 +1209,8 @@ def main():
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # list of packs to iterate on and upload/update in bucket
-    packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id), is_modified=pack_id in pack_ids_to_upload)
+    packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
+                               is_modified=pack_id in pack_ids_to_upload)
                           for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
     if not is_regular_upload_flow:
         # if it's not a regular upload-flow, then upload only collected/modified packs
