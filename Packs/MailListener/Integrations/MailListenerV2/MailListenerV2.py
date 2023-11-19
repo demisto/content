@@ -353,7 +353,7 @@ def fetch_mails(client: IMAPClient,
         try:
             email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
         except Exception as e:
-            demisto.debug(f"Create Email object was un-successful for {mail_id=}, {mail_id=}.\
+            demisto.debug(f"Create Email object was un-successful for {mail_id=}, {message_data=}.\
                 Skipping to next available email. Error: {e}")
             continue
 
