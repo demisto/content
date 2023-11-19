@@ -5330,7 +5330,13 @@
             "playbookID": "FormatURL-Test"
         },
         {
+            "playbookID": "TestGetErrorsFromEntry"
+        },
+        {
             "playbookID": "IPToHost - Test"
+        },
+        {
+            "playbookID": "TestIsInCidrRanges"
         },
         {
             "playbookID": "NetskopeAPIv1 Test",
