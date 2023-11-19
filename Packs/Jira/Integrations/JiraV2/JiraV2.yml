@@ -402,7 +402,7 @@ script:
     - description: The component names of the issue. For example components="component1,component2".
       isArray: true
       name: components
-    - description: Resolution to change in the issue, to be used when transitioning to a closing status.
+    - description: Resolution to update in the issue, to be used when transitioning to a closed status.
       name: resolution
     description: Modifies an issue in Jira.
     name: jira-edit-issue
