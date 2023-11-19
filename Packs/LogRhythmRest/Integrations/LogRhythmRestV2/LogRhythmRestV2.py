@@ -2453,6 +2453,7 @@ def fetch_incidents_command(client: Client, fetch_type: str, cases_max_fetch: in
     elif fetch_type == 'Cases':
         return fetch_cases(client, cases_max_fetch, fetch_time, fetch_case_evidences,
                            case_tags_filter, case_status_filter, case_priority_filter)
+    return None
 
 
 def fetch_alarms(client: Client, limit: int, fetch_time: str, alarm_status_filter: str,
