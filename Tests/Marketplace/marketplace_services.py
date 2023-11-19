@@ -672,7 +672,7 @@ class Pack:
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
             task_status = True
-            logging.success(f"Finished zipping {source_name} folder.")
+            logging.debug(f"Finished zipping {source_name} folder.")
         except Exception:
             logging.exception(f"Failed in zipping {source_name} folder")
         finally:
@@ -889,8 +889,7 @@ class Pack:
                 dest_path_to_upload = with_dependencies_path
             else:
                 version_pack_path = os.path.join(storage_base_path, self.name, self.current_version)
-                logging.warning(f"Uploading {self._pack_name} pack to storage and overriding the existing pack "
-                                f"files already in storage.")
+                logging.debug(f"Uploading pack '{self._pack_name}' to storage")
 
                 dest_path_to_upload = os.path.join(version_pack_path, f"{self._pack_name}.zip")
 
@@ -2296,7 +2295,7 @@ class Pack:
         """
         if os.path.exists(self._pack_path):
             shutil.rmtree(self._pack_path)
-            logging.info(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
+            logging.debug(f"Cleanup {self._pack_name} pack from: {self._pack_path}")
 
     def is_changelog_exists(self):
         """ Indicates whether the local changelog of a given pack exists or not

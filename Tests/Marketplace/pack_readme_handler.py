@@ -96,7 +96,7 @@ def download_markdown_image_from_url_and_upload_to_gcs(
             # remove local saved image
             os.remove(image_name)
 
-            logging.info(f"Image sucessfully Downloaded: {image_name}")
+            logging.debug(f"Image sucessfully Downloaded: {image_name}")
             return True
 
         logging.error(
@@ -129,7 +129,7 @@ def copy_markdown_images(
     Returns:
         bool: Whether the operation succeeded.
     """
-    logging.info("Starting readme images copy.")
+    logging.debug("Starting readme images copy.")
     markdown_images: dict = {}
     if markdown_images := images_data.get(BucketUploadFlow.MARKDOWN_IMAGES, {}):
         for pack_name, readme_description_md in markdown_images.items():

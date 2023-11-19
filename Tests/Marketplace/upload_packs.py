@@ -205,6 +205,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     Returns:
         bool: whether cleanup was skipped or not.
     """
+    logging.debug(f"{GCPConfig.PRODUCTION_BUCKET=}")
     if ('CI' not in os.environ) or (
             os.environ.get('CI_COMMIT_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
             os.environ.get('CI_COMMIT_BRANCH') == 'master' and storage_bucket.name not in
@@ -677,6 +678,7 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
 
     """
     skipping_build_task_message = "Skipping Upload Packs To Marketplace Storage Step."
+    logging.debug(f"{GCPConfig.PRODUCTION_BUCKET=}")
 
     try:
         if storage_bucket.name not in (GCPConfig.CI_BUILD_BUCKET, GCPConfig.PRODUCTION_BUCKET):
@@ -1165,7 +1167,8 @@ def main():
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
-    modified_packs_to_upload = option.pack_names or ""
+    pack_ids_to_upload = get_packs_ids_to_upload(option.pack_names or "")
+    upload_specific_pack = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
@@ -1179,61 +1182,57 @@ def main():
     marketplace = option.marketplace
     is_create_dependencies_zip = option.create_dependencies_zip
 
+    # regular upload flow that doesn't force or to upload specific packs and not PR or nightly build
+    is_regular_upload_flow = is_bucket_upload_flow and not force_upload and not upload_specific_pack
+
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
     uploaded_packs_dir = Path(option.artifacts_folder_server_type) / 'uploaded_packs'
     markdown_images_data = Path(option.artifacts_folder_server_type) / BucketUploadFlow.MARKDOWN_IMAGES_ARTIFACT_FILE_NAME
-
     uploaded_packs_dir.mkdir(parents=True, exist_ok=True)
     # Relevant when triggering test upload flow
     if storage_bucket_name:
         GCPConfig.PRODUCTION_BUCKET = storage_bucket_name
+    logging.debug(f"{GCPConfig.PRODUCTION_BUCKET=}")
 
-    # download and extract index from public bucket
+    # download and extract index and packs artifacts
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path,
                                                                                  storage_base_path)
+    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
 
-    # content repo client initialized
+    # content repo client and current/previous commits initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
                                                                         is_bucket_upload_flow, ci_branch)
-
-    # detect packs to upload
-    pack_ids_to_upload = get_packs_ids_to_upload(modified_packs_to_upload)
-    extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    # list of all packs from `content_packs.zip` given from create artifacts
-    all_content_packs = [Pack(pack_id, os.path.join(extract_destination_path, pack_id), is_modified=pack_id in pack_ids_to_upload)
-                         for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
+
+    # list of packs to iterate on and upload/update in bucket
+    packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id), is_modified=pack_id in pack_ids_to_upload)
+                          for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
+    if not is_regular_upload_flow:
+        # if it's not a regular upload-flow, then upload only collected/modified packs
+        packs_objects_list = [p for p in packs_objects_list if p.is_modified]
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_ids_to_upload, storage_base_path
     )
 
-    delete_from_index_packs_not_in_marketplace(index_folder_path, all_content_packs, private_packs)
-
     if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
 
+    # clean index and gcs from non existing or invalid packs
+    delete_from_index_packs_not_in_marketplace(index_folder_path, packs_objects_list, private_packs)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, packs_objects_list, marketplace)
+
     # initiate the statistics handler for marketplace packs
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
-    # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
-
-    all_packs_dict = {p.name: p for p in all_content_packs}  # temporary var to replace packs_for_current_marketplace_dict
-
-    # iterating over packs that are for this current marketplace
-    # we iterate over all packs (and not just for modified packs) for several reasons -
-    # 1. we might need the info about this pack if a modified pack is dependent on it.
-    # 2. even if the pack is not updated, we still keep some fields in it's metadata updated, such as download count,
-    # changelog, etc.
-    pack: Pack
-    for pack in all_content_packs:
+    # iterating over packs that are for the current marketplace
+    for pack in packs_objects_list:
         logging.info(f"Starts iterating over pack '{pack.name}' which is{' not ' if not pack.is_modified else ' '}modified")
 
         if not pack.load_pack_metadata():
@@ -1326,8 +1325,9 @@ def main():
                             )
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
-    if is_create_dependencies_zip and marketplace == XSOAR_MP:
+    if is_create_dependencies_zip and marketplace == XSOAR_MP and is_regular_upload_flow:
         # handle packs with dependencies zip
+        all_packs_dict = {p.name: p for p in packs_objects_list}
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                            all_packs_dict)
 
@@ -1336,14 +1336,14 @@ def main():
 
     # get the lists of packs divided by their status
     successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(
-        all_content_packs)
+        packs_objects_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
         successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
-        images_data=get_images_data([p for p in all_content_packs if p.is_modified], markdown_images_dict=markdown_images_dict)
+        images_data=get_images_data([p for p in packs_objects_list if p.is_modified], markdown_images_dict=markdown_images_dict)
     )
 
     # summary of packs status
