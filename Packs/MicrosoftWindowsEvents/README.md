@@ -61,7 +61,7 @@ As Cortex XSIAM provides a YAML template for Windows Security Event Logs, you ca
 ### Option B
 #### Creating a customized YAML template
 Tailor the XDR collector to your specific needs by creating a custom template that includes all the event types you want to collect.
-As an example, In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System**,**Application**, and **Microsoft Defender** events:
+As an example, In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System**, **Application**, and **Microsoft Defender** events:
  ```bash
 winlogbeat.event_logs:
 - name: Security
@@ -80,4 +80,4 @@ winlogbeat.event_logs:
 
 **Note:** Control what event types will be collected by adding or removing the "name", "ignore_older", and "id" lines of the specific event type.
 
-1. Press **Create** to save the new template.
+5. Press **Create** to save the new template.
