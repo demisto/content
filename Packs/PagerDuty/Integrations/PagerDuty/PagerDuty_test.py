@@ -1,9 +1,10 @@
 from CommonServerPython import *
 import pytest
 from pytest_mock import MockerFixture
+from requests_mock import MockerCore
 
 
-def load_mock_response(file_name):
+def load_mock_response(file_name: str) -> dict:
     """
     Load mock file that simulates an API response.
 
@@ -18,7 +19,7 @@ def load_mock_response(file_name):
         return json.loads(f.read())
 
 
-def test_get_incidents(requests_mock, mocker: MockerFixture):
+def test_get_incidents(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - An incident with non-ascii character in its documentation
@@ -56,11 +57,11 @@ def test_get_incidents(requests_mock, mocker: MockerFixture):
             }]
         }
     )
-    res = get_incidents_command()
+    res = get_incidents_command({})
     assert '| Documentation: • |' in res['HumanReadable']
 
 
-def test_add_responders(requests_mock, mocker: MockerFixture):
+def test_add_responders(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a responder request.
@@ -104,7 +105,7 @@ def test_add_responders(requests_mock, mocker: MockerFixture):
     assert demisto.args().get('user_requests') == expected_users_requested
 
 
-def test_add_responders_default(requests_mock, mocker: MockerFixture):
+def test_add_responders_default(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a responder request without specifying responders.
@@ -147,7 +148,7 @@ def test_add_responders_default(requests_mock, mocker: MockerFixture):
     assert demisto.params().get('DefaultRequestor') == expected_users_requested
 
 
-def test_play_response_play(requests_mock, mocker: MockerFixture):
+def test_play_response_play(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a responder request without specifying responders.
@@ -188,7 +189,7 @@ def test_play_response_play(requests_mock, mocker: MockerFixture):
     assert res.raw_response == {"status": "ok"}
 
 
-def test_get_users_on_call(requests_mock, mocker: MockerFixture):
+def test_get_users_on_call(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a request to get user on-call by schedule ID.
@@ -225,7 +226,7 @@ def test_get_users_on_call(requests_mock, mocker: MockerFixture):
     assert demisto.args().get('scheduleID') == res.outputs[0].get('ScheduleID')
 
 
-def test_get_users_on_call_now(requests_mock, mocker: MockerFixture):
+def test_get_users_on_call_now(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a reqest to get user oncall by schedule ID without specifying responders.
@@ -263,7 +264,7 @@ def test_get_users_on_call_now(requests_mock, mocker: MockerFixture):
     assert 'oncalls' in res.raw_response
 
 
-def test_submit_event(requests_mock, mocker: MockerFixture):
+def test_submit_event(requests_mock: MockerCore, mocker: MockerFixture) -> None:
     """
     Given:
         - a reqest to submit request.
@@ -302,7 +303,7 @@ def test_submit_event(requests_mock, mocker: MockerFixture):
     assert '### Trigger Event' in res.get('HumanReadable')
 
 
-def test_get_all_schedules_command(mocker: MockerFixture, requests_mock):
+def test_get_all_schedules_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
     """
     Given:
         - a reqest to get all schedule
@@ -339,7 +340,7 @@ def test_get_all_schedules_command(mocker: MockerFixture, requests_mock):
     assert '### All Schedules' in res.get('HumanReadable')
 
 
-def test_get_users_contact_methods_command(mocker: MockerFixture, requests_mock):
+def test_get_users_contact_methods_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
     """
     Given:
         - a reqest to get all schedule.
@@ -372,7 +373,7 @@ def test_get_users_contact_methods_command(mocker: MockerFixture, requests_mock)
     assert '### Contact Methods' in res.get('HumanReadable')
 
 
-def test_get_users_notification_command(mocker, requests_mock):
+def test_get_users_notification_command(mocker: MockerFixture, requests_mock: MockerCore) -> None:
     """
     Given:
         - a request to get users notifications.
@@ -406,7 +407,7 @@ def test_get_users_notification_command(mocker, requests_mock):
 
 
 @pytest.mark.parametrize('severity, expected_result', [('high', 3), ('low', 1), ('other_severity', 0)])
-def test_translate_severity(mocker: MockerFixture, severity, expected_result):
+def test_translate_severity(mocker: MockerFixture, severity: str, expected_result: int) -> None:
     """
     Given:
         - a severity.
@@ -428,3 +429,16 @@ def test_translate_severity(mocker: MockerFixture, severity, expected_result):
     from PagerDuty import translate_severity
     res = translate_severity(severity)
     assert res == expected_result
+
+
+def test_pagination_incidents_with_page_and_page_size(requests_mock: MockerCore) -> None:
+    from PagerDuty import pagination_incidents
+    args = {'page': 1, 'page_size': 20}
+    url = 'https://api.pagerduty.com/incidents?include%5B%5D=assignees&statuses%5B%5D=resolved&include%5B%5D=first_trigger_log_entries&include%5B%5D=assignments&time_zone=UTC'
+    mock_data = load_mock_response("incidents.json")
+    req = requests_mock.get(url, json=mock_data)
+
+    result = pagination_incidents(args, url)
+
+    assert req.called_once
+    assert result == mock_data["incidents"]

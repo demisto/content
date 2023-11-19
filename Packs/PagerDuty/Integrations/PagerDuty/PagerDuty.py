@@ -29,7 +29,7 @@ if not USE_PROXY:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
-INCIDENT_API_LIMIT = 100  # TODO try to find the docs
+INCIDENT_API_LIMIT = 100
 
 '''PARAMS'''
 UTC_PARAM = '&time_zone=UTC'
@@ -113,7 +113,7 @@ def http_request(method: str, url: str, params_dict=None, data=None, json_data=N
         raise
 
 
-def translate_severity(sev):
+def translate_severity(sev: str) -> int:
     if sev.lower() == 'high':
         return 3
     elif sev.lower() == 'low':
@@ -551,7 +551,7 @@ def fetch_incidents():
     demisto.setLastRun({'time': now})
 
 
-def configure_status(status='triggered,acknowledged'):
+def configure_status(status='triggered,acknowledged') -> str:
     statuses = status.split(',')
     statuses_string = f"&{STATUSES}="
     statuses = statuses_string.join(statuses)
@@ -561,32 +561,60 @@ def configure_status(status='triggered,acknowledged'):
     return status_request
 
 
-def pagination_incidents(args: dict, url, param_dict) -> list[dict]:
-    def get_page(**pagination_args):
+def pagination_incidents(param_dict: dict, url: str) -> list[dict]:
+    """
+    Retrieves incident data through paginated requests.
+
+    Args:
+        param_dict (dict): A dictionary containing parameters for controlling pagination, including:
+            - 'page': Current page number (optional).
+            - 'page_size': Number of incidents per page (optional).
+            - 'limit': Maximum number of incidents to retrieve (optional).
+            - Additional parameters to include in the API request.
+
+        url (str): The URL of the API endpoint for incident data.
+
+    Returns:
+        list[dict]: A list of dictionaries, where each dictionary represents an incident.
+
+    Notes:
+        This function supports pagination for efficient retrieval of large datasets. It calculates
+        the appropriate 'limit' and 'offset' values based on the provided arguments.
+
+    Examples:
+        To retrieve incidents for the second page with a page size of 20:
+        >>> pagination_incidents({'page': 2, 'page_size': 20}, 'https://api.example.com/incidents', {})
+
+        To retrieve the first 50 incidents without explicit pagination:
+        >>> pagination_incidents({'limit': 50}, 'https://api.example.com/incidents', {'status': 'open'})
+    """
+    def _get_page(**pagination_args) -> list[dict]:
+        # param_dict must be before pagination_args for merging to work correctly
         return http_request('GET', url, param_dict | pagination_args).get("incidents", [{}])
+
     pages: list = []
 
-    page = arg_to_number(args.get("page"))
-    page_size = arg_to_number(args.get("page_size"))
-    if page and page_size:
+    page = arg_to_number(param_dict.get("page"))
+    page_size = arg_to_number(param_dict.get("page_size"))
+    if page is not None and page_size is not None:
         limit = page_size
         offset = (page - 1) * page_size
 
     else:
-        limit = arg_to_number(args.get("limit")) or 50
+        limit = arg_to_number(param_dict.get("limit")) or 50
         offset = 0
-        api_limit = 100
-        if limit > api_limit:
-            for offset in range(0, limit - api_limit, api_limit):
-                pages += get_page(
-                    limit=api_limit,
-                    offset=offset)
 
-            # the remaining call can be less than OR equal the api_limit but not empty
-            limit = limit % api_limit or api_limit
-            offset += api_limit
+    if limit > INCIDENT_API_LIMIT:
+        for offset in range(0, limit - INCIDENT_API_LIMIT, INCIDENT_API_LIMIT):
+            pages += _get_page(
+                limit=INCIDENT_API_LIMIT,
+                offset=offset)
 
-    pages += get_page(
+        # the remaining call can be less than OR equal the api_limit but not empty
+        limit = limit % INCIDENT_API_LIMIT or INCIDENT_API_LIMIT
+        offset += INCIDENT_API_LIMIT
+
+    pages += _get_page(
         limit=limit,
         offset=offset)
 
@@ -610,9 +638,9 @@ def get_incidents_command(args: dict[str, str]) -> dict:
     }
     remove_nulls_from_dictionary(param_dict)
     url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(args.get("status", 'triggered,acknowledged'))
-    res: list[dict] = pagination_incidents(args, url, param_dict)
+    incidents: list[dict] = pagination_incidents(param_dict, url)
 
-    return extract_incidents_data(res, INCIDENTS_LIST)
+    return extract_incidents_data(incidents, INCIDENTS_LIST)
 
 
 def submit_event_command(source, summary, severity, action, description='No description', group='',
