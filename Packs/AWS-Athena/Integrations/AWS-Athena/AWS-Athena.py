@@ -50,6 +50,11 @@ def parse_rows_response(rows_data: list[dict]) -> list[dict]:
 
 def start_query_execution_command(args: dict, client):
     query_string: str = args['QueryString']
+    query_limit: str | None = args.get('QueryLimit')
+
+    if query_limit and 'LIMIT' not in query_string:
+        query_string = f'{query_string} LIMIT {query_limit}'
+
     kwargs: dict[str, Any] = {'QueryString': query_string}
 
     if args.get('ClientRequestToken'):
