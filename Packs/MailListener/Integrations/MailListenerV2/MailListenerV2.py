@@ -58,12 +58,14 @@ class Email:
     def get_eml_attachments(message_bytes: bytes) -> list:
         eml_attachments = []
         msg = email.message_from_bytes(message_bytes)
+        demisto.debug(f'get_eml_attachments func | {msg=}')
         if msg:
             for part in msg.walk():
                 if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
                     continue
-
+                demisto.debug(f'get_eml_attachments func | {part=}')
                 filename = part.get_filename()
+                demisto.debug(f'get_eml_attachments func | {filename=}')
                 if filename and filename.endswith('.eml'):
                     eml_attachments.append({
                         "filename": filename,
@@ -350,7 +352,13 @@ def fetch_mails(client: IMAPClient,
 
         if not message_bytes:
             continue
-        email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
+
+        try:
+            email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
+        except Exception as e:
+            demisto.debug(f"Create Email object was un-successful for {mail_id=}, {mail_id=}.\
+                Skipping to next available email. Error: {e}")
+            continue
 
         # Add mails if the current email UID is higher than the previous incident UID
         if int(email_message_object.id) > int(uid_to_fetch_from):
