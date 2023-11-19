@@ -17,6 +17,8 @@ DEFAULT_REQUESTOR = demisto.params().get('DefaultRequestor', '')
 SERVER_URL = 'https://api.pagerduty.com/'
 CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
 
+INCIDENT_API_LIMIT = 100
+
 DEFAULT_HEADERS = {
     'Authorization': f'Token token={API_KEY}',
     'Accept': 'application/vnd.pagerduty+json;version=2',
@@ -28,8 +30,6 @@ if not USE_PROXY:
     del os.environ['HTTPS_PROXY']
     del os.environ['http_proxy']
     del os.environ['https_proxy']
-
-INCIDENT_API_LIMIT = 100
 
 '''PARAMS'''
 UTC_PARAM = '&time_zone=UTC'
