@@ -3507,28 +3507,28 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
                                                              filter_=f'create_time >= {offense_close_time}')
             # In QRadar UI, when you close a reason, a note is added with the reason and more details. Try to get note
             # if exists, else fallback to closing reason only, as closing QRadar through an API call does not create a note.
-            close_reason_with_note = next((note.get('note_text') for note in closed_offense_notes if
-                                           note.get('note_text').startswith('This offense was closed with reason:')),
-                                          closing_reason)
-            if not close_reason_with_note:
+            closenotes = next((note.get('note_text') for note in closed_offense_notes if
+                               note.get('note_text').startswith('This offense was closed with reason:')),
+                              closing_reason)
+            if not closing_reason:
                 print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
-                close_reason_with_note = 'Unknown closing reason from QRadar'
-            else:
-                close_reason_with_note = f'From QRadar: {close_reason_with_note}'
+                closing_reason = 'Unknown closing reason from QRadar'
+                closenotes = 'Unknown closing note from QRadar'
+
         except Exception as e:
             demisto.error(f'Failed to get closing reason with error: {e}')
-            close_reason_with_note = 'Unknown closing reason from QRadar'
+            closing_reason = 'Unknown closing reason from QRadar'
+            closenotes = 'Unknown closing note from QRadar'
             time.sleep(FAILURE_SLEEP)
-
         entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': close_reason_with_note
+                'closeReason': closing_reason,
+                'closeNotes': f'From QRadar: {closenotes}'
             },
             'ContentsFormat': EntryFormat.JSON
         })
-
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
                 int(num_events) >= (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
