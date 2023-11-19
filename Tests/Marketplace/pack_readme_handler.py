@@ -48,6 +48,7 @@ def download_markdown_images_from_artifacts(
                 image_name.get("image_name") for image_name in images_data
             ]
 
+    logging.debug(f'{pack_images_names=}')
     return pack_images_names
 
 

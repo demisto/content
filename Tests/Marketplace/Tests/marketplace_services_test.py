@@ -304,12 +304,12 @@ class TestMetadataParsing:
         dummy_pack._server_min_version = Metadata.SERVER_DEFAULT_MIN_VERSION
         dummy_pack._downloads_count = 10
         dummy_pack._displayed_integration_images = []
-        dummy_pack._user_metadata = dummy_pack_metadata
+        dummy_pack._pack_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
-        dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
+        dummy_pack._tags = set(dummy_pack._pack_metadata.get(Metadata.TAGS))
         dummy_pack._certification = Metadata.CERTIFIED
         dummy_pack._create_date = datetime.strftime(datetime.utcnow() - timedelta(days=20), Metadata.DATE_FORMAT)
-        dummy_pack.enhance_pack_attributes(index_folder_path="", statistics_handler=None)
+        dummy_pack.enhance_pack_attributes(index_folder_path="", packs_dependencies_mapping={}, statistics_handler=None)
         parsed_metadata = dummy_pack._parse_pack_metadata()
 
         assert 'created' in parsed_metadata
@@ -324,12 +324,12 @@ class TestMetadataParsing:
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
         dummy_pack._displayed_integration_images = []
-        dummy_pack._user_metadata = dummy_pack_metadata
+        dummy_pack._pack_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
-        dummy_pack._tags = set(dummy_pack._user_metadata.get(Metadata.TAGS))
+        dummy_pack._tags = set(dummy_pack._pack_metadata.get(Metadata.TAGS))
 
         dummy_pack.enhance_pack_attributes(
-            index_folder_path="", statistics_handler=None
+            index_folder_path="", packs_dependencies_mapping={}, statistics_handler=None
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -451,7 +451,7 @@ class TestHelperFunctions:
         (['Packs', 'A', PackFolders.SCRIPTS.value, 'A', 'Pipfile'], True),
         (['Packs', 'A', PackFolders.SCRIPTS.value, 'A', 'Pipfile.lock'], True),
         (['Packs', 'A', Pack.README], False),
-        (['Packs', 'A', Pack.USER_METADATA], False),
+        (['Packs', 'A', Pack.PACK_METADATA], False),
         (['Packs', 'A', PackFolders.INTEGRATIONS.value, 'A', 'A.py'], False)
     ])
     def test_is_ignored_pack_file(self, modified_file_path_parts, expected_result, mocker):
@@ -521,66 +521,6 @@ class TestHelperFunctions:
                                             compared_content_item=compared_content_item, pack_name="dummy")
 
         assert result == expected_result
-
-    @pytest.mark.parametrize('yaml_context, yaml_type, marketplaces, single_integration, is_actually_feed,'
-                             ' is_actually_siem, is_actually_data_source',
-                             [
-                                 # Check is_feed by Integration
-                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
-                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
-                                  'Integration', ["xsoar"], True, True, False, False),
-                                 ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
-                                   'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
-                                  'Integration', ["xsoar"], True, False, False, False),
-                                 # Checks no feed parameter
-                                 ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
-                                   'script': {'commands': [], 'dockerimage': 'bla'}},
-                                  'Integration', ["xsoar"], True, False, False, False),
-
-                                 # Check is_feed by playbook
-                                 ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
-                                   'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
-                                  'Playbook', ["xsoar"], True, True, False, False),
-                                 ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
-                                   'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
-                                  'Playbook', ["xsoar"], True, False, False, False),
-
-                                 # Check is_siem for integration
-                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration', ["xsoar"], True,
-                                  False, True, False),
-                                 ({'id': 'some-id', 'script': {'isfetchevents': False}}, 'Integration', ["xsoar"], True,
-                                  False, False, False),
-
-                                 # Check is_siem for rules
-                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', ["xsoar"], True, False, True, False),
-                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', ["xsoar"], True, False, True, False),
-                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', ["xsoar"], True, False, True, False),
-
-                                 # Check is_data_source for integration
-                                 # case 1: one integration, contains isfetchevents, in marketplacev2 -> data source
-                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], True, False, True, True),
-                                 # case 2: one integration, contains isfetch, not in marketplacev2 -> not data source
-                                 ({'id': 'some-id', 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar'], True, False, False, False),
-                                 # case 3: one integration (deprecated), with is_fetch, in marketplacev2 -> data source
-                                 ({'id': 'some-id', 'deprecated': True, 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], True, False, False, True),
-                                 # case 4: not one integration, with isfetch, in marketplacev2 -> not data source
-                                 ({'id': 'some-id', 'deprecated': False, 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], False, False, False, False)
-                             ])
-    def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces, single_integration,
-                                is_actually_feed, is_actually_siem, is_actually_data_source):
-        """ Tests is_feed or is_seem is set to True for pack changes for tagging.
-        """
-        dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
-        dummy_pack._marketplaces = marketplaces
-        dummy_pack._single_integration = single_integration
-        dummy_pack.add_pack_type_tags(yaml_context, yaml_type)
-        assert dummy_pack.is_feed == is_actually_feed
-        assert dummy_pack.is_siem == is_actually_siem
-        assert dummy_pack.is_data_source == is_actually_data_source
 
     def test_remove_unwanted_files(self):
         """
@@ -1699,7 +1639,7 @@ class TestImagesUpload:
                                            'integration_path_basename': 'fake_unified_integration_path'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        task_status = dummy_pack.enhance_pack_attributes('')
+        task_status = dummy_pack.enhance_pack_attributes('', {})
 
         assert task_status
         assert len(dummy_pack._displayed_integration_images) == len(expected_result)
@@ -1727,7 +1667,7 @@ class TestImagesUpload:
                                            'integration_path_basename': 'fake_unified_integration_path'}]
         mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        task_status = dummy_pack.enhance_pack_attributes('')
+        task_status = dummy_pack.enhance_pack_attributes('', {})
 
         assert task_status
         assert len(dummy_pack._displayed_integration_images) == len(expected_result)
@@ -1969,14 +1909,14 @@ class TestCopyAndUploadToStorage:
         assert not skipped_pack
 
 
-class TestLoadUserMetadata:
+class TestLoadPackMetadata:
     @pytest.fixture(scope="function")
     def dummy_pack(self):
         """ dummy pack fixture
         """
         return Pack(pack_name="TestPack", pack_path="dummy_path")
 
-    def test_load_user_metadata(self, dummy_pack, dummy_pack_metadata, tmp_path):
+    def test_load_pack_metadata(self, dummy_pack, dummy_pack_metadata, tmp_path):
         """
         Given:
             - A pack with metadata containing pack data like eula link
@@ -1989,12 +1929,12 @@ class TestLoadUserMetadata:
         dummy_pack._pack_path = tmp_path
         with open(metadata_path, 'w') as metadata_file:
             metadata_file.write(json.dumps(dummy_pack_metadata))
-        dummy_pack.load_user_metadata()
-        loaded_metadata = dummy_pack.user_metadata
+        dummy_pack.load_pack_metadata()
+        loaded_metadata = dummy_pack.pack_metadata
 
         assert loaded_metadata['eulaLink'] == 'https://my.eula.com'
 
-    def test_load_user_metadata_with_missing_file(self, mocker, dummy_pack):
+    def test_load_pack_metadata_with_missing_file(self, mocker, dummy_pack):
         """
            Given:
                - Pack with missing pack metadata.
@@ -2005,11 +1945,11 @@ class TestLoadUserMetadata:
        """
         mocker.patch("os.path.exists", return_value=False)
         logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.error")
-        task_status = dummy_pack.load_user_metadata()
+        task_status = dummy_pack.load_pack_metadata()
 
         assert logging_mock.call_count == 1
         assert not task_status
-        assert not dummy_pack.user_metadata
+        assert not dummy_pack.pack_metadata
 
 
 class TestSetDependencies:
@@ -2059,7 +1999,7 @@ class TestSetDependencies:
 
         metadata['dependencies'] = {}
         p = Pack('HelloWorld', 'dummy_path')
-        p._user_metadata = metadata
+        p._pack_metadata = metadata
 
         with pytest.raises(Exception) as e:
             p.set_pack_dependencies(generated_dependencies)

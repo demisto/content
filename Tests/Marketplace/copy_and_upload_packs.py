@@ -433,9 +433,9 @@ def main():
     packs_for_current_marketplace = []
 
     for pack in packs_list:
-        task_status = pack.load_user_metadata()
+        task_status = pack.load_pack_metadata()
         if not task_status:
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
+            pack.status = PackStatus.FAILED_LOADING_PACK_METADATA.value  # type: ignore[misc]
             pack.cleanup()
             continue
 

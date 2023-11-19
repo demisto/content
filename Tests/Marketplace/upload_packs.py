@@ -60,7 +60,7 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     """
     with ZipFile(packs_artifacts_path) as packs_artifacts:
         packs_artifacts.extractall(extract_destination_path)
-    logging.info("Finished extracting packs artifacts")
+    logging.debug("Finished extracting packs artifacts")
 
 
 def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
@@ -77,7 +77,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         str: downloaded index generation.
 
     """
-    logging.info('Start of download_and_extract_index')
+    logging.debug('Start of download_and_extract_index')
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     else:
@@ -180,7 +180,7 @@ def update_index_folder(index_folder_path: str, pack: Pack, is_private_pack: boo
             shutil.copy(d.path, index_pack_path)
             if pack.current_version and d.name == Pack.METADATA:
                 shutil.copy(d.path, os.path.join(index_pack_path, f"metadata-{pack.current_version}.json"))
-
+        logging.debug(f"Finished updating index for pack '{pack.name}'")
         task_status = True
     except Exception as e:
         logging.exception(f"Failed in updating index folder for {pack.name} pack.\n{e}")
@@ -209,10 +209,10 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
             os.environ.get('CI_COMMIT_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
             os.environ.get('CI_COMMIT_BRANCH') == 'master' and storage_bucket.name not in
             (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
-        logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
+        logging.debug("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
 
-    logging.info("Start cleaning non existing packs in index.")
+    logging.debug("Start cleaning non existing packs in index.")
     valid_pack_names = {p.name for p in content_packs}
     if marketplace in [XSOAR_MP, XSOAR_SAAS_MP]:
         private_packs_names = {p.get('id', '') for p in private_packs}
@@ -241,7 +241,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
             logging.exception("Failed to cleanup non existing packs.")
 
     else:
-        logging.info(f"No invalid packs detected inside {GCPConfig.INDEX_NAME} folder")
+        logging.debug(f"No invalid packs detected inside {GCPConfig.INDEX_NAME} folder")
 
     return False
 
@@ -266,19 +266,19 @@ def prepare_index_json(index_folder_path: str, build_number: str, private_packs:
         # If we force upload we don't want to update the commit in the index.json file,
         # this is to be able to identify all changed packs in the next upload
         commit = previous_commit_hash
-        logging.info('Force upload flow - Index commit hash should not be changed')
+        logging.debug('Force upload flow - Index commit hash should not be changed')
     else:
         # Otherwise, update the index with the current commit hash (the commit of the upload)
         commit = current_commit_hash
-        logging.info('Updating production index commit hash to master last commit hash')
+        logging.debug('Updating production index commit hash to master last commit hash')
 
     if not landing_page_sections:
         landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
 
     logging.debug(f'commit hash is: {commit}')
     index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
-    logging.info(f'index json path: {index_json_path}')
-    logging.info(f'Private packs are: {private_packs}')
+    logging.debug(f'index json path: {index_json_path}')
+    logging.debug(f'Private packs are: {private_packs}')
     with open(index_json_path, "w+") as index_file:
         index = {
             'revision': build_number,
@@ -315,7 +315,7 @@ def upload_index_to_storage(index_folder_path: str,
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
-        logging.info(f'index zip path: {index_zip_path}')
+        logging.debug(f'index zip path: {index_zip_path}')
 
         index_blob.reload()
         current_index_generation = index_blob.generation
@@ -366,7 +366,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
     corepacks_files_names.extend(GCPConfig.get_core_packs_unlocked_files(marketplace))
     logging.debug(f"Updating the following corepacks files: {corepacks_files_names}")
     for corepacks_file in corepacks_files_names:
-        logging.info(f"Creating corepacks file {corepacks_file}.")
+        logging.debug(f"Creating corepacks file {corepacks_file}.")
         core_packs_public_urls = []
         bucket_core_packs = set()
         packs_missing_metadata = set()
@@ -519,7 +519,7 @@ def add_private_content_to_index(private_index_path: str, extract_destination_pa
         logging.exception(f"Could not add private packs to the index. Additional Info: {str(e)}")
 
     finally:
-        logging.info("Finished updating index with priced packs")
+        logging.debug("Finished updating index with priced packs")
         shutil.rmtree(os.path.dirname(private_index_path), ignore_errors=True)
         return private_packs, updated_private_packs
 
@@ -568,7 +568,7 @@ def get_private_packs(private_index_path: str, pack_names: set = None,
     :param extract_destination_path: Path to where the files should be extracted to.
     :return: List of dicts containing pack metadata information.
     """
-    logging.info(f'getting all private packs. private_index_path: {private_index_path}')
+    logging.debug(f'getting all private packs. private_index_path: {private_index_path}')
     try:
         metadata_files = glob.glob(f"{private_index_path}/**/metadata.json")
     except Exception:
@@ -580,7 +580,7 @@ def get_private_packs(private_index_path: str, pack_names: set = None,
 
     private_packs = []
     pack_names = pack_names or set()
-    logging.info(f'all metadata files found: {metadata_files}')
+    logging.debug(f'all metadata files found: {metadata_files}')
     for metadata_file_path in metadata_files:
         try:
             with open(metadata_file_path) as metadata_file:
@@ -680,7 +680,7 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
 
     try:
         if storage_bucket.name not in (GCPConfig.CI_BUILD_BUCKET, GCPConfig.PRODUCTION_BUCKET):
-            logging.info("Skipping index update check in non production/build bucket")
+            logging.debug("Skipping index update check in non production/build bucket")
             return
 
         if is_private_content_updated:
@@ -716,7 +716,7 @@ def check_if_index_is_updated(index_folder_path: str, content_repo: Any, current
 
         for changed_file in current_commit.diff(index_commit):
             if changed_file.a_path.startswith(PACKS_FOLDER):
-                logging.info(
+                logging.debug(
                     f"Found changed packs between index commit {index_commit.hexsha} and {current_commit.hexsha}")
                 break
         else:
@@ -916,7 +916,6 @@ def get_images_data(packs_list: list, markdown_images_dict: dict):
             images_data.update(pack_image_data)
 
     images_data[BucketUploadFlow.MARKDOWN_IMAGES] = markdown_images_dict
-    logging.info(f'{images_data=}')
     return images_data
 
 
@@ -965,13 +964,13 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 if pack.status == PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name:
                     break
 
-                logging.info(f"Zipping {pack_name} with its dependencies")
+                logging.debug(f"Zipping {pack_name} with its dependencies")
                 Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
                 shutil.rmtree(pack_with_dep_path)
-                logging.info(f"Uploading {pack_name} with its dependencies")
+                logging.debug(f"Uploading {pack_name} with its dependencies")
                 task_status = pack.upload_to_storage(zip_with_deps_path, storage_bucket, storage_base_path,
                                                      with_dependencies_path=upload_path)
-                logging.info(f"{pack_name} with dependencies was{'' if task_status else ' not'} "
+                logging.debug(f"{pack_name} with dependencies was{'' if task_status else ' not'} "
                              f"uploaded successfully")
                 if not task_status:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
@@ -1011,7 +1010,7 @@ def delete_from_index_packs_not_in_marketplace(index_folder_path: str,
         except Exception:
             logging.error(f'Fail to delete from index the pack {pack_name} which is not in current marketplace')
 
-    logging.info(f'Packs not supported in current marketplace and was deleted from index: {deleted_packs}')
+    logging.debug(f'Packs not supported in current marketplace and was deleted from index: {deleted_packs}')
     return deleted_packs
 
 
@@ -1036,19 +1035,19 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
     current_corepacks_file_version = GCPConfig.core_packs_file_versions.get(
         override_corepacks_server_version, {}).get('file_version')
     if not current_corepacks_file_version:
-        logging.info(f'Could not find a matching file version for server version {override_corepacks_server_version} in '
+        logging.debug(f'Could not find a matching file version for server version {override_corepacks_server_version} in '
                      f'{GCPConfig.VERSIONS_METADATA_FILE} file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
         return False
 
     if int(override_corepacks_file_version) <= int(current_corepacks_file_version):
-        logging.info(
+        logging.debug(
             f'Corepacks file version: {override_corepacks_file_version} of server version {override_corepacks_server_version} in '
             f'{GCPConfig.COREPACKS_OVERRIDE_FILE} is not greater than the version in {GCPConfig.VERSIONS_METADATA_FILE}: '
             f'{current_corepacks_file_version}. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
         return False
 
     if override_marketplaces and marketplace not in override_marketplaces:
-        logging.info(f'Current marketplace {marketplace} is not selected in the {GCPConfig.VERSIONS_METADATA_FILE} '
+        logging.debug(f'Current marketplace {marketplace} is not selected in the {GCPConfig.VERSIONS_METADATA_FILE} '
                      f'file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
         return False
 
@@ -1183,7 +1182,7 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
-    uploaded_packs_dir = Path(option.artifacts_folder_server_type) / f'uploaded_packs-{"id_set" if id_set else "graph"}'
+    uploaded_packs_dir = Path(option.artifacts_folder_server_type) / 'uploaded_packs'
     markdown_images_data = Path(option.artifacts_folder_server_type) / BucketUploadFlow.MARKDOWN_IMAGES_ARTIFACT_FILE_NAME
 
     uploaded_packs_dir.mkdir(parents=True, exist_ok=True)
@@ -1195,7 +1194,7 @@ def main():
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path,
                                                                                  storage_base_path)
-    logging.info(f"[TEST] Does index exists: {os.path.exists(os.path.join(index_folder_path))}")
+
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
@@ -1207,30 +1206,24 @@ def main():
     # list of all packs from `content_packs.zip` given from create artifacts
     all_content_packs = [Pack(pack_id, os.path.join(extract_destination_path, pack_id), is_modified=pack_id in pack_ids_to_upload)
                          for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
-    packs_to_upload_list = [pack for pack in all_content_packs if pack.is_modified]
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_ids_to_upload, storage_base_path
     )
-    logging.info(f"[TEST-handle_private_content] Does index exists: {os.path.exists(os.path.join(index_folder_path))}")
 
     delete_from_index_packs_not_in_marketplace(index_folder_path, all_content_packs, private_packs)
-    logging.info(f"[TEST-delete_from_index_packs_not_in_marketplace] Does index exists: "
-                 f"{os.path.exists(os.path.join(index_folder_path))}")
 
     if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
-    logging.info(f"[TEST-check_if_index_is_updated] Does index exists: {os.path.exists(os.path.join(index_folder_path))}")
 
     # initiate the statistics handler for marketplace packs
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
-    logging.info(f"[TEST-clean_non_existing_packs] Does index exists: {os.path.exists(os.path.join(index_folder_path))}")
 
     all_packs_dict = {p.name: p for p in all_content_packs}  # temporary var to replace packs_for_current_marketplace_dict
 
@@ -1241,19 +1234,18 @@ def main():
     # changelog, etc.
     pack: Pack
     for pack in all_content_packs:
-        logging.info(f"[TEST] Does pack {pack.name} exists: {os.path.exists(os.path.join(index_folder_path, pack.name))}")
-        if not pack.load_user_metadata():
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
+        logging.info(f"Starts iterating over pack '{pack.name}' which is{' not ' if not pack.is_modified else ' '}modified")
+
+        if not pack.load_pack_metadata():
+            pack.status = PackStatus.FAILED_LOADING_PACK_METADATA.value  # type: ignore[misc]
             pack.cleanup()
             continue
-        logging.info(f"[TEST - load_user_metadata] Does pack {pack.name} exists: "
-                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}\n"
-                     f"{pack._dependencies=}")
 
-        pack.enhance_pack_attributes(index_folder_path, statistics_handler, remove_test_deps)
-        logging.info(f"[TEST - enhance_pack_attributes] Does pack {pack.name} exists: "
-                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}\n"
-                     f"{pack._dependencies=}")
+        if not pack.enhance_pack_attributes(index_folder_path, packs_dependencies_mapping, marketplace,
+                                            statistics_handler, remove_test_deps):
+            pack.status = PackStatus.FAILED_ENHANCING_PACK_ATTRIBUTES.value  # type: ignore[misc]
+            pack.cleanup()
+            continue
 
         task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
             index_folder_path,
@@ -1262,9 +1254,6 @@ def main():
             marketplace, id_set,
             is_override=override_all_packs
         )
-        logging.info(f"[TEST - prepare_release_notes] Does pack {pack.name} exists: "
-                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}\n"
-                     f"{pack._dependencies=}")
 
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name  # type: ignore[misc]
@@ -1276,7 +1265,7 @@ def main():
             continue
 
         if pack.is_modified:
-            if not pack.format_metadata(packs_dependencies_mapping, marketplace, remove_test_deps=remove_test_deps):
+            if not pack.format_metadata(remove_test_deps=remove_test_deps):
                 pack.status = PackStatus.FAILED_METADATA_PARSING.name  # type: ignore[misc]
                 pack.cleanup()
                 continue
@@ -1292,16 +1281,13 @@ def main():
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
                 pack.cleanup()
                 continue
-        logging.info(f"[TEST-{pack.is_modified =}] Does pack {pack.name} exists: "
-                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
 
         if not update_index_folder(index_folder_path=index_folder_path, pack=pack, pack_versions_to_keep=pack_versions_to_keep):
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
             pack.cleanup()
             continue
-        logging.info(f"[TEST - update_index_folder] Does pack {pack.name} exists: "
-                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
 
+        logging.info(f"Finished iterating over pack '{pack.name}'")
         if not pack.is_modified:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
@@ -1315,10 +1301,10 @@ def main():
 
     # override a locked core packs file (used for hot-fixes)
     if should_override_locked_corepacks_file(marketplace=marketplace):
-        logging.info('Using the corepacks_override.json file to update an existing corepacks file.')
+        logging.debug('Using the corepacks_override.json file to update an existing corepacks file.')
         override_locked_corepacks_file(build_number=build_number, artifacts_dir=os.path.dirname(packs_artifacts_path))
     else:
-        logging.info('Skipping overriding an existing corepacks file.')
+        logging.debug('Skipping overriding an existing corepacks file.')
 
     # upload server versions metadata to bucket
     upload_server_versions_metadata(os.path.dirname(packs_artifacts_path))
@@ -1348,17 +1334,16 @@ def main():
     markdown_images_dict = download_markdown_images_from_artifacts(
         markdown_images_data, storage_bucket=storage_bucket, storge_base_path=storage_base_path)
 
-    logging.debug(f'{markdown_images_dict=}')
     # get the lists of packs divided by their status
     successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(
-        packs_to_upload_list)
+        all_content_packs)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
         successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
-        images_data=get_images_data(packs_to_upload_list, markdown_images_dict=markdown_images_dict)
+        images_data=get_images_data([p for p in all_content_packs if p.is_modified], markdown_images_dict=markdown_images_dict)
     )
 
     # summary of packs status

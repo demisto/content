@@ -16,7 +16,7 @@ from Utils.github_workflow_scripts.utils import load_json, Checkout, timestamped
 print = timestamped_print
 SKIPPING_MESSAGE = "Skipping Auto-Bumping release notes."
 PACKS_DIR = "Packs"
-PACK_METADATA_FILE = Pack.USER_METADATA
+PACK_METADATA_FILE = Pack.PACK_METADATA
 RELEASE_NOTES_DIR = Pack.RELEASE_NOTES
 LAST_SUITABLE_PR_UPDATE_TIME_DAYS = 14
 t = Terminal()
