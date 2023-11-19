@@ -232,10 +232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 66eaa232-f160-4fc8-8788-163874940a58
+    taskid: af42cb76-d20d-4696-80f0-1a017a8b71d2
     type: regular
     task:
-      id: 66eaa232-f160-4fc8-8788-163874940a58
+      id: af42cb76-d20d-4696-80f0-1a017a8b71d2
       version: -1
       name: PAN-OS query logs
       description: The query logs in Panorama.
@@ -251,6 +251,14 @@ tasks:
         simple: threat
       query:
         simple: (user.src eq ${inputs.Username}) or (user.dst eq ${inputs.Username}) and (time_generated in last-24-hrs)
+      interval_in_seconds:
+        simple: "10"
+      number_of_logs:
+        simple: "100"
+      polling:
+        simple: "true"
+      timeout:
+        simple: "120"
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -596,10 +604,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 135dfff8-d76c-41c5-8a38-6891f2d98256
+    taskid: d1e1b232-6084-449c-81f5-827d7144d995
     type: playbook
     task:
-      id: 135dfff8-d76c-41c5-8a38-6891f2d98256
+      id: d1e1b232-6084-449c-81f5-827d7144d995
       version: -1
       name: Cortex XDR - Get entity alerts by MITRE tactics
       description: |-
@@ -645,6 +653,13 @@ tasks:
       entityID:
         complex:
           root: inputs.Username
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
       timeRange:
         simple: 2 hours
     separatecontext: true
@@ -1244,17 +1259,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 9605cc83-3071-40c2-82b7-db1775a8863f
+    taskid: aa79fc84-545d-4f11-8686-877d1193560a
     type: playbook
     task:
-      id: 9605cc83-3071-40c2-82b7-db1775a8863f
+      id: aa79fc84-545d-4f11-8686-877d1193560a
       version: -1
       name: Get entity alerts by MITRE tactics
+      description: |-
+        This playbook searches XDR alerts related to specific entities , on a given timeframe, based on MITRE tactics.
+        Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
       playbookName: Get entity alerts by MITRE tactics
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -1262,6 +1279,13 @@ tasks:
       EntityID:
         complex:
           root: inputs.Username
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
       EntityType:
         complex:
           root: inputs.XDRUsernameField
@@ -1290,9 +1314,9 @@ tasks:
       HuntReconnaissanceTechniques:
         simple: "True"
       RunAll:
-        simple: "true"
+        simple: "False"
       timeRange:
-        simple: 20 days
+        simple: 2 hours
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1401,7 +1425,8 @@ inputs:
   description: Whether to search for logs from Okta? Can be False or True.
   playbookInputQuery:
 - key: XDRUsernameField
-  value: {}
+  value:
+    simple: actor_effective_username
   required: false
   description: Cortex XDR User name Field.
   playbookInputQuery:

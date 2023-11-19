@@ -15,9 +15,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Okta - User Investigation
+* Cortex XDR - Get entity alerts by MITRE tactics
 * Get entity alerts by MITRE tactics
 * SIEM - Search for Failed logins
-* Cortex XDR - Get entity alerts by MITRE tactics
 
 ### Integrations
 
@@ -25,14 +25,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* Set
 * CountArraySize
 * MathUtil
-* Set
 
 ### Commands
 
-* pan-os-get-logs
 * pan-os-query-logs
+* pan-os-get-logs
 
 ## Playbook Inputs
 
@@ -50,7 +50,7 @@ This playbook does not use any integrations.
 | ThreatLogSearch | Whether to search for threat logs from PAN-OS? Can be False or True. | True | Optional |
 | XDRAlertSearch | Whether to search for Related alerts from XDR? Can be False or True. | True | Optional |
 | OktaSearch | Whether to search for logs from Okta? Can be False or True. | True | Optional |
-| XDRUsernameField | Cortex XDR User name Field. |  | Optional |
+| XDRUsernameField | Cortex XDR User name Field. | actor_effective_username | Optional |
 | QRadarSearchTime | The Search Time for the QRadar search query. for example:  Last 1 days | Last 1 days | Optional |
 | AzureSearchTime | The Search Time for the Azure Log Analytics search query. for example: ago\(1d\) | ago(1d) | Optional |
 | ASN | The ASN from which the user logged in. |  | Optional |
