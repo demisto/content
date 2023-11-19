@@ -205,7 +205,7 @@
 .build_parameters: &build_parameters
   - section_start "Build Parameters" --collapsed
   - echo "Environment Variables:"
-  - set | grep -E "^ARTIFACTS_FOLDER.*=|^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ARTIFACTS_FOLDER_INSTANCE=|^ARTIFACTS_FOLDER_SERVER_TYPE=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=" | sort
+  - set | grep -E "^ARTIFACTS_FOLDER.*=|^JIRA_.*=|^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_.*=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ARTIFACTS_FOLDER_INSTANCE=|^ARTIFACTS_FOLDER_SERVER_TYPE=|^ENV_RESULTS_PATH=|^LAST_UPLOAD_COMMIT=|^DEMISTO_SDK_LOG_FILE_SIZE=|^DEMISTO_SDK_LOG_FILE_COUNT=|^DEMISTO_SDK_LOG_FILE_PATH=|^DEMISTO_SDK_LOG_NO_COLORS=|^DEMISTO_SDK_LOG_NOTIFY_PATH=|^POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY=|^GIT_SHA1=" | sort
   - echo "Versions Installed:"
   - python --version
   - python3 --version
@@ -248,14 +248,8 @@
 
 .fetch-through-merge-base: &fetch-through-merge-base
   - section_start "Fetch Through Merge Base"
-  - DEEPEN_LENGTH=${DEEPEN_LENGTH:-$GIT_DEPTH}
-  - HEAD_REF=origin/master
-  - BASE_REF=0b5a3e38ff926fef3da402d99186d3dd3cc39651 # ${CI_COMMIT_SHA}
-  - |
-    while [ -z "$(git merge-base "$BASE_REF" "$HEAD_REF" 2>/dev/null)" ]; do
-      echo "Continuing fetch with a depth of $DEEPEN_LENGTH commits..."
-      git fetch -q --deepen="$DEEPEN_LENGTH" origin
-    done
+  - ./Tests/scripts/fetch_through_merge_base.sh "$CI_COMMIT_SHA" "origin/master"
+  - ./Tests/scripts/fetch_through_merge_base.sh "$CI_COMMIT_SHA" "$LAST_UPLOAD_COMMIT"
   - section_end "Fetch Through Merge Base Completed"
 
 .default-before-script:
@@ -265,13 +259,13 @@
     - *setup-artifactory
     - *stop_contrib_external_build
     - *create_artifacts_and_server_type_instance_folders
+    - *get_last_upload_commit
     - *fetch-through-merge-base
     - *clone_and_export_variables
     - *check_build_files_are_up_to_date
     - *install_node_modules
     - *install_venv
     - *get_contribution_pack
-    - *get_last_upload_commit
     - *install_ssh_keys
     - *neo4j-setup
     - *build_parameters
