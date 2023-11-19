@@ -151,6 +151,7 @@ def update_index_folder(index_folder_path: str, pack: Pack, is_private_pack: boo
             for d in os.scandir(index_pack_path):
                 if (metadata_version := re.findall(METADATA_FILE_REGEX_GET_VERSION, d.name)) \
                         and pack_versions_to_keep and metadata_version[0] not in pack_versions_to_keep:
+                    logging.debug(f"Removing metadata path for pack '{pack.name}': {d.path}")
                     os.remove(d.path)
         else:
             Path(index_pack_path).mkdir()
@@ -1194,7 +1195,7 @@ def main():
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path,
                                                                                  storage_base_path)
-
+    logging.info(f"[TEST] Does index exists: {os.path.exists(os.path.join(index_folder_path))}")
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
@@ -1213,18 +1214,23 @@ def main():
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_ids_to_upload, storage_base_path
     )
+    logging.info(f"[TEST-handle_private_content] Does index exists: {os.path.exists(os.path.join(index_folder_path))}")
 
     delete_from_index_packs_not_in_marketplace(index_folder_path, all_content_packs, private_packs)
+    logging.info(f"[TEST-delete_from_index_packs_not_in_marketplace] Does index exists: "
+                 f"{os.path.exists(os.path.join(index_folder_path))}")
 
     if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
+    logging.info(f"[TEST-check_if_index_is_updated] Does index exists: {os.path.exists(os.path.join(index_folder_path))}")
 
     # initiate the statistics handler for marketplace packs
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
+    logging.info(f"[TEST-clean_non_existing_packs] Does index exists: {os.path.exists(os.path.join(index_folder_path))}")
 
     all_packs_dict = {p.name: p for p in all_content_packs}  # temporary var to replace packs_for_current_marketplace_dict
 
@@ -1235,13 +1241,17 @@ def main():
     # changelog, etc.
     pack: Pack
     for pack in all_content_packs:
-
+        logging.info(f"[TEST] Does pack {pack.name} exists: {os.path.exists(os.path.join(index_folder_path, pack.name))}")
         if not pack.load_user_metadata():
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value  # type: ignore[misc]
             pack.cleanup()
             continue
+        logging.info(f"[TEST - load_user_metadata] Does pack {pack.name} exists: "
+                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
 
         pack.enhance_pack_attributes(index_folder_path, statistics_handler, remove_test_deps)
+        logging.info(f"[TEST - enhance_pack_attributes] Does pack {pack.name} exists: "
+                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
 
         task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
             index_folder_path,
@@ -1250,6 +1260,8 @@ def main():
             marketplace, id_set,
             is_override=override_all_packs
         )
+        logging.info(f"[TEST - prepare_release_notes] Does pack {pack.name} exists: "
+                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
 
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name  # type: ignore[misc]
@@ -1278,11 +1290,15 @@ def main():
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
                 pack.cleanup()
                 continue
+        logging.info(f"[TEST-{pack.is_modified =}] Does pack {pack.name} exists: "
+                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
 
         if not update_index_folder(index_folder_path=index_folder_path, pack=pack, pack_versions_to_keep=pack_versions_to_keep):
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name  # type: ignore[misc]
             pack.cleanup()
             continue
+        logging.info(f"[TEST - update_index_folder] Does pack {pack.name} exists: "
+                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
         if not pack.status:
