@@ -1,0 +1,772 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Recorded Future Feed Test
+  version: -1
+configuration:
+- display: Fetch indicators
+  name: feed
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: feedInstanceReputationNotSet
+  type: 18
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
+- defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+- display: ''
+  name: feedExpirationPolicy
+  defaultvalue: suddenDeath
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+- name: feedExpirationInterval
+  defaultvalue: '20160'
+  type: 1
+  display: ''
+  required: false
+- defaultvalue: '60'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: Type of the indicator in the feed.
+  display: Indicator Type
+  name: indicator_type
+  options:
+  - domain
+  - ip
+  - hash
+  - url
+  - CVE(vulnerability)
+  required: true
+  type: 15
+- display: API token
+  name: api_token
+  type: 4
+  hidden: true
+  required: false
+- displaypassword: API Token
+  name: credentials_api_token
+  hiddenusername: true
+  type: 9
+  required: false
+- defaultvalue: connectApi
+  display: Services
+  name: services
+  options:
+  - connectApi
+  - fusion
+  required: true
+  type: 16
+- additionalinfo: "A comma-separated list of risk rules which limits the indicators list to a specific risk rule.\nFor example: 'dhsAis,phishingUrl'.\nIf more than one risk rule is set, the indicators fetching and the 'rf-feed-get-indicators' command will be executed for each risk rule.\nTo see available risk rules run the rf-feed-get-risk-rules command.\nThis parameter will only be used for the 'connectApi' service.\nUsing the 'large' risk rule is not recommended."
+  display: Risk Rule
+  name: risk_rule
+  type: 0
+  required: false
+- additionalinfo: "Load a custom risklist from a specified Recorded Future file path.\nIf no file path is specified, the default risklist file is used. This parameter\nwill only be used for the 'fusion' service."
+  display: Fusion File Path
+  name: fusion_file_path
+  type: 0
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  required: false
+- additionalinfo: Time in seconds before HTTP requests timeout.
+  defaultvalue: '20'
+  display: Request Timeout
+  name: polling_timeout
+  required: true
+  type: 0
+- additionalinfo: The minimum score from the feed in order to to determine whether the indicator is malicious. Default is "65". For more information about Recorded Future scoring go to integration details.
+  defaultvalue: '65'
+  display: Malicious Threshold
+  name: threshold
+  type: 0
+  required: false
+- additionalinfo: If selected, will be used to filter out the ingested indicators, and only indicators with equivalent and higher risk score will be ingested into XSOAR.
+  defaultvalue: '0'
+  display: IOC Risk Score Threshold
+  name: risk_score_threshold
+  type: 0
+  required: false
+description: Ingests indicators from Recorded Future feeds into Demisto.
+display: Recorded Future RiskList Feed Test
+name: Recorded Future Feed Test
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '10'
+      description: The maximum number of results to return. The default value is 10.
+      name: limit
+      required: true
+    - auto: PREDEFINED
+      description: The indicator type. Can be "ip", "domain", "hash", "vulnerability" or "url".
+      name: indicator_type
+      predefined:
+      - ip
+      - domain
+      - hash
+      - url
+      - vulnerability
+    description: Gets indicators from the feed.
+    name: rf-feed-get-indicators
+  - arguments:
+    - auto: PREDEFINED
+      description: The indicator type.
+      name: indicator_type
+      predefined:
+      - ip
+      - domain
+      - hash
+      - url
+      - vulnerability
+      required: true
+    description: "Get a list of the risk rules available for an indicator,\nTo limit the 'connectApi' service indicators list."
+    name: rf-feed-get-risk-rules
+    outputs:
+    - contextPath: RecordedFutureFeed.RiskRule.Name
+      description: The risk rule name.
+      type: String
+    - contextPath: RecordedFutureFeed.RiskRule.Description
+      description: The risk rule description.
+      type: String
+    - contextPath: RecordedFutureFeed.RiskRule.Criticality
+      description: The risk rule criticality.
+      type: String
+  dockerimage: demisto/python3:3.10.13.80593
+  feed: true
+  runonce: false
+  script: >
+    register_module_line('Recorded Future Feed', 'start', __line__())
+
+    ### pack version: 1.0.31
+
+    import gzip
+
+    import zlib
+
+    import json
+
+
+
+    # IMPORTS
+
+    import urllib3
+
+    import csv
+
+    import requests
+
+    import traceback
+
+    import urllib.parse
+
+    from typing import Tuple, Optional, List, Dict
+
+
+    # Disable insecure warnings
+
+    urllib3.disable_warnings()
+
+    BATCH_SIZE = 2000
+
+    CHUNK_SIZE = 1024 * 1024 * 10  # 10 MB
+
+
+    INTEGRATION_NAME = 'Recorded Future'
+
+
+    # taken from recorded future docs
+
+    RF_CRITICALITY_LABELS = {
+        'Very_Malicious': 90,
+        'Malicious': 65,
+        'Suspicious': 25,
+        'Unusual': 5
+    }
+
+
+    RF_INDICATOR_TYPES = {
+        'ip': 'ip',
+        'domain': 'domain',
+        'url': 'url',
+        'CVE(vulnerability)': 'vulnerability',
+        'hash': 'hash'
+    }
+
+
+
+    class Client(BaseClient):
+        """
+        Client will implement the service API, and should not contain any Demisto logic.
+        Should only do requests and return data.
+        """
+        SOURCE_NAME = 'recordedfuture.masterrisklist'
+        BASE_URL = 'https://api.recordedfuture.com/v2/'
+        PARAMS = {'output_format': 'csv/splunk',
+                  'download': 1}  # for faster download
+        headers = {'X-RF-User-Agent': 'Demisto',
+                   'content-type': 'application/json'}
+
+        def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
+                     fusion_file_path: str = None, insecure: bool = False,
+                     polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, risk_score_threshold: int = 0,
+                     tags: Optional[list] = None, tlp_color: Optional[str] = None):
+            """
+            Attributes:
+                 indicator_type: string, the indicator type of the feed.
+                 api_token: string, the api token for RecordedFuture.
+                 services: list, the services from RecordedFuture.
+                 risk_rule: string, an optional argument to the 'ConnectApi' service request.
+                 fusion_file_path: string, an optional argument to the 'Fusion' service request.
+                 insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
+                 polling_timeout: timeout of the polling request in seconds. Default: 20
+                 proxy: Sets whether use proxy when sending requests
+                 threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
+                 risk_score_threshold: The minimum score to filter out the ingested indicators.
+                 tags: A list of tags to add to indicators
+                 :param tlp_color: Traffic Light Protocol color
+            """
+            if tags is None:
+                tags = []
+            try:
+                self.polling_timeout = int(polling_timeout)
+            except (ValueError, TypeError):
+                return_error('Please provide an integer value for "Request Timeout"')
+
+            self.risk_rule = argToList(risk_rule)
+            self.fusion_file_path = fusion_file_path if fusion_file_path != "" else None
+            self.api_token = self.headers['X-RFToken'] = api_token
+            self.services = services
+            self.indicator_type = indicator_type
+            self.threshold = int(threshold) if threshold else threshold
+            self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else risk_score_threshold
+            self.tags = tags
+            self.tlp_color = tlp_color
+            super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
+
+        def _build_request(self, service, indicator_type, risk_rule: Optional[str] = None) -> requests.PreparedRequest:
+            """Builds the request for the Recorded Future feed.
+            Args:
+                service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
+                indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
+                risk_rule(str): A risk rule that limits the fetched indicators
+
+            Returns:
+                requests.PreparedRequest: The prepared request which will be sent to the server
+            """
+            if service == 'connectApi':
+                if risk_rule:
+                    url = self.BASE_URL + indicator_type + '/risklist?list=' + risk_rule
+                else:
+                    url = self.BASE_URL + indicator_type + '/risklist'
+
+                params = self.PARAMS
+                params['gzip'] = True
+
+                response = requests.Request(
+                    'GET',
+                    url,
+                    headers=self.headers,
+                    params=params
+                )
+
+            elif service == 'fusion':
+                url = self.BASE_URL + 'fusion/files/?path='
+                if self.fusion_file_path is None:
+                    fusion_path = '/public/risklists/default_' + indicator_type + '_risklist.csv'
+                else:
+                    fusion_path = self.fusion_file_path
+
+                fusion_path = urllib.parse.quote_plus(fusion_path)
+                response = requests.Request('GET',
+                                            url + fusion_path,
+                                            headers=self.headers,
+                                            params=self.PARAMS)
+            else:
+                raise DemistoException(f'Service unknown: {service}')
+            return response.prepare()
+
+        def build_iterator(self, service, indicator_type, risk_rule: Optional[str] = None):
+            """Retrieves all entries from the feed.
+            Args:
+                service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
+                indicator_type (str): The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
+                risk_rule (str): A risk rule that limits the fetched indicators
+
+            Returns:
+                list of feed dictionaries.
+            """
+            _session = requests.Session()
+            prepared_request = self._build_request(service, indicator_type, risk_rule)
+            # this is to honour the proxy environment variables
+            rkwargs = _session.merge_environment_settings(
+                prepared_request.url,
+                {}, None, None, None  # defaults
+            )
+            rkwargs['stream'] = True
+            rkwargs['verify'] = self._verify
+            rkwargs['timeout'] = self.polling_timeout  # type:ignore[typeddict-item]
+
+            try:
+                response = _session.send(prepared_request, **rkwargs)
+            except requests.ConnectionError as e:
+                raise requests.ConnectionError(f'Failed to establish a new connection: {str(e)}')
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError:
+                if "Insufficient credits" in response.text:
+                    return_error("'Insufficient Credits' error was returned from Recorded Future. \n"
+                                 "Try increasing the integration's fetch interval in order to decrease the amount of API"
+                                 " requests made to Recorded Future. ")
+                else:
+                    return_error(
+                        '{} - exception in request: {} {}'
+                        .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
+
+            if service == 'connectApi':
+                demisto.debug("Will now stream the response's compressed data")
+                decompressor = zlib.decompressobj(zlib.MAX_WBITS + 16)
+                with open("response.txt", "w") as f:
+                    for chunk in response.iter_content(CHUNK_SIZE):
+                        if chunk:
+                            decompressed_chunk = decompressor.decompress(chunk)
+                            f.write(decompressed_chunk.decode('utf-8'))
+            else:
+                demisto.debug("Will now stream the response's data")
+                with open("response.txt", "w") as f:
+                    for chunk in response.iter_content(CHUNK_SIZE, decode_unicode=True):
+                        if chunk:
+                            f.write(chunk)
+            demisto.info('done build_iterator')
+
+        def get_batches_from_file(self, limit):
+            demisto.info('reading from file')
+            # we do this try to make sure the file gets deleted at the end
+            try:
+                file_stream = open("response.txt", 'rt')
+                columns = file_stream.readline()  # get the headers from the csv file.
+                columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
+
+                batch_size = limit if limit else BATCH_SIZE
+                while True:
+
+                    feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
+
+                    if not feed_batch:
+                        file_stream.close()
+                        return
+                    demisto.info(f'yielding, {batch_size=}')
+                    yield csv.DictReader(feed_batch, fieldnames=columns)
+            finally:
+                try:
+                    os.remove("response.txt")
+                    demisto.info('file was deleted')
+                except OSError:
+                    demisto.info('file could not be deleted')
+
+        def calculate_indicator_score(self, risk_from_feed):
+            """Calculates the Dbot score of an indicator based on its Risk value from the feed.
+            Args:
+                risk_from_feed (str): The indicator's risk value from the feed
+            Returns:
+                int. The indicator's Dbot score
+            """
+            dbot_score = 0
+            risk_from_feed = int(risk_from_feed)
+            if risk_from_feed >= self.threshold or risk_from_feed >= 65:
+                dbot_score = 3
+            elif risk_from_feed >= 5:
+                dbot_score = 2
+
+            return dbot_score
+
+        def check_indicator_risk_score(self, risk_score):
+            """Checks if the indicator risk score is above risk_score_threshold
+            Args:
+                risk_score (str): The indicator's risk score from the feed
+            Returns:
+                True if the indicator risk score is above risk_score_threshold, False otherwise.
+            """
+            return int(risk_score) >= self.risk_score_threshold
+
+        def run_parameters_validations(self):
+            """Checks validation of the risk_rule and fusion_file_path parameters
+            Returns:
+                None in success, Error otherwise
+            """
+            if self.risk_rule:
+                if 'connectApi' not in self.services:
+                    return_error("You entered a risk rule but the 'connectApi' service is not chosen. "
+                                 "Add the 'connectApi' service to the list or remove the risk rule.")
+                else:
+                    for risk_rule in self.risk_rule:
+                        if not is_valid_risk_rule(self, risk_rule):
+                            return_error(f"The given risk rule: {risk_rule} does not exist,"
+                                         f"please make sure you entered it correctly. \n"
+                                         f"To see all available risk rules run the '!rf-get-risk-rules' command.")
+
+            if self.fusion_file_path is not None:
+                if 'fusion' not in self.services:
+                    return_error("You entered a fusion file path but the 'fusion' service is not chosen. "
+                                 "Add the 'fusion' service to the list or remove the fusion file path.")
+
+        def get_risk_rules(self, indicator_type: Optional[str] = None) -> dict:
+            if indicator_type is None:
+                indicator_type = self.indicator_type
+            return self._http_request(
+                method='GET',
+                url_suffix=indicator_type + '/riskrules',
+                params=self.PARAMS,
+                headers=self.headers
+            )
+
+
+    def is_valid_risk_rule(client: Client, risk_rule):
+        """Checks if the risk rule is valid by requesting from RF a list of all available rules.
+        Returns:
+            bool. Whether the risk rule is valid or not
+        """
+        risk_rule_response: dict = client.get_risk_rules()
+        risk_rules_list = [single_risk_rule['name'] for single_risk_rule in risk_rule_response['data']['results']]
+        if risk_rule in risk_rules_list:
+            return True
+        else:
+            return False
+
+
+    def test_module(client: Client, *args) -> Tuple[str, dict, dict]:
+        """Builds the iterator to check that the feed is accessible.
+        Args:
+            client(Client): Recorded Future Feed client.
+            args(dict): demisto.args()
+        Returns:
+            'ok' if test passed, anything else will fail the test.
+        """
+
+        client.run_parameters_validations()
+
+        for service in client.services:
+            demisto.debug(f'iterating over {service=}')
+            # if there are risk rules, select the first one for test
+            risk_rule = client.risk_rule[0] if client.risk_rule else None
+            client.build_iterator(service, client.indicator_type, risk_rule)
+            client.get_batches_from_file(limit=1)
+        return 'ok', {}, {}
+
+
+    def get_indicator_type(indicator_type, item):
+        """Returns the indicator type in Demisto
+        Args:
+            indicator_type (str): ip, url, domain or hash
+            item (dict): the indicator row from the csv response
+        Returns:
+            str. The indicator type per the indicators defined in Demisto
+        """
+
+        if indicator_type == 'ip':
+            return ip_to_indicator_type(item.get('Name'))
+        elif indicator_type == 'hash':
+            return FeedIndicatorType.File
+        elif indicator_type == 'domain':
+            # If * is in the domain it is of type DomainGlob
+            if '*' in item.get('Name', ''):
+                return FeedIndicatorType.DomainGlob
+            return FeedIndicatorType.Domain
+        elif indicator_type == 'url':
+            return FeedIndicatorType.URL
+        elif indicator_type == 'vulnerability':
+            return FeedIndicatorType.CVE
+
+
+    def ip_to_indicator_type(ip):
+        """Returns the indicator type of the input IP.
+        :type ip: ``str``
+        :param ip: IP address to get it's indicator type.
+        :rtype: ``str``
+        :return:: Indicator type from FeedIndicatorType, or None if invalid IP address.
+        """
+        ip = str(ip)
+        if re.match(ipv4cidrRegex, ip):
+            return FeedIndicatorType.CIDR
+
+        elif re.match(ipv4Regex, ip):
+            return FeedIndicatorType.IP
+
+        elif re.match(ipv6cidrRegex, ip):
+            return FeedIndicatorType.IPv6CIDR
+
+        elif re.match(ipv6Regex, ip):
+            return FeedIndicatorType.IPv6
+
+        else:
+            return None
+
+
+    def calculate_recorded_future_criticality_label(risk_from_feed):
+        risk_from_feed = int(risk_from_feed)
+        if risk_from_feed >= RF_CRITICALITY_LABELS['Very_Malicious']:
+            return 'Very Malicious'
+        elif risk_from_feed >= RF_CRITICALITY_LABELS['Malicious']:
+            return 'Malicious'
+        elif risk_from_feed >= RF_CRITICALITY_LABELS['Suspicious']:
+            return 'Suspicious'
+        elif risk_from_feed >= RF_CRITICALITY_LABELS['Unusual']:
+            return 'Unusual'
+        else:
+            return 'No current evidence of risk'
+
+
+    def format_risk_string(risk_string):
+        """Formats the risk string returned from the feed
+        Args:
+            risk_string(str): The risk string from the feed, in 'X/X' format
+        Returns:
+            str. The formatted string
+        """
+        splitted_risk_string = risk_string.split('/')
+        return f'{splitted_risk_string[0]} of {splitted_risk_string[1]} Risk Rules Triggered'
+
+
+    def fetch_and_create_indicators(client, risk_rule: Optional[str] = None):
+        """Fetches indicators from the Recorded Future feeds,
+        and from each fetched indicator creates an indicator in XSOAR.
+
+        Args:
+            client(Client): Recorded Future Feed client.
+            risk_rule(str): A risk rule that limits the fetched indicators
+
+        Returns: None.
+
+        """
+        for indicators in fetch_indicators_command(client, client.indicator_type, risk_rule):
+            demisto.createIndicators(indicators)
+
+
+    def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = None, limit: Optional[int] = None):
+        """Fetches indicators from the Recorded Future feeds.
+        Args:
+            client(Client): Recorded Future Feed client
+            indicator_type(str): The indicator type
+            risk_rule(str): A risk rule that limits the fetched indicators
+            limit(int): Optional. The number of the indicators to fetch
+        Returns:
+            list. List of indicators from the feed
+        """
+        indicators_value_set: Set[str] = set()
+        for service in client.services:
+            demisto.debug(f'iterating over {service=}')
+            client.build_iterator(service, indicator_type, risk_rule)
+            feed_batches = client.get_batches_from_file(limit)
+            for feed_dicts in feed_batches:
+                indicators = []
+                for item in feed_dicts:
+                    raw_json = dict(item)
+                    raw_json['value'] = value = item.get('Name')
+                    if value in indicators_value_set:
+                        continue
+                    indicators_value_set.add(value)
+                    raw_json['type'] = get_indicator_type(indicator_type, item)
+                    score = 0
+                    risk = item.get('Risk')
+                    if isinstance(risk, str) and risk.isdigit():
+                        raw_json['score'] = score = client.calculate_indicator_score(risk)
+                        raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
+                        # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
+                        if not client.check_indicator_risk_score(risk):
+                            continue
+                    lower_case_evidence_details_keys = []
+                    evidence_details_value = item.get('EvidenceDetails', '{}')
+                    if evidence_details_value:
+                        evidence_details = json.loads(evidence_details_value).get('EvidenceDetails', [])
+                        if evidence_details:
+                            raw_json['EvidenceDetails'] = evidence_details
+                            for rule in evidence_details:
+                                rule = dict((key.lower(), value) for key, value in rule.items())
+                                lower_case_evidence_details_keys.append(rule)
+                    risk_string = item.get('RiskString')
+                    if isinstance(risk_string, str):
+                        raw_json['RiskString'] = format_risk_string(risk_string)
+                    indicator_obj = {
+                        'value': value,
+                        'type': raw_json['type'],
+                        'rawJSON': raw_json,
+                        'fields': {
+                            'recordedfutureevidencedetails': lower_case_evidence_details_keys,
+                            'tags': client.tags,
+                        },
+                        'score': score
+                    }
+                    if client.tlp_color:
+                        indicator_obj['fields']['trafficlightprotocol'] = client.tlp_color
+
+                    indicators.append(indicator_obj)
+
+                yield indicators
+
+
+    def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict]]:  # pragma: no cover
+        """Retrieves indicators from the Recorded Future feed to the war-room.
+            Args:
+                client(Client): Recorded Future Feed client.
+                args(dict): demisto.args()
+            Returns:
+                str, dict, list. the markdown table, context JSON and list of indicators
+            """
+        indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
+        limit = int(args.get('limit'))
+
+        human_readable: str = ''
+        entry_results: List[Dict]
+        indicators_list: List[Dict]
+
+        if client.risk_rule:
+            entry_results = []
+            for risk_rule in client.risk_rule:
+                indicators_list = []
+                for indicators in fetch_indicators_command(client, indicator_type, risk_rule, limit):
+                    indicators_list.extend(indicators)
+
+                    if limit and len(indicators_list) >= limit:
+                        break
+
+                entry_result = camelize(indicators_list)
+                entry_results.extend(entry_result)
+                hr = tableToMarkdown(f'Indicators from RecordedFuture Feed for {risk_rule} risk rule:', entry_result,
+                                     headers=['Value', 'Type'], removeNull=True)
+                human_readable += f'\n{hr}'
+
+        else:  # there are no risk rules
+            indicators_list = []
+            risk_rule = None
+            for indicators in fetch_indicators_command(client, indicator_type, risk_rule, limit):
+                indicators_list.extend(indicators)
+
+                if limit and len(indicators_list) >= limit:
+                    break
+
+            entry_results = camelize(indicators_list)
+            human_readable = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_results,
+                                             headers=['Value', 'Type'], removeNull=True)
+
+        return human_readable, {}, entry_results
+
+
+    def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
+        """Retrieves all risk rules available from Recorded Future to the war-room.
+            Args:
+                client(Client): Recorded Future Feed client.
+                args(dict): demisto.args()
+            Returns:
+                str, dict, list. the markdown table, context JSON and list of risk rules
+            """
+        indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
+        result = client.get_risk_rules(indicator_type)
+        entry_result = []
+        for entry in result['data']['results']:
+            entry_result.append({
+                'Name': entry.get('name'),
+                'Description': entry.get('description'),
+                'Criticality': entry.get('criticalityLabel')
+            })
+        headers = ['Name', 'Description', 'Criticality']
+        hr = tableToMarkdown(f'Available risk rules for {indicator_type}:', entry_result, headers)
+        return hr, {'RecordedFutureFeed.RiskRule(val.Name == obj.Name)': entry_result}, result
+
+
+    def main():  # pragma: no cover
+        params = demisto.params()
+        api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
+        if not api_token:
+            raise DemistoException('API Token must be provided.')
+        client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),
+                        params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
+                        params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
+                        params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'))
+        command = demisto.command()
+        demisto.info('Command being called is {}'.format(command))
+        # Switch case
+        commands = {
+            'test-module': test_module,
+            'rf-feed-get-indicators': get_indicators_command,
+            'rf-feed-get-risk-rules': get_risk_rules_command
+        }
+        try:
+            if demisto.command() == 'fetch-indicators':
+                if client.risk_rule:
+                    for risk_rule in client.risk_rule:
+                        fetch_and_create_indicators(client, risk_rule)
+                else:  # there are no risk rules
+                    fetch_and_create_indicators(client)
+
+            else:
+                readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
+                return_outputs(readable_output, outputs, raw_response)
+        except Exception as e:
+            err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}] \n Traceback: {traceback.format_exc()}'
+            return_error(err_msg)
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('Recorded Future Feed', 'end', __line__())
+  subtype: python3
+  type: python
+  nativeimage:
+  - '8.3'
+  - '8.4'
+tests:
+- RecordedFutureFeed - Test
+fromversion: 5.5.0
+image: data:image/png;base64,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
+detaileddescription: "## Notes\n1. It is highly recommended to not create multiple instances of the same indicator type, even when fetching both from fusion and connectApi. Creating multiple instances with same indicator type will lead to duplicate indicators being fetched which can cause performance issues for the server.\n2. Recommended interval for fetching indicators according to Recorded Future documentation:\n\n| **Indicator Type** | **Recommended Fetch Interval**\n| --- | --- |\n| IP | 1 Hour. |\n| Domain | 2 Hours. |\n| Hash | 1 Day. |\n| URL | 2 Hours. |\n| Vulnerability | 2 Hours. |\n3. Per instance configuration, it is recommended to use either `connectApi` or `fusion` as a service for chosen indicator type, and not both, as most of the data between both services is duplicated.\n## Recorded Future Feed\nThis integration downloads from Recorded Future a list of IP addresses, domains, URLs, CVEs or file hashes with known risk associations.\nThe risk list includes risk scores and supporting evidence details.\n- The 'Connect Api' feed can be configured to load a specific risk list by specifying a risk rule.\nIf no risk rule is specified, Recorded Future’s default risk list is used, which only contains indicators with score above 65.\nTo find the available risk rules for every indicator you can use the ‘rf-get-risk-rules’ command.\n- The 'Fusion' feed be configured to load a custom risk list from a user-specified Recorded Future file path.\nIf no file path is specified, the default risk list file is used.\n\nRecorded Future's indicators scoring:\n- Above 90 - Very Malicious\n- Between 65 to 90 - Malicious\n- Between 25 to 90 - Suspicious\n- Between 5 to 25 - Unusual\n\nTo access this resource, a valid Recorded Future API token is required.\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/recorded-future-feed)"

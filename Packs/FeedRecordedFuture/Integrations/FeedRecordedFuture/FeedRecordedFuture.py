@@ -1,4 +1,3 @@
-import gzip
 import zlib
 import json
 
