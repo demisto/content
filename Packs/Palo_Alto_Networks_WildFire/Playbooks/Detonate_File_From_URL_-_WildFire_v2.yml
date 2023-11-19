@@ -116,7 +116,7 @@ tasks:
       id: db6bc911-dfe3-498b-8232-7ffe22c54d8b
       version: -1
       name: Is WildFire sandbox enabled?
-      description: Check if integration instance is enabled
+      description: Check if the integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
