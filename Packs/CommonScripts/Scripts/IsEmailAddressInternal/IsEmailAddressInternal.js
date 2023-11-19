@@ -30,7 +30,7 @@ function main() {
 
         if (parts.length > 1) {
             const domain = parts[1].toLowerCase();
-            if (domains.includes(domain) || (includeSubdomains && new RegExp(`^(.*\\.)?(${domains.map(d => escapeRegex(d)).join('|')})`).test(domain))) {
+            if (domains.indexOf(domain) !== -1 || (includeSubdomains && new RegExp(`^(.*\\.)?(${domains.map(d => escapeRegex(d)).join('|')})`).test(domain))) {
                 inDomain = 'yes';
                 networkType = 'Internal';
             } else {
