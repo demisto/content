@@ -19,7 +19,8 @@ from Tests.scripts.common import calculate_results_table, get_all_failed_results
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
-    jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, jira_ticket_to_json_data
+    jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type, jira_ticket_to_json_data, \
+    jira_file_link
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
     TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS, \
     write_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -53,7 +54,7 @@ def generate_description(playbook_id: str, build_number: str, junit_file_name: s
     msg = "failed" if failed else "succeeded"
     description = f"""
         *{playbook_id}* {msg} in {build_markdown_link}
-        Test Results file: {junit_file_name}
+        Test Results file: {jira_file_link(junit_file_name)}
 
         {table}
         """

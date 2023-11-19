@@ -13,7 +13,7 @@ from tabulate import tabulate
 from Tests.scripts.common import get_properties_for_test_suite
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query_with_summary, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
-    generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data
+    generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data, jira_file_link
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
@@ -95,7 +95,7 @@ def generate_description_for_test_modeling_rule(ci_pipeline_id: str,
     ], tablefmt="jira", headers=["Tests", "Result"])
     description = f"""
         *{properties['pack_id']}* - *{properties['file_name']}* failed in {build_markdown_link}
-        Test Results file: {junit_file_name}
+        Test Results file: {jira_file_link(junit_file_name)}
 
         {table}
         """
