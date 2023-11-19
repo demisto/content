@@ -246,6 +246,21 @@
   - |
   - section_end "Checkout upload commit content nightly"
 
+.fetch-through-merge-base: &fetch-through-merge-base
+  - section_start "Fetch Through Merge Base"
+  - DEEPEN_LENGTH=${DEEPEN_LENGTH:-$GIT_DEPTH}
+  - HEAD_REF=origin/master
+  - BASE_REF=${CI_COMMIT_SHA}
+  - |
+    if [ "${CI_COMMIT_BRANCH}" != "master" ]; then
+      while [ -z "$(git merge-base "$BASE_REF" "$HEAD_REF" 2>/dev/null)" ]; do
+        echo "Continuing fetch with a depth of $DEEPEN_LENGTH commits..."
+        git fetch -q --deepen="$DEEPEN_LENGTH" origin
+      done
+    else
+      echo "Skipping fetch-through-merge-base because the current branch is master."
+    fi
+  - section_end "Fetch Through Merge Base Completed"
 
 .default-before-script:
   before_script:
@@ -254,6 +269,7 @@
     - *setup-artifactory
     - *stop_contrib_external_build
     - *create_artifacts_and_server_type_instance_folders
+    - *fetch-through-merge-base
     - *clone_and_export_variables
     - *check_build_files_are_up_to_date
     - *install_node_modules
