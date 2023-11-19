@@ -38,7 +38,7 @@ function whereFieldEquals() {
     }
 
     if (toBoolean(args.stringify || 'true')) {
-        return JSON.stringify(foundMatches, null, 2);
+        return JSON.stringify(foundMatches);
     } else {
         return foundMatches;
     }
