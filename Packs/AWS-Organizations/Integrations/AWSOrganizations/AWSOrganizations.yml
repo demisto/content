@@ -490,7 +490,7 @@ script:
   - name: aws-org-target-policy-list
     arguments:
     - auto: PREDEFINED
-      description: 
+      description: The type of policy to include in the returned list.
       name: policy_type
       predefined:
       - Service Control Policy
@@ -498,19 +498,15 @@ script:
       - Backup Policy
       - AI Services Opt Out Policy
       required: true
-    - description: "The unique identifier (ID) of the root, organizational unit, or        \ account
-                        whose policies you want to list.
-        Add description        \ that the user can get
-                        this value by running the commands        \ “root-list” /
-                        “organization-unit-list”        \ / “root-list”"
+    - description: The unique identifier (ID) of the root, organizational unit, or account whose policies are to be listed.
       name: target_id
       required: true
-    - description: The number of accounts to return.
+    - description: The number of policies to return.
       name: limit
       defaultValue: '50'
-    - description: The number of accounts to return per page. The maximum is 1000.
+    - description: The number of policies to return per page. The maximum is 1000.
       name: page_size
-    - description: The token denoting the next page of accounts, as given by the response of the previous run of this command under the context key "AWS.Organizations.AccountNextToken".
+    - description: The token denoting the next page of policies, as given by the response of the previous run of this command under the context key "AWS.Organizations.PolicyNextToken".
       name: next_token
     - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
@@ -518,12 +514,32 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: 
-    outputs: []
+    description: Lists the policies that are directly attached to the specified target root, organizational unit (OU), or account. 
+    outputs:
+    - contextPath: AWS.Organizations.TargetPolicy.Id
+      description: The unique identifier (ID) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.Arn
+      description: The Amazon Resource Name (ARN) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.Name
+      description: The friendly name of the policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.Description
+      description: The description of the policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.Type
+      description: The type of policy.
+      type: String
+    - contextPath: AWS.Organizations.TargetPolicy.AwsManaged
+      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, OUs, or accounts, but cannot be edited.
+      type: Boolean
+    - contextPath: AWS.Organizations.TargetPolicyNextToken
+      description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
+      type: String
   - name: aws-org-policy-get
     arguments:
-    - description: "Add description that the user can get this value by running the        \ command
-                        “policy-list”"
+    - description: The unique identifier (ID) of the policy that you want details about. This value can be retrieved by running the command "aws-org-policy-list".
       name: policy_id
       required: true
     - description: The Amazon Resource Name (ARN) of the role to assume.
@@ -533,25 +549,39 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     description: 
-    outputs: []
+    outputs:
+    - contextPath: AWS.Organizations.Policy.Id
+      description: The unique identifier (ID) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Arn
+      description: The Amazon Resource Name (ARN) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Name
+      description: The friendly name of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Description
+      description: The description of the policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.Type
+      description: The type of policy.
+      type: String
+    - contextPath: AWS.Organizations.Policy.AwsManaged
+      description: Indicates whether the specified policy is an Amazon Web Services managed policy. If true, the policy can be attached to roots, OUs, or accounts, but cannot be edited.
+      type: Boolean
   - name: aws-org-policy-delete
     arguments:
-    - description: "Add description that the user can get this value by running the        \ command
-                        “policy-list”"
+    - description: The unique identifier (ID) of the policy that you want to delete. This value can be retrieved by running the command "aws-org-policy-list".
       name: policy_id
       required: true
-    description: 'Note: add description that: Before you perform this operation, you must first detach the policy from all organizational units (OUs), roots, and accounts.'
+    # TODO check if role should be added
+    description: Deletes the specified policy from the organization. Before performing this operation, the policy must be detached from all organizational units (OUs), roots, and accounts.'
     outputs: []
   - name: aws-org-policy-attach
     arguments:
-    - description: "Add description that the user can get this value by running the        \ command
-                        “policy-list”"
+    - description: The unique identifier (ID) of the policy to attach to the target. This value can be retrieved by running the command "aws-org-policy-list".
       name: policy_id
       required: true
-    - description: "The unique identifier (ID) of the root, OU, or account that you        \ want to
-                        attach the policy to. Add description that        \ the user can get
-                        this value by running the commands        \ “root-list” /
-                        “organization-unit-list”        \ / “root-list”"
+    - description: The unique identifier (ID) of the root, OU, or account to attach the policy to. This value can be retrieved by running the commands "aws-org-root-list" or "aws-org-account-list"
       name: target_id
       required: true
     - description: The Amazon Resource Name (ARN) of the role to assume.
@@ -560,20 +590,19 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: 
+    description: Attaches a policy to a root, an organizational unit (OU), or an individual account.
     outputs: []
   - name: aws-org-policy-target-list
     arguments:
-    - description: "Add description that the user can get this value by running the        \ command
-                        “policy-list”"
+    - description: The unique identifier (ID) of the policy whose attachments are to be listed.
       name: policy_id
       required: true
-    - description: The number of accounts to return.
+    - description: The number of policies to return.
       name: limit
       defaultValue: '50'
-    - description: The number of accounts to return per page. The maximum is 1000.
+    - description: The number of policies to return per page. The maximum is 1000.
       name: page_size
-    - description: The token denoting the next page of accounts, as given by the response of the previous run of this command under the context key "AWS.Organizations.AccountNextToken".
+    - description: The token denoting the next page of policies, as given by the response of the previous run of this command under the context key "AWS.Organizations.PolicyTargetNextToken".
       name: next_token
     - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
@@ -581,45 +610,64 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: 
-    outputs: []  # TODO add the policy_id as output parameter 
+    description: Lists all the roots, organizational units (OUs), and accounts that the specified policy is attached to.
+    outputs:
+    - contextPath: AWS.Organizations.PolicyTarget.TargetId
+      description: The unique identifier (ID) of the policy target.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTarget.Arn
+      description: The Amazon Resource Name (ARN) of the policy target.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTarget.Name
+      description: The friendly name of the policy target.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTarget.Type
+      description: The type of the policy target.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTarget.PolicyId
+      description: The unique identifier (ID) of the policy.
+      type: String
+    - contextPath: AWS.Organizations.PolicyTargetNextToken
+      description: If not null, indicates that more output is available than is included in the current response. Use this value as the next_token argument in a subsequent call of the command to get the next part of the output.
+      type: String
   - name: aws-org-resource-tag-add
     arguments:
-    - description: "Add description that the user can get this value by running the        \ commands
-                        “root-list” / “organization-unit-list”        \ / “root-list” /
-                        “policy-list”"
+    - description: The ID of the resource to add a tag to. This value can be retrieved by running the commands "aws-org-root-list", "aws-org-account-list", "aws-org-root-list" or "aws-org-policy-list"
       name: resource_id
       required: true
-    - description: '"Tags": [ {\_"Key": "string", "Value": "string" } ]"'
+    - description: A list of tag keys to attach to the newly created account. For each key in the list, there must be a corresponding value in the "tag_value" argument.
       name: tag_key
       required: true
-    - description: 
+    - description: A list of tag values to attach to the newly created account. For each value in the list, there must be a corresponding key in the "tag_key" argument. The value can be an empty string.
       name: tag_value
       required: true
-    - description:
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-    - description: 
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: 
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: 
+    description: Adds one or more tags to the specified resource.
     outputs: []
   - name: aws-org-resource-tag-list
     arguments:
-    - description: "Add description that the user can get this value by running the        \ commands
-                        “root-list” / “organization-unit-list”        \ / “root-list” /
-                        “policy-list”"
+    - description: The ID of the resource with the tags to list. This value can be retrieved by running the commands "aws-org-root-list", "aws-org-account-list", "aws-org-root-list" or "aws-org-policy-list"
       name: resource_id
       required: true
-    - description:
+    - description: The Amazon Resource Name (ARN) of the role to assume.
       name: roleArn
-    - description: 
+    - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: 
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
-    description: 
-    outputs: []
-
+    description: Lists tags that are attached to the specified resource.
+    outputs:
+    - contextPath: AWS.Organizations.Tag.Key
+      description: The key identifier, or name, of the tag.
+      type: String
+    - contextPath: AWS.Organizations.Tag.Value
+      description: The string value that's associated with the key of the tag.
+      type: String
   dockerimage: demisto/boto3py3:1.0.0.80307
   feed: false
   longRunning: false
