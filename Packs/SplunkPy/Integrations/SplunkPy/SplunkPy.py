@@ -2305,6 +2305,7 @@ def splunk_get_indexes_command(service: client.Service):
 
 
 def splunk_submit_event_command(service: client.Service, args: dict):
+    demisto.debug(f"Got the following indexes: {service.indexes}")
     try:
         index = service.indexes[args['index']]
     except KeyError:
@@ -2378,7 +2379,7 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
 
     if 'Success' not in response_info.text:
-        return_error('Could not send event to Splunk ' + response_info.text.encode('utf8'))
+        return_error(f"Could not send event to Splunk {response_info.text}")
     else:
         return_results('The event was sent successfully to Splunk.')
 
