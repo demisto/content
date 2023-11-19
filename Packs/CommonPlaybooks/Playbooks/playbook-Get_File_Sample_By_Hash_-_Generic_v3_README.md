@@ -1,25 +1,32 @@
 This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:
 - Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
-- Get the threat (file) attached to a specific SHA256 hash - Cylance Protect v2.
+- Get the threat (file) associated with a specific SHA256 hash - Cylance Protect v2.
+- Get the file associated with a specific MD5 or SHA256 hash - Code42.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get File Sample By Hash - Cylance Protect v2
+
 * Get the binary file from Carbon Black by its MD5 hash
 * Code42 File Download
+* Get File Sample By Hash - Cylance Protect v2
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 This playbook does not use any commands.
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -29,6 +36,7 @@ This playbook does not use any commands.
 | NewFilename | A new name for the retrieved file. If left empty, the filename will not change. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -46,5 +54,7 @@ This playbook does not use any commands.
 | File.Name | The file name. | string |
 
 ## Playbook Image
+
 ---
-![Get File Sample By Hash - Generic v3](https://raw.githubusercontent.com/demisto/content/da182ee3ae5a35f346aa358fc86d89dba28716d9/Packs/CommonPlaybooks/doc_files/Get_File_Sample_By_Hash_-_Generic_v3.png)
+
+![Get File Sample By Hash - Generic v3](../doc_files/Get_File_Sample_By_Hash_-_Generic_v3.png)
