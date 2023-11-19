@@ -1519,7 +1519,7 @@ Imports indicators (observables) into ThreatStream. The imported data must be ap
 Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
 
  Note: This command indicates that the JSON you submitted was valid. However, in cases where data is incorrect or required fields are left unspecified, observables can be ignored or imported as false positive.
-Valid itypes values for the JSON can be found in the Anomaly ThreatStream API documentation, in Appendix B: Indicator Types in Threat Stream API.
+Valid itypes values for the JSON can be found in the Anomaly ThreatStream API documentation under the Indicator Types in Threat Stream API section.
 
 #### Base Command
 
