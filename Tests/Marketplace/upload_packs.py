@@ -1206,7 +1206,7 @@ def main():
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     # list of all packs from `content_packs.zip` given from create artifacts
     all_content_packs = [Pack(pack_id, os.path.join(extract_destination_path, pack_id), is_modified=pack_id in pack_ids_to_upload)
-                         for pack_id in os.listdir(extract_destination_path)]
+                         for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
     packs_to_upload_list = [pack for pack in all_content_packs if pack.is_modified]
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
@@ -1299,8 +1299,7 @@ def main():
         logging.info(f"[TEST - update_index_folder] Does pack {pack.name} exists: "
                      f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
 
-        # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
-        if not pack.status:
+        if not pack.is_modified:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
             continue
