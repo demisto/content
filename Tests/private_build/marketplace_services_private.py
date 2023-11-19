@@ -28,7 +28,7 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, SIEM_RULES_OBJECTS, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
 from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
@@ -66,7 +66,6 @@ class Pack:
     AUTHOR_IMAGE_NAME = "Author_image.png"
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
-    INDEX_FILES_TO_UPDATE = [METADATA, CHANGELOG_JSON, README]
 
     def __init__(self, pack_name, pack_path, is_modified=None):
         self._pack_name = pack_name
@@ -82,7 +81,6 @@ class Pack:
         self._current_version = None  # initialized in load_user_metadata function
         self._hidden = False  # initialized in load_user_metadata function
         self._description = None  # initialized in load_user_metadata function
-        self._dependencies = {}  # initialized in load_user_metadata function
         self._display_name = None  # initialized in load_user_metadata function
         self._user_metadata = {}  # initialized in load_user_metadata function
         self._eula_link = None  # initialized in load_user_metadata function
@@ -91,7 +89,7 @@ class Pack:
         self._bucket_url = None  # URL of where the pack was uploaded.
         self._aggregated = False  # weather the pack's rn was aggregated or not.
         self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
-        self._create_date = ""  # initialized in enhance_pack_attributes function
+        self._create_date = None  # initialized in enhance_pack_attributes function
         self._update_date = None  # initialized in enhance_pack_attributes function
         self._uploaded_author_image = False  # whether the pack author image was uploaded or not
         self._reademe_images = []
@@ -113,7 +111,7 @@ class Pack:
         self._content_commit_hash = None  # initialized in enhance_pack_attributes function
         self._preview_only = None  # initialized in enhance_pack_attributes function
         self._disable_monthly = None  # initialized in enhance_pack_attributes
-        self._tags = set()  # initialized in load_user_metadata function
+        self._tags = None  # initialized in enhance_pack_attributes function
         self._modules = None
         self._categories = None  # initialized in enhance_pack_attributes function
         self._content_items = None  # initialized in collect_content_items function
@@ -125,6 +123,7 @@ class Pack:
         self._pack_statistics_handler = None  # initialized in enhance_pack_attributes function
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
+        self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
         self._is_modified = is_modified
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
@@ -387,6 +386,10 @@ class Pack:
         return self._uploaded_dynamic_dashboard_images
 
     @property
+    def is_missing_dependencies(self):
+        return self._is_missing_dependencies
+
+    @property
     def zip_path(self):
         return self._zip_path
 
@@ -471,7 +474,8 @@ class Pack:
         return all_dep_int_imgs
 
     @staticmethod
-    def _get_all_pack_images(index_folder_path, pack_integration_images: list, display_dependencies_images: list,
+    def _get_all_pack_images(pack_integration_images: list, display_dependencies_images: list,
+                             dependencies_metadata: dict,
                              pack_dependencies_by_download_count):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
@@ -488,10 +492,11 @@ class Pack:
 
         """
         dependencies_integration_images_dict: dict = {}
+        additional_dependencies_data = {k: v for k, v in dependencies_metadata.items() if k in
+                                        display_dependencies_images}
 
-        for pack_id in display_dependencies_images:
-            dependency_metadata = load_json(f"{index_folder_path}/{pack_id}/metadata.json")
-            for dep_int_img in dependency_metadata.get('integrations', []):
+        for dependency_data in additional_dependencies_data.values():
+            for dep_int_img in dependency_data.get('integrations', []):
                 dep_int_img_gcs_path = dep_int_img.get('imagePath', '')  # image public url
                 dep_int_img['name'] = Pack.remove_contrib_suffix_from_name(dep_int_img.get('name', ''))
                 dep_pack_name = os.path.basename(os.path.dirname(dep_int_img_gcs_path))
@@ -560,28 +565,222 @@ class Pack:
     def _clean_release_notes(release_notes_lines):
         return re.sub(r'<\!--.*?-->', '', release_notes_lines, flags=re.DOTALL)
 
-    def _parse_pack_metadata(self, parse_dependencies: bool = False):
+    def _parse_pack_dependencies(self, dependencies_metadata_dict):
+        """ Parses user defined dependencies and returns dictionary with relevant data about each dependency pack.
+
+        Args:
+            first_level_dependencies (dict): first lever dependencies that were retrieved
+            from user pack_metadata.json file.
+            dependencies_metadata_dict (dict): dict of pack dependencies data.
+
+        Returns:
+            dict: parsed dictionary with pack dependency data.
+        """
+        parsed_result = {}
+
+        first_level_dependencies = self.user_metadata.get(Metadata.DEPENDENCIES, {})
+        for dependency_id, dependency_data in dependencies_metadata_dict.items():
+            if dependency_id in self.user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, []):
+                continue
+            parsed_result[dependency_id] = {
+                "mandatory": first_level_dependencies.get(dependency_id, {}).get('mandatory', True),
+                "minVersion": dependency_data.get(Metadata.CURRENT_VERSION, Pack.PACK_INITIAL_VERSION),
+                "author": dependency_data.get('author', ''),
+                "name": dependency_data.get('name') if dependency_data.get('name') else dependency_id,
+                "certification": dependency_data.get('certification', 'certified')
+            }
+
+        return parsed_result
+
+    @staticmethod
+    def _create_support_section(support_type, support_url=None, support_email=None):
+        """ Creates support dictionary that is part of metadata.
+
+        In case of support type xsoar, adds default support url. If support is xsoar and support url is defined and
+        doesn't match xsoar default url, warning is raised.
+
+        Args:
+            support_type (str): support type of pack.
+            support_url (str): support full url.
+            support_email (str): support email address.
+
+        Returns:
+            dict: supported data dictionary.
+        """
+        support_details = {}
+
+        if support_url:  # set support url from user input
+            support_details['url'] = support_url
+        elif support_type == Metadata.XSOAR_SUPPORT:  # in case support type is xsoar, set default xsoar support url
+            support_details['url'] = Metadata.XSOAR_SUPPORT_URL
+        # add support email if defined
+        if support_email:
+            support_details['email'] = support_email
+
+        return support_details
+
+    @staticmethod
+    def _get_author(support_type, author=None):
+        """ Returns pack author. In case support type is xsoar, more additional validation are applied.
+
+        Args:
+            support_type (str): support type of pack.
+            author (str): author of the pack.
+
+        Returns:
+            str: returns author from the input.
+        """
+        if support_type == Metadata.XSOAR_SUPPORT and not author:
+            return Metadata.XSOAR_AUTHOR  # returned xsoar default author
+        elif support_type == Metadata.XSOAR_SUPPORT and author != Metadata.XSOAR_AUTHOR:
+            logging.warning(f"{author} author doest not match {Metadata.XSOAR_AUTHOR} default value")
+            return author
+        else:
+            return author
+
+    @staticmethod
+    def _get_certification(support_type, certification=None):
+        """ Returns pack certification.
+
+        In case support type is xsoar or partner, CERTIFIED is returned.
+        In case support is not xsoar or partner but pack_metadata has certification field, certification value will be
+        taken from pack_metadata defined value.
+        Otherwise empty certification value (empty string) will be returned
+
+        Args:
+            support_type (str): support type of pack.
+            certification (str): certification value from pack_metadata, if exists.
+
+        Returns:
+            str: certification value
+        """
+        if support_type in [Metadata.XSOAR_SUPPORT, Metadata.PARTNER_SUPPORT]:
+            return Metadata.CERTIFIED
+        elif certification:
+            return certification
+        else:
+            return ""
+
+    def _get_tags_from_landing_page(self, landing_page_sections: dict) -> set:
+        """
+        Build the pack's tag list according to the user metadata and the landingPage sections file.
+        Args:
+            landing_page_sections (dict): landingPage sections and the packs in each one of them.
+
+        Returns:
+            set: Pack's tags.
+
+        """
+
+        tags = set()
+        sections = landing_page_sections.get('sections', []) if landing_page_sections else []
+
+        for section in sections:
+            if self._pack_name in landing_page_sections.get(section, []):
+                tags.add(section)
+
+        return tags
+
+    def _parse_pack_metadata(self, build_number, commit_hash):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
 
         Args:
-            parse_dependencies (bool): Whether to parse dependencies in metadata as well.
+            build_number (str): circleCI build number.
+            commit_hash (str): current commit hash.
 
         Returns:
             dict: parsed pack metadata.
+
         """
         pack_metadata = {
+            Metadata.NAME: self._display_name or self._pack_name,
+            Metadata.ID: self._pack_name,
+            Metadata.DESCRIPTION: self._description or self._pack_name,
             Metadata.CREATED: self._create_date,
             Metadata.UPDATED: self._update_date,
+            Metadata.LEGACY: self._legacy,
+            Metadata.SUPPORT: self._support_type,
+            Metadata.SUPPORT_DETAILS: self._support_details,
+            Metadata.EULA_LINK: self._eula_link,
+            Metadata.AUTHOR: self._author,
+            Metadata.AUTHOR_IMAGE: self._author_image,
+            Metadata.CERTIFICATION: self._certification,
+            Metadata.PRICE: self._price,
+            Metadata.SERVER_MIN_VERSION: self.user_metadata.get(Metadata.SERVER_MIN_VERSION) or self.server_min_version,
+            Metadata.CURRENT_VERSION: self.user_metadata.get(Metadata.CURRENT_VERSION, ''),
+            Metadata.VERSION_INFO: build_number,
+            Metadata.COMMIT: commit_hash,
             Metadata.DOWNLOADS: self._downloads_count,
             Metadata.TAGS: list(self._tags or []),
+            Metadata.MODULES: list(self._modules or []),
+            Metadata.CATEGORIES: self._categories,
+            Metadata.CONTENT_ITEMS: self._content_items,
+            Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
+            Metadata.USE_CASES: self._use_cases,
+            Metadata.KEY_WORDS: self._keywords,
+            Metadata.DEPENDENCIES: self._parsed_dependencies,
+            Metadata.EXCLUDED_DEPENDENCIES: self.user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, []),
+            Metadata.MARKETPLACES: self._marketplaces,
+            Metadata.VIDEOS: self.user_metadata.get(Metadata.VIDEOS) or [],
         }
 
-        if parse_dependencies:
-            pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
+        if self._is_private_pack:
+            pack_metadata.update({
+                Metadata.PREMIUM: self._is_premium,
+                Metadata.VENDOR_ID: self._vendor_id,
+                Metadata.PARTNER_ID: self._partner_id,
+                Metadata.PARTNER_NAME: self._partner_name,
+                Metadata.CONTENT_COMMIT_HASH: self._content_commit_hash,
+                Metadata.PREVIEW_ONLY: self._preview_only,
+                Metadata.DISABLE_MONTHLY: self._disable_monthly,
+            })
 
         return pack_metadata
+
+    def _load_pack_dependencies_metadata(self, index_folder_path, packs_dict):
+        """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
+            There are 3 cases:
+              Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
+              Case 2: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
+                dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is
+                created, and therefore it contains the new pack, we call this function again, and hitting case 1.
+              Case 3: The dependency is of a pack that is not a part of this marketplace. In this case, we ignore this
+              dependency.
+        Args:
+            index_folder_path (str): full path to download index folder.
+            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_id: pack_object}.
+
+        Returns:
+            dict: pack id as key and loaded metadata of packs as value.
+            bool: True if the pack is missing dependencies, False otherwise.
+
+        """
+        dependencies_metadata_result = {}
+        dependencies_ids = set(self._first_level_dependencies)
+        dependencies_ids.update(self._displayed_images_dependent_on_packs)
+
+        for dependency_pack_id in dependencies_ids:
+            dependency_metadata_path = os.path.join(index_folder_path, dependency_pack_id, Pack.METADATA)
+
+            if os.path.exists(dependency_metadata_path):
+                # Case 1: the dependency is found in the index.zip
+                with open(dependency_metadata_path) as metadata_file:
+                    dependency_metadata = json.load(metadata_file)
+                    dependencies_metadata_result[dependency_pack_id] = dependency_metadata
+            elif dependency_pack_id in packs_dict:
+                # Case 2: the dependency is not in the index since it is a new pack
+                self._is_missing_dependencies = True
+                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                f"was not found in index, marking it as missing dependencies - to be resolved in "
+                                f"next iteration over packs")
+            else:
+                # Case 3: the dependency is not a part of this marketplace
+                logging.warning(f"{self._pack_name} pack dependency with id {dependency_pack_id} "
+                                f"is not part of this marketplace, ignoring this dependency")
+
+        return dependencies_metadata_result, self._is_missing_dependencies
 
     def _get_updated_changelog_entry(self, changelog: dict, version: str, release_notes: str = None,
                                      version_display_name: str = None, build_number_with_prefix: str = None,
@@ -1493,7 +1692,7 @@ class Pack:
             (bool) Whether the pack is not updated because the entries are not relevant to the current marketplace.
         """
         logging.debug(f"Starting to filter changelog entries by the entities that are given from id-set for pack "
-                      f"{self._pack_name} and marketplace {marketplace}")
+                      f"{self._pack_name}")
 
         release_notes = self.filter_release_notes_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES), marketplace)
 
@@ -1602,7 +1801,7 @@ class Pack:
             release_notes_dict (dict): The release notes in dict object.
 
         Returns:
-            (bool) Whether the dict contains the RN entries by the entities types.
+            (bool) Whther the dict contains the RN entries by the entities types.
         """
         return release_notes_str and not release_notes_dict
 
@@ -2176,9 +2375,9 @@ class Pack:
         user_metadata = {}
 
         try:
-            user_metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # user metadata path before parsing
+            user_metadata_path = os.path.join(self._pack_path, Pack.USER_METADATA)  # user metadata path before parsing
             if not os.path.exists(user_metadata_path):
-                logging.error(f"{self._pack_name} pack is missing {Pack.METADATA} file.")
+                logging.error(f"{self._pack_name} pack is missing {Pack.USER_METADATA} file.")
                 return task_status
 
             with open(user_metadata_path) as user_metadata_file:
@@ -2196,9 +2395,6 @@ class Pack:
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
-            self._tags = set(user_metadata.get(Metadata.TAGS) or [])
-            self._dependencies = user_metadata.get(Metadata.DEPENDENCIES, {})
-            self._certification = user_metadata.get(Metadata.CERTIFICATION, "")
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
@@ -2211,51 +2407,100 @@ class Pack:
         finally:
             return task_status
 
-    def _collect_pack_tags_by_statistics(self, trending_packs):
+    def _collect_pack_tags(self, user_metadata, landing_page_sections, trending_packs, marketplace):
+        tags = self._get_tags_by_marketplace(user_metadata, marketplace)
+        tags |= self._get_tags_from_landing_page(landing_page_sections)
+        tags |= {PackTags.TIM} if self._is_feed else set()
+        tags |= {PackTags.USE_CASE} if self._use_cases else set()
+        tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
+        tags |= {PackTags.FILTER} if self._contains_filter else set()
+        tags |= {PackTags.COLLECTION} if self._is_siem else set()
+        tags |= {PackTags.DATA_SOURCE} if self._is_data_source and marketplace == XSIAM_MP else set()
 
-        days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
-        if days_since_creation <= 30:
-            self._tags |= {PackTags.NEW}
-        else:
-            self._tags -= {PackTags.NEW}
+        if self._create_date:
+            days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
+            if days_since_creation <= 30:
+                tags |= {PackTags.NEW}
+            else:
+                tags -= {PackTags.NEW}
 
-        if self._pack_name in trending_packs:
-            self._tags |= {PackTags.TRENDING}
-        else:
-            self._tags -= {PackTags.TRENDING}
+        if trending_packs:
+            if self._pack_name in trending_packs:
+                tags |= {PackTags.TRENDING}
+            else:
+                tags -= {PackTags.TRENDING}
 
-    def remove_test_dependencies(self):
-        """Removes test dependencies from pack dependencies property"""
+        return tags
 
-        pack_dependencies = [dep_id for dep_id in self._first_level_dependencies
-                             if not self._first_level_dependencies[dep_id].get("is_test", False)]
+    def _get_tags_by_marketplace(self, user_metadata: dict, marketplace: str):
+        """ Returns tags in according to the current marketplace"""
+        tags = []
+        for tag in user_metadata.get('tags', []):
+            if ':' in tag:
+                tag_data = tag.split(':')
+                if marketplace in tag_data[0].split(','):
+                    tags.append(tag_data[1])
+            else:
+                tags.append(tag)
 
-        self._dependencies = {k: v for k, v in self._dependencies.items() if k in pack_dependencies}
-        removed_test_deps = [dep_id for dep_id in self._first_level_dependencies if dep_id not in self._dependencies]
-        logging.debug(f"Removed the following test dependencies for pack '{self._pack_name}': {removed_test_deps}")
+        return set(input_to_list(input_data=tags))
 
-    def _enhance_pack_attributes(self, index_folder_path, statistics_handler=None, format_dependencies_only=False,
-                                 remove_test_deps=False):
+    def _enhance_pack_attributes(self, index_folder_path, dependencies_metadata_dict, marketplace,
+                                 statistics_handler=None, format_dependencies_only=False):
         """ Enhances the pack object with attributes for the metadata file
 
         Args:
-            index_folder_path (str): downloaded index folder directory path.
-            statistics_handler (StatisticsHandler): The marketplace statistics handler.
+            dependencies_metadata_dict (dict): mapping of pack dependencies metadata, for first level dependencies.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
             dependencies or not.
-            remove_test_deps (bool): Whether to remove test dependencies.
+
+        Returns:
+            dict: parsed pack metadata.
+
         """
-        trending_packs = []
+        landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
+        trending_packs = None
         pack_dependencies_by_download_count = self._displayed_images_dependent_on_packs
         if not format_dependencies_only:
+            # ===== Pack Regular Attributes =====
+            self._support_type = self.user_metadata.get(Metadata.SUPPORT, Metadata.XSOAR_SUPPORT)
+            self._support_details = self._create_support_section(
+                support_type=self._support_type, support_url=self.user_metadata.get(Metadata.URL),
+                support_email=self.user_metadata.get(Metadata.EMAIL)
+            )
+            self._author = self._get_author(
+                support_type=self._support_type, author=self.user_metadata.get(Metadata.AUTHOR, ''))
+            self._certification = self._get_certification(
+                support_type=self._support_type, certification=self.user_metadata.get(Metadata.CERTIFICATION)
+            )
+            self._legacy = self.user_metadata.get(Metadata.LEGACY, True)
             self._create_date = self._get_pack_creation_date(index_folder_path)
             self._update_date = self._get_pack_update_date(index_folder_path)
+            self._use_cases = input_to_list(input_data=self.user_metadata.get(Metadata.USE_CASES),
+                                            capitalize_input=True)
+            self._categories = input_to_list(input_data=self.user_metadata.get(Metadata.CATEGORIES),
+                                             capitalize_input=True)
+            self._keywords = input_to_list(self.user_metadata.get(Metadata.KEY_WORDS))
+        self._parsed_dependencies = self._parse_pack_dependencies(dependencies_metadata_dict)
 
-        if remove_test_deps:
-            self.remove_test_dependencies()
+        # ===== Pack Private Attributes =====
+        if not format_dependencies_only:
+            self._is_private_pack = Metadata.PARTNER_ID in self.user_metadata
+            self._is_premium = self._is_private_pack
+            self._preview_only = get_valid_bool(self.user_metadata.get(Metadata.PREVIEW_ONLY, False))
+            self._price = convert_price(pack_id=self._pack_name, price_value_input=self.user_metadata.get('price'))
+            if self._is_private_pack:
+                self._vendor_id = self.user_metadata.get(Metadata.VENDOR_ID, "")
+                self._partner_id = self.user_metadata.get(Metadata.PARTNER_ID, "")
+                self._partner_name = self.user_metadata.get(Metadata.PARTNER_NAME, "")
+                self._content_commit_hash = self.user_metadata.get(Metadata.CONTENT_COMMIT_HASH, "")
+                self._disable_monthly = self.user_metadata.get(Metadata.DISABLE_MONTHLY, False)
+                # Currently all content packs are legacy.
+                # Since premium packs cannot be legacy, we directly set this attribute to false.
+                self._legacy = False
 
         # ===== Pack Statistics Attributes =====
-        if statistics_handler:  # Public Content case
+        if not self._is_private_pack and statistics_handler:  # Public Content case
             self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
                 self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
                 self._displayed_images_dependent_on_packs
@@ -2263,44 +2508,54 @@ class Pack:
             self._downloads_count = self._pack_statistics_handler.download_count
             trending_packs = statistics_handler.trending_packs
             pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
-        self._collect_pack_tags_by_statistics(trending_packs)
+        self._tags = self._collect_pack_tags(self.user_metadata, landing_page_sections, trending_packs, marketplace)
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
         self._related_integration_images = self._get_all_pack_images(
-            index_folder_path, self._displayed_integration_images, self._displayed_images_dependent_on_packs,
+            self._displayed_integration_images, self._displayed_images_dependent_on_packs, dependencies_metadata_dict,
             pack_dependencies_by_download_count
         )
 
-    def format_metadata(self, index_folder_path, packs_dependencies_mapping,
-                        statistics_handler, marketplace='xsoar',
-                        format_dependencies_only=False, remove_test_deps=False):
-        """ Formats metadata according to marketplace metadata format defined in issue #19786 and writes back
+    def format_metadata(self, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,
+                        statistics_handler, packs_dict=None, marketplace='xsoar',
+                        format_dependencies_only=False):
+        """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
         Args:
             index_folder_path (str): downloaded index folder directory path.
             packs_dependencies_mapping (dict): all packs dependencies lookup mapping.
+            build_number (str): circleCI build number.
+            commit_hash (str): current commit hash.
             statistics_handler (StatisticsHandler): The marketplace statistics handler
+            packs_dict (dict): dict of all packs relevant for current marketplace, as {pack_name: pack_object}.
             marketplace (str): Marketplace of current upload.
             format_dependencies_only (bool): Indicates whether the metadata formation is just for formatting the
              dependencies or not.
-            remove_test_deps (bool): Whether to remove test dependencies.
 
         Returns:
             bool: True is returned in case metadata file was parsed successfully, otherwise False.
             bool: True is returned in pack is missing dependencies.
+
         """
         task_status = False
+        packs_dict = packs_dict if packs_dict else {}
+        is_missing_dependencies = False
 
         try:
-            self.set_pack_dependencies(packs_dependencies_mapping, marketplace=marketplace)
-            self._enhance_pack_attributes(index_folder_path, statistics_handler, format_dependencies_only,
-                                          remove_test_deps=remove_test_deps)
+            self.set_pack_dependencies(packs_dependencies_mapping, packs_dict, marketplace=marketplace)
 
-            formatted_metadata = self._parse_pack_metadata(parse_dependencies=remove_test_deps)
+            logging.info(f"Loading pack dependencies metadata for {self._pack_name} pack")
+            dependencies_metadata_dict, is_missing_dependencies = self._load_pack_dependencies_metadata(
+                index_folder_path, packs_dict)
+
+            self._enhance_pack_attributes(index_folder_path, dependencies_metadata_dict, marketplace,
+                                          statistics_handler, format_dependencies_only)
+
+            formatted_metadata = self._parse_pack_metadata(build_number, commit_hash)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
-            json_write(metadata_path, formatted_metadata, update=True)  # writing back parsed metadata
+            json_write(metadata_path, formatted_metadata)  # writing back parsed metadata
 
             logging.success(f"Finished formatting {self._pack_name} packs's {Pack.METADATA} {metadata_path} file.")
             task_status = True
@@ -2309,7 +2564,7 @@ class Pack:
             logging.exception(f"Failed in formatting {self._pack_name} pack metadata. Additional Info: {str(e)}")
 
         finally:
-            return task_status
+            return task_status, is_missing_dependencies
 
     @staticmethod
     def pack_created_in_time_delta(pack_name, time_delta: timedelta, index_folder_path: str) -> bool:
@@ -2366,21 +2621,35 @@ class Pack:
 
         return latest_changelog_released_date
 
-    def set_pack_dependencies(self, packs_dependencies_mapping, marketplace='xsoar'):
+    def set_pack_dependencies(self, packs_dependencies_mapping, packs_dict, marketplace='xsoar'):
         """
         Retrieve all pack's dependencies by merging the calculated dependencies from pack_dependencies.json file, given
         as input priorly, and the hard coded dependencies featured in the pack_metadata.json file.
         This is done for both first level dependencies and the all levels dependencies.
         Args:
             packs_dependencies_mapping: the calculated dependencies from pack_dependencies.json file
+            packs_dict (dict): Dict of packs relevant for current marketplace as {pack_name: pack_object}
             marketplace: the current marketplace this upload is for
         """
         pack_dependencies_mapping = packs_dependencies_mapping.get(self._pack_name, {})
-        self._first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
-        self._all_levels_dependencies = list(pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {}))
-        self._displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
-        logging.debug(f'(0) {self._first_level_dependencies=}')
-        logging.debug(f'(0) {self._all_levels_dependencies=}')
+        first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
+        all_levels_dependencies = list(pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {}))
+        displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
+        logging.debug(f'(0) {first_level_dependencies=}')
+        logging.debug(f'(0) {all_levels_dependencies=}')
+
+        if Metadata.DISPLAYED_IMAGES not in self._user_metadata:
+            self._user_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
+
+        if Metadata.DEPENDENCIES not in self._user_metadata:
+            self._user_metadata[Metadata.DEPENDENCIES] = {}
+
+        if self._pack_name != GCPConfig.BASE_PACK:
+            # add base as a mandatory pack dependency, by design for all packs
+            first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
+            all_levels_dependencies.append(GCPConfig.BASE_PACK)
+            logging.debug(f'(1) {first_level_dependencies=}')
+            logging.debug(f'(1) {all_levels_dependencies=}')
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
@@ -2388,7 +2657,7 @@ class Pack:
         logging.debug(f'{core_packs=}')
 
         if self._pack_name in core_packs:
-            mandatory_dependencies = [k for k, v in self._first_level_dependencies.items()
+            mandatory_dependencies = [k for k, v in first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
                                       and not v.get("is_test", False)
                                       and k not in core_packs
@@ -2397,6 +2666,39 @@ class Pack:
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
+
+        self._user_metadata[Metadata.DEPENDENCIES] = first_level_dependencies
+        self._first_level_dependencies = first_level_dependencies
+        self._all_levels_dependencies = all_levels_dependencies
+        self._displayed_images_dependent_on_packs = displayed_images_dependent_on_packs
+
+    def prepare_for_index_upload(self):
+        """ Removes and leaves only necessary files in pack folder.
+
+        Returns:
+            bool: whether the operation succeeded.
+
+        """
+        task_status = False
+        files_to_leave = [Pack.METADATA, Pack.CHANGELOG_JSON, Pack.README]
+
+        try:
+            for file_or_folder in os.listdir(self._pack_path):
+                files_or_folder_path = os.path.join(self._pack_path, file_or_folder)
+
+                if file_or_folder in files_to_leave:
+                    continue
+
+                if os.path.isdir(files_or_folder_path):
+                    shutil.rmtree(files_or_folder_path)
+                else:
+                    os.remove(files_or_folder_path)
+
+            task_status = True
+        except Exception:
+            logging.exception(f"Failed in preparing index for upload in {self._pack_name} pack.")
+        finally:
+            return task_status
 
     @staticmethod
     def _get_spitted_yml_image_data(root, target_folder_files):
@@ -3539,22 +3841,16 @@ def load_json(file_path: str) -> dict:
         return {}
 
 
-def json_write(file_path: str, data: dict, update: bool = False):
+def json_write(file_path: str, data: list | dict):
     """ Writes given data to a json file
+
     Args:
         file_path: The file path
         data: The data to write
-        update: Whether to update the json file object with data
-    """
-    logging.info(f"update_index: {file_path=}, {data=}, {update=}")
-    if update:
-        metadata_obj = load_json(file_path=file_path)
-        metadata_obj.update(data)
-    else:
-        metadata_obj = data
 
+    """
     with open(file_path, "w") as f:
-        f.write(json.dumps(metadata_obj, indent=4))
+        f.write(json.dumps(data, indent=4))
 
 
 def init_storage_client(service_account=None):
@@ -3920,6 +4216,7 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
         return True
 
     for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
+
         if list(id_set_entity.values())[0]['display_name'] == display_name:
             return True
 

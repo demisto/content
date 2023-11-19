@@ -14,6 +14,7 @@ from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 
 
+BUCKET_LINK_PREFIX = "https://console.cloud.google.com/storage/browser/"
 MSG_DICT = {
     "verify_new_pack": "verified the new pack in the index and that version 1.0.0 zip exists under the pack path",
     "verify_modified_pack": "verified the packs new version is in the index and that all the new items are present in the pack",
@@ -28,6 +29,8 @@ MSG_DICT = {
     "verify_dependency": "verified the new dependency is in the pack metadata",
     "verify_new_image": "verified the new image was uploaded",
     "verify_hidden_dependency": "verified the hidden dependency pack not in metadata.json",
+    "verify_new_xsoar_pack": "verified the new XSOAR only pack is NOT in the index and that version 1.0.0 zip DOES NOT exists "
+                             "under the pack path in XSIAM bucket",
 }
 
 
@@ -65,7 +68,6 @@ class GCP:
         storage_client = init_storage_client(service_account)
         self.storage_bucket = storage_client.bucket(storage_bucket_name)
         self.storage_base_path = storage_base_path
-        logging.info(f"The var {storage_base_path=}")
         self.extracting_destination = tempfile.mkdtemp()
         self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination,
                                                            self.storage_base_path)
@@ -83,7 +85,7 @@ class GCP:
                 pack_zip.extractall(os.path.join(self.extracting_destination, pack_id))
             return os.path.join(self.extracting_destination, pack_id)
         else:
-            logging.critical(f'{pack_id} pack of version {pack_version} was not found in the bucket. {pack_path=}')
+            logging.warning(f'{pack_id} pack of version {pack_version} was not found in the bucket. {pack_path=}')
             return False
 
     def download_image(self, pack_id):
@@ -308,7 +310,7 @@ class BucketVerifier:
         self.verify_modified_item_path('AlibabaActionTrail', 'ModelingRules/modelingrule-Alibaba.yml',
                                        self.items_dict.get('AlibabaActionTrail'))
 
-        self.verify_new_xsoar_pack('TestUploadFlowXSOAR', self.items_dict.get('TestUploadFlowXSOAR'))
+        self.verify_new_xsoar_pack('TestUploadFlowXSOAR')
 
     def run_xsoar_bucket_validations(self):
         """
@@ -367,7 +369,8 @@ class BucketVerifier:
         """
         Returns whether the bucket is valid.
         """
-        logging.info(f"Bucket with name {self.bucket_name} is {'valid' if self.is_valid else 'invalid'}.")
+        logging.info(f"Bucket with name {self.bucket_name} is {'valid' if self.is_valid else 'invalid'}.\n"
+                     f"See {BUCKET_LINK_PREFIX}{self.bucket_name}/{self.gcp.storage_base_path}")
         return self.is_valid
 
 
