@@ -75,7 +75,7 @@ tasks:
       id: 4a6315f7-7947-4cfc-8554-4e6b3edb4478
       version: -1
       name: Is there a File to detonate?
-      description: Look for file URLs to detonate
+      description: Look for file URLs to detonate.
       type: condition
       iscommand: false
       brand: ""
