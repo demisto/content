@@ -459,7 +459,7 @@ class Client(BaseClient):
             'query': updated_query,
             'updated_since': updated_since,
             'filter': ticket_filter,
-            'include': include or 'tags',
+            'include': include,
             'order_type': order_type,
         })
 
