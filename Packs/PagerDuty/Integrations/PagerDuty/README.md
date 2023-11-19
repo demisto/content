@@ -1,5 +1,6 @@
 Use the PagerDuty integration to manage schedules and on-call users. 
 This integration was integrated and tested with PagerDuty API v2.
+
 ## Configure PagerDuty v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -20,6 +21,7 @@ This integration was integrated and tested with PagerDuty API v2.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
+
 By default, the integration will import PagerDuty incidents data as Cortex XSOAR incidents. All incidents created in the minute prior to the configuration of Fetch Incidents and up to current time will be imported.
 
 ## Commands
@@ -66,9 +68,11 @@ Receive all schedules from PagerDuty.
 
 
 #### Command Example
+
 ```!PagerDuty-get-all-schedules```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -105,6 +109,7 @@ Receive all schedules from PagerDuty.
 #### Human Readable Output
 
 >### All Schedules
+
 >|ID|Name|Today|Time Zone|Escalation Policy|Escalation Policy ID|
 >|---|---|---|---|---|---|
 >| scheduleid | New Schedule #1 | 2021-03-10 | America/Los_Angeles | Default | someid |
@@ -140,9 +145,11 @@ Returns the names and details of on call users at a certain time or by specific 
 | PagerDutyUser.TimeZone | string | The time zone of the user. | 
 
 #### Command Example
+
 ```!PagerDuty-get-users-on-call scheduleID=scheduleid```
 
 #### Context Example
+
 ```json
 {
     "PagerDutyUser": [
@@ -169,10 +176,11 @@ Returns the names and details of on call users at a certain time or by specific 
 #### Human Readable Output
 
 >### Users On Call
+
 >|ID|Email|Name|Role|User Url|Time Zone|
 >|---|---|---|---|---|---|
->| someid | demisto@demisto.com | Demisto User | owner | https://demisto.pagerduty.com/users/someid | Europe/Athens |
->| anotherid | demisto@mail.com | Another User | user | https://demisto.pagerduty.com/users/anotherid | Europe/Athens |
+>| someid | demisto@demisto.com | Demisto User | owner | <https://demisto.pagerduty.com/users/someid> | Europe/Athens |
+>| anotherid | demisto@mail.com | Another User | user | <https://demisto.pagerduty.com/users/anotherid> | Europe/Athens |
 
 
 ### PagerDuty-get-users-on-call-now
@@ -205,9 +213,11 @@ Returns the names and details of current on call personnel.
 
 
 #### Command Example
+
 ```!PagerDuty-get-users-on-call-now```
 
 #### Context Example
+
 ```json
 {
     "PagerDutyUser": [
@@ -226,9 +236,10 @@ Returns the names and details of current on call personnel.
 #### Human Readable Output
 
 >### Users On Call Now
+
 >|ID|Email|Name|Role|User Url|Time Zone|
 >|---|---|---|---|---|---|
->| someid | demisto@demisto.com | Demisto User | owner | https://demisto.pagerduty.com/users/someid | Europe/Athens |
+>| someid | demisto@demisto.com | Demisto User | owner | <https://demisto.pagerduty.com/users/someid> | Europe/Athens |
 
 ### PagerDuty-incidents
 
@@ -245,7 +256,7 @@ Shows incidents in PagerDuty. Default status parameters are triggered,acknowledg
 | --- | --- | --- |
 | status | Returns only the incidents currently in the passed status(es). Valid status options are triggered,acknowledged, and resolved. (Default values are triggered,acknowledged). Possible values are: triggered, acknowledged, resolved. | Optional | 
 | since | Beginning date and time. Using ISO 8601 Representation. E.g. PagerDutyIncidents since=2011-05-06T17:00Z (must be used with until argument). | Optional | 
-| sortBy | Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents. | Optional | 
+| sortBy | Used to specify both the field you wish to sort the results on, as well as the direction (ascending/descending) of the results.See more <https://v2.developer.pagerduty.com/v2/page/api-reference#!/Incidents/get_incidents>. | Optional | 
 | until | Last date and time.  Using ISO 8601 Representation. E.g. PagerDutyIncidents until=2016-05-06T13:00Z. | Optional | 
 | incident_key | Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec. | Optional | 
 | limit | The maximum number of incidents to retrieve. If "page_size" is defined, this argument is ignored. Max value is 100. Default is 50. | Optional | 
@@ -285,9 +296,11 @@ Shows incidents in PagerDuty. Default status parameters are triggered,acknowledg
 | PagerDuty.Incidents.incident_key | String | The incident's de-duplication key. | 
 
 #### Command Example
+
 ```!PagerDuty-incidents```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -358,10 +371,11 @@ Shows incidents in PagerDuty. Default status parameters are triggered,acknowledg
 #### Human Readable Output
 
 >### PagerDuty Incidents
+
 >|ID|Title|Description|Status|Created On|Urgency|Html Url|Incident key|Assigned To User|Service ID|Service Name|Escalation Policy|Last Status Change On|Last Status Change By|Resolved By User|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| someid | [#264] Ticket 01439490 | description: No description | acknowledged | 2021-03-04T08:52:56Z | high | https://demisto.pagerduty.com/incidents/someid |  | someone | P5CX6RZ | PD SF | Default | 2021-03-04T08:53:04Z | someone | - |
->| anotherid | [#278] my event | description: No description | triggered | 2021-03-10T07:57:16Z | high | https://demisto.pagerduty.com/incidents/anotherid | somekey | someone-else | someid | API Service | Default | 2021-03-10T08:37:17Z | API Service | - |
+>| someid | [#264] Ticket 01439490 | description: No description | acknowledged | 2021-03-04T08:52:56Z | high | <https://demisto.pagerduty.com/incidents/someid> |  | someone | P5CX6RZ | PD SF | Default | 2021-03-04T08:53:04Z | someone | - |
+>| anotherid | [#278] my event | description: No description | triggered | 2021-03-10T07:57:16Z | high | <https://demisto.pagerduty.com/incidents/anotherid> | somekey | someone-else | someid | API Service | Default | 2021-03-10T08:37:17Z | API Service | - |
 
 ### PagerDuty-submit-event
 
@@ -396,9 +410,11 @@ Creates a new event/incident in PagerDuty(In order to use this command you have 
 
 
 #### Command Example
+
 ```!PagerDuty-submit-event action=trigger severity=info source=demisto summary="my new event"```
 
 #### Human Readable Output
+
 >|Incident key|Message|Status|
 >|---|---|---|
 >| somekey | Event processed | success |
@@ -429,9 +445,11 @@ Get the contact methods of a given user.
 | PagerDuty.Contact_methods.email | string | The email of the user. |
 
 #### Command Example
+
 ```!PagerDuty-get-contact-methods UserID=someid```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -476,6 +494,7 @@ Get the contact methods of a given user.
 #### Human Readable Output
 
 >### Contact Methods
+
 >|ID|Type|Details|
 >|---|---|---|
 >| someotherid | Email | demisto@demisto.com |
@@ -508,9 +527,11 @@ Get the users notification rules.
 
 
 #### Command Example
+
 ```!PagerDuty-get-users-notification UserID=someid```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -541,6 +562,7 @@ Get the users notification rules.
 #### Human Readable Output
 
 >### User notification rules
+
 >|ID|Type|Urgency|Notification timeout(minutes)|
 >|---|---|---|---|
 >| someid | assignment_notification_rule | high | 0 |
@@ -571,9 +593,11 @@ Resolves an existing event in PagerDuty.
 
 
 #### Command Example
+
 ```!PagerDuty-resolve-event incident_key=somekey serviceKey=servicekey```
 
 #### Context Example
+
 ```json
 {
     "Event": {
@@ -592,6 +616,7 @@ Resolves an existing event in PagerDuty.
 #### Human Readable Output
 
 >### Resolve Event
+
 >|Incident key|Message|Status|
 >|---|---|---|
 >| somekey | Event processed | success |
@@ -622,9 +647,11 @@ Acknowledges an existing event in PagerDuty.
 
 
 #### Command Example
+
 ```!PagerDuty-acknowledge-event incident_key=somekey serviceKey=servicekey```
 
 #### Context Example
+
 ```json
 {
     "Event": {
@@ -643,6 +670,7 @@ Acknowledges an existing event in PagerDuty.
 #### Human Readable Output
 
 >### Acknowledge Event
+
 >|Incident key|Message|Status|
 >|---|---|---|
 >| somekey | Event processed | success |
@@ -694,9 +722,11 @@ Get data about a incident from PagerDuty.
 
 
 #### Command Example
+
 ```!PagerDuty-get-incident-data incident_id=someid```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -736,9 +766,10 @@ Get data about a incident from PagerDuty.
 #### Human Readable Output
 
 >### PagerDuty Incident
+
 >|ID|Title|Status|Created On|Urgency|Html Url|Incident key|Service ID|Service Name|Escalation Policy|Last Status Change On|Last Status Change By|Resolved By User|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| someid | [#281] my new event | acknowledged | 2021-03-10T09:31:48Z | high | https://demisto.pagerduty.com/incidents/someid | 8e42eeb6391a4a2abeda5d12e09bddec | someid | API Service | Default | 2021-03-10T10:00:50Z | API Service | - |
+>| someid | [#281] my new event | acknowledged | 2021-03-10T09:31:48Z | high | <https://demisto.pagerduty.com/incidents/someid> | 8e42eeb6391a4a2abeda5d12e09bddec | someid | API Service | Default | 2021-03-10T10:00:50Z | API Service | - |
 
 
 ### PagerDuty-get-service-keys
@@ -768,9 +799,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!PagerDuty-get-service-keys```
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": {
@@ -794,7 +827,9 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
+
 >### Service List
+
 >|ID|Name|Status|Created At|Integration|
 >|---|---|---|---|---|
 >| someid | API Service | critical | 2016-03-20T14:00:55+02:00 | Name: API Service, Vendor: Missing Vendor information, Key: somekey<br/> |
@@ -809,6 +844,7 @@ Add responders to an incident.
 `PagerDuty-add-responders`
 
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | PagerDuty Incident ID to add responders to. | Required | 
@@ -819,6 +855,7 @@ Add responders to an incident.
 
 
 #### Command Example
+
 ```!PagerDuty-add-responders incident_id=PXP12GZ UserRequests=P09TT3C,PAIXXX  Message="Please join zoom meeting" ```
 
 #### Context Output
@@ -829,6 +866,7 @@ Add responders to an incident.
 | PagerDuty.ResponderRequests.ResponderName | String | The name of the responder added. | 
 
 #### Context Example
+
 ```json
 {
     "PagerDuty": 
@@ -873,6 +911,7 @@ Response Plays are a package of Incident Actions that can be applied during an I
 `PagerDuty-run-response-play`
 
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | The PagerDuty Incident ID to run the play on. | Required | 
@@ -881,8 +920,10 @@ Response Plays are a package of Incident Actions that can be applied during an I
 
 
 #### Command Example
+
 ```!PagerDuty-run-response-play incident_id="Q107XAAAAMBBR" from_email="john.doe@example.com" response_play_uuid="111111-88bb-bb37-181d-11111111110dewsq"```
 
 
 >#### Human Readable Output
+
 >Response play successfully run to the incident Q107XAAAAMBBR by john.doe@example.com

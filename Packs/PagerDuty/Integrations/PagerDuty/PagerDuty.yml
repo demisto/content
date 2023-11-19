@@ -137,7 +137,7 @@ script:
       name: until
     - description: Incident de-duplication key. E.g. 8e42eeb6391a4a2abeda5d12e09bddec.
       name: incident_key
-    - description:  The maximum number of incidents to retrieve. If "page_size" is defined, this argument is ignored. Max value is 100.
+    - description: The maximum number of incidents to retrieve. If "page_size" is defined, this argument is ignored. Max value is 100.
       name: limit
       defaultValue: 50
     - description: "Returns only the incidents currently assigned to the passed user(s). This expects one or more user IDs. Note: When using the assigned_to_user filter, you will only receive incidents with statuses of triggered or acknowledged. This is because resolved incidents are not assigned to any user."
@@ -155,7 +155,7 @@ script:
       - all
     - description: The page number of incidents to retrieve (used for pagination) starting from 1. The page size is defined by the "page_size" argument.
       name: page
-    - description: The number of incidents per page to retrieve (used for pagination). The page number is defined by the "page" argument.   
+    - description: The number of incidents per page to retrieve (used for pagination). The page number is defined by the "page" argument.
       name: page_size
     description: Shows incidents in PagerDuty. Default status parameters are triggered,acknowledged.
     name: PagerDuty-incidents
@@ -484,7 +484,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80593
 tests:
 - PagerDuty Test
 fromversion: 5.0.0
