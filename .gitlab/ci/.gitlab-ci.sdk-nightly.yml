@@ -418,9 +418,9 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
 
     - !reference [.export_cloud_machine_constants]
 
-    - !reference [.run_end_to_end_tests]
-
     - !reference [.prepare_for_test_content]
+
+    - !reference [.run_end_to_end_tests]
 
     - !reference [.run_test_content]
 
