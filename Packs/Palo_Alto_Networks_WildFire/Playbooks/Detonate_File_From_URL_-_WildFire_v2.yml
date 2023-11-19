@@ -283,7 +283,7 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: Duration for executing the pooling (in minutes)
+  description: Duration for executing the pooling (in minutes).
   playbookInputQuery:
 - key: Timeout
   value:
