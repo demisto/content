@@ -58,14 +58,11 @@ class Email:
     def get_eml_attachments(message_bytes: bytes) -> list:
         eml_attachments = []
         msg = email.message_from_bytes(message_bytes)
-        demisto.debug(f'get_eml_attachments func | {msg=}')
         if msg:
             for part in msg.walk():
                 if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
                     continue
-                demisto.debug(f'get_eml_attachments func | {part=}')
                 filename = part.get_filename()
-                demisto.debug(f'get_eml_attachments func | {filename=}')
                 if filename and filename.endswith('.eml'):
                     eml_attachments.append({
                         "filename": filename,
