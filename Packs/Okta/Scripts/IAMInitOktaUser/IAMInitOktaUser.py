@@ -171,9 +171,6 @@ def send_email(display_name: str, username: str, error_message: str, email_recip
     requires_polling_arg=False,
 )
 def create_zip_with_password(args: dict, generated_password: str, zip_password: str) -> PollResult:
-    """
-
-    """
     # Returns FileID of the created zip file
     text_file_name = 'Okta_Password.txt'
     zip_file_name = f'Okta_Password_{uuid.uuid4()}.zip'
