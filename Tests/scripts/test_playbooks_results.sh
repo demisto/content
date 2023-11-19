@@ -9,7 +9,7 @@ function exit_on_error {
 
 echo "Starting the print test playbook summary script - Server type: ${SERVER_TYPE}, Product type: ${PRODUCT_TYPE}"
 
-python3 ./Tests/Marketplace/print_test_playbook_summary.py --artifacts-path "${ARTIFACTS_FOLDER_INSTANCE}"
+python3 ./Tests/Marketplace/print_test_playbook_summary.py --artifacts-path "${ARTIFACTS_FOLDER}"
 summary_exit_code=$?
 
 if [ -n "${NIGHTLY}" ]; then
