@@ -154,7 +154,7 @@ def create_occur_timestamp(timestamp, timedelta_object=timedelta(minutes=0)):
 
 
 class TestCloseBenign:
-    def setup(self):
+    def setup_method(self):
         self.success_response = get_fetch_data()['CLOSE_BENIGN_SUCCESS']
         self.failure_response = get_fetch_data()['CLOSE_BENIGN_FAILURE']
 
@@ -270,7 +270,7 @@ class TestCloseBenign:
 
 
 class TestCloseTruePositive:
-    def setup(self):
+    def setup_method(self):
         self.success_response = get_fetch_data()['CLOSE_TRUE_POSITIVE_SUCCESS']
         self.failure_response = get_fetch_data()['CLOSE_TRUE_POSITIVE_FAILURE']
 
@@ -343,7 +343,7 @@ class TestCloseTruePositive:
 
 
 class TestCloseFalsePositive:
-    def setup(self):
+    def setup_method(self):
         self.success_response = get_fetch_data()['CLOSE_FALSE_POSITIVE_SUCCESS']
         self.failure_response = get_fetch_data()['CLOSE_FALSE_POSITIVE_FAILURE']
 

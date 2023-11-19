@@ -1,9 +1,10 @@
 import json
-import io
+
+from freezegun import freeze_time
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -11,10 +12,10 @@ def test_list_cases_command(requests_mock):
 
     from TheHiveProject import list_cases_command, Client
 
-    mock_response = util_load_json('test_data/cases_list.json')
+    mock_response = util_load_json('test_data/cases_list_new.json')
 
-    requests_mock.get('https://test/api/case',
-                      json=mock_response)
+    requests_mock.post('https://test/api/v1/query?name=list-cases',
+                       json=mock_response)
     requests_mock.get('https://test/api/status',
                       json={'versions': {'TheHive': 'version'}})
 
@@ -524,3 +525,45 @@ def test_update_observable_command(requests_mock):
     assert "Updated Observable" in response.readable_output
     assert response.outputs_prefix == 'TheHive.Observables'
     assert response.outputs_key_field == 'id'
+
+
+@freeze_time("2023-11-07T07:59:23Z")
+def test_migrate_last_run(mocker, requests_mock):
+    """
+    Given:
+        Old last run timestamp in milliseconds
+
+    When:
+        Running fetch-incidents after migrating to the new version
+
+    Then:
+        The last run timestamp is converted from milliseconds to ISO8601 format
+    """
+    from TheHiveProject import fetch_incidents, demisto, Client
+    mocker.patch.object(demisto, "getLastRun", return_value={"timestamp": "1677728000000"})
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    get_cases_mock = mocker.patch.object(Client, "get_cases")
+    requests_mock.get('https://test/api/status',
+                      json={'versions': {'TheHive': 'version'}})
+    requests_mock.post('https://test/api/v1/query?name=list-cases',
+                       json=[])
+
+    client = Client(
+        base_url='https://test/api',
+        verify=False,
+        headers={
+            'Authorization': 'Bearer APIKEY'
+        },
+        proxy=False,
+        mirroring='both'
+    )
+
+    fetch_incidents(client)
+    assert set_last_run_mock.call_args_list[0][0][0]["time"] == "2023-11-07T07:59:23Z"
+    mocker.patch.object(demisto, "getLastRun", return_value={"time": "2023-11-07T07:59:23Z"})
+    assert get_cases_mock.call_args_list[0][1]["start_time"] == 1677728000000
+
+    # now we want to test with updated last run to make sure it converts to milliseconds in the query
+    get_cases_mock = mocker.patch.object(Client, "get_cases")
+    fetch_incidents(client)
+    assert get_cases_mock.call_args_list[0][1]["start_time"] == 1699343963000

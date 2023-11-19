@@ -1,13 +1,15 @@
 {
-    "name": "SplunkCIMFields",
-    "description": "Convert Splunk CIM Dynamic Fields into their values.\n\nExample:\n\nBrute Force Attack On $src$ transformed into Brute Force Attack On 192.168.100.254",
+    "name": "SplunkScripts",
+    "description": "Splunk helper scripts.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.1.0",
     "author": "Farrukh Ahmed",
     "url": "",
     "email": "",
     "created": "2021-08-19T22:10:45Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

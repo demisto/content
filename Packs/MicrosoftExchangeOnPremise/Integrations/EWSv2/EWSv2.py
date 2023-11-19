@@ -3,7 +3,6 @@ import hashlib
 import subprocess
 import warnings
 from multiprocessing import Process
-from typing import Optional
 
 import dateparser  # type: ignore
 import exchangelib
@@ -20,7 +19,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorMailboxMoveInProgress,
                                 ErrorMailboxStoreUnavailable,
                                 ErrorNameResolutionNoResults, RateLimitError,
-                                ResponseMessageError, TransportError)
+                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, Protocol
 from exchangelib.services import EWSService
@@ -596,7 +595,7 @@ def is_empty_object(obj):
     return size == 0
 
 
-def get_time_zone() -> Optional[EWSTimeZone]:
+def get_time_zone() -> EWSTimeZone | None:
     """get the XSOAR user time zone
     :return:
         returns an ``EWSTimeZone`` if TZ available or ``None`` if not
@@ -1007,9 +1006,9 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     demisto.debug(f'Exclude ID list: {exclude_ids}')
 
     for item in qs:
-        demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
-            item.subject, item.message_id, item.datetime_created, item.datetime_received))
         try:
+            demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
+                item.subject, item.message_id, item.datetime_created, item.datetime_received))
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
                 demisto.debug(f'Appending {item.subject}, {item.message_id}.')
@@ -1020,6 +1019,14 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
                 'Got an error when pulling incidents. You might be using the wrong exchange version.'
             ), exc)
             raise exc
+        except ErrorMimeContentConversionFailed as exc:
+            demisto.debug(f"Encountered an ErrorMimeContentConversionFailed error object while iterating: {exc}.\
+                Continuing to next item.")
+            continue
+        except AttributeError as exc:
+            demisto.debug(f"Encountered an Attribute error object while iterating: {exc}.\
+                 Continuing to next item.")
+
     demisto.debug(f'EWS V2 - Got total of {len(result)} from ews query. ')
     return result
 

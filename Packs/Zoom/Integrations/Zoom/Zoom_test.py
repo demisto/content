@@ -1,8 +1,13 @@
+from fastapi import Request, status
+import json
+from unittest.mock import patch
+from fastapi.security import HTTPBasicCredentials
 from Zoom import Client
 import Zoom
 import pytest
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, CommandResults
 import demistomock as demisto
+from freezegun import freeze_time
 
 
 def test_zoom_list_users_command__limit(mocker):
@@ -717,7 +722,7 @@ def test_check_start_time_format__wrong_format():
 
 
 def test_test_moudle__reciving_errors(mocker):
-    mocker.patch.object(Client, "generate_oauth_token")
+    mocker.patch.object(Client, "get_oauth_token", return_value=("token", None))
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException('Invalid access token'))
@@ -727,7 +732,7 @@ def test_test_moudle__reciving_errors(mocker):
 
 
 def test_test_moudle__reciving_errors1(mocker):
-    mocker.patch.object(Client, "generate_oauth_token")
+    mocker.patch.object(Client, "get_oauth_token", return_value=("token", None))
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("The Token's Signature resulted invalid"))
@@ -737,7 +742,7 @@ def test_test_moudle__reciving_errors1(mocker):
 
 
 def test_test_moudle__reciving_errors2(mocker):
-    mocker.patch.object(Client, "generate_oauth_token")
+    mocker.patch.object(Client, "get_oauth_token", return_value=("token", None))
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("Invalid client_id or client_secret"))
@@ -747,7 +752,7 @@ def test_test_moudle__reciving_errors2(mocker):
 
 
 def test_test_moudle__reciving_errors3(mocker):
-    mocker.patch.object(Client, "generate_oauth_token")
+    mocker.patch.object(Client, "get_oauth_token", return_value=("token", None))
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("mockerror"))
@@ -1766,3 +1771,488 @@ def test_zoom_get_user_id_by_email(mocker):
     result = zoom_get_user_id_by_email(client, email)
     mock_zoom_list_users.assert_called_with(page_size=50, url_suffix=f'users/{email}')
     assert result == expected_user_id
+
+
+def test_zoom_send_notification_command(mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel
+    Then -
+        Validate that the zoom_send_message function is called with the correct arguments
+        Validate the command results including outputs and readable output
+    """
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret", bot_client_id="mockclient",
+                    bot_client_secret="mocksecret")
+    client.bot_jid = 'mock_bot'
+
+    expected_request_payload = {
+        'robot_jid': 'mock_bot',
+        'to_jid': 'channel1@xmpp.zoom.us',
+        'account_id': 'mockaccount',
+        'content': {'head': {'type': 'message', 'text': 'Hello'}}
+    }
+
+    expected_response = {
+        'message_id': 'message_id',
+    }
+
+    mock_send_chat_message = mocker.patch.object(client, 'zoom_send_notification')
+    mock_send_chat_message.return_value = expected_response
+    from Zoom import send_notification
+
+    result = send_notification(client,
+                               user_id='user1',
+                               message='Hello',
+                               to='channel1',
+                               )
+
+    assert result.readable_output == 'Message sent to Zoom successfully. Message ID is: message_id'
+    assert mock_send_chat_message.call_args[0][1] == expected_request_payload
+
+
+@pytest.mark.parametrize("channel_name, investigation_id, expected_result", [
+    ('Channel1', None, 'JID1'),                # Scenario 1: Find by channel_name
+    (None, 'Incident123', 'JID1'),            # Scenario 2: Find by investigation_id
+    ('NonExistentChannel', None, None),       # Scenario 3: Channel not found
+])
+def test_get_channel_jid_by_channel_name(channel_name, investigation_id, expected_result, mocker):
+    """
+    Given different scenarios with channel_name and investigation_id parameters,
+    When calling the get_channel_jid_from_context function,
+    Then validate that the function returns the expected result.
+    """
+    # Mock integration context
+    Zoom.CACHE_EXPIRY = False
+    mock_integration_context = {
+        'mirrors': json.dumps([
+            {'channel_name': 'Channel1', 'channel_jid': 'JID1', 'investigation_id': 'Incident123'},
+            {'channel_name': 'Channel2', 'channel_jid': 'JID2', 'investigation_id': 'Incident123'},
+        ])
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=mock_integration_context)
+
+    # Call the function
+    from Zoom import get_channel_jid_from_context
+    result = get_channel_jid_from_context(channel_name, investigation_id)
+
+    # Assert the result
+    assert result == expected_result
+
+
+# Test cases for check_authentication_bot_parameters
+@pytest.mark.parametrize("bot_Jid, client_id, client_secret, expected_exception", [
+    ('bot_Jid', 'client_id', 'client_secret', None),  # Scenario 1: All parameters provided
+    (None, None, None, None),                        # Scenario 2: All parameters None
+    ('bot_Jid', None, None, DemistoException),       # Scenario 3: bot_Jid provided, others None
+    (None, 'client_id', None, DemistoException),     # Scenario 4: client_id provided, others None
+    (None, None, 'client_secret', DemistoException),  # Scenario 5: client_secret provided, others None
+])
+def test_check_authentication_bot_parameters(bot_Jid, client_id, client_secret, expected_exception):
+    """
+    Given different scenarios with bot_Jid, client_id, and client_secret parameters,
+    When calling the check_authentication_bot_parameters function,
+    Then validate that the function raises the expected exception or returns without raising an exception.
+    """
+    from Zoom import check_authentication_bot_parameters
+    if expected_exception:
+        with pytest.raises(expected_exception):
+            check_authentication_bot_parameters(bot_Jid, client_id, client_secret)
+    else:
+        check_authentication_bot_parameters(bot_Jid, client_id, client_secret)
+
+
+def test_get_admin_user_id_from_token(mocker):
+    """
+    Given a mock client with a zoom_get_admin_user_id_from_token method,
+    When calling the get_admin_user_id_from_token function,
+    Then validate that the function returns the expected user ID.
+    """
+    # Create a mock client
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(client, 'zoom_get_admin_user_id_from_token', return_value={'id': 'mock_user_id'})
+    # Call the function
+    from Zoom import get_admin_user_id_from_token
+    result = get_admin_user_id_from_token(client)
+
+    # Assert the result
+    assert result == 'mock_user_id'
+
+
+def test_mirror_investigation_create_new_channel(mocker):
+    """
+    Given a mock client and relevant arguments,
+    When calling the mirror_investigation function to create a new channel,
+    Then validate that the function returns the expected CommandResults.
+    """
+    Zoom.MIRRORING_ENABLED = True
+    Zoom.LONG_RUNNING = True
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    client.bot_jid = 'mock_jid'
+    mocker.patch.object(client, 'zoom_send_notification')
+    mocker.patch.object(Zoom, 'get_admin_user_id_from_token', return_value='mock_user_id')
+    mocker.patch.object(Zoom, 'zoom_create_channel_command',
+                        return_value=CommandResults(outputs={"jid": "mock_jid", "id": "mock_id"}))
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'mock_server_url'})
+    # mocker.patch.object(client, 'botJid', return_value='bot_jid_mock')
+
+    # Test data
+    args = {
+        'type': 'all',
+        'direction': 'Both',
+        'channelName': 'mirror-channel',
+        'autoclose': True,
+    }
+
+    # Call the function
+    from Zoom import mirror_investigation
+    result = mirror_investigation(client, **args)
+
+    # Assert the result
+    assert 'Investigation mirrored successfully' in result.readable_output
+
+
+@pytest.mark.asyncio
+async def test_check_and_handle_entitlement(mocker):
+    """
+    Test the asynchronous function check_and_handle_entitlement.
+    Given:
+    - Input parameters for the function: text, message_id, user_name.
+    When:
+    - Calling the asynchronous function check_and_handle_entitlement with the given input parameters.
+    Then:
+    - Validate that the function behaves as expected and returns the expected result.
+    """
+    # Mock integration context
+    mock_integration_context = {
+        'messages': json.dumps([
+            {'message_id': 'MessageID123',
+             'entitlement': '3dcaae6d-d4d2-45b3-81a7-834bce779009@2b03d219-bbac-4333-84a2-d329d7296baa',
+             'reply': 'thanks', 'expiry': '2023-08-29 12:32:40', 'sent': '2023-08-29 12:27:42', 'default_response': 'NoResponse'}
+        ])
+    }
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value=mock_integration_context)
+    Zoom.CACHE_EXPIRY = False
+    # Define the input parameters for the function
+    text = "Entitlement Text"
+    message_id = "MessageID123"
+    user_name = "User123"
+
+    # Call the async function and await its result
+    from Zoom import check_and_handle_entitlement
+    result = await check_and_handle_entitlement(text, message_id, user_name)
+
+    assert result == 'thanks'  # Adjust the expected reply as needed
+
+
+@pytest.mark.parametrize("entitlement, expected_result", [
+    ("guid123@incident456|task789", ("guid123", "incident456", "task789")),  # Scenario 1: Full entitlement
+    ("guid123@incident456", ("guid123", "incident456", "")),  # Scenario 2: No task ID
+    ("guid123@", ("guid123", "", "")),  # Scenario 3: No incident ID or task ID
+])
+def test_extract_entitlement(entitlement, expected_result):
+    """
+    Test the extract_entitlement function.
+    Given:
+    - Input entitlement string.
+    When:
+    - Calling the extract_entitlement function with the given input entitlement.
+    Then:
+    - Validate that the function correctly extracts the entitlement components: guid, incident_id, and task_id.
+    """
+    from Zoom import extract_entitlement
+    result = extract_entitlement(entitlement)
+
+    # Assert the result against the expected outcome
+    assert result == expected_result
+
+
+# @pytest.mark.asyncio
+# async def test_check_for_unanswered_questions(mocker):
+#     mock_integration_context = {
+#         'messages': json.dumps([
+#             {
+#                 'message_id': 'MessageID1',
+#                 'expiry': '2023-08-29 12:00:00',
+#                 'default_response': 'DefaultResponse1'
+#             },
+#             {
+#                 'message_id': 'MessageID2',
+#                 'expiry': '2023-08-29 14:00:00',
+#                 'default_response': 'DefaultResponse2'
+#             },
+#         ])
+#     }
+#     mocker.patch.object(demisto, 'getIntegrationContext', return_value=mock_integration_context)
+
+
+@pytest.mark.asyncio
+async def test_answer_question(mocker):
+    """
+    Test the answer_question function.
+    Given:
+    - A mocked question dictionary.
+    When:
+    - Calling the answer_question function with the mocked question.
+    Then:
+    - Validate that the function correctly handles the entitlement and returns the incident_id.
+    """
+
+    mock_question = {
+        'entitlement': 'guid123@incident456|task789',
+        'to_jid': 'ToJID123'
+    }
+    Zoom.CLIENT = Client(base_url='https://test.com', account_id="mockaccount",
+                         client_id="mockclient", client_secret="mocksecret")
+    Zoom.CLIENT.bot_jid = 'mock_bot_id'
+    mocker.patch.object(Zoom, 'process_entitlement_reply')
+
+    from Zoom import answer_question
+    result = await answer_question("Answer123", mock_question, "user@example.com")
+    assert result == 'incident456'
+
+
+@pytest.mark.asyncio
+async def test_process_entitlement_reply(mocker):
+    """
+    Test the process_entitlement_reply function.
+
+    Given:
+    - Mocked input parameters.
+
+    When:
+    - Calling the process_entitlement_reply function with the mocked parameters.
+
+    Then:
+    - Validate that the function correctly prepares and sends a Zoom notification.
+    """
+    # Mocked input parameters
+    mock_entitlement_reply = "Entitlement Reply"
+    mock_account_id = "mock_account_id"
+    mock_robot_jid = "mock_robot_jid"
+    mock_to_jid = "mock_to_jid"
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    # Mock the CLIENT.zoom_send_notification function
+    Zoom.CLIENT = client
+    mock_zoom_send_notification = mocker.AsyncMock()
+    mock_zoom_send_notification = mocker.patch.object(Zoom, 'zoom_send_notification_async')
+
+    # Call the function with the mocked parameters
+    from Zoom import process_entitlement_reply
+    await process_entitlement_reply(mock_entitlement_reply, mock_account_id, mock_robot_jid, mock_to_jid)
+
+    # Assert that the CLIENT.zoom_send_notification function was called with the correct arguments
+    mock_zoom_send_notification.assert_called_with(client,
+                                                   '/im/chat/messages',
+                                                   {
+                                                       "content": {
+                                                           "body": [
+                                                               {
+                                                                   "type": "message",
+                                                                   "text": mock_entitlement_reply
+                                                               }
+                                                           ]
+                                                       },
+                                                       "to_jid": mock_to_jid,
+                                                       "robot_jid": mock_robot_jid,
+                                                       "account_id": mock_account_id
+                                                   }
+                                                   )
+
+
+# Test cases
+@pytest.mark.asyncio
+async def test_close_channel(mocker):
+    """
+    Test the close_channel function
+    Given:
+    - Mocked input parameters.
+    When:
+    - Calling the close_channel function.
+    Then:
+    - Ensure that the function successfully closes the channel.
+    """
+    mock_integration_context = {
+        'mirrors': json.dumps([
+            {'channel_name': 'Channel1', 'channel_jid': 'JID1', 'channel_id': 'ID1',
+             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
+            {'channel_name': 'Channel2', 'channel_jid': 'JID2', 'channel_id': 'ID2',
+             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
+        ])
+    }
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    mocker.patch.object(Zoom, 'zoom_delete_channel_command')
+    mocker.patch.object(demisto, 'mirrorInvestigation')
+    mocker.patch.object(Zoom, 'get_integration_context', return_value=mock_integration_context)
+    mocker.patch.object(Zoom, 'set_to_integration_context_with_retries')
+    mocker.patch.object(Zoom, 'get_admin_user_id_from_token', return_value='mock_user_id')
+    mocker.patch.object(Zoom, 'find_mirror_by_investigation', return_value={'channel_id': 'ID1'})
+
+    from Zoom import close_channel
+    result = close_channel(client)
+
+    assert result == 'Channel successfully deleted.'
+
+
+@pytest.mark.parametrize("event_type, expected_status", [
+    ('endpoint.url_validation', status.HTTP_200_OK),
+    ('interactive_message_actions', status.HTTP_200_OK),
+    ('invalid_event_type', status.HTTP_400_BAD_REQUEST)
+])
+@pytest.mark.asyncio
+async def test_handle_zoom_response(event_type, expected_status,
+                                    mocker):
+    """
+    Test the handle_zoom_response function with different event types and payload conditions.
+
+    Given:
+    - Mocked request object.
+    - Mocked event_url_validation, check_and_handle_entitlement, process_entitlement_reply, and handle_mirroring functions.
+    - Parameters for event types and payload conditions.
+
+    When:
+    - Calling the handle_zoom_response function with different event types and payload conditions.
+
+    Then:
+    - Ensure that the function returns the expected response status code.
+    """
+    mock_request = mocker.Mock(spec=Request)
+    json_res = {
+        "plainToken": 123,
+        "encryptedToken": 123
+    }
+    mocker.patch('Zoom.event_url_validation', return_value=json_res)
+    mocker.patch('Zoom.check_and_handle_entitlement')
+    mocker.patch('Zoom.process_entitlement_reply')
+    mocker.patch('Zoom.handle_mirroring')
+    mocker.patch.object(demisto, 'params', return_value={'credentials': {'identifier': 'test', 'password': 'testpass'}})
+
+    # Create a mock HTTPBasicCredentials object
+    mock_credentials = HTTPBasicCredentials(
+        username="test",
+        password="testpass"
+    )
+
+    Zoom.SECRET_TOKEN = 'token'
+
+    from Zoom import handle_zoom_response
+
+    mock_request.json.return_value = {
+        "event": event_type,
+        "payload": {
+            "accountId": "mock_accountid",
+            "actionItem": {
+                "text": "no",
+                "value": "no",
+                "action": "command"
+            },
+            "messageId": "message_id",
+            "robotJid": "robot_jid",
+            "toJid": "mock_jid",
+            "userName": "admin zoom"
+        }
+    }
+
+    response = await handle_zoom_response(mock_request, mock_credentials)
+
+    assert response.status_code == expected_status
+
+
+@pytest.mark.asyncio
+async def test_event_url_validation():
+    Zoom.SECRET_TOKEN = "secret_token"
+
+    # Define the payload for testing
+    payload = {
+        "plainToken": "plain_token"
+    }
+
+    # Calculate the expected signature
+    import hashlib
+    import hmac
+    hash_object = hmac.new(Zoom.SECRET_TOKEN.encode('utf-8'), msg=payload['plainToken'].encode('utf-8'), digestmod=hashlib.sha256)
+    expected_signature = hash_object.hexdigest()
+
+    from Zoom import event_url_validation
+    response = await event_url_validation(payload)
+
+    # Verify that the response matches the expected signature
+    assert response == {
+        "plainToken": payload["plainToken"],
+        "encryptedToken": expected_signature
+    }
+
+
+@pytest.mark.asyncio
+async def test_handle_text(mocker):
+    # Create mock arguments
+    investigation_id = "123"
+    text = "Hello, this is a test message"
+    operator_email = "test@example.com"
+    operator_name = "Test User"
+    MESSAGE_FOOTER = '\n**From Zoom**'
+    from Zoom import handle_text_received_from_zoom
+
+    with patch('Zoom.demisto') as mock_demisto:
+        # Call the function
+        await handle_text_received_from_zoom(investigation_id, text, operator_email, operator_name)
+        # Assert that the `demisto.addEntry` method was called with the expected arguments
+        mock_demisto.addEntry.assert_called_once_with(
+            id=investigation_id,
+            entry=text,
+            username=operator_name,
+            email=operator_email,
+            footer=MESSAGE_FOOTER  # Assuming MESSAGE_FOOTER is defined in your module
+        )
+
+
+def test_save_entitlement():
+    # Define test inputs
+    entitlement = "Test Entitlement"
+    message_id = "123"
+    reply = "Test Reply"
+    expiry = "2023-09-09"
+    default_response = "Default Response"
+    to_jid = "user@example.com"
+    SYNC_CONTEXT = True
+    OBJECTS_TO_KEYS = {
+        'messages': 'entitlement',
+    }
+    # Mock the required functions (get_integration_context, set_to_integration_context_with_retries) and any other dependencies
+    with patch('Zoom.get_integration_context') as mock_get_integration_context, \
+            patch('Zoom.set_to_integration_context_with_retries') as mock_set_integration_context:
+
+        # Mock the return values of the mocked functions
+        mock_get_integration_context.return_value = {'messages': []}
+        fixed_timestamp = '2023-09-09 20:08:50'
+
+        with freeze_time(fixed_timestamp):
+            from Zoom import save_entitlement
+            # Call the function to be tested
+            save_entitlement(entitlement, message_id, reply, expiry, default_response, to_jid)
+
+        # Define the expected data to be added to integration context
+        expected_data = {
+            'messages': [
+                {
+                    'message_id': message_id,
+                    'entitlement': entitlement,
+                    'reply': reply,
+                    'expiry': expiry,
+                    'sent': fixed_timestamp,
+                    'default_response': default_response,
+                    'to_jid': to_jid
+                }
+            ]
+        }
+
+        # Assert that the mocked functions were called with the expected arguments
+        mock_get_integration_context.assert_called_once_with(SYNC_CONTEXT)
+        mock_set_integration_context.assert_called_once_with(expected_data, OBJECTS_TO_KEYS, SYNC_CONTEXT)

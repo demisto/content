@@ -46,6 +46,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 - [vmray-get-iocs](#vmray-get-iocs): Get IOCs for a sample
 - [vmray-get-job-by-id](#vmray-get-job-by-id): Get information for a job
 - [vmray-get-summary](#vmray-get-summary): Download Summary JSON v2 for an analysis
+- [vmray-get-license-usage-verdicts](#vmray-get-license-usage-verdicts): Get the used quota of verdicts
+- [vmray-get-license-usage-reports](#vmray-get-license-usage-reports): Get the used quota of reports
 
 
 ### vmray-upload-sample
@@ -69,6 +71,7 @@ Submits a sample to VMRay for analysis.
 | max_jobs | Maximum number of jobs to create (number). Default is 1. | Optional | 
 | tags | A CSV list of tags to add to the sample. | Optional | 
 | reanalyze | Deprecated. Analyze even if analyses already exist. To control analysis caching, use the API Key settings instead, which are available via the Analysis Settings page, in the VMRay Web Interface. Possible values are: true, false. | Optional | 
+| net_scheme_name | The network scheme to use. | Optional |
 
 #### Context Output
 
@@ -151,7 +154,8 @@ Submits a URL for analysis.
 | url |  The URL to analyze. For example: <https://demisto.com>. . | Required | 
 | shareable | Whether the analysis is shareable. Possible values are: true, false. | Optional | 
 | max_jobs | Maximum number of jobs to create (number). Default is 1. | Optional | 
-| tags | A CSV list of tags to add to the sample. | Optional | 
+| tags | A CSV list of tags to add to the sample. | Optional |
+| net_scheme_name | The network scheme to use. | Optional |
 
 #### Context Output
 
@@ -1142,3 +1146,99 @@ Retrieves screenshots taken during a specific dynamic analysis. The screenshots 
     ]
 }
 ```
+
+
+### vmray-get-license-usage-verdicts
+***
+Gets the usage of verdicts from VMRay.
+
+
+#### Base Command
+
+`vmray-get-license-usage-verdicts`
+#### Input
+
+There is no input for this command.
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VMRay.VerdictQuota.PeriodEndDate | string | License end date. | 
+| VMRay.VerdictQuota.VerdictQuota | number | Total number of available verdicts (per month). |
+| VMRay.VerdictQuota.VerdictRemaining | number | Remaining number of verdicts (per month). |
+| VMRay.VerdictQuota.VerdictUsage | number | Percentages used. | 
+
+
+#### Command Example
+
+```vmray-get-license-usage-verdicts```
+
+#### Context Example
+
+```json
+{
+    "VMRay.VerdictQuota": {
+        "PeriodEndDate": "2024-02-03 14:12 (UTC+1)",
+        "VerdictQuota": 100,
+        "VerdictRemaining": 90,
+        "VerdictUsage": 10
+    }
+}
+```
+
+#### Human Readable Output
+
+| VerdictQuota | 100 |
+| VerdictRemaining | 90 |
+| VerdictUsage | 10.0 |
+| PeriodEndDate | 	2024-02-03 14:12 (UTC+1) |
+
+
+### vmray-get-license-usage-reports
+***
+Gets the usage of reports from VMRay.
+
+
+#### Base Command
+
+`vmray-get-license-usage-reports`
+#### Input
+
+There is no input for this command.
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VMRay.ReportQuota.PeriodEndDate | string | License end date. | 
+| VMRay.ReportQuota.VerdictQuota | number | Total number of available reports (per month). |
+| VMRay.ReportQuota.VerdictRemaining | number | Remaining number of reports (per month). |
+| VMRay.ReportQuota.VerdictUsage | number | Percentages used. | 
+
+#### Context Example
+
+```json
+{
+    "VMRay.ReportsQuota": {
+        "PeriodEndDate": "2024-02-03 14:12 (UTC+1)",
+        "ReportQuota": 100,
+        "ReportRemaining": 90,
+        "ReportUsage": 10
+    }
+}
+```
+
+#### Command Example
+```
+vmray-get-license-usage-reports
+```
+
+#### Human Readable Output
+
+| ReportQuota | 100 |
+| ReportRemaining | 90 |
+| ReportUsage | 10.0 |
+| PeriodEndDate | 	2024-02-03 14:12 (UTC+1) |

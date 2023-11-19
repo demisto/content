@@ -181,7 +181,7 @@ script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      description: When the alert was last modified in the following string format - YYYY-MM-DD
+      description: When the alert was last modified in the following string format - YYYY-MM-DD.
       name: last_modified
       predefined:
       - Last24Hours
@@ -198,11 +198,11 @@ script:
       - high
     - description: Category of the alert, e.g. credentialTheft, ransomware (Categories can be added or removed by vendors.)
       name: category
-    - description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD
+    - description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD.
       name: time_from
-    - description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD
+    - description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD.
       name: time_to
-    - description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
+    - description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'".
       name: filter
     - auto: PREDEFINED
       description: Relevant only for Alerts v2. Use this field to filter by an alert's classification.
@@ -295,7 +295,7 @@ script:
       description: Relevant only for Alerts v2. Alert determination.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.@odata.Type
-      description: Relevant only for Alerts v2. Alert evidence type
+      description: Relevant only for Alerts v2. Alert evidence type.
       type: String
     - contextPath: MsGraph.Alert.Evidence.AzureAdDeviceId
       description: Relevant only for Alerts v2. Evidence azure device ID.
@@ -450,7 +450,7 @@ script:
       description: Relevant only for Alerts v2. Alert comment creator name.
       type: String
     - contextPath: MsGraph.Alert.Comments.CreatedDate
-      description: Relevant only for Alerts v2. Alert comment creation time
+      description: Relevant only for Alerts v2. Alert comment creation time.
       type: Date
     - contextPath: MsGraph.Alert.Description
       description: Relevant only for Alerts v2. Alert description.
@@ -709,7 +709,7 @@ script:
     name: msg-update-alert
     outputs:
     - contextPath: MsGraph.Alert.ID
-      description: Alert ID
+      description: Alert ID.
       type: string
     - contextPath: MsGraph.Alert.Status
       description: Alert status, will appear only if changed.
@@ -765,16 +765,16 @@ script:
     name: msg-get-user
     outputs:
     - contextPath: MsGraph.User.Email
-      description: User email address
+      description: User email address.
       type: string
     - contextPath: MsGraph.User.ID
-      description: User ID
+      description: User ID.
       type: string
     - contextPath: MsGraph.User.Title
-      description: User job title
+      description: User job title.
       type: string
     - contextPath: MsGraph.User.Name
-      description: User name
+      description: User name.
       type: string
   - description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
@@ -822,7 +822,7 @@ script:
       description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
-      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.Description
       description: The case description.
@@ -834,7 +834,7 @@ script:
       description: The external case number for customer reference.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
-      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
   - arguments:
     - description: The ID of the eDiscovery case.
@@ -890,7 +890,7 @@ script:
       isArray: false
       name: case_id
       required: false
-    - description: The maximum number of results to return. 
+    - description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -914,7 +914,7 @@ script:
       description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
-      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.Description
       description: The case description.
@@ -926,7 +926,7 @@ script:
       description: The external case number for customer reference.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
-      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.ClosedBy.User.DisplayName
       description: The user who closed the case.
@@ -935,7 +935,7 @@ script:
       description: The user who last modified the case.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.ClosedDateTime
-      description: 'The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z'
+      description: 'The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
       type: Date
   - arguments:
     - description: The ID of the eDiscovery case.
@@ -980,7 +980,7 @@ script:
       isArray: false
       name: custodian_id
       required: false
-    - description: Number of total results to return. 
+    - description: Number of total results to return.
       isArray: false
       name: limit
       required: false
@@ -1161,7 +1161,7 @@ script:
       isArray: false
       name: user_source_id
       required: false
-    - description: Number of total results to return. 
+    - description: Number of total results to return.
       isArray: false
       name: limit
       required: false
@@ -1227,7 +1227,7 @@ script:
       isArray: false
       name: site_source_id
       required: false
-    - description: Number of total results to return. 
+    - description: Number of total results to return.
       isArray: false
       name: limit
       required: false
@@ -1310,7 +1310,7 @@ script:
       description: Display name of the noncustodialDataSource.
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.HoldStatus
-      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial'
+      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial.'
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.LastModifiedDateTime
       description: Last modified date and time of the nonCustodialDataSource.
@@ -1327,7 +1327,7 @@ script:
       isArray: false
       name: data_source_id
       required: false
-    - description: The maximum number of results to return. 
+    - description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
@@ -1356,7 +1356,7 @@ script:
       description: Display name of the noncustodialDataSource.
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.HoldStatus
-      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial'
+      description: 'The hold status of the nonCustodialDataSource.The possible values are: notApplied, applied, applying, removing, partial.'
       type: String
     - contextPath: MsGraph.NoncustodialDataSource.LastModifiedDateTime
       description: Last modified date and time of the nonCustodialDataSource.
@@ -1507,7 +1507,7 @@ script:
       isArray: false
       name: search_id
       required: false
-    - description: The maximum number of results to return. 
+    - description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false

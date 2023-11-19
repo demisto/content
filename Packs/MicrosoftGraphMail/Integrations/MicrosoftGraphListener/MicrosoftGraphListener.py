@@ -210,6 +210,8 @@ def main():     # pragma: no cover
             return_results(move_email_command(client, args))
         elif command == 'msgraph-mail-list-folders':
             return_results(list_folders_command(client, args))
+        elif command == 'msgraph-mail-list-child-folders':
+            return_results(list_child_folders_command(client, args))
         elif command == 'msgraph-mail-send-draft':
             return_results(send_draft_command(client, args))  # pylint: disable=E1123
         elif command == 'msgraph-update-email-status':

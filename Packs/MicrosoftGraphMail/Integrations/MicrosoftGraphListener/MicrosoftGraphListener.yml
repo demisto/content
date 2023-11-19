@@ -25,20 +25,19 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
-- display: ID or Client ID - see Detailed Instructions (?)
+- display: ID or Client ID
   name: auth_id
   type: 4
   hidden: true
   section: Connect
   required: false
-- display: Token or Tenant ID - see Detailed Instructions (?)
+- display: Token or Tenant ID
   name: refresh_token
   type: 4
   hidden: true
   section: Connect
-  advanced: true
   required: false
-- display: Key or Client Secret - see Detailed Instructions (?)
+- display: Key or Client Secret
   name: enc_key
   type: 4
   hidden: true
@@ -818,7 +817,37 @@ script:
     - contextPath: MSGraphMail.Folders.UnreadItemCount
       description: The number of unread emails in the folder.
       type: number
-  dockerimage: demisto/crypto:1.0.0.76022
+  - arguments:
+    - description: The ID of the parent folder.
+      name: parent_folder_id
+      required: true
+    - defaultValue: '20'
+      description: The maximum number of mail folder lists to return. 
+      name: limit
+    - description: Flag for the rate limit retry.
+      name: ran_once_flag
+    description: Returns the folder list under the specified folder.
+    name: msgraph-mail-list-child-folders
+    outputs:
+    - contextPath: MSGraphMail.Folders.ChildFolderCount
+      description: The number of child folders.
+      type: Number
+    - contextPath: MSGraphMail.Folders.DisplayName
+      description: The folder display name.
+      type: String
+    - contextPath: MSGraphMail.Folders.ID
+      description: The folder ID.
+      type: String
+    - contextPath: MSGraphMail.Folders.ParentFolderID
+      description: The parent folder ID.
+      type: String
+    - contextPath: MSGraphMail.Folders.TotalItemCount
+      description: The total number of email messages in the folder.
+      type: Number
+    - contextPath: MSGraphMail.Folders.UnreadItemCount
+      description: The number of unread email messages in the folder.
+      type: Number
+  dockerimage: demisto/crypto:1.0.0.79610
   isfetch: true
   script: ''
   type: python

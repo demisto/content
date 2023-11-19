@@ -40,7 +40,7 @@ COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', '
 ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel API version, the retention period ' \
                                     'for GetEntityByID is 30 days.'
 
-DEFAULT_LIMIT = 50
+DEFAULT_LIMIT = 20
 
 DEFAULT_SOURCE = 'Microsoft Sentinel'
 
@@ -648,17 +648,15 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def close_incident_in_remote(delta: Dict[str, Any]) -> bool:
+def close_incident_in_remote(delta: Dict[str, Any], data: Dict[str, Any]) -> bool:
     """
     Closing in the remote system should happen only when both:
         1. The user asked for it
-        2. The closing field is in the delta
-
-    The second is mandatory, so a closing request will not be sent for all mirroring requests that occur after closing an incident
-    (in the case where the incident has been updated, but the status has not been changed).
+        2. A closing reason was provided (either in the delta or before in the data).
     """
     closing_field = 'classification'
-    return demisto.params().get('close_ticket') and closing_field in delta
+    closing_reason = delta.get(closing_field, data.get(closing_field, ''))
+    return demisto.params().get('close_ticket') and bool(closing_reason)
 
 
 def update_incident_request(client: AzureSentinelClient, incident_id: str, data: Dict[str, Any], delta: Dict[str, Any],
@@ -669,7 +667,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         incident_id (str): the incident ID
         data (Dict[str, Any]): all the data of the incident
         delta (Dict[str, Any]): the delta of the changes in the incident's data
-        close_ticket (bool, optional): whether to close the ticket or not (defined by the close_incident_in_remote(delta)).
+        close_ticket (bool, optional): whether to close the ticket or not (defined by the close_incident_in_remote).
                                        Defaults to False.
 
     Returns:
@@ -694,9 +692,9 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     if close_ticket:
         properties |= {
             'status': 'Closed',
-            'classification': delta.get('classification'),
-            'classificationComment': delta.get('classificationComment'),
-            'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', ''))
+            'classification': delta.get('classification') or data.get('classification'),
+            'classificationComment': delta.get('classificationComment') or data.get('classificationComment'),
+            'classificationReason': CLASSIFICATION_REASON.get(delta.get('classification', data.get('classification', '')))
         }
     remove_nulls_from_dictionary(properties)
     data = {
@@ -710,7 +708,7 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
                            incident_status: IncidentStatus, incident_id: str) -> str:
     if incident_status == IncidentStatus.DONE:
-        if close_incident_in_remote(delta):
+        if close_incident_in_remote(delta, data):
             demisto.debug(f'Closing incident with remote ID {incident_id} in remote system.')
             return str(update_incident_request(client, incident_id, data, delta, close_ticket=True))
         elif delta.keys() <= {'classification', 'classificationComment'}:
@@ -799,7 +797,7 @@ def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents
         A CommandResult object with the array of incidents as output.
     """
     filter_expression = args.get('filter')
-    limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
+    limit = min(DEFAULT_LIMIT, int(args.get('limit')))
     next_link = args.get('next_link', '')
 
     if next_link:
@@ -1037,7 +1035,7 @@ def delete_incident_command(client, args):
 
 def list_incident_comments_command(client, args):
     inc_id = args.get('incident_id')
-    limit = min(50, int(args.get('limit')))
+    limit = min(DEFAULT_LIMIT, int(args.get('limit')))
     next_link = args.get('next_link', '')
 
     if next_link:
@@ -1246,6 +1244,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
 
     """
     # Get the last fetch details, if exist
+    limit = demisto.params().get("limit", DEFAULT_LIMIT)
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
     last_incident_number = last_run.get('last_incident_number')
@@ -1267,6 +1266,7 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         command_args = {
             'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
             'orderby': 'properties/createdTimeUtc asc',
+            'limit': limit
         }
 
     else:
@@ -1277,13 +1277,19 @@ def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_tim
         command_args = {
             'filter': f'properties/incidentNumber gt {last_incident_number}',
             'orderby': 'properties/incidentNumber asc',
+            'limit': limit
         }
 
     raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+    if isinstance(raw_incidents, dict):
+        raw_incidents = [raw_incidents]
+    demisto.debug(f"raw incidents id before dedup: {[incident['ID'] for incident in raw_incidents]}")
+    raw_incidents = list(filter(lambda incident: incident['ID'] not in last_fetch_ids, raw_incidents))
+    demisto.debug(f"raw incidents id after dedup: {[incident['ID'] for incident in raw_incidents]}")
 
     fetch_incidents_additional_info(client, raw_incidents)
 
-    return process_incidents(raw_incidents, last_fetch_ids, min_severity,
+    return process_incidents(raw_incidents, min_severity,
                              latest_created_time, last_incident_number)  # type: ignore[attr-defined]
 
 
@@ -1292,22 +1298,24 @@ def fetch_incidents_command(client, params):
     first_fetch_time = params.get('fetch_time', '3 days').strip()
     min_severity = severity_to_level(params.get('min_severity', 'Informational'))
     # Set and define the fetch incidents command to run after activated via integration settings.
+    last_run = demisto.getLastRun()
+    demisto.debug(f"Current last run is {last_run}")
     next_run, incidents = fetch_incidents(
         client=client,
-        last_run=demisto.getLastRun(),
+        last_run=last_run,
         first_fetch_time=first_fetch_time,
         min_severity=min_severity
     )
+    demisto.debug(f"New last run is {last_run}")
     demisto.setLastRun(next_run)
     demisto.incidents(incidents)
 
 
-def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
+def process_incidents(raw_incidents: list, min_severity: int, latest_created_time: datetime,
                       last_incident_number):
     """Processing the raw incidents
     Args:
         raw_incidents: The incidents that were fetched from the API.
-        last_fetch_ids: The last fetch ids from the last run.
         last_incident_number: The last incident number that was fetched.
         latest_created_time: The latest created time.
         min_severity: The minimum severity.
@@ -1325,31 +1333,29 @@ def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: i
         incident_severity = severity_to_level(incident.get('Severity'))
         demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
-        # create incident only for incidents that weren't fetched in the last run and their severity is at least min_severity
-        if incident.get('ID') not in last_fetch_ids:
-            incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
-            current_fetch_ids.append(incident.get('ID'))
-            if incident_severity >= min_severity:
-                add_mirroring_fields(incident)
-                xsoar_incident = {
-                    'name': '[Azure Sentinel] ' + incident.get('Title'),
-                    'occurred': incident.get('CreatedTimeUTC'),
-                    'severity': incident_severity,
-                    'rawJSON': json.dumps(incident)
-                }
-                incidents.append(xsoar_incident)
-            else:
-                demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
-                              "due to the {incident_severity=} is lower then {min_severity=}")
+        incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
+        current_fetch_ids.append(incident.get('ID'))
+        if incident_severity >= min_severity:
+            add_mirroring_fields(incident)
+            xsoar_incident = {
+                'name': '[Azure Sentinel] ' + incident.get('Title'),
+                'occurred': incident.get('CreatedTimeUTC'),
+                'severity': incident_severity,
+                'rawJSON': json.dumps(incident)
+            }
+            incidents.append(xsoar_incident)
+        else:
+            demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
+                          "due to the {incident_severity=} is lower then {min_severity=}")
 
-            # Update last run to the latest fetch time
-            if incident_created_time is None:
-                raise DemistoException(f"{incident.get('CreatedTimeUTC')=} couldn't be parsed")
+        # Update last run to the latest fetch time
+        if incident_created_time is None:
+            raise DemistoException(f"{incident.get('CreatedTimeUTC')=} couldn't be parsed")
 
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
-            if incident.get('IncidentNumber') > last_incident_number:
-                last_incident_number = incident.get('IncidentNumber')
+        if incident_created_time > latest_created_time:
+            latest_created_time = incident_created_time
+        if incident.get('IncidentNumber') > last_incident_number:
+            last_incident_number = incident.get('IncidentNumber')
 
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),

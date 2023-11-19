@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import json
 import random
 import re
@@ -108,6 +110,11 @@ def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, 
             "replyTo": service_mail,
             "using": mail_sender_instance
         }
+        # If using Gmail Single User,
+        # add references header to mail_content to properly group replies into conversations in user's inbox.
+        instances = demisto.getModules()
+        if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
+            mail_content["references"] = email_latest_message
     else:
         mail_content = {
             "to": email_to,
@@ -812,7 +819,7 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
             # Keep track of the last processed list position
             last_thread_processed = idx
 
-    return thread_found, reply_to_message_id, outbound_only, reply_code, reply_subject, reply_recipients,\
+    return thread_found, reply_to_message_id, outbound_only, reply_code, reply_subject, reply_recipients, \
         reply_mailbox, thread_cc, thread_bcc, last_thread_processed
 
 
@@ -870,7 +877,7 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
         elif type(incident_email_threads) == list:
             # Process existing thread entries in this email chain to gather re-usable data for new message
             thread_found, reply_to_message_id, outbound_only, reply_code, reply_subject, reply_recipients, \
-                reply_mailbox, thread_cc, thread_bcc,\
+                reply_mailbox, thread_cc, thread_bcc, \
                 last_thread_processed = collect_thread_details(incident_email_threads, email_selected_thread)
 
             if thread_found is False:

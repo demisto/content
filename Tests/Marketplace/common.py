@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 import time
 from typing import Any
 from collections.abc import Callable
-
+from urllib.parse import urljoin
 import demisto_client
+import requests
 from demisto_client.demisto_api.rest import ApiException
 from urllib3.exceptions import HTTPError, HTTPWarning
 
@@ -162,4 +163,105 @@ def wait_until_not_updating(client: demisto_client,
                 logging.info("Exiting after exhausting all attempts")
                 return False
     logging.info(f"Exiting after exhausting the allowed time:{maximum_time_to_wait} seconds")
+    return False
+
+
+def send_api_request_with_retries(
+    base_url: str,
+    retries_message: str,
+    exception_message: str,
+    success_message: str,
+    prior_message: str,
+    endpoint: str,
+    method: str,
+    params: dict | None = None,
+    headers: dict | None = None,
+    request_timeout: int | None = None,
+    accept: str = 'application/json',
+    body: Any | None = None,
+    attempts_count: int = 5,
+    sleep_interval: int = 60,
+    should_try_handler: Callable[[Any], bool] | None = None,
+    success_handler: Callable[[Any], Any] | None = None,
+    api_exception_handler: Callable[[ApiException, int], Any] | None = None,
+    http_exception_handler: Callable[[HTTPError | HTTPWarning], Any] | None = None
+):
+    """
+    Args:
+        body: request body.
+        base_url: base url to send request
+        headers: headers for the request.
+        success_message:  message to print after success response.
+        retries_message: message to print after failure when we have more attempts.
+        exception_message: message to print when we get and exception that is not API or HTTP exception.
+        prior_message: message to print when a new retry is made.
+        endpoint: endpoint to send request to.
+        method: HTTP method to use.
+        params: api request params.
+        request_timeout: request param.
+        accept: request param.
+        attempts_count: number of total attempts made.
+        sleep_interval: sleep interval between attempts.
+        should_try_handler: a method to determine if we should send the next request.
+        success_handler: a method to run in case of successful request (according to the response status).
+        api_exception_handler: a method to run in case of api exception.
+        http_exception_handler: a method to run in case of http exception
+
+    Returns: True if the request succeeded
+
+    """
+    headers = headers if headers else {}
+    headers['Accept'] = accept
+    response = None
+    url_path = urljoin(base_url, endpoint)
+    try:
+        for attempts_left in range(attempts_count - 1, -1, -1):
+            try:
+                if should_try_handler and not should_try_handler(response):
+                    # if the method exist, and we should not try again.
+                    return True
+
+                logging.info(f"{prior_message}, attempt: {attempts_count - attempts_left}/{attempts_count}")
+                response = requests.request(
+                    method=method,
+                    url=url_path,
+                    verify=False,
+                    params=params,
+                    data=body,
+                    headers=headers,
+                    timeout=request_timeout,
+                )
+                if 200 <= response.status_code < 300 and response.status_code != 204:
+                    logging.debug(f"Got successful response: {response.status_code=},  {response.content=}.")
+                    logging.info(success_message)
+                    if success_handler:
+                        return success_handler(response)
+
+                    return True
+
+                else:
+                    err = f"Got {response.status_code=}, {response.headers=}, {response.content=}"
+
+                if not attempts_left:
+                    raise Exception(err)
+
+                logging.warning(f"Got error: {err}")
+
+            except ApiException as ex:
+                if api_exception_handler:
+                    api_exception_handler(ex, attempts_left)
+                if not attempts_left:
+                    raise Exception(f"Got status {ex.status} from server, message: {ex.body}, headers: {ex.headers}") from ex
+                logging.debug(f"Process failed, got error {ex}")
+            except (HTTPError, HTTPWarning) as http_ex:
+                if http_exception_handler:
+                    http_exception_handler(http_ex)
+                if not attempts_left:
+                    raise Exception("Failed to perform http request to the server") from http_ex
+                logging.debug(f"Process failed, got error {http_ex}")
+
+            logging.debug(f"{retries_message}, sleeping for {sleep_interval} seconds.")
+            time.sleep(sleep_interval)
+    except Exception as e:
+        logging.exception(f'{exception_message}. Additional info: {str(e)}')
     return False
