@@ -164,6 +164,7 @@ class Client(BaseClient):
                     .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
 
         if service == 'connectApi':
+            demisto.debug("Will now stream the response's compressed data")
             decompressor = zlib.decompressobj(zlib.MAX_WBITS + 16)
             with open("response.txt", "w") as f:
                 for chunk in response.iter_content(CHUNK_SIZE):
@@ -171,6 +172,7 @@ class Client(BaseClient):
                         decompressed_chunk = decompressor.decompress(chunk)
                         f.write(decompressed_chunk.decode('utf-8'))
         else:
+            demisto.debug("Will now stream the response's data")
             with open("response.txt", "w") as f:
                 for chunk in response.iter_content(CHUNK_SIZE, decode_unicode=True):
                     if chunk:
