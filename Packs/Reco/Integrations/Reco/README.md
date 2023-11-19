@@ -328,6 +328,7 @@ update alert status in Reco
 #### Context Output
 
 There is no context output for this command.
+
 ### reco-get-user-context-by-email-address
 
 ***
