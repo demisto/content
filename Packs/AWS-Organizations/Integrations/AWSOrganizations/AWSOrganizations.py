@@ -8,13 +8,19 @@ from botocore.paginate import Paginator
 # They are not used at runtime, and are not in the docker image.
 if TYPE_CHECKING:
     from mypy_boto3_organizations import *  # noqa
-    from mypy_boto3_organizations.type_defs import *  # noqa
+    from mypy_boto3_organizations.literals import *  # noqa
 
 ''' CONSTANTS '''
 
 SERVICE_NAME = 'organizations'
 REGION = 'us-east-1'
 MAX_PAGINATION = 20
+POLICY_TYPE_MAP: dict[str, 'PolicyTypeType'] = {
+    'Service Control Policy': 'SERVICE_CONTROL_POLICY',
+    'Tag Policy': 'TAG_POLICY',
+    'Backup Policy': 'BACKUP_POLICY',
+    'AI Services Opt Out Policy': 'AISERVICES_OPT_OUT_POLICY'
+}
 
 ''' HELPER FUNCTIONS '''
 
@@ -109,6 +115,23 @@ def dict_values_to_str(d: dict, *keys) -> dict:
         if key in d:
             d[key] = str(d[key])
     return d
+
+
+def build_tags(keys: str | None, values: str | None) -> list:
+    try:
+        return [
+            {
+                'Key': key,
+                'Value': value
+            }
+            for key, value in zip(
+                argToList(keys),
+                argToList(values),
+                strict=True
+            )
+        ]
+    except ValueError:
+        raise DemistoException('"tag_key" and "tag_value" must have the same length.')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -293,7 +316,7 @@ def organization_get_command(aws_client: 'OrganizationsClient') -> CommandResult
     )
 
 
-def account_remove_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+def account_remove_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:  # TODO: test
 
     aws_client.remove_account_from_organization(
         AccountId=args['account_id']
@@ -307,7 +330,7 @@ def account_remove_command(args: dict, aws_client: 'OrganizationsClient') -> Com
     )
 
 
-def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:  # TODO: test
 
     aws_client.move_account(
         AccountId=args['account_id'],
@@ -330,23 +353,7 @@ def account_move_command(args: dict, aws_client: 'OrganizationsClient') -> Comma
     poll_message='Creating account:',
     requires_polling_arg=False
 )
-def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:
-
-    def build_tags(keys: str | None, values: str | None) -> list:
-        try:
-            return [
-                {
-                    'Key': key,
-                    'Value': value
-                }
-                for key, value in zip(
-                    argToList(keys),
-                    argToList(values),
-                    strict=True
-                )
-            ]
-        except ValueError:
-            raise DemistoException('"tag_key" and "tag_value" must have the same length.')
+def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:  # TODO: test
 
     def initial_call() -> dict:
         account = aws_client.create_account(
@@ -369,19 +376,23 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
 
     def create_response(account: dict) -> PollResult:
 
-        result = PollResult(None, continue_to_poll=True)
-
         match dict_safe_get(account, ['CreateAccountStatus', 'State']):
             case 'SUCCEEDED':
-                result.continue_to_poll = False
-                result.response = account_list_command(
-                    {'account_id': account.get('AccountId')},
-                    aws_client
+                return PollResult(
+                    response=account_list_command(
+                        {'account_id': account.get('AccountId')},
+                        aws_client
+                    ),
+                    continue_to_poll=False
                 )
             case 'FAILED':
-                pass
-
-        return result
+                reason = dict_safe_get(account, ['CreateAccountStatus', 'FailureReason'])
+                raise DemistoException(f'Failed to create account. Reason: {reason}')
+            case _:
+                return PollResult(
+                    response=None,
+                    continue_to_poll=True
+                )
 
     if not args.get('request_id'):
         account = initial_call()
@@ -398,7 +409,7 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
     poll_message='Closing account:',
     requires_polling_arg=False
 )
-def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:
+def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> PollResult:  # TODO: test
 
     if not args['is_closed']:
         aws_client.close_account(
@@ -417,6 +428,238 @@ def account_close_command(args: dict, aws_client: 'OrganizationsClient') -> Poll
             )
         ),
         continue_to_poll=(dict_safe_get(account, ['Account', 'Status']) != 'SUSPENDED'),
+    )
+
+
+def organization_unit_create_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    ou = aws_client.create_organizational_unit(
+        ParentId=args['parent_id'],
+        Name=args['name'],
+        Tags=build_tags(
+            args.get('tag_key'),  # TODO
+            args.get('tag_value')
+        )
+    )
+
+    return CommandResults(
+        outputs_prefix='AWS.Organizations.OrganizationUnit',
+        outputs_key_field='Id',
+        outputs=ou['OrganizationalUnit'],
+        readable_output=tableToMarkdown(
+            'AWS Organization Unit',
+            ou['OrganizationalUnit'],
+            ['Id', 'Name', 'Arn'],
+            removeNull=True
+        )
+    )
+
+
+def organization_unit_delete_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    aws_client.delete_organizational_unit(
+        OrganizationalUnitId=args['organizational_unit_id']
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'AWS Organization Unit Deleted',
+            {'OrganizationalUnitId': args['organizational_unit_id']}
+        )
+    )
+
+
+def organization_unit_rename_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    aws_client.update_organizational_unit(
+        OrganizationalUnitId=args['organizational_unit_id'],
+        Name=args['name']
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'AWS Organization Unit Renamed',
+            {
+                'OrganizationalUnitId': args['organizational_unit_id'],
+                'Name': args['name']
+            }
+        )
+    )
+
+
+def policy_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    policies, next_token = paginate(
+        aws_client.get_paginator('list_policies'),
+        'Policies',
+        limit=args.get('limit'),
+        next_token=args.get('next_token'),
+        page_size=args.get('page_size'),
+        Filter=POLICY_TYPE_MAP[args['policy_type']]
+    )
+
+    return CommandResults(
+        outputs=next_token_output_dict(
+            'Policy', next_token, policies, 'Id',
+        ),
+        readable_output=tableToMarkdown(
+            'AWS Organization Policies',
+            policies,
+            [
+                'Id', 'Arn', 'Name',
+                'Description', 'Type', 'AwsManaged'
+            ],
+            removeNull=True,
+        )
+    )
+
+
+def target_policy_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    policies, next_token = paginate(
+        aws_client.get_paginator('list_policies_for_target'),
+        'Policies',
+        limit=args.get('limit'),
+        next_token=args.get('next_token'),
+        page_size=args.get('page_size'),
+        TargetId=args['target_id'],
+        Filter=POLICY_TYPE_MAP[args['policy_type']]
+    )
+
+    return CommandResults(
+        outputs=next_token_output_dict(
+            'Policy', next_token, policies, 'Id',
+        ),
+        readable_output=tableToMarkdown(
+            'AWS Organization Policies',
+            policies,
+            [
+                'Id', 'Arn', 'Name',
+                'Description', 'Type', 'AwsManaged'
+            ],
+            removeNull=True,
+        )
+    )
+
+
+def policy_get_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    response = aws_client.describe_policy(
+        PolicyId=args['policy_id']
+    )
+
+    policy = dict_safe_get(response, ['Policy', 'PolicySummary'])
+
+    return CommandResults(
+        raw_response=response,
+        outputs=policy,
+        outputs_key_field='Id',
+        outputs_prefix='AWS.Organizations.Policy',
+        readable_output=tableToMarkdown(
+            'AWS Organization Policies',
+            policy,
+            [
+                'Id', 'Arn', 'Name',
+                'Description', 'Type', 'AwsManaged'
+            ],
+            removeNull=True,
+        )
+    )
+
+
+def policy_delete_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    aws_client.delete_policy(
+        PolicyId=args['policy_id']
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'AWS Organization Policy Deleted',
+            {'PolicyId': args['policy_id']}
+        )
+    )
+
+
+def policy_attach_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    aws_client.attach_policy(
+        PolicyId=args['policy_id'],
+        TargetId=args['target_id']
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'AWS Organization Policy Attached',
+            {'PolicyId': args['policy_id']}
+        )
+    )
+
+
+def policy_target_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    targets, next_token = paginate(
+        aws_client.get_paginator('list_targets_for_policy'),
+        'Targets',
+        limit=args.get('limit'),
+        next_token=args.get('next_token'),
+        page_size=args.get('page_size'),
+        PolicyId=args['policy_id']
+    )
+
+    return CommandResults(
+        outputs=next_token_output_dict(
+            'PolicyTarget',
+            next_token,
+            [
+                target | {'PolicyId': args['policy_id']}
+                for target in targets
+            ],
+            'TargetId'
+        ),
+        readable_output=tableToMarkdown(
+            'AWS Organization Policy Targets',
+            targets,
+            ['TargetId', 'Arn', 'Name', 'Type'],
+            removeNull=True
+        )
+    )
+
+
+def resource_tag_add_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    aws_client.tag_resource(
+        ResourceId=args['resource_id'],
+        Tags=build_tags(
+            args.get('tag_key'),  # TODO
+            args.get('tag_value')
+        )
+    )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'AWS Organization Resource Tagged',
+            {'ResourceId': args['resource_id']}
+        )
+    )
+
+
+def resource_tag_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
+
+    tags = [
+        response.get('Tags') for response in
+        aws_client.get_paginator(
+            'list_tags_for_resource'
+        ).paginate(ResourceId=args['resource_id'])
+    ]
+
+    return CommandResults(
+        outputs=tags,
+        readable_output=tableToMarkdown(
+            'AWS Organization Resource Tags',
+            tags, ['Key', 'Value'],
+            removeNull=True
+        )
     )
 
 
@@ -456,6 +699,28 @@ def main():
             return_results(account_create_command(args, aws_client))
         elif command == 'aws-org-account-close':
             return_results(account_close_command(args, aws_client))
+        elif command == 'aws-org-organization-unit-create':
+            return_results(organization_unit_create_command(args, aws_client))
+        elif command == 'aws-org-organization-unit-delete':
+            return_results(organization_unit_delete_command(args, aws_client))
+        elif command == 'aws-org-organization-unit-rename':
+            return_results(organization_unit_rename_command(args, aws_client))
+        elif command == 'aws-org-policy-list':
+            return_results(policy_list_command(args, aws_client))
+        elif command == 'aws-org-target-policy-list':
+            return_results(target_policy_list_command(args, aws_client))
+        elif command == 'aws-org-policy-get':
+            return_results(policy_get_command(args, aws_client))
+        elif command == 'aws-org-policy-delete':
+            return_results(policy_delete_command(args, aws_client))
+        elif command == 'aws-org-policy-attach':
+            return_results(policy_attach_command(args, aws_client))
+        elif command == 'aws-org-policy-target-list':
+            return_results(policy_target_list_command(args, aws_client))
+        elif command == 'aws-org-resource-tag-add':
+            return_results(resource_tag_add_command(args, aws_client))
+        elif command == 'aws-org-resource-tag-list':
+            return_results(resource_tag_list_command(args, aws_client))
         else:
             raise NotImplementedError(f'AWS-Organizations error: command {command!r} is not implemented')
 

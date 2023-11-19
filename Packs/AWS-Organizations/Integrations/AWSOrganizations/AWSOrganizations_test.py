@@ -27,9 +27,6 @@ class MockOrganizationsClient:  # (OrganizationsClient):
         assert account_move.client_func_kwargs == kwargs
 
 
-CLIENT = MockOrganizationsClient()
-
-
 def get_mock_paginate(kwargs: dict, return_obj):
     def mock_paginate(paginator, key_to_pages, limit=None, page_size=None, next_token=None, **paginator_kwargs):
         assert kwargs == paginator_kwargs
@@ -106,7 +103,7 @@ def test_root_list_command(mocker):
         )
     )
 
-    result = root_list_command(root_list.command_args, CLIENT)
+    result = root_list_command(root_list.command_args, MockOrganizationsClient())
 
     assert list(result.outputs.values()) == root_list.context_outputs
     assert result.readable_output == root_list.readable_output
@@ -124,7 +121,7 @@ def test_children_list_command(mocker):
         )
     )
 
-    result = children_list_command(children_list.command_args, CLIENT)
+    result = children_list_command(children_list.command_args, MockOrganizationsClient())
 
     assert list(result.outputs.values()) == children_list.context_outputs
     assert result.readable_output == children_list.readable_output
@@ -142,7 +139,7 @@ def test_parent_list_command(mocker):
         )
     )
 
-    result = parent_list_command(parent_list.command_args, CLIENT)
+    result = parent_list_command(parent_list.command_args, MockOrganizationsClient())
 
     assert result.outputs == parent_list.context_outputs
     assert result.readable_output == parent_list.readable_output
@@ -152,7 +149,7 @@ def test_organization_unit_get():
 
     from AWSOrganizations import organization_unit_get_command
 
-    result = organization_unit_get_command(organization_unit_get.command_args, CLIENT)
+    result = organization_unit_get_command(organization_unit_get.command_args, MockOrganizationsClient())
 
     assert result.outputs == organization_unit_get.context_outputs
     assert result.readable_output == organization_unit_get.readable_output
@@ -170,7 +167,7 @@ def test_account_list_command(mocker):
         )
     )
 
-    result = account_list_command(account_list.command_args, CLIENT)
+    result = account_list_command(account_list.command_args, MockOrganizationsClient())
 
     assert list(result.outputs.values()) == account_list.context_outputs
     assert result.readable_output == account_list.readable_output
@@ -180,7 +177,7 @@ def test_account_get():
 
     from AWSOrganizations import account_list_command
 
-    result = account_list_command(account_get.command_args, CLIENT)
+    result = account_list_command(account_get.command_args, MockOrganizationsClient())
 
     assert result.outputs == account_get.context_outputs
     assert result.readable_output == account_get.readable_output
@@ -190,7 +187,7 @@ def test_organization_get():
 
     from AWSOrganizations import organization_get_command
 
-    result = organization_get_command(CLIENT)
+    result = organization_get_command(MockOrganizationsClient())
 
     assert result.outputs == organization_get.context_outputs
     assert result.readable_output == organization_get.readable_output
@@ -200,7 +197,7 @@ def test_account_remove():
 
     from AWSOrganizations import account_remove_command
 
-    result = account_remove_command(account_remove.command_args, CLIENT)
+    result = account_remove_command(account_remove.command_args, MockOrganizationsClient())
 
     assert result.readable_output == account_remove.readable_output
 
@@ -209,6 +206,16 @@ def test_account_move():
 
     from AWSOrganizations import account_move_command
 
-    result = account_move_command(account_move.command_args, CLIENT)
+    result = account_move_command(account_move.command_args, MockOrganizationsClient())
 
     assert result.readable_output == account_move.readable_output
+
+
+def test_account_create_initial_call():
+    
+    from AWSOrganizations import account_create_command
+
+    result = account_create_command(MockOrganizationsClient())
+
+    assert result.response.outputs == test_data.context_outputs
+    assert result.response.readable_output == test_data.readable_output

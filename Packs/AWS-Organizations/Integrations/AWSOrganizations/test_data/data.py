@@ -326,3 +326,9 @@ class account_move(Data):
 |---|
 | account_id |
 """
+
+
+class account_create_initial(Data):
+    command_args = {}
+    client_func_kwargs = {}
+    readable_output = """"""
