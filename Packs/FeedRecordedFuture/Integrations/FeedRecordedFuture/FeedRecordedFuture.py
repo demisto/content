@@ -1,4 +1,5 @@
 import gzip
+import zlib
 import json
 
 from CommonServerPython import *
@@ -163,16 +164,12 @@ class Client(BaseClient):
                     .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
 
         if service == 'connectApi':
-            # Check if we can gzip in chunks
-            response_content = gzip.decompress(response.content)
-            # response_content = response_content.decode('utf-8')
-            # with open("response.txt", "w") as f:
-            #     f.write(response_content)
+            decompressor = zlib.decompressobj(zlib.MAX_WBITS + 16)
             with open("response.txt", "w") as f:
-                # TODO implement solution of streaming, as can be seen below
-                for chunk in response.iter_content(CHUNK_SIZE, decode_unicode=True):
+                for chunk in response.iter_content(CHUNK_SIZE):
                     if chunk:
-                        f.write(chunk)
+                        decompressed_chunk = decompressor.decompress(chunk)
+                        f.write(decompressed_chunk.decode('utf-8'))
         else:
             with open("response.txt", "w") as f:
                 for chunk in response.iter_content(CHUNK_SIZE, decode_unicode=True):
