@@ -465,7 +465,7 @@ class Client(BaseClient):
 
         url_suffix = get_url_suffix(ticket_id)
         url_suffix = '/filter' if updated_query else url_suffix
-
+        demisto.debug(f'Calling "/tickets{url_suffix}" API endpoint with {params=}')
         return self._http_request('GET',
                                   f'api/v2/tickets{url_suffix}',
                                   params=params)
