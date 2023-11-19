@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The suffix 'Closed on Microsoft Sentinel' was moved from 'close reason' field to 'close notes' filed, relevant only for cases of closing mirrored incident." 
+}

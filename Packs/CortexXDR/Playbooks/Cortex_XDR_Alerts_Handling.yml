@@ -1,7 +1,7 @@
 id: Cortex XDR Alerts Handling
 version: -1
 name: Cortex XDR Alerts Handling
-description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation\n- Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service."
+description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation.\n- Remote PsExec-like LOLBIN command execution from an unsigned non-standard PsExec service."
 starttaskid: "0"
 tasks:
   "0":
@@ -481,6 +481,7 @@ tasks:
         complex:
           root: inputs.alert_id
     separatecontext: false
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -547,7 +548,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -940,
           "y": 920
         }
       }
@@ -604,7 +605,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -940,
           "y": 575
         }
       }
@@ -617,10 +618,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 887caea0-e329-4f52-87de-71ab6d7ebeb2
+    taskid: d876d66f-ca83-4565-8c73-bfcf47d74473
     type: condition
     task:
-      id: 887caea0-e329-4f52-87de-71ab6d7ebeb2
+      id: d876d66f-ca83-4565-8c73-bfcf47d74473
       version: -1
       name: Which XCLOUD alert was found?
       description: Checks which XCLOUD alert was found in the incident.
@@ -632,6 +633,8 @@ tasks:
       - "5"
       Cryptojacking:
       - "10"
+      Data Exfiltration:
+      - "17"
       IAM User Access:
       - "15"
       Token Theft:
@@ -838,11 +841,23 @@ tasks:
             value:
               simple: Remote usage of VM Service Account token
           ignorecase: true
+    - label: Data Exfiltration
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: An identity performed a suspicious download of multiple cloud storage object
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -730,
+          "x": -940,
           "y": 730
         }
       }
@@ -1119,7 +1134,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1430,
+          "x": -430,
           "y": 575
         }
       }
@@ -1184,7 +1199,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -310,
+          "x": -1780,
           "y": 920
         }
       }
@@ -1268,7 +1283,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1140,
+          "x": -1360,
           "y": 920
         }
       }
@@ -1281,27 +1296,46 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 70166990-846c-413a-873e-9ff6242703d6
+    taskid: be0cb5ec-08ca-4334-8efd-9c7c004aa362
     type: playbook
     task:
-      id: 70166990-846c-413a-873e-9ff6242703d6
+      id: be0cb5ec-08ca-4334-8efd-9c7c004aa362
       version: -1
-      name: Cortex XDR Remote PsExec with LOLBIN command execution alert
-      description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (Manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and verdict for the executed command.\n- Perform further endpoint investigation using XDR.\n- Checks for any malicious verdict found to raise the severity of the alert.\n- Perform Automatic/Manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and can not be used as a standalone version."
-      playbookName: Cortex XDR Remote PsExec with LOLBIN command execution alert
+      name: Cortex XDR - Cloud Data Exfiltration Response
+      playbookName: Cortex XDR - Cloud Data Exfiltration Response
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
-    separatecontext: true
+    scriptarguments:
+      alertID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: An identity performed a suspicious download of multiple cloud storage objects
+          accessor: alert_id
+    separatecontext: false
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
     view: |-
       {
         "position": {
-          "x": 1380,
-          "y": 575
+          "x": -2200,
+          "y": 920
         }
       }
     note: false
@@ -1311,10 +1345,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "12_15_IAM User Access": 0.59,
+      "12_15_IAM User Access": 0.74,
+      "12_16_Token Theft": 0.58,
       "1_11_Cloud": 0.81,
       "1_14_First SSO Access": 0.82,
       "1_7_#default#": 0.77,
@@ -1323,8 +1359,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1095,
-        "width": 3790,
-        "x": -1430,
+        "width": 3940,
+        "x": -2200,
         "y": 70
       }
     }
@@ -1388,7 +1424,7 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
   description: The domain related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
-  description: The country related to the artifact
+  description: The country related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
   description: The remote IP related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
@@ -1434,3 +1470,5 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+marketplaces:
+- xsoar

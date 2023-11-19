@@ -77,7 +77,7 @@ def initialise_scrolls_and_rules():
 
 def initialize_global_values():
 
-    global URL, MAX_INCIDENTS_TO_FETCH, COOKIE, AUTH_HEADERS,\
+    global URL, MAX_INCIDENTS_TO_FETCH, COOKIE, AUTH_HEADERS, \
         CLIENT_ID, CLIENT_SECRET, AUTH_HEADERS, DOMAIN, AUTHORIZATION
 
     CLIENT_ID = demisto.getParam('client_id')
