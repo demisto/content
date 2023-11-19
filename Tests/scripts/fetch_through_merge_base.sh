@@ -5,7 +5,7 @@ DEEPEN_LENGTH=${DEEPEN_LENGTH:-10}
 HEAD_REF=${1:-$(git rev-parse HEAD)}
 BASE_REF=$2
 
-while [ -z "$(git merge-base "$BASE_REF" "$HEAD_REF" 2>/dev/null)" ]; do
+while [ -z "$(git merge-base "$BASE_REF" "$HEAD_REF")" ]; do
   echo "Continuing fetch with a depth of $DEEPEN_LENGTH commits..."
   git fetch -q --deepen="$DEEPEN_LENGTH" origin
 done
