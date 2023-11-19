@@ -26,7 +26,7 @@ class Client(BaseClient):
     For this HelloWorld implementation, no special attributes defined
     """
 
-    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None) -> List[Dict]:
+    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None, default_Protocol: str = 'UDP') -> List[Dict]:  # noqa: E501
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -46,6 +46,8 @@ class Client(BaseClient):
             'created_time': datetime.now().isoformat(),
             'description': f'This is test description {prev_id + 1}',
             'alert_status': alert_status,
+            'protocol': default_Protocol,
+            't_port': prev_id + 1,
             'custom_details': {
                 'triggered_by_name': f'Name for id: {prev_id + 1}',
                 'triggered_by_uuid': str(uuid.uuid4()),
