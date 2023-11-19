@@ -559,6 +559,47 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
+    def get_user_context_by_email_address(
+        self, email_address: str
+    ) -> list[dict[str, Any]]:
+        """ Get user context by email address. Returns a dict of user context. """
+        params: dict[str, Any] = {
+            "getTableRequest": {
+                "tableName": "enriched_users_view",
+                "pageSize": 1,
+                "fieldSorts": {
+                    "sorts": []
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_OR",
+                    "fieldFilterGroups": {
+                        "fieldFilters": [
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_OR",
+                                "filters": {
+                                    "filters": [
+                                        {
+                                            "field": "email_account",
+                                            "stringEquals": {
+                                                "value": f"{email_address}"
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+        response = self._http_request(
+            method="POST",
+            url_suffix="/asset-management",
+            timeout=RECO_API_TIMEOUT_IN_SECONDS * 2,
+            data=json.dumps(params),
+        )
+        return extract_response(response)
+
     def get_sensitive_assets_information(self,
                                          asset_name: str | None,
                                          asset_id: str | None,
@@ -753,7 +794,8 @@ def parse_table_row_to_dict(alert: list[dict[str, Any]]) -> dict[str, Any]:
             continue
         obj[key] = base64.b64decode(value).decode("utf-8")
         # Remove " from the beginning and end of the string
-        obj[key] = obj[key].replace('"', "")
+        if key != "labels":
+            obj[key] = obj[key].replace('"', "")
         if key in ["updated_at", "created_at", "event_time"]:
             try:
                 parsed_time = datetime.strptime(obj[key], RECO_TIME_FORMAT)
@@ -766,6 +808,11 @@ def parse_table_row_to_dict(alert: list[dict[str, Any]]) -> dict[str, Any]:
                 obj[key] = int(obj[key])
             except Exception:
                 demisto.info(f"Could not parse risk level {obj[key]} to int")
+        if key in ["group", "job_title", "departments", "labels"]:
+            try:
+                obj[key] = json.loads(obj[key])
+            except Exception:
+                pass
         alert_as_dict[key] = obj[key]
 
     return alert_as_dict
@@ -1043,6 +1090,26 @@ def get_sensitive_assets_by_name(reco_client: RecoClient, asset_name: str, regex
     return assets_to_command_result(assets)
 
 
+def get_user_context_by_email_address(reco_client: RecoClient, email_address: str) -> CommandResults:
+    users_context = reco_client.get_user_context_by_email_address(email_address)
+    user_as_dict = None
+    headers = []
+    if len(users_context) > 0:
+        user_as_dict = parse_table_row_to_dict(users_context[0].get("cells", {}))
+        headers = list(user_as_dict.keys())
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "User",
+            user_as_dict,
+            headers=headers
+        ),
+        outputs_prefix="Reco.User",
+        outputs_key_field="email_address",
+        outputs=user_as_dict,
+        raw_response=users_context)
+
+
 def add_exclusion_filter(reco_client: RecoClient, key_to_add: str, values: list[str]) -> CommandResults:
     """Add exclusion filter to Reco."""
     response = reco_client.add_exclusion_filter(key_to_add, values)
@@ -1297,6 +1364,9 @@ def main() -> None:
             return_results(result)
         elif command == "reco-change-alert-status":
             result = change_alert_status(reco_client, demisto.args()["alert_id"], demisto.args()["status"])
+            return_results(result)
+        elif command == "reco-get-user-context-by-email-address":
+            result = get_user_context_by_email_address(reco_client, demisto.args()["email_address"])
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
