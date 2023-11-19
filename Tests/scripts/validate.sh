@@ -11,7 +11,7 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
             python3 -m demisto_sdk validate -i Packs/"$item" --post-commit --graph --skip-pack-dependencies
         done       
     else
-        if [ -n "$NIGHTLY" ]; then
+        if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
             PREV_VER=$LAST_UPLOAD_COMMIT
         else
             PREV_VER="origin/master"

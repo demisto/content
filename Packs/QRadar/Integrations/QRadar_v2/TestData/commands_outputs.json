@@ -22,7 +22,7 @@
     "QRadar.Asset(val.ID === \"1914\")": {
       "ID": 1914,
       "Name": {
-        "Value": "ec2-54-245-171-52.us-west-2.compute.amazonaws.com",
+        "Value": "ec2.us.compute-1.amazonaws.com",
         "LastUser": "IDENTITY:0",
         "Property Name": "Name"
       }
@@ -30,7 +30,7 @@
     "QRadar.Asset(val.ID === \"1928\")": {
       "ID": 1928,
       "Name": {
-        "Value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com",
+        "Value": "ec2.us.compute-1.amazonaws.com",
         "LastUser": "IDENTITY:0",
         "Property Name": "Name"
       }
@@ -46,7 +46,7 @@
     "QRadar.Asset(val.ID === \"1928\")": {
       "ID": 1928,
       "Name": {
-        "Value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com",
+        "Value": "ec2.us.compute-1.amazonaws.com",
         "LastUser": "IDENTITY:0",
         "Property Name": "Name"
       }
