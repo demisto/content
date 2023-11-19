@@ -1247,11 +1247,13 @@ def main():
             pack.cleanup()
             continue
         logging.info(f"[TEST - load_user_metadata] Does pack {pack.name} exists: "
-                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
+                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}\n"
+                     f"{pack._dependencies=}")
 
         pack.enhance_pack_attributes(index_folder_path, statistics_handler, remove_test_deps)
         logging.info(f"[TEST - enhance_pack_attributes] Does pack {pack.name} exists: "
-                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
+                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}\n"
+                     f"{pack._dependencies=}")
 
         task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
             index_folder_path,
@@ -1261,7 +1263,8 @@ def main():
             is_override=override_all_packs
         )
         logging.info(f"[TEST - prepare_release_notes] Does pack {pack.name} exists: "
-                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}")
+                     f"{os.path.exists(os.path.join(index_folder_path, pack.name))}\n"
+                     f"{pack._dependencies=}")
 
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name  # type: ignore[misc]

@@ -2279,8 +2279,9 @@ class Pack:
         """
         task_status = False
         try:
+            logging.debug(f"{self._dependencies=}")
             self.set_pack_dependencies(packs_dependencies_mapping, marketplace=marketplace)
-
+            logging.debug(f"{self._dependencies=}")
             formatted_metadata = self._parse_pack_metadata(parse_dependencies=remove_test_deps)
             metadata_path = os.path.join(self._pack_path, Pack.METADATA)  # deployed metadata path after parsing
             json_write(metadata_path, formatted_metadata, update=True)  # writing back parsed metadata
