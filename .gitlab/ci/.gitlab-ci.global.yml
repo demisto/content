@@ -250,7 +250,7 @@
   - section_start "Fetch Through Merge Base"
   - DEEPEN_LENGTH=${DEEPEN_LENGTH:-$GIT_DEPTH}
   - HEAD_REF=origin/master
-  - BASE_REF=${CI_COMMIT_SHA}
+  - BASE_REF=0b5a3e38ff926fef3da402d99186d3dd3cc39651 # ${CI_COMMIT_SHA}
   - |
     while [ -z "$(git merge-base "$BASE_REF" "$HEAD_REF" 2>/dev/null)" ]; do
       echo "Continuing fetch with a depth of $DEEPEN_LENGTH commits..."
