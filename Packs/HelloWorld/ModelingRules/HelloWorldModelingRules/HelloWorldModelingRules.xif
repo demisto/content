@@ -3,4 +3,4 @@ alter
     xdm.event.description = description,
     xdm.network.protocol_layers =  arraycreate(protocol),
     xdm.source.user.username = json_extract_scalar(custom_details, "$.triggered_by_name"),
-    xdm.target.port = t_port,
+    xdm.target.port = t_port;
