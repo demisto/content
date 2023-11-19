@@ -69,12 +69,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7cf6bacb-0099-40b0-8775-5da6b87bfd88
+      id: 95eb0459-76df-462b-8458-265fecaa39b5
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: 7cf6bacb-0099-40b0-8775-5da6b87bfd88
+    taskid: 95eb0459-76df-462b-8458-265fecaa39b5
     timertriggers: []
     type: start
     view: |-
@@ -84,6 +84,9 @@ tasks:
           "y": 50
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     ignoreworker: false
@@ -95,21 +98,17 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 4b833f28-1140-4e78-8eb1-6b8a6a2c01cb
+      id: 3e2bf113-40c2-45e5-8a72-6bfa5d5db83b
       iscommand: false
       name: DeleteContext
-      script: DeleteContext
       type: regular
       version: -1
-    taskid: 4b833f28-1140-4e78-8eb1-6b8a6a2c01cb
+      scriptName: DeleteContext
+    taskid: 3e2bf113-40c2-45e5-8a72-6bfa5d5db83b
     timertriggers: []
     type: regular
     view: |-
@@ -119,6 +118,9 @@ tasks:
           "y": 195
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     ignoreworker: false
@@ -136,13 +138,13 @@ tasks:
     skipunavailable: false
     task:
       brand: Code42
-      id: 07bd6b8f-7131-4e99-827d-bb392671171c
+      id: 005c7021-f6c3-4d0d-81ea-c5384384e24b
       iscommand: true
       name: code42-alert-get
       script: Code42|||code42-alert-get
       type: regular
       version: -1
-    taskid: 07bd6b8f-7131-4e99-827d-bb392671171c
+    taskid: 005c7021-f6c3-4d0d-81ea-c5384384e24b
     timertriggers: []
     type: regular
     view: |-
@@ -152,6 +154,9 @@ tasks:
           "y": 370
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     conditions:
     - condition:
@@ -172,12 +177,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f80bfb2f-dccd-415e-85bc-0427c2d1652c
+      id: 25db814a-8d82-4dc2-8303-389a033c4991
       iscommand: false
       name: Validate code42-alert-get
       type: condition
       version: -1
-    taskid: f80bfb2f-dccd-415e-85bc-0427c2d1652c
+    taskid: 25db814a-8d82-4dc2-8303-389a033c4991
     timertriggers: []
     type: condition
     view: |-
@@ -187,6 +192,9 @@ tasks:
           "y": 545
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     ignoreworker: false
@@ -198,21 +206,17 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 8c83a2e8-1942-45b0-8d76-13f952996226
+      id: 150bc8ae-8d68-4f2e-8c84-e533e2f2fca2
       iscommand: false
       name: DeleteContext
-      script: DeleteContext
       type: regular
       version: -1
-    taskid: 8c83a2e8-1942-45b0-8d76-13f952996226
+      scriptName: DeleteContext
+    taskid: 150bc8ae-8d68-4f2e-8c84-e533e2f2fca2
     timertriggers: []
     type: regular
     view: |-
@@ -222,6 +226,9 @@ tasks:
           "y": 720
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     ignoreworker: false
@@ -239,13 +246,13 @@ tasks:
     skipunavailable: false
     task:
       brand: Code42
-      id: 42319e0a-9867-4293-886d-4a9985d70585
+      id: e5172822-3c21-4110-8697-f08cb3618f85
       iscommand: true
       name: code42-alert-resolve
       script: Code42|||code42-alert-resolve
       type: regular
       version: -1
-    taskid: 42319e0a-9867-4293-886d-4a9985d70585
+    taskid: e5172822-3c21-4110-8697-f08cb3618f85
     timertriggers: []
     type: regular
     view: |-
@@ -255,6 +262,9 @@ tasks:
           "y": 895
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     conditions:
     - condition:
@@ -275,12 +285,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 83227c49-a096-42be-8721-fdc9962efae5
+      id: b3477876-2534-4b47-8d59-45e6daa4d65a
       iscommand: false
       name: Validate code42-alert-resolve
       type: condition
       version: -1
-    taskid: 83227c49-a096-42be-8721-fdc9962efae5
+    taskid: b3477876-2534-4b47-8d59-45e6daa4d65a
     timertriggers: []
     type: condition
     view: |-
@@ -290,216 +300,11 @@ tasks:
           "y": 1070
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "10"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: e796f348-6368-4275-87d1-3f7cbd562b9d
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: e796f348-6368-4275-87d1-3f7cbd562b9d
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-  "10":
-    id: "10"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "11"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      departuredate: {}
-      extend-context:
-        simple: departingemployee=
-      note: {}
-      username:
-        simple: ${inputs.username}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Code42
-      id: d1621fb2-b4cc-4773-80c8-416e60a33d12
-      iscommand: true
-      name: code42-departingemployee-add
-      script: Code42|||code42-departingemployee-add
-      type: regular
-      version: -1
-    taskid: d1621fb2-b4cc-4773-80c8-416e60a33d12
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-  "11":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Code42.DepartingEmployee.UserID
-          operator: isNotEmpty
-      label: "yes"
-    id: "11"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "12"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: c0d459a9-1d1e-4c78-823e-748d2af904fe
-      iscommand: false
-      name: Validate code42-departingemployee-add
-      type: condition
-      version: -1
-    taskid: c0d459a9-1d1e-4c78-823e-748d2af904fe
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1595
-        }
-      }
-  "12":
-    id: "12"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "13"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 0a5a6f79-facd-4e5d-8283-4af2fe097448
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 0a5a6f79-facd-4e5d-8283-4af2fe097448
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-  "13":
-    id: "13"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "14"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      extend-context:
-        simple: departingemployee=
-      username:
-        simple: ${inputs.username}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Code42
-      id: 4a0f6e3d-6cec-45e4-8ff6-77192be68cbf
-      iscommand: true
-      name: code42-departingemployee-remove
-      script: Code42|||code42-departingemployee-remove
-      type: regular
-      version: -1
-    taskid: 4a0f6e3d-6cec-45e4-8ff6-77192be68cbf
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1945
-        }
-      }
-  "14":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Code42.DepartingEmployee.UserID
-          operator: isNotEmpty
-      label: "yes"
-    id: "14"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "20"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 3e883931-5c04-4175-835d-19279b7f645f
-      iscommand: false
-      name: Validate code42-departingemployee-remove
-      type: condition
-      version: -1
-    taskid: 3e883931-5c04-4175-835d-19279b7f645f
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-  "15":
-    id: "15"
     ignoreworker: false
     nexttasks:
       '#none#':
@@ -509,30 +314,29 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 794e083a-18cd-4f44-80a9-feeb572bd0b6
+      id: 4bd88219-4ac5-43b2-8ae4-77241f554816
       iscommand: false
       name: DeleteContext
-      script: DeleteContext
       type: regular
       version: -1
-    taskid: 794e083a-18cd-4f44-80a9-feeb572bd0b6
+      scriptName: DeleteContext
+    taskid: 4bd88219-4ac5-43b2-8ae4-77241f554816
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 1245
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     ignoreworker: false
@@ -542,36 +346,35 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      exposure: {}
       extend-context:
         simple: searchresults=
-      hash: {}
-      hostname: {}
       json:
         simple: ${inputs.search-payload}
       results:
         simple: "100"
-      username: {}
     separatecontext: false
     skipunavailable: false
     task:
       brand: Code42
-      id: 152c9178-b877-413d-8868-bcb2b08af2a5
+      id: d1bddd96-538c-4380-8f47-a688405713d5
       iscommand: true
       name: code42-securitydata-search
       script: Code42|||code42-securitydata-search
       type: regular
       version: -1
-    taskid: 152c9178-b877-413d-8868-bcb2b08af2a5
+    taskid: d1bddd96-538c-4380-8f47-a688405713d5
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5620
+          "y": 1420
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     conditions:
     - condition:
@@ -599,21 +402,24 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 09a8dcd7-efa3-4ed6-8003-9924d12387dc
+      id: 0bfdd31a-7acf-41d8-8a83-cfbe6c53e37b
       iscommand: false
       name: Validate code42-securitydata-search
       type: condition
       version: -1
-    taskid: 09a8dcd7-efa3-4ed6-8003-9924d12387dc
+    taskid: 0bfdd31a-7acf-41d8-8a83-cfbe6c53e37b
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 1595
         }
       }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
     ignoreworker: false
@@ -623,657 +429,32 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e3f1c3eb-abf9-438d-8e3a-1d409fa66ee2
+      id: 9696dca8-dbb1-47b2-845e-b9746700694b
       iscommand: false
       name: Test Succeeded
       type: title
       version: -1
       description: ''
-    taskid: e3f1c3eb-abf9-438d-8e3a-1d409fa66ee2
+    taskid: 9696dca8-dbb1-47b2-845e-b9746700694b
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5970
+          "y": 1770
         }
       }
-  "20":
-    id: "20"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "21"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 65f035a8-d6b2-4cc2-8b3c-e2f8a98ce4e5
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 65f035a8-d6b2-4cc2-8b3c-e2f8a98ce4e5
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2295
-        }
-      }
-  "21":
-    id: "21"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "22"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      results: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Code42
-      description: Get all employees on the Departing Employee List.
-      id: d290b8ae-29b0-46ca-80bb-834238694862
-      iscommand: true
-      name: Code42-departingemployee-get-all
-      script: Code42|||code42-departingemployee-get-all
-      type: regular
-      version: -1
-    taskid: d290b8ae-29b0-46ca-80bb-834238694862
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2470
-        }
-      }
-  "22":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: DepartingEmployee
-                root: Code42
-                transformers:
-                - operator: count
-          operator: greaterThanOrEqual
-          right:
-            value:
-              simple: "0"
-      label: "yes"
-    id: "22"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "23"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 84da2359-0662-49bd-84d5-ed3724e48b7e
-      iscommand: false
-      name: Validate code42-departingemployee-get-all
-      type: condition
-      version: -1
-    taskid: 84da2359-0662-49bd-84d5-ed3724e48b7e
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2645
-        }
-      }
-  "23":
-    id: "23"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "24"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 121c9696-a391-439b-809d-6fad7ff4539e
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 121c9696-a391-439b-809d-6fad7ff4539e
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
-  "24":
-    id: "24"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "25"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      note: {}
-      username:
-        simple: ${inputs.username}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Code42
-      description: Adds a user from the High Risk Employee List.
-      id: 290f6851-3129-42b2-8c85-df4c0a9ccdc8
-      iscommand: true
-      name: Code42-highriskemployee-add
-      script: Code42|||code42-highriskemployee-add
-      type: regular
-      version: -1
-    taskid: 290f6851-3129-42b2-8c85-df4c0a9ccdc8
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2995
-        }
-      }
-  "25":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Code42.HighRiskEmployee.UserID
-          operator: isNotEmpty
-      label: "yes"
-    id: "25"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "26"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: f3fe075d-34ed-4c26-8d21-f378f5d1c7e8
-      iscommand: false
-      name: Validate code42-highriskemployee-add
-      type: condition
-      version: -1
-    taskid: f3fe075d-34ed-4c26-8d21-f378f5d1c7e8
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3170
-        }
-      }
-  "26":
-    id: "26"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "27"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: db4c0622-0db9-402c-88a0-57a085066441
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: db4c0622-0db9-402c-88a0-57a085066441
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3345
-        }
-      }
-  "27":
-    id: "27"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "28"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      username:
-        simple: ${inputs.username}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Code42
-      description: Removes a user from the High Risk Employee List.
-      id: fe761cd2-284a-42b2-873f-709cbf14b73f
-      iscommand: true
-      name: Code42-highriskemployee-remove
-      script: Code42|||code42-highriskemployee-remove
-      type: regular
-      version: -1
-    taskid: fe761cd2-284a-42b2-873f-709cbf14b73f
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3520
-        }
-      }
-  "28":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Code42.HighRiskEmployee.UserID
-          operator: isNotEmpty
-      label: "yes"
-    id: "28"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "29"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 7dfa261d-5d18-4491-8529-4df9b0856d14
-      iscommand: false
-      name: Validate code42-highriskemployee-remove
-      type: condition
-      version: -1
-    taskid: 7dfa261d-5d18-4491-8529-4df9b0856d14
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3695
-        }
-      }
-  "29":
-    id: "29"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "30"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: c2779d4e-9f0c-41c4-8364-58cdd0db3504
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: c2779d4e-9f0c-41c4-8364-58cdd0db3504
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3870
-        }
-      }
-  "30":
-    id: "30"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "31"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      risktags:
-        simple: FLIGHT_RISK
-      username:
-        simple: ${inputs.username}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Code42
-      id: 10fa1977-fd58-4524-8688-0ab9725a87d9
-      iscommand: true
-      name: Code42-highriskemployee-add-risk-tags
-      script: Code42|||code42-highriskemployee-add-risk-tags
-      type: regular
-      version: -1
-    taskid: 10fa1977-fd58-4524-8688-0ab9725a87d9
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4045
-        }
-      }
-  "31":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Code42.HighRiskEmployee.UserID
-          operator: isNotEmpty
-      label: "yes"
-    id: "31"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "32"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: c8b59082-bec7-4ed4-8cb7-8a32f097e212
-      iscommand: false
-      name: Validate code42-highriskemployee-add-risk-tags
-      type: condition
-      version: -1
-    taskid: c8b59082-bec7-4ed4-8cb7-8a32f097e212
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4220
-        }
-      }
-  "32":
-    id: "32"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "33"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 1a4bb879-ba2c-4825-8c39-fc8b1eb7d27a
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 1a4bb879-ba2c-4825-8c39-fc8b1eb7d27a
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4395
-        }
-      }
-  "33":
-    id: "33"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "37"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      risktags:
-        simple: FLIGHT_RISK
-      username:
-        simple: ${inputs.username}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Code42
-      id: 3fd90be8-ab7e-4e14-8308-ee4f87ca981a
-      iscommand: true
-      name: Code42-highriskemployee-remove-risk-tags
-      script: Code42|||code42-highriskemployee-remove-risk-tags
-      type: regular
-      version: -1
-    taskid: 3fd90be8-ab7e-4e14-8308-ee4f87ca981a
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4570
-        }
-      }
-  "34":
-    id: "34"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "35"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 84293fd1-6417-4955-8216-18b217cda5a4
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 84293fd1-6417-4955-8216-18b217cda5a4
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4920
-        }
-      }
-  "35":
-    id: "35"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "36"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      results: {}
-      risktags: {}
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Code42
-      description: Get all employees on the High Risk Employee List.
-      id: 65767c92-d77b-4e8d-845a-36fac9bbba72
-      iscommand: true
-      name: Code42-highriskemployee-get-all
-      script: Code42|||code42-highriskemployee-get-all
-      type: regular
-      version: -1
-    taskid: 65767c92-d77b-4e8d-845a-36fac9bbba72
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5095
-        }
-      }
-  "36":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: HighRiskEmployee
-                root: Code42
-                transformers:
-                - operator: count
-          operator: greaterThanOrEqual
-          right:
-            value:
-              simple: "0"
-      label: "yes"
-    id: "36"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "15"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: ccc2ce6a-b83a-47bc-8e31-76b172de259d
-      iscommand: false
-      name: Validate code42-highriskmployee-get-all
-      type: condition
-      version: -1
-    taskid: ccc2ce6a-b83a-47bc-8e31-76b172de259d
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5270
-        }
-      }
-  "37":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: Code42.HighRiskEmployee.UserID
-          operator: isNotEmpty
-      label: "yes"
-    id: "37"
-    ignoreworker: false
-    nexttasks:
-      "yes":
-      - "34"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 0294a8f9-5bf9-4be0-873a-85d55c79ac11
-      iscommand: false
-      name: Validate code42-highriskemployee-remove-risk-tags
-      type: condition
-      version: -1
-    taskid: 0294a8f9-5bf9-4be0-873a-85d55c79ac11
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4745
-        }
-      }
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5985,
+        "height": 1785,
         "width": 380,
         "x": 50,
         "y": 50
@@ -1281,4 +462,4 @@ view: |-
     }
   }
 fromversion: 5.0.0
-description: ''
+description: 'Tests the Code42 commands.'

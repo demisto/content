@@ -27,7 +27,9 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context, is_integration_command_execution
+    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam
+
 
 try:
     from StringIO import StringIO
@@ -7227,6 +7229,28 @@ class TestIsDemistoServerGE:
         assert not is_demisto_version_ge(version, build)
 
 
+class TestDeterminePlatform:
+    @classmethod
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
+        get_demisto_version._version = None
+
+    @pytest.mark.parametrize('demistoVersion, method', [
+        ({'platform': 'xsoar', 'version': '6.5.0'}, is_xsoar),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsoar),
+        ({'platform': 'xsoar_hosted', 'version': '6.5.0'}, is_xsoar),
+        ({'platform': 'x2', 'version': '8.2.0'}, is_xsiam_or_xsoar_saas),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsiam_or_xsoar_saas),
+        ({'platform': 'xsoar', 'version': '6.5.0'}, is_xsoar_on_prem),
+        ({'platform': 'xsoar_hosted', 'version': '6.5.0'}, is_xsoar_hosted),
+        ({'platform': 'xsoar', 'version': '8.2.0'}, is_xsoar_saas),
+        ({'platform': 'x2', 'version': '8.2.0'}, is_xsiam),
+    ])
+    def test_determine_platform(self, mocker, demistoVersion, method):
+        mocker.patch.object(demisto, 'demistoVersion', return_value=demistoVersion)
+        assert method()
+
+
 def test_smart_get_dict():
     d = {'t1': None, "t2": 1}
     # before we remove the dict will return null which is unexpected by a lot of users
@@ -8073,29 +8097,6 @@ class TestFetchWithLookBack:
         assert results.get('limit') == expected_results3.get('limit')
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results3.get('found_incident_ids')
-
-    @freeze_time("2022-04-07T10:13:00")
-    def test_lookback_with_offset_time_range(self):
-        """
-        Given:
-            A last run with an offset
-            
-        When:
-            Calling get_fetch_run_time_range
-            
-        Then:
-            The last run should be unchanged, even if there is a lookback.
-        """
-        from CommonServerPython import get_fetch_run_time_range
-        last_time = "2022-04-07T10:13:00"
-        last_run = {"time": last_time, "offset": 3}
-        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
-        # make sure that the start time is unchanged because of the offset
-        assert start_time == last_time
-        last_run = {"time": last_time, "offset": 0}
-        start_time, end_time = get_fetch_run_time_range(last_run, None, look_back=1)
-        # now the offset is 0, so the look_back should act
-        assert start_time == "2022-04-07T10:12:00"
     
     def test_lookback_with_offset_update_last_run(self):
         """

@@ -67,9 +67,13 @@ script:
       - 'True'
       - 'False'
       required: true
+    - defaultValue: '1 day'
+      description: "Specifies the start time of the search. This filter is optional. Default is 1 day. Syntax: start_time=YYYY-MM-DDTHH:mm or '1 hour/day/month'."
+      name: from_date
+      required: false
     description: Manual command to fetch events and display them.
     name: okta-get-events
-  dockerimage: demisto/fastapi:1.0.0.79360
+  dockerimage: demisto/fastapi:1.0.0.80124
   isfetchevents: true
   subtype: python3
 marketplaces:

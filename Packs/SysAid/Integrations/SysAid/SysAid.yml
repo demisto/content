@@ -591,33 +591,33 @@ script:
       required: true
     - name: solution
       description: 'The solution for deleting the service record.'
-  - arguments:
-    - description: The service record ID.
-      name: id
-      required: true
-    - description: File file ID to upload.
-      name: file_id
-      required: true
+  - name: sysaid-service-record-attach-file
     description: Add an attachment to a service record.
-    name: sysaid-service-record-attach-file
-  - arguments:
-    - description: The service record ID.
-      name: id
+    arguments:
+    - name: id
+      description: The service record ID.
       required: true
-    - description: The attachment file ID to delete.
-      name: file_id
+    - name: file_id
+      description: File ID to upload.
       required: true
+  - name: sysaid-service-record-delete-file
     description: Delete an attachment from a service record.
-    name: sysaid-service-record-delete-file
-  - arguments:
-    - description: The service record ID.
-      name: id
+    arguments:
+    - name: id
+      description: The service record ID.
       required: true
-    - description: List of fields to return, comma separated. If sent together with view parameter, returns both view’s fields and the requested fields.
-      name: fields
+    - name: file_id
+      description: The attachment file ID to delete.
       required: true
+  - name: sysaid-service-record-get
     description: Returns the information for the specified service record.
-    name: sysaid-service-record-get
+    arguments:
+    - name: id
+      description: The service record ID.
+      required: true
+    - name: fields
+      description: List of fields to return, comma separated. If sent together with view parameter, returns both view’s fields and the requested fields.
+      required: true
     outputs:
     - type: String
       contextPath: SysAid.ServiceRecord.id
@@ -637,20 +637,66 @@ script:
     - type: String
       contextPath: SysAid.ServiceRecord.notes
       description: 'The notes of the service record.'
-  - arguments:
-    - description: The service record ID.
-      name: id
+  - name: sysaid-service-record-add-note
+    description: Add a note to a service record.
+    arguments:
+    - name: id
+      description: The service record ID.
       required: true
-    - description: The note to be added to the Service Record.
-      name: note
+    - name: note
+      description: The note to be added to the Service Record.
       required: true
-    description: Add a note to a Service Record.
-    name: sysaid-service-record-add-note
+  - name: sysaid-service-record-get-file
+    description: Download an attachment to a service record.
+    arguments:
+    - name: id
+      required: true
+      description: The service record ID.
+    - name: file_id
+      required: true
+      description: The ID of the file to download.
+    - name: file_name
+      required: true
+      description: The name of the file to download.
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: number
+    - contextPath: File.SHA1
+      description: The SHA1 of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA512 of the file.
+      type: string
+    - contextPath: File.Name
+      description: The full name with extension of the file.
+      type: string
+    - contextPath: File.SSDeep
+      description: The SSDeep of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: The entryId of the file.
+      type: string
+    - contextPath: File.Info
+      description: The info of the file.
+      type: string
+    - contextPath: File.Type
+      description: The type of the file.
+      type: string
+    - contextPath: File.MD5
+      description: The MD5 of the file.
+      type: string
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
   isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.13.80014
 fromversion: 6.0.0
 defaultclassifier: SysAid Classifier
 defaultmapperin: SysAid Mapper
