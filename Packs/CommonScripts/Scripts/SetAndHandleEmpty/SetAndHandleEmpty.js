@@ -4,7 +4,7 @@ function getValue(value, stringify = false) {
             return '';
         }
         return String(value);
-    } else if (!value || !(typeof value === 'string' || value instanceof Text || value instanceof Uint8Array)) {
+    } else if (!value || !(typeof value === 'string')) {
         return value;
     } else {
         try {

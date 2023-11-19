@@ -27,4 +27,4 @@ timeout: '0'
 type: javascript
 fromversion: 5.0.0
 tests:
-- SetIfEmpty - non-ascii chars - Test
+- SetIfEmpty_Test

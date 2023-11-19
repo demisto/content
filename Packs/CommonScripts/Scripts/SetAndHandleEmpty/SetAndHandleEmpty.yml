@@ -47,3 +47,4 @@ scripttarget: 0
 script: '-'
 tests:
 - SetAndHandleEmpty test
+- SetAndHandleEmpty_Test

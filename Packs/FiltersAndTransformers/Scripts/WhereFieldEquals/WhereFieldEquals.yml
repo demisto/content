@@ -37,3 +37,4 @@ timeout: '0'
 type: javascript
 tests:
 - Email Address Enrichment - Generic v2.1 - Test
+- Test filters & transformers scripts
