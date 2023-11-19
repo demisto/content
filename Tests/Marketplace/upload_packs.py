@@ -1273,7 +1273,6 @@ def main():
             continue
 
         if pack.is_modified:
-
             if not pack.format_metadata(packs_dependencies_mapping, marketplace, remove_test_deps=remove_test_deps):
                 pack.status = PackStatus.FAILED_METADATA_PARSING.name  # type: ignore[misc]
                 pack.cleanup()
