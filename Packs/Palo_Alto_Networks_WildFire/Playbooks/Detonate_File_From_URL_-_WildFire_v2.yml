@@ -289,7 +289,7 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  description: The duration after which to stop pooling and to resume the playbook (in minutes).
   playbookInputQuery:
 - key: ReportFileType
   value: {}
