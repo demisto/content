@@ -2970,8 +2970,8 @@ def gcp_iam_service_account_generate_access_token_command(client: Client, args: 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
 
     """
-    service_account_email = args.get('service_account_email', '')
-    lifetime = args.get('lifetime', '')
+    service_account_email = args['service_account_email']
+    lifetime = args['lifetime']
 
     response = client.gcp_iam_service_account_generate_access_token_request(service_account_email, lifetime)
 
