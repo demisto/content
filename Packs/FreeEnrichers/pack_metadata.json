@@ -80,7 +80,7 @@
             "display_name": "Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration."
         },
 
-        "AlienVault_OTX_v2": {
+        "AlienVault_OTX": {
             "mandatory": false,
             "display_name": "Query Indicators of Compromise in AlienVault OTX."
         },
