@@ -119,7 +119,7 @@ def get_query_execution_command(args: dict, client):
 @polling_function(
     name=demisto.command(),
     interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
-    timeout=arg_to_number(demisto.args().get('timeout', 600)),
+    timeout=arg_to_number(demisto.args().get('timeout_in_seconds', 300)),
     requires_polling_arg=True,
 )
 def get_query_results_command(args: dict, client):

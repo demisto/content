@@ -119,7 +119,7 @@ script:
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     - name: region
       description: The AWS Region, if not specified the default region will be used.
-    description: Start an Athena query.
+    description: Start an Athena query. Either 'OutputLocation' or 'WorkGroup' must be specified for the query to run.
     outputs:
     - contextPath: AWS.Athena.Query.QueryExecutionId
       description: ID of the newly created query.
@@ -179,6 +179,12 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: interval_in_seconds
+      description: Interval in seconds between each poll (only if polling is set to true).
+      defaultValue: '10'
+    - name: timeout_in_seconds
+      description: Timeout in seconds for each poll (only if polling is set to true).
+      defaultValue: '300'
     description: Returns the results of a single query execution specified by QueryExecutionId if you have access to the workgroup in which the query ran.
     polling: true
     outputs:
