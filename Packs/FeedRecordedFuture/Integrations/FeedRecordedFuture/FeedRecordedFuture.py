@@ -201,7 +201,6 @@ class Client(BaseClient):
                 demisto.info('file was deleted')
             except OSError:
                 demisto.info('file could not be deleted')
-                pass
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
