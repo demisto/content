@@ -1,0 +1,22 @@
+commonfields:
+  id: HuntingFromIndicatorLayout
+  version: -1
+name: HuntingFromIndicatorLayout
+script: ''
+type: python
+tags:
+- indicator-action-button
+comment: |-
+  This automation creates an incident from the indicator layouts Malware, Campaign and Intrusion set, with the following parameters:
+  - Name: Threat Hunting Session - <Indicator Value>
+  - Type: Proactive Threat Hunting
+  - sdoname: <Indicator Value>.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.13.80593
+runas: DBotWeakRole
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
