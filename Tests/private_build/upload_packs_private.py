@@ -286,7 +286,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Pack, storage_b
 
     task_status = pack.load_user_metadata()
     if not task_status:
-        pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name  # type: ignore[misc]
+        pack.status = PackStatus.FAILED_LOADING_PACK_METADATA.name  # type: ignore[misc]
         pack.cleanup()
         return
 

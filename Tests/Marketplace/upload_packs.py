@@ -971,7 +971,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                 task_status = pack.upload_to_storage(zip_with_deps_path, storage_bucket, storage_base_path,
                                                      with_dependencies_path=upload_path)
                 logging.debug(f"{pack_name} with dependencies was{'' if task_status else ' not'} "
-                             f"uploaded successfully")
+                              f"uploaded successfully")
                 if not task_status:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
@@ -1036,7 +1036,7 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
         override_corepacks_server_version, {}).get('file_version')
     if not current_corepacks_file_version:
         logging.debug(f'Could not find a matching file version for server version {override_corepacks_server_version} in '
-                     f'{GCPConfig.VERSIONS_METADATA_FILE} file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
+                      f'{GCPConfig.VERSIONS_METADATA_FILE} file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
         return False
 
     if int(override_corepacks_file_version) <= int(current_corepacks_file_version):
@@ -1048,7 +1048,7 @@ def should_override_locked_corepacks_file(marketplace: str = 'xsoar'):
 
     if override_marketplaces and marketplace not in override_marketplaces:
         logging.debug(f'Current marketplace {marketplace} is not selected in the {GCPConfig.VERSIONS_METADATA_FILE} '
-                     f'file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
+                      f'file. Skipping upload of {GCPConfig.COREPACKS_OVERRIDE_FILE}...')
         return False
 
     return True
