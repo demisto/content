@@ -1207,17 +1207,29 @@ class Client(BaseClient):
             file_bytes = file.read()
 
         file_content = file_bytes.decode('iso-8859-1')
-        content_type = mimetypes.guess_type(file_path)[0]
+        content_type = mimetypes.guess_type(file_name)[0]
+        demisto.debug(f'content-type of {file_name} is {content_type=}')
 
-        data = '-----------------------------\n' \
-               f'Content-Disposition: form-data; name="file"; filename="{file_name}"\n' \
-               f'Content-Type: {content_type}\n\n' \
-               f'{file_content}\n' \
-               '-----------------------------\n' \
-               'Content-Disposition: form-data; name="note"\n\n' \
-               '-------------------------------'
+        try:
+            data = '-----------------------------\n' \
+                   f'Content-Disposition: form-data; name="file"; filename="{file_name}"\n' \
+                   f'Content-Type: {content_type}\n\n' \
+                   f'{file_content}\n' \
+                   '-----------------------------\n' \
+                   'Content-Disposition: form-data; name="note"\n\n' \
+                   '-------------------------------'
 
-        response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', data=data)
+            response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', data=data)
+        except DemistoException as error:
+            demisto.debug(f'error when trying to upload {file_name} to case {case_id}, error:\n{error}')
+            data = '-----------------------------\n' \
+                   f'Content-Disposition: form-data; name="file"; filename="{file_name}"\n' \
+                   f'Content-Type: multipart/from-data\n\n' \
+                   f'{file_content}\n' \
+                   '-----------------------------\n' \
+                   'Content-Disposition: form-data; name="note"\n\n' \
+                   '-------------------------------'
+            response = self._http_request('POST', f'lr-case-api/cases/{case_id}/evidence/file', data=data)
 
         return response
 
