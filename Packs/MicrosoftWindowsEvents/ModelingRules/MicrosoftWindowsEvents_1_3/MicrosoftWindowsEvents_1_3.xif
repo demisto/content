@@ -37,8 +37,8 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         scan_id = event_data -> ["Scan ID"], // windows defender event ids 1000 - 1005 
         scan_type = event_data -> ["Scan Type"], // windows defender event ids 1000 - 1005 
         scan_params = event_data -> ["Scan Parameters"], // windows defender event ids 1000 - 1005 
-        scan_duration = multiply(add(add(multiply(to_integer(event_data -> ["Scan Time Seconds"]), 3600), multiply(to_integer(event_data -> ["Scan Time Minutes"]), 60)), to_integer(event_data -> ["Scan Time Seconds"])), 1000), // windows defender event ids 1000 - 1005 
-        severity = arrayindex(regextract(message, "Severity:\s*(\w+)"), 0),
+        scan_duration = if(provider_name = "Microsoft-Windows-Windows Defender" and (event_id_num >= 1000 and event_id_num <= 1005), multiply(add(add(multiply(to_integer(event_data -> ["Scan Time Hours"]), 3600), multiply(to_integer(event_data -> ["Scan Time Minutes"]), 60)), to_integer(event_data -> ["Scan Time Seconds"])), 1000), // windows defender event ids 1000 - 1005 
+        severity = arrayindex(regextract(message, "Severity:\s*(\w+)"), 0)),
         Script_Name = arrayindex(regextract(arrayindex(regextract(message, "Script Name = (.*?)\s{2, }"), 0), "\\([^\\]+)$"), 0),
         Script_Path = arrayindex(regextract(message, "Script Name = (.*?)\s{2, }"), 0),
         target_username = event_data -> TargetUserName, 
