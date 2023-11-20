@@ -708,7 +708,6 @@ xsoar_ng_server_ga:
     NON_REMOVABLE_PACKS: "Base"
   needs:
     - job: xsoar-saas-prepare-testing-bucket
-      optional: true
   artifacts:
     when: always
     expire_in: 30 days
