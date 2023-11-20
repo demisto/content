@@ -109,7 +109,7 @@ script:
       name: alert_status
     - description: The aggregate alert id.
       name: aggregate_alert_id
-  dockerimage: demisto/sixgill:1.0.0.80180
+  dockerimage: demisto/sixgill:1.0.0.80770
   isfetch: true
   runonce: false
   script: '-'
@@ -118,3 +118,4 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
+defaultmapperin: classifier-mapper-incoming-Cybersixgill-Actionable-Alerts
