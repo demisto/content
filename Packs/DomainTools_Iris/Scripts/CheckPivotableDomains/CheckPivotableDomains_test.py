@@ -30,13 +30,13 @@ def test_check_pivotable_output(mocker):
                         "count": 1,
                     }
                 ],
-                "Name": {"value": "", "count": 0},
+                "Name": {"value": "just a test", "count": 200},
                 "Phone": {"value": "", "count": 0},
                 "Street": {"value": "", "count": 0},
                 "City": {"value": "", "count": 0},
                 "State": {"value": "CA", "count": 18232716},
                 "Postal": {"value": "", "count": 0},
-                "Org": {"value": "Palo Alto Networks, Inc.", "count": 645},
+                "Org": {"value": "Palo Alto Networks, Inc.", "count": 200},
             },
             "Registrar": {"value": "MarkMonitor, Inc.", "count": 867819},
             "SOAEmail": [{"value": "it-staff-sysadmin@paloaltonetworks.com", "count": 34}],
@@ -127,9 +127,9 @@ def test_check_pivotable_output(mocker):
             "SPFRecord": "",
             "NameServers": [
                 {
-                    "host": {"value": "pdns112.ultradns.net", "count": 369},
-                    "domain": {"value": "ultradns.net", "count": 800581},
-                    "ip": [{"value": "156.154.65.112", "count": 369}],
+                    "host": {"value": "pdns112.ultradns.net", "count": 200},
+                    "domain": {"value": "ultradns.net", "count": 200},
+                    "ip": [{"value": "156.154.65.112", "count": 200}],
                 },
                 {
                     "host": {"value": "pdns112.ultradns.com", "count": 369},
@@ -151,10 +151,10 @@ def test_check_pivotable_output(mocker):
                 {
                     "hash": {
                         "value": "9eb6468deaea5a1c9d022ebaa3694e9ce2f9dce8",
-                        "count": 1,
+                        "count": 10,
                     },
-                    "subject": {"value": "CN=demisto.com", "count": 1},
-                    "organization": {"value": "", "count": 0},
+                    "subject": {"value": "CN=demisto.com", "count": 2},
+                    "organization": {"value": "just a test org", "count": 20},
                     "email": [],
                     "alt_names": [
                         {"value": "blog.demisto.com", "count": 0},
@@ -209,34 +209,49 @@ def test_check_pivotable_output(mocker):
     expected_context = {
         "Name": "demisto.com",
         "PivotableRegistrantContactName": {
-            "pivotable": False
+            "pivotable": True,
+            "items": {"count": 200,
+                       "value": "just a test"}
         },
         "PivotableRegistrantOrg": {
-            "pivotable": False
+            "pivotable": True,
+            "items": {"count": 200, "value": "Palo Alto Networks, Inc."}
         },
         "PivotableRegistrar": {
             "pivotalbe": False
         },
         "PivotableSslInfoOrganization": {
-            "pivotable": False
+            "pivotable": True,
+            "items": [{"count": 20,
+                       "value": "just a test org"}]
         },
         "PivotableSslInfoHash": {
-            "pivotable": False
+            "pivotable": True,
+            "items": [{"count": 10,
+                       "value": "9eb6468deaea5a1c9d022ebaa3694e9ce2f9dce8"}]
         },
         "PivotableSslSubject": {
-            "pivotable": False
+            "pivotable": True,
+            "items": [{"count": 2,
+                       "value": "CN=demisto.com"}]
         },
         "PivotableSslEmail": {
             "pivotable": False
         },
         "PivotableNameServerHost": {
-            "pivotable": False
+            "pivotable": True,
+            "items": [{"count": 200,
+                       "value": "pdns112.ultradns.net"}]
         },
         "PivotableNameServerIp": {
-            "pivotable": False
+            "pivotable": True,
+            "items": [{"count": 200,
+                       "value": '156.154.65.112'}]
         },
         "PivotableNameServerDomain": {
-            "pivotable": False
+            "pivotable": True,
+            "items": [{"count": 200,
+                       "value": "ultradns.net"}]
         },
         "PivotableSoaEmail": {
             "pivotable": True,
