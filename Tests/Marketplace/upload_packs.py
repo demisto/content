@@ -1201,9 +1201,11 @@ def main():
     all_packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
                                    is_modified=pack_id in pack_ids_to_upload)
                               for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
-    if not is_regular_upload_flow:
-        # if it's not a regular upload-flow, then upload only collected/modified packs
-        packs_objects_list = [p for p in all_packs_objects_list if p.is_modified]
+
+    # if it's not a regular upload-flow, then upload only collected/modified packs
+    packs_objects_list = all_packs_objects_list if is_regular_upload_flow \
+        else [p for p in all_packs_objects_list if p.is_modified]
+    logging.info(f"Packs list is: {[p.name for p in packs_objects_list]}")
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
