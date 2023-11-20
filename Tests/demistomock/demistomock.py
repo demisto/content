@@ -437,9 +437,13 @@ def params():
       dict: Integrations parameters object
 
     """
-    if demisto_params := os.getenv("DEMISTO_PARAMS"):
-        return json.loads(demisto_params)
-
+    demisto_params = os.getenv("DEMISTO_PARAMS")
+    try:
+        if demisto_params:
+            try:
+                return json.loads(demisto_params)
+            except json.JSONDecodeError:
+                return {}
     return {}
 
 
@@ -452,7 +456,10 @@ def args():
     """
     if Path(ARGS_COMMAND_PATH).exists():
         with Path(ARGS_COMMAND_PATH).open() as f:
-            args = json.load(f)
+            try:
+                args = json.load(f)
+            except json.JSONDecodeError:
+                return {}
             args.pop("cmd", None)
             return args
     return {}
