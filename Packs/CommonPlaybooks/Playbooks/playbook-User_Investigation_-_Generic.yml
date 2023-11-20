@@ -110,10 +110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 85e91ccb-1565-48a5-8f56-e745b4b3d5a2
+    taskid: 73c894c8-fd7a-4ea0-8eba-dbfd2db37bcf
     type: title
     task:
-      id: 85e91ccb-1565-48a5-8f56-e745b4b3d5a2
+      id: 73c894c8-fd7a-4ea0-8eba-dbfd2db37bcf
       version: -1
       name: Done
       type: title
@@ -125,8 +125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1820
+          "x": 720,
+          "y": 1840
         }
       }
     note: false
@@ -232,10 +232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: af42cb76-d20d-4696-80f0-1a017a8b71d2
+    taskid: ea25e12c-7774-410a-8af8-77c6320c30ab
     type: regular
     task:
-      id: af42cb76-d20d-4696-80f0-1a017a8b71d2
+      id: ea25e12c-7774-410a-8af8-77c6320c30ab
       version: -1
       name: PAN-OS query logs
       description: The query logs in Panorama.
@@ -250,15 +250,7 @@ tasks:
       log-type:
         simple: threat
       query:
-        simple: (user.src eq ${inputs.Username}) or (user.dst eq ${inputs.Username}) and (time_generated in last-24-hrs)
-      interval_in_seconds:
-        simple: "10"
-      number_of_logs:
-        simple: "100"
-      polling:
-        simple: "true"
-      timeout:
-        simple: "120"
+        simple: (user.src eq ${SplitUsername}) or (user.dst eq ${SplitUsername}) and (time_generated in last-24-hrs)
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -266,7 +258,7 @@ tasks:
       {
         "position": {
           "x": 2070,
-          "y": 1050
+          "y": 1090
         }
       }
     note: false
@@ -308,7 +300,7 @@ tasks:
       {
         "position": {
           "x": 2070,
-          "y": 1625
+          "y": 1665
         }
       }
     note: false
@@ -346,7 +338,7 @@ tasks:
       {
         "position": {
           "x": 2070,
-          "y": 1215
+          "y": 1255
         }
       }
     note: false
@@ -370,14 +362,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "33"
+      - "87"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 2070,
-          "y": 920
+          "y": 800
         }
       }
     note: false
@@ -592,7 +584,7 @@ tasks:
       {
         "position": {
           "x": 2070,
-          "y": 1390
+          "y": 1430
         }
       }
     note: false
@@ -604,10 +596,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: d1e1b232-6084-449c-81f5-827d7144d995
+    taskid: 83835468-5432-4baa-8656-cfd7c05fecbe
     type: playbook
     task:
-      id: d1e1b232-6084-449c-81f5-827d7144d995
+      id: 83835468-5432-4baa-8656-cfd7c05fecbe
       version: -1
       name: Cortex XDR - Get entity alerts by MITRE tactics
       description: |-
@@ -660,6 +652,7 @@ tasks:
                 value:
                   simple: \
           - operator: LastArrayElement
+          - operator: uniq
       timeRange:
         simple: 2 hours
     separatecontext: true
@@ -1259,10 +1252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: aa79fc84-545d-4f11-8686-877d1193560a
+    taskid: 30f27e02-ece5-453a-8cc3-0b62510da975
     type: playbook
     task:
-      id: aa79fc84-545d-4f11-8686-877d1193560a
+      id: 30f27e02-ece5-453a-8cc3-0b62510da975
       version: -1
       name: Get entity alerts by MITRE tactics
       description: |-
@@ -1286,6 +1279,7 @@ tasks:
                 value:
                   simple: \
           - operator: LastArrayElement
+          - operator: uniq
       EntityType:
         complex:
           root: inputs.XDRUsernameField
@@ -1338,6 +1332,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 1fe16618-2b52-443d-891e-3705a9bd5d65
+    type: regular
+    task:
+      id: 1fe16618-2b52-443d-891e-3705a9bd5d65
+      version: -1
+      name: Save split username
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      key:
+        simple: SplitUsername
+      value:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: \
+          - operator: LastArrayElement
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1359,7 +1404,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2040,
+        "height": 2060,
         "width": 2610,
         "x": -160,
         "y": -155
