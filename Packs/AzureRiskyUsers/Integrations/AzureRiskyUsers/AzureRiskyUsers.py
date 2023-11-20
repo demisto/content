@@ -7,9 +7,11 @@ from urllib.parse import parse_qs
 from typing import Any
 from MicrosoftApiModule import *  # noqa: E402
 import urllib3
+from typing import Any
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
+MAX_ITEMS_PER_RESPONSE = 500
 
 
 class Client:
@@ -109,10 +111,11 @@ class Client:
         Returns:
             response (dict): API response from AzureRiskyUsers.
         """
-        params = remove_empty_elements({'$top': limit,
-                                        '$skiptoken': skip_token,
-                                        '$filter': build_query_filter(risk_state, risk_level)})
+        if skip_token:
+            return self.ms_client.http_request(method='GET', full_url=skip_token)
 
+        params = remove_empty_elements({'$top': limit,
+                                        '$filter': build_query_filter(risk_state, risk_level)})
         return self.ms_client.http_request(method='GET',
                                            url_suffix="identityProtection/riskyUsers",
                                            params=params)
@@ -223,7 +226,37 @@ def get_skip_token(next_link: str | None, outputs_prefix: str, outputs_key_field
         return parse_qs(parsed_url.query)['$skiptoken'][0]
 
 
-def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandResults:
+def pages_puller(client: Client, response: dict[str, Any], limit: int = 1) -> tuple[list, str | None]:
+    """
+    Retrieves a limited number of pages by repeatedly making requests to the API using the nextLink URL
+    until it has reached the specified limit or there are no more pages to retrieve,
+    :param response: response body, contains collection of chat/message objects
+    :param limit: the requested limit
+    :return: tuple of the limited response_data and the last nextLink URL.
+    """
+
+    response_data = response.get('value', [])
+    while (next_link := response.get('@odata.nextLink')) and len(response_data) < limit:
+        demisto.debug(f"Using response {next_link=}")
+        response = client.risky_users_list_request(None, None, limit, next_link)
+        response_data.extend(response.get('value', []))
+    demisto.debug(f'The limited response contains: {len(response_data[:limit])}')
+    return response_data[:limit], next_link
+
+
+def get_user_human_readable(users: list):
+    table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
+                     'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
+    table_outputs = [{key: user.get(key) for key in user if key in table_headers}
+                     for user in users]
+    return tableToMarkdown(name='Risky Users List:',
+                           t=table_outputs,
+                           headers=table_headers,
+                           removeNull=True,
+                           headerTransform=pascalToSpace)
+
+
+def risky_users_list_command(client: Client, args: dict[str, str]) -> List[CommandResults]:
     """
     List all risky users.
     Args:
@@ -232,53 +265,37 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> CommandRes
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    page = arg_to_number(args.get('page')) or 1
+
+    page_size = arg_to_number(args.get('page_size'))  # default value is in the yml
+    next_token = args.get('next_token')
     limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
-    skip_token: CommandResults | str | None = None
 
-    if page > 1:
-        offset = limit * (page - 1)
+    top = MAX_ITEMS_PER_RESPONSE if limit >= MAX_ITEMS_PER_RESPONSE else limit
+    if next_token and page_size:
+        limit = page_size
+        raw_response = client.risky_users_list_request(risk_state, risk_level, top, next_token)
+    else:  # there is only a limit
+        raw_response = client.risky_users_list_request(risk_state, risk_level, top, None)
 
-        raw_response = client.risky_users_list_request(risk_state,
-                                                       risk_level,
-                                                       offset)
-        next_link = raw_response.get('@odata.nextLink')
-        skip_token = get_skip_token(next_link=next_link,
-                                    outputs_prefix='AzureRiskyUsers.RiskyUser',
-                                    outputs_key_field='id',
-                                    readable_output=f'Risky Users List\nCurrent page size: {limit}\n'
-                                                    f'Showing page {page} out others that may exist')
-        if isinstance(skip_token, CommandResults):
-            return skip_token
+    list_users_data, next_token = pages_puller(client, raw_response, limit)
 
-    raw_response = client.risky_users_list_request(risk_state,
-                                                   risk_level,
-                                                   limit,
-                                                   skip_token)  # type: ignore[arg-type]
-
-    table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
-                     'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
-
-    outputs = raw_response.get('value', {})
-
-    table_outputs = [{key: item.get(key) for key in item if key in table_headers}
-                     for item in outputs]
-
-    readable_output = tableToMarkdown(name=f'Risky Users List\n'
-                                           f'Current page size: {args["limit"]}\n'
-                                           f'Showing page {args["page"]} out others that may exist',
-                                      t=table_outputs,
-                                      headers=table_headers,
-                                      removeNull=True,
-                                      headerTransform=pascalToSpace)
-
-    return CommandResults(outputs_prefix='AzureRiskyUsers.RiskyUser',
-                          outputs_key_field='id',
-                          outputs=outputs,
-                          readable_output=readable_output,
-                          raw_response=raw_response)
+    command_results = []
+    command_results.append(CommandResults(
+        outputs_prefix='AzureRiskyUsers.RiskyUser',
+        outputs_key_field='id',
+        outputs=list_users_data,
+        readable_output=get_user_human_readable(list_users_data),
+        raw_response=raw_response))
+    if next_token:
+        readable_output_next_token = tableToMarkdown("Risky Users List Token:", {'next_token': next_token},
+                                                     headers=['next_token'], removeNull=False)
+        command_results.append(CommandResults(
+            outputs={'AzureRiskyUsers(true)': {'RiskyUserListNextToken': next_token}},
+            readable_output=readable_output_next_token,
+        ))
+    return command_results
 
 
 def risky_user_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
