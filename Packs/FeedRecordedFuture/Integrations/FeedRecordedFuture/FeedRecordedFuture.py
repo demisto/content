@@ -8,7 +8,7 @@ import csv
 import requests
 import traceback
 import urllib.parse
-from typing import Tuple, Optional, List, Dict
+from typing import Optional
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -159,8 +159,8 @@ class Client(BaseClient):
                              " requests made to Recorded Future. ")
             else:
                 return_error(
-                    '{} - exception in request: {} {}'
-                    .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
+                    f'{self.SOURCE_NAME} - exception in request: {response.status_code} {response.content}'
+                    )  # type: ignore
 
         if service == 'connectApi':
             demisto.debug("Will now stream the response's compressed data")
@@ -182,7 +182,7 @@ class Client(BaseClient):
         demisto.info('reading from file')
         # we do this try to make sure the file gets deleted at the end
         try:
-            file_stream = open("response.txt", 'rt')
+            file_stream = open("response.txt")
             columns = file_stream.readline()  # get the headers from the csv file.
             columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
 
@@ -273,7 +273,7 @@ def is_valid_risk_rule(client: Client, risk_rule):
         return False
 
 
-def test_module(client: Client, *args) -> Tuple[str, dict, dict]:
+def test_module(client: Client, *args) -> tuple[str, dict, dict]:
     """Builds the iterator to check that the feed is accessible.
     Args:
         client(Client): Recorded Future Feed client.
@@ -443,7 +443,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
             yield indicators
 
 
-def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict]]:  # pragma: no cover
+def get_indicators_command(client, args) -> tuple[str, dict[Any, Any], list[dict]]:  # pragma: no cover
     """Retrieves indicators from the Recorded Future feed to the war-room.
         Args:
             client(Client): Recorded Future Feed client.
@@ -455,8 +455,8 @@ def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict
     limit = int(args.get('limit'))
 
     human_readable: str = ''
-    entry_results: List[Dict]
-    indicators_list: List[Dict]
+    entry_results: list[dict]
+    indicators_list: list[dict]
 
     if client.risk_rule:
         entry_results = []
@@ -490,7 +490,7 @@ def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict
     return human_readable, {}, entry_results
 
 
-def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
+def get_risk_rules_command(client: Client, args) -> tuple[str, dict, dict]:
     """Retrieves all risk rules available from Recorded Future to the war-room.
         Args:
             client(Client): Recorded Future Feed client.
@@ -522,7 +522,7 @@ def main():  # pragma: no cover
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
                     params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'))
     command = demisto.command()
-    demisto.info('Command being called is {}'.format(command))
+    demisto.info(f'Command being called is {command}')
     # Switch case
     commands = {
         'test-module': test_module,
