@@ -83,38 +83,54 @@ jobs-done-check-upload-flow:
 
 xsoar-prepare-testing-bucket-upload-flow:
   extends:
-    - .force-bucket-upload-rule
     - xsoar-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
 xsoar-saas-prepare-testing-bucket-upload-flow:
   extends:
-    - .force-bucket-upload-rule
     - xsoar-saas-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
 mpv2-prepare-testing-bucket-upload-flow:
- extends:
-    - .force-bucket-upload-rule
-    - mpv2-prepare-testing-bucket
- variables:
-   IFRA_ENV_TYPE: "Bucket-Upload"
-   ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+  extends:
+      - mpv2-prepare-testing-bucket
+  variables:
+    IFRA_ENV_TYPE: "Bucket-Upload"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
 xpanse-prepare-testing-bucket-upload-flow:
- extends:
-    - .force-bucket-upload-rule
-    - xpanse-prepare-testing-bucket
- variables:
-   IFRA_ENV_TYPE: "Bucket-Upload"
-   ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+  extends:
+      - xpanse-prepare-testing-bucket
+  variables:
+    IFRA_ENV_TYPE: "Bucket-Upload"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
 .install_packs_in_xsoar_server:
