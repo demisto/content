@@ -1,11 +1,16 @@
-import uuid
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+import uuid
 import pyminizip
 
 DEFAULT_PWD_GENERATION_SCRIPT = "GeneratePassword"
+TEXT_FILE_NAME = "Okta_Password"  # File name for the text file (within the zip file) to use
+EMAIL_ZIP_NAME = "Okta_Password"  # File name to use for the zip file when attaching it to the email
 
+
+# The script uses polling since generating a file and using it within the same script does not work on engines and XSOAR 8.0.
+# To resolve this, we use polling to generate the zip file, and then call the script recursively with the zip file's name.
 
 def find_file_entry_id(file_name: str) -> str:
     """
@@ -116,10 +121,10 @@ def okta_update_user(username: str, password: str, temporary_password: str, pass
                                    f"Please make sure that the '{password_generation_script}' script "
                                    f"complies with your domain's password complexity policy.")
 
-        raise DemistoException(f"An error occurred while trying to set a new password for the user. "
-                               f"Error is:\n{error_message}")
+        raise DemistoException(f"An error occurred while trying to set a new password for the user:\n"
+                               f"{error_message}")
 
-    # Enable useer (in case it was disabled)
+    # Enable user (in case it was disabled)
     enable_outputs = demisto.executeCommand("okta-activate-user", {'username': username})
 
     if is_error(enable_outputs):
@@ -130,23 +135,27 @@ def okta_update_user(username: str, password: str, temporary_password: str, pass
                                    f'Error:\n{error_message}')
 
 
-def send_email(display_name: str, username: str, error_message: str | None, email_recipient: str, email_subject: str,
-               email_body: str, password: str | None = None, zip_file_entry_id: str | None = None):
+def send_email(username: str, email_recipient: str, email_subject: str,
+               email_body: str, display_name: str | None, error_message: str | None = None,
+               password: str | None = None, zip_file_entry_id: str | None = None) -> list | dict:
     """
-    Send an email to the user with the password (plain text or encrypted).
-    One of 'password' or 'zip_file_entry_id' must be provided.
+    Email the user with the password (plain text or encrypted).
+    One of 'error_message', 'password' or 'zip_file_entry_id' must be provided.
 
     Args:
-        display_name (str): The display name of the user.
         username (str): The username of the user.
-        error_message (str): An error message to include in the email.
         email_recipient (str): The email address of the recipient.
         email_subject (str): The subject of the email.
         email_body (str): The body of the email.
-        password (str): The password to send in the email (plain text).
-        zip_file_entry_id (str): The entry ID of the zip file to send in the email (encrypted).
+        display_name (str | None, optional): The display name of the user.
+        error_message (str | None, optional): An error message to include in the email.
+        password (str | None, optional): The password to send in the email (plain text).
+        zip_file_entry_id (str | None, optional): The entry ID of the zip file to send in the email (encrypted).
+
+    Returns:
+        list | dict: The outputs of the send-mail command.
     """
-    if not any((password, zip_file_entry_id)):
+    if not any((error_message, password, zip_file_entry_id)):
         raise ValueError("Either 'password' or 'zip_file_entry_id' must be provided.")
 
     if error_message:
@@ -156,24 +165,26 @@ def send_email(display_name: str, username: str, error_message: str | None, emai
                       f"'to activate the user account of '{username}' in Okta.\n\n'"
                       f"'The error is: '{error_message}'\n\nRegards,\nIAM Team'")
 
-    if not email_subject:
-        email_subject = f'User {display_name or username} was successfully activated in Okta'
-
-    email_password = 'Available in the attached zip file' if zip_file_entry_id else password
-    if not email_body:
-        email_body = 'Hello,\n\n' \
-                     'The following account has been activated in Okta:\n\n'
-        if display_name:
-            email_body += f'Name: {display_name}\n'
-
-        email_body += f'Username: {username}\nPassword: {email_password}\n\nRegards,\nIAM Team'
     else:
-        email_body += f'\nUsername: {username}\nPassword: {email_password}'
+        if not email_subject:
+            email_subject = f"User '{display_name or username}' was successfully activated in Okta"
+
+        email_password = 'Available in the attached zip file' if zip_file_entry_id else password
+
+        if not email_body:
+            email_body = ('Hello,\n\n'
+                          'The following account has been activated in Okta:\n\n')
+            if display_name:
+                email_body += f'Name: {display_name}\n'
+
+            email_body += f'Username: {username}\nPassword: {email_password}\n\nRegards,\nIAM Team'
+        else:
+            email_body += f'\nUsername: {username}\nPassword: {email_password}'
 
     send_email_args = {"to": email_recipient, "subject": email_subject, "body": email_body}
 
     if zip_file_entry_id:
-        send_email_args |= {"attachIDs": zip_file_entry_id, "attachNames": 'Okta_Password.zip'}
+        send_email_args |= {"attachIDs": zip_file_entry_id, "attachNames": f"{EMAIL_ZIP_NAME}.zip"}
 
     return demisto.executeCommand("send-mail", send_email_args)
 
@@ -185,9 +196,20 @@ def send_email(display_name: str, username: str, error_message: str | None, emai
     requires_polling_arg=False,
 )
 def create_zip_with_password(args: dict, generated_password: str, zip_password: str) -> PollResult:
-    # Returns FileID of the created zip file
-    text_file_name = 'Okta_Password.txt'
-    zip_file_name = f'Okta_Password_{uuid.uuid4()}.zip'
+    """
+    Create a zip file with a password.
+    The function returns a zip file to the war room, and calls this script recursively using polling.
+
+    Args:
+        args (dict): The arguments passed to the script.
+        generated_password (str): The password to encrypt.
+        zip_password (str): The password to use for encrypting the zip file.
+
+    Returns:
+        PollResult: The polling result.
+    """
+    text_file_name = f'{TEXT_FILE_NAME}.txt'
+    zip_file_name = f'{EMAIL_ZIP_NAME}_{uuid.uuid4()}.zip'
 
     try:
         with open(text_file_name, 'w') as text_file:
@@ -224,7 +246,7 @@ def main():
     email_recipient = args.get("to_email")
     email_subject = args.get("email_subject")
     email_body = args.get("email_body")
-    zip_password = args.get("ZipProtectWithPassword", '')
+    zip_password = args.get("ZipProtectWithPassword")
     temporary_password = args.get("temporary_password", "false")
     zip_file_name = args.get("zip_file_name")
 
@@ -273,7 +295,7 @@ def main():
                                        email_body=email_body, password=generated_password, zip_file_entry_id=file_entry_id)
 
         if is_error(send_mail_outputs):
-            raise DemistoException(f'An error occurred while trying to send mail. Error is:\n{get_error(send_mail_outputs)}')
+            raise DemistoException(f'An error occurred while trying to send mail:\n{get_error(send_mail_outputs)}')
 
         context_outputs['sentMail'] = 'true'
 
