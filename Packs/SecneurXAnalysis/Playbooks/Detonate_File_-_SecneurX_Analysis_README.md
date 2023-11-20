@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* snx-analysis-submit-file
 * snx-analysis-get-report
+* snx-analysis-submit-file
 
 ## Playbook Inputs
 
@@ -44,22 +44,23 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| SecneurXAnalysis.Report.SHA256 | SHA256 value of the analyzed sample | string |
-| SecneurXAnalysis.Report.Platform | Platform of the analyzed sample | String |
-| SecneurXAnalysis.Report.Verdict | Summary result of the analyzed sample | string |
-| SecneurXAnalysis.Report.Tags | More details of the analyzed sample | string |
-| SecneurXAnalysis.Report.DnsRequests | List of DNS data observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.HttpRequests | List of HTTP data observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.JA3Digests | List of JA3 data observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.ProcessCreated | Process behaviour data observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.RegistrySet | List of Registry creations observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.RegistryDeleted | List of Registry deletions observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.FileCreated | List of File creations observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.FileDropped | List of File drops observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.FileDeleted | List of File deletions observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.FileModified | List of File changes observed in the analyzed sample | string |
-| SecneurXAnalysis.Report.IOC | List of IOC's observed in the analyzed sample | string |
+| SecneurXAnalysis.Report.SHA256 | SHA256 value of the analyzed sample. | string |
+| SecneurXAnalysis.Report.Platform | Platform of the analyzed sample. | String |
+| SecneurXAnalysis.Report.Verdict | Summary result of the analyzed sample. | string |
+| SecneurXAnalysis.Report.Tags | More details of the analyzed sample. | string |
+| SecneurXAnalysis.Report.DnsRequests | List of DNS data observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.HttpRequests | List of HTTP data observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.JA3Digests | List of JA3 data observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.ProcessCreated | Process behaviour data observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.RegistrySet | List of Registry creations observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.RegistryDeleted | List of Registry deletions observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.FileCreated | List of File creations observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.FileDropped | List of File drops observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.FileDeleted | List of File deletions observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.FileModified | List of File changes observed in the analyzed sample. | string |
+| SecneurXAnalysis.Report.IOC | List of IOC's observed in the analyzed sample. | string |
 | SecneurXAnalysis.Report.Status | Analysis queued sample state. | String |
+| SecneurXAnalysis.SubmitFile.error_msg | Error message when the file type i not supported. | string |
 
 ## Playbook Image
 
