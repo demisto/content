@@ -54249,3 +54249,1130 @@ Returns URL analyses reports from the defined time onward.
 >| 168597674625002a | 2023-06-05T14:52:28 | online | http:<span>//</span>ftp.riken.jp/Linux/debian/debian/dists/bookworm-proposed-updates/main/i18n/Translation-en.diff/T-2023-06-03-1403.07-F-2023-01-20-0206.46.gz | http:<span>//</span>ftp.riken.jp/Linux/debian/debian/dists/bookworm-proposed-updates/main/i18n/Translation-en.diff/T-2023-06-03-1403.07-F-2023-01-20-0206.46.gz |
 >| 168597674529c352 | 2023-06-05T14:52:28 | online | http:<span>//</span>cigarettescigs.com/marengo-cigarettes-c-226.html?zenid=1ur5fbj6tboo2ulacuejibatq2 | http:<span>//</span>cigarettescigs.com/marengo-cigarettes-c-226.html?zenid=1ur5fbj6tboo2ulacuejibatq2 |
 
+
+### reversinglabs-titaniumcloud-domain-report
+
+***
+Returns a domain analysis report.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-domain-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain string. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.domain_report | Unknown | The domain analysis report. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-domain-report domain=bloom-artists.com```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "bloom-artists.com",
+        "Reliability": "C - Fairly reliable",
+        "Score": 0,
+        "Type": "domain",
+        "Vendor": "ReversingLabs TitaniumCloud v2"
+    },
+    "Domain": {
+        "Name": "bloom-artists.com"
+    },
+    "ReversingLabs": {
+        "domain_report": {
+            "rl": {
+                "downloaded_files_statistics": {
+                    "known": 54,
+                    "malicious": 1,
+                    "suspicious": 0,
+                    "total": 55,
+                    "unknown": 0
+                },
+                "last_dns_records": [
+                    {
+                        "provider": "ReversingLabs",
+                        "type": "A",
+                        "value": "85.187.128.34"
+                    }
+                ],
+                "last_dns_records_time": "2023-08-25T09:34:16",
+                "modified_time": "2023-11-06T12:06:50",
+                "requested_domain": "bloom-artists.com",
+                "third_party_reputations": {
+                    "sources": [
+                        {
+                            "detection": "undetected",
+                            "source": "phishing_database",
+                            "update_time": "2023-11-06T02:25:55"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "0xSI_f33d",
+                            "update_time": "2023-11-06T06:22:03"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "cyradar",
+                            "update_time": "2023-11-06T08:15:05"
+                        },
+                        {
+                            "detect_time": "2023-10-22T21:13:34",
+                            "detection": "malicious",
+                            "source": "adminus_labs",
+                            "update_time": "2023-11-06T12:06:50"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "apwg",
+                            "update_time": "2023-11-02T17:30:36"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "netstar",
+                            "update_time": "2023-11-06T11:39:40"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "threatfox_abuse_ch",
+                            "update_time": "2023-11-06T08:20:49"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "botvrij",
+                            "update_time": "2023-11-06T02:26:03"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "alphamountain",
+                            "update_time": "2023-11-06T10:57:13"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "comodo_valkyrie",
+                            "update_time": "2023-11-06T05:53:24"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "web_security_guard",
+                            "update_time": "2022-01-21T06:56:15"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "osint",
+                            "update_time": "2023-11-06T01:30:13"
+                        },
+                        {
+                            "detect_time": "2023-10-23T03:27:25",
+                            "detection": "malicious",
+                            "source": "crdf",
+                            "update_time": "2023-11-06T08:34:19"
+                        }
+                    ],
+                    "statistics": {
+                        "clean": 0,
+                        "malicious": 2,
+                        "total": 13,
+                        "undetected": 11
+                    }
+                },
+                "top_threats": [
+                    {
+                        "files_count": 1,
+                        "threat_level": 5,
+                        "threat_name": "Win32.Trojan.RedLine"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs Domain Report for bloom-artists.com
+> ### Last DNS records
+>|provider|type|value|
+>|---|---|---|
+>| ReversingLabs | A | 85.187.128.34 |
+>
+>    
+>**Last DNS records time**: 2023-08-25T09:34:16
+>    
+> ### Top threats
+>|files_count|threat_level|threat_name|
+>|---|---|---|
+>| 1 | 5 | Win32.Trojan.RedLine |
+>
+> ### Third party statistics
+> **CLEAN**: 0
+>        **MALICIOUS**: 2
+>        **UNDETECTED**: 11
+>        **TOTAL**: 13
+>        
+> ### Third party sources
+>|detection|source|update_time|
+>|---|---|---|
+>| undetected | phishing_database | 2023-11-06T02:25:55 |
+>| undetected | 0xSI_f33d | 2023-11-06T06:22:03 |
+>| undetected | cyradar | 2023-11-06T08:15:05 |
+>| **malicious** | adminus_labs | 2023-11-06T12:06:50 |
+>| undetected | apwg | 2023-11-02T17:30:36 |
+>| undetected | netstar | 2023-11-06T11:39:40 |
+>| undetected | threatfox_abuse_ch | 2023-11-06T08:20:49 |
+>| undetected | botvrij | 2023-11-06T02:26:03 |
+>| undetected | alphamountain | 2023-11-06T10:57:13 |
+>| undetected | comodo_valkyrie | 2023-11-06T05:53:24 |
+>| undetected | web_security_guard | 2022-01-21T06:56:15 |
+>| undetected | osint | 2023-11-06T01:30:13 |
+>| **malicious** | crdf | 2023-11-06T08:34:19 |
+>
+> ### Downloaded files statistics
+> **KNOWN**: 54
+>    **MALICIOUS**: 1
+>    **SUSPICIOUS**: 0
+>    **UNKNOWN**: 0
+>    **TOTAL**: 55
+>    
+
+### reversinglabs-titaniumcloud-domain-downloaded-files
+
+***
+Returns a list of files downloaded from a domain.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-domain-downloaded-files`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain string. | Required | 
+| classification | Return only files of this classification. Possible values are: MALICIOUS, SUSPICIOUS, KNOWN. | Optional | 
+| result_limit | Maximum number of returned results. Default is 50000. | Optional | 
+| results_per_page | Number of results returned per request. Default is 1000. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.domain_downloaded_files | Unknown | The list of files downloaded from a domain. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-domain-downloaded-files domain=bloom-artists.com classification=MALICIOUS result_limit=10 results_per_page=3```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "bloom-artists.com",
+        "Reliability": "C - Fairly reliable",
+        "Score": 0,
+        "Type": "domain",
+        "Vendor": "ReversingLabs TitaniumCloud v2"
+    },
+    "Domain": {
+        "Name": "bloom-artists.com"
+    },
+    "ReversingLabs": {
+        "domain_downloaded_files": [
+            {
+                "classification": "MALICIOUS",
+                "first_download": "2023-07-08T06:13:02",
+                "first_seen": "2023-07-08T00:39:23",
+                "last_download": "2023-07-08T15:11:31",
+                "last_download_url": "http://bloom-artists.com/wp-includes/class-wp-image-editors.php?filename=winx32apideftype.exe",
+                "last_seen": "2023-09-26T15:25:41",
+                "malware_family": "RedLine",
+                "malware_type": "Trojan",
+                "md5": "2796bf32abbebdd11a35603f3453214d",
+                "platform": "Win32",
+                "sample_available": true,
+                "sample_size": 3697248,
+                "sample_type": "PE/Exe",
+                "sha1": "96826340af3f4708b16f8f0e3eb29ad0ce5bb6f8",
+                "sha256": "0edc6dae7ee848bf465be34edfc49377b7da304798445685e4a7d45d4983f166",
+                "threat_level": 5,
+                "threat_name": "Win32.Trojan.RedLine",
+                "trust_factor": 5
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs Files downloaded from domain bloom-artists.com
+> ### Downloaded files
+>|classification|first_download|first_seen|last_download|last_download_url|last_seen|malware_family|malware_type|md5|platform|sample_available|sample_size|sample_type|sha1|sha256|threat_level|threat_name|trust_factor|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| MALICIOUS | 2023-07-08T06:13:02 | 2023-07-08T00:39:23 | 2023-07-08T15:11:31 | http://bloom-artists.com/wp-includes/class-wp-image-editors.php?filename=winx32apideftype.exe | 2023-09-26T15:25:41 | RedLine | Trojan | 2796bf32abbebdd11a35603f3453214d | Win32 | true | 3697248 | PE/Exe | 96826340af3f4708b16f8f0e3eb29ad0ce5bb6f8 | 0edc6dae7ee848bf465be34edfc49377b7da304798445685e4a7d45d4983f166 | 5 | Win32.Trojan.RedLine | 5 |
+
+
+### reversinglabs-titaniumcloud-domain-urls
+
+***
+Returns a list of URL-s associated with the requested domain.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-domain-urls`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain string. | Required | 
+| result_limit | Maximum number of returned results. Default is 50000. | Optional | 
+| results_per_page | Number of results returned per request. Default is 1000. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.domain_urls | Unknown | The list of URL-s associated with the requested domain. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-domain-urls result_limit=10 results_per_page=3 domain=bloom-artists.com```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "bloom-artists.com",
+        "Reliability": "C - Fairly reliable",
+        "Score": 0,
+        "Type": "domain",
+        "Vendor": "ReversingLabs TitaniumCloud v2"
+    },
+    "Domain": {
+        "Name": "bloom-artists.com"
+    },
+    "ReversingLabs": {
+        "domain_urls": [
+            {
+                "url": "https://bloom-artists.com/wp-content/uploads/2021/01/cropped-%C3%A8%C2%97%C2%9D%C3%A9%C2%BB%C2%9E%C3%A4%C2%BA%C2%AE%C3%A5%C2%8D%C2%94%C3%A6%C2%9C%C2%83-logo-1-32x32.jpg"
+            },
+            {
+                "url": "https://bloom-artists.com/wp-content/themes/Avada/assets/min/js/general/avada-custom-header.js?ver=7.2.1"
+            },
+            {
+                "url": "https://bloom-artists.com/wp-content/plugins/fusion-builder/assets/js/min/general/fusion-animations.js?ver=6.2.2"
+            },
+            {
+                "url": "https://bloom-artists.com/wp-content/themes/Avada/includes/lib/assets/min/js/library/jquery.requestAnimationFrame.js?ver=1"
+            },
+            {
+                "url": "https://bloom-artists.com/wp-content/themes/Avada/includes/lib/assets/min/js/library/fusion-video-bg.js?ver=1"
+            },
+            {
+                "url": "https://bloom-artists.com/2021/01/15/teacher-2/"
+            },
+            {
+                "url": "https://bloom-artists.com/wp-json/"
+            },
+            {
+                "url": "https://bloom-artists.com/2021/01/15/author-6/"
+            },
+            {
+                "url": "https://bloom-artists.com/wp-content/plugins/convertplug/modules/slide_in/assets/demos"
+            },
+            {
+                "url": "https://bloom-artists.com/wp-content/themes/Avada/assets/min/js/general/avada-live-search.js?ver=7.2.1"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs URL-s associated with domain bloom-artists.com
+> ### URL list
+>|url|
+>|---|
+>| https://bloom-artists.com/wp-content/uploads/2021/01/cropped-%C3%A8%C2%97%C2%9D%C3%A9%C2%BB%C2%9E%C3%A4%C2%BA%C2%AE%C3%A5%C2%8D%C2%94%C3%A6%C2%9C%C2%83-logo-1-32x32.jpg |
+>| https://bloom-artists.com/wp-content/themes/Avada/assets/min/js/general/avada-custom-header.js?ver=7.2.1 |
+>| https://bloom-artists.com/wp-content/plugins/fusion-builder/assets/js/min/general/fusion-animations.js?ver=6.2.2 |
+>| https://bloom-artists.com/wp-content/themes/Avada/includes/lib/assets/min/js/library/jquery.requestAnimationFrame.js?ver=1 |
+>| https://bloom-artists.com/wp-content/themes/Avada/includes/lib/assets/min/js/library/fusion-video-bg.js?ver=1 |
+>| https://bloom-artists.com/2021/01/15/teacher-2/ |
+>| https://bloom-artists.com/wp-json/ |
+>| https://bloom-artists.com/2021/01/15/author-6/ |
+>| https://bloom-artists.com/wp-content/plugins/convertplug/modules/slide_in/assets/demos |
+>| https://bloom-artists.com/wp-content/themes/Avada/assets/min/js/general/avada-live-search.js?ver=7.2.1 |
+
+
+### reversinglabs-titaniumcloud-domain-to-ip
+
+***
+Returns a list of IP addresses resolved from a domain.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-domain-to-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain string. | Required | 
+| result_limit | Maximum number of returned results. Default is 50000. | Optional | 
+| results_per_page | Number of results returned per request. Default is 1000. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.domain_to_ip | Unknown | The list of IP addresses resolved from the domain. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-domain-to-ip results_per_page=3 domain=bloom-artists.com result_limit=10```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "bloom-artists.com",
+        "Reliability": "C - Fairly reliable",
+        "Score": 0,
+        "Type": "domain",
+        "Vendor": "ReversingLabs TitaniumCloud v2"
+    },
+    "Domain": {
+        "Name": "bloom-artists.com"
+    },
+    "ReversingLabs": {
+        "domain_to_ip": [
+            {
+                "ip": "85.187.128.34",
+                "last_resolution_time": "2023-08-25T09:34:16",
+                "provider": "ReversingLabs"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs IP addresses resolved from domain bloom-artists.com
+> ### IP address list
+>|ip|last_resolution_time|provider|
+>|---|---|---|
+>| 85.187.128.34 | 2023-08-25T09:34:16 | ReversingLabs |
+
+
+### reversinglabs-titaniumcloud-domain-related-domains
+
+***
+Returns a list of domains related to the submitted domain.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-domain-related-domains`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain string. | Required | 
+| result_limit | Maximum number of returned results. Default is 50000. | Optional | 
+| results_per_page | Number of results returned per request. Default is 1000. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.domain_related_domains | Unknown | The list of domains related to the submitted domain. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-domain-related-domains domain=smsv4.ufcfan.org result_limit=10 results_per_page=3```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "smsv4.ufcfan.org",
+        "Reliability": "C - Fairly reliable",
+        "Score": 0,
+        "Type": "domain",
+        "Vendor": "ReversingLabs TitaniumCloud v2"
+    },
+    "Domain": {
+        "Name": "smsv4.ufcfan.org"
+    },
+    "ReversingLabs": {
+        "domain_related_domains": [
+            {
+                "domain": "mstanley.ufcfan.org"
+            },
+            {
+                "domain": "ketogendietmo.ufcfan.org"
+            },
+            {
+                "domain": "vmze-crypto511386.marketscoin.ufcfan.org"
+            },
+            {
+                "domain": "cxip-crypto665491.marketscoin.ufcfan.org"
+            },
+            {
+                "domain": "xgzc-crypto767019.marketscoin.ufcfan.org"
+            },
+            {
+                "domain": "dejar-de-roncar.ufcfan.org"
+            },
+            {
+                "domain": "uolv-crypto969448.marketscoin.ufcfan.org"
+            },
+            {
+                "domain": "nowornever1.ufcfan.org"
+            },
+            {
+                "domain": "the.ufcfan.org"
+            },
+            {
+                "domain": "onedrshapointooo.ufcfan.org"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs domains related to domain smsv4.ufcfan.org
+> ### Domain list
+>|domain|
+>|---|
+>| mstanley.ufcfan.org |
+>| ketogendietmo.ufcfan.org |
+>| vmze-crypto511386.marketscoin.ufcfan.org |
+>| cxip-crypto665491.marketscoin.ufcfan.org |
+>| xgzc-crypto767019.marketscoin.ufcfan.org |
+>| dejar-de-roncar.ufcfan.org |
+>| uolv-crypto969448.marketscoin.ufcfan.org |
+>| nowornever1.ufcfan.org |
+>| the.ufcfan.org |
+>| onedrshapointooo.ufcfan.org |
+
+
+### reversinglabs-titaniumcloud-ip-report
+
+***
+Returns an IP address analysis report.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-ip-report`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.ip_report | Unknown | The IP address analysis report. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-ip-report ip=5.42.64.70```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "5.42.64.70",
+        "Reliability": "C - Fairly reliable",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "ReversingLabs TitaniumCloud v2"
+    },
+    "IP": {
+        "Address": "5.42.64.70"
+    },
+    "ReversingLabs": {
+        "ip_report": {
+            "rl": {
+                "downloaded_files_statistics": {
+                    "known": 0,
+                    "malicious": 0,
+                    "suspicious": 0,
+                    "total": 0,
+                    "unknown": 0
+                },
+                "modified_time": "2023-11-06T12:00:35",
+                "requested_ip": "5.42.64.70",
+                "third_party_reputations": {
+                    "sources": [
+                        {
+                            "detection": "undetected",
+                            "source": "adminus_labs",
+                            "update_time": "2023-11-06T12:00:35"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "apwg",
+                            "update_time": "2023-11-01T21:23:52"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "threatfox_abuse_ch",
+                            "update_time": "2023-11-06T08:20:49"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "alphamountain",
+                            "update_time": "2023-11-06T10:57:13"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "osint",
+                            "update_time": "2023-11-06T01:30:13"
+                        },
+                        {
+                            "detection": "undetected",
+                            "source": "feodotracker",
+                            "update_time": "2023-11-06T05:28:24"
+                        },
+                        {
+                            "detect_time": "2023-10-27T03:54:23",
+                            "detection": "malicious",
+                            "source": "crdf",
+                            "update_time": "2023-11-06T08:34:19"
+                        }
+                    ],
+                    "statistics": {
+                        "clean": 0,
+                        "malicious": 1,
+                        "total": 7,
+                        "undetected": 6
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs IP address report for 5.42.64.70
+> ### Downloaded files statistics
+> **KNOWN**: 0
+>    **MALICIOUS**: 0
+>    **SUSPICIOUS**: 0
+>    **UNKNOWN**: 0
+>    **TOTAL**: 0
+>    
+> ### Third party statistics
+> **CLEAN**: 0
+>        **MALICIOUS**: 1
+>        **UNDETECTED**: 6
+>         **TOTAL**: 7
+>        
+> ### Third party sources
+>|detection|source|update_time|
+>|---|---|---|
+>| undetected | adminus_labs | 2023-11-06T12:00:35 |
+>| undetected | apwg | 2023-11-01T21:23:52 |
+>| undetected | threatfox_abuse_ch | 2023-11-06T08:20:49 |
+>| undetected | alphamountain | 2023-11-06T10:57:13 |
+>| undetected | osint | 2023-11-06T01:30:13 |
+>| undetected | feodotracker | 2023-11-06T05:28:24 |
+>| **malicious** | crdf | 2023-11-06T08:34:19 |
+
+
+### reversinglabs-titaniumcloud-ip-downloaded-files
+
+***
+Returns a list of files downloaded from an IP address.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-ip-downloaded-files`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address. | Required | 
+| classification | Return only files of this classification. Possible values are: MALICIOUS, SUSPICIOUS, KNOWN. | Optional | 
+| result_limit | Maximum number of returned results. Default is 50000. | Optional | 
+| results_per_page | Number of results returned per request. Default is 1000. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.ip_downloaded_files | Unknown | The list of files downloaded from an IP address. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-ip-downloaded-files ip=61.253.71.111 result_limit=10 results_per_page=3 classification=KNOWN```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "61.253.71.111",
+        "Reliability": "C - Fairly reliable",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "ReversingLabs TitaniumCloud v2"
+    },
+    "IP": {
+        "Address": "61.253.71.111"
+    },
+    "ReversingLabs": {
+        "ip_downloaded_files": [
+            {
+                "classification": "KNOWN",
+                "first_download": "2023-07-07T17:19:28",
+                "first_seen": "2023-07-07T17:19:28",
+                "last_download": "2023-07-07T17:19:28",
+                "last_download_url": "http://zexeq.com/lancer/get.php?first=true&pid=C3B16B41D6F86B32953BEB04946D0A6E",
+                "last_seen": "2023-07-07T19:59:59",
+                "md5": "797eccd405422c693c0191979ff6ef4a",
+                "sample_available": true,
+                "sample_size": 556,
+                "sample_type": "Text/JSON",
+                "sha1": "91b32dca495014f75ffdee6faa698bdf6434d8fb",
+                "sha256": "4b89d4825098a840cd456b2b5885dcb2877f64860849241fa1f61ae222ad17bf",
+                "threat_level": 0,
+                "trust_factor": 5
+            },
+            {
+                "classification": "KNOWN",
+                "first_download": "2023-06-02T11:22:59",
+                "first_seen": "2023-06-02T11:22:59",
+                "last_download": "2023-06-02T11:22:59",
+                "last_download_url": "http://zexeq.com/lancer/get.php?first=true&pid=254EAF666E5FA09BE8619B6A01AF9288",
+                "last_seen": "2023-07-24T13:15:30",
+                "md5": "c64e2b30fda16b0196942265d3dd5fef",
+                "sample_available": true,
+                "sample_size": 560,
+                "sample_type": "Text/JSON",
+                "sha1": "d8e27451c3045d36059275900c471d6fbb0cabf4",
+                "sha256": "196a50b5dd9a72e24acb81c757df553d1e0f5c072d52672decb5c598f203b4c5",
+                "threat_level": 0,
+                "trust_factor": 5
+            },
+            {
+                "classification": "KNOWN",
+                "first_download": "2023-07-06T13:27:18",
+                "first_seen": "2023-07-06T13:27:18",
+                "last_download": "2023-07-06T13:27:18",
+                "last_download_url": "http://zexeq.com/test1/get.php?first=false&pid=DF224B838A5638467035D81D43816702",
+                "last_seen": "2023-07-13T18:31:02",
+                "md5": "4dea2d4466b52c08d0b8276dd0c45172",
+                "sample_available": true,
+                "sample_size": 556,
+                "sample_type": "Text/JSON",
+                "sha1": "e8f717a59b8c1c5290797642d9442612ea234657",
+                "sha256": "8575ac48af341192f571d55002370cc945c56dd43655731d76348f4df6d232a7",
+                "threat_level": 0,
+                "trust_factor": 5
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs Files downloaded from IP address 61.253.71.111
+> ### Downloaded files
+>|classification|first_download|first_seen|last_download|last_download_url|last_seen|md5|sample_available|sample_size|sample_type|sha1|sha256|threat_level|trust_factor|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| KNOWN | 2023-07-07T17:19:28 | 2023-07-07T17:19:28 | 2023-07-07T17:19:28 | http:<span>//</span>zexeq.com/lancer/get.php?first=true&pid=C3B16B41D6F86B32953BEB04946D0A6E | 2023-07-07T19:59:59 | 797eccd405422c693c0191979ff6ef4a | true | 556 | Text/JSON | 91b32dca495014f75ffdee6faa698bdf6434d8fb | 4b89d4825098a840cd456b2b5885dcb2877f64860849241fa1f61ae222ad17bf | 0 | 5 |
+>| KNOWN | 2023-06-02T11:22:59 | 2023-06-02T11:22:59 | 2023-06-02T11:22:59 | http:<span>//</span>zexeq.com/lancer/get.php?first=true&pid=254EAF666E5FA09BE8619B6A01AF9288 | 2023-07-24T13:15:30 | c64e2b30fda16b0196942265d3dd5fef | true | 560 | Text/JSON | d8e27451c3045d36059275900c471d6fbb0cabf4 | 196a50b5dd9a72e24acb81c757df553d1e0f5c072d52672decb5c598f203b4c5 | 0 | 5 |
+>| KNOWN | 2023-07-06T13:27:18 | 2023-07-06T13:27:18 | 2023-07-06T13:27:18 | http:<span>//</span>zexeq.com/test1/get.php?first=false&pid=DF224B838A5638467035D81D43816702 | 2023-07-13T18:31:02 | 4dea2d4466b52c08d0b8276dd0c45172 | true | 556 | Text/JSON | e8f717a59b8c1c5290797642d9442612ea234657 | 8575ac48af341192f571d55002370cc945c56dd43655731d76348f4df6d232a7 | 0 | 5 |
+
+
+### reversinglabs-titaniumcloud-ip-urls
+
+***
+Returns a list of URL-s associated with an IP address.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-ip-urls`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address. | Required | 
+| result_limit | Maximum number of returned results. Default is 50000. | Optional | 
+| results_per_page | Number of results returned per request. Default is 1000. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.ip_urls | Unknown | The list of URL-s associated with an IP address. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-ip-urls ip=61.253.71.111 result_limit=10 results_per_page=3```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "61.253.71.111",
+        "Reliability": "C - Fairly reliable",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "ReversingLabs TitaniumCloud v2"
+    },
+    "IP": {
+        "Address": "61.253.71.111"
+    },
+    "ReversingLabs": {
+        "ip_urls": [
+            {
+                "url": "http://zexeq.com/lancer/get.php?first=true&pid=254EAF666E5FA09BE8619B6A01AF9288"
+            },
+            {
+                "url": "http://zexeq.com/lancer/get.php?first=true&pid=C3B16B41D6F86B32953BEB04946D0A6E"
+            },
+            {
+                "url": "http://zexeq.com/test1/get.php?first=false&pid=DF224B838A5638467035D81D43816702"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs URL-s associated with IP address 61.253.71.111
+> ### URL list
+>|url|
+>|---|
+>| http:<span>//</span>zexeq.com/lancer/get.php?first=true&pid=254EAF666E5FA09BE8619B6A01AF9288 |
+>| http:<span>//</span>zexeq.com/lancer/get.php?first=true&pid=C3B16B41D6F86B32953BEB04946D0A6E |
+>| http:<span>//</span>zexeq.com/test1/get.php?first=false&pid=DF224B838A5638467035D81D43816702 |
+
+
+### reversinglabs-titaniumcloud-ip-to-domain
+
+***
+Returns a list of IP to domain mappings.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-ip-to-domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address. | Required | 
+| result_limit | Maximum number of returned results. Default is 50000. | Optional | 
+| results_per_page | Number of results returned per request. Default is 1000. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.ip_to_domain | Unknown | The list of IP to domain mappings. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-ip-to-domain results_per_page=3 ip=61.253.71.111 result_limit=10```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "61.253.71.111",
+        "Reliability": "C - Fairly reliable",
+        "Score": 0,
+        "Type": "ip",
+        "Vendor": "ReversingLabs TitaniumCloud v2"
+    },
+    "IP": {
+        "Address": "61.253.71.111"
+    },
+    "ReversingLabs": {
+        "ip_to_domain": [
+            {
+                "host_name": "zexeq.com",
+                "last_resolution_time": "2023-07-07T17:19:28",
+                "provider": "ReversingLabs"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs IP to domain mappings for IP address 61.253.71.111
+> ### Domain list
+>|host_name|last_resolution_time|provider|
+>|---|---|---|
+>| zexeq.com | 2023-07-07T17:19:28 | ReversingLabs |
+
+
+### reversinglabs-titaniumcloud-network-reputation
+
+***
+Returns network reputation for requested network locations.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-network-reputation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| network_locations | A comma-separated list of network locations. The list should have no spaces. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.network_reputation | Unknown | Network reputation. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-network-reputation network_locations=http://43.138.221.139/jquery-3.3.1.min.js,61.253.71.111,bloom-artists.com```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "network_reputation": {
+            "rl": {
+                "entries": [
+                    {
+                        "associated_malware": false,
+                        "categories": [
+                            "phishing",
+                            "command_and_control"
+                        ],
+                        "classification": "malicious",
+                        "first_seen": "2022-09-11T11:54:39",
+                        "last_seen": "2023-04-14T11:15:51",
+                        "reason": "third_party_reputation",
+                        "requested_network_location": "http://43.138.221.139/jquery-3.3.1.min.js",
+                        "third_party_reputations": {
+                            "clean": 0,
+                            "malicious": 2,
+                            "total": 19,
+                            "undetected": 17
+                        },
+                        "type": "url"
+                    },
+                    {
+                        "associated_malware": false,
+                        "first_seen": "2023-11-06T13:10:15",
+                        "last_seen": "2023-07-24T13:15:52",
+                        "requested_network_location": "61.253.71.111",
+                        "third_party_reputations": {
+                            "clean": 0,
+                            "malicious": 0,
+                            "total": 7,
+                            "undetected": 7
+                        },
+                        "type": "ip"
+                    },
+                    {
+                        "associated_malware": true,
+                        "first_seen": "2023-10-22T21:13:34",
+                        "last_seen": "2023-10-23T03:27:25",
+                        "requested_network_location": "bloom-artists.com",
+                        "third_party_reputations": {
+                            "clean": 0,
+                            "malicious": 2,
+                            "total": 13,
+                            "undetected": 11
+                        },
+                        "type": "domain"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs Reputation for the following network locations: http:<span>//</span>43.138.221.139/jquery-3.3.1.min.js, 61.253.71.111, bloom-artists.com
+> ### Network locations
+>|associated_malware|categories|classification|first_seen|last_seen|reason|requested_network_location|third_party_reputations_clean|third_party_reputations_malicious|third_party_reputations_total|third_party_reputations_undetected|type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| false | phishing,<br/>command_and_control | **malicious** | 2022-09-11T11:54:39 | 2023-04-14T11:15:51 | third_party_reputation | http:<span>//</span>43.138.221.139/jquery-3.3.1.min.js | 0 | 2 | 19 | 17 | url |
+>| false |  |  | 2023-11-06T13:10:15 | 2023-07-24T13:15:52 |  | 61.253.71.111 | 0 | 0 | 7 | 7 | ip |
+>| true |  |  | 2023-10-22T21:13:34 | 2023-10-23T03:27:25 |  | bloom-artists.com | 0 | 2 | 13 | 11 | domain |
+
+
+### reversinglabs-titaniumcloud-network-reputation-override
+
+***
+Sets and removes user-requested network reputation overrides.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-network-reputation-override`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| set_overrides_list | Network locations whose reputations should be overriden. The locations should be written as a string in the following format - 'network_location,location_type,new_classification\|network_location,location_type,new_classification\|network_location,location_type,new_classification'. | Optional | 
+| remove_overrides_list | Network locations whose reputation overrides should be removed. The locations should be written as a string in the following format - 'network_location,location_type\|network_location,location_type\|network_location,location_type'. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.network_reputation_override | Unknown | Network reputation user override. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-network-reputation-override set_overrides_list="http://163.197.220.144/5x8x,url,suspicious|http://163.197.220.144/j.ad,url,known" remove_overrides_list="http://43.138.221.139/jquery-3.3.1.min.js,url"```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "network_reputation_override": {
+            "rl": {
+                "user_override": {
+                    "created_overrides": [
+                        {
+                            "classification": "suspicious",
+                            "network_location": "http://163.197.220.144/5x8x",
+                            "reason": "user_override",
+                            "type": "url"
+                        },
+                        {
+                            "classification": "known",
+                            "network_location": "http://163.197.220.144/j.ad",
+                            "reason": "user_override",
+                            "type": "url"
+                        }
+                    ],
+                    "removed_overrides": [
+                        {
+                            "network_location": "http://43.138.221.139/jquery-3.3.1.min.js",
+                            "type": "url"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs Network reputation user override
+> ### Created overrides
+>|classification|network_location|reason|type|
+>|---|---|---|---|
+>| suspicious | http:<span>//</span>163.197.220.144/5x8x | user_override | url |
+>| known | http:<span>//</span>163.197.220.144/j.ad | user_override | url |
+>
+> ### Removed overrides
+>|network_location|type|
+>|---|---|
+>| http:<span>//</span>43.138.221.139/jquery-3.3.1.min.js | url |
+
+
+### reversinglabs-titaniumcloud-network-reputation-overrides-list
+
+***
+Lists the active network reputation overrides.
+
+#### Base Command
+
+`reversinglabs-titaniumcloud-network-reputation-overrides-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| result_limit | Maximum number of returned results. Default is 50000. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ReversingLabs.network_reputation_overrides_list | Unknown | Network reputation overrides list. | 
+
+#### Command example
+```!reversinglabs-titaniumcloud-network-reputation-overrides-list result_limit=10```
+#### Context Example
+```json
+{
+    "ReversingLabs": {
+        "network_reputation_overrides_list": [
+            {
+                "network_location": "https://cisco.com/",
+                "type": "url"
+            },
+            {
+                "network_location": "http://banco.colpatria.com.co/banca-virtual/login/",
+                "type": "url"
+            },
+            {
+                "network_location": "http://cvisd.com/",
+                "type": "url"
+            },
+            {
+                "network_location": "https://ca-sil.com/",
+                "type": "url"
+            },
+            {
+                "network_location": "http://partner.frontread.com/",
+                "type": "url"
+            },
+            {
+                "network_location": "https://eclipse.org/",
+                "type": "url"
+            },
+            {
+                "network_location": "http://163.197.220.144/5x8x",
+                "type": "url"
+            },
+            {
+                "network_location": "https://ajestudios.com/",
+                "type": "url"
+            },
+            {
+                "network_location": "https://openairmt.org/",
+                "type": "url"
+            },
+            {
+                "network_location": "https://synnexfpt.com/",
+                "type": "url"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>## ReversingLabs Network reputation active user overrides list
+> ### Network location list
+>|network_location|type|
+>|---|---|
+>| https:<span>//</span>cisco.com/ | url |
+>| http:<span>//</span>banco.colpatria.com.co/banca-virtual/login/ | url |
+>| http:<span>//</span>cvisd.com/ | url |
+>| https://ca-sil.com/ | url |
+>| http:<span>//</span>partner.frontread.com/ | url |
+>| https:<span>//</span>eclipse.org/ | url |
+>| http:<span>//</span>163.197.220.144/5x8x | url |
+>| https:<span>//</span>ajestudios.com/ | url |
+>| https:<span>//</span>openairmt.org/ | url |
+>| https:<span>//</span>synnexfpt.com/ | url |
+

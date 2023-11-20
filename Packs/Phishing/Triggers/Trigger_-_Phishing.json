@@ -1,0 +1,18 @@
+{
+  "trigger_id": "7cf55ecbe5a8f69de931ce236cef5973",
+  "playbook_id": "Phishing - Generic v3",
+  "suggestion_reason": "Provides a comprehensive response to phishing alerts.",
+  "description": "This trigger is responsible for running the Phishing - Generic v3 playbook on Phishing alerts.",
+  "trigger_name": "Phishing Playbook Trigger",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Phishing"
+        }
+      ]
+    }
+  }
+}

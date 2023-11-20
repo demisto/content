@@ -1591,7 +1591,7 @@ def test_get_remote_incident_data(mocker):
 @pytest.mark.parametrize("incident, expected_contents", [
     (
         {'ID': 'id-incident-1', 'Status': 'Closed', 'classification': 'BenignPositive'},
-        {'dbotIncidentClose': True, 'closeReason': 'Resolved - Closed on Microsoft Sentinel', 'closeNotes': ''}
+        {'dbotIncidentClose': True, 'closeReason': 'Resolved', 'closeNotes': 'Closed on Microsoft Sentinel'}
     ),
     (
         {'ID': 'id-incident-1', 'Status': 'Active'},
@@ -1677,13 +1677,19 @@ def test_update_remote_incident(mocker, incident_status, close_incident_in_remot
     assert mock_update_status.called == expected_update_call
 
 
-@pytest.mark.parametrize('delta, close_ticket_param, to_close', [
-    ({'classification': 'FalsePositive'}, True, True),
-    ({'classification': 'FalsePositive'}, False, False),
-    ({}, True, False),
-    ({}, False, False)
+@pytest.mark.parametrize('delta, data, close_ticket_param, to_close', [
+    ({'classification': 'FalsePositive'}, {}, True, True),
+    ({'classification': 'FalsePositive'}, {}, False, False),
+    ({}, {}, True, False),
+    ({}, {}, False, False),
+    # Closing after classification is already present in the data.
+    ({}, {'classification': 'FalsePositive'}, True, True),
+    # Closing after reopened, before data update
+    ({}, {'classification': 'FalsePositive', 'status': 'Closed'}, True, True),
+    # Closing after reopened, after data update
+    ({}, {'classification': 'FalsePositive', 'status': 'Active'}, True, True)
 ])
-def test_close_incident_in_remote(mocker, delta, close_ticket_param, to_close):
+def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_close):
     """
     Given
         - one of the close parameters
@@ -1693,45 +1699,55 @@ def test_close_incident_in_remote(mocker, delta, close_ticket_param, to_close):
         - returns true if the incident was closed in XSOAR and the close_ticket parameter was set to true
     """
     mocker.patch.object(demisto, 'params', return_value={'close_ticket': close_ticket_param})
-    assert close_incident_in_remote(delta) == to_close
+    assert close_incident_in_remote(delta, data) == to_close
 
 
-@pytest.mark.parametrize("data, delta, mock_response, close_ticket", [
-    (
-        {'title': 'New Title', 'severity': 2, 'status': 1},
-        {'title': 'New Title'},
-        {'title': 'New Title', 'severity': 'Medium', 'status': 'Active'},
+@pytest.mark.parametrize("data, delta, mocked_fetch_data, expected_response, close_ticket", [
+    (   # Update description of active incident.
+        {'title': 'Title', 'description': 'old desc', 'severity': 2, 'status': 1},
+        {'title': 'Title', 'description': 'new desc'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Medium', 'status': 'Active'},
+        {'title': 'Title', 'description': 'new desc', 'severity': 'Medium', 'status': 'Active'},
         False
     ),
-    (
-        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
-        {'title': 'New Title', 'classification': 'Undetermined'},
-        {'title': 'New Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+    (   # Update description and classification and close incident.
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
+        {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
     ),
-    (
-        {'title': 'New Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
-        {'title': 'New Title', 'classification': 'Undetermined'},
-        {'title': 'New Title', 'severity': 'Low', 'status': 'Active'},
+    (   # Update description and classification of active incident without closing. Result in description update only.
+        {'title': 'Title', 'description': 'old desc', 'severity': 1, 'status': 2},
+        {'title': 'Title', 'description': 'new desc', 'classification': 'Undetermined'},
+        {'title': 'Title', 'description': 'old desc', 'severity': 'Low', 'status': 'Active'},
+        {'title': 'Title', 'description': 'new desc', 'severity': 'Low', 'status': 'Active'},
         False
+    ),
+    (   # Update title and close incident with classification already in data. Result in closing with classification.
+        {'title': 'Title', 'severity': 1, 'status': 2, 'classification': 'Undetermined'},
+        {'title': 'Title'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
+        {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
+        True
     )
 ])
-def test_update_incident_request(mocker, data, delta, mock_response, close_ticket):
+def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, close_ticket):
     """
     Given
-        - data
-        - delta
+        - data: The incident data before the update in xsoar.
+        - delta: The changes in the incident made in xsoar.
+        - mocked fetched current data: The incident data before the update in sentinel.
     When
         - running update_incident_request
     Then
         - Ensure the client.http_request was called with the expected data
     """
     client = mock_client()
-    mock_response = {'etag': None, 'properties': mock_response}
-    mocker.patch.object(client, 'http_request', return_value=mock_response)
+    mocker.patch.object(client, 'http_request', return_value=mocked_fetch_data)
 
     update_incident_request(client, 'id-incident-1', data, delta, close_ticket)
-    assert client.http_request.call_args[1]['data'] == mock_response
+    assert client.http_request.call_args[1]['data'].get('properties') == expected_response
 
 
 @pytest.mark.parametrize("args", [
