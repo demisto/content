@@ -1134,6 +1134,8 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-ast', '--artifacts-folder-server-type', help="The artifacts folder server type",
+                        required=True)
     parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
@@ -1205,9 +1207,8 @@ def main():
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
-    artifact_folder_path = Path(packs_artifacts_path).parent
-    uploaded_packs_dir = Path(artifact_folder_path / f'uploaded_packs-{"id_set" if id_set else "graph"}')
-    markdown_images_data = Path(artifact_folder_path / BucketUploadFlow.MARKDOWN_IMAGES_ARTIFACT_FILE_NAME)
+    uploaded_packs_dir = Path(option.artifacts_folder_server_type) / f'uploaded_packs-{"id_set" if id_set else "graph"}'
+    markdown_images_data = Path(option.artifacts_folder_server_type) / BucketUploadFlow.MARKDOWN_IMAGES_ARTIFACT_FILE_NAME
 
     uploaded_packs_dir.mkdir(parents=True, exist_ok=True)
     # Relevant when triggering test upload flow

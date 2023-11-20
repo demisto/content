@@ -455,7 +455,10 @@ tasks:
             iscontext: true
             value:
               simple: empty_list_key
-          operator: isExists
+          operator: hasLength
+          right:
+            value:
+              simple: "0"
       label: "yes"
     id: "18"
     ignoreworker: false

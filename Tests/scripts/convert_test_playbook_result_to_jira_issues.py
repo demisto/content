@@ -16,13 +16,13 @@ from junitparser import JUnitXml
 from tabulate import tabulate
 
 from Tests.scripts.common import calculate_results_table, get_all_failed_results, \
-    get_test_results_files, TEST_PLAYBOOKS_REPORT_FILE_NAME
+    get_test_results_files, TEST_PLAYBOOKS_REPORT_FILE_NAME, TEST_SUITE_CELL_EXPLANATION
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     find_existing_jira_ticket, JIRA_ADDITIONAL_FIELDS, generate_ticket_summary, generate_build_markdown_link, \
     jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type
 from Tests.scripts.test_playbooks_report import calculate_test_playbooks_results, \
-    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks
+    TEST_PLAYBOOKS_BASE_HEADERS, get_jira_tickets_for_playbooks, TEST_PLAYBOOKS_JIRA_BASE_HEADERS
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
@@ -50,7 +50,7 @@ def options_handler() -> argparse.Namespace:
 def generate_description(playbook_id: str, build_number: str, junit_file_name: str, table_data: Any, failed: bool) -> str:
     build_markdown_link = generate_build_markdown_link(build_number)
     transposed = pd.DataFrame(table_data, index=None).transpose().to_numpy()
-    table = tabulate(transposed, headers="firstrow", tablefmt="jira", stralign="left", numalign="center")
+    table = tabulate(transposed, headers="firstrow", tablefmt="jira")
     msg = "failed" if failed else "succeeded"
     description = f"""
         *{playbook_id}* {msg} in {build_markdown_link}
@@ -97,8 +97,8 @@ def create_jira_issue(jira_server: JIRA,
         jira_server.add_attachment(issue=jira_issue.key, attachment=attachment_file_name.name, filename=junit_file_name)
 
     back_link_to = f" with back link to {link_to_issue.key}" if link_to_issue else ""
-    logging.info(f"{'Updated' if use_existing_issue else 'Created'} Jira issue: {jira_issue.key} {back_link_to}"
-                 f"for {playbook_id}")
+    logging.success(f"{'Updated' if use_existing_issue else 'Created'} Jira issue: {jira_issue.key} {back_link_to}"
+                    f"for {playbook_id}")
 
     return jira_issue
 
@@ -115,17 +115,18 @@ def main():
         install_logging('convert_test_playbook_result_to_jira_issues.log', logger=logging)
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
-        logging.info(f"Artifacts path: {options.artifacts_path}\n"
-                     f"Jira server url: {JIRA_SERVER_URL}\n"
-                     f"Jira verify SSL: {JIRA_VERIFY_SSL}\n"
-                     f"Jira project id: {JIRA_PROJECT_ID}\n"
-                     f"Jira issue type: {JIRA_ISSUE_TYPE}\n"
-                     f"Jira component: {JIRA_COMPONENT}\n"
-                     f"Jira labels: {', '.join(JIRA_LABELS)}\n"
-                     f"Jira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}\n"
-                     f"Max days to reopen: {options.max_days_to_reopen}\n"
-                     f"Max failures to handle: {options.max_failures_to_handle}\n"
-                     f"Build number: {options.build_number}\n")
+        logging.info("Converting test playbook results to Jira issues with the following settings:")
+        logging.info(f"\tArtifacts path: {options.artifacts_path}")
+        logging.info(f"\tJira server url: {JIRA_SERVER_URL}")
+        logging.info(f"\tJira verify SSL: {JIRA_VERIFY_SSL}")
+        logging.info(f"\tJira project id: {JIRA_PROJECT_ID}")
+        logging.info(f"\tJira issue type: {JIRA_ISSUE_TYPE}")
+        logging.info(f"\tJira component: {JIRA_COMPONENT}")
+        logging.info(f"\tJira labels: {', '.join(JIRA_LABELS)}")
+        logging.info(f"\tJira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}")
+        logging.info(f"\tMax days to reopen: {options.max_days_to_reopen}")
+        logging.info(f"\tMax failures to handle: {options.max_failures_to_handle}")
+        logging.info(f"\tBuild number: {options.build_number}")
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
@@ -148,13 +149,14 @@ def main():
         failed_playbooks = get_all_failed_results(playbooks_results)
 
         if len(failed_playbooks) >= options.max_failures_to_handle:
-            headers, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_playbooks,
-                                                                   failed_playbooks,
-                                                                   server_versions,
-                                                                   TEST_PLAYBOOKS_BASE_HEADERS)
-            table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
+            headers, column_align, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_playbooks,
+                                                                                 failed_playbooks,
+                                                                                 server_versions,
+                                                                                 TEST_PLAYBOOKS_BASE_HEADERS)
+            table = tabulate(tabulate_data, headers, tablefmt="pretty", colalign=column_align)
+            logging.info(f"Test Playbook Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
             logging.critical(f"Found {len(failed_playbooks)} failed test playbooks, "
-                             f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.\n{table}")
+                             f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.")
 
             sys.exit(1)
 
@@ -164,18 +166,19 @@ def main():
             # The table should be created without colors, as we don't want to have them within the Jira issue.
             # We also don't want to have the total row, as we don't want to have it within the Jira issue
             # since it's a single playbook.
-            headers, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
-                                                                                {
-                                                                                    playbook_id: test_suites
-                                                                                },
-                                                                                server_versions,
-                                                                                TEST_PLAYBOOKS_BASE_HEADERS,
-                                                                                add_total_row=False,
-                                                                                no_color=True,
-                                                                                without_jira=True,
-                                                                                with_skipped=True,
-                                                                                transpose=True,
-                                                                                )
+            headers, _, tabulate_data, xml, total_errors = calculate_results_table(jira_tickets_for_playbooks,
+                                                                                   {
+                                                                                       playbook_id: test_suites
+                                                                                   },
+                                                                                   server_versions,
+                                                                                   TEST_PLAYBOOKS_JIRA_BASE_HEADERS,
+                                                                                   add_total_row=False,
+                                                                                   no_color=True,
+                                                                                   without_jira=True,
+                                                                                   with_skipped=True,
+                                                                                   multiline_headers=False,
+                                                                                   transpose=True,
+                                                                                   )
 
             if (jira_ticket := jira_tickets_for_playbooks.get(playbook_id)) or total_errors:
                 # if the ticket isn't resolved, or we found new errors, we update it, otherwise we skip it.

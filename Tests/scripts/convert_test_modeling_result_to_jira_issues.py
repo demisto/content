@@ -11,7 +11,7 @@ from junitparser import TestSuite, JUnitXml
 from tabulate import tabulate
 
 from Tests.scripts.common import get_all_failed_results, calculate_results_table, TEST_MODELING_RULES_REPORT_FILE_NAME, \
-    get_test_results_files
+    get_test_results_files, TEST_SUITE_CELL_EXPLANATION
 from Tests.scripts.jira_issues import JIRA_SERVER_URL, JIRA_VERIFY_SSL, JIRA_API_KEY, \
     JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME, JIRA_LABELS, \
     jira_server_information, jira_search_all_by_query, generate_query_by_component_and_issue_type
@@ -47,15 +47,16 @@ def main():
         install_logging('convert_test_modeling_result_to_jira_issues.log', logger=logging)
         now = datetime.now(tz=timezone.utc)
         options = options_handler()
-        logging.info(f"Artifacts path: {options.artifacts_path}\n"
-                     f"Jira server url: {JIRA_SERVER_URL}\n"
-                     f"Jira verify SSL: {JIRA_VERIFY_SSL}\n"
-                     f"Jira project id: {JIRA_PROJECT_ID}\n"
-                     f"Jira issue type: {JIRA_ISSUE_TYPE}\n"
-                     f"Jira component: {JIRA_COMPONENT}\n"
-                     f"Jira labels: {', '.join(JIRA_LABELS)}\n"
-                     f"Jira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}\n"
-                     f"Max days to reopen: {options.max_days_to_reopen}\n")
+        logging.info("Converting test modeling rule report to Jira issues with the following settings:")
+        logging.info(f"\tArtifacts path: {options.artifacts_path}")
+        logging.info(f"\tJira server url: {JIRA_SERVER_URL}")
+        logging.info(f"\tJira verify SSL: {JIRA_VERIFY_SSL}")
+        logging.info(f"\tJira project id: {JIRA_PROJECT_ID}")
+        logging.info(f"\tJira issue type: {JIRA_ISSUE_TYPE}")
+        logging.info(f"\tJira component: {JIRA_COMPONENT}")
+        logging.info(f"\tJira labels: {', '.join(JIRA_LABELS)}")
+        logging.info(f"\tJira issue unresolved transition name: {JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}")
+        logging.info(f"\tMax days to reopen: {options.max_days_to_reopen}")
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
         jira_server_information(jira_server)
@@ -80,13 +81,14 @@ def main():
         failed_test_modeling_rule = get_all_failed_results(modeling_rules_to_test_suite)
 
         if len(failed_test_modeling_rule) >= options.max_failures_to_handle:
-            headers, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_modeling_rule,
-                                                                   failed_test_modeling_rule,
-                                                                   server_versions,
-                                                                   TEST_MODELING_RULES_BASE_HEADERS)
-            table = tabulate(tabulate_data, headers, tablefmt="pretty", stralign="left", numalign="center")
+            headers, column_align, tabulate_data, _, _ = calculate_results_table(jira_tickets_for_modeling_rule,
+                                                                                 failed_test_modeling_rule,
+                                                                                 server_versions,
+                                                                                 TEST_MODELING_RULES_BASE_HEADERS)
+            table = tabulate(tabulate_data, headers, tablefmt="pretty", colalign=column_align)
+            logging.info(f"Test Modeling rule Results: {TEST_SUITE_CELL_EXPLANATION}\n{table}")
             logging.critical(f"Found {len(failed_test_modeling_rule)} failed test modeling rule, "
-                             f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.\n{table}")
+                             f"which is more than the max allowed limit of {options.max_failures_to_handle} to handle.")
 
             sys.exit(1)
 

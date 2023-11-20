@@ -83,6 +83,8 @@ MARKETPLACE_XSIAM_BUCKETS = (
 )
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', '/builds/xsoar/content/artifacts/marketplacev2')
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
+ARTIFACTS_FOLDER_SERVER_TYPE = os.getenv('ARTIFACTS_FOLDER_SERVER_TYPE')
+ENV_RESULTS_PATH = os.getenv('ENV_RESULTS_PATH', f'{ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json')
 SET_SERVER_KEYS = True
 
 
@@ -200,7 +202,7 @@ class Build(ABC):
         'CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CI_RUN
-    env_results_path = f'{ARTIFACTS_FOLDER}/env_results.json'
+    env_results_path = ENV_RESULTS_PATH
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
@@ -341,7 +343,8 @@ class Build(ABC):
 
     def install_packs(self, pack_ids: list | None = None, multithreading=True, production_bucket: bool = True) -> bool:
         """
-        Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and their dependencies.
+        Install packs using 'pack_ids' or "$ARTIFACTS_FOLDER_SERVER_TYPE/content_packs_to_install.txt" file,
+        and their dependencies.
         Args:
             pack_ids (list | None, optional): Packs to install on the server.
                 If no packs provided, installs packs that were provided by the previous step of the build.
@@ -639,8 +642,11 @@ class XSOARBuild(Build):
             self: A build object
         """
         # Install all existing packs with latest version
-        success, results = self.concurrently_run_function_on_servers(function=install_all_content_packs_for_nightly,
-                                                                     service_account=self.service_account)
+        success, results = self.concurrently_run_function_on_servers(
+            function=install_all_content_packs_for_nightly,
+            service_account=self.service_account,
+            packs_to_install=self.pack_ids_to_install
+        )
         success &= all(results)
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_test_pack()
@@ -757,7 +763,9 @@ class XSOARBuild(Build):
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
         return servers, server_numeric_version
 
-    def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None) -> tuple[bool, list[Any]]:
+    def concurrently_run_function_on_servers(
+        self, function=None, pack_path=None, service_account=None, packs_to_install=None
+    ) -> tuple[bool, list[Any]]:
         if not function:
             raise Exception('Install method was not provided.')
 
@@ -767,6 +775,8 @@ class XSOARBuild(Build):
                 kwargs['service_account'] = service_account
             if pack_path:
                 kwargs['pack_path'] = pack_path
+            if packs_to_install:
+                kwargs["pack_ids_to_install"] = packs_to_install
 
             futures = [
                 executor.submit(
@@ -954,15 +964,13 @@ def options_handler(args=None):
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
-    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.',
-                        default='/home/runner/work/content-private/content-private/content/artifacts/packs')
-    parser.add_argument('--content_root', help='Path to the content root.',
-                        default='/home/runner/work/content-private/content-private/content')
+    parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.', required=True)
+    parser.add_argument('--content_root', help='Path to the content root.', required=True)
     parser.add_argument('--id_set_path', help='Path to the ID set.')
     parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
-                        default='./artifacts/filter_file.txt')
+                        default='./filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
-                        default='./artifacts/content_packs_to_install.txt')
+                        default='./content_packs_to_install.txt')
     parser.add_argument('--server-type', help=f'Server type running, choices: {",".join(SERVER_TYPES)}',
                         default=Build.run_environment)
     parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
@@ -1895,7 +1903,7 @@ def get_packs_with_higher_min_version(packs_names: set[str],
                     their min version is greater than the server version.
     """
     extract_content_packs_path = mkdtemp()
-    packs_artifacts_path = f'{ARTIFACTS_FOLDER}/content_packs.zip'
+    packs_artifacts_path = f'{ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip'
     extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
 
     packs_with_higher_version = set()

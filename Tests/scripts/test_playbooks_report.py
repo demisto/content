@@ -9,6 +9,7 @@ from Tests.scripts.jira_issues import generate_ticket_summary, convert_jira_time
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_PLAYBOOKS_BASE_HEADERS = ["Playbook ID"]
+TEST_PLAYBOOKS_JIRA_BASE_HEADERS = ["Instance Role"]
 
 
 def calculate_test_playbooks_results(test_playbooks_result_files_list: dict[str, Path]

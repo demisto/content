@@ -121,7 +121,7 @@
 
   "expected_list": [
     {
-        "type": "STIX Threat Actor",
+        "type": "Threat Actor",
         "value": "A",
         "rawJSON": {
                     "type": "STIX Threat Actor",
@@ -217,7 +217,7 @@
       }
     },
     {
-        "type": "STIX Threat Actor",
+        "type": "Threat Actor",
         "value": "B",
         "rawJSON": {
                     "type": "STIX Threat Actor",

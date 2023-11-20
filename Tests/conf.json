@@ -3485,6 +3485,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Code42 Suspicious Activity Action v2 - Test",
+            "integrations": "Code42",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "FetchIndicatorsFromFile-test",
             "fromversion": "5.5.0"
         },

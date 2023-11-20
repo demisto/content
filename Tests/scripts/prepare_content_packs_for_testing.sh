@@ -5,7 +5,7 @@ set -e
 
 CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
 CI_BUILD_ID=${CI_BUILD_ID:-00000}
-PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
+PACK_ARTIFACTS="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs.zip"
 EXTRACT_FOLDER=$(mktemp -d)
 
 
@@ -15,7 +15,7 @@ if [[ ! -f "$GCS_MARKET_KEY" ]]; then
 fi
 
 if [[ -z "$3" ]]; then
-  MARKETPLACE_TYPE="xsoar"  # The defult is "marketplace-dist"
+  MARKETPLACE_TYPE="xsoar"  # The default is "marketplace-dist"
 else
   MARKETPLACE_TYPE=$3
 
@@ -74,13 +74,13 @@ echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target pa
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing gsutil.log" 2>&1
 echo "Finished copying successfully."
 
-CONTENT_PACKS_TO_UPLOAD_FILE="$ARTIFACTS_FOLDER/content_packs_to_upload.txt"
-if [ ! -f $CONTENT_PACKS_TO_UPLOAD_FILE ]; then
-  echo "Could not find file $CONTENT_PACKS_TO_UPLOAD_FILE. Skipping upload step."
+CONTENT_PACKS_TO_UPLOAD_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.txt"
+if [ ! -f "${CONTENT_PACKS_TO_UPLOAD_FILE}" ]; then
+  echo "Could not find file ${CONTENT_PACKS_TO_UPLOAD_FILE}. Skipping upload step."
   exit 0
 else
-  CONTENT_PACKS_TO_UPLOAD=$(paste -sd, $CONTENT_PACKS_TO_UPLOAD_FILE)
-  if [[ -z "$CONTENT_PACKS_TO_UPLOAD" ]]; then
+  CONTENT_PACKS_TO_UPLOAD=$(paste -sd, "${CONTENT_PACKS_TO_UPLOAD_FILE}")
+  if [[ -z "${CONTENT_PACKS_TO_UPLOAD}" ]]; then
     echo "Did not get content packs to update in the bucket. Skipping upload step."
     exit 0
   fi
@@ -88,10 +88,13 @@ else
 fi
 echo "BUCKET_UPLOAD = $BUCKET_UPLOAD, FORCE_BUCKET_UPLOAD = $FORCE_BUCKET_UPLOAD"
 
+# Workaround for the SDK hard-coded path.
+mv "${ARTIFACTS_FOLDER}/markdown_images.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/markdown_images.json"
+
 UPLOAD_SPECIFIC_PACKS=false
 if [ -z "${BUCKET_UPLOAD}" ] && [ -z "${FORCE_BUCKET_UPLOAD}" ]; then
-  echo "Updating the following content packs: $CONTENT_PACKS_TO_UPLOAD ..."
-  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -pn $CONTENT_PACKS_TO_UPLOAD -p $UPLOAD_SPECIFIC_PACKS -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
+  echo "Updating the following content packs: ${CONTENT_PACKS_TO_UPLOAD} ..."
+  python3 ./Tests/Marketplace/upload_packs.py -pa "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --artifacts-folder-server-type "${ARTIFACTS_FOLDER_SERVER_TYPE}" -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -pn "${CONTENT_PACKS_TO_UPLOAD}" -p $UPLOAD_SPECIFIC_PACKS -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
   echo "Finished updating content packs successfully."
 else
   # In Upload-Flow, we exclude test-pbs in the zipped packs
@@ -110,11 +113,11 @@ else
     fi
     # In case of a regular upload flow, the upload_packs script will decide which pack to upload or not, thus it is
     # given with all the packs, we don't override packs to not force upload a pack
-    echo "Updating the following content packs to production: $CONTENT_PACKS_TO_UPLOAD ..."
+    echo "Updating the following content packs to production: ${CONTENT_PACKS_TO_UPLOAD} ..."
     BUCKET_UPLOAD_FLOW=true
     IS_FORCE_UPLOAD=false
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -pn "$CONTENT_PACKS_TO_UPLOAD" -p $UPLOAD_SPECIFIC_PACKS -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
+  python3 ./Tests/Marketplace/upload_packs.py -pa "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --artifacts-folder-server-type "${ARTIFACTS_FOLDER_SERVER_TYPE}" -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -pn "${CONTENT_PACKS_TO_UPLOAD}" -p $UPLOAD_SPECIFIC_PACKS -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
 
   if [ -f "$ARTIFACTS_FOLDER/index.json" ]; then
     gsutil cp -z json "$ARTIFACTS_FOLDER/index.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"

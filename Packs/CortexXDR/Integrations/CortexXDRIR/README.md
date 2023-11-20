@@ -456,6 +456,7 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | Process.Path | String | The file system path to the binary file. | 
 | Process.Start Time | String | The timestamp of the process start time. | 
 | Process.CommandLine | String | The full command line \(including arguments\). | 
+| Process.is_malicious | boolean | Whether the artifact is malicious, as decided by the Wildfire verdict. | 
 | IP.Address | String | IP address. | 
 | IP.Geo.Country | String | The country in which the IP address is located. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 

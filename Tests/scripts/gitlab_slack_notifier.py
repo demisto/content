@@ -10,9 +10,11 @@ from pathlib import Path
 from typing import Any
 
 import gitlab
+import requests
 from demisto_sdk.commands.coverage_analyze.tools import get_total_coverage
 from junitparser import TestSuite
 from slack_sdk import WebClient
+from slack_sdk.web import SlackResponse
 
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
@@ -24,15 +26,18 @@ from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule
 from Tests.scripts.utils.log_util import install_logging
 
 ROOT_ARTIFACTS_FOLDER = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
-ARTIFACTS_FOLDER_XSOAR = Path(os.getenv('ARTIFACTS_FOLDER_XSOAR', (ROOT_ARTIFACTS_FOLDER / 'xsoar').as_posix()))
-ARTIFACTS_FOLDER_MPV2 = Path(os.getenv('ARTIFACTS_FOLDER_MPV2', (ROOT_ARTIFACTS_FOLDER / 'marketplacev2').as_posix()))
-ARTIFACTS_FOLDER_MPV2_INSTANCE = Path(os.getenv('ARTIFACTS_FOLDER_INSTANCE',
-                                                (ROOT_ARTIFACTS_FOLDER / 'marketplacev2' / 'instance_xsiam').as_posix()))
-ARTIFACTS_FOLDER_XPANSE = Path(os.getenv('ARTIFACTS_FOLDER_XPANSE', (ROOT_ARTIFACTS_FOLDER / 'xpanse').as_posix()))
+ARTIFACTS_FOLDER_XSOAR = ROOT_ARTIFACTS_FOLDER / 'xsoar'
+ARTIFACTS_FOLDER_XSIAM = ROOT_ARTIFACTS_FOLDER / 'marketplacev2'
+ARTIFACTS_FOLDER_XPANSE = ROOT_ARTIFACTS_FOLDER / 'xpanse'
+ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE = ARTIFACTS_FOLDER_XSOAR / "server_type_XSOAR"
+ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE = ARTIFACTS_FOLDER_XSOAR / "server_type_XSOAR SAAS"
+ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE = ARTIFACTS_FOLDER_XPANSE / "server_type_XPANSE"
+ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE = ARTIFACTS_FOLDER_XSIAM / "server_type_XSIAM"
 GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
 GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
 CONTENT_CHANNEL = 'dmst-build-test'
 SLACK_USERNAME = 'Content GitlabCI'
+SLACK_WORKSPACE_NAME = os.getenv('SLACK_WORKSPACE_NAME', '')
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN', '')
 CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
 CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
@@ -126,7 +131,8 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
                 failed_test_suites.append(get_failed_modeling_rule_name_from_test_suite(test_suite))
 
     if failed_test_suites:
-        title = f"{title} - Failed Tests Modeling rules - ({len(failed_test_suites)}/{total_test_suites})"
+        title = (f"{title} - Failed Tests Modeling rules - Passed:{total_test_suites - len(failed_test_suites)}, "
+                 f"Failed:{len(failed_test_suites)}")
         return [{
             'fallback': title,
             'color': 'danger',
@@ -134,7 +140,7 @@ def test_modeling_rules_results(artifact_folder: Path, pipeline_url: str, title:
             'title_link': get_test_report_pipeline_url(pipeline_url),
             'fields': [
                 {
-                    "title": f"Failed Tests Modeling rules - ({len(failed_test_suites)}/{total_test_suites})",
+                    "title": "Failed Tests Modeling rules",
                     "value": ' ,'.join(failed_test_suites),
                     "short": False
                 }
@@ -212,10 +218,11 @@ def unit_tests_results() -> list[dict[str, Any]]:
     return []
 
 
-def bucket_upload_results(bucket_artifact_folder: Path, should_include_private_packs: bool) -> list[dict[str, Any]]:
+def bucket_upload_results(bucket_artifact_folder: Path,
+                          marketplace_name: str,
+                          should_include_private_packs: bool) -> list[dict[str, Any]]:
     steps_fields = []
     pack_results_path = bucket_artifact_folder / BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK
-    marketplace_name = os.path.basename(bucket_artifact_folder).upper()
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
     successful_packs, _, failed_packs, successful_private_packs, _ = get_upload_data(
@@ -273,17 +280,18 @@ def construct_slack_msg(triggering_workflow: str,
 
     # report pack updates
     if 'upload' in triggering_workflow_lower:
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR, True)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_MPV2, False)
-        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE, False)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE, "XSOAR", True)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE, "XSOAR SAAS", True)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE, "XSIAM", False)
+        content_fields += bucket_upload_results(ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
 
     slack_msg_append = []
     # report failing test-playbooks and test modeling rules.
     if triggering_workflow in {CONTENT_NIGHTLY, CONTENT_PR, CONTENT_MERGE}:
         slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, pipeline_url, title="XSOAR")
-        slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
-        slack_msg_append += test_modeling_rules_results(ARTIFACTS_FOLDER_MPV2, pipeline_url, title="XSIAM")
-        slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR)
+        slack_msg_append += test_playbooks_results(ARTIFACTS_FOLDER_XSIAM, pipeline_url, title="XSIAM")
+        slack_msg_append += test_modeling_rules_results(ARTIFACTS_FOLDER_XSIAM, pipeline_url, title="XSIAM")
+        slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE)
     if triggering_workflow == CONTENT_NIGHTLY:
         # The coverage Slack message is only relevant for nightly and not for PRs.
         slack_msg_append += construct_coverage_slack_msg()
@@ -321,9 +329,8 @@ def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any
             'title': title,
             'fields': [
                 {
-                    "title": f"The following packs exist in content-test-conf, "
-                             f"but not in content: {', '.join(missing_packs_list)}",
-                    "value": '',
+                    "title": "The following packs exist in content-test-conf, but not in content",
+                    "value": ', '.join(missing_packs_list),
                     "short": False
                 }
             ]
@@ -362,6 +369,15 @@ def construct_coverage_slack_msg() -> list[dict[str, Any]]:
     }]
 
 
+def build_link_to_message(response: SlackResponse) -> str:
+    if SLACK_WORKSPACE_NAME and response.status_code == requests.codes.ok:
+        data: dict = response.data  # type: ignore[assignment]
+        channel_id: str = data['channel']
+        message_ts: str = data['ts'].replace('.', '')
+        return f"https://{SLACK_WORKSPACE_NAME}.slack.com/archives/{channel_id}/p{message_ts}"
+    return ""
+
+
 def main():
     install_logging('Slack_Notifier.log')
     options = options_handler()
@@ -379,9 +395,7 @@ def main():
                  f"triggering workflow:'{triggering_workflow}' allowing failure:{options.allow_failure} "
                  f"slack channel:{computed_slack_channel}")
     pull_request = None
-    if triggering_workflow in {BUCKET_UPLOAD}:
-        logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
-    elif options.current_branch != DEFAULT_BRANCH:
+    if options.current_branch != DEFAULT_BRANCH:
         try:
             branch = options.current_branch
             if triggering_workflow == BUCKET_UPLOAD and BUCKET_UPLOAD_BRANCH_SUFFIX in branch:
@@ -394,11 +408,15 @@ def main():
                 verify=False,
             )
             author = pull_request.data.get('user', {}).get('login')
-            computed_slack_channel = f"{computed_slack_channel}{author}"
+            if triggering_workflow in {BUCKET_UPLOAD}:
+                logging.info(f"Not supporting custom Slack channel for {triggering_workflow} workflow")
+            else:
+                # This feature is only supported for content nightly and content pr workflows.
+                computed_slack_channel = f"{computed_slack_channel}{author}"
             logging.info(f"Sending slack message to channel {computed_slack_channel} for "
                          f"Author:{author} of PR#{pull_request.data.get('number')}")
         except Exception:
-            logging.exception(f'Failed to get pull request data for branch {options.current_branch}')
+            logging.error(f'Failed to get pull request data for branch {options.current_branch}')
     else:
         logging.info("Not a pull request build, skipping PR comment")
 
@@ -413,10 +431,11 @@ def main():
         logging.info(f'Successfully wrote slack message to {output_file}')
 
     try:
-        slack_client.chat_postMessage(
+        response = slack_client.chat_postMessage(
             channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME
         )
-        logging.info(f'Successfully sent slack message to channel {computed_slack_channel}')
+        link = build_link_to_message(response)
+        logging.info(f'Successfully sent slack message to channel {computed_slack_channel} link: {link}')
     except Exception:
         if strtobool(options.allow_failure):
             logging.warning(f'Failed to send slack message to channel {computed_slack_channel} not failing build')

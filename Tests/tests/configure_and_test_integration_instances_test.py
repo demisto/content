@@ -28,12 +28,12 @@ XSIAM_SERVERS = {
 
 def create_build_object_with_mock(mocker, server_type):
     args = ['-u', "$USERNAME", '-p', "$PASSWORD", '-c', "$CONF_PATH", '-s', "$SECRET_CONF_PATH",
-            '--tests_to_run', "$ARTIFACTS_FOLDER/filter_file.txt",
-            '--pack_ids_to_install', "$ARTIFACTS_FOLDER/content_packs_to_install.txt",
+            '--tests_to_run', "$ARTIFACTS_FOLDER_SERVER_TYPE/filter_file.txt",
+            '--pack_ids_to_install', "$ARTIFACTS_FOLDER_SERVER_TYPE/content_packs_to_install.txt",
             '-g', "$GIT_SHA1", '--ami_env', "$1", '-n', 'false', '--branch', "$CI_COMMIT_BRANCH",
             '--build-number', "$CI_PIPELINE_ID", '-sa', "$GCS_MARKET_KEY", '--server-type', server_type,
             '--cloud_machine', "qa2-test-111111", '--cloud_servers_path', '$XSIAM_SERVERS_PATH',
-            '--marketplace_name', 'marketplacev2']
+            '--marketplace_name', 'marketplacev2', '--test_pack_path', '$ARTIFACTS_FOLDER', '--content_root', '$CONTENT_ROOT']
     options = options_handler(args=args)
     json_data = {
         'tests': [],
@@ -263,7 +263,7 @@ def test_first_added_to_marketplace(mocker, diff, build_type, the_expected_resul
     assert the_expected_result == first_added_to_marketplace
 
 
-EXTRACT_SERVER_VERSION = [('projects/xsoar-content-build/global/images/family/xsoar-master', '99.99.98'),
+EXTRACT_SERVER_VERSION = [('projects/xsoar-content-build/global/images/family/xsoar-master', '6.99.99'),
                           ('projects/xsoar-content-build/global/images/family/xsoar-ga-6-11', '6.11.0'),
                           ('family/xsoar-ga-6-11', '6.11.0')]
 
@@ -271,5 +271,5 @@ EXTRACT_SERVER_VERSION = [('projects/xsoar-content-build/global/images/family/xs
 @pytest.mark.parametrize('instances_ami_name, res_version', EXTRACT_SERVER_VERSION)
 def test_extract_server_numeric_version(instances_ami_name, res_version):
     from Tests.test_content import extract_server_numeric_version
-    default_version = '99.99.98'
+    default_version = "6.99.99"
     assert extract_server_numeric_version(instances_ami_name, default_version) == res_version
