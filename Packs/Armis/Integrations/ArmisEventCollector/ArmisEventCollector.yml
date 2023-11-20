@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: ArmisEventCollector
+  id: THD_Custom_ArmisEventCollector
   version: -1
 configuration:
 - defaultvalue: https://<armis-instance>.armis.com
@@ -64,7 +64,7 @@ configuration:
   required: false
 description: Collects alerts, devices and activities from Armis resources.
 display: Armis Event Collector
-name: ArmisEventCollector
+name: THD_Custom_ArmisEventCollector
 supportlevelheader: xsoar
 script:
   commands:
@@ -88,7 +88,10 @@ script:
       - 'Alerts'
       - 'Activities'
       - 'Devices'
-      required: true
+      required: false
+    - description: Run your own AQL query to fetch events.
+      name: aql
+      required: false
     description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     name: armis-get-events
   runonce: false
