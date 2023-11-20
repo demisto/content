@@ -1,5 +1,4 @@
 # Open Issue: Should we keep the "old" selenium? e.g. offline_mode
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -11,6 +10,7 @@ import subprocess
 import tempfile
 import time
 import traceback
+from collections.abc import Callable
 from enum import Enum
 from io import BytesIO
 from pathlib import Path
@@ -269,13 +269,11 @@ def find_zombie_processes():
 def is_chrome_headless_running():
     ps_out = subprocess.check_output(['ps', '-ef'],
                                      stderr=subprocess.STDOUT, universal_newlines=True)
-    chrome_headless_substrings = [
-                                  "chrom",
+    chrome_headless_substrings = ["chrom",
                                   "headless",
-                                  "--remote-debugging-port=9222",
-                                  ]
+                                  "--remote-debugging-port=9222"]
     lines = ps_out.splitlines()
-    return [ f for f in lines if all(c in f for c in chrome_headless_substrings) ]
+    return [f for f in lines if all(c in f for c in chrome_headless_substrings)]
 
 
 def quit_driver_and_display_and_reap_children(driver, display):
@@ -347,7 +345,6 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
                                            max_page_load_time=page_load_time, full_screen=full_screen,
                                            include_url=include_url)
 
-    from collections.abc import Callable ## should be in the imports above, around line 15
     rasterize_funcs: tuple[Callable, ...] = ()
     if r_mode == RasterizeMode.WEBDRIVER_PREFERED:
         rasterize_funcs = (rasterize_webdriver, rasterize_headless_cmd)
@@ -375,8 +372,8 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
                     raise
 
         return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
-                        offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen,
-                        include_url=include_url)
+                      offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen,
+                      include_url=include_url)
     except (InvalidArgumentException, NoSuchElementException) as ex:
         if 'invalid argument' in str(ex):
             err_msg = URL_ERROR_MSG + str(ex)
