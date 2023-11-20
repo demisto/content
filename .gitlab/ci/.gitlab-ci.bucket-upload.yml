@@ -2,9 +2,7 @@
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-    - if: '$BUCKET_UPLOAD == "true"'
-    - if: '$FORCE_BUCKET_UPLOAD == "false"'
-      when: never
+    - if: '$BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"'
 
 .force-bucket-upload-rule:
   rules:
