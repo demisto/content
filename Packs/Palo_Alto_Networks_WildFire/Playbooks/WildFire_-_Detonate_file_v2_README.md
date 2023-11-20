@@ -20,7 +20,7 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* SetAndHandleEmpty
+SetAndHandleEmpty
 
 ### Commands
 
