@@ -9,6 +9,7 @@ default:
     when: always
 
 stages:
+  - clean-up machine
   - cleanup
   - security
   - unittests-and-validations
@@ -18,7 +19,6 @@ stages:
   - upload-to-marketplace
   - are-jobs-really-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
-  - clean-up machine
 
 include:
   - local: .gitlab/ci/.gitlab-ci.variables.yml

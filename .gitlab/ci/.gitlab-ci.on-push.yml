@@ -838,6 +838,10 @@ xsiam-test_modeling_rule_results:
 
 trigger_job:
   stage: clean-up machine
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+      when: always
   trigger:
     include:
       - local: .gitlab/ci/.gitlab-ci.build-machines-cleanup.yml
