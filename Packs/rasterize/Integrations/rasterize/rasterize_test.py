@@ -172,7 +172,8 @@ def http_wait_server():
                                                           (RasterizeMode.WEBDRIVER_ONLY, True),
                                                           (RasterizeMode.HEADLESS_CLI_ONLY, True),
                                                           (RasterizeMode.WEBDRIVER_PREFERED, True),
-                                                          (RasterizeMode.HEADLESS_CLI_PREFERED, True),])
+                                                          (RasterizeMode.HEADLESS_CLI_PREFERED, True),
+                                                          ])
 def test_rasterize_url_long_load(r_mode, mocker, http_wait_server, force_selenium_usage, capfd):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
