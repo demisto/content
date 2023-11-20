@@ -1198,12 +1198,12 @@ def main():
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # list of packs to iterate on over and upload/update them in bucket
-    packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
-                               is_modified=pack_id in pack_ids_to_upload)
-                          for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
+    all_packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
+                                   is_modified=pack_id in pack_ids_to_upload)
+                              for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
     if not is_regular_upload_flow:
         # if it's not a regular upload-flow, then upload only collected/modified packs
-        packs_objects_list = [p for p in packs_objects_list if p.is_modified]
+        packs_objects_list = [p for p in all_packs_objects_list if p.is_modified]
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
@@ -1215,8 +1215,9 @@ def main():
                                   storage_bucket, is_private_content_updated)
 
     # clean index and gcs from non existing or invalid packs
-    delete_from_index_packs_not_in_marketplace(index_folder_path, packs_objects_list, private_packs)
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, packs_objects_list, marketplace)
+    delete_from_index_packs_not_in_marketplace(index_folder_path, all_packs_objects_list, private_packs)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_packs_objects_list,
+                             marketplace)
 
     # initiate the statistics handler for marketplace packs
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
@@ -1315,7 +1316,7 @@ def main():
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == XSOAR_MP and (is_regular_upload_flow or override_all_packs):
         # handle packs with dependencies zip
-        all_packs_dict = {p.name: p for p in packs_objects_list}
+        all_packs_dict = {p.name: p for p in all_packs_objects_list}
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
                                            all_packs_dict)
 
@@ -1331,7 +1332,7 @@ def main():
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
         successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
-        images_data=get_images_data([p for p in packs_objects_list if p.is_modified], markdown_images_dict=markdown_images_dict)
+        images_data=get_images_data(packs_objects_list, markdown_images_dict=markdown_images_dict)
     )
 
     # summary of packs status
