@@ -98,13 +98,17 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
 
     # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
 
-    tab.start()
-    tab.call_method("Network.enable")
-    tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
-
     try:
+        tab.start()
+        tab.call_method("Network.enable")
+        tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
+
         time.sleep(wait_time)  # pylint: disable=E9003
         return base64.b64decode(tab.Page.captureScreenshot()['data'])
+    except pychrome.exceptions.TimeoutException:
+        message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
+        demisto.info(message)
+        return_error(message)
     finally:
         tab.stop()
         browser.close_tab(tab)
@@ -117,17 +121,20 @@ def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, 
 
     # tab.set_listener("Network.requestWillBeSent", request_will_be_sent)
 
-    tab.start()
-    tab.call_method("Network.enable")
-    tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
-
     try:
+        tab.start()
+        tab.call_method("Network.enable")
+        tab.call_method("Page.navigate", url=path, _timeout=max_page_load_time)
+
         time.sleep(wait_time)  # pylint: disable=E9003
         header_template = ''
         if include_url:
             header_template = "<span class=url></span>"
         return base64.b64decode(tab.Page.printToPDF(headerTemplate=header_template)['data'])
-
+    except pychrome.exceptions.TimeoutException:
+        message = f'Timeout of {max_page_load_time} seconds reached while waiting for {path}'
+        demisto.info(message)
+        return_error(message)
     finally:
         tab.stop()
         close_tab_response = browser.close_tab(tab)
