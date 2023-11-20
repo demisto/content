@@ -4,17 +4,11 @@
       when: never
     - if: '$BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"'
 
-.force-bucket-upload-rule:
-  rules:
-    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
-      when: never
-    - if: '$BUCKET_UPLOAD == "true"'
-
 .bucket-upload-rule-always:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-    - if: '$BUCKET_UPLOAD == "true"'
+    - if: '$BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"'
       when: always
 
 
