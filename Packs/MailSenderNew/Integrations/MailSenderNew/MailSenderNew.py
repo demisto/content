@@ -239,7 +239,7 @@ def encode_img(entry_id: str) -> str:
             encoded_data = base64.b64encode(image_file.read()).decode('utf-8')
             return f"data:image/png;base64,{encoded_data}"
     except Exception as err:
-        return_error_mail_sender(f"Error parsing image {entry_id}: {err}")
+        return_error_mail_sender(f"Error parsing image {entry_id=}: {err}")
 
 
 def replace_entry_ids_with_image_data(html_body: str) -> str:
@@ -251,18 +251,13 @@ def replace_entry_ids_with_image_data(html_body: str) -> str:
 
     substitutions = {}
 
-    img_tag_matches = re.finditer(img_tag_regex, html_body)
-
-    for match in img_tag_matches:
+    for match in re.finditer(img_tag_regex, html_body):
         img_tag = match.group(0)
         img_tag_prefix = match.group(1)
         entry_id = match.group(2)
         img_tag_suffix = match.group(3)
-        try:
-            encoded_img = encode_img(entry_id)
-            substitutions[img_tag] = f"{img_tag_prefix}{encoded_img}{img_tag_suffix}"
-        except Exception as err:
-            return_error_mail_sender(f"Error parsing image with {entry_id=}: {err}")
+
+        substitutions[img_tag] = f"{img_tag_prefix}{encode_img(entry_id)}{img_tag_suffix}"
 
     for original, new_src in substitutions.items():
         html_body = html_body.replace(original, new_src)
