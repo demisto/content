@@ -344,17 +344,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: ba56a25f-53b5-4afd-8d52-bba2f0288c68
+    taskid: 36274297-5bc4-4f17-8f71-eace307e6ffd
     type: regular
     task:
-      id: ba56a25f-53b5-4afd-8d52-bba2f0288c68
+      id: 36274297-5bc4-4f17-8f71-eace307e6ffd
       version: -1
       name: Detonate URL - OPSWAT
-      description: Detonates a URL using the OPSWAT-Filescan Integration. Returns relevant reports to the War Room and URL reputations to the context data.
-      script: 'OPSWAT Filescan|||opswat-filescan-scan-url'
+      description: Scan URL resource.
+      script: '|||opswat-filescan-scan-url'
       type: regular
       iscommand: true
-      brand: "OPSWAT Filescan"
+      brand: ""
     nexttasks:
       '#none#':
       - "20"
