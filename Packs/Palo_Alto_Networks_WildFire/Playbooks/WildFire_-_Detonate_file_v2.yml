@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: WildFire - Detonate file v2
 description: |-
-  Detonate one or more files using the Wildfire integration. This playbook
+  Detonate one or more files using the Wildfire v2 integration. This playbook
   returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types -
   APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z, JS, ELF, HTA, LNK, VBS, PS1, PERL, PYTHON, SHELL.
@@ -44,10 +44,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4d801593-76c0-45bc-880c-46572315ab6d
+    taskid: daa3ffa3-fe2f-4035-8343-aa27cd3b36ed
     type: regular
     task:
-      id: 4d801593-76c0-45bc-880c-46572315ab6d
+      id: daa3ffa3-fe2f-4035-8343-aa27cd3b36ed
       version: -1
       name: WildFire Get Report
       description: Retrieve results for a file hash using WildFire.
@@ -62,17 +62,17 @@ tasks:
       format:
         complex:
           root: inputs.ReportFileType
-      hash:
+      sha256:
         complex:
-          root: WildFire
-          accessor: Report.SHA256
+          root: WildFire.Report
+          accessor: SHA256
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 560,
-          "y": 1040
+          "y": 1000
         }
       }
     note: false
@@ -100,7 +100,7 @@ tasks:
       {
         "position": {
           "x": 57.5,
-          "y": 1220
+          "y": 1170
         }
       }
     note: false
@@ -112,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 55af7034-b0cf-40c7-86a5-f7efd9d31e9b
+    taskid: 8a573a24-f991-4404-8b19-59f6585d938e
     type: condition
     task:
-      id: 55af7034-b0cf-40c7-86a5-f7efd9d31e9b
+      id: 8a573a24-f991-4404-8b19-59f6585d938e
       version: -1
       name: Is WildFire sandbox enabled?
       description: Check if integration instance is enabled.
@@ -138,14 +138,6 @@ tasks:
                 root: modules
                 filters:
                 - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: WildFire
-                  - operator: isEqualString
                     left:
                       value:
                         simple: modules.brand
@@ -335,10 +327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 4ef96e35-bb0b-4a27-8f95-f98fda94c98e
+    taskid: f92ac323-d156-4809-8d15-0ce03970ec12
     type: condition
     task:
-      id: 4ef96e35-bb0b-4a27-8f95-f98fda94c98e
+      id: f92ac323-d156-4809-8d15-0ce03970ec12
       version: -1
       name: Are there any supported files to detonate?
       description: Check if there are any supported files to upload to wildfire for detonation.
@@ -354,7 +346,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
               complex:
@@ -377,10 +369,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 4529c363-7864-4905-8521-7d23649846be
+    taskid: e36ecb1b-c9af-4cf7-8b69-16dc92ae7cbf
     type: regular
     task:
-      id: 4529c363-7864-4905-8521-7d23649846be
+      id: e36ecb1b-c9af-4cf7-8b69-16dc92ae7cbf
       version: -1
       name: WildFire Upload File
       description: Uploads a file to WildFire for analysis.
@@ -403,13 +395,15 @@ tasks:
       upload:
         complex:
           root: SupportedFilesToUpload
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 560,
-          "y": 840
+          "y": 820
         }
       }
     note: false
@@ -427,7 +421,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1305,
+        "height": 1255,
         "width": 1092.5,
         "x": 57.5,
         "y": -20
@@ -450,7 +444,7 @@ inputs:
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "15"
+    simple: "8"
   required: false
   description: The duration after which to stop polling and to resume the playbook. (in minutes)
   playbookInputQuery:
@@ -541,6 +535,9 @@ outputs:
 - contextPath: WildFire.Report.Size
   description: The size of the submission.
   type: number
+- contextPath: WildFire.Report.detection_reasons.description
+  description: Reason for the detection verdict.
+  type: string
 tests:
 - Wildfire Test With Polling
 - Wildfire Test
