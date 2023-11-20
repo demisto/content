@@ -1,5 +1,5 @@
 from CommonServerPython import *
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, List
 from enum import Enum
 import traceback
 
