@@ -852,7 +852,7 @@ xsiam-test_modeling_rule_results:
     - xsiam_server_ga
 
 trigger_job:
-  stage: .clean-up machine
+  stage: clean-up machine
   trigger:
     include:
       - local: .gitlab/ci/.gitlab-ci.build-machines-cleanup.yml
