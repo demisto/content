@@ -14,20 +14,20 @@ from TrendMicroVisionOneV3 import (
     add_to_suspicious_list,
     submit_file_to_sandbox,
     get_email_activity_data,
-    get_email_activity_count,
     get_file_analysis_status,
     get_file_analysis_result,
     download_analysis_report,
     get_endpoint_activity_data,
-    get_endpoint_activity_count,
     delete_from_suspicious_list,
     submit_file_entry_to_sandbox,
     get_sandbox_submission_status,
+    get_email_activity_data_count,
     add_or_remove_from_block_list,
     isolate_or_restore_connection,
     enable_or_disable_user_account,
     download_investigation_package,
     download_suspicious_object_list,
+    get_endpoint_activity_data_count,
     add_or_delete_from_exception_list,
     quarantine_or_delete_email_message,
     download_information_collected_file,
@@ -1268,7 +1268,7 @@ def test_get_endpoint_activity_data_count(mocker):
         "get_activity_data_count": "true",
         "fields": json.dumps({"dpt": "443", "endpointHostName": "client1"}),
     }
-    result = get_endpoint_activity_count(client, args)
+    result = get_endpoint_activity_data_count(client, args)
     assert isinstance(result.outputs["endpoint_activity_count"], int)
     assert result.outputs_key_field == "endpoint_activity_count"
 
@@ -1335,7 +1335,7 @@ def test_get_email_activity_data_count(mocker):
             {"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"}
         ),
     }
-    result = get_email_activity_count(client, args)
+    result = get_email_activity_data_count(client, args)
     assert isinstance(result.outputs["email_activity_count"], int)
     assert result.outputs_key_field == "email_activity_count"
 
