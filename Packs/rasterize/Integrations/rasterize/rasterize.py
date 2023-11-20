@@ -273,7 +273,7 @@ def find_zombie_processes():
     return zombies, ps_out
 
 
-def is_chrome_headless_running():
+def is_chrome_headless_running():  # pragma: no cover
     ps_out = subprocess.check_output(['ps', '-ef'],
                                      stderr=subprocess.STDOUT, universal_newlines=True)
     chrome_headless_substrings = ["chrom",
@@ -342,7 +342,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
 
     # TODO Support force_selenium_usage
     force_selenium_usage = False
-    if chrome_headless_running or force_selenium_usage:
+    if chrome_headless_running or force_selenium_usage:  # pragma: no cover
         demisto.debug(f'Using pychrome for rasterizing {path}')
         if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
             return pychrome_screenshot_image(path, width=width, height=height, wait_time=wait_time,
