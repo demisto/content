@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Detonate URL - WildFire v2.2
 description: |-
-  Detonate a webpage or remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+  Detonate a webpage or remote file using the WildFire v2 integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types:
   APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z, JS.
 starttaskid: "0"
@@ -170,10 +170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a896c7ee-1e6b-4cf5-8308-13cecfaaae9b
+    taskid: 2a424489-4f53-47f0-8504-6b71550d8bc7
     type: regular
     task:
-      id: a896c7ee-1e6b-4cf5-8308-13cecfaaae9b
+      id: 2a424489-4f53-47f0-8504-6b71550d8bc7
       version: -1
       name: WildFire Get Report
       description: Retrieves results for a file hash using WildFire.
@@ -207,10 +207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 9af63a04-a57e-4e07-87df-0c9b38b02a62
+    taskid: c43f0095-ea2f-4aaf-85ee-41ea5ba54e6c
     type: regular
     task:
-      id: 9af63a04-a57e-4e07-87df-0c9b38b02a62
+      id: c43f0095-ea2f-4aaf-85ee-41ea5ba54e6c
       version: -1
       name: WildFire Upload File URL
       description: Uploads a URL of a webpage to WildFire for analysis.
@@ -233,6 +233,8 @@ tasks:
       upload:
         complex:
           root: inputs.URL
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -280,7 +282,7 @@ inputs:
   playbookInputQuery:
 - key: Timeout
   value:
-    simple: "60"
+    simple: "8"
   required: false
   description: The duration after which to stop polling and to resume the playbook (in minutes).
   playbookInputQuery:
@@ -404,6 +406,12 @@ outputs:
 - contextPath: WildFire.Report.iocs
   description: Associated IOCs.
   type: string
+- contextPath: WildFire.Report.ExtractedURL.URL
+  description: The extracted URL.
+  type: string
+- contextPath: WildFire.Report.ExtractedURL.Verdict
+  description: The extracted verdict.
+  type: number
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0

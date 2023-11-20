@@ -1,4 +1,4 @@
-Detonate a webpage or remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+Detonate a webpage or remote file using the WildFire v2 integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
 The detonation supports the following file types:
 APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z, JS.
 
@@ -31,7 +31,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | URL | URL of the webpage or file url to detonate. The URL is taken from the context. | URL.Data | Optional |
 | Interval | Duration for executing the polling \(in minutes\). | 1 | Optional |
-| Timeout | The duration after which to stop polling and to resume the playbook \(in minutes\). | 60 | Optional |
+| Timeout | The duration after which to stop polling and to resume the playbook \(in minutes\). | 8 | Optional |
 | ReportFileType | The resource type to download. Default is PDF. XML is also possible. |  | Optional |
 
 ## Playbook Outputs
@@ -78,6 +78,8 @@ This playbook does not use any scripts.
 | WildFire.Report.detection_reasons.verdict | Verdict of the detection. | string |
 | WildFire.Report.detection_reasons.artifacts | Artifacts for the detection reasons. | string |
 | WildFire.Report.iocs | Associated IOCs. | string |
+| WildFire.Report.ExtractedURL.URL | The extracted URL. | string |
+| WildFire.Report.ExtractedURL.Verdict | The extracted verdict. | number |
 
 ## Playbook Image
 
