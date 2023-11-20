@@ -1,8 +1,5 @@
 [file:CortexXpanse.yml]
-ignore=BC102
-
-[file:CortexXpanse.yml]
-ignore=BC104
+ignore=BC102,BC104
 
 [known_words]
 Xpanse
