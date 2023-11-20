@@ -27,8 +27,7 @@
                 "xdm.source.user.identifier": "uuid",
                 "xdm.event.description": "This is test description 1",
                 "xdm.network.protocol_layers": ["UDP"],
-                "xdm.target.port": 22,
-                "xdm.source.user.username": "Name for id: 1"
+                "xdm.target.port": 22
             }
         }
         
