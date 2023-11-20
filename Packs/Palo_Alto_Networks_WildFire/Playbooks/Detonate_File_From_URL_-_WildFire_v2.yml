@@ -309,7 +309,7 @@ outputs:
   description: SHA1 hash of the file.
   type: string
 - contextPath: File.Type
-  description: File type e.g. "PE".
+  description: File type, e.g., "PE".
   type: string
 - contextPath: File.SHA256
   description: SHA256 hash of the file.
