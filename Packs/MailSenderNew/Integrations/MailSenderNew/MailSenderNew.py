@@ -230,7 +230,48 @@ def parse_template_params():
                 return_error_mail_sender('Unable to parse templateParams: %s' % (str(e)))
 
 
+def encode_img(entry_id: str) -> str:
+    """Returns the base64 encoded image data for the given entry ID"""
+    try:
+        file_res = demisto.getFilePath(entry_id)
+        path = file_res['path']
+        with open(path, 'rb') as image_file:
+            encoded_data = base64.b64encode(image_file.read()).decode('utf-8')
+            return f"data:image/png;base64,{encoded_data}"
+    except Exception as err:
+        return_error_mail_sender(f"Error parsing image {entry_id}: {err}")
+
+
+def replace_entry_ids_with_image_data(html_body: str) -> str:
+    """Replaces entry IDs in the html body with the encoded image data."""
+    img_tag_prefix_regex = r'<img [^>]*src=["\']'
+    entry_id_regex = r'[a-zA-Z0-9-@]+'
+    img_tag_suffix_regex = r'["\'][^>]*>'
+    img_tag_regex = f'({img_tag_prefix_regex})({entry_id_regex})({img_tag_suffix_regex})'
+
+    substitutions = {}
+
+    img_tag_matches = re.finditer(img_tag_regex, html_body)
+
+    for match in img_tag_matches:
+        img_tag = match.group(0)
+        img_tag_prefix = match.group(1)
+        entry_id = match.group(2)
+        img_tag_suffix = match.group(3)
+        try:
+            encoded_img = encode_img(entry_id)
+            substitutions[img_tag] = f"{img_tag_prefix}{encoded_img}{img_tag_suffix}"
+        except Exception as err:
+            return_error_mail_sender(f"Error parsing image with {entry_id=}: {err}")
+
+    for original, new_src in substitutions.items():
+        html_body = html_body.replace(original, new_src)
+
+    return html_body
+
+
 def header(s):
+
     if not s:
         return None
     s_no_newlines = ' '.join(s.splitlines())
@@ -255,6 +296,7 @@ def create_msg():
     if template_params:
         body = body.format(**template_params)
         html_body = html_body.format(**template_params)
+    html_body = replace_entry_ids_with_image_data(html_body)
 
     # Basic validation - we allow pretty much everything, but you have to have at least a recipient
     # We allow messages without subject and also without body

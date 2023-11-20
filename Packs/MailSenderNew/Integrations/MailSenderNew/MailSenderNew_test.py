@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import MailSenderNew
 import demistomock as demisto
 import pytest
@@ -125,3 +126,31 @@ def test_attachments(mocker):
 
     assert all([file_name in msg for file_name in ['attach.txt', 'test1.txt', 'test2.txt']])
     assert all([decode_file_content in msg for decode_file_content in decode_files_content])
+
+
+def test_replace_entry_ids_with_image_data(mocker):
+    """
+    Given:
+    - An HTML body with img tags, one referencing an entry ID, one a URL
+    When:
+    - Calling replace_entry_ids_with_image_data()
+    Then:
+    - For the img tag referencing the entry ID only, ensure the src attribute is replaced with
+      a data URI containing the encoded image data
+    """
+    test_image_path = "test_data/image.png"
+    with open(test_image_path, 'rb') as f:
+        test_image_encoded_data = base64.b64encode(f.read()).decode()
+
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': test_image_path})
+    mock_entry_id = "123456"
+    mock_image_url = "https://example.com/image.png"
+
+    html_body = MailSenderNew.replace_entry_ids_with_image_data(
+        html_body=f'<img width="10" src="{mock_entry_id}" height="10" />'
+                  f'<br/>'
+                  f'<img width="10" src="{mock_image_url}" height="10" />'
+    )
+    assert html_body == f'<img width="10" src="data:image/png;base64,{test_image_encoded_data}" height="10" />' \
+                        f'<br/>' \
+                        f'<img width="10" src="{mock_image_url}" height="10" />'

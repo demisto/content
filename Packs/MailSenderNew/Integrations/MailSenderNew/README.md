@@ -68,7 +68,7 @@
 </tr>
 <tr>
 <td>htmlBody</td>
-<td>Content of the email in html format</td>
+<td>Content of the email in html format. To include an image, pass an entry ID to the "src" attribute of the img tag.</td>
 </tr>
 <tr>
 <td>replyTo</td>
