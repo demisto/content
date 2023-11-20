@@ -108,7 +108,7 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         xdm.source.process.executable.path = coalesce(get_message_instance_exe_path, process_name, if(channel="Application", event_data -> Module), if(check_Script_Path != null and check_Script_Path != "", check_Script_Path), if(check_Command_Path != null and check_Command_Path != "", check_Command_Path), process_path, file_path),
         xdm.source.process.executable.sha256 = process_sha256,
         xdm.source.process.name = coalesce(check_fw_process_name, get_message_instance_exe_process, arrayindex(regextract(process_name, "\\([^\\]+)$"), 0), if(channel="System", process_name), process_name),
-        xdm.source.process.pid = to_integer(coalesce(check_message_processID, process_pid, if(channel="System", event_data -> ProcessID))),
+        xdm.source.process.pid = to_integer(coalesce(check_message_processID, to_string(process_pid), if(channel="System", event_data -> ProcessID))),
         xdm.source.process.thread_id = to_integer(process_thread_id),
         xdm.source.user.domain = user_domain,
         xdm.source.user.identifier = user_sid,
