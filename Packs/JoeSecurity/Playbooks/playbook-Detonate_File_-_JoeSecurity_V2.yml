@@ -417,12 +417,6 @@ inputs:
   required: false
   description: File object of the file to detonate. The File is taken from the context.
   playbookInputQuery:
-- key: Interval
-  value:
-    simple: "1"
-  required: false
-  description: Duration for executing the pooling (in minutes)
-  playbookInputQuery:
 - key: Timeout
   value:
     simple: "1500"
