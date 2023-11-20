@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEEPEN_LENGTH=${DEEPEN_LENGTH:-10}
+DEEPEN_LENGTH=${DEEPEN_LENGTH:-$GIT_DEPTH}
 
 HEAD_REF=${1:-$(git rev-parse HEAD)}
 BASE_REF=${2:-origin/master}
