@@ -323,7 +323,8 @@ def quit_driver_and_display_and_reap_children(driver, display):
 
 def rasterize(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
               offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
-              r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED, include_url: bool = False):
+              r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED, include_url: bool = False,
+              force_selenium_usage: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -577,7 +578,7 @@ def get_image_screenshot(driver, include_url):
 
 def get_pdf(driver, width: int, height: int):
     """
-    Uses the Chrome driver to generate an pdf file out of a currently loaded path
+    Uses the Chrome driver to generate a pdf file out of a currently loaded path
     :param width: desired snapshot width in pixels
     :param height: desired snapshot height in pixels
     :return: .pdf file of the loaded path
@@ -654,7 +655,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
         return outputs
 
 
-def rasterize_command():
+def rasterize_command():  # pragma: no cover
     url = demisto.getArg('url')
     w, h, r_mode = get_common_args(demisto.args())
     r_type = RasterizeType(demisto.args().get('type', 'png').lower())
@@ -714,7 +715,7 @@ def rasterize_image_command():
         demisto.results(res)
 
 
-def rasterize_email_command():
+def rasterize_email_command():  # pragma: no cover
     html_body = demisto.args().get('htmlBody')
     w, h, r_mode = get_common_args(demisto.args())
     offline = demisto.args().get('offline', 'false') == 'true'
@@ -739,7 +740,7 @@ def rasterize_email_command():
     demisto.results(res)
 
 
-def rasterize_pdf_command():
+def rasterize_pdf_command():  # pragma: no cover
     entry_id = demisto.args().get('EntryID')
     password = demisto.args().get('pdfPassword')
     max_pages = demisto.args().get('maxPages', 30)
@@ -785,7 +786,7 @@ def rasterize_html_command():
     return_results(res)
 
 
-def module_test():
+def module_test():  # pragma: no cover
     # setting up a mock email file
     with tempfile.NamedTemporaryFile('w+') as test_file:
         test_file.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'

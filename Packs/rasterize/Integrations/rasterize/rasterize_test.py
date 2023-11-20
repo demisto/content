@@ -168,14 +168,17 @@ def http_wait_server():
 # curl -v -H 'user-agent: HeadlessChrome' --max-time 10  "http://www.grainger.com/"  # disable-secrets-detection
 # This tests access a server which waits for 10 seconds and makes sure we timeout
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
-@pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY,
-                                    RasterizeMode.WEBDRIVER_PREFERED, RasterizeMode.HEADLESS_CLI_PREFERED])
-def test_rasterize_url_long_load(r_mode, mocker, http_wait_server, capfd):
+@pytest.mark.parametrize("r_mode, force_selenium_usage", [(RasterizeMode.WEBDRIVER_ONLY, False),
+                                                          (RasterizeMode.WEBDRIVER_ONLY, True),
+                                                          (RasterizeMode.HEADLESS_CLI_ONLY, True),
+                                                          (RasterizeMode.WEBDRIVER_PREFERED, True),
+                                                          (RasterizeMode.HEADLESS_CLI_PREFERED, True),])
+def test_rasterize_url_long_load(r_mode, mocker, http_wait_server, force_selenium_usage, capfd):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     time.sleep(1)  # give time to the servrer to start
     with capfd.disabled():
         rasterize('http://localhost:10888', width=250, height=250, r_type=RasterizeType.PNG, max_page_load_time=5,
-                  r_mode=r_mode)
+                  r_mode=r_mode, force_selenium_usage=force_selenium_usage)
         assert return_error_mock.call_count == 1
         # call_args last call with a tuple of args list and kwargs
         # err_msg = return_error_mock.call_args[0][0]
