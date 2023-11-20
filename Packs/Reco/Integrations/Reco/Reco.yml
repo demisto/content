@@ -65,7 +65,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.80593
   isfetch: true
   runonce: false
   script: "-"
@@ -272,6 +272,34 @@ script:
       - ALERT_STATUS_CLOSED
     description: update alert status in Reco.
     name: reco-change-alert-status
+  - arguments:
+    - description: user email address.
+      name: email_address
+      required: true
+    outputs:
+    - contextPath: Reco.User.email_account
+      description: The email of the user.
+      type: String
+    - contextPath: Reco.User.departments
+      description: User departments.
+      type: String
+    - contextPath: Reco.User.job_titles
+      description: Job Title.
+      type: String
+    - contextPath: Reco.User.category
+      description: Category.
+      type: String
+    - contextPath: Reco.User.groups
+      description: The groups user is member of.
+      type: String
+    - contextPath: Reco.User.full_name
+      description: The user full name.
+      type: String
+    - contextPath: Reco.User.labels
+      description: User Labels.
+      type: Unknown
+    description: Get user context by email address from Reco.
+    name: reco-get-user-context-by-email-address
 tests:
 - No tests
 fromversion: 6.5.0
