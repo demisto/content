@@ -343,6 +343,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     # TODO Support force_selenium_usage
     force_selenium_usage = False
     if chrome_headless_running or force_selenium_usage:
+        demisto.debug(f'Using pychrome for rasterizing {path}')
         if r_type == RasterizeType.PNG or str(r_type).lower() == 'png':
             return pychrome_screenshot_image(path, width=width, height=height, wait_time=wait_time,
                                              max_page_load_time=page_load_time, full_screen=full_screen,
