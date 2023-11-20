@@ -146,7 +146,7 @@ TABLE_GET_ENDPOINT_ACTIVITY_DATA = "Endpoint activity data "
 TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT = "Endpoint activity data count "
 TABLE_GET_FILE_ANALYSIS_STATUS = "File analysis status "
 TABLE_GET_FILE_ANALYSIS_RESULT = "File analysis result "
-TABLE_GET_ALERT_DETAILS = "Alert details"
+TABLE_GET_ALERT_DETAILS = "Alert details "
 TABLE_COLLECT_FILE = "Collect forensic file "
 TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = (
     "Download information for collected forensic file "
