@@ -1158,7 +1158,6 @@ def main():
     service_account = option.service_account
     pack_ids_to_upload = get_packs_ids_to_upload(option.pack_names or "")
     upload_specific_pack = option.upload_specific_pack
-    logging.info(f"1 {option.upload_specific_pack=}, {upload_specific_pack=}, {type(upload_specific_pack)=}")
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
@@ -1171,11 +1170,9 @@ def main():
     force_upload = option.force_upload
     marketplace = option.marketplace
     is_create_dependencies_zip = option.create_dependencies_zip
-    logging.info(f"2 {upload_specific_pack=}, {type(upload_specific_pack)=}")
 
     # regular upload flow that doesn't force or to upload specific packs and not PR or nightly build
     is_regular_upload_flow = is_bucket_upload_flow and not any([force_upload, upload_specific_pack, override_all_packs])
-    logging.info(f"3 {upload_specific_pack=}, {type(upload_specific_pack)=}")
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -1187,7 +1184,6 @@ def main():
     if storage_bucket_name:
         GCPConfig.PRODUCTION_BUCKET = storage_bucket_name
     logging.debug(f"{GCPConfig.PRODUCTION_BUCKET=}")
-    logging.info(f"4 {upload_specific_pack=}, {type(upload_specific_pack)=}")
 
     # download and extract index and packs artifacts
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
@@ -1200,19 +1196,16 @@ def main():
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
                                                                         is_bucket_upload_flow, ci_branch)
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
-    logging.info(f"5 {upload_specific_pack=}, {type(upload_specific_pack)=}")
 
     # list of packs to iterate on over and upload/update them in bucket
     all_packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
                                    is_modified=pack_id in pack_ids_to_upload)
                               for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
-    logging.info(f"6 {upload_specific_pack=}, {type(upload_specific_pack)=}")
 
     # if it's not a regular upload-flow, then upload only collected/modified packs
     packs_objects_list = all_packs_objects_list if is_regular_upload_flow \
         else [p for p in all_packs_objects_list if p.is_modified]
     logging.info(f"Packs list is: {[p.name for p in packs_objects_list]}")
-    logging.info(f"7 {upload_specific_pack=}, {type(upload_specific_pack)=}")
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
