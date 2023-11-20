@@ -1174,12 +1174,12 @@ outputs:
   description: |-
     Determines whether there are events of anomalous network traffic performed by the user in the GCP environment.
     Possible values: True/False.
-  type: string
+  type: boolean
 - contextPath: GcpSuspiciousApiUsage
   description: |-
     Determines whether there are events of suspicious API usage by the user in the GCP environment.
     Possible values: True/False.
-  type: string
+  type: boolean
 - contextPath: GcpFailLogonCount
   description: The number of failed logins by the user in the GCP environment.
   type: number
@@ -1199,7 +1199,7 @@ outputs:
   description: |-
     Determines whether the user's password was leaked in the G Suite environment.
     Possible values: True/False.
-  type: string
+  type: boolean
 tests:
 - No tests (auto formatted)
 fromversion: 6.9.0

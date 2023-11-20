@@ -53,14 +53,14 @@ This playbook does not use any commands.
 | AwsAdminActivitiesCount | The number of administrative activities performed by the user in the AWS environment. | number |
 | AwsApiAccessDeniedCount | The number of API accesses denied by the user in the AWS environment. | number |
 | AwsFailedLogonCount | The number of failed logins by the user in the AWS environment. | number |
-| GcpAnomalousNetworkTraffic | Determines whether there are events of anomalous network traffic performed by the user in the GCP environment.<br/>Possible values: True/False. | string |
-| GcpSuspiciousApiUsage | Determines whether there are events of suspicious API usage by the user in the GCP environment.<br/>Possible values: True/False. | string |
+| GcpAnomalousNetworkTraffic | Determines whether there are events of anomalous network traffic performed by the user in the GCP environment.<br/>Possible values: True/False. | boolean |
+| GcpSuspiciousApiUsage | Determines whether there are events of suspicious API usage by the user in the GCP environment.<br/>Possible values: True/False. | boolean |
 | GcpFailLogonCount | The number of failed logins by the user in the GCP environment. | number |
 | GsuiteFailLogonCount | The number of failed logins by the user in the G Suite environment. | number |
 | GsuiteUnusualLoginAllowedCount | The number of unusual logins performed by the user and allowed in the G Suite environment. | number |
 | GsuiteUnusualLoginBlockedCount | The number of unusual logins performed by the user and blocked in the G Suite environment. | number |
 | GsuiteSuspiciousLoginCount | The number of suspicious logins performed by the user in the G Suite environment. | number |
-| GsuiteUserPasswordLeaked | Determines whether user's password was leaked in the G Suite environment.<br/>Possible values: True/False. | string |
+| GsuiteUserPasswordLeaked | Determines whether user's password was leaked in the G Suite environment.<br/>Possible values: True/False. | boolean |
 | AzureScriptBasedUserAgentEvents | Script-based user agent events used by the user in the Azure environment. | string |
 | AzureAdminActivitiesEvents | Administrative activities performed by the user in the Azure environment. | string |
 | AzureSecurityRulesChangeEvents | Security rules that were changed by the user in the Azure environment. | string |

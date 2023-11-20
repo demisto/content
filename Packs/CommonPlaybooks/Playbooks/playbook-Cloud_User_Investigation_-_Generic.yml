@@ -561,12 +561,12 @@ outputs:
   description: |-
     Determines whether there are events of anomalous network traffic performed by the user in the GCP environment.
     Possible values: True/False.
-  type: string
+  type: boolean
 - contextPath: GcpSuspiciousApiUsage
   description: |-
     Determines whether there are events of suspicious API usage by the user in the GCP environment.
     Possible values: True/False.
-  type: string
+  type: boolean
 - contextPath: GcpFailLogonCount
   description: The number of failed logins by the user in the GCP environment.
   type: number
@@ -586,7 +586,7 @@ outputs:
   description: |-
     Determines whether user's password was leaked in the G Suite environment.
     Possible values: True/False.
-  type: string
+  type: boolean
 - contextPath: AzureScriptBasedUserAgentEvents
   description: Script-based user agent events used by the user in the Azure environment.
   type: string
