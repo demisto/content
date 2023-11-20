@@ -428,7 +428,7 @@ def handle_fetched_events(events: dict[str, list[dict[str, Any]]],
                 vendor=VENDOR,
                 product=product
             )
-            demisto.debug(f'debug-log: {len(events)} events were sent to XSIAM.')
+            demisto.debug(f'debug-log: {len(events_list)} events of {event_type} were sent to XSIAM.')
         demisto.setLastRun(next_run)
     else:
         demisto.debug('debug-log: No new events fetched.')
