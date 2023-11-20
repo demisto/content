@@ -14,7 +14,7 @@
 	"content": false,
 	"defaultRows": null,
 	"definitionId": "",
-	"description": "the category associated with an Attack Surface Rule",
+	"description": "The category associated with an Attack Surface Rule",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"fromServerVersion": "",

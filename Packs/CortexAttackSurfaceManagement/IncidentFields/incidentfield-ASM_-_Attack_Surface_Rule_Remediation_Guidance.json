@@ -14,7 +14,7 @@
 	"content": false,
 	"defaultRows": null,
 	"definitionId": "",
-	"description": "",
+	"description": "The remediation guidance information associated with an Attack Surface Rule",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"fromServerVersion": "",
