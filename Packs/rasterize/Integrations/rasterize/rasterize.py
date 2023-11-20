@@ -317,7 +317,7 @@ def quit_driver_and_display_and_reap_children(driver, display):
 
 
 def rasterize(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
-              max_page_load_time: int = 180, full_screen: bool = False,
+              offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
               r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED, include_url: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
@@ -712,7 +712,7 @@ def rasterize_image_command():
 def rasterize_email_command():
     html_body = demisto.args().get('htmlBody')
     w, h, r_mode = get_common_args(demisto.args())
-    # offline = demisto.args().get('offline', 'false') == 'true'
+    offline = demisto.args().get('offline', 'false') == 'true'
     r_type = RasterizeType(demisto.args().get('type', 'png').lower())
     file_name = demisto.args().get('file_name', 'email')
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
@@ -725,7 +725,7 @@ def rasterize_email_command():
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
 
-    output = rasterize(path=path, r_type=r_type, width=w, height=h,
+    output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline,
                        max_page_load_time=html_load, full_screen=full_screen, r_mode=r_mode)
     res = fileResult(filename=file_name, data=output)
     if r_type == RasterizeType.PNG:
