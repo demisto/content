@@ -37,7 +37,8 @@ DEFAULT_URGENCY_SCORE_MEDIUM_THRESHOLD = 50
 DEFAULT_URGENCY_SCORE_HIGH_THRESHOLD = 80
 MAX_MIRRORING_LIMIT = 5000
 MAX_OUTGOING_NOTE_LIMIT = 8000
-UTM_PIVOT = "?pivot=Vectra-XSOAR-1.0.0"
+PACK_VERSION = get_pack_version(pack_name='Vectra XDR') or '1.0.0'
+UTM_PIVOT = f"?pivot=Vectra-XSOAR-{PACK_VERSION}"
 EMPTY_ASSIGNMENT = [{"id": "", "date_assigned": "", "date_resolved": "", "assigned_to": {"username": ""},
                      "resolved_by": {"username": ""}, "assigned_by": {"username": ""}, "outcome": {"title": ""}}]
 DETECTION_CATEGORY_TO_ARG = {
@@ -82,7 +83,7 @@ ENDPOINTS = {
     'ASSIGNMENT_OUTCOME_ENDPOINT': '/api/v3.3/assignment_outcomes/',
     'DOWNLOAD_DETECTION_PCAP': '/api/v3.3/detections/{}/pcap'
 }
-USER_AGENT = 'VectraXDR-XSOAR-1.0.0'
+USER_AGENT = f"VectraXDR-XSOAR-{PACK_VERSION}"
 PAGE_SIZE = 200
 ENTITY_IMPORTANCE = {
     'low': 0,
@@ -1840,6 +1841,7 @@ def fetch_incidents(client: VectraClient, params: Dict[str, Any]) -> List:
             entity.update({'assignment_details': assignment_details})
             # Add configuration filter
             entity.update({'filter_tags': tags})
+            entity['url'] = f"{entity.get('url') or ''}{UTM_PIVOT}"
 
             # Create an incident if the entity is not already fetched
             if entity_checkpoint not in already_fetched:

@@ -34,20 +34,6 @@
                                     }
                                 },
                                 "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "prefix": {
-                                        "isContext": false
-                                    },
-                                    "suffix": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": "?pivot=Vectra-XSOAR-1.0.0"
-                                        }
-                                    }
-                                },
-                                "operator": "concat"
                             }
                         ]
                     }

@@ -61,7 +61,6 @@ def main():
         # Handle command error if there is any
         handle_error(command_result)
         result = command_result[0].get("Contents", [])
-        hr = command_result[0].get("HumanReadable", "")
         if isinstance(result, list):
             assignment = result[0] if len(result) > 0 else {}
             # Handling empty values which are removed from command output
