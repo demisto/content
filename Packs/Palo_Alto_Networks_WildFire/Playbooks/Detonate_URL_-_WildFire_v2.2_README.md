@@ -55,7 +55,7 @@ This playbook does not use any scripts.
 | DBotScore.Type | The type of indicator. | string |
 | DBotScore.Vendor | Vendor used to calculate the score. | string |
 | IP.Address | IPs relevant to the sample. | string |
-| File | The File object. | unknown |
+| File | The file object. | unknown |
 | InfoFile | The report file object. | unknown |
 | InfoFile.EntryID | The EntryID of the report file. | string |
 | InfoFile.Extension | The extension of the report file. | string |
