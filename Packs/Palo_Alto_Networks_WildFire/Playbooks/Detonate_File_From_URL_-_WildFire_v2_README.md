@@ -46,7 +46,7 @@ This playbook does not use any scripts.
 | File.Size | File size. | number |
 | File.MD5 | MD5 hash of the file. | string |
 | File.SHA1 | SHA1 hash of the file. | string |
-| File.Type | File type e.g. "PE". | string |
+| File.Type | File type, e.g., "PE". | string |
 | File.SHA256 | SHA256 hash of the file. | string |
 | File.EntryID | The Entry ID of the sample. | string |
 | File.Malicious.Vendor | For malicious files, the vendor that made the decision. | string |
