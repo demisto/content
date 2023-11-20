@@ -186,7 +186,7 @@ script:
       description: Task ID generated after deleting a message from a mailbox.
       type: string
   - arguments:
-    - description: Email Message ID (<mailMsgId>), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data.
+    - description: 'Email Message ID (<mailMsgId>), Mailbox ID and description or Unique Message ID (msgUuid) and description from Trend Micro Vision One message activity data.'
       name: email_identifiers
       required: true
     description: Restores a quarantined message. Deleted messages cannot be restored.
@@ -196,7 +196,7 @@ script:
       description: Status of restoring a message.
       type: number
     - contextPath: VisionOne.Email.task_id
-      description: Task ID generated after restoring a message.
+      description: 'Task ID generated after restoring a message.'
       type: string
   - arguments:
     - description: 'Object containing endpoint (hostname) and description or agent_guid and description.'
@@ -306,11 +306,11 @@ script:
       required: true
     - description: Query Operator for querying endpoint(s).
       name: query_op
+      required: true
       auto: PREDEFINED
       predefined:
       - and
       - or
-      required: true
     description: Retrieves information about a specific endpoint.
     name: trendmicro-visionone-get-endpoint-info
     outputs:
@@ -515,9 +515,9 @@ script:
       - or
       default: true
     description: Displays total count of search results from the Endpoint Activity Data source that match the parameters provided.
-    name: trendmicro-visionone-get-endpoint-activity-count
+    name: trendmicro-visionone-get-endpoint-activity-data-count
     outputs:
-    - contextPath: VisionOne.Endpoint_Activity_Count.endpoint_activity_count
+    - contextPath: VisionOne.Endpoint_Activity_Data_Count.endpoint_activity_count
       description: Total count for endpoint activity queried.
       type: string
   - arguments:
@@ -607,17 +607,15 @@ script:
       - or
       default: true
     description: Displays search results from the Email Activity Data source that match the parameters provided.
-    name: trendmicro-visionone-get-email-activity-count
+    name: trendmicro-visionone-get-email-activity-data-count
     outputs:
-    - contextPath: VisionOne.Email_Activity_Count.email_activity_count
+    - contextPath: VisionOne.Email_Activity_Data_Count.email_activity_count
       description: Total count of email activity.
       type: string
   - arguments:
     - description: 'Object consisting of endpoint (hostname) or agent_guid, file_sha1, filename and description.'
       name: process_identifiers
       required: true
-    description: Terminates a process that is running on an endpoint.
-    name: trendmicro-visionone-terminate-process
     outputs:
     - contextPath: VisionOne.Terminate_Process.status
       description: Status of request to terminate process.
@@ -625,12 +623,12 @@ script:
     - contextPath: VisionOne.Terminate_Process.task_id
       description: Task Id generated after terminating a process.
       type: string
+    description: Terminates a process that is running on an endpoint.
+    name: trendmicro-visionone-terminate-process
   - arguments:
     - description: 'task_id from the trendmicro-visionone-submit-file-to-sandbox command output.'
       name: task_id
       required: true
-    description: Retrieves the status of a sandbox analysis submission.
-    name: trendmicro-visionone-get-file-analysis-status
     outputs:
     - contextPath: VisionOne.File_Analysis_Status.id
       description: Submission ID of the file submitted for sandbox analysis.
@@ -662,6 +660,8 @@ script:
     - contextPath: VisionOne.File_Analysis_Status.arguments
       description: Arguments for the file submitted.
       type: string
+    description: Retrieves the status of a sandbox analysis submission.
+    name: trendmicro-visionone-get-file-analysis-status
   - arguments:
     - description: report_id of the sandbox submission retrieved from the trendmicro-visionone-get-file-analysis-status command.
       name: report_id
@@ -675,8 +675,6 @@ script:
       default: true
     - description: Maximum time to wait for the result to be available.
       name: poll_time_sec
-    description: Retrieves the sandbox submission analysis result.
-    name: trendmicro-visionone-get-file-analysis-result
     outputs:
     - contextPath: VisionOne.File_Analysis_Result.id
       description: Report ID for the submission.
@@ -714,10 +712,14 @@ script:
     - contextPath: VisionOne.File_Analysis_Result.DBotScore.Reliability
       description: The reliability of an intelligence-data source.
       type: string
+    description: Retrieves the sandbox submission analysis result.
+    name: trendmicro-visionone-get-file-analysis-result
   - arguments:
     - description: 'Object containing endpoint (hostname) or agent_guid, file_path and description.'
       name: collect_files
       required: true
+    description: Compresses a file on an endpoint in a password-protected archive and then sends the archive to the XDR service platform.
+    name: trendmicro-visionone-collect-forensic-file
     outputs:
     - contextPath: VisionOne.Collect_Forensic_File.status
       description: Status of request to collect file from endpoint.
@@ -725,8 +727,6 @@ script:
     - contextPath: VisionOne.Collect_Forensic_File.task_id
       description: Task ID generated after collecting file for forensic analysis.
       type: string
-    description: Compresses a file on an endpoint in a password-protected archive and then sends the archive to the XDR service platform.
-    name: trendmicro-visionone-collect-forensic-file
   - arguments:
     - description: taskId output from the collect forensic file command.
       name: task_id
@@ -832,8 +832,6 @@ script:
       default: true
     - description: Maximum time to wait for the result to be available.
       name: poll_time_sec
-    description: Downloads the suspicious object list associated to the specified object. Note ~ Suspicious Object Lists are only available for objects with a high risk level.
-    name: trendmicro-visionone-download-suspicious-object-list
     outputs:
     - contextPath: VisionOne.Download_Suspicious_Object_list.type
       description: The type of suspicious object.
@@ -853,6 +851,8 @@ script:
     - contextPath: VisionOne.Download_Suspicious_Object_list.expired_date_time
       description: The expiration date and time for the suspicious object.
       type: string
+    name: trendmicro-visionone-download-suspicious-object-list
+    description: Downloads the suspicious object list associated to the specified object. Note ~ Suspicious Object Lists are only available for objects with a high risk level.
   - arguments:
     - description: The submission ID for the object submitted to sandbox for analysis.
       name: submission_id

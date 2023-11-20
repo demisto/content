@@ -141,11 +141,9 @@ TABLE_ADD_SUSPICIOUS_LIST = "Add object to suspicious list "
 TABLE_DELETE_SUSPICIOUS_LIST = "Delete object from suspicious list "
 TABLE_ENDPOINT_INFO = "Endpoint info "
 TABLE_GET_EMAIL_ACTIVITY_DATA = "Email activity data "
-TABLE_GET_ALL_EMAIL_ACTIVITY_DATA = "All email activity data "
-TABLE_GET_EMAIL_ACTIVITY_COUNT = "Email activity data count "
+TABLE_GET_EMAIL_ACTIVITY_DATA_COUNT = "Email activity data count "
 TABLE_GET_ENDPOINT_ACTIVITY_DATA = "Endpoint activity data "
-TABLE_GET_ALL_ENDPOINT_ACTIVITY_DATA = "All endpoint activity data "
-TABLE_GET_ENDPOINT_ACTIVITY_COUNT = "Endpoint activity data count"
+TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT = "Endpoint activity data count "
 TABLE_GET_FILE_ANALYSIS_STATUS = "File analysis status "
 TABLE_GET_FILE_ANALYSIS_RESULT = "File analysis result "
 TABLE_GET_ALERT_DETAILS = "Alert details"
@@ -206,9 +204,13 @@ SANDBOX_SUBMISSION_POLLING_COMMAND = (
 CHECK_TASK_STATUS_COMMAND = "trendmicro-visionone-check-task-status"
 GET_ENDPOINT_INFO_COMMAND = "trendmicro-visionone-get-endpoint-info"
 GET_EMAIL_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-email-activity-data"
-GET_EMAIL_ACTIVITY_COUNT_COMMAND = "trendmicro-visionone-get-email-activity-count"
+GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND = (
+    "trendmicro-visionone-get-email-activity-data-count"
+)
 GET_ENDPOINT_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-endpoint-activity-data"
-GET_ENDPOINT_ACTIVITY_COUNT_COMMAND = "trendmicro-visionone-get-endpoint-activity-count"
+GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND = (
+    "trendmicro-visionone-get-endpoint-activity-data-count"
+)
 GET_ALERT_DETAILS_COMMAND = "trendmicro-visionone-get-alert-details"
 UPDATE_STATUS_COMMAND = "trendmicro-visionone-update-status"
 ADD_NOTE_COMMAND = "trendmicro-visionone-add-note"
@@ -244,13 +246,13 @@ table_name = {
     GET_FILE_ANALYSIS_STATUS_COMMAND: TABLE_GET_FILE_ANALYSIS_STATUS,
     GET_FILE_ANALYSIS_RESULT_COMMAND: TABLE_GET_FILE_ANALYSIS_RESULT,
     DOWNLOAD_ANALYSIS_REPORT_COMMAND: TABLE_DOWNLOAD_ANALYSIS_REPORT,
-    GET_EMAIL_ACTIVITY_COUNT_COMMAND: TABLE_GET_EMAIL_ACTIVITY_COUNT,
     FILE_ENTRY_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX,
     SANDBOX_SUBMISSION_POLLING_COMMAND: TABLE_SANDBOX_SUBMISSION_POLLING,
     GET_ENDPOINT_ACTIVITY_DATA_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA,
-    GET_ENDPOINT_ACTIVITY_COUNT_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_COUNT,
+    GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND: TABLE_GET_EMAIL_ACTIVITY_DATA_COUNT,
     DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND: TABLE_DOWNLOAD_INVESTIGATION_PACKAGE,
     DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND: TABLE_DOWNLOAD_SUSPICIOUS_OBJECT_LIST,
+    GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA_COUNT,
     DOWNLOAD_COLLECTED_FILE_COMMAND: TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION,
 }
 # disable insecure warnings
@@ -903,7 +905,7 @@ def get_endpoint_activity_data(
     # List to contain endpoint activity data
     message: List[Any] = []
     # Get the activity count
-    count_obj = get_endpoint_activity_count(v1_client, args)
+    count_obj = get_endpoint_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("endpoint_activity_count", EMPTY_STRING))  # type: ignore
     # If activity count is greater than 5k, throw error else return response
     if activity_count > 5000:
@@ -935,7 +937,7 @@ def get_endpoint_activity_data(
     )
 
 
-def get_endpoint_activity_count(
+def get_endpoint_activity_data_count(
     v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
@@ -969,7 +971,7 @@ def get_endpoint_activity_count(
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[GET_ENDPOINT_ACTIVITY_COUNT_COMMAND],
+            table_name[GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND],
             activity_count,
             headerTransform=string_to_table_header,
             removeNull=True,
@@ -1011,7 +1013,7 @@ def get_email_activity_data(
     # List to populate email activity data
     message: List[Any] = []
     # Get the activity count
-    count_obj = get_email_activity_count(v1_client, args)
+    count_obj = get_email_activity_data_count(v1_client, args)
     activity_count = int(count_obj.outputs.get("email_activity_count", EMPTY_STRING))  # type: ignore
     # If activity count is greater than 5k, throw error else return response
     if activity_count > 5000:
@@ -1042,7 +1044,7 @@ def get_email_activity_data(
     )
 
 
-def get_email_activity_count(
+def get_email_activity_data_count(
     v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
     """
@@ -1076,7 +1078,7 @@ def get_email_activity_count(
 
     return CommandResults(
         readable_output=tableToMarkdown(
-            table_name[GET_EMAIL_ACTIVITY_COUNT_COMMAND],
+            table_name[GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND],
             activity_count,
             headerTransform=string_to_table_header,
             removeNull=True,
@@ -2479,14 +2481,14 @@ def main():  # pragma: no cover
         elif command == GET_ENDPOINT_ACTIVITY_DATA_COMMAND:
             return_results(get_endpoint_activity_data(v1_client, args))
 
-        elif command == GET_ENDPOINT_ACTIVITY_COUNT_COMMAND:
-            return_results(get_endpoint_activity_count(v1_client, args))
+        elif command == GET_ENDPOINT_ACTIVITY_DATA_COUNT_COMMAND:
+            return_results(get_endpoint_activity_data_count(v1_client, args))
 
         elif command == GET_EMAIL_ACTIVITY_DATA_COMMAND:
             return_results(get_email_activity_data(v1_client, args))
 
-        elif command == GET_EMAIL_ACTIVITY_COUNT_COMMAND:
-            return_results(get_email_activity_count(v1_client, args))
+        elif command == GET_EMAIL_ACTIVITY_DATA_COUNT_COMMAND:
+            return_results(get_email_activity_data_count(v1_client, args))
 
         elif command == COLLECT_FILE_COMMAND:
             return_results(collect_file(v1_client, args))

@@ -464,14 +464,14 @@ Displays search results from the Endpoint Activity Data source that match the pa
 | VisionOne.Endpoint_Activity_Data.tags                       | string   | Detected by Security Analytics Engine filters.                |
 | VisionOne.Endpoint_Activity_Data.uuid                       | string   | Log unique identity.                                          |
 
-### trendmicro-visionone-get-endpoint-activity-count
+### trendmicro-visionone-get-endpoint-activity-data-count
 
 ***
 Displays total count of search results from the Endpoint Activity Data source that match the parameters provided.
 
 #### Base Command
 
-`trendmicro-visionone-get-endpoint-activity-count`
+`trendmicro-visionone-get-endpoint-activity-data-count`
 
 #### Input
 
@@ -486,9 +486,9 @@ Displays total count of search results from the Endpoint Activity Data source th
 
 #### Context Output
 
-| **Path**                                                  | **Type** | **Description**                            |
-| --------------------------------------------------------- | -------- | ------------------------------------------ |
-| VisionOne.Endpoint_Activity_Count.endpoint_activity_count | string   | Total count for endpoint activity queried. |
+| **Path**                                                       | **Type** | **Description**                            |
+| -------------------------------------------------------------- | -------- | ------------------------------------------ |
+| VisionOne.Endpoint_Activity_Data_Count.endpoint_activity_count | string   | Total count for endpoint activity queried. |
 
 ### trendmicro-visionone-get-email-activity-data
 
@@ -530,14 +530,14 @@ Displays search results from the Email Activity Data source that match the param
 | VisionOne.Email_Activity_Data.mail_urls_visible_link | string   | Visible link in email message.                            |
 | VisionOne.Email_Activity_Data.mail_urls_real_link    | string   | Real link in email message.                               |
 
-### trendmicro-visionone-get-email-activity-count
+### trendmicro-visionone-get-email-activity-data-count
 
 ***
 Displays search results from the Email Activity Data source that match the parameters provided.
 
 #### Base Command
 
-`trendmicro-visionone-get-email-activity-count`
+`trendmicro-visionone-get-email-activity-data-count`
 
 #### Input
 
@@ -552,9 +552,9 @@ Displays search results from the Email Activity Data source that match the param
 
 #### Context Output
 
-| **Path**                                            | **Type** | **Description**                |
-| --------------------------------------------------- | -------- | ------------------------------ |
-| VisionOne.Email_Activity_Count.email_activity_count | string   | Total count of email activity. |
+| **Path**                                                 | **Type** | **Description**                |
+| -------------------------------------------------------- | -------- | ------------------------------ |
+| VisionOne.Email_Activity_Data_Count.email_activity_count | string   | Total count of email activity. |
 
 ### trendmicro-visionone-terminate-process
 
