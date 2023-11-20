@@ -1,0 +1,118 @@
+{
+    "case schema": {
+        "properties": {
+            "totalRetentionInDays": 30,
+            "archiveRetentionInDays": 0,
+            "plan": "Analytics",
+            "lastPlanModifiedDate": "2023-10-26T21:49:25.6586323Z",
+            "createDate": "2023-10-26T21:49:25.6588002Z",
+            "createdBy": "test",
+            "retentionInDaysAsDefault": true,
+            "totalRetentionInDaysAsDefault": true,
+            "schema": {
+                "tableSubType": "DataCollectionRuleBased",
+                "name": "test",
+                "tableType": "SearchResults",
+                "columns": [
+                    {
+                        "name": "_OriginalTenantId",
+                        "type": "string",
+                        "isDefaultDisplay": false,
+                        "isHidden": false
+                    }
+                ],
+                "standardColumns": [
+                    {
+                        "name": "TenantId",
+                        "type": "guid",
+                        "isDefaultDisplay": false,
+                        "isHidden": false
+                    }
+                ],
+                "solutions": [
+                    "LogManagement"
+                ],
+                "isTroubleshootingAllowed": false,
+                "searchResults": {
+                    "query": "testLogs",
+                    "description": "This table was created using a Search Job with the following query: 'testLogs'.",
+                    "limit": 10,
+                    "startSearchTime": "2023-10-23T00:00:00Z",
+                    "endSearchTime": "2023-10-25T00:00:00Z",
+                    "sourceTable": "testLogs",
+                    "azureAsyncOperationId": "test"
+                }
+            },
+            "provisioningState": "Succeeded",
+            "retentionInDays": 30
+        },
+        "systemData": {
+            "createdBy": "test",
+            "createdByType": null,
+            "createdAt": "2023-10-26T21:49:25.6588002Z",
+            "lastModifiedBy": null,
+            "lastModifiedByType": null,
+            "lastModifiedAt": null
+        },
+        "id": "test",
+        "name": "test"
+    },
+    "case properties": {
+        "properties": {
+            "totalRetentionInDays": 30,
+            "archiveRetentionInDays": 0,
+            "plan": "Analytics",
+            "lastPlanModifiedDate": "2023-10-26T21:49:25.6586323Z",
+            "createDate": "2023-10-26T21:49:25.6588002Z",
+            "createdBy": "test",
+            "retentionInDaysAsDefault": true,
+            "totalRetentionInDaysAsDefault": true,
+            "schema": {
+                "tableSubType": "DataCollectionRuleBased",
+                "name": "test",
+                "tableType": "SearchResults",
+                "columns": [
+                    {
+                        "name": "_OriginalTenantId",
+                        "type": "string",
+                        "isDefaultDisplay": false,
+                        "isHidden": false
+                    }
+                ],
+                "standardColumns": [
+                    {
+                        "name": "TenantId",
+                        "type": "guid",
+                        "isDefaultDisplay": false,
+                        "isHidden": false
+                    }
+                ],
+                "solutions": [
+                    "LogManagement"
+                ],
+                "isTroubleshootingAllowed": false
+            },
+            "searchResults": {
+                "query": "testLogs",
+                "description": "This table was created using a Search Job with the following query: 'testLogs'.",
+                "limit": 10,
+                "startSearchTime": "2023-10-23T00:00:00Z",
+                "endSearchTime": "2023-10-25T00:00:00Z",
+                "sourceTable": "testLogs",
+                "azureAsyncOperationId": "test"
+            },
+            "provisioningState": "Succeeded",
+            "retentionInDays": 30
+        },
+        "systemData": {
+            "createdBy": "test",
+            "createdByType": null,
+            "createdAt": "2023-10-26T21:49:25.6588002Z",
+            "lastModifiedBy": null,
+            "lastModifiedByType": null,
+            "lastModifiedAt": null
+        },
+        "id": "test",
+        "name": "test"
+    }
+}
