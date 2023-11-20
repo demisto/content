@@ -5,6 +5,12 @@
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "false"'
 
+.force-bucket-upload-rule:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+
 .bucket-upload-rule-always:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
@@ -77,7 +83,7 @@ jobs-done-check-upload-flow:
 
 xsoar-prepare-testing-bucket-upload-flow:
   extends:
-    - .bucket-upload-rule-always
+    - .force-bucket-upload-rule
     - xsoar-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
@@ -86,7 +92,7 @@ xsoar-prepare-testing-bucket-upload-flow:
 
 xsoar-saas-prepare-testing-bucket-upload-flow:
   extends:
-    - .bucket-upload-rule-always
+    - .force-bucket-upload-rule
     - xsoar-saas-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
@@ -95,7 +101,7 @@ xsoar-saas-prepare-testing-bucket-upload-flow:
 
 mpv2-prepare-testing-bucket-upload-flow:
  extends:
-    - .bucket-upload-rule-always
+    - .force-bucket-upload-rule
     - mpv2-prepare-testing-bucket
  variables:
    IFRA_ENV_TYPE: "Bucket-Upload"
@@ -104,7 +110,7 @@ mpv2-prepare-testing-bucket-upload-flow:
 
 xpanse-prepare-testing-bucket-upload-flow:
  extends:
-    - .bucket-upload-rule-always
+    - .force-bucket-upload-rule
     - xpanse-prepare-testing-bucket
  variables:
    IFRA_ENV_TYPE: "Bucket-Upload"
