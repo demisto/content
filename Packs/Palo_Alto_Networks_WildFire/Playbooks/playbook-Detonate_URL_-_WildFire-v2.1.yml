@@ -617,7 +617,7 @@ inputs:
       root: URL
       accessor: Data
   required: false
-  description: URL of the webpage or file url to detonate. The URL is taken from the context.
+  description: URL of the webpage or file URL to detonate. The URL is taken from the context.
   playbookInputQuery:
 - key: Interval
   value:
