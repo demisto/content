@@ -262,6 +262,10 @@ def main():
     context_outputs: dict[str, str] = {'success': 'true'}
     error_message: str | None = None
 
+    if not zip_password:
+        return_warning("It is highly recommended to run the script using the 'ZipProtectWithPassword' argument,"
+                       "as sending a plain text password in an email is an insecure practice.")
+
     # If zip file is already generated and this is the second iteration, we skip this section
     if not (zip_password and zip_file_name):
         try:
