@@ -2,7 +2,11 @@
 
 
 function compare_revision() {
-  bucket_list_origin=($GCS_MARKET_BUCKET $GCS_MARKET_V2_BUCKET $GCS_MARKET_XPANSE_BUCKET)
+  if [ "$1" == "dev" ]; then
+    bucket_list_origin=($GCS_MARKET_XSOAR_SAAS_BUCKET $GCS_MARKET_V2_BUCKET $GCS_MARKET_XPANSE_BUCKET)
+  else
+    bucket_list_origin=($GCS_MARKET_BUCKET $GCS_MARKET_V2_BUCKET $GCS_MARKET_XPANSE_BUCKET)
+  fi
   bucket_list_prod=($MARKETPLACE_XSOAR_PROD $MARKETPLACE_V2_PROD $MARKETPLACE_XPANSE_PROD)
   json_file_path="/content/packs/index.json"
 
