@@ -1195,11 +1195,6 @@ def test_get_endpoint_information(mocker):
     client = Mock()
     client.consume_endpoint_data = Mock(return_value=mock_get_endpoint_info_response())
     args = {"endpoint": "hostname", "query_op": "or"}
-    # mocker.patch.object(
-    #     "TrendMicroVisionOneV3.get_endpoint_info",
-    #     "client.consume_endpoint_data",
-    #     mock_get_endpoint_info_response,
-    # )
     result = get_endpoint_info(client, args)
     assert isinstance(result.outputs[0]["agent_guid"], str)
     assert isinstance(result.outputs[0]["login_account"], dict)
