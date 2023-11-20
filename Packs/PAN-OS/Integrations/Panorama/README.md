@@ -3294,7 +3294,8 @@ The query logs in Panorama.
 | number_of_logs    | The maximum number of logs to retrieve. If empty, the default is 100. The maximum is 5,000. Default is 100.                                                       | Optional | 
 | polling           | Whether to use polling. Possible values are: true, false. Default is false.                                                                                       | Optional | 
 | timeout           | The timeout (in seconds) when polling. Default is 120.                                                                                                            | Optional | 
-| interval_in_seconds | The interval (in seconds) when polling. Default is 10.                                                                                                            | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10.                                                                                                            | Optional |
+| show-detail       | Whether to show only `after-change-preview`, and `before-change-preview`, or get full data for it.  The full data are under the fields `after-change-detail`, and `before-change-detail`. Possible values are: yes, no. Default is no.                                                                                                             | Optional | 
 
 
 #### Context Output
@@ -3366,7 +3367,7 @@ enforce the policy. |
 | Panorama.Monitor.Logs.Vsys | String | The VSYS on the firewall that generated the log. | 
 
 #### Command example with polling
-```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true```
+```!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true show-detail=yes```
 
 ### Context example
 ```json
@@ -8985,3 +8986,30 @@ Returns a list of all device groups from Panorama.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.DeviceGroupNames | string | The list of device groups. |
+
+### pan-os-export-tech-support-file
+
+***
+Exports a tech support file (TSF).
+
+#### Base Command
+
+`pan-os-export-tech-support-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| interval_in_seconds | The polling interval (in seconds). Default is 30. | Optional | 
+| timeout | The polling timeout (in seconds). Default is 1200. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-export-tech-support-file```
+
+#### Human Readable Output
+
+>Waiting for tech support file export with job ID 101 to finish...

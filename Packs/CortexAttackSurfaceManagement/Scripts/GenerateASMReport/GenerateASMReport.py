@@ -293,11 +293,43 @@ def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
                     "classes": "striped stackable",
                 },
             },
+            # Attack surface rule information
+            {
+                "type": "header",
+                "data": "Remediation Guidance",
+                "layout": {
+                    "rowPos": 12,
+                    "columnPos": 1,
+                    "style": {
+                        "textAlign": "left",
+                        "fontSize": 16,
+                        "color": "black",
+                        "background-color": "white",
+                        "border-bottom": "5px solid #00cc66ff",
+                    },
+                },
+            },
+            {
+                "type": "text",
+                "data": args.get('asm_remediation_guidance'),
+                "layout": {
+                    "rowPos": 13,
+                    "columnPos": 1,
+                    "style": {
+                        "textAlign": "left",
+                        "display": "flex",
+                        "alignItems": "center",
+                        "padding": "5px",
+                        "fontSize": 12,
+                    },
+                },
+            },
+            # Remediation Taken
             {
                 "type": "header",
                 "data": "Remediation Taken",
                 "layout": {
-                    "rowPos": 12,
+                    "rowPos": 14,
                     "columnPos": 1,
                     "style": {
                         "textAlign": "left",
@@ -312,7 +344,7 @@ def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
                 "type": "table",
                 "data": remediation,
                 "layout": {
-                    "rowPos": 13,
+                    "rowPos": 15,
                     "columnPos": 1,
                     "tableColumns": [
                         "action",
@@ -328,7 +360,7 @@ def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
                 "type": "header",
                 "data": "Evidence and Investigation Artifacts",
                 "layout": {
-                    "rowPos": 14,
+                    "rowPos": 16,
                     "columnPos": 1,
                     "style": {
                         "textAlign": "left",
@@ -340,7 +372,7 @@ def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
             }
         ]
 
-        placeholder = 15
+        placeholder = 17
         optional_order = ["asm_remediation_path_rule", "asm_service_owner", "asm_notification",
                           "asm_data_collection", "asm_private_ip", "asm_cloud", "asm_tags", "asm_system_ids"]
     elif args.get('report_type') == "analysis":
@@ -546,12 +578,43 @@ def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
                     "classes": "striped stackable",
                 },
             },
+            # Attack surface rule information
+            {
+                "type": "header",
+                "data": "Remediation Guidance",
+                "layout": {
+                    "rowPos": 12,
+                    "columnPos": 1,
+                    "style": {
+                        "textAlign": "left",
+                        "fontSize": 16,
+                        "color": "black",
+                        "background-color": "white",
+                        "border-bottom": "5px solid #00cc66ff",
+                    },
+                },
+            },
+            {
+                "type": "text",
+                "data": args.get('asm_remediation_guidance'),
+                "layout": {
+                    "rowPos": 13,
+                    "columnPos": 1,
+                    "style": {
+                        "textAlign": "left",
+                        "display": "flex",
+                        "alignItems": "center",
+                        "padding": "5px",
+                        "fontSize": 12,
+                    },
+                },
+            },
             # Evidence
             {
                 "type": "header",
                 "data": "Evidence and Investigation Artifacts",
                 "layout": {
-                    "rowPos": 12,
+                    "rowPos": 14,
                     "columnPos": 1,
                     "style": {
                         "textAlign": "left",
@@ -563,7 +626,7 @@ def build_template(args: dict[str, Any]) -> list[dict[str, Any]]:
             },
         ]
 
-        placeholder = 13
+        placeholder = 15
         optional_order = ["asm_service_owner", "asm_private_ip", "asm_cloud", "asm_tags", "asm_system_ids"]
 
     optional_template = optional_report_fields(placeholder, optional_order, args)

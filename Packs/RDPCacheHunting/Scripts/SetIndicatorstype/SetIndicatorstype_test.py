@@ -100,7 +100,7 @@ def test_main():
     ]
 
     # Patch demisto.context and argToList functions
-    with patch.object(demisto, 'context', return_value={'ExtractedIndicators': test_data}), patch.object(demisto, 'results'),\
+    with patch.object(demisto, 'context', return_value={'ExtractedIndicators': test_data}), patch.object(demisto, 'results'), \
             patch.object(random, 'randint', return_value=123456):
         main()
         result = demisto.results.call_args[0][0]

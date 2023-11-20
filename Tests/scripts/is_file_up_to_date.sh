@@ -4,7 +4,7 @@ BRANCH=$2
 SHOULD_CHECKOUT=$3
 
 if [[ -n $BRANCH ]]; then
-    BRANCH=$(git branch --show-current)
+  BRANCH=$(git branch --show-current 2>/dev/null) || BRANCH=$(git rev-parse --head) 
 fi
 
 # Checks if there's any diff from master
@@ -16,6 +16,10 @@ if [[ $(git diff origin/master -G"." -- ${FILE_TO_CHECK}) ]]; then
             echo "Checking out $FILE_TO_CHECK"
             git checkout origin/master -- ${FILE_TO_CHECK}
             exit 0
+        fi
+        if [[ -n $GITHUB_ACTIONS  ]]; then
+          # print github action annotation
+          echo "::error file=$FILE_TO_CHECK::$FILE_TO_CHECK has been changed. Merge from master"
         fi
         if [[ -z "${CIRCLECI}" && -f /usr/games/cowsay ]]; then
             # using printf & STDIN instead of command argument to support new lines in the message.

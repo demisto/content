@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
 CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
-echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
+if [ "${TEST_XDR_ENV}" == "true" ]; then
+    cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+else
+    echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
+fi
 
-if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
+if [[ "${SERVER_TYPE}" == "XSIAM" ]]; then
 
   if [[ -z "${CLOUD_CHOSEN_MACHINE_IDS}" ]]; then
     echo "CLOUD_CHOSEN_MACHINE_IDS is not defined, exiting..."
@@ -22,7 +26,7 @@ if [[ "${INSTANCE_ROLE}" == "XSIAM" ]]; then
     exit "${exit_code}"
   fi
 else
-  echo "Not running end to end tests on ${INSTANCE_ROLE}, exiting..."
+  echo "Not running end-to-end tests on Server Type:${SERVER_TYPE}, exiting..."
   exit 0
 fi
 

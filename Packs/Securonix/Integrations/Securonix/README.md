@@ -896,6 +896,9 @@ Gets a list of incidents.
 | Securonix.Incidents.ViolatorText | String | Incident violator text. | 
 | Securonix.Incidents.AssignedUser | String | User assigned to the incident. | 
 | Securonix.Incidents.IsWhitelisted | Boolean | Whether the incident is added to allow list. | 
+| Securonix.Incidents.Policystarttime | Number | Epoch time when the policy is first violated. | 
+| Securonix.Incidents.Policyendtime | Number | Epoch time when the policy is last violated. | 
+| Securonix.Incidents.Solrquery | String | Spotter query to fetch the related violations. | 
 
 
 ##### Command Example
@@ -914,7 +917,7 @@ Gets a list of incidents.
                 "CaseEventStartTime": 1675845486324,
                 "Casecreatetime": 1675849649900,
                 "Entity": "RTActivityAccount",
-                "IncidentID": "Incident ID",
+                "IncidentID": "30107",
                 "IncidentStatus": "COMPLETED",
                 "IncidentType": "HighRiskRTActivityAccount",
                 "IsWhitelisted": false,
@@ -938,7 +941,10 @@ Gets a list of incidents.
                 "ViolatorID": "TESTING2",
                 "ViolatorText": "TESTING2",
                 "Watchlisted": false,
-                "WorkflowName": "SOCTeamReview"
+                "WorkflowName": "SOCTeamReview",
+                "Policystarttime": 1692950376801,
+                "Policyendtime": 1695613655539,
+                "Solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
             },
             {
                 "AssignedUser": "Admin Admin",
@@ -947,7 +953,7 @@ Gets a list of incidents.
                 "CaseEventStartTime": 1675850440699,
                 "Casecreatetime": 1675850942351,
                 "Entity": "RTActivityAccount",
-                "IncidentID": "Incident ID",
+                "IncidentID": "30108",
                 "IncidentStatus": "COMPLETED",
                 "IncidentType": "HighRiskRTActivityAccount",
                 "IsWhitelisted": true,
@@ -971,7 +977,10 @@ Gets a list of incidents.
                 "ViolatorID": "TESTING4",
                 "ViolatorText": "TESTING4",
                 "Watchlisted": false,
-                "WorkflowName": "SOCTeamReview"
+                "WorkflowName": "SOCTeamReview",
+                "Policystarttime": 1692950376801,
+                "Policyendtime": 1695613655539,
+                "Solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
             }
         ]
     }
@@ -980,10 +989,10 @@ Gets a list of incidents.
 
 ##### Human Readable Output
 >### Incidents:
->|Incident Status|Incident Type|Priority|Reason|
->|---|---|---|---|
->| COMPLETED | HighRiskRTActivityAccount | None | ResourceType: mvk,<br/>Policy: SandboxFeb8,<br/>Threat: Abnormal attempts to reset domain admin password |
->| COMPLETED | HighRiskRTActivityAccount | None | ResourceType: mvk,<br/>Policy: SandboxFeb8,<br/>Threat: Abnormal attempts to reset domain admin password |
+>|IncidentID|Incident Status|Incident Type|Priority|Reason|
+>|---|---|---|---|---|
+>| 30107 | COMPLETED | HighRiskRTActivityAccount | None | ResourceType: mvk,<br/>Policy: SandboxFeb8,<br/>Threat: Abnormal attempts to reset domain admin password |
+>| 30108 | COMPLETED | HighRiskRTActivityAccount | None | ResourceType: mvk,<br/>Policy: SandboxFeb8,<br/>Threat: Abnormal attempts to reset domain admin password |
 
 ### securonix-get-incident
 ***
@@ -1019,6 +1028,9 @@ Gets details of the specified incident.
 | Securonix.Incidents.ViolatorText | String | Incident violator text. | 
 | Securonix.Incidents.AssignedUser | String | User assigned to the incident. | 
 | Securonix.Incidents.IsWhitelisted | Boolean | Whether the incident is added to allow list. | 
+| Securonix.Incidents.Policystarttime | Number | Epoch time when the policy is first violated. | 
+| Securonix.Incidents.Policyendtime | Number | Epoch time when the policy is last violated. | 
+| Securonix.Incidents.Solrquery | String | Spotter query to fetch the related violations. | 
 
 
 ##### Command Example
@@ -1058,7 +1070,10 @@ Gets details of the specified incident.
             "ViolatorSubText": "1009",
             "ViolatorText": "Judi Mcabee",
             "Watchlisted": false,
-            "WorkflowName": "SOCTeamReview"
+            "WorkflowName": "SOCTeamReview",
+            "Policystarttime": 1692950376801,
+            "Policyendtime": 1695613655539,
+            "Solrquery": "index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\""
         }
     }
 }
@@ -1066,9 +1081,9 @@ Gets details of the specified incident.
 
 ##### Human Readable Output
 >### Incident:
->|Assigned User|Casecreatetime|Entity|Incident Status|Incident Type|IncidentID|Is Whitelisted|Last Update Date|Priority|Reason|Riskscore|Sand Box Policy|Status Completed|Tenant Info|Url|Violator Sub Text|Violator Text|ViolatorID|Watchlisted|Workflow Name|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Admin Admin | 1579687173702 | Users | Open | Policy | 30107 | false | 1579687173702 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | 0.0 | false | false | tenantid: 1 tenantname: {name} | url | 1009 | john smith | 9 | false | SOCTeamReview |
+>|Assigned User|Casecreatetime|Entity|Incident Status|Incident Type|IncidentID|Is Whitelisted|Last Update Date|Priority|Reason|Riskscore|Sand Box Policy|Status Completed|Tenant Info|Url|Violator Sub Text|Violator Text|ViolatorID|Watchlisted|Workflow Name|Policystarttime|Policyendtime|Solrquery|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Admin Admin | 1579687173702 | Users | Open | Policy | 30107 | false | 1579687173702 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | 0.0 | false | false | tenantid: 1 tenantname: {name} | url | 1009 | john smith | 9 | false | SOCTeamReview | 1692950376801 | 1695613655539 | index = violation and ( ( @policyname = \"Response-PB-Resources-AutoPlay\" and @resourcename=\"Activityres17-Resource-549829\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"02/07/2023 15:52:12\" \"02/07/2023 15:52:13\" |
 
 
 ### securonix-get-incident-status
@@ -2490,8 +2505,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Entries added to  TEST_TABLE successfully
-
-
-## Limitations
-  - The `opened` argument for fetching and listing incidents is currently not filtering only the opened incidents.
-    This is an open issue on the vendor side.

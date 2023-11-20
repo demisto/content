@@ -129,6 +129,7 @@ def test_aws_recreate_sg(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1", "port": "22", "protocol": "tcp"}
-    result = aws_recreate_sg(args)
+    command_results = aws_recreate_sg(args)
+    readable_output = command_results.readable_output
     correct_output = "For interface eni-00000000000000000: \r\nreplaced SG sg-00000000000000000 with sg-00000000000000001 \r\n"
-    assert result == correct_output
+    assert readable_output == correct_output
