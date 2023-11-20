@@ -621,8 +621,7 @@ xsoar-force-pack-upload:
     GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_BUCKET
   extends: .force-pack-upload
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD'
-
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 marketplace-v2-force-pack-upload:
   needs: [ "mpv2-prepare-testing-bucket-upload-flow" ]
@@ -633,7 +632,7 @@ marketplace-v2-force-pack-upload:
     GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_V2_BUCKET
   extends: .force-pack-upload
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD'
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 xpanse-force-pack-upload:
   needs: [ "xpanse-prepare-testing-bucket-upload-flow" ]
@@ -644,8 +643,7 @@ xpanse-force-pack-upload:
     GCS_CURRENT_PRODUCTION_BUCKET: $GCS_PRODUCTION_XPANSE_BUCKET
   extends: .force-pack-upload
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD'
-
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 .force-pack-upload:
   tags:
