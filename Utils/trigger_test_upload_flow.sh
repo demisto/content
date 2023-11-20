@@ -28,6 +28,7 @@ _bucket_v2="${TEST_XDR_PREFIX}marketplace-v2-dist-dev"
 _bucket_xpanse="${TEST_XDR_PREFIX}xpanse-dist-dev"
 _bucket_xsoar_saas="${TEST_XDR_PREFIX}marketplace-saas-dist-dev"
 _bucket_upload="true"
+_force="false"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
 _sdk_ref="${SDK_REF:-master}"
@@ -82,7 +83,7 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -f|--force) _force=true
-    _bucket_upload=""
+    shift
     shift;;
 
   -p|--packs) _packs="$2"
