@@ -84,7 +84,7 @@ def get_threats_outputs(threats, rank: int = 0):
             yield entry
 
 
-def get_agents_outputs(agents, column_to_display: list):
+def get_agents_outputs(agents, column_to_display: list | None = None):
     for agent in agents:
         entry = {
             'ID': agent.get('id'),
@@ -104,10 +104,9 @@ def get_agents_outputs(agents, column_to_display: list):
             'SiteName': agent.get('siteName'),
         }
 
-        for c in column_to_display:
-            if c in agent:
-                entry[c] = agent.get(c)
-
+        for c in set(column_to_display or []).intersection(agent.keys()):
+            entry[c] = agent[c]                
+        
         remove_nulls_from_dictionary(entry)
         yield entry
 
@@ -796,7 +795,7 @@ class Client(BaseClient):
         return data, pagination
 
     def get_accounts_request(self, account_id: str = None):
-        response = self._http_request(method='GET', url_suffix='accounts'/account_id if account_id else 'accounts')
+        response = self._http_request(method='GET', url_suffix=f'accounts/{account_id}' if account_id else 'accounts')
         return response.get('data', {})
 
     def create_power_query_request(self, limit, query, from_date, to_date):
@@ -2806,9 +2805,8 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
             'EventID': event.get('id'),
         })
 
-        for c in column_to_display:
-            if c in event:
-                contents[-1][c] = event.get(c)
+        for c in set(column_to_display).intersection(event.keys()):
+            contents[-1][c] = event[c]
 
         event_standards.append({
             'Type': event.get('eventType'),
