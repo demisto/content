@@ -79,7 +79,7 @@ class RasterizeType(Enum):
     JSON = 'json'
 
 
-def ensure_chrome_running():
+def ensure_chrome_running():  # pragma: no cover
     try:
         command = ['bash', '/start_chrome_headless.sh']
         with open(os.devnull, "w") as fnull:
@@ -92,7 +92,7 @@ def ensure_chrome_running():
 
 
 def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time, full_screen,
-                              include_url):
+                              include_url):  # pragma: no cover
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
 
@@ -115,7 +115,7 @@ def pychrome_screenshot_image(path, width, height, wait_time, max_page_load_time
 
 
 def pychrome_screenshot_pdf(path, width, height, wait_time, max_page_load_time, full_screen,
-                            include_url):
+                            include_url):  # pragma: no cover
     browser = pychrome.Browser(url="http://127.0.0.1:9222")
     tab = browser.new_tab()
 
