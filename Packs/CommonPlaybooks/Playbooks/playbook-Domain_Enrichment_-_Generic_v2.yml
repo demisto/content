@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 370
+          "y": 400
         }
       }
     note: false
@@ -41,10 +41,10 @@ tasks:
     skipunavailable: false
   "16":
     id: "16"
-    taskid: b0ff1fa7-e741-4cb0-8fb6-98929d4d6e7d
+    taskid: 86e8324e-34fa-4726-8cc0-2f61e6de5395
     type: condition
     task:
-      id: b0ff1fa7-e741-4cb0-8fb6-98929d4d6e7d
+      id: 86e8324e-34fa-4726-8cc0-2f61e6de5395
       version: -1
       name: Is there a domain to enrich?
       description: Checks whether the playbook's input contains at least one domain name to enrich.
@@ -66,6 +66,8 @@ tasks:
             value:
               simple: inputs.Domain
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -99,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 1285
+          "y": 1235
         }
       }
     note: false
@@ -111,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 369e9301-a4f9-415f-8c45-902304453296
+    taskid: 7b77b6ff-906f-46cc-8e96-fd9d02778d63
     type: regular
     task:
-      id: 369e9301-a4f9-415f-8c45-902304453296
+      id: 7b77b6ff-906f-46cc-8e96-fd9d02778d63
       version: -1
       name: Get domain category
       description: Gets the category of the domain as found in Cisco Umbrella Investigation records.
@@ -138,7 +140,7 @@ tasks:
       {
         "position": {
           "x": -200,
-          "y": 1100
+          "y": 1060
         }
       }
     note: false
@@ -150,13 +152,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 29cca13b-1b82-4db3-8463-2a4f537546d0
+    taskid: ec9764d9-3eea-44d8-8da7-538766ac0670
     type: condition
     task:
-      id: 29cca13b-1b82-4db3-8463-2a4f537546d0
+      id: ec9764d9-3eea-44d8-8da7-538766ac0670
       version: -1
       name: Is Cisco Umbrella Investigate enabled?
-      description: Checks if there is an active instance of the Cisco Umbrella Investigate integration enabled. enabled.
+      description: Checks if there is an active instance of the Cisco Umbrella Investigate integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -195,6 +197,8 @@ tasks:
                     ignorecase: true
                 accessor: brand
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -230,7 +234,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
+          "x": 320,
           "y": 720
         }
       }
@@ -274,10 +278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: b077e2fc-cf78-4bba-8810-9bebca2cc5f6
+    taskid: 5b429a1c-ec97-4f6a-877b-0e5dbff30e9f
     type: condition
     task:
-      id: b077e2fc-cf78-4bba-8810-9bebca2cc5f6
+      id: 5b429a1c-ec97-4f6a-877b-0e5dbff30e9f
       version: -1
       name: Should use !domain command?
       description: Check whether to run domain reputation command.
@@ -307,8 +311,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 895
+          "x": 320,
+          "y": 855
         }
       }
     note: false
@@ -320,10 +324,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 1cc32acf-ef90-4392-8f3c-9aa33eaa54d9
+    taskid: 6feef606-9d2b-4ce9-8aa7-024b49568b13
     type: regular
     task:
-      id: 1cc32acf-ef90-4392-8f3c-9aa33eaa54d9
+      id: 6feef606-9d2b-4ce9-8aa7-024b49568b13
       version: -1
       name: Check Reputation
       description: Checks the reputation of a domain.
@@ -343,8 +347,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 1100
+          "x": 320,
+          "y": 1060
         }
       }
     note: false
@@ -365,10 +369,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 980,
-        "width": 890,
+        "height": 900,
+        "width": 900,
         "x": -200,
-        "y": 370
+        "y": 400
       }
     }
   }
@@ -395,22 +399,91 @@ inputs:
 outputs:
 - contextPath: Domain
   description: The domain objects.
-  type: unknown
+  type: string
 - contextPath: DBotScore
   description: Indicator, Score, Type, and Vendor.
-  type: unknown
+  type: string
 - contextPath: Domain.Name
   description: Bad domain found.
+  type: string
 - contextPath: Domain.Malicious.Vendor
   description: For malicious domains, the vendor that made the decision.
+  type: string
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
+  type: string
 - contextPath: DBotScore.Type
   description: The indicator type.
+  type: string
 - contextPath: DBotScore.Score
   description: The actual DBot score.
-- contextPath: DBotScore.Reliability
-  description: Reliability of the source providing the intelligence data.
+  type: number
+- contextPath: Domain.SecurityCategories
+  description: The Umbrella security category, or categories, that match this domain
+  type: string
+- contextPath: Domain.ContentCategories
+  description: The Umbrella content category or categories that match this domain
+  type: string
+- contextPath: Domain.Malicious.Description
+  description: For malicious domains, the reason for the vendor to make the decision
+  type: string
+- contextPath: Domain.CreationDate
+  description: The date on which the domain was created.
+  type: string
+- contextPath: Domain.DomainStatus
+  description: The status of the domain.
+  type: string
+- contextPath: Domain.UpdatedDate
+  description: The date on which the domain was last updated.
+  type: string
+- contextPath: Domain.ExpirationDate
+  description: The expiration date of the domain.
+  type: string
+- contextPath: Domain.Umbrella.RiskScore
+  description: The status will be "-1" if the domain is believed to be malicious, "1" if the domain is believed to be benign, "0" if it hasn't been classified yet.
+  type: string
+- contextPath: Domain.Umbrella.SecureRank 
+  description: Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 (suspicious) to 100 (benign). Note, this parameter is deprecated by the API, and will be equal to 0.
+  type: string
+- contextPath: Domain.Umbrella.FirstQueriedTime
+  description: The time when the attribution for this Domain was made.
+  type: string
+- contextPath: Domain.Umbrella.ContentCategories
+  description: The Umbrella content category or categories that match this domain. If none of them match, the return will be blank.
+  type: string
+- contextPath: Domain.Umbrella.MalwareCategories
+  description: The Umbrella security category, or categories, that match this domain or that this domain is associated with. If none match, the return will be blank.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: Domain.Admin.Country
+  description: The country of the domain administrator.
+  type: string
+- contextPath: Domain.Admin.Email
+  description: The email address of the domain administrator.
+  type: string
+- contextPath: Domain.Admin.Name
+  description: The name of the domain administrator.
+  type: string
+- contextPath: Domain.Admin.Phone
+  description: The phone number of the domain administrator.
+  type: string
+- contextPath: Domain.Registrant.Country
+  description: The country of the registrant.
+  type: string
+- contextPath: Domain.Registrant.Email
+  description: The email address of the registrant.
+  type: string
+- contextPath: Domain.Registrant.Name
+  description: The name of the registrant.
+  type: string
+- contextPath: Domain.Registrant.Phone
+  description: The phone number of the registrant.
+  type: string
+- contextPath: Domain.Registrar.Name
+  description: The name of the registrar, such as "GoDaddy".
+  type: string
 tests:
 - Domain Enrichment - Generic v2 - Test
 marketplaces:
