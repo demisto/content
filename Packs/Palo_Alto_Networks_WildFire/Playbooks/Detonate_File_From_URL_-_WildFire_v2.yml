@@ -336,7 +336,7 @@ outputs:
   description: Vendor used to calculate the score.
   type: string
 - contextPath: IP.Address
-  description: IP's relevant to the sample.
+  description: IPs relevant to the sample.
   type: string
 - contextPath: File
   description: The File object.
