@@ -217,7 +217,7 @@ install-packs-in-server-master:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == "true"
+    - if: $TEST_XDR_ENV && $BUCKET_UPLOAD == "true" && $FORCE_BUCKET_UPLOAD == "false"
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "testing"

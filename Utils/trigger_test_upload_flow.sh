@@ -121,12 +121,12 @@ if [ -z "$_ci_token" ]; then
     exit 1
 fi
 
-if [ -n "$_force" ] && [ -z "$_packs" ]; then
+if [ "$_force" == "true" ] && [ -z "$_packs" ]; then
     echo "You must provide a csv list of packs to force upload."
     exit 1
 fi
 
-if [ -n "$_force" ] && [ -n "$_storage_base_path" ]; then
+if [ "$_force" == "true" ] && [ -n "$_storage_base_path" ]; then
     echo "Can not force upload while using a storage base path."
     exit 1
 fi
