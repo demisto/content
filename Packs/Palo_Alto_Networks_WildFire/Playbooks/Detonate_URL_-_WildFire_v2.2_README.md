@@ -51,7 +51,7 @@ This playbook does not use any scripts.
 | File.Malicious.Vendor | For malicious files, the vendor that determined that the file is malicious. | string |
 | File.Name | Filename. | string |
 | File.Malicious.Description | For malicious files, the reason the vendor determined that the file is malicious. | string |
-| DBotScore.Indicator | The indicator we tested. | string |
+| DBotScore.Indicator | The indicator tested. | string |
 | DBotScore.Type | The type of indicator. | string |
 | DBotScore.Vendor | Vendor used to calculate the score. | string |
 | IP.Address | IPs relevant to the sample. | string |
