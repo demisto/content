@@ -12,7 +12,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* WildFire-v2
+WildFire-v2
 
 ### Scripts
 
