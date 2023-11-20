@@ -170,8 +170,11 @@ def http_wait_server():
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
 @pytest.mark.parametrize("r_mode, force_selenium_usage", [(RasterizeMode.WEBDRIVER_ONLY, False),
                                                           (RasterizeMode.WEBDRIVER_ONLY, True),
+                                                          (RasterizeMode.HEADLESS_CLI_ONLY, False),
                                                           (RasterizeMode.HEADLESS_CLI_ONLY, True),
+                                                          (RasterizeMode.WEBDRIVER_PREFERED, False),
                                                           (RasterizeMode.WEBDRIVER_PREFERED, True),
+                                                          (RasterizeMode.HEADLESS_CLI_PREFERED, False),
                                                           (RasterizeMode.HEADLESS_CLI_PREFERED, True),
                                                           ])
 def test_rasterize_url_long_load(r_mode, mocker, http_wait_server, force_selenium_usage, capfd):

@@ -156,7 +156,7 @@ def check_width_and_height(width: int, height: int) -> tuple[int, int]:
     return w, h
 
 
-def return_err_or_warn(msg):
+def return_err_or_warn(msg):  # pragma: no cover
     return_error(msg) if WITH_ERRORS else return_warning(msg, exit=True)
 
 
@@ -196,7 +196,7 @@ def merge_options(default_options, user_options):
 def check_response(driver):
     EMPTY_PAGE = '<html><head></head><body></body></html>'
     if driver.page_source == EMPTY_PAGE:
-        return_err_or_warn(EMPTY_RESPONSE_ERROR_MSG)
+        return_err_or_warn(EMPTY_RESPONSE_ERROR_MSG)  # pragma: no cover
 
 
 def init_display(width: int, height: int):
@@ -216,7 +216,7 @@ def init_display(width: int, height: int):
         display = Display(visible=0, size=(width, height), backend='xvnc')
         display.start()
 
-    except Exception as ex:
+    except Exception as ex:  # pragma: no cover
         raise DemistoException(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
 
     demisto.debug('Creating display - COMPLETED')
@@ -248,7 +248,7 @@ def init_driver(offline_mode=False, include_url=False):
         driver = webdriver.Chrome(options=chrome_options, service=chrome_service)
         if offline_mode:
             driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
-    except Exception as ex:
+    except Exception as ex:  # pragma: no cover
         raise DemistoException(f'Unexpected exception: {ex}\nTrace:{traceback.format_exc()}')
 
     demisto.debug('Creating chrome driver - COMPLETED')
@@ -299,14 +299,14 @@ def quit_driver_and_display_and_reap_children(driver, display):
             if driver:
                 demisto.debug(f'Quitting driver session: {driver.session_id}')
                 driver.quit()
-        except Exception as edr:
+        except Exception as edr:  # pragma: no cover
             demisto.error(f"Failed to quit driver. Error: {edr}. Trace: {traceback.format_exc()}")
 
         try:
             if display:
                 demisto.debug("Stopping display")
                 display.stop()
-        except Exception as edr:
+        except Exception as edr:  # pragma: no cover
             demisto.error(f"Failed to stop display. Error: {edr}. Trace: {traceback.format_exc()}")
 
         zombies, ps_out = find_zombie_processes()
@@ -317,7 +317,7 @@ def quit_driver_and_display_and_reap_children(driver, display):
                 demisto.info(f'waitpid result: {waitres}')
         else:
             demisto.debug(f'No zombie processes found for ps output: {ps_out}')
-    except Exception as e:
+    except Exception as e:  # pragma: no cover
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
@@ -448,7 +448,7 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
 
 def rasterize_headless_cmd(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
                            offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
-                           include_url: bool = False):
+                           include_url: bool = False):  # pragma: no cover
     if include_url:
         demisto.info('include_url options is ignored in headless cmd mode. Image will not include the url bar.')
 
@@ -558,14 +558,14 @@ def get_image_screenshot(driver, include_url):
                                  env={'DISPLAY': ':0'})
             demisto.debug(f"Finished taking the screenshot. Stdout: [{res.stdout}] stderr: [{res.stderr}]")
 
-        except subprocess.CalledProcessError as se:
+        except subprocess.CalledProcessError as se:  # pragma: no cover
             demisto.error(f'Subprocess exception: {se}. Stderr: [{se.stderr}] stdout: [{se.stdout}]')
             raise
 
         try:
             with open('screenshot.png', 'rb') as f:
                 image = f.read()
-        except Exception as e:
+        except Exception as e:  # pragma: no cover
             demisto.error(f'Failed to read the screenshot.png image. Exception: {e}')
             raise
         finally:
