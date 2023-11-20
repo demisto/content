@@ -27,92 +27,92 @@ script:
   commands:
   - arguments:
     - defaultValue: root
-      description: Filter by address (ip or domain)
+      description: Filter by address (ip or domain).
       name: address
-    - description: Filter by address name
+    - description: Filter by address name.
       name: name
     deprecated: true
     description: Deprecated. Use `fortigate-list-firewall-address-ipv4s` instead. Get all address objects from your firewall.
     name: fortigate-get-addresses
     outputs:
     - contextPath: Fortigate.Address.Name
-      description: Address name
+      description: Address name.
       type: string
     - contextPath: Fortigate.Address.Subnet
-      description: Address subnet
+      description: Address subnet.
       type: string
     - contextPath: Fortigate.Address.StartIP
-      description: Address object start IP address
+      description: Address object start IP address.
       type: string
     - contextPath: Fortigate.Address.EndIP
-      description: Address object end IP address
+      description: Address object end IP address.
       type: string
   - arguments:
-    - description: Filter by group name
+    - description: Filter by group name.
       name: name
     deprecated: true
-    description: Deprecated. Use `fortigate-list-firewall-service-groups` instead. Get information about FortiGate service groups
+    description: Deprecated. Use `fortigate-list-firewall-service-groups` instead. Get information about FortiGate service groups.
     name: fortigate-get-service-groups
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
-      description: Service Group name
+      description: Service Group name.
       type: string
     - contextPath: Fortigate.ServiceGroup.Member.Name
-      description: Service Group member name
+      description: Service Group member name.
       type: string
   - arguments:
-    - description: Group name to update
+    - description: Group name to update.
       name: groupName
       required: true
-    - description: Service name to update from the group (If providing data argument value does not matter)
+    - description: Service name to update from the group (If providing data argument value does not matter).
       name: serviceName
       required: true
     - auto: PREDEFINED
-      description: Action to take on the service
+      description: Action to take on the service.
       name: action
       predefined:
       - add
       - remove
       required: true
     deprecated: true
-    description: Deprecated. Use `fortigate-update-firewall-service-group` instead. Update a FortiGate service group
+    description: Deprecated. Use `fortigate-update-firewall-service-group` instead. Update a FortiGate service group.
     name: fortigate-update-service-group
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
-      description: Service group name
+      description: Service group name.
       type: string
     - contextPath: Fortigate.ServiceGroup.Service.Name
-      description: Service name
+      description: Service name.
       type: string
   - arguments:
-    - description: Group name of the group you would like to delete
+    - description: Group name of the group you would like to delete.
       name: groupName
       required: true
     deprecated: true
-    description: Deprecated. Use `fortigate-delete-firewall-service-group` instead. Delete a service group from FortiGate
+    description: Deprecated. Use `fortigate-delete-firewall-service-group` instead. Delete a service group from FortiGate.
     name: fortigate-delete-service-group
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
-      description: Service group name
+      description: Service group name.
       type: string
     - contextPath: Fortigate.ServiceGroup.Deleted
-      description: Was service group deleted
+      description: Was service group deleted.
       type: boolean
   - arguments:
     - description: Service name
       name: serviceName
     deprecated: true
-    description: Deprecated. Use `fortigate-list-firewall-services` instead. Get information about a service from FortiGate Firewall
+    description: Deprecated. Use `fortigate-list-firewall-services` instead. Get information about a service from FortiGate Firewall.
     name: fortigate-get-firewall-service
     outputs:
     - contextPath: Fortigate.Service.Name
-      description: Service name
+      description: Service name.
       type: string
     - contextPath: Fortigate.Service.Ports.TCP
-      description: TCP Port range included for the service
+      description: TCP Port range included for the service.
       type: string
     - contextPath: Fortigate.Service.Ports.UDP
-      description: UDP Port range included for the service
+      description: UDP Port range included for the service.
       type: string
   - arguments:
     - description: Policy name
@@ -120,45 +120,45 @@ script:
     - description: Policy ID
       name: policyID
     deprecated: true
-    description: Deprecated. Use `fortigate-list-firewall-policies` instead. Get information about a firewall policy on FortiGate
+    description: Deprecated. Use `fortigate-list-firewall-policies` instead. Get information about a firewall policy on FortiGate.
     name: fortigate-get-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: string
     - contextPath: Fortigate.Policy.ID
-      description: Policy ID
+      description: Policy ID.
       type: number
     - contextPath: Fortigate.Policy.Description
-      description: Policy description
+      description: Policy description.
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the policy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled).
       type: string
     - contextPath: Fortigate.Policy.Source
-      description: Source address
+      description: Source address.
       type: string
     - contextPath: Fortigate.Policy.Destination
-      description: Destination address
+      description: Destination address.
       type: string
     - contextPath: Fortigate.Policy.Service
-      description: Service for the policy (for example HTTP)
+      description: Service for the policy (for example HTTP).
       type: string
     - contextPath: Fortigate.Policy.Action
-      description: Policy action (Allow, Block)
+      description: Policy action (Allow, Block).
       type: string
     - contextPath: Fortigate.Policy.Log
-      description: Does the policy log the traffic or not
+      description: Does the policy log the traffic or not.
       type: string
     - contextPath: Fortigate.Policy.Security
-      description: Policy attached security profile
+      description: Policy attached security profile.
       type: string
   - arguments:
-    - description: Policy ID
+    - description: Policy ID.
       name: policyID
       required: true
     - auto: PREDEFINED
-      description: Field parameter to update
+      description: Field parameter to update.
       name: field
       predefined:
       - description
@@ -170,7 +170,7 @@ script:
       - log
       - nat
       required: true
-    - description: Value of field parameter to update
+    - description: Value of field parameter to update.
       name: value
       required: true
     - auto: PREDEFINED
@@ -186,60 +186,60 @@ script:
       - add
       - remove
     deprecated: true
-    description: Deprecated. Use `fortigate-update-firewall-policy` instead. Update a firewall policy on FortiGate
+    description: Deprecated. Use `fortigate-update-firewall-policy` instead. Update a firewall policy on FortiGate.
     execution: true
     name: fortigate-update-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: string
     - contextPath: Fortigate.Policy.ID
-      description: Policy ID
+      description: Policy ID.
       type: number
     - contextPath: Fortigate.Policy.Description
-      description: Policy description
+      description: Policy description.
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the policy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled).
       type: string
     - contextPath: Fortigate.Policy.Source
-      description: Source address
+      description: Source address.
       type: string
     - contextPath: Fortigate.Policy.Destination
-      description: Destination address
+      description: Destination address.
       type: string
     - contextPath: Fortigate.Policy.Service
-      description: Service for the policy (for example HTTP)
+      description: Service for the policy (for example HTTP).
       type: string
     - contextPath: Fortigate.Policy.Action
-      description: Policy action (Allow, Block)
+      description: Policy action (Allow, Block).
       type: string
     - contextPath: Fortigate.Policy.Log
-      description: Does the policy log the traffic or not
+      description: Does the policy log the traffic or not.
       type: boolean
   - arguments:
-    - description: Policy name
+    - description: Policy name.
       name: policyName
       required: true
-    - description: Description for the policy
+    - description: Description for the policy.
       name: description
-    - description: 'Source interface  (examples : port1, port2 or port3)'
+    - description: 'Source interface  (examples : port1, port2 or port3).'
       name: sourceIntf
       required: true
-    - description: 'Destination interface (examples : port1, port2 or port3)'
+    - description: 'Destination interface (examples : port1, port2 or port3).'
       name: dstIntf
       required: true
-    - description: 'Source IP address, range or domain (examples : all, update.microsoft.com)'
+    - description: 'Source IP address, range or domain (examples : all, update.microsoft.com).'
       name: source
       required: true
-    - description: 'Destination IP address, range or domain (examples : all, update.microsoft.com)'
+    - description: 'Destination IP address, range or domain (examples : all, update.microsoft.com).'
       name: destination
       required: true
-    - description: Service for the policy (for example HTTP)
+    - description: Service for the policy (for example HTTP).
       name: service
       required: true
     - auto: PREDEFINED
-      description: Action to take
+      description: Action to take.
       name: action
       predefined:
       - accept
@@ -247,14 +247,14 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: enable
-      description: policy status
+      description: policy status.
       name: status
       predefined:
       - enable
       - disable
     - auto: PREDEFINED
       defaultValue: enable
-      description: Will the policy log the traffic or not
+      description: Will the policy log the traffic or not.
       name: log
       predefined:
       - all
@@ -262,161 +262,161 @@ script:
       - disable
     - auto: PREDEFINED
       defaultValue: enable
-      description: enable/disable NAT
+      description: enable/disable NAT.
       name: nat
       predefined:
       - enable
       - disable
     deprecated: true
-    description: Deprecated. Use `fortigate-create-firewall-policy` instead. Create a firewall policy (rule) on FortiGate
+    description: Deprecated. Use `fortigate-create-firewall-policy` instead. Create a firewall policy (rule) on FortiGate.
     execution: true
     name: fortigate-create-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: string
     - contextPath: Fortigate.Policy.Description
-      description: Policy description
+      description: Policy description.
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the policy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled).
       type: string
     - contextPath: Fortigate.Policy.Source.Address
-      description: Source address
+      description: Source address.
       type: string
     - contextPath: Fortigate.Policy.Destination.Address
-      description: Destination address
+      description: Destination address.
       type: string
     - contextPath: Fortigate.Policy.Service
-      description: Service for the policy (for example HTTP)
+      description: Service for the policy (for example HTTP).
       type: string
     - contextPath: Fortigate.Policy.Action
-      description: Policy action (Allow, Block)
+      description: Policy action (Allow, Block).
       type: string
     - contextPath: Fortigate.Policy.Log
-      description: Does the policy log the traffic or not
+      description: Does the policy log the traffic or not.
       type: boolean
     - contextPath: Fortigate.Policy.Source.Intf
-      description: Source interface
+      description: Source interface.
       type: string
     - contextPath: Fortigate.Policy.Destination.Intf
-      description: Destination interface
+      description: Destination interface.
       type: string
     - contextPath: Fortigate.Policy.NAT
-      description: Policy NAT
+      description: Policy NAT.
       type: string
   - arguments:
-    - description: Policy ID
+    - description: Policy ID.
       name: policyID
       required: true
     - auto: PREDEFINED
-      description: Position for the policy (before or after)
+      description: Position for the policy (before or after).
       name: position
       predefined:
       - before
       - after
       required: true
-    - description: The ID of the policy being used as a positional anchor
+    - description: The ID of the policy being used as a positional anchor.
       name: neighbor
       required: true
     deprecated: true
-    description: Deprecated. Use `fortigate-move-firewall-policy` instead. Move a firewall policy rule to a different position
+    description: Deprecated. Use `fortigate-move-firewall-policy` instead. Move a firewall policy rule to a different position.
     name: fortigate-move-policy
     outputs:
     - contextPath: Fortigate.Policy.ID
-      description: Policy ID
+      description: Policy ID.
       type: number
     - contextPath: Fortigate.Policy.Moved
-      description: Was policy moved successfully
+      description: Was policy moved successfully.
       type: boolean
   - arguments:
-    - description: Policy ID
+    - description: Policy ID.
       name: policyID
       required: true
     deprecated: true
-    description: Deprecated. Use `fortigate-delete-firewall-policy` instead. Delete a policy from FortiGate firewall
+    description: Deprecated. Use `fortigate-delete-firewall-policy` instead. Delete a policy from FortiGate firewall.
     execution: true
     name: fortigate-delete-policy
     outputs:
     - contextPath: Fortigate.Policy.ID
-      description: Policy ID
+      description: Policy ID.
       type: number
     - contextPath: Fortigate.Policy.Deleted
-      description: Was policy deleted successfully
+      description: Was policy deleted successfully.
       type: boolean
   - arguments:
-    - description: Filter by group name
+    - description: Filter by group name.
       name: groupName
     deprecated: true
-    description: Deprecated. Use `fortigate-list-firewall-address-ipv4-groups` instead. Get information about address groups from FortiGate
+    description: Deprecated. Use `fortigate-list-firewall-address-ipv4-groups` instead. Get information about address groups from FortiGate.
     name: fortigate-get-address-groups
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
-      description: Address Group name
+      description: Address Group name.
       type: string
     - contextPath: Fortigate.AddressGroup.Member.Name
-      description: Address Group member name
+      description: Address Group member name.
       type: string
     - contextPath: Fortigate.AddressGroup.UUID
-      description: Address Group UUID
+      description: Address Group UUID.
       type: string
   - arguments:
-    - description: Group name
+    - description: Group name.
       name: groupName
       required: true
-    - description: An address to add or remove from the group (If providing data argument, value does not matter)
+    - description: An address to add or remove from the group (If providing data argument, value does not matter).
       name: address
       required: true
     - auto: PREDEFINED
-      description: Action to take on the service
+      description: Action to take on the service.
       name: action
       predefined:
       - add
       - remove
       required: true
     deprecated: true
-    description: Deprecated. Use `fortigate-update-firewall-address-ipv4-group` instead. Update an address group on FortiGate firewall
+    description: Deprecated. Use `fortigate-update-firewall-address-ipv4-group` instead. Update an address group on FortiGate firewall.
     name: fortigate-update-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
-      description: Address group name
+      description: Address group name.
       type: string
     - contextPath: Fortigate.AddressGroup.Address.Name
-      description: Address name
+      description: Address name.
       type: string
     - contextPath: Fortigate.AddressGroup.UUID
-      description: Address group UUID
+      description: Address group UUID.
       type: Unknown
   - arguments:
-    - description: Group name
+    - description: Group name.
       name: groupName
       required: true
-    - description: Address member to add to the group
+    - description: Address member to add to the group.
       name: address
       required: true
     deprecated: true
-    description: Deprecated. Use `fortigate-create-firewall-address-ipv4-group` instead. Create an address group in FortiGate firewall
+    description: Deprecated. Use `fortigate-create-firewall-address-ipv4-group` instead. Create an address group in FortiGate firewall.
     name: fortigate-create-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
-      description: Address group name
+      description: Address group name.
       type: string
     - contextPath: Fortigate.AddressGroup.Address
-      description: Address group member address
+      description: Address group member address.
       type: string
   - arguments:
-    - description: Address group name
+    - description: Address group name.
       name: name
       required: true
     deprecated: true
-    description: Deprecated. Use `fortigate-delete-firewall-address-ipv4-group` instead. Delete an address group from FortiGate firewall
+    description: Deprecated. Use `fortigate-delete-firewall-address-ipv4-group` instead. Delete an address group from FortiGate firewall.
     name: fortigate-delete-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
-      description: Address group name
+      description: Address group name.
       type: string
     - contextPath: Fortigate.AddressGroup.Deleted
-      description: Was address group deleted
+      description: Was address group deleted.
       type: boolean
   - description: Deprecated. Use `fortigate-list-banned-ips` instead. Returns a list of banned IP addresses.
     deprecated: true
