@@ -7,6 +7,7 @@
             "dataset": "hello_world_raw",
             "tenant_timezone": "UTC",
             "event_data": {
+                "id": 1,
                 "created_time": "2023-10-21T03:42:05Z",
                 "description": "This is test description 1",
                 "alert_status": "Pending",
@@ -22,6 +23,8 @@
             },
             "expected_values": {
                 "_time": "Oct 21st 2023 03:42:05",
+                "xdm.event.id": "1",
+                "xdm.source.user.identifier": "uuid",
                 "xdm.event.description": "This is test description 1",
                 "xdm.network.protocol_layers": ["UDP"],
                 "xdm.target.port": 22,
