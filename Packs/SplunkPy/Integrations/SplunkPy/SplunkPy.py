@@ -340,7 +340,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, search_offset)
     fetch_query = build_fetch_query(params)
     last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
-    if second_time_pagination := last_run_data.get('second_time_pagination'):
+    if late_indexed_pagination := last_run_data.get('late_indexed_pagination'):
         # code for additional pagination fetch here
         window = f'{kwargs_oneshot.get("earliest_time")}-{kwargs_oneshot.get("latest_time")}'
         demisto.debug(f'[SplunkPy] additional fetch for the window {window}')
@@ -423,11 +423,11 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     
     # Need to fetch again this "window" to be sure no "late" indexed events are missed
     if num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query:
-        new_last_run['second_time_pagination'] = True
+        new_last_run['late_indexed_pagination'] = True
     # If we are in the process of checking late indexed events, and len(fetch_incidents) == FETCH_LIMIT,
     # that means we need to continue the process of checking late indexed events
-    if len(incidents) == FETCH_LIMIT and second_time_pagination:
-         new_last_run['second_time_pagination'] = True
+    if len(incidents) == FETCH_LIMIT and late_indexed_pagination:
+         new_last_run['late_indexed_pagination'] = True
     demisto.debug(f'SplunkPy - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}')
 
     last_run_data.update(new_last_run)

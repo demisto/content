@@ -1,3 +1,4 @@
+from more_itertools import side_effect
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -10,7 +11,7 @@ from splunklib.binding import AuthenticationError
 from splunklib import client
 from splunklib import results
 import SplunkPy as splunk
-
+from pytest_mock import MockerFixture
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
@@ -560,9 +561,38 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     expected_output = f'{START_OUTPUT}{expected_output}'
     assert output == expected_output
 
-# If second_time_pagination is True, then we exclude the last fetched ids (check by using fetch query)
+# If late_indexed_pagination is True, then we exclude the last fetched ids (check by using fetch query),
+# and kwargs_oneshot['offset'] == 0
+def test_fetch_late_indexed_pagination(mocker: MockerFixture):
+    updated_notable = {'status': '5', 'event_id': 'id'}
+
+    class Jobs:
+        def __init__(self):
+             self.oneshot = lambda x, **kwargs: updated_notable
+
+    class Service:
+        def __init__(self):
+            self.jobs = Jobs()
+
+    from SplunkPy import UserMappingObject
+    mocker.patch.object(demisto, 'setLastRun')
+    mock_last_run = {'time': '2018-10-24T14:13:20', 'late_indexed_pagination': True,
+                     'found_incidents_ids': {'1234': 1700497516, '5678': 1700497516}}
+    mock_params = {'fetchQuery': 'something'}
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    mocker.patch('splunklib.results.JSONResultsReader', return_value=[updated_notable])
+    service = Service()
+    oneshot_mocker = mocker.patch.object(service.jobs, 'oneshot', side_effect=service.jobs.oneshot)
+    mapper = UserMappingObject(service, False)
+    splunk.fetch_incidents(service, mapper, 'from_xsoar', 'from_splunk')
+    assert oneshot_mocker.call_args_list[0][0][0] == 'something | where not event_id in (1234,5678)'
+    assert oneshot_mocker.call_args_list[0][1]['offset'] == 0
+
 # If fetched incidents is notable, then take the event_id, else the custom ID
-# 
+# If (num_of_dropped == FETCH_LIMIT and '`notable`' in fetch_query), then late_indexed_pagination should be set to True
+# If (len(incidents) == FETCH_LIMIT and late_indexed_pagination), then late_indexed_pagination should be set to True
+
 
 def test_fetch_incidents(mocker):
     """
