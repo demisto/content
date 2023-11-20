@@ -560,6 +560,9 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     expected_output = f'{START_OUTPUT}{expected_output}'
     assert output == expected_output
 
+# If second_time_pagination is True, then we exclude the last fetched ids (check by using fetch query)
+# If fetched incidents is notable, then take the event_id, else the custom ID
+# 
 
 def test_fetch_incidents(mocker):
     """
