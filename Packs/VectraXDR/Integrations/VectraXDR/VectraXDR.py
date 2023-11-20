@@ -664,7 +664,7 @@ def validate_urgency_score(urgency_score: str, score_name: str) -> Optional[int]
         ValueError: If the urgency score is outside the valid range.
     """
     score = arg_to_number(urgency_score, arg_name=score_name)
-    if score < MIN_URGENCY_SCORE or score > MAX_URGENCY_SCORE:  # type: ignore
+    if not MIN_URGENCY_SCORE <= score <= MAX_URGENCY_SCORE:  # type: ignore
         raise ValueError(f"Please provide a valid {score_name} between 0 and 100.")
     return score
 
@@ -693,7 +693,7 @@ def validate_configuration_parameters(params: Dict[str, Any]):
         raise ValueError(ERRORS['REQUIRED_ARGUMENT'].format('Max Fetch'))
     # validate max_fetch
     max_fetch = arg_to_number(max_fetch, arg_name='Max Fetch', required=True)
-    if max_fetch > 200 or max_fetch < 1:  # type: ignore
+    if not 1 <= max_fetch <= 200:  # type: ignore
         raise ValueError(ERRORS['INVALID_MAX_FETCH'].format(max_fetch))
     # validate first_fetch parameter
     arg_to_datetime(fetch_time, arg_name='first_fetch', required=True)
@@ -763,7 +763,7 @@ def validate_entity_list_command_args(args: Dict):
 
     validate_positive_integer_arg(page, arg_name='page')
     validate_positive_integer_arg(page_size, arg_name='page_size')
-    if int(page_size) < 1 or int(page_size) > ENTITY_AND_DETECTION_MAX_PAGE_SIZE:
+    if not 1 <= int(page_size) <= ENTITY_AND_DETECTION_MAX_PAGE_SIZE:
         raise ValueError(ERRORS['INVALID_PAGE_SIZE'])
 
 
@@ -798,7 +798,7 @@ def validate_list_entity_detections_args(args: Dict[Any, Any]):
 
     validate_positive_integer_arg(value=page, arg_name='page')
     validate_positive_integer_arg(value=page_size, arg_name='page_size')
-    if int(page_size) < 1 or int(page_size) > ENTITY_AND_DETECTION_MAX_PAGE_SIZE:
+    if not 1 <= int(page_size) <= ENTITY_AND_DETECTION_MAX_PAGE_SIZE:
         raise ValueError(ERRORS['INVALID_PAGE_SIZE'])
 
 
@@ -829,7 +829,7 @@ def validate_detection_describe_args(args: Dict[Any, Any]):
 
     validate_positive_integer_arg(value=page, arg_name='page')
     validate_positive_integer_arg(value=page_size, arg_name='page_size')
-    if int(page_size) < 1 or int(page_size) > ENTITY_AND_DETECTION_MAX_PAGE_SIZE:
+    if not 1 <= int(page_size) <= ENTITY_AND_DETECTION_MAX_PAGE_SIZE:
         raise ValueError(ERRORS['INVALID_PAGE_SIZE'])
 
 
@@ -1111,15 +1111,13 @@ def validate_group_list_command_args(args: Dict[Any, Any]):
         ValueError: If any of the arguments are invalid.
     """
     group_type = args.get('group_type') or ''
-    if group_type:
+    if group_type and isinstance(group_type, str):
         group_type = group_type.lower()
-    # Validate group_type value
-    if group_type and isinstance(group_type, str) and group_type.lower() not in VALID_GROUP_TYPE:
-        raise ValueError(ERRORS['INVALID_COMMAND_ARG_VALUE'].format('group_type', ', '.join(VALID_GROUP_TYPE)))
+        # Validate group_type value
+        if group_type not in VALID_GROUP_TYPE:
+            raise ValueError(ERRORS['INVALID_COMMAND_ARG_VALUE'].format('group_type', ', '.join(VALID_GROUP_TYPE)))
 
     importance = args.get('importance') or ''
-    if importance:
-        importance = importance.lower()
     # Validate importance value
     if importance and isinstance(importance, str) and importance.lower() not in VALID_IMPORTANCE_VALUE:
         raise ValueError(ERRORS['INVALID_COMMAND_ARG_VALUE'].format('importance', ', '.join(VALID_IMPORTANCE_VALUE)))
@@ -1140,8 +1138,7 @@ def validate_group_list_command_args(args: Dict[Any, Any]):
         raise ValueError(ERRORS['INVALID_SUPPORT_FOR_ARG'].format('group_type', 'host', 'host_ids'))
     for host_id in host_ids:
         host_id = arg_to_number(host_id, 'host_ids')
-        if host_id < 1:
-            raise ValueError(ERRORS['INVALID_INTEGER_VALUE'].format('host_ids'))
+        validate_positive_integer_arg(host_id, arg_name="host_ids")
 
     # Validate host_names value
     host_names = argToList(args.get('host_names') or '')
@@ -1439,19 +1436,18 @@ def get_list_entity_detections_command_hr(detections: Dict[Any, Any], page: Opti
         # Convert ID into clickable URL
         detection['id'] = f"[{detection['id']}]({detection['url']})"
         account_url = None
+        host_url = None
         if detection.get('src_account'):
             account_url = f"[{detection.get('src_account').get('name')}]" \
                           f"({trim_api_version(detection.get('src_account').get('url'))})"
         if detection.get('src_host'):
             host_url = f"[{detection.get('src_host').get('name')}]" \
                        f"({trim_api_version(detection.get('src_host').get('url'))})"
-        else:
-            host_url = None
         summary = detection.get('summary')
         num_events = 0
         # For counting number of events
-        if summary and summary.get('num_events'):
-            num_events = int(summary.get('num_events'))
+        if summary and isinstance(summary, dict):
+            num_events = int(summary.get('num_events') or 0)
 
         hr_dict.append({
             'ID': detection.get('id'),
@@ -3155,7 +3151,7 @@ def update_remote_system_command(client: VectraClient, args: Dict) -> str:
             if len(close_notes) > MAX_OUTGOING_NOTE_LIMIT:
                 demisto.info(
                     f"Skipping outgoing mirroring for closing notes with XSOAR Incident ID {xsoar_incident_id}, "
-                    "because the note length exceeds 8000 characters.")
+                    f"because the note length exceeds {MAX_OUTGOING_NOTE_LIMIT} characters.")
             else:
                 closing_note = f'[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n\n' \
                                f'Close Reason: {close_reason}\n\n' \

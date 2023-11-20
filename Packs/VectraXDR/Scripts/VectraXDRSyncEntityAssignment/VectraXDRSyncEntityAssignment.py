@@ -43,7 +43,7 @@ def map_and_update_entity_assignments(data: Dict[str, Any], mapper: str, mapper_
         if "Assignment" in key:
             # Remove whitespace and convert the key to lowercase to use as a dictionary key.
             new_key = "".join(key.lower().split())
-            updated_mapped_data[new_key] = mapped_data[key]
+            updated_mapped_data[new_key] = value
     # If there are fields to update, call the 'setIncident' command to update the incident with the latest data.
     demisto.executeCommand("setIncident", updated_mapped_data)
     return CommandResults(readable_output="Assignments have been synchronized successfully.")
@@ -73,8 +73,6 @@ def main():
                         assignment[field] = {"username": ""}
                     elif field == "outcome":
                         assignment[field] = {"title": ""}
-        elif hr == "##### Couldn't find any matching assignments for provided filters.":
-            assignment = EMPTY_ASSIGNMENT
         else:
             assignment = EMPTY_ASSIGNMENT
         # Prepare entity json

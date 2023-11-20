@@ -11,13 +11,13 @@ def main():
         notes = demisto.incident().get('CustomFields', {}).get('vectraxdrentitynotes', [])
         if not bool(notes):
             return_results(
-                {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': '', 'Note': False})
+                {'ContentsFormat': EntryFormat.MARKDOWN, 'Type': EntryType.NOTE, 'Contents': '', 'Note': False})
         else:
             for note in notes:
                 note = json.loads(note)
                 if note:
                     return_results(
-                        {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'],
+                        {'ContentsFormat': EntryFormat.MARKDOWN, 'Type': EntryType.NOTE,
                          'Contents': "[Fetched From Vectra]\n"
                                      + f"Added By: {note.get('created_by')}\n"
                                      + f"Added At: {note.get('date_created')} UTC\n"

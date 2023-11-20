@@ -41,7 +41,7 @@ def map_and_update_entity_detections(data: Dict[str, Any], mapper: str, mapper_t
         if key == "Vectra XDR Entity Detection Details":
             # Remove whitespace and convert the key to lowercase to use as a dictionary key.
             new_key = "".join(key.lower().split())
-            updated_mapped_data[new_key] = mapped_data[key]
+            updated_mapped_data[new_key] = value
     # If there are fields to update, call the 'setIncident' command to update the incident with the latest data.
     demisto.executeCommand("setIncident", updated_mapped_data)
     return CommandResults(readable_output="Detections have been synchronized successfully.")
