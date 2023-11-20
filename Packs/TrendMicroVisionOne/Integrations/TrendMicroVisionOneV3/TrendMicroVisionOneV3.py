@@ -16,11 +16,9 @@ from pytmv1 import (
     BaseTaskResp,
     BlockListTaskResp,
     CollectFileTaskResp,
-    EmailActivity,
     EmailMessageIdTask,
     EmailMessageTaskResp,
     EmailMessageUIdTask,
-    EndpointActivity,
     EndpointTask,
     EndpointTaskResp,
     ExceptionObject,
@@ -209,12 +207,8 @@ CHECK_TASK_STATUS_COMMAND = "trendmicro-visionone-check-task-status"
 GET_ENDPOINT_INFO_COMMAND = "trendmicro-visionone-get-endpoint-info"
 GET_EMAIL_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-email-activity-data"
 GET_EMAIL_ACTIVITY_COUNT_COMMAND = "trendmicro-visionone-get-email-activity-count"
-GET_ALL_EMAIL_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-all-email-activity-data"
 GET_ENDPOINT_ACTIVITY_DATA_COMMAND = "trendmicro-visionone-get-endpoint-activity-data"
 GET_ENDPOINT_ACTIVITY_COUNT_COMMAND = "trendmicro-visionone-get-endpoint-activity-count"
-GET_ALL_ENDPOINT_ACTIVITY_DATA_COMMAND = (
-    "trendmicro-visionone-get-all-endpoint-activity-data"
-)
 GET_ALERT_DETAILS_COMMAND = "trendmicro-visionone-get-alert-details"
 UPDATE_STATUS_COMMAND = "trendmicro-visionone-update-status"
 ADD_NOTE_COMMAND = "trendmicro-visionone-add-note"
@@ -254,9 +248,7 @@ table_name = {
     FILE_ENTRY_TO_SANDBOX_COMMAND: TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX,
     SANDBOX_SUBMISSION_POLLING_COMMAND: TABLE_SANDBOX_SUBMISSION_POLLING,
     GET_ENDPOINT_ACTIVITY_DATA_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_DATA,
-    GET_ALL_EMAIL_ACTIVITY_DATA_COMMAND: TABLE_GET_ALL_EMAIL_ACTIVITY_DATA,
     GET_ENDPOINT_ACTIVITY_COUNT_COMMAND: TABLE_GET_ENDPOINT_ACTIVITY_COUNT,
-    GET_ALL_ENDPOINT_ACTIVITY_DATA_COMMAND: TABLE_GET_ALL_ENDPOINT_ACTIVITY_DATA,
     DOWNLOAD_INVESTIGATION_PACKAGE_COMMAND: TABLE_DOWNLOAD_INVESTIGATION_PACKAGE,
     DOWNLOAD_SUSPICIOUS_OBJECT_LIST_COMMAND: TABLE_DOWNLOAD_SUSPICIOUS_OBJECT_LIST,
     DOWNLOAD_COLLECTED_FILE_COMMAND: TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION,
@@ -850,7 +842,6 @@ def get_endpoint_info(
         query_op = pytmv1.QueryOp.OR
     elif query_op.lower() == "and":
         query_op = pytmv1.QueryOp.AND
-
     # Make rest call
     try:
         v1_client.consume_endpoint_data(
@@ -861,15 +852,12 @@ def get_endpoint_info(
     except Exception as e:
         raise RuntimeError(f"Something went wrong while fetching endpoint data: {e}")
     # Load json objects to list
-    endpoint_data_resp: List[Dict[str, Any]] = []
     for endpoint in new_endpoint_data:
-        endpoint_data_resp.append(endpoint.dict())
+        message.append(endpoint.dict())
     # Check if endpoint(s) returned
-    if len(endpoint_data_resp) == 0:
+    if len(message) == 0:
         err_msg = f"No endpoint found. Please check endpoint {endpoint_list}."
         return_error(message=err_msg)
-    else:
-        message = endpoint_data_resp
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -880,72 +868,6 @@ def get_endpoint_info(
         ),
         outputs_prefix="VisionOne.Endpoint_Info",
         outputs_key_field="endpoint_name",
-        outputs=message,
-    )
-
-
-def get_all_endpoint_activity_data(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
-    """
-    Displays search results from the Endpoint Activity Data source
-    in a paginated list and sends the result to demisto war room.
-
-    :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
-
-    :type args: ``dict``
-    :param args: args object to fetch the argument data.
-
-    :return: sends data to demisto war room.
-    :rtype: ``dict`
-    """
-    # Optional Params
-    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
-    start = args.get(START, EMPTY_STRING)
-    end = args.get(END, EMPTY_STRING)
-    top = args.get(TOP, EMPTY_STRING)
-    select = args.get(SELECT, EMPTY_STRING).split(",")
-    query_op = args.get(QUERY_OP, EMPTY_STRING)
-    # Choose QueryOp Enum based on user choice
-    if query_op.lower() == "or":
-        query_op = pytmv1.QueryOp.OR
-    elif query_op.lower() == "and":
-        query_op = pytmv1.QueryOp.AND
-    # List to contain endpoint activity data
-    endpoint_activity_data: List[EndpointActivity] = []
-    message: List[Any] = []
-    # Make rest call
-    try:
-        v1_client.consume_endpoint_activity_data(
-            lambda consumer: endpoint_activity_data.append(consumer),
-            start_time=start,
-            end_time=end,
-            top=top,
-            select=select,
-            op=query_op,
-            **fields,
-        )
-    except Exception as err:
-        return_error(f"Something went wrong. {err}")
-
-    # Check if endpoint activity data is returned
-    if len(endpoint_activity_data) == 0:
-        err_msg = "No endpoint data found. Please check queries provided."
-        return_error(message=err_msg)
-    # Parse endpoint activity data to message list and send to war room
-    for activity in endpoint_activity_data:
-        message.append(activity.dict())
-
-    return CommandResults(
-        readable_output=tableToMarkdown(
-            table_name[GET_ALL_ENDPOINT_ACTIVITY_DATA_COMMAND],
-            message,
-            headerTransform=string_to_table_header,
-            removeNull=True,
-        ),
-        outputs_prefix="VisionOne.All_Endpoint_Activity_Data",
-        outputs_key_field="endpoint_host_name",
         outputs=message,
     )
 
@@ -980,6 +902,12 @@ def get_endpoint_activity_data(
         query_op = pytmv1.QueryOp.AND
     # List to contain endpoint activity data
     message: List[Any] = []
+    # Get the activity count
+    count_obj = get_endpoint_activity_count(v1_client, args)
+    activity_count = int(count_obj.outputs.get("endpoint_activity_count", EMPTY_STRING))  # type: ignore
+    # If activity count is greater than 5k, throw error else return response
+    if activity_count > 5000:
+        return_error("Please refine search, this query returns more than 5K results.")
     # Make rest call
     resp = v1_client.get_endpoint_activity_data(
         start_time=start,
@@ -1052,70 +980,6 @@ def get_endpoint_activity_count(
     )
 
 
-def get_all_email_activity_data(
-    v1_client: pytmv1.Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
-    """
-    Displays search results from the Email Activity Data source
-    in a paginated list and sends the result to demisto war room.
-
-    :type client: ``Client``
-    :param client: client object used to initialize pytmv1 client.
-
-    :type args: ``dict``
-    :param args: args object to fetch the argument data.
-
-    :return: sends data to demisto war room.
-    :rtype: ``dict`
-    """
-    # Optional Params
-    fields = json.loads(args.get(FIELDS, EMPTY_STRING))
-    start = args.get(START, EMPTY_STRING)
-    end = args.get(END, EMPTY_STRING)
-    top = args.get(TOP, EMPTY_STRING)
-    select = args.get(SELECT, EMPTY_STRING).split(",")
-    query_op = args.get(QUERY_OP, EMPTY_STRING)
-    # Choose QueryOp Enum based on user choice
-    if query_op.lower() == "or":
-        query_op = pytmv1.QueryOp.OR
-    elif query_op.lower() == "and":
-        query_op = pytmv1.QueryOp.AND
-    # List to populate email activity data
-    email_activity_data: List[EmailActivity] = []
-    message: List[Any] = []
-    # Make rest call
-    try:
-        v1_client.consume_email_activity_data(
-            lambda consumer: email_activity_data.append(consumer),
-            start_time=start,
-            end_time=end,
-            top=top,
-            select=select,
-            op=query_op,
-            **fields,
-        )
-    except Exception as err:
-        return_error(f"Something went wrong. {err}")
-    # Check if an error occurred
-    if len(email_activity_data) == 0:
-        err_msg = "No email activity data found. Please check queries provided."
-        return_error(message=err_msg)
-    for activity in email_activity_data:
-        message.append(activity.dict())
-
-    return CommandResults(
-        readable_output=tableToMarkdown(
-            table_name[GET_ALL_EMAIL_ACTIVITY_DATA_COMMAND],
-            message,
-            headerTransform=string_to_table_header,
-            removeNull=True,
-        ),
-        outputs_prefix="VisionOne.All_Email_Activity_Data",
-        outputs_key_field="mail_to_addresses",
-        outputs=message,
-    )
-
-
 def get_email_activity_data(
     v1_client: pytmv1.Client, args: Dict[str, Any]
 ) -> Union[str, CommandResults]:
@@ -1146,6 +1010,12 @@ def get_email_activity_data(
         query_op = pytmv1.QueryOp.AND
     # List to populate email activity data
     message: List[Any] = []
+    # Get the activity count
+    count_obj = get_email_activity_count(v1_client, args)
+    activity_count = int(count_obj.outputs.get("email_activity_count", EMPTY_STRING))  # type: ignore
+    # If activity count is greater than 5k, throw error else return response
+    if activity_count > 5000:
+        return_error("Please refine search, this query returns more than 5K results.")
     # Make rest call
     resp = v1_client.get_email_activity_data(
         start_time=start,
@@ -2609,17 +2479,11 @@ def main():  # pragma: no cover
         elif command == GET_ENDPOINT_ACTIVITY_DATA_COMMAND:
             return_results(get_endpoint_activity_data(v1_client, args))
 
-        elif command == GET_ALL_ENDPOINT_ACTIVITY_DATA_COMMAND:
-            return_results(get_all_endpoint_activity_data(v1_client, args))
-
         elif command == GET_ENDPOINT_ACTIVITY_COUNT_COMMAND:
             return_results(get_endpoint_activity_count(v1_client, args))
 
         elif command == GET_EMAIL_ACTIVITY_DATA_COMMAND:
             return_results(get_email_activity_data(v1_client, args))
-
-        elif command == GET_ALL_EMAIL_ACTIVITY_DATA_COMMAND:
-            return_results(get_all_email_activity_data(v1_client, args))
 
         elif command == GET_EMAIL_ACTIVITY_COUNT_COMMAND:
             return_results(get_email_activity_count(v1_client, args))

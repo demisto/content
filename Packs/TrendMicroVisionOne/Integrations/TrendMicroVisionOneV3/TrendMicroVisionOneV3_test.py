@@ -14,10 +14,12 @@ from TrendMicroVisionOneV3 import (
     add_to_suspicious_list,
     submit_file_to_sandbox,
     get_email_activity_data,
+    get_email_activity_count,
     get_file_analysis_status,
     get_file_analysis_result,
     download_analysis_report,
     get_endpoint_activity_data,
+    get_endpoint_activity_count,
     delete_from_suspicious_list,
     submit_file_entry_to_sandbox,
     get_sandbox_submission_status,
@@ -44,6 +46,7 @@ from pytmv1 import (
     GetAlertDetailsResp,
     GetEmailActivityDataResp,
     GetEndpointActivityDataResp,
+    GetEmailActivityDataCountResp,
     MsData,
     MsDataUrl,
     MultiResp,
@@ -1192,7 +1195,11 @@ def test_get_endpoint_information(mocker):
     client = Mock()
     client.consume_endpoint_data = Mock(return_value=mock_get_endpoint_info_response())
     args = {"endpoint": "hostname", "query_op": "or"}
-
+    # mocker.patch.object(
+    #     "TrendMicroVisionOneV3.get_endpoint_info",
+    #     "client.consume_endpoint_data",
+    #     mock_get_endpoint_info_response,
+    # )
     result = get_endpoint_info(client, args)
     assert isinstance(result.outputs[0]["agent_guid"], str)
     assert isinstance(result.outputs[0]["login_account"], dict)
@@ -1223,13 +1230,16 @@ def get_endpoint_activity_data_mock_response(*args, **kwargs):
 # Test case for get alert details
 def test_get_endpoint_activity_data(mocker):
     client = Mock()
+    client.get_endpoint_activity_data_count = Mock(
+        return_value=get_endpoint_activity_data_count_mock_response()
+    )
     client.get_endpoint_activity_data = Mock(
         return_value=get_endpoint_activity_data_mock_response()
     )
     args = {
         "start": "2022-10-04T08:22:37Z",
         "end": "2023-10-04T08:22:37Z",
-        "top": 50,
+        "top": 500,
         "query_op": "or",
         "select": "dpt,dst,endpointHostName",
         "get_activity_data_count": "true",
@@ -1238,6 +1248,34 @@ def test_get_endpoint_activity_data(mocker):
     result = get_endpoint_activity_data(client, args)
     assert isinstance(result.outputs[0]["endpoint_host_name"], str)
     assert result.outputs_key_field == "endpoint_host_name"
+
+
+# Mock response for get endpoint activity data count
+def get_endpoint_activity_data_count_mock_response(*args, **kwargs):
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=GetEmailActivityDataCountResp(total_count=10),
+    )
+
+
+# Test case for get alert details
+def test_get_endpoint_activity_data_count(mocker):
+    client = Mock()
+    client.get_endpoint_activity_data_count = Mock(
+        return_value=get_endpoint_activity_data_count_mock_response()
+    )
+    args = {
+        "start": "2022-10-04T08:22:37Z",
+        "end": "2023-10-04T08:22:37Z",
+        "top": 500,
+        "query_op": "or",
+        "select": "dpt,dst,endpointHostName",
+        "get_activity_data_count": "true",
+        "fields": json.dumps({"dpt": "443", "endpointHostName": "client1"}),
+    }
+    result = get_endpoint_activity_count(client, args)
+    assert isinstance(result.outputs["endpoint_activity_count"], int)
+    assert result.outputs_key_field == "endpoint_activity_count"
 
 
 # Mock response for get endpoint activity data
@@ -1257,6 +1295,9 @@ def get_email_activity_data_mock_response(*args, **kwargs):
 # Test case for get alert details
 def test_get_email_activity_data(mocker):
     client = Mock()
+    client.get_email_activity_data_count = Mock(
+        return_value=get_email_activity_data_count_mock_response()
+    )
     client.get_email_activity_data = Mock(
         return_value=get_email_activity_data_mock_response()
     )
@@ -1273,6 +1314,35 @@ def test_get_email_activity_data(mocker):
     result = get_email_activity_data(client, args)
     assert isinstance(result.outputs[0]["mail_msg_id"], str)
     assert result.outputs_key_field == "mail_to_addresses"
+
+
+# Mock response for get email activity data count
+def get_email_activity_data_count_mock_response(*args, **kwargs):
+    return Result(
+        result_code=ResultCode.SUCCESS,
+        response=GetEmailActivityDataCountResp(total_count=10),
+    )
+
+
+# Test case for get email activity data count
+def test_get_email_activity_data_count(mocker):
+    client = Mock()
+    client.get_email_activity_data_count = Mock(
+        return_value=get_email_activity_data_count_mock_response()
+    )
+    args = {
+        "start": "2022-10-04T08:22:37Z",
+        "end": "2023-10-04T08:22:37Z",
+        "top": 50,
+        "query_op": "or",
+        "select": "mailFromAddresses,mailToAddresses",
+        "fields": json.dumps(
+            {"mailToAddresses": "testemail@gmail.com", "mailMsgSubject": "spam"}
+        ),
+    }
+    result = get_email_activity_count(client, args)
+    assert isinstance(result.outputs["email_activity_count"], int)
+    assert result.outputs_key_field == "email_activity_count"
 
 
 # Mock response for get alert details
@@ -1331,7 +1401,6 @@ def update_status_mock_response(*args, **kwargs):
 
 # Test case for update alert status
 def test_update_status(mocker):
-    # mocker.patch("TrendMicroVisionOneV3.update_status", update_status_mock_response)
     client = Mock()
     client.edit_alert_status = Mock(return_value=update_status_mock_response())
     args = {
