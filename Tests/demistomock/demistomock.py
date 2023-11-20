@@ -438,12 +438,11 @@ def params():
 
     """
     demisto_params = os.getenv("DEMISTO_PARAMS")
-    try:
-        if demisto_params:
-            try:
-                return json.loads(demisto_params)
-            except json.JSONDecodeError:
-                return {}
+    if demisto_params:
+        try:
+            return json.loads(demisto_params)
+        except json.JSONDecodeError:
+            return {}
     return {}
 
 
