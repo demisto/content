@@ -327,7 +327,7 @@ outputs:
   description: For malicious files, the reason the vendor made the decision.
   type: string
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested.
+  description: The indicator tested.
   type: string
 - contextPath: DBotScore.Type
   description: The type of the indicator.
