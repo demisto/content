@@ -196,6 +196,7 @@ class Pack:
     def status(self, status_value):
         """ setter of pack current status.
         """
+        logging.info(f"Pack '{self.name}' status is set to '{status_value}'")
         self._status = status_value
 
     @property

@@ -23,7 +23,7 @@ _bucket="${TEST_XDR_PREFIX}marketplace-dist-dev"
 _bucket_v2="${TEST_XDR_PREFIX}marketplace-v2-dist-dev"
 _bucket_xpanse="${TEST_XDR_PREFIX}xpanse-dist-dev"
 _bucket_xsoar_saas="${TEST_XDR_PREFIX}marketplace-saas-dist-dev"
-_bucket_upload="true"
+_force="false"
 _slack_channel="dmst-bucket-upload"
 _override_all_pack="false"
 
@@ -57,7 +57,7 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -f|--force) _force=true
-    _bucket_upload=""
+    shift
     shift;;
 
   -p|--packs) _packs="$2"
@@ -82,7 +82,7 @@ if [ -z "$_ci_token" ]; then
     exit 1
 fi
 
-if [ -n "$_force" ] && [ -z "$_packs" ]; then
+if [ "$_force" == "true" ] && [ -z "$_packs" ]; then
     echo "You must provide a csv list of packs to force upload."
     exit 1
 fi

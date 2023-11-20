@@ -247,36 +247,25 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     return False
 
 
-def prepare_index_json(index_folder_path: str, build_number: str, private_packs: list,
-                       current_commit_hash: str, force_upload: bool = False, previous_commit_hash: str = None,
+def prepare_index_json(index_folder_path: str, build_number: str, private_packs: list, commit_hash: str,
                        landing_page_sections: dict = None):
     """
+    Prepare and update the index.json file to be uploaded to the bucket.
+
     Args:
         index_folder_path (str): index folder full path.
         build_number (str): CI build number, used as an index revision.
         private_packs (list): List of private packs and their price.
-        current_commit_hash (str): last commit hash of head.
-        force_upload (bool): Indicates if force upload or not.
-        previous_commit_hash (str): The previous commit hash to diff with.
+        commit_hash (str): last commit hash of head.
         landing_page_sections (dict): landingPage sections.
 
     Returns:
         None
     """
-    if force_upload:
-        # If we force upload we don't want to update the commit in the index.json file,
-        # this is to be able to identify all changed packs in the next upload
-        commit = previous_commit_hash
-        logging.debug('Force upload flow - Index commit hash should not be changed')
-    else:
-        # Otherwise, update the index with the current commit hash (the commit of the upload)
-        commit = current_commit_hash
-        logging.debug('Updating production index commit hash to master last commit hash')
-
     if not landing_page_sections:
         landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
 
-    logging.debug(f'commit hash is: {commit}')
+    logging.debug(f'commit hash is: {commit_hash}')
     index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
     logging.debug(f'index json path: {index_json_path}')
     logging.debug(f'Private packs are: {private_packs}')
@@ -285,7 +274,7 @@ def prepare_index_json(index_folder_path: str, build_number: str, private_packs:
             'revision': build_number,
             'modified': datetime.utcnow().strftime(Metadata.DATE_FORMAT),
             'packs': private_packs,
-            'commit': commit,
+            'commit': commit_hash,
             'landingPage': {'sections': landing_page_sections.get('sections', [])}  # type: ignore[union-attr]
         }
         json.dump(index, index_file, indent=4)
@@ -1183,7 +1172,7 @@ def main():
     is_create_dependencies_zip = option.create_dependencies_zip
 
     # regular upload flow that doesn't force or to upload specific packs and not PR or nightly build
-    is_regular_upload_flow = is_bucket_upload_flow and not force_upload and not upload_specific_pack
+    is_regular_upload_flow = is_bucket_upload_flow and not any([force_upload, upload_specific_pack, override_all_packs])
 
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -1208,7 +1197,7 @@ def main():
                                                                         is_bucket_upload_flow, ci_branch)
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
-    # list of packs to iterate on and upload/update in bucket
+    # list of packs to iterate on over and upload/update them in bucket
     packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
                                is_modified=pack_id in pack_ids_to_upload)
                           for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
@@ -1221,7 +1210,7 @@ def main():
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_ids_to_upload, storage_base_path
     )
 
-    if not override_all_packs:
+    if is_regular_upload_flow:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
 
@@ -1234,7 +1223,7 @@ def main():
 
     # iterating over packs that are for the current marketplace
     for pack in packs_objects_list:
-        logging.info(f"Starts iterating over pack '{pack.name}' which is{' not ' if not pack.is_modified else ' '}modified")
+        logging.debug(f"Starts iterating over pack '{pack.name}' which is{' not ' if not pack.is_modified else ' '}modified")
 
         if not pack.load_pack_metadata():
             pack.status = PackStatus.FAILED_LOADING_PACK_METADATA.value  # type: ignore[misc]
@@ -1287,7 +1276,7 @@ def main():
             pack.cleanup()
             continue
 
-        logging.info(f"Finished iterating over pack '{pack.name}'")
+        logging.debug(f"Finished iterating over pack '{pack.name}'")
         if not pack.is_modified:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
@@ -1312,9 +1301,7 @@ def main():
     prepare_index_json(index_folder_path=index_folder_path,
                        build_number=build_number,
                        private_packs=private_packs,
-                       current_commit_hash=current_commit_hash,
-                       force_upload=force_upload,
-                       previous_commit_hash=previous_commit_hash,
+                       commit_hash=current_commit_hash if is_regular_upload_flow or override_all_packs else previous_commit_hash,
                        landing_page_sections=statistics_handler.landing_page_sections)
 
     # finished iteration over content packs
@@ -1326,7 +1313,7 @@ def main():
                             )
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
-    if is_create_dependencies_zip and marketplace == XSOAR_MP and is_regular_upload_flow:
+    if is_create_dependencies_zip and marketplace == XSOAR_MP and (is_regular_upload_flow or override_all_packs):
         # handle packs with dependencies zip
         all_packs_dict = {p.name: p for p in packs_objects_list}
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
