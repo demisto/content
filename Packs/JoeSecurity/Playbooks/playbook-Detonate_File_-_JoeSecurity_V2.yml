@@ -1,5 +1,7 @@
 id: Detonate File - JoeSecurity V2
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Detonate File - JoeSecurity V2
 description: The Detonate File using Joe Sandbox Process is designed to streamline and enhance the security assessment of files. This automated system accepts a user-submitted file, sends it for in-depth analysis using Joe Sandbox technology, and returns comprehensive results as attachments to the user. The process is designed to be swift, efficient, and secure, providing users with valuable insights into potential threats and vulnerabilities within their files.
 tags:
@@ -28,7 +30,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 50
+          "y": 60
         }
       }
     note: false
@@ -73,8 +75,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 545
+          "x": 900,
+          "y": 710
         }
       }
     note: false
@@ -123,8 +125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 1035
+          "x": 900,
+          "y": 1200
         }
       }
     note: false
@@ -152,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1210
+          "y": 1370
         }
       }
     note: false
@@ -178,7 +180,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "1"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -196,7 +198,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
+          "x": 510,
           "y": 370
         }
       }
@@ -296,8 +298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 705
+          "x": 900,
+          "y": 875
         }
       }
     note: false
@@ -335,8 +337,53 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -160,
-          "y": 870
+          "x": 900,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: ad0b0e84-9dc2-4d90-8200-938bdca36a7f
+    type: condition
+    task:
+      id: ad0b0e84-9dc2-4d90-8200-938bdca36a7f
+      version: -1
+      name: Is the file type supported?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:EXE|DLL|PIF|CMD|BAT|COM|SCR|CPL|PDF|DOCX|DOC|DOCM|XLSX|XLS|XLSM|XLSB|PPT|PPX|PPTM|HWP|JTD|RFT|XPI|CRX|EML|MSG|CHM|JS|JSE|VBS|VBE|LNK|JAR|PS1|ZIP|7Z|RAR|ZLIB|ASPX|APS|PNG|JPEG|GIF|HTML|HTM|XHTML|SHTML)\b
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 540
         }
       }
     note: false
@@ -349,16 +396,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "6_1_yes": 0.2,
-      "6_5_#default#": 0.31,
-      "7_5_#default#": 0.12
+      "10_5_#default#": 0.41,
+      "6_5_#default#": 0.23,
+      "7_5_#default#": 0.24
     },
     "paper": {
       "dimensions": {
-        "height": 1225,
-        "width": 815,
-        "x": -160,
-        "y": 50
+        "height": 1375,
+        "width": 1005,
+        "x": 275,
+        "y": 60
       }
     }
   }
@@ -369,12 +416,6 @@ inputs:
       root: File
   required: false
   description: File object of the file to detonate. The File is taken from the context.
-  playbookInputQuery:
-- key: Interval
-  value:
-    simple: "1"
-  required: false
-  description: Duration for executing the pooling (in minutes)
   playbookInputQuery:
 - key: Timeout
   value:
@@ -392,12 +433,6 @@ inputs:
   required: false
   description: Comments for the analysis.
   playbookInputQuery:
-- key: InternetAccess
-  value:
-    simple: "True"
-  required: false
-  description: Enable internet access (boolean). True= internet access (default), False= no internet access.
-  playbookInputQuery:
 - key: ReportFileType
   value: {}
   required: false
@@ -408,37 +443,37 @@ outputs:
   description: The vendor used to calculate the score.
   type: string
 - contextPath: Joe.Analysis.ID
-  description: Web ID
+  description: Web ID.
   type: string
 - contextPath: Joe.Analysis.Status
-  description: Analysis Status
+  description: Analysis Status.
   type: string
 - contextPath: Joe.Analysis.Comments
-  description: Analysis Comments
+  description: Analysis Comments.
   type: string
 - contextPath: Joe.Analysis.Time
-  description: Submitted Time
+  description: Submitted Time.
   type: date
 - contextPath: Joe.Analysis.Runs
-  description: Sub-Analysis Information
+  description: Sub-Analysis Information.
 - contextPath: Joe.Analysis.Result
-  description: Analysis Results
+  description: Analysis Results.
   type: string
 - contextPath: Joe.Analysis.Errors
-  description: Raised errors during sampling
+  description: Raised errors during sampling.
 - contextPath: Joe.Analysis.Systems
-  description: Analysis OS
+  description: Analysis OS.
 - contextPath: Joe.Analysis.MD5
-  description: MD5 of analysis sample
+  description: MD5 of analysis sample.
   type: string
 - contextPath: Joe.Analysis.SHA1
-  description: SHA1 of analysis sample
+  description: SHA1 of analysis sample.
   type: string
 - contextPath: Joe.Analysis.SHA256
-  description: SHA256 of analysis sample
+  description: SHA256 of analysis sample.
   type: string
 - contextPath: Joe.Analysis.SampleName
-  description: Sample Data, could be a file name or URL
+  description: Sample Data, could be a file name or URL.
   type: string
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested.
@@ -453,43 +488,43 @@ outputs:
   description: The vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Malicious.Detections
-  description: The sub analysis detection statuses
+  description: The sub analysis detection statuses.
   type: string
 - contextPath: DBotScore.Malicious.SHA1
-  description: The SHA1 of the file
+  description: The SHA1 of the file.
   type: string
 - contextPath: InfoFile.Name
-  description: FileName
+  description: FileName.
   type: string
 - contextPath: InfoFile.EntryID
-  description: The EntryID of the sample
+  description: The EntryID of the sample.
   type: string
 - contextPath: InfoFile.Size
-  description: File Size
+  description: File Size.
   type: number
 - contextPath: InfoFile.Type
-  description: File type e.g. "PE"
+  description: File type e.g. "PE".
   type: string
 - contextPath: InfoFile.Info
-  description: Basic information of the file
+  description: Basic information of the file.
   type: string
 - contextPath: File.Extension
-  description: File Extension
+  description: File Extension.
   type: string
 - contextPath: InfoFile
-  description: Report file object
+  description: Report file object.
   type: unknown
 - contextPath: File
-  description: File object
+  description: File object.
   type: unknown
 - contextPath: Joe.Analysis
-  description: Joe Analysis object
+  description: Joe Analysis object.
   type: unknown
 - contextPath: DBotScore
-  description: DBotScore object
+  description: DBotScore object.
   type: unknown
 - contextPath: DBotScore.Malicious
-  description: DBotScore Malicious object
+  description: DBotScore Malicious object.
   type: unknown
 - contextPath: File.MD5
   description: The MD5 hash of the file.
