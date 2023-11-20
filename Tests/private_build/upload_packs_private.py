@@ -530,7 +530,7 @@ def main():
         prepare_index_json(index_folder_path=index_folder_path,
                            build_number=build_number,
                            private_packs=private_packs,
-                           current_commit_hash=current_commit_hash,
+                           commit_hash=current_commit_hash,
                            landing_page_sections=landing_page_sections
                            )
 
@@ -544,7 +544,7 @@ def main():
         prepare_index_json(index_folder_path=index_folder_path,
                            build_number=build_number,
                            private_packs=private_packs,
-                           current_commit_hash=current_commit_hash,
+                           commit_hash=current_commit_hash,
                            landing_page_sections=landing_page_sections)
 
         upload_index_to_storage(index_folder_path=index_folder_path,
