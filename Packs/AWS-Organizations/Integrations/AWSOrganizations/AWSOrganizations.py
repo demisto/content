@@ -117,21 +117,18 @@ def dict_values_to_str(d: dict, *keys) -> dict:
     return d
 
 
-def build_tags(keys: str | None, values: str | None) -> list:
-    try:
-        return [
+def build_tags(tags: str) -> list:
+    '''Turns the tags provided by the args in the format "key=value" into the format expected by AWS'''
+    result = []
+    for tag in argToList(tags):
+        key, _, value = tag.partition('=')
+        result.append(
             {
                 'Key': key,
                 'Value': value
             }
-            for key, value in zip(
-                argToList(keys),
-                argToList(values),
-                strict=True
-            )
-        ]
-    except ValueError:
-        raise DemistoException('"tag_key" and "tag_value" must have the same length.')
+        )
+    return result
 
 
 ''' COMMAND FUNCTIONS '''
@@ -361,10 +358,7 @@ def account_create_command(args: dict, aws_client: 'OrganizationsClient') -> Pol
             AccountName=args['account_name'],
             RoleName=args['role_name'],
             IamUserAccessToBilling=args['iam_user_access_to_billing'].upper(),
-            Tags=build_tags(
-                args.get('tag_key'),
-                args.get('tag_value')
-            )
+            Tags=build_tags(args['tags'])
         )
         args['request_id'] = account['CreateAccountStatus']['Id']
         return account
@@ -436,10 +430,7 @@ def organization_unit_create_command(args: dict, aws_client: 'OrganizationsClien
     ou = aws_client.create_organizational_unit(
         ParentId=args['parent_id'],
         Name=args['name'],
-        Tags=build_tags(
-            args.get('tag_key'),  # TODO
-            args.get('tag_value')
-        )
+        Tags=build_tags(args['tags'])
     )
 
     return CommandResults(
@@ -630,10 +621,7 @@ def resource_tag_add_command(args: dict, aws_client: 'OrganizationsClient') -> C
 
     aws_client.tag_resource(
         ResourceId=args['resource_id'],
-        Tags=build_tags(
-            args.get('tag_key'),  # TODO
-            args.get('tag_value')
-        )
+        Tags=build_tags(args['tags'])
     )
 
     return CommandResults(
@@ -646,15 +634,19 @@ def resource_tag_add_command(args: dict, aws_client: 'OrganizationsClient') -> C
 
 def resource_tag_list_command(args: dict, aws_client: 'OrganizationsClient') -> CommandResults:
 
-    tags = [
-        response.get('Tags') for response in
-        aws_client.get_paginator(
-            'list_tags_for_resource'
-        ).paginate(ResourceId=args['resource_id'])
-    ]
+    tags, next_token = paginate(
+        aws_client.get_paginator('list_tags_for_resource'),
+        'Tags',
+        limit=args.get('limit'),
+        next_token=args.get('next_token'),
+        page_size=args.get('page_size'),
+        ResourceId=args['resource_id']
+    )
 
     return CommandResults(
-        outputs=tags,
+        outputs=next_token_output_dict(
+            'Tag', next_token, tags, 'Key'
+        ),
         readable_output=tableToMarkdown(
             'AWS Organization Resource Tags',
             tags, ['Key', 'Value'],

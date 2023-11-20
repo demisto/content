@@ -90,39 +90,25 @@ class root_list(Data):
 
 
 class children_list(Data):
-    command_args = {
-        'child_type': 'OrganizationalUnit',
-        'parent_id': 'parent_id'
-    }
-    client_func_kwargs = {
-        'ChildType': 'ORGANIZATIONAL_UNIT',
-        'ParentId': 'parent_id'
-    }
+    command_args = {"child_type": "OrganizationalUnit", "parent_id": "parent_id"}
+    client_func_kwargs = {"ChildType": "ORGANIZATIONAL_UNIT", "ParentId": "parent_id"}
     client_func_return = [
         [
             {
-                "Id": 'id_1',
+                "Id": "id_1",
                 "Type": "type_1",
             },
             {
-                "Id": 'id_2',
+                "Id": "id_2",
                 "Type": "type_2",
-            }
+            },
         ],
         "next_token",
     ]
     context_outputs = [
         [
-            {
-                "Id": 'id_1',
-                "Type": "type_1",
-                'ParentId': 'parent_id'
-            },
-            {
-                "Id": 'id_2',
-                "Type": "type_2",
-                'ParentId': 'parent_id'
-            },
+            {"Id": "id_1", "Type": "type_1", "ParentId": "parent_id"},
+            {"Id": "id_2", "Type": "type_2", "ParentId": "parent_id"},
         ],
         {"ChildrenNextToken": "next_token"},
     ]
@@ -135,28 +121,18 @@ class children_list(Data):
 
 
 class parent_list(Data):
-    command_args = {
-        'child_id': 'child_id'
-    }
-    client_func_kwargs = {
-        'ChildId': 'child_id'
-    }
+    command_args = {"child_id": "child_id"}
+    client_func_kwargs = {"ChildId": "child_id"}
     client_func_return = [
         [
             {
-                "Id": 'id',
+                "Id": "id",
                 "Type": "type",
             }
         ],
         "next_token",
     ]
-    context_outputs = [
-        {
-            "Id": 'id',
-            "Type": "type",
-            'ChildId': 'child_id'
-        }
-    ]
+    context_outputs = [{"Id": "id", "Type": "type", "ChildId": "child_id"}]
     readable_output = """### AWS Account *child_id* Parent
 |Id|Type|
 |---|---|
@@ -188,9 +164,9 @@ class account_list(Data):
                 "JoinedTimestamp": datetime(
                     year=2022, month=10, day=16, hour=12, minute=30, second=45
                 ),
-            }
+            },
         ],
-        "next_token"
+        "next_token",
     ]
     context_outputs = [
         [
@@ -211,9 +187,9 @@ class account_list(Data):
                 "Status": "status_2",
                 "JoinedMethod": "joined_method_2",
                 "JoinedTimestamp": "2022-10-16 12:30:45",
-            }
+            },
         ],
-        {"AccountNextToken": "next_token"}
+        {"AccountNextToken": "next_token"},
     ]
     readable_output = """### AWS Organization Accounts
 |Id|Arn|Name|Email|JoinedMethod|JoinedTimestamp|Status|
@@ -312,14 +288,14 @@ class account_remove(Data):
 
 class account_move(Data):
     command_args = {
-        'account_id': 'account_id',
-        'source_parent_id': 'source_parent_id',
-        'destination_parent_id': 'destination_parent_id'
+        "account_id": "account_id",
+        "source_parent_id": "source_parent_id",
+        "destination_parent_id": "destination_parent_id",
     }
     client_func_kwargs = {
-        'AccountId': 'account_id',
-        'SourceParentId': 'source_parent_id',
-        'DestinationParentId': 'destination_parent_id'
+        "AccountId": "account_id",
+        "SourceParentId": "source_parent_id",
+        "DestinationParentId": "destination_parent_id",
     }
     readable_output = """### AWS Account Moved
 |AccountId|
@@ -328,7 +304,118 @@ class account_move(Data):
 """
 
 
-class account_create_initial(Data):
-    command_args = {}
+class account_create(Data):
+    command_args = {
+        "account_name": "account_name",
+        "email": "email",
+        "iam_user_access_to_billing": "iam_user_access_to_billing",
+        "role_name": "role_name",
+        "tags": "key1=value1,key2=value2",
+        "request_id": "request_id",
+        "interval_in_seconds": "interval_in_seconds",
+        "timeout": "timeout",
+        "roleArn": "roleArn",
+    }
     client_func_kwargs = {}
-    readable_output = """"""
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class account_close(Data):
+    command_args = {
+        "account_id": "account_id",
+        "is_closed": True
+    }
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class organization_unit_create(Data):
+    command_args = {"name": "name", "parent_id": "parent_id", "tags": "key1=value1,key2=value2"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class organization_unit_delete(Data):
+    command_args = {"organizational_unit_id": "organizational_unit_id"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class organization_unit_rename(Data):
+    command_args = {"organizational_unit_id": "organizational_unit_id", "name": "name"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class policy_list(Data):
+    command_args = {"policy_type": "policy_type"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class target_policy_list(Data):
+    command_args = {"policy_type": "policy_type", "target_id": "target_id"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class policy_get(Data):
+    command_args = {"policy_id": "policy_id"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class policy_delete(Data):
+    command_args = {"policy_id": "policy_id"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class policy_attach(Data):
+    command_args = {"policy_id": "policy_id", "target_id": "target_id"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class policy_target_list(Data):
+    command_args = {"policy_id": "policy_id"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class resource_tag_add(Data):
+    command_args = {"resource_id": "resource_id", "tags": "key1=value1,key2=value2"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
+
+
+class resource_tag_list(Data):
+    command_args = {"resource_id": "resource_id"}
+    client_func_kwargs = {}
+    client_func_return = None
+    context_outputs = None
+    readable_output = None
