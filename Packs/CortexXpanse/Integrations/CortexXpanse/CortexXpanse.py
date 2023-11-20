@@ -140,25 +140,6 @@ class Client(BaseClient):
 
         return response
 
-    def get_attack_surface_rule_request(
-        self, search_params: List[dict]
-    ) -> Dict[str, Any]:
-        """Get Attack Surface Rule details for an attack surface rule id using the '/get_attack_surface_rules/' endpoint.
-
-        Args:
-            attack_surface_rule_id (str): Coma separated attack surface rule ids.
-
-        Returns:
-            dict: dict containing information about Attack surface rule.
-        """
-        data = {"request_data": {"filters": search_params}}
-        response = self._http_request(
-            "POST",
-            f"{V1_URL_SUFFIX}/get_attack_surface_rules/",
-            json_data=data
-        )
-        return response
-
     def list_asset_internet_exposure_request(self, search_params: list[dict], search_from: int = 0,
                                              search_to: int = DEFAULT_SEARCH_LIMIT) -> dict[str, Any]:
         """Get a list of all your internet exposure assets using the '/assets/get_assets_internet_exposure/' endpoint.
@@ -570,65 +551,6 @@ def get_external_ip_address_range_command(client: Client, args: dict[str, Any]) 
         outputs=parsed,
         raw_response=response,
         readable_output=markdown
-    )
-
-    return command_results
-
-
-def get_attack_surface_rule_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """
-    asm-list-external-service command: Returns list of external services.
-
-    Args:
-        client (Client): CortexXpanse client to use.
-        args (dict): all command arguments, usually passed from ``demisto.args()``.
-            ``args['ip_address']`` IP Address to search on.
-            ``args['domain']`` Domain to search on.
-            ``args['is_active']`` If the service active or not.
-            ``args['discovery_type']`` how service was discovered.
-
-    Returns:
-        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains external
-        services.
-    """
-    attack_surface_rule_id = args.get("attack_surface_rule_id")
-    enabled_status = args.get("enabled_status")
-    priority = args.get("priority")
-    category = args.get("category")
-
-    search_params = []
-    if attack_surface_rule_id:
-        search_params.append({
-            "field": "attack_surface_rule_id",
-            "operator": "in",
-            "value": attack_surface_rule_id.split(",")
-        })
-    if enabled_status:
-        search_params.append({
-            "field": "enabled_status",
-            "operator": "in",
-            "value": enabled_status.split(",")
-        })
-    if priority:
-        search_params.append({
-            "field": "priority",
-            "operator": "in",
-            "value": priority.split(",")
-        })
-    if category:
-        search_params.append({
-            "field": "category",
-            "operator": "in",
-            "value": category.split(",")
-        })
-
-    response = client.get_attack_surface_rule_request(search_params)
-    parsed = response.get("reply", {}).get("attack_surface_rules")
-    command_results = CommandResults(
-        outputs_prefix='ASM.AttackSurfaceRule',
-        outputs_key_field='attack_surface_rule',
-        outputs=parsed,
-        raw_response=response
     )
 
     return command_results
@@ -1447,11 +1369,10 @@ def main() -> None:
             'asm-get-external-service': get_external_service_command,
             'asm-list-external-ip-address-range': list_external_ip_address_range_command,
             'asm-get-external-ip-address-range': get_external_ip_address_range_command,
-            "asm-get-attack-surface-rule": get_attack_surface_rule_command,
             'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
             'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
             'asm-list-alerts': list_alerts_command,
-            'asm-list-attack-surface-rules': list_attack_surface_rules_command,
+            'asm-get-attack-surface-rule': list_attack_surface_rules_command,
             'asm-tag-asset-assign': assign_tag_to_assets_command,
             'asm-tag-asset-remove': remove_tag_to_assets_command,
             'asm-tag-range-assign': assign_tag_to_ranges_command,

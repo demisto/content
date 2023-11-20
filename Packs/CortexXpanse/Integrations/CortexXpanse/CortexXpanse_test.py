@@ -62,47 +62,6 @@ def test_list_external_service_command(requests_mock):
     assert response.outputs_key_field == 'service_id'
 
 
-def test_get_attack_surface_rule_command(requests_mock):
-    """Tests get_attack_surface_rule_command command function.
-
-    Given:
-        - requests_mock instance to generate the appropriate get_attack_surface_rule_command API response,
-          loaded from a local JSON file.
-    When:
-        - Running the 'get_attack_surface_rule_command'.
-    Then:
-        - Checks the output of the command function with the expected output.
-    """
-    from CortexXpanse import Client, get_attack_surface_rule_command
-
-    from test_data.raw_response import ASM_GET_ATTACK_SURFACE_RULE_RESPONSE
-    from test_data.expected_results import ASM_GET_ATTACK_SURFACE_RULE_RESULTS
-    requests_mock.post(
-        "https://test.com/api/webapp/public_api/v1/public_api/v1/get_attack_surface_rules/",
-        json=ASM_GET_ATTACK_SURFACE_RULE_RESPONSE,
-    )
-
-    client = Client(
-        base_url='https://test.com/api/webapp/public_api/v1/',
-        verify=True,
-        headers={
-            "HOST": "test.com",
-            "Authorization": "THISISAFAKEKEY",
-            "Content-Type": "application/json"
-        },
-        proxy=False)
-
-    args = {
-        "attack_surface_rule_id": "RdpServer",
-        "enabled_status": "ON",
-        "priority": "High",
-        "category": "Attack Surface Reduction"
-    }
-
-    response = get_attack_surface_rule_command(args=args, client=client)
-    assert response.outputs == ASM_GET_ATTACK_SURFACE_RULE_RESULTS
-
-
 def test_get_external_service_command(requests_mock):
     """Tests get_external_service_command command function.
 

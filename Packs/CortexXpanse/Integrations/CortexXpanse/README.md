@@ -1076,19 +1076,20 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                   | **Required** |
-| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| alert_id_list | Comma-separated list of integers of the alert ID.                                                                                                                                                                                                 | Optional | 
-| severity | Comma-separated list of strings of alert severity (valid values are low, medium, high, critical, informational).                                                                                                                                  | Optional | 
-| tags | Comma-separated list of strings of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                                                                                   | Optional | 
-| status | Comma separated list of strings of the Alert status. Possible values are: new, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
-| business_units_list | Comma-separated list of strings of the business units.                                                                                                                                                                                            | Optional | 
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                | Optional | 
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                                                 | Optional | 
+| **Argument Name**     | **Description**                                                                                                                                                                                                                                   | **Required** |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| alert_id_list         | Comma-separated list of alert IDs.                                                                                                                                                                                                 | Optional | 
+| severity              | Comma-separated list of alert severities (valid values are low, medium, high, critical, informational).                                                                                                                                  | Optional | 
+| tags                  | Comma-separated list of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                             | Optional | 
+| status                | Comma-separated list of the alert status. Possible values are: new, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
+| business_units_list   | Comma-separated list business units.                                                                                                                                                                                            | Optional | 
+| case_id_list          | Comma-separated list of case (incident) IDs.                                                                                                                                                                                       | Optional | 
+| lte_creation_time     | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                | Optional | 
+| gte_creation_time     | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                                                 | Optional | 
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional | 
-| sort_by_severity | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional | 
-| page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                                                    | Optional | 
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                                                   | Optional | 
+| sort_by_severity      | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                                                 | Optional | 
+| page                  | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                                                    | Optional | 
+| limit                 | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                                                   | Optional | 
 
 #### Context Output
 
@@ -1437,14 +1438,14 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 >| NOT_AVAILABLE | N/A | NO_HOST | 33 | Unclassified | Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network. | 1659452809020 | {'agent_install_type': 'NA', 'agent_host_boot_time': None, 'event_sub_type': None, 'module_id': None, 'association_strength': None, 'dst_association_strength': None, 'story_id': None, 'event_id': None, 'event_type': None, 'event_timestamp': 1659452809020, 'actor_process_instance_id': None, 'actor_process_image_path': None, 'actor_process_image_name': None, 'actor_process_command_line': None, 'actor_process_signature_status': 'N/A', 'actor_process_signature_vendor': None, 'actor_process_image_sha256': None, 'actor_process_image_md5': None, 'actor_process_causality_id': None, 'actor_causality_id': None, 'actor_process_os_pid': None, 'actor_thread_thread_id': None, 'causality_actor_process_image_name': None, 'causality_actor_process_command_line': None, 'causality_actor_process_image_path': None, 'causality_actor_process_signature_vendor': None, 'causality_actor_process_signature_status': 'N/A', 'causality_actor_causality_id': None, 'causality_actor_process_execution_time': None, 'causality_actor_process_image_md5': None, 'causality_actor_process_image_sha256': None, 'action_file_path': None, 'action_file_name': None, 'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None, 'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, 'action_local_ip': None, 'action_local_ip_v6': None, 'action_local_port': None, 'action_remote_ip': None, 'action_remote_ip_v6': None, 'action_remote_port': 80, 'action_external_hostname': None, 'action_country': 'UNKNOWN', 'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None, 'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A', 'action_process_signature_vendor': None, 'os_actor_effective_username': None, 'os_actor_process_instance_id': None, 'os_actor_process_image_path': None, 'os_actor_process_image_name': None, 'os_actor_process_command_line': None, 'os_actor_process_signature_status': 'N/A', 'os_actor_process_signature_vendor': None, 'os_actor_process_image_sha256': None, 'os_actor_process_causality_id': None, 'os_actor_causality_id': None, 'os_actor_process_os_pid': None, 'os_actor_thread_thread_id': None, 'fw_app_id': None, 'fw_interface_from': None, 'fw_interface_to': None, 'fw_rule': None, 'fw_rule_id': None, 'fw_device_name': None, 'fw_serial_number': None, 'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None, 'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None, 'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': None, 'dst_causality_actor_process_execution_time': None, 'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': None, 'dst_action_external_port': None, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO', 'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None, 'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None, 'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None, 'user_name': None} | FAKE-GUID | false | false | 1660240426055 | 1659455246812 | MATCHED | Networking Infrastructure | ASM alert resolution | STATUS_070_RESOLVED_OTHER | high | ASM | false |
 
 
-### asm-list-attack-surface-rules
+### asm-get-attack-surface-rule
 
 ***
 Fetches attack surface rules related to how Cortex Xpanse does assessment.
 
 #### Base Command
 
-`asm-list-attack-surface-rules`
+`asm-get-attack-surface-rule`
 
 #### Input
 
@@ -1471,7 +1472,7 @@ Fetches attack surface rules related to how Cortex Xpanse does assessment.
 | ASM.AttackSurfaceRules.modified | unknown | Last modification of the attack surface rule. | 
 
 #### Command example
-```!asm-list-attack-surface-rules enabled_status=On limit=1```
+```!asm-get-attack-surface-rule enabled_status=On limit=1```
 #### Context Example
 ```json
 {
@@ -2234,72 +2235,6 @@ Returns enrichment for a domain.
 #### Human Readable Output
 >### Xpanse Domain List
 >|asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|last_observed|name|recent_ips|service_type|tags|
->|---|---|---|---|---|---|---|---|---|---|---|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
 
-### asm-get-attack-surface-rule
-
-***
-Get information of an attack surface rule id.
-
-#### Base Command
-
-`asm-get-attack-surface-rule`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| attack_surface_rule_id | Attack surface rule ID. Has to be command separated. For example: RdpServer,InsecureOpenSSH. | Optional | 
-| enabled_status | Get the info about Rules ID(s) with enabled status on or off. Has to be command separated. For example: on,off. | Optional | 
-| priority | Get the info about Rules ID(s) with a priority. Has to be command separated. For example: high,medium. | Optional | 
-| category | Get the info about Rules ID(s) of a category. Has to be command separated. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ASM.AttackSurfaceRule.attack_surface_rule_id | unknown | Attack surface rule ID. | 
-| ASM.AttackSurfaceRule.attack_surface_rule_name | unknown | Attack surface rule name. | 
-| ASM.AttackSurfaceRule.category | unknown | Attack surface rule category. | 
-| ASM.AttackSurfaceRule.enabled_status | unknown | Attack surface rule status. | 
-| ASM.AttackSurfaceRule.priority | unknown | Attack surface rule priority. | 
-| ASM.AttackSurfaceRule.remediation_guidance | unknown | Remediation guidance of attack surface rule. | 
-
-#### Command example
-
-`!asm-get-attack-surface-rule attack_surface_rule_id=RdpServer raw-response=true`
-
-#### Context Example
-
-```json
-{
-    "reply": {
-        "attack_surface_rules": [
-            {
-                "attack_surface_rule_id": "RdpServer",
-                "attack_surface_rule_name": "RDP Server",
-                "category": "Attack Surface Reduction",
-                "created": 1698113023000,
-                "description": "Remote Desktop Protocol (RDP) servers provide remote access to a computer over a network connection. Externally accessible RDP servers pose a significant security risk as they are frequent targets for attackers and can be vulnerable to a variety of documented exploits.",
-                "enabled_status": "ON",
-                "knowledge_base_link": null,
-                "modified": 1605140275000,
-                "modified_by": null,
-                "priority": "High",
-                "remediation_guidance": "Recommendations to reduce the likelihood of malicious RDP attempts are as follows:\n\n1. Best practice is to not have RDP publicly accessible on the Internet and instead only on trusted local networks.\n2. Implement a risk-based approach that prioritizes patching RDP vulnerabilities that have known weaponized public exploits.\n3. Limit RDP access to a specific user group and implementing lockout policies is an additional measure to protect against RDP brute-forcing which is another common tactic used by attackers. In addition, enable NLA (Network Level Authentication) which is non-default on older versions.\n4. If remote access to RDP or terminal services is a business requirement, it should only be made accessible through a secure Virtual Private Network (VPN) connection with multi-factor authentication (MFA) to the corporate network or through a zero-trust remote access gateway."
-            }
-        ],
-        "result_count": 1,
-        "total_count": 1
-    }
-}
-```
-
-#### Human Readable Output
-
-> ### Results
-
-> |ATTACK_SURFACE_RULE_ID|ATTACK_SURFACE_RULE_NAME|CATEGORY|CREATED|DESCRIPTION|ENABLED_STATUS|KNOWLEDGE_BASE_LINK|MODIFIED|MODIFIED_BY|PRIORITY|REMEDIATION_GUIDANCE|
-> |---|---|---|---|---|---|---|---|---|---|---|
-> | RdpServer | RDP Server | Attack Surface Reduction | 1698113023000 | Remote Desktop Protocol (RDP) servers provide remote access to a computer over a network connection. Externally accessible RDP servers pose a significant security risk as they are frequent targets for attackers and can be vulnerable to a variety of documented exploits. | ON | | 1605140275000 | | High | Recommendations to reduce the likelihood of malicious RDP attempts are as follows:\n\n1. Best practice is to not have RDP publicly accessible on the Internet and instead only on trusted local networks.\n2. Implement a risk-based approach that prioritizes patching RDP vulnerabilities that have known weaponized public exploits.\n3. Limit RDP access to a specific user group and implementing lockout policies is an additional measure to protect against RDP brute-forcing which is another common tactic used by attackers. In addition, enable NLA (Network Level Authentication) which is non-default on older versions.\n4. If remote access to RDP or terminal services is a business requirement, it should only be made accessible through a secure Virtual Private Network (VPN) connection with multi-factor authentication (MFA) to the corporate network or through a zero-trust remote access gateway |
