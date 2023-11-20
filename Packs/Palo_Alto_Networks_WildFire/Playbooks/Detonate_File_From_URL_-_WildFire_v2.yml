@@ -324,7 +324,7 @@ outputs:
   description: Filename.
   type: string
 - contextPath: File.Malicious.Description
-  description: For malicious files, the reason for the vendor to make the decision.
+  description: For malicious files, the reason the vendor made the decision.
   type: string
 - contextPath: DBotScore.Indicator
   description: The indicator we tested.
