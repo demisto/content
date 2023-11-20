@@ -4,6 +4,7 @@
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "false"'
+      when: never
 
 .force-bucket-upload-rule:
   rules:
