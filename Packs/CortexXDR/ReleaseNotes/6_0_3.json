@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "**Important Note**: The incident field Last Mirrored In Time was moved to the *CommonTypes* pack. Make sure to update the *CommonTypes* pack to the latest version in order to use that field."
-}
