@@ -20,7 +20,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* AWS - CloudTrail
+AWS - CloudTrail
 
 ### Scripts
 
@@ -30,7 +30,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* aws-cloudtrail-lookup-events
+aws-cloudtrail-lookup-events
 
 ## Playbook Inputs
 

@@ -20,7 +20,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Azure Log Analytics
+Azure Log Analytics
 
 ### Scripts
 
@@ -29,7 +29,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* azure-log-analytics-execute-query
+azure-log-analytics-execute-query
 
 ## Playbook Inputs
 
