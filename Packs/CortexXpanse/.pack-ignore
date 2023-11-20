@@ -1,3 +1,9 @@
+[file:CortexXpanse.yml]
+ignore=BC102
+
+[file:CortexXpanse.yml]
+ignore=BC104
+
 [known_words]
 Xpanse
 NMap
