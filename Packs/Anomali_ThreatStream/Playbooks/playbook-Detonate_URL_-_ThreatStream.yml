@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 80a68b3e-8a7e-43bb-8215-918ecde338b6
+    taskid: b2dc8b93-caec-4473-8a3b-d68fe32e41d6
     type: regular
     task:
-      id: 80a68b3e-8a7e-43bb-8215-918ecde338b6
+      id: b2dc8b93-caec-4473-8a3b-d68fe32e41d6
       version: -1
       name: ThreatStream Submit URL for Analysis
       description: Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
@@ -58,21 +58,16 @@ tasks:
         complex:
           root: inputs.Tags
       premium_sandbox:
-        complex:
-          root: inputs.PremiumSandbox
+        simple: ${inputs.PremiumSandbox}
       report_platform:
-        complex:
-          root: inputs.VM
+        simple: ${inputs.VM}
       submission_classification:
-        complex:
-          root: inputs.SubmissionClassification
+        simple: ${inputs.SubmissionClassification}
       submission_type:
         simple: url
       submission_value:
         complex:
           root: inputs.URL
-          transformers:
-          - operator: uniq
     separatecontext: false
     view: |-
       {
