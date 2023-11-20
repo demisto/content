@@ -130,8 +130,22 @@ def okta_update_user(username: str, password: str, temporary_password: str, pass
                                    f'Error:\n{error_message}')
 
 
-def send_email(display_name: str, username: str, error_message: str, email_recipient: str, email_subject: str,
+def send_email(display_name: str, username: str, error_message: str | None, email_recipient: str, email_subject: str,
                email_body: str, password: str | None = None, zip_file_entry_id: str | None = None):
+    """
+    Send an email to the user with the password (plain text or encrypted).
+    One of 'password' or 'zip_file_entry_id' must be provided.
+
+    Args:
+        display_name (str): The display name of the user.
+        username (str): The username of the user.
+        error_message (str): An error message to include in the email.
+        email_recipient (str): The email address of the recipient.
+        email_subject (str): The subject of the email.
+        email_body (str): The body of the email.
+        password (str): The password to send in the email (plain text).
+        zip_file_entry_id (str): The entry ID of the zip file to send in the email (encrypted).
+    """
     if not any((password, zip_file_entry_id)):
         raise ValueError("Either 'password' or 'zip_file_entry_id' must be provided.")
 
@@ -165,7 +179,7 @@ def send_email(display_name: str, username: str, error_message: str, email_recip
 
 
 @polling_function(
-    name="IAMInitOktaUserTest",
+    name="IAMInitOktaUser",
     interval=10,
     timeout=30,
     requires_polling_arg=False,
@@ -216,7 +230,7 @@ def main():
 
     generated_password: str | None = None
     file_entry_id: str | None = None
-    context_outputs = {'success': True}
+    context_outputs: dict[str, str] = {'success': 'true'}
     error_message: str | None = None
 
     # If zip file is already generated and this is the second iteration, we skip this section
@@ -245,7 +259,7 @@ def main():
                 return
 
         except Exception as e:
-            context_outputs['success'] = False
+            context_outputs['success'] = 'false'
             error_message = str(e)
             context_outputs['errorDetails'] = error_message
             demisto.error(traceback.format_exc())
@@ -261,11 +275,11 @@ def main():
         if is_error(send_mail_outputs):
             raise DemistoException(f'An error occurred while trying to send mail. Error is:\n{get_error(send_mail_outputs)}')
 
-        context_outputs['sentMail'] = True
+        context_outputs['sentMail'] = 'true'
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        context_outputs['sentMail'] = False
+        context_outputs['sentMail'] = 'false'
         context_outputs['sendMailError'] = str(e)
 
     if context_outputs['success'] and context_outputs['sentMail']:

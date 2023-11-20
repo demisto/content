@@ -1,7 +1,7 @@
 commonfields:
-  id: IAMInitOktaUserTest
+  id: IAMInitOktaUser
   version: -1
-name: IAMInitOktaUserTest
+name: IAMInitOktaUser
 script: ''
 type: python
 tags:
@@ -14,7 +14,6 @@ comment: |-
   Sends an  email to the user with the account information.
   This script is running the `send-mail` command, make sure there is a mail sender integration configured.
 enabled: true
-polling: true
 args:
 - name: pwdGenerationScript
   description: The password generator script.
@@ -82,8 +81,9 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.50499
+dockerimage: demisto/py3-tools:1.0.0.80754
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
 - IAMInitOktaUser - Test
+polling: true
