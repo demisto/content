@@ -273,7 +273,9 @@ def risky_users_list_command(client: Client, args: dict[str, str]) -> List[Comma
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    page_size = arg_to_number(args.get('page_size'))  # default value is in the yml
+    page_size = arg_to_number(args.get('page_size')) or 50
+    if page_size < 1 or page_size > 500:
+        raise DemistoException("Page size must be between 1 and 500.")
     next_token = args.get('next_token')
     limit = arg_to_number(args.get('limit')) or 50
     risk_state = args.get('risk_state')

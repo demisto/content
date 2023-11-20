@@ -68,8 +68,7 @@ script:
     - defaultValue: '50'
       description: Limit of results to retrieve.
       name: limit
-    - defaultValue: '50'
-      description: Amount of results per request. Can be values between 1 and 500.
+    - description: Amount of results per request. Can be values between 1 and 500.
       name: page_size
     - description: The URL for the next set of items to return. (Received this URL from a previous call).
       name: next_token
