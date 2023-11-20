@@ -290,7 +290,7 @@ inputs:
 - key: ReportFileType
   value: {}
   required: false
-  description: The resource type to download. Default is pdf. xml is also possible.
+  description: The resource type to download. Default is pdf. XML is also possible.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore
