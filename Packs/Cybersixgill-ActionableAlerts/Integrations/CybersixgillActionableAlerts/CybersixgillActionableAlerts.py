@@ -83,9 +83,6 @@ def add_sub_alerts_shared_fields(incident, item_info):
         'cybersixgillassessment': item_info.get('assessment', None),
         'cybersixgillrecommendations': '\n\n-----------\n\n'.join(item_info.get('recommendations', [])),
         'incidentlink': f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}",
-        'cybersixgillcvss31': -1,
-        'cybersixgillcvss20': -1,
-        'cybersixgilldvescore': -1,
         'cve': None,
         'cybersixgillattributes': None
     }
