@@ -69,7 +69,7 @@ ADDRESS_MULTICAST_GUI_TO_API_TYPE = {
     "Multicast IP Range": "multicastrange",
 }
 
-VDOM_DEFAULT = "root"
+DEFAULT_VDOM = "root"
 MIN_MASK = 0
 MAX_MASK = 128
 
@@ -237,7 +237,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv4s(
         self,
         name: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -276,7 +276,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         comment: str | None = None,
         associated_interface: str | None = None,
         address: str | None = None,
@@ -348,7 +348,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         comment: str | None = None,
         associated_interface: str | None = None,
         address: str | None = None,
@@ -417,7 +417,7 @@ class Client(BaseClient):
             error_handler=Client._error_handler,
         )
 
-    def delete_firewall_address_ipv4(self, name: str, vdom: str = VDOM_DEFAULT) -> dict[str, Any]:
+    def delete_firewall_address_ipv4(self, name: str, vdom: str = DEFAULT_VDOM) -> dict[str, Any]:
         """Delete a IPv4 address.
 
         Args:
@@ -438,7 +438,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv6s(
         self,
         name: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -477,7 +477,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         comment: str | None = None,
         subnet: str | None = None,
         start_ip: str | None = None,
@@ -541,7 +541,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         comment: str | None = None,
         subnet: str | None = None,
         start_ip: str | None = None,
@@ -602,7 +602,7 @@ class Client(BaseClient):
             error_handler=Client._error_handler,
         )
 
-    def delete_firewall_address_ipv6(self, name: str, vdom: str = VDOM_DEFAULT) -> dict[str, Any]:
+    def delete_firewall_address_ipv6(self, name: str, vdom: str = DEFAULT_VDOM) -> dict[str, Any]:
         """Delete a IPv6 address.
 
         Args:
@@ -623,7 +623,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv4_multicasts(
         self,
         name: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -664,7 +664,7 @@ class Client(BaseClient):
         self,
         name: str,
         type_: str,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         comment: str | None = None,
         associated_interface: str | None = None,
         subnet: str | None = None,
@@ -715,7 +715,7 @@ class Client(BaseClient):
     def update_firewall_address_ipv4_multicast(
         self,
         name: str,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         comment: str | None = None,
         associated_interface: str | None = None,
         type_: str | None = None,
@@ -766,7 +766,7 @@ class Client(BaseClient):
             error_handler=Client._error_handler,
         )
 
-    def delete_firewall_address_ipv4_multicast(self, name: str, vdom: str = VDOM_DEFAULT) -> dict[str, Any]:
+    def delete_firewall_address_ipv4_multicast(self, name: str, vdom: str = DEFAULT_VDOM) -> dict[str, Any]:
         """Delete a IPv6 multicast address.
 
         Args:
@@ -787,7 +787,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv6_multicasts(
         self,
         name: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -828,7 +828,7 @@ class Client(BaseClient):
         self,
         name: str,
         subnet: str,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         comment: str | None = None,
     ) -> dict[str, Any]:
         """Create a IPv6 multicast address.
@@ -861,7 +861,7 @@ class Client(BaseClient):
     def update_firewall_address_ipv6_multicast(
         self,
         name: str,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         comment: str | None = None,
         subnet: str | None = None,
     ) -> dict[str, Any]:
@@ -893,7 +893,7 @@ class Client(BaseClient):
             error_handler=Client._error_handler,
         )
 
-    def delete_firewall_address_ipv6_multicast(self, name: str, vdom: str = VDOM_DEFAULT) -> dict[str, Any]:
+    def delete_firewall_address_ipv6_multicast(self, name: str, vdom: str = DEFAULT_VDOM) -> dict[str, Any]:
         """Delete a IPv6 multicast address.
 
         Args:
@@ -914,7 +914,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv4_groups(
         self,
         name: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -955,7 +955,7 @@ class Client(BaseClient):
     def update_firewall_address_ipv4_group(self) -> dict[str, Any]:
         pass
 
-    def delete_firewall_address_ipv4_group(self, name: str, vdom: str = VDOM_DEFAULT) -> dict[str, Any]:
+    def delete_firewall_address_ipv4_group(self, name: str, vdom: str = DEFAULT_VDOM) -> dict[str, Any]:
         """Delete a IPv4 address group.
 
         Args:
@@ -976,7 +976,7 @@ class Client(BaseClient):
     def list_firewall_address_ipv6_groups(
         self,
         name: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -1017,7 +1017,7 @@ class Client(BaseClient):
     def update_firewall_address_ipv6_group(self) -> dict[str, Any]:
         pass
 
-    def delete_firewall_address_ipv6_group(self, name: str, vdom: str = VDOM_DEFAULT) -> dict[str, Any]:
+    def delete_firewall_address_ipv6_group(self, name: str, vdom: str = DEFAULT_VDOM) -> dict[str, Any]:
         """Delete a IPv6 address group.
 
         Args:
@@ -1038,7 +1038,7 @@ class Client(BaseClient):
     def list_firewall_services(
         self,
         name: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -1079,7 +1079,7 @@ class Client(BaseClient):
     def update_firewall_service(self) -> dict[str, Any]:
         pass
 
-    def delete_firewall_service(self, name: str, vdom: str = VDOM_DEFAULT) -> dict[str, Any]:
+    def delete_firewall_service(self, name: str, vdom: str = DEFAULT_VDOM) -> dict[str, Any]:
         """Delete a service.
 
         Args:
@@ -1100,7 +1100,7 @@ class Client(BaseClient):
     def list_firewall_service_groups(
         self,
         name: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -1141,7 +1141,7 @@ class Client(BaseClient):
     def update_firewall_service_group(self) -> dict[str, Any]:
         pass
 
-    def delete_firewall_service_group(self, name: str, vdom: str = VDOM_DEFAULT) -> dict[str, Any]:
+    def delete_firewall_service_group(self, name: str, vdom: str = DEFAULT_VDOM) -> dict[str, Any]:
         """Delete a service group.
 
         Args:
@@ -1162,7 +1162,7 @@ class Client(BaseClient):
     def list_firewall_policies(
         self,
         id_: str | None = None,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -1206,7 +1206,7 @@ class Client(BaseClient):
     def move_firewall_policy(self) -> dict[str, Any]:
         pass
 
-    def delete_firewall_policy(self, id_: str, vdom: str = VDOM_DEFAULT) -> dict[str, Any]:
+    def delete_firewall_policy(self, id_: str, vdom: str = DEFAULT_VDOM) -> dict[str, Any]:
         """Delete a policy.
 
         Args:
@@ -1257,7 +1257,7 @@ class Client(BaseClient):
 
     def list_banned_ips(
         self,
-        vdom: str | None = VDOM_DEFAULT,
+        vdom: str | None = DEFAULT_VDOM,
         filter_field: str | None = None,
         filter_value: str | None = None,
         format_fields: list[str] | None = None,
@@ -1813,7 +1813,7 @@ def handle_list_command(
     Returns:
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
     format_fields = argToList(args.get("format_fields"))
 
     raw_response = list_command(
@@ -1883,7 +1883,7 @@ def handle_delete_command(
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
     identifier = args.get(identifier_field)
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
 
     response = delete_command(identifier, vdom=vdom)
     output = {outputs_key_field: identifier, "Deleted": True}
@@ -2002,7 +2002,7 @@ def create_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
     type_ = get_address_type(args)
 
     name = args.get("name", "")
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     associated_interface = args.get("associated_interface")
     address = args.get("address")
@@ -2056,7 +2056,7 @@ def update_firewall_address_ipv4_command(client: Client, args: dict[str, Any]) -
     """
     name = args.get("name", "")
     type_ = ADDRESS_GUI_TO_API_TYPE.get(args.get("type", ""))
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     associated_interface = args.get("associated_interface")
     address = args.get("address")
@@ -2205,7 +2205,7 @@ def create_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
     type_ = get_address_type(args, True)
 
     name = args.get("name", "")
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     address = args.get("address")
     mask = arg_to_number(args.get("mask"))
@@ -2263,7 +2263,7 @@ def update_firewall_address_ipv6_command(client: Client, args: dict[str, Any]) -
     """
     name = args.get("name", "")
     type_ = ADDRESS6_GUI_TO_API_TYPE.get(args.get("type", ""))
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     address = args.get("address")
     mask = arg_to_number(args.get("mask"))
@@ -2396,7 +2396,7 @@ def create_firewall_address_ipv4_multicast_command(client: Client, args: dict[st
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
     name = args.get("name", "")
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     associated_interface = args.get("associated_interface")
     type_ = ADDRESS_MULTICAST_GUI_TO_API_TYPE.get(args.get("type", ""), "")
@@ -2445,7 +2445,7 @@ def update_firewall_address_ipv4_multicast_command(client: Client, args: dict[st
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
     name = args.get("name", "")
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     associated_interface = args.get("associated_interface")
     type_ = ADDRESS_MULTICAST_GUI_TO_API_TYPE.get(args.get("type", ""), "")
@@ -2562,7 +2562,7 @@ def create_firewall_address_ipv6_multicast_command(client: Client, args: dict[st
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
     name = args.get("name", "")
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     address = args.get("address")
     mask = arg_to_number(args.get("mask"))
@@ -2604,7 +2604,7 @@ def update_firewall_address_ipv6_multicast_command(client: Client, args: dict[st
         CommandResults: Outputs of the command that represent an entry in warroom.
     """
     name = args.get("name", "")
-    vdom = args.get("vdom", VDOM_DEFAULT)
+    vdom = args.get("vdom", DEFAULT_VDOM)
     comment = args.get("comment")
     address = args.get("address")
     mask = arg_to_number(args.get("mask"))
@@ -3253,6 +3253,7 @@ def unban_ip_command(client: Client, args: dict[str, Any]) -> CommandResults:
 
 @logger
 def get_addresses_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     contents = []
     context = {}
     addresses_context = []
@@ -3302,6 +3303,7 @@ def get_addresses_command(client: Client, args: dict[str, Any]):
 
 @logger
 def create_address_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     contents = []
     context = {}
     address_context = []
@@ -3346,6 +3348,7 @@ def create_address_command(client: Client, args: dict[str, Any]):
 
 @logger
 def delete_address_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     contents = []
     context = {}
     address_context = []
@@ -3373,13 +3376,14 @@ def delete_address_command(client: Client, args: dict[str, Any]):
 
 @logger
 def get_address_groups_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     contents = []
     context = {}
     address_groups_context = []
     address_group_name = args.get("groupName", "")
     title = address_group_name if address_group_name else "all"
 
-    address_groups = client.list_firewall_address_ipv4_groups(address_group_name).get("results")
+    address_groups = client.list_firewall_address_ipv4_groups(address_group_name).get("results", [])
 
     for address_group in address_groups:
         members = address_group.get("member")
@@ -3407,6 +3411,7 @@ def get_address_groups_command(client: Client, args: dict[str, Any]):
 
 @logger
 def delete_address_group_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     contents = []
     context = {}
     address_group_context = []
@@ -3433,6 +3438,7 @@ def delete_address_group_command(client: Client, args: dict[str, Any]):
 
 @logger
 def get_firewall_service_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     contents = []
     context = {}
     service_context = []
@@ -3473,6 +3479,7 @@ def get_firewall_service_command(client: Client, args: dict[str, Any]):
 
 @logger
 def get_service_groups_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     contents = []
     context = {}
     service_groups_context = []
@@ -3503,6 +3510,7 @@ def get_service_groups_command(client: Client, args: dict[str, Any]):
 
 @logger
 def delete_service_group_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     context = {}
     group_name = args.get("groupName", "").encode("utf-8")
 
@@ -3529,6 +3537,7 @@ def delete_service_group_command(client: Client, args: dict[str, Any]):
 
 @logger
 def get_policy_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     contents = []
     context = {}
     policy_context = []
@@ -3630,6 +3639,7 @@ def get_policy_command(client: Client, args: dict[str, Any]):
 
 @logger
 def delete_policy_command(client: Client, args: dict[str, Any]):
+    """DEPRECATED COMMAND"""
     contents = []
     context = {}
     policy_id = args.get("policyID", "")
