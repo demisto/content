@@ -910,10 +910,10 @@ inputs:
 outputs:
 - contextPath: DBotFindSimilarIncidents
   description: Return all the results from the "DBotFindSimilarIncidents" script.
-  type: string
+  type: unknown
 - contextPath: DBotFindSimilarIncidentsByIndicators
   description: Return all the results from the "DBotFindSimilarIncidentsByIndicators" script.
-  type: string
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.2.0

@@ -50,8 +50,8 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotFindSimilarIncidents | Return all the results from the "DBotFindSimilarIncidents" script. | string |
-| DBotFindSimilarIncidentsByIndicators | Return all the results from the "DBotFindSimilarIncidentsByIndicators" script. | string |
+| DBotFindSimilarIncidents | Return all the results from the "DBotFindSimilarIncidents" script. | unknown |
+| DBotFindSimilarIncidentsByIndicators | Return all the results from the "DBotFindSimilarIncidentsByIndicators" script. | unknown |
 
 ## Playbook Image
 
