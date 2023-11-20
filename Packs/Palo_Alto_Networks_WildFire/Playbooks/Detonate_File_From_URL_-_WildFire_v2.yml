@@ -339,7 +339,7 @@ outputs:
   description: IPs relevant to the sample.
   type: string
 - contextPath: File
-  description: The File object.
+  description: The file object.
   type: unknown
 - contextPath: InfoFile
   description: The report file object.
