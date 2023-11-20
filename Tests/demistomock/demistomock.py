@@ -2,13 +2,12 @@ from __future__ import print_function
 
 import json
 import logging
-from pathlib import Path
 import uuid
 import os
 
 integrationContext = {}
 is_debug = False  # type: bool
-ARGS_COMMAND_PATH = Path(__file__).parent / ".args_command.json"
+ARGS_COMMAND_PATH = os.path.join(os.path.dirname(__file__), ".args_command.json")
 
 exampleIncidents = [
     {
@@ -453,8 +452,8 @@ def args():
       dict: Arguments object
 
     """
-    if Path(ARGS_COMMAND_PATH).exists():
-        with Path(ARGS_COMMAND_PATH).open() as f:
+    if os.path.exists(ARGS_COMMAND_PATH):
+        with open(ARGS_COMMAND_PATH) as f:
             try:
                 args = json.load(f)
             except json.JSONDecodeError:
@@ -472,10 +471,14 @@ def command():
       str: Integrations command name
 
     """
-    if Path(ARGS_COMMAND_PATH).exists():
-        with Path(ARGS_COMMAND_PATH).open() as f:
-            return json.load(f)["cmd"]
-
+    if os.path.exists(ARGS_COMMAND_PATH):
+        with open(ARGS_COMMAND_PATH) as f:
+            try:
+                return json.load(f)["cmd"]
+            except json.JSONDecodeError:
+                return ""
+            except KeyError:
+                return ""
     return ""
 
 
