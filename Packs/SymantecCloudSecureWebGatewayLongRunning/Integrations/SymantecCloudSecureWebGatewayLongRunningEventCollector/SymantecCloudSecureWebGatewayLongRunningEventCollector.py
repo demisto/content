@@ -505,6 +505,19 @@ def extract_logs_and_push_to_XSIAM(
     )
 
 
+def delete_tmp_file_from_last_fetch():
+    # Deletes the temporary file from the last fetch if it exists
+    if tmp_file_path := get_integration_context().get("tmp_file_path"):
+        demisto.debug(f"{tmp_file_path=}")  # ????
+        tmp_file_path = Path(tmp_file_path)
+        try:
+            if tmp_file_path.exists():
+                demisto.debug(f"there is a {tmp_file_path=}")  # ????
+                tmp_file_path.unlink()
+                demisto.debug(f"Deleted temporary file: {tmp_file_path}")
+        except Exception as err:
+            demisto.debug(f"Failed to delete temporary file. Error: {err}")
+    demisto.debug("Skipping temporary file deletion")  # ????
 """ FETCH EVENTS """
 
 
@@ -593,6 +606,9 @@ def get_events_command(
         )
 
 
+""" TEST MODULE """
+
+
 def test_module(client: Client):
     start_date, end_date = get_start_and_end_date({}, None)
     params: dict[str, Union[str, int]] = {
@@ -603,21 +619,6 @@ def test_module(client: Client):
 
     client.get_logs(params)
     return "ok"
-
-
-def delete_tmp_file_from_last_fetch():
-    # Deletes the temporary file from the last fetch if it exists
-    if tmp_file_path := get_integration_context().get("tmp_file_path"):
-        demisto.debug(f"{tmp_file_path=}")  # ????
-        tmp_file_path = Path(tmp_file_path)
-        try:
-            if tmp_file_path.exists():
-                demisto.debug(f"there is a {tmp_file_path=}")  # ????
-                tmp_file_path.unlink()
-                demisto.debug(f"Deleted temporary file: {tmp_file_path}")
-        except Exception as err:
-            demisto.debug(f"Failed to delete temporary file. Error: {err}")
-    demisto.debug("Skipping temporary file deletion")  # ????
 
 
 def perform_long_running_loop(client: Client, args: dict[str, str]):
