@@ -506,14 +506,14 @@ class DBotScoreCalculator:
         confidence = indicator.get('confidence', Common.DBotScore.NONE)
         defined_threshold = threshold or self.instance_defined_thresholds.get(ioc_type)
         if defined_threshold:
-            return Common.DBotScore.BAD if confidence >= defined_threshold else Common.DBotScore.GOOD
+            return Common.DBotScore.BAD if confidence >= defined_threshold else Common.DBotScore.NONE
         else:
             if confidence > DEFAULT_MALICIOUS_THRESHOLD:
                 return Common.DBotScore.BAD
             if confidence > DEFAULT_SUSPICIOUS_THRESHOLD:
                 return Common.DBotScore.SUSPICIOUS
             else:
-                return Common.DBotScore.GOOD
+                return Common.DBotScore.NONE
 
 
 def find_worst_indicator(indicators):
