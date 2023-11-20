@@ -87,21 +87,17 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
     exit 1
 fi
 
-_variables="variables[BUCKET_UPLOAD]=true"
-if [ -n "$_force" ]; then
-  _variables="variables[FORCE_BUCKET_UPLOAD]=true"
-fi
-
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 source ${SCRIPT_DIR}/trigger_build_url.sh
 
 curl -k -v --request POST \
   --form token="${_ci_token}" \
   --form ref="${_branch}" \
-  --form "${_variables}" \
+  --form "variables[BUCKET_UPLOAD]=true" \
   --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_pack}" \
   --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
   --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
+  --form "variables[FORCE_BUCKET_UPLOAD]=${_force}" \
   --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
   --form "variables[GCS_MARKET_V2_BUCKET]=${_bucket_v2}" \
   --form "variables[GCS_MARKET_XPANSE_BUCKET]=${_bucket_xpanse}" \
