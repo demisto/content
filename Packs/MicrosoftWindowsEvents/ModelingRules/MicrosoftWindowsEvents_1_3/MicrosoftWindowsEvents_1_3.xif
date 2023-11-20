@@ -17,7 +17,7 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         error_message = coalesce(event_data -> ErrorMessage, arrayindex(regextract(message, "Error Description:\s*([^\.]+\.)"), 0)),
         event_data_param1 = event_data -> param1,
         event_data_param2 = event_data -> param2,
-        event_name = arrayindex(regextract(message, "([^\.]+)"), 0),
+        event_name = arrayindex(regextract(message, "([^\.]+)\."), 0),
         IpPort = event_data -> IpPort,
         IpAddress = event_data -> IpAddress,
         LogLevel = lowercase(log_level),
