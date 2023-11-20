@@ -1,4 +1,4 @@
-Detonate one or more files using the Wildfire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+Detonate one or more files using the Wildfire v2 integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
 The detonation supports the following file types -
 APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z.
 
@@ -12,8 +12,8 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* WildFire-v2
 * Palo_Alto_Networks_WildFire_v2
+* WildFire-v2
 
 ### Scripts
 
@@ -21,8 +21,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* wildfire-upload-file-url
 * wildfire-report
+* wildfire-upload-file-url
 
 ## Playbook Inputs
 
@@ -31,8 +31,8 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | FileURL | URL of the web file to detonate. The FileUrl is taken from the context. | FileURL | Optional |
-| Interval | Duration for executing the pooling \(in minutes\) | 1 | Optional |
-| Timeout | The duration after which to stop pooling and to resume the playbook \(in minutes\) | 15 | Optional |
+| Interval | Duration for executing the pooling \(in minutes\). | 1 | Optional |
+| Timeout | The duration after which to stop pooling and to resume the playbook \(in minutes\). | 8 | Optional |
 | ReportFileType | The resource type to download. Default is pdf. xml is also possible. |  | Optional |
 
 ## Playbook Outputs
@@ -71,6 +71,8 @@ This playbook does not use any scripts.
 | WildFire.Report.FileType | The type of the submission. | string |
 | WildFire.Report.Status | The status of the submission. | string |
 | WildFire.Report.Size | The size of the submission. | number |
+| WildFire.Report.ExtractedURL.URL | The extracted URL. | string |
+| WildFire.Report.ExtractedURL.Verdict | The extracted verdict. | number |
 
 ## Playbook Image
 
