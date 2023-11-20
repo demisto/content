@@ -40,7 +40,7 @@ trigger-private-build:
   - section_start "Create Release Notes and Common Server Documentation" --collapsed
   - echo "Creating Release Notes and Content Descriptor"
   - |
-    if [ "${CI_COMMIT_BRANCH}" != "master" ]; then
+    if [ "${CI_COMMIT_BRANCH}" == "master" ]; then
       git fetch --depth=0
     fi
   - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --packs-release-notes "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs-release-notes.md" --content-descriptor "${ARTIFACTS_FOLDER_SERVER_TYPE}/content-descriptor.json" --github-token $GITHUB_TOKEN
